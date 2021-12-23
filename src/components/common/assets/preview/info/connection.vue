@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col">
         <p
-            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
             Category
         </p>
@@ -12,7 +12,7 @@
 
     <div class="flex flex-col">
         <p
-            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
             SQL Query
         </p>
@@ -52,22 +52,22 @@
                 <div class="flex items-center mb-3 gap-x-6">
                     <div class="flex flex-col">
                         <p
-                            class="flex items-center justify-between mb-1 text-sm text-gray-500 "
+                            class="flex items-center justify-between mb-1 text-sm text-gray-500"
                         >
                             Credential
                         </p>
                         <div class="uppercase">
-                            {{ queryConfigJSON.credentialType }}
+                            {{ attributes(selectedAsset)?.credentialStrategy }}
                         </div>
                     </div>
                     <div class="flex flex-col">
                         <p
-                            class="flex items-center justify-between mb-1 text-sm text-gray-500 "
+                            class="flex items-center justify-between mb-1 text-sm text-gray-500"
                         >
                             Row Limit
                         </p>
                         <div class="uppercase">
-                            {{ queryConfigJSON.rowLimit }}
+                            {{ attributes(selectedAsset)?.rowLimit }}
                         </div>
                     </div>
                 </div>
@@ -77,16 +77,25 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject } from 'vue'
+    import { computed, defineComponent, inject, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+
+    import Owners from '@/common/input/owner/index.vue'
 
     export default defineComponent({
         name: 'ConnectionDetails',
+        props: {
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+        },
         components: {
-            AtlanIcon,
+            Owners,
         },
         setup(props) {
+            const { editPermission } = toRefs(props)
             const selectedAsset = inject('selectedAsset')
 
             const { attributes } = useAssetInfo()
@@ -100,7 +109,12 @@
                 return {}
             })
 
-            return { selectedAsset, attributes, queryConfigJSON }
+            return {
+                selectedAsset,
+                attributes,
+                queryConfigJSON,
+                editPermission,
+            }
         },
     })
 </script>

@@ -23,8 +23,6 @@ const useActiveQueryAccess = (
         'description',
         'userDescription',
         'certificateStatus',
-        'ownerUsers',
-        'ownerGroups',
         'adminUsers',
         'adminGroups',
         
@@ -54,7 +52,9 @@ const useActiveQueryAccess = (
         if (activeInlineTab?.value?.qualifiedName?.length) {
             queryQualifiedName =
                 activeInlineTab?.value?.qualifiedName?.split('/')
-            parentQualifiedName = `/${queryQualifiedName[1]}/${queryQualifiedName[2]}/${queryQualifiedName[3]}/${queryQualifiedName[4]}`
+
+            // console.log('queryQualifiedName: ', )
+            parentQualifiedName = `${queryQualifiedName[0]}/${queryQualifiedName[1]}/${queryQualifiedName[2]}/${queryQualifiedName[3]}`
         }
         // console.log('queryQualifiedName: ', parentQualifiedName)
 
@@ -177,9 +177,9 @@ const useActiveQueryAccess = (
             let adminGroups =
                 selectedCollectionData?.value?.entities?.length &&
                 selectedCollectionData?.value?.entities[0]?.attributes
-                    ?.ownerGroups
+                    ?.adminGroups
                     ? selectedCollectionData.value?.entities[0].attributes
-                          ?.ownerGroups
+                          ?.adminGroups
                     : []
 
             if (adminUsers?.length) {
@@ -209,10 +209,10 @@ const useActiveQueryAccess = (
                 ? selectedCollectionData?.value?.entities[0]?.attributes
                       ?.__createdBy
                 : ''
-            console.log('creator: ', {
-                creator,
-                currentUser: currentUser.value,
-            })
+            // console.log('creator: ', {
+            //     creator,
+            //     currentUser: currentUser.value,
+            // })
 
             if (creator == currentUser.value) {
                 return true

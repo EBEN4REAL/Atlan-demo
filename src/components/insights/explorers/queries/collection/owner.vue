@@ -1,97 +1,121 @@
 <template>
     <div class="w-full">
-        <div class="flex items-center justify-between px-4">
-            <SearchAdvanced
-                ref="ownerSearchRef"
-                v-model="queryText"
-                :placeholder="placeholder"
-                class="-mt-1.5"
-                :allow-clear="true"
-                size="minimal"
+        <a-popover
+            trigger="click"
+            placement="bottom"
+            v-model:visible="popoverVisible"
+        >
+            <div
+                class="flex items-center justify-between"
+                @click="showPopover(true)"
             >
-                <template #tab>
-                    <div class="flex gap-1">
-                        <a-tooltip title="users" placement="top">
-                            <div
-                                :class="
-                                    !enableTabs.includes('users')
-                                        ? hideDisabledTabs
-                                            ? 'hidden'
-                                            : 'pointer-events-none cursor-not-allowed'
-                                        : ''
-                                "
-                            >
-                                <AtlanIcon
+                <SearchAdvanced
+                    v-model="queryText"
+                    :placeholder="placeholder"
+                    :allow-clear="true"
+                    size="minimal"
+                    class="border-b-0"
+                    :autofocus="false"
+                >
+                    <template #tab>
+                        <div class="flex gap-1">
+                            <a-tooltip title="users" placement="top">
+                                <div
                                     :class="
-                                        componentType === 'users'
-                                            ? 'text-primary font-bold '
+                                        !enableTabs.includes('users')
+                                            ? hideDisabledTabs
+                                                ? 'hidden'
+                                                : 'pointer-events-none cursor-not-allowed'
                                             : ''
                                     "
-                                    icon="User"
-                                    class="mx-auto"
-                                    @click="handleUserClick"
-                                />
-                            </div>
-                        </a-tooltip>
-                        <a-tooltip title="groups" placement="top">
-                            <div
-                                :class="
-                                    !enableTabs.includes('groups')
-                                        ? hideDisabledTabs
-                                            ? 'hidden'
-                                            : 'pointer-events-none cursor-not-allowed'
-                                        : ''
-                                "
-                            >
-                                <AtlanIcon
+                                >
+                                    <AtlanIcon
+                                        :class="
+                                            componentType === 'users'
+                                                ? 'text-primary font-bold '
+                                                : ''
+                                        "
+                                        icon="User"
+                                        class="mx-auto"
+                                        @click="handleUserClick"
+                                    />
+                                </div>
+                            </a-tooltip>
+                            <a-tooltip title="groups" placement="top">
+                                <div
                                     :class="
-                                        componentType === 'groups'
-                                            ? 'text-primary font-bold'
+                                        !enableTabs.includes('groups')
+                                            ? hideDisabledTabs
+                                                ? 'hidden'
+                                                : 'pointer-events-none cursor-not-allowed'
                                             : ''
                                     "
-                                    icon="GroupStatic"
-                                    class="mx-auto"
-                                    @click="handleGroupClick"
-                                />
-                            </div>
-                        </a-tooltip>
-                    </div>
-                </template>
-            </SearchAdvanced>
-        </div>
-        <div class="mt-1">
-            <Users
-                v-if="componentType == 'users'"
-                ref="usersRef"
-                v-model="modelValue.ownerUsers"
-                v-model:disabledKeys="disabledModalValue.ownerUsers"
-                :query-text="queryText"
-                :select-user-key="selectUserKey"
-                @change="handleChange"
-            ></Users>
+                                >
+                                    <AtlanIcon
+                                        :class="
+                                            componentType === 'groups'
+                                                ? 'text-primary font-bold'
+                                                : ''
+                                        "
+                                        icon="GroupStatic"
+                                        class="mx-auto"
+                                        @click="handleGroupClick"
+                                    />
+                                </div>
+                            </a-tooltip>
+                        </div>
+                    </template>
+                </SearchAdvanced>
+            </div>
 
-            <Groups
-                v-if="componentType == 'groups'"
-                ref="groupRef"
-                v-model="modelValue.ownerGroups"
-                v-model:disabledKeys="disabledModalValue.ownerGroups"
-                :query-text="queryText"
-                :select-group-key="selectGroupKey"
-                @change="handleChange"
-            ></Groups>
-        </div>
-        <div v-if="showNone" class="px-4 pt-1">
-            <a-checkbox
-                v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
-            >
-                <component
-                    :is="noStatus"
-                    class="inline-flex self-center w-auto h-4 mb-1"
-                />
-                <span class="mb-0 text-gray-500"> No Owners </span>
-            </a-checkbox>
-        </div>
+            <template #content>
+                <div style="width: 330px" class="">
+                    <div>
+                        <Users
+                            v-if="componentType == 'users'"
+                            ref="usersRef"
+                            v-model="modelValue.ownerUsers"
+                            v-model:disabledKeys="disabledModalValue.ownerUsers"
+                            :query-text="queryText"
+                            :select-user-key="selectUserKey"
+                            @change="handleChange"
+                            :show-avatar="true"
+                            list-class="h-52"
+                            checkbox-list-class="py-2 h-52"
+                            list-item-class="h-8 my-0.5"
+                        ></Users>
+
+                        <Groups
+                            v-if="componentType == 'groups'"
+                            ref="groupRef"
+                            v-model="modelValue.ownerGroups"
+                            v-model:disabledKeys="
+                                disabledModalValue.ownerGroups
+                            "
+                            :query-text="queryText"
+                            :select-group-key="selectGroupKey"
+                            @change="handleChange"
+                            :show-avatar="true"
+                            list-class="h-52"
+                            checkbox-list-class="py-2 h-52"
+                            list-item-class="h-8 my-0.5"
+                        ></Groups>
+                    </div>
+                    <div v-if="showNone" class="px-4 pt-1">
+                        <a-checkbox
+                            v-model:checked="localValue.empty"
+                            class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
+                        >
+                            <component
+                                :is="noStatus"
+                                class="inline-flex self-center w-auto h-4 mb-1"
+                            />
+                            <span class="mb-0 text-gray-500"> No Owners </span>
+                        </a-checkbox>
+                    </div>
+                </div>
+            </template>
+        </a-popover>
     </div>
 </template>
 
@@ -186,55 +210,48 @@
 
             const queryText = ref('')
 
+            const popoverVisible = ref(false)
+            const showPopover = (val) => {
+                popoverVisible.value = val
+            }
+
             const handleGroupClick = () => {
                 componentType.value = 'groups'
-                queryText.value = ''
+                // queryText.value = ''
+                showPopover(true)
             }
 
             const handleUserClick = () => {
                 componentType.value = 'users'
-                queryText.value = ''
+                // queryText.value = ''
+                showPopover(true)
             }
 
             const placeholder = computed(() => {
+                if (!popoverVisible.value) {
+                    return 'Search users and groups'
+                }
                 if (componentType.value === 'groups') {
                     return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
                 }
                 return `Search ${usersRef?.value?.filterTotal ?? ''} users`
             })
 
-            // watch(localValue.value, (prev, cur) => {
-            //     if (!localValue.value.ownerUsers) {
-            //         delete localValue.value.ownerUsers
-            //     } else if (localValue.value.ownerUsers?.length === 0) {
-            //         delete localValue.value.ownerUsers
-            //     }
-
-            //     if (!localValue.value.ownerGroups) {
-            //         delete localValue.value.ownerGroups
-            //     } else if (localValue.value.ownerGroups?.length === 0) {
-            //         delete localValue.value.ownerGroups
-            //     }
-            //     modelValue.value = localValue.value
-            //     emit('change', localValue.value)
-            // })
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
-            const { start } = useTimeoutFn(() => {
-                if (ownerSearchRef.value?.forceFocus) {
-                    ownerSearchRef.value?.forceFocus()
-                }
-            }, 100)
-            /* Adding this when parent data change, sync it with local */
+
             watch(modelValue, () => {
                 localValue.value = modelValue.value
             })
 
-            const forceFocus = () => {
-                start()
-            }
             const handleChange = () => {
                 emit('change')
             }
+
+            watch(queryText, () => {
+                if (popoverVisible.value === false) {
+                    showPopover(true)
+                }
+            })
 
             return {
                 groupRef,
@@ -251,8 +268,10 @@
                 localValue,
                 showNone,
                 ownerSearchRef,
-                forceFocus,
+                // forceFocus,
                 handleChange,
+                showPopover,
+                popoverVisible,
                 // handleUserChange,
             }
         },

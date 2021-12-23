@@ -47,11 +47,13 @@
             :is-loading="isValidating"
             @loadMore="handleLoadMore"
         >
-            <template #default="{ item }">
+            <template #default="{ item, itemIndex }">
                 <AssetItem
                     :item="item"
+                    :item-index="itemIndex"
+                    :enable-sidebar-drawer="true"
                     class="m-1"
-                    @update="handleListUpdate"
+                    @updateDrawer="handleListUpdate"
                 />
             </template>
         </AssetList>

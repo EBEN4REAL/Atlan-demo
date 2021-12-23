@@ -28,7 +28,7 @@
                 <Avatar
                     v-if="isValidUser"
                     :image-url="updatedImageUrl || imageUrl"
-                    :allow-upload="isCurrentUser"
+                    :allow-upload="false"
                     :avatar-name="
                         selectedUser.name ||
                         selectedUser.username ||

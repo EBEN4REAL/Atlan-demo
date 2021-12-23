@@ -18,8 +18,8 @@ export interface State {
     evaluations: any
     decentralizedRole: {
         level: string
-        id: string
-        type: string
+        roleId: string
+        privelage: string
     }[]
 }
 

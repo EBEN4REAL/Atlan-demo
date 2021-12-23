@@ -53,7 +53,7 @@ const useActiveQueryAccess = (
             queryQualifiedName =
                 activeInlineTab?.value?.qualifiedName?.split('/')
 
-            console.log('queryQualifiedName: ', )
+            // console.log('queryQualifiedName: ', )
             parentQualifiedName = `${queryQualifiedName[0]}/${queryQualifiedName[1]}/${queryQualifiedName[2]}/${queryQualifiedName[3]}`
         }
         // console.log('queryQualifiedName: ', parentQualifiedName)
@@ -209,10 +209,10 @@ const useActiveQueryAccess = (
                 ? selectedCollectionData?.value?.entities[0]?.attributes
                       ?.__createdBy
                 : ''
-            console.log('creator: ', {
-                creator,
-                currentUser: currentUser.value,
-            })
+            // console.log('creator: ', {
+            //     creator,
+            //     currentUser: currentUser.value,
+            // })
 
             if (creator == currentUser.value) {
                 return true

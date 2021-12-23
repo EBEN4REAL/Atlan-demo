@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-44">
+    <div class="w-full h-44" :class="listClass">
         <div
             v-if="userList.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -8,7 +8,10 @@
                 <span class="text-gray-500">No users found</span>
             </div>
         </div>
-        <div class="flex flex-col w-full h-40 overflow-y-auto">
+        <div
+            class="flex flex-col w-full h-40 overflow-y-auto"
+            :class="checkboxListClass"
+        >
             <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
@@ -21,19 +24,33 @@
                             disabledKeyMap[item[selectUserKey]] === true
                         "
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        :class="listItemClass"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectUserKey])
                         "
                     >
-                        <div class="text-sm leading-none capitalize text-gray">
-                            {{ fullName(item) }}
-                            <span
-                                v-if="item.username === username"
-                                class="text-sm text-gray-500"
+                        <div class="flex items-center">
+                            <Avatar
+                                v-if="showAvatar"
+                                avatar-shape="circle"
+                                :image-url="imageUrl(item.username)"
+                                :allow-upload="false"
+                                :avatar-name="item.username"
+                                :avatar-size="20"
+                                class="mr-2"
+                            />
+                            <div
+                                class="text-sm leading-none capitalize text-gray"
                             >
-                                (me)
-                            </span>
+                                {{ fullName(item) }}
+                                <span
+                                    v-if="item.username === username"
+                                    class="text-sm text-gray-500"
+                                >
+                                    (me)
+                                </span>
+                            </div>
                         </div>
                     </a-checkbox>
                 </template>
@@ -42,7 +59,7 @@
                 class="flex items-center justify-between px-4"
                 v-if="userList.length > 0"
             >
-                <p class="mt-1 text-xs text-gray-500">
+                <p class="text-xs text-gray-500">
                     {{ userList.length }} of {{ filterTotal }} users
                 </p>
                 <template v-if="userList?.length < filterTotal">
@@ -50,7 +67,7 @@
                         <a-spin size="small"></a-spin>
                     </div>
                     <div
-                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
+                        class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                         v-else
                     >
@@ -64,11 +81,15 @@
 
 <script lang="ts">
     import { defineComponent, watch, computed, ref, toRefs, Ref } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { useVModels, onKeyStroke } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
+    import Avatar from '~/components/common/avatar/avatar.vue'
 
     export default defineComponent({
         name: 'UsersFilter',
+        components: {
+            Avatar,
+        },
         props: {
             queryText: {
                 type: String,
@@ -92,6 +113,22 @@
             },
             disabledKeys: {
                 type: Array,
+                required: false,
+            },
+            showAvatar: {
+                type: Boolean,
+                required: false,
+            },
+            listClass: {
+                type: String,
+                required: false,
+            },
+            checkboxListClass: {
+                type: String,
+                required: false,
+            },
+            listItemClass: {
+                type: String,
                 required: false,
             },
         },
@@ -149,6 +186,29 @@
                 modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
+
+            onKeyStroke(['Enter'], (e) => {
+                const { key } = e
+                e.preventDefault()
+
+                if (key === 'Enter') {
+                    if (userList.value.length === 1) {
+                        // console.log('enter pressed')
+
+                        let id = userList.value[0][selectUserKey.value]
+                        if (map.value[id]) {
+                            delete map.value[id]
+                        } else {
+                            map.value[id] = true
+                        }
+                        modelValue.value = [...Object.keys(map.value)]
+                    }
+                }
+            })
+
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+
             return {
                 loadMore,
                 isLoading,
@@ -161,6 +221,7 @@
                 filterTotal,
                 handleChange,
                 disabledKeyMap,
+                imageUrl,
             }
         },
     })

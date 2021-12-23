@@ -7,19 +7,7 @@
                 :placeholder="`Search ${totalCount} columns`"
                 class=""
                 @change="handleSearchChange"
-            >
-                <template #postFilter>
-                    <div class="flex items-center justify-between py-1 rounded">
-                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
-
-                        <Sorting
-                            v-model="preference.sort"
-                            asset-type="Column"
-                            @change="handleChangeSort"
-                        ></Sorting>
-                    </div>
-                </template>
-            </SearchAdvanced>
+            />
         </div>
 
         <AggregationTabs

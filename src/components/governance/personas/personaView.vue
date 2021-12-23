@@ -54,20 +54,20 @@
                             </span>
                             <div class="flex gap-x-1">
                                 <span
-                                    class="text-xs text-gray-500"
                                     v-if="item.users.length > 0"
+                                    class="text-xs text-gray-500"
                                 >
                                     {{ item.users.length }} users</span
                                 >
                                 <span
-                                    class="text-xs text-gray-500"
                                     v-if="item.groups.length > 0"
+                                    class="text-xs text-gray-500"
                                 >
                                     {{ item.groups.length }} groups</span
                                 >
                                 <span
-                                    class="text-xs text-gray-500"
                                     v-if="item.groups.length > 0"
+                                    class="text-xs text-gray-500"
                                 >
                                     {{
                                         item.metadataPolicies.length +
@@ -81,9 +81,9 @@
                         </div>
 
                         <a-tooltip
+                            v-if="item.description"
                             tabindex="-1"
                             :title="item.description"
-                            v-if="item.description"
                             placement="right"
                         >
                             <span
@@ -100,8 +100,8 @@
         <template v-else-if="selectedPersona">
             <div class="bg-white">
                 <PersonaHeader
-                    :persona="selectedPersona"
                     v-model:openEditModal="openEditModal"
+                    :persona="selectedPersona"
                 />
             </div>
             <PersonaBody
@@ -190,6 +190,7 @@
     import { isEditing } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
+    import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
@@ -211,8 +212,9 @@
             const modalVisible = ref(false)
             const modalDetailPolicyVisible = ref(false)
             const selectedPolicy = ref({})
+            usePermissions() // refresh the list of connection user can access
             const authStore = useAuthStore()
-            const { roles } = storeToRefs(authStore)
+            const { decentralizedRole } = storeToRefs(authStore)
             const openEditModal = ref(false)
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
@@ -253,15 +255,19 @@
             })
 
             watch(
-                roles,
+                decentralizedRole,
                 () => {
-                    const filteredRoles = (roles.value || []).filter((role) =>
-                        role.name.startsWith('connection_admins_')
+                    debugger
+                    const filteredRoles = (
+                        decentralizedRole.value || []
+                    ).filter(
+                        (role) =>
+                            role.level === 'connection' &&
+                            role.privelage === 'admin'
                     )
                     whitelistedConnectionIds.value = filteredRoles.map(
                         (role) => {
-                            if (role && role.name)
-                                return role.name.split('_')[2]
+                            if (role && role.roleId) return role.roleId
                             return ''
                         }
                     )
@@ -288,7 +294,6 @@
                 handleSelectPolicy,
                 selectedPolicy,
                 whitelistedConnectionIds,
-                roles,
                 openEditModal,
             }
         },

@@ -51,6 +51,7 @@
 
         <Connection
             v-if="selectedAsset.typeName === 'Connection'"
+            :selected-asset="selectedAsset"
             v-model="localSQLQuery"
             :edit-permission="editPermission"
             @change="handleSQLQueryUpdate"

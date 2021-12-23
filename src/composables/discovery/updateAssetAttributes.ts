@@ -302,12 +302,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
 
-    // Announcement Update
+    // SQL Query Config Update
     const handleSQLQueryUpdate = () => {
         entity.value.attributes.allowQuery = localSQLQuery.value.allowQuery
         entity.value.attributes.allowQueryPreview =
             localSQLQuery.value.allowQueryPreview
-        entity.value.attributes.connectionRowLimit =
+        entity.value.attributes.rowLimit =
             localSQLQuery.value.connectionRowLimit
         body.value.entities = [entity.value]
 

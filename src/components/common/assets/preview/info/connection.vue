@@ -82,9 +82,38 @@
                 :destroyOnClose="true"
                 :maskClosable="false"
             >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <div class="flex flex-col p-4 text-gray-500">
+                    <div class="flex items-center mb-3 gap-x-6">
+                        <div class="flex flex-col">
+                            <p class="mb-1 text-sm">Query</p>
+                            <RadioButtons
+                                v-model="localValue.allowQuery"
+                                :list="radioList"
+                            />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <p class="mb-1 text-sm">Preview</p>
+                            <RadioButtons
+                                v-model="localValue.allowQueryPreview"
+                                :list="radioList"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center mb-3 gap-x-6">
+                        <div class="flex flex-col">
+                            <p class="mb-1 text-sm">Row Limit</p>
+                            <a-input
+                                v-model:value="localValue.connectionRowLimit"
+                                placeholder="Input a number"
+                                type="number"
+                                :min="0"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
                 <template #footer>
                     <a-button @click="handleCancel">Cancel</a-button>
                     <a-button type="primary" @click="handleUpdate"
@@ -107,17 +136,13 @@
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import {
-        and,
-        useActiveElement,
-        useMagicKeys,
-        useTimeoutFn,
-        useVModels,
-        whenever,
-    } from '@vueuse/core'
+    import { useVModels } from '@vueuse/core'
+    import RadioButtons from '@common/radio/customRadioButtonSingle.vue'
+    import { CheckboxArray } from '~/types'
 
     export default defineComponent({
         name: 'ConnectionDetails',
+        components: { RadioButtons },
         props: {
             editPermission: {
                 type: Boolean,
@@ -142,6 +167,11 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
+            const radioList: CheckboxArray = [
+                { id: true, label: 'Yes' },
+                { id: false, label: 'No' },
+            ]
+
             const {
                 attributes,
                 connectionRowLimit,
@@ -164,18 +194,17 @@
                 }
             }
 
+            const handleRowLimitChange = (e) => {
+                localValue.value.connectionRowLimit = e.target.value
+            }
+
             const handleUpdate = () => {
                 modelValue.value = localValue.value
                 emit('change')
-
                 visible.value = false
             }
 
-            const handleCancel = () => {
-                visible.value = false
-            }
-
-            watch(selectedAsset, () => {
+            const resetInput = () => {
                 localValue.value.allowQuery = allowQuery(selectedAsset.value)
                 localValue.value.allowQueryPreview = allowQueryPreview(
                     selectedAsset.value
@@ -183,6 +212,15 @@
                 localValue.value.connectionRowLimit = connectionRowLimit(
                     selectedAsset.value
                 )
+            }
+
+            const handleCancel = () => {
+                visible.value = false
+                resetInput()
+            }
+
+            watch(selectedAsset, () => {
+                resetInput()
             })
 
             return {
@@ -197,6 +235,9 @@
                 connectionRowLimit,
                 allowQuery,
                 allowQueryPreview,
+                localValue,
+                radioList,
+                handleRowLimitChange,
             }
         },
     })

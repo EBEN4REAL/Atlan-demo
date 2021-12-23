@@ -136,6 +136,7 @@ export default function useFacetUsers(
     }
 
     return {
+        queryText,
         userList,
         loadMore,
         isLoading,

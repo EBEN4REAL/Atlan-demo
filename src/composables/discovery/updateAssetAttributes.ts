@@ -30,6 +30,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         readmeContent,
         meaningRelationships,
         categories,
+        allowQuery,
+        allowQueryPreview,
+        connectionRowLimit,
     } = useAssetInfo()
 
     const entity = ref({
@@ -119,6 +122,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localReadmeContent = ref(readmeContent(selectedAsset.value))
 
     const localClassifications = ref(classifications(selectedAsset.value))
+
+    const localSQLQuery = ref({
+        allowQuery: allowQuery(selectedAsset.value),
+        allowQueryPreview: allowQueryPreview(selectedAsset.value),
+        connectionRowLimit: connectionRowLimit(selectedAsset.value),
+    })
 
     const currentMessage = ref('')
 

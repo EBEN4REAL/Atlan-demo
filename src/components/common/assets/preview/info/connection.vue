@@ -28,7 +28,7 @@
                         <AtlanIcon
                             icon="Approve"
                             class="mr-1"
-                            v-if="attributes(selectedAsset)?.allowQuery"
+                            v-if="allowQuery(selectedAsset)"
                         ></AtlanIcon>
                         <AtlanIcon
                             icon="Decline"
@@ -42,7 +42,7 @@
                         <AtlanIcon
                             icon="Approve"
                             class="mr-1"
-                            v-if="attributes(selectedAsset)?.allowQueryPreview"
+                            v-if="allowQueryPreview(selectedAsset)"
                         ></AtlanIcon>
                         <AtlanIcon
                             icon="Decline"
@@ -71,7 +71,7 @@
                             Row Limit
                         </p>
                         <div class="uppercase">
-                            {{ attributes(selectedAsset)?.rowLimit }}
+                            {{ connectionRowLimit(selectedAsset) }}
                         </div>
                     </div>
                 </div>
@@ -123,7 +123,12 @@
             const { editPermission, selectedAsset } = toRefs(props)
             const visible = ref(false)
 
-            const { attributes } = useAssetInfo()
+            const {
+                attributes,
+                connectionRowLimit,
+                allowQuery,
+                allowQueryPreview,
+            } = useAssetInfo()
 
             const queryConfigJSON = computed(() => {
                 if (attributes(selectedAsset.value)?.queryConfig) {
@@ -157,6 +162,9 @@
                 visible,
                 handleCancel,
                 handleUpdate,
+                connectionRowLimit,
+                allowQuery,
+                allowQueryPreview,
             }
         },
     })

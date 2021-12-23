@@ -119,6 +119,12 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
+    const connectionRowLimit = (asset: assetInterface) =>
+        attributes(asset)?.rowLimit
+    const allowQuery = (asset: assetInterface) => attributes(asset)?.allowQuery
+    const allowQueryPreview = (asset: assetInterface) =>
+        attributes(asset)?.allowQueryPreview
+
     const links = (asset: assetInterface) => {
         const allLinks = attributes(asset)?.links
 
@@ -1013,5 +1019,8 @@ export default function useAssetInfo() {
         isScrubbed,
         adminGroups,
         adminUsers,
+        connectionRowLimit,
+        allowQuery,
+        allowQueryPreview,
     }
 }

@@ -10,11 +10,7 @@
         </div>
     </div>
 
-    <div
-        class="flex flex-col"
-        :class="{ 'cursor-pointer': editPermission }"
-        @click="handleOpenModal"
-    >
+    <div class="flex flex-col" @click="handleOpenModal">
         <p
             class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
@@ -22,7 +18,10 @@
         </p>
 
         <div class="px-5">
-            <div class="flex flex-col p-4 border border-gray-200 rounded">
+            <div
+                class="flex flex-col p-4 border border-gray-200 rounded"
+                :class="{ 'cursor-pointer hover:shadow': editPermission }"
+            >
                 <div class="flex items-center mb-3 gap-x-6">
                     <p class="flex items-center text-gray-500">
                         <AtlanIcon
@@ -194,10 +193,6 @@
                 }
             }
 
-            const handleRowLimitChange = (e) => {
-                localValue.value.connectionRowLimit = e.target.value
-            }
-
             const handleUpdate = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -237,7 +232,6 @@
                 allowQueryPreview,
                 localValue,
                 radioList,
-                handleRowLimitChange,
             }
         },
     })

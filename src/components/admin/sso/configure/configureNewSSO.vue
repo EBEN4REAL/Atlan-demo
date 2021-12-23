@@ -358,7 +358,7 @@
     import { Tenant } from '~/services/service/tenant'
     import DefaultLayout from '@/admin/layout.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import MinimalTab from '@/UI/minimalTab.vue'
+    
 
     interface FormState {
         alias: string
@@ -373,7 +373,6 @@
             ImportText,
             DefaultLayout,
             AtlanBtn,
-            MinimalTab,
         },
         setup() {
             const allowAddDeleteMappers = ref(false)
@@ -390,12 +389,7 @@
             const isLoading = ref(false)
             const tenantStore = useTenantStore()
             const { identityProviders } = storeToRefs(tenantStore)
-            // const identityProviders = computed(
-            //     () => tenantStore.identityProviders
-            // )
-
             const defaultMappers = mapperList
-
             const mapperLists = ref(defaultMappers)
             const mappers: {
                 name: any

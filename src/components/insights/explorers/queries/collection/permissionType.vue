@@ -2,7 +2,12 @@
     <a-menu style="width: 217px" :selectedKeys="[selectedType]">
         <a-menu-item
             key="view"
-            class="rounded hover:bg-primary-light"
+            class="hover:bg-gray-100"
+            :class="
+                selectedType === 'view'
+                    ? 'bg-primary-light hover:bg-primary-light'
+                    : 'bg-white'
+            "
             @click="handleChange('view', item)"
         >
             <div class="flex items-center justify-between">
@@ -26,7 +31,12 @@
         </a-menu-item>
         <a-menu-item
             key="edit"
-            class="rounded hover:bg-primary-light"
+            class="hover:bg-gray-100"
+            :class="[
+                selectedType === 'edit'
+                    ? 'bg-primary-light hover:bg-primary-light'
+                    : 'bg-white',
+            ]"
             @click="handleChange('edit', item)"
         >
             <div class="flex items-center justify-between">
@@ -50,7 +60,7 @@
         </a-menu-item>
         <a-menu-item
             key="remove"
-            class="rounded hover:bg-primary-light"
+            class="bg-white hover:bg-gray-100"
             v-if="showRemove"
             @click="handleChange('remove', item)"
         >

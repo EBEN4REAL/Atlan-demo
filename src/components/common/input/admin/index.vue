@@ -13,11 +13,11 @@
         >
             <template #content>
                 <div class="">
-                    <OwnerFacets
+                    <AdminFacets
                         ref="adminInputRef"
                         v-model="localValue"
                         :show-none="false"
-                    ></OwnerFacets>
+                    ></AdminFacets>
                 </div>
             </template>
             <a-button
@@ -88,7 +88,7 @@
     // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
-    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import AdminFacets from '@/common/facet/admins/index.vue'
 
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
@@ -107,7 +107,7 @@
             UserPill,
             GroupPill,
 
-            OwnerFacets,
+            AdminFacets,
             PopOverUser,
             PopOverGroup,
         },

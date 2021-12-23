@@ -42,7 +42,7 @@ jobs:
         id: get_segment_analytics_key
         run: |
           analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
-          echo "##[set-output name=analytics_keys;]$(echo $analytics_key)"
+          echo "##[set-output name=analytics_key;]$(echo $analytics_key)"
         shell: bash
 
       - name: Check out branch

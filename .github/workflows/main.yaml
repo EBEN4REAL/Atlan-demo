@@ -38,6 +38,18 @@ jobs:
           echo "##[set-output name=channel;]$(echo $channel)"
         shell: bash
 
+      - name: Get segment analytics key based on branch name
+        id: get_segment_analytics_key
+        run: |
+          repo_branch=${{ steps.get_branch.outputs.branch }}
+          if [[ "$repo_branch" == "main" ]]; then
+            analytics_key=${{ secrets.SEGMENT_PROD_KEY }}
+          else 
+            analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
+          fi
+          ##set-output name=analytics_keys;
+        shell: bash
+
       - name: Check out branch
         uses: actions/checkout@v2
 
@@ -57,6 +69,8 @@ jobs:
 
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8000 pnpm run build
+        env:
+          VITE_SEGMENT_ANALYTICS_KEY: ${{ steps.get_segment_analytics_key.outputs.analytics_key }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

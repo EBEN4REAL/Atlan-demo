@@ -218,7 +218,7 @@ export const isCollectionPrivate = (
     // owner/viewer are empty
     // eslint-disable-next-line no-underscore-dangle
 
-    console.log('isCollectionPrivate: ', {collection, username})
+    // console.log('isCollectionPrivate: ', {collection, username})
     const isCreatedByCurrentUser =
         collection?.attributes?.__createdBy === username
     const hasNoViewers =

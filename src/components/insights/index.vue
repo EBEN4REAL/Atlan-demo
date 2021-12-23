@@ -254,6 +254,8 @@
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
 
+            const editorContentSelectionState: Ref<boolean> = ref(false)
+
             const setEditorInstance = (
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
@@ -293,6 +295,7 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                editorContentSelectionState,
             }
             useProvide(provideData)
             /*-------------------------------------*/

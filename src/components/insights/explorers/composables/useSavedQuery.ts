@@ -757,16 +757,16 @@ export function useSavedQuery(
             entity: {
                 typeName: 'Folder',
                 attributes: {
-                    connectorName,
+                    // connectorName,
                     name,
                     qualifiedName,
-                    connectionName,
-                    defaultSchemaQualifiedName,
-                    connectionQualifiedName,
+                    // connectionName,
+                    // defaultSchemaQualifiedName,
+                    // connectionQualifiedName,
                     collectionQualifiedName,
                     ownerUsers: [username.value],
                     tenantId: 'default',
-                    connectionId: connectionGuid,
+                    // connectionId: connectionGuid,
                     isPrivate: true,
                 },
                 /*TODO Created by will eventually change according to the owners*/

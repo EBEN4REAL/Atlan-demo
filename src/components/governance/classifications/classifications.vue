@@ -3,26 +3,27 @@
         v-if="filteredClassificationList.length"
         title="Classification"
     >
-        <template #action> </template>
+        <template #action>
+            <AtlanBtn
+                v-auth="map.CREATE_CLASSIFICATION"
+                class="flex-none px-2 ml-4"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                @click="createClassificationModalVisible = true"
+            >
+                <AtlanIcon icon="Add" />
+            </AtlanBtn>
+        </template>
         <template #sidebar v-auth="map.LIST_CLASSIFICATION">
             <div class="flex items-center px-4">
                 <SearchAdvanced
                     v-model:value="searchQuery"
-                    placeholder="Search classifications"
+                    :placeholder="`Search from ${filteredClassificationList?.length} classification(s)`"
                     :autofocus="true"
                     size="minimal"
                     class="px-2 my-3"
                 />
-                <AtlanBtn
-                    v-auth="map.CREATE_CLASSIFICATION"
-                    class="flex-none ml-4"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                    @click="createClassificationModalVisible = true"
-                >
-                    New
-                </AtlanBtn>
             </div>
             <ExplorerList
                 :list="filteredClassificationList"

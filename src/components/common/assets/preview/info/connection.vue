@@ -57,7 +57,7 @@
                             Credential
                         </p>
                         <div class="uppercase">
-                            {{ queryConfigJSON.credentialType }}
+                            {{ attributes(selectedAsset)?.credentialStrategy }}
                         </div>
                     </div>
                     <div class="flex flex-col">
@@ -67,7 +67,7 @@
                             Row Limit
                         </p>
                         <div class="uppercase">
-                            {{ queryConfigJSON.rowLimit }}
+                            {{ attributes(selectedAsset)?.rowLimit }}
                         </div>
                     </div>
                 </div>

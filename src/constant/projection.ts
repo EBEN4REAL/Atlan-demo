@@ -75,6 +75,8 @@ export const AssetAttributes = [
     'lastSyncRunAt',
     'lastSyncWorkflowName',
     'queryConfig',
+    'rowLimit',
+    'credentialStrategy',
     'allowQuery',
     'allowQueryPreview',
     'parentQualifiedName',

@@ -1,42 +1,25 @@
 <template>
-    <div class="flex content-center items-center mb-4">
-        <p class="text-lg font-bold text-gray-500">Edit user info</p>
-    </div>
-    <a-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        layout="vertical"
-    >
-        <div class="pb-6 border-solid border-b border-gray-200">
-            <div class="flex justify-center">
-                <div class="relative flex items-center">
-                    <Avatar
-                        :avatar-name="`${selectedUser.firstName} ${selectedUser.lastName}`"
-                        :allow-upload="true"
-                        :avatar-shape="'circle'"
-                        :image-url="avatarUrl"
-                        :avatar-size="100"
-                    />
-                    <div
-                        class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
-                    >
-                        <div
-                            class="
-                                    p-1
-                                    bg-gray-100
-                                    border border-gray-300
-                                    rounded-full
-                                    px-1
-                                    py-0.5
-                                    text-gray-500
-                                "
-                        >
-                            <AtlanIcon icon="Camera"></AtlanIcon>
-                        </div>
+    <div class="relative h-full">
+        <a-form
+            ref="formRef"
+            :model="formData"
+            :rules="rules"
+            layout="vertical"
+            class="mb-6"
+        >
+            <div class="pb-3 border-solid border-b border-gray-200">
+                <div class="flex justify-center">
+                    <div class="relative flex items-center">
+                        <Avatar
+                            :avatar-name="`${selectedUser.firstName} ${selectedUser.lastName}`"
+                            :allow-upload="true"
+                            :avatar-shape="'circle'"
+                            :image-url="avatarUrl"
+                            :avatar-size="100"
+                            @image-updated="handleImageUpdate"
+                        />
                     </div>
                 </div>
-            </div>
                 <a-form-item label="First Name" prop="firstName">
                     <a-input
                         v-model:value="formData.firstName"
@@ -58,67 +41,67 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
-                <UpdateSkills :user="selectedUser" :allow-update="isCurrentUser" />
-        </div>
-        <div class="pt-6">
-            <p class="uppercase text-gray-500 text-sm">Contact Details</p>
-            <div class="mt-4">
-                <a-form-item
-                    prop="slack"
-                >
-                    <template #label>
-                        Slack
-                        <a-popover>
-                            <template #content>
-                                <div class="p-3 text-gray-500">
-                                    <PopOverContent
-                                        content="Open a direct message with yourself on Slack in your browser and copy the url. It will look something like this: myorg.slack.com/client/id"
-                                    />
-                                </div>
-                            </template>
-                            <AtlanIcon icon="Info" class="h-3 w-3 ml-1" />
-                        </a-popover>
-                    </template>
-                    <a-input
-                        v-model:value="formData.slack"
-                        class="mt-2"
+                <a-form-item label="Skills" prop="skills">
+                    <a-select
+                        v-model:value="formData.skills"
+                        placeholder="Please choose a skill or enter one"
                         :loading="isRequestLoading"
-                        placeholder="https://app.slack.com/client/[workspace]/[client]"
+                        mode="tags"
                     >
-                        <template #prefix>
-                            <span class="border-solid border-gray-300 pr-2 border-r">
-                                <AtlanIcon icon="Slack" />
-                            </span>
-                        </template>
-                    </a-input>
+                        <a-select-option
+                            v-for="(skill, index) in formData.skills"
+                            :key="index"
+                            :value="skill"
+                        >
+                            {{ skill }}
+                        </a-select-option>
+                    </a-select>
                 </a-form-item>
             </div>
-    <!--        <div class="mt-6">-->
-    <!--            <div class="text-gray-500 text-sm">Teams</div>-->
-    <!--            <a-input-->
-    <!--                v-model:value="formData.teams"-->
-    <!--                class="mt-2"-->
-    <!--                :loading="isRequestLoading"-->
-    <!--            >-->
-    <!--                <template #prefix>-->
-    <!--                    <span class="border-solid border-gray-300 pr-2 border-r">-->
-    <!--                        <AtlanIcon icon="Teams" />-->
-    <!--                    </span>-->
-    <!--                </template>-->
-    <!--            </a-input>-->
-    <!--        </div>-->
+            <div class="pt-6">
+                <p class="uppercase text-gray-500 text-sm">Contact Details</p>
+                <div class="mt-2">
+                    <a-form-item
+                        prop="slack"
+                    >
+                        <template #label>
+                            Slack
+                            <a-popover>
+                                <template #content>
+                                    <div class="p-3 text-gray-500 w-52">
+                                        <PopOverContent
+                                            content="Open a direct message with yourself on Slack in your browser and copy the url. It will look something like this: myorg.slack.com/client/id"
+                                        />
+                                    </div>
+                                </template>
+                                <AtlanIcon icon="Info" class="h-3 w-3 ml-1" />
+                            </a-popover>
+                        </template>
+                        <a-input
+                            v-model:value="formData.slack"
+                            class="mt-2"
+                            :loading="isRequestLoading"
+                            placeholder="https://app.slack.com/client/abc/xyz"
+                        >
+                            <template #prefix>
+                                <span class="border-solid border-gray-300 pr-2 border-r">
+                                    <AtlanIcon icon="Slack" />
+                                </span>
+                            </template>
+                        </a-input>
+                    </a-form-item>
+                </div>
+            </div>
+        </a-form>
+        <div class="flex w-full absolute bottom-0 bg-white py-4" >
+            <a-button class="border-0 shadow-none" type="minimal" :disabled="isRequestLoading" @click="onCancel">
+                Cancel
+            </a-button>
+            <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
+                Save
+            </a-button>
         </div>
-        <div class="w-full sticky bottom-0 pb-6">
-            <a-button-group class="w-full">
-                <a-button block type="minimal" :disabled="isRequestLoading" @click="onCancel">
-                    Cancel
-                </a-button>
-                <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
-                    Save
-                </a-button>
-            </a-button-group>
-        </div>
-    </a-form>
+    </div>
 </template>
 
 <script lang="ts">
@@ -128,6 +111,7 @@
     import Avatar from '@common/avatar/avatar.vue'
     import { message } from 'ant-design-vue'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
     export default {
         name: 'EditUser',
@@ -146,7 +130,7 @@
                 default: false,
             },
         },
-        emits: ['updatedUser', 'toggleEdit', 'success', 'changedLoading'],
+        emits: ['updatedUser', 'toggleEdit', 'success', 'changedLoading', 'imageUpdated'],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
             const updateError = ref("")
@@ -157,11 +141,29 @@
             })
             
             const { selectedUser } = toRefs(props)
+            const userProfiles = computed(() => selectedUser.value?.attributes?.profiles)
+            const slackProfile = computed(() => {
+                if (userProfiles.value?.length > 0) {
+                    const firstProfile = JSON.parse(userProfiles.value[0])
+                    if (
+                        firstProfile &&
+                        firstProfile.length > 0 &&
+                        firstProfile[0].hasOwnProperty('slack')
+                    ) {
+                        return firstProfile[0].slack
+                    }
+                }
+                return ''
+            })
+
+            const slackEnabled = computed(() => slackProfile.value)
+            const slackUrl = computed(() => slackEnabled.value ? slackEnabled.value : '')
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
                 designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
-                slack: ""
+                slack: slackUrl.value,
+                skills: selectedUser.value.attributes?.skills?.length > 0 ? selectedUser.value.attributes.skills : []
             })
 
             const rules = {
@@ -187,7 +189,8 @@
             const onSubmit = async () => {
                 await formRef.value?.validate()
                 const attributes = {
-                    designation: [formData.value.designation]
+                    designation: [formData.value.designation],
+                    skills: formData.value.skills
                 }
                 attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
                 requestPayload.value = {
@@ -226,7 +229,7 @@
                                 selectedUser.value.attributes.profiles = []
                             }
                             message.success('The details have been updated')
-                            emit('success')
+                            emit('updatedUser')
                             emit('toggleEdit')
                         } else if (error && error.value) {
                             updateError.value =
@@ -243,6 +246,9 @@
                 formRef.value.resetFields()
                 emit('toggleEdit')
             }
+            const handleImageUpdate = (updatedImageUrl) => {
+                emit('imageUpdated', updatedImageUrl)
+            }
 
             const avatarUrl = computed(() => `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`)
             return {
@@ -254,7 +260,8 @@
                 formData,
                 avatarUrl,
                 isRequestLoading,
-                updateError
+                updateError,
+                handleImageUpdate
             }
         }
     }

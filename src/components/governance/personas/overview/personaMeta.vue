@@ -1,6 +1,32 @@
 <template>
-    <div>
-        <PersonaSummary :persona="persona" @setActiveTab="setActiveTab" />
+    <div class="grid grid-cols-3 gap-x-3">
+        <PersonaUsersGroups
+            v-model:persona="persona"
+            class="col-span-2 border border-gray-200"
+        />
+        <DetailsWidget
+            :item="persona"
+            @editDetails="$emit('editDetails')"
+            class="border border-gray-200"
+        >
+            <!-- <template #actionBtn>
+                <div class="hidden">
+                    <a-switch
+                        v-model:checked="persona.enabled"
+                        class="ml-auto"
+                        data-test-id="toggle-switch"
+                        style="width: 40px !important"
+                        :class="
+                            persona.enabled ? 'btn-checked' : 'btn-unchecked'
+                        "
+                        :loading="enableDisableLoading"
+                        @change="handleEnableDisablePersona"
+                    />
+                    <span class="ml-2 text-sm text-gray">Enable Persona</span>
+                </div>
+            </template> -->
+        </DetailsWidget>
+
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div v-if="persona.createdBy" class="flex items-center text-sm">
@@ -118,25 +144,26 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        reactive,
-        ref,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, h } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
-    import PersonaSummary from './personaSummary.vue'
+    import DetailsWidget from '@/common/widgets/detailsWidget.vue'
+    import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
+    import { enablePersona } from '../composables/useEditPersona'
+    import { message, Modal } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: { PopOverUser, UserPill, PersonaSummary },
+        components: {
+            PopOverUser,
+            UserPill,
+            DetailsWidget,
+            PersonaUsersGroups,
+        },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -146,7 +173,7 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { persona } = toRefs(props)
-
+            const enableDisableLoading = ref(false)
             const timeStamp = (time, raw: boolean = false) => {
                 if (time) {
                     return raw
@@ -155,13 +182,81 @@
                 }
                 return ''
             }
+            const enableDisablePersona = async (val) => {
+                const messageKey = Date.now()
+                enableDisableLoading.value = true
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} persona ${
+                        persona.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePersona(persona.value.id, val)
+                    persona.value.enabled = val
+                    message.success({
+                        content: `${val ? 'Enabled' : 'Disabled'} persona ${
+                            persona.value.displayName
+                        }`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    enableDisableLoading.value = false
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } persona ${persona.value.displayName}`,
+                        duration: 1.5,
+                        key,
+                    })
+                    enableDisableLoading.value = false
+                }
+            }
+
+            const handleEnableDisablePersona = (val) => {
+                persona.value.enabled = !val
+                if (!persona.value.enabled) enableDisablePersona(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable persona',
+                        class: 'disable-persona-modal',
+                        content: () =>
+                            h('div', [
+                                'Are you sure you want to disable persona',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${persona.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ]),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePersona(val)
+                        },
+                    })
+            }
             return {
                 setActiveTab,
                 timeStamp,
+                handleEnableDisablePersona,
+                enableDisableLoading,
             }
         },
     })
 </script>
+
 <style lang="less" scoped>
     .details-section {
         @apply flex items-center gap-x-2 py-4;

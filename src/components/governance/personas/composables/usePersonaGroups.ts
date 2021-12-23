@@ -17,6 +17,8 @@ function usePersonaGroupList(persona: Ref<IPersona>) {
         getGroupList,
         state,
         STATES,
+        isLoading,
+        error,
     } = useGroups(params.value)
 
     watch(
@@ -47,6 +49,8 @@ function usePersonaGroupList(persona: Ref<IPersona>) {
         state,
         STATES,
         groupList,
+        isLoading,
+        error,
     }
 }
 

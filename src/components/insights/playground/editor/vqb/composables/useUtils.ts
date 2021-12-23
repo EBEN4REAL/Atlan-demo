@@ -1,6 +1,9 @@
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
 import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
+import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
+import { getValueStringFromType } from './generateSQLQuery'
+
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
         const vals = tableQualifiedName?.split('/')
@@ -65,8 +68,54 @@ export function useUtils() {
         })
         return res
     }
+    function getSummarisedInfoOfFilterPanel(subpanels: SubpanelFilter[]) {
+        if (subpanels.length == 0) return 'No Columns Added for filter'
+        let res = ' '
+        subpanels.forEach((subpanel, i) => {
+            if (subpanel.column.label) res += `${subpanel.column.label} `
+            if (subpanel.filter.title) res += `${subpanel.filter.title}`
+
+            switch (subpanel?.filter?.type) {
+                case 'range_input': {
+                    if (subpanel?.filter?.name === 'between') {
+                        if (subpanel?.filter?.value?.length > 0) {
+                            const firstVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[0] ?? ''
+                            )
+                            const secondVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[1] ?? ''
+                            )
+                            res += ` ${firstVal} AND ${secondVal}`
+                        }
+                    }
+                    break
+                }
+                case 'input': {
+                    res += ` ${getValueStringFromType(
+                        subpanel,
+                        subpanel?.filter?.value ?? ''
+                    )}`
+                    break
+                }
+                case 'multi_input': {
+                    res += ` (${subpanel?.filter?.value?.join(',') ?? ''})`
+                    break
+                }
+                case 'none': {
+                    break
+                }
+            }
+            if (subpanels?.length > 1 && i !== subpanels.length - 1) res += ', '
+
+            if (res === ' ') res = 'No Columns Added for filter'
+        })
+        return res
+    }
 
     return {
+        getSummarisedInfoOfFilterPanel,
         getSummarisedInfoOfGroupPanel,
         getSummarisedInfoOfAggregationPanel,
         getSummarisedInfoOfSortPanel,

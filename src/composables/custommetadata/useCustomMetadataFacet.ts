@@ -26,6 +26,7 @@ export default function useCustomMetadataFacet() {
                     includes: [],
                     exclude: false,
                     options: bm.options,
+                    analyticsKey: 'custom_metadata',
                 }))
         }
         return []
@@ -51,7 +52,6 @@ export default function useCustomMetadataFacet() {
                                 ),
                             })
                         }
-
                     } else {
                         attributeList.push({
                             ...a,
@@ -79,10 +79,10 @@ export default function useCustomMetadataFacet() {
                     includes: [],
                     exclude: false,
                     options: bm.options,
+                    analyticsKey: 'custom_metadata',
                 })
             }
         })
-        console.log({ list })
         return list
     }
 

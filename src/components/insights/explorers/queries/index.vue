@@ -2,7 +2,6 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
-        {{ queryCollectionsError }}
         <div
             v-if="
                 isValid(queryCollections) &&
@@ -27,8 +26,9 @@
                         placement="bottomRight"
                     >
                         <div
-                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
                             :class="$style.filterButton"
+                            v-auth="[map.CREATE_COLLECTION]"
                         >
                             <span class="text-xs text-gray-700">New</span>
                         </div>
@@ -36,6 +36,7 @@
                             <a-menu>
                                 <a-menu-item
                                     key="0"
+                                    v-if="hasWritePermission"
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
@@ -52,7 +53,11 @@
                                         <span>New Query</span>
                                     </div>
                                 </a-menu-item>
-                                <a-menu-item key="1" @click="createFolderInput">
+                                <a-menu-item
+                                    key="1"
+                                    @click="createFolderInput"
+                                    v-if="hasWritePermission"
+                                >
                                     <div class="flex items-center">
                                         <AtlanIcon
                                             color="#5277D7"
@@ -299,6 +304,7 @@
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
     import { isValid } from '~/utils/isValid'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'QueryExplorer',
@@ -395,6 +401,7 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+
             const queryCollectionsError = inject(
                 'queryCollectionsError'
             ) as Ref<any>
@@ -413,6 +420,27 @@
                         ?.attributeValue
                 )
             )
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
+            // console.log('collection permission: ', {
+            //     isCollectionCreatedByCurrentUser,
+            //     hasCollectionReadPermission,
+            //     hasCollectionWritePermission,
+            // })
 
             const selectedCollection = computed(() => {
                 // console.log(
@@ -489,8 +517,8 @@
                     selectedFolder.value = item
                     showSaveQueryModal.value = !showSaveQueryModal.value
                 } else if (
-                    item?.typeName === 'QueryFolder' ||
-                    item?.value?.typeName === 'QueryFolder'
+                    item?.typeName === 'Folder' ||
+                    item?.value?.typeName === 'Folder'
                 ) {
                     if (item?.value?.guid) {
                         selectedFolder.value = item
@@ -617,18 +645,12 @@
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
-                                    useAddEvent(
-                                        'insights',
-                                        'folder',
-                                        'created',
-                                        newFolderName.value
-                                    )
                                     newFolderName.value = ''
                                     setTimeout(async () => {
                                         await refetchNode(
                                             getRelevantTreeData().parentGuid
                                                 .value,
-                                            'queryFolder'
+                                            'Folder'
                                         )
                                         ul.removeChild(div)
                                     }, 1000)
@@ -724,9 +746,12 @@
                 // if the folder is not loaded, don't do anything
             }
 
-            const pushGuidToURL = (guid: string) => {
-                const queryParams = { id: guid }
-                if (route?.query?.vqb) queryParams.vqb = true
+            const pushGuidToURL = (item) => {
+                const queryParams = {}
+                if (item.guid) queryParams.id = item.guid
+                if (item?.attributes?.isVisualQuery) queryParams.vqb = true
+                // const queryParams = { id: guid }
+                // if (route?.query?.vqb) queryParams.vqb = true
                 router.push({ path: `insights`, query: queryParams })
             }
             const facets = ref({})
@@ -839,11 +864,13 @@
                     // console.log('query data: ', data)
                     // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
-                        refetchNode(
-                            saveQueryData.parentGuid ??
-                                getRelevantTreeData().parentGuid.value,
-                            'query'
-                        )
+                        setTimeout(async () => {
+                            await refetchNode(
+                                saveQueryData.parentGuid ??
+                                    getRelevantTreeData().parentGuid.value,
+                                'query'
+                            )
+                        }, 1000)
                     }
                 })
             }
@@ -861,7 +888,7 @@
 
             const refetchParentNode = (
                 guid: string,
-                type: 'query' | 'queryFolder',
+                type: 'query' | 'Folder',
                 tree?: 'personal' | 'all'
             ) => {
                 const all_guid =
@@ -954,37 +981,48 @@
             )
 
             watch(reset, () => {
-                // console.log('queryTree query: ', reset.value)
+                console.log('queryTree query: ', reset.value)
                 if (reset.value) {
-                    // console.log('queryTree inside if')
-                    setTimeout(async () => {
-                        console.log('reset type: ', resetType.value)
-                        console.log('reset id: ', resetParentGuid.value)
+                    console.log(
+                        'queryTree inside if: ',
+                        resetParentGuid.value,
+                        resetType.value
+                    )
 
-                        if (Array.isArray(resetParentGuid.value)) {
-                            console.log(
-                                'reset parent guid: ',
-                                resetParentGuid.value
+                    if (Array.isArray(resetParentGuid.value)) {
+                        setTimeout(async () => {
+                            await refetchNode(
+                                resetParentGuid.value[0],
+                                resetType.value
                             )
-                            resetParentGuid.value.forEach(
-                                async (guid, index) => {
-                                    // console.log('reset: ', index)
+                        }, 1000)
 
-                                    await refetchNode(guid, resetType.value)
-                                }
+                        setTimeout(async () => {
+                            await refetchNode(
+                                resetParentGuid.value[1],
+                                resetType.value
                             )
-                        } else {
+                            props.resetQueryTree()
+                        }, 2000)
+                    } else {
+                        // console.log(
+                        //     'new refetch data: ',
+                        //     resetParentGuid.value,
+                        //     resetType.value
+                        // )
+                        setTimeout(async () => {
                             await refetchNode(
                                 resetParentGuid.value,
                                 resetType.value
                             )
-                        }
+                            props.resetQueryTree()
+                        }, 1000)
+                    }
 
-                        props.resetQueryTree()
-                    }, 750)
+                    // props.resetQueryTree()
                 }
             })
-            console.log(queryCollectionsError.value, 'queryCollectionsError')
+            // console.log(queryCollectionsError.value, 'queryCollectionsError')
 
             return {
                 isValid,
@@ -1037,6 +1075,11 @@
                 selectedCollection,
                 toggleCollectionModal,
                 showCollectionModal,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
+                map,
             }
         },
     })

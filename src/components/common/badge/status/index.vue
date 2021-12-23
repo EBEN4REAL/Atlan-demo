@@ -5,26 +5,14 @@
                 <component :is="icons" class="w-auto h-4 -mt-0.5" />
             </span>
 
-            <p v-if="showLabel" class="mb-0 ml-2">{{ label }}</p>
+            <p v-if="showLabel" class="mb-0 ml-1.5">{{ label }}</p>
         </div>
 
         <div v-else class="flex items-center">
             <div
-                class="
-                    inline-flex
-                    items-center
-                    px-3
-                    py-1
-                    mr-3
-                    text-sm text-gray-700
-                    border border-opacity-0
-                    rounded-full
-                    cursor-pointer
-                    hover:border-opacity-100
-                    status-badge-margin
-                "
+                class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border border-opacity-0 rounded-full cursor-pointer hover:border-opacity-100 status-badge-margin"
             >
-                <span v-if="iconId !== 'is_null'" class="mr-2 svg-icon">
+                <span v-if="iconId !== 'is_null'" class="mr-1.5 svg-icon">
                     <component :is="icons" class="w-auto h-4" />
                 </span>
 

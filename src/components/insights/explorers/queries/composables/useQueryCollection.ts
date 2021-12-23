@@ -16,6 +16,7 @@ import { Insights } from '~/services/meta/insights/index'
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import useBody from './useBody'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 const useQueryCollection = () => {
     const { modifyActiveInlineTab } = useInlineTab()
@@ -36,6 +37,8 @@ const useQueryCollection = () => {
         'certificateStatus',
         'ownerUsers',
         'ownerGroups',
+        'adminUsers',
+        'adminGroups',
         'viewerUsers',
         'viewerGroups',
         'classifications',
@@ -71,8 +74,8 @@ const useQueryCollection = () => {
     const createCollection = ({
         name,
         description,
-        ownerUsers,
-        ownerGroups,
+        adminUsers,
+        adminGroups,
         viewerUsers,
         viewerGroups,
         icon,
@@ -83,13 +86,13 @@ const useQueryCollection = () => {
 
         const body = ref<Record<string, any>>({
             entity: {
-                typeName: 'QueryCollection',
+                typeName: 'Collection',
                 attributes: {
                     name,
                     description,
                     qualifiedName,
-                    ownerUsers,
-                    ownerGroups,
+                    adminUsers,
+                    adminGroups,
                     viewerUsers,
                     viewerGroups,
                     tenantId,
@@ -108,6 +111,7 @@ const useQueryCollection = () => {
                     message.success({
                         content: `Collection ${name} created!`,
                     })
+                    useAddEvent('insights', 'collection', 'created')
                 } else {
                     // console.log(error.value.toString())
                     message.error({
@@ -213,14 +217,16 @@ export const isCollectionPrivate = (
     // created by user
     // owner/viewer are empty
     // eslint-disable-next-line no-underscore-dangle
+
+    console.log('isCollectionPrivate: ', {collection, username})
     const isCreatedByCurrentUser =
         collection?.attributes?.__createdBy === username
     const hasNoViewers =
-        collection?.attributes?.viewerUsers.length === 0 &&
-        collection?.attributes?.viewerGroups.length === 0
+        collection?.attributes?.viewerUsers?.length === 0 &&
+        collection?.attributes?.viewerGroups?.length === 0
     const hasNoUsers =
-        collection?.attributes?.ownerUsers.length === 0 &&
-        collection?.attributes?.ownerGroups.length === 0
+        collection?.attributes?.adminUsers?.length === 0 &&
+        collection?.attributes?.adminGroups?.length === 0
     return isCreatedByCurrentUser && hasNoUsers && hasNoViewers
 }
 

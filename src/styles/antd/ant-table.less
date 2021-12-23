@@ -1,8 +1,77 @@
+.ant-table-thead {
+    ::before {
+        width: 0px !important;
+        height: 0px !important;
+    }
+}
+
 .persona-user-group-table {
-  .ant-table-pagination.ant-pagination {
-    @apply m-4 !important;
-  }
-  .ant-table thead th {
-    @apply p-2 !important;
-  }
+    .ant-table-pagination.ant-pagination {
+        @apply m-4 !important;
+    }
+    .ant-table thead th {
+        @apply p-2 !important;
+    }
+}
+
+.users-groups-table {
+    .ant-table-thead {
+        tr {
+            th {
+                font-weight: 700;
+                color: theme('colors.gray.DEFAULT') !important;
+                padding: 1rem !important;
+            }
+        }
+    }
+    .ant-table-tbody {
+        tr:not(.ant-table-measure-row) {
+            td {
+                color: theme('colors.gray.DEFAULT') !important;
+            }
+        }
+    }
+}
+
+.query-access-logs-table {
+    .ant-empty-normal {
+        height: calc(100vh - 20rem);
+    }
+
+    .ant-table-thead {
+        tr {
+            th {
+                font-weight: 700;
+                color: theme('colors.gray.DEFAULT') !important;
+                padding: 1rem !important;
+            }
+        }
+    }
+    .ant-table-tbody {
+        tr:not(.ant-table-measure-row) {
+            td {
+                color: theme('colors.gray.DEFAULT') !important;
+            }
+        }
+    }
+}
+
+.column-table {
+    .ant-table-thead {
+        max-height: 40px !important;
+        height: 40px !important;
+    }
+    .ant-table-thead tr th {
+        @apply text-gray-700 !important;
+    }
+    .ant-table td {
+        @apply cursor-pointer !important;
+    }
+    .ant-table-container table > thead > tr:first-child th:first-child {
+        @apply border-r border-gray-light text-gray-500 !important;
+    }
+    .ant-table-tbody tr:not(.ant-table-measure-row) {
+        max-height: 32px !important;
+        height: 32px !important;
+    }
 }

@@ -20,11 +20,11 @@ export default function useDeleteTypedefs(name: string) {
         typedefStore.removeClassificationByName(name)
     })
     watch(error, (newError) => {
-        if(newError) {
-            message.error(newError.response.data.errorMessage)
+        if (newError) {
+            message.error(newError?.response?.data?.errorMessage ?? 'Something went wrong, please contact support.')
         }
     })
-    
+
     return {
         data,
         error,

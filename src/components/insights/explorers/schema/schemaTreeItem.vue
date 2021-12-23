@@ -12,7 +12,7 @@
             >
                 <PopoverAsset :item="item" placement="right">
                     <template #button>
-                        <a-button
+                        <!-- <a-button
                             class="mt-3"
                             @click="actionClick('info', item)"
                             block
@@ -22,7 +22,20 @@
                                     Open preview sidebar
                                 </div>
                             </div>
-                        </a-button>
+                        </a-button> -->
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                            @click="actionClick('info', item)"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                Show Preview</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
                     </template>
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -338,22 +351,55 @@
                         "
                         @click.stop="() => {}"
                     >
-                        <div
-                            class="pl-2 ml-24"
-                            @click="() => actionClick('add', item)"
-                        >
-                            <a-tooltip color="#363636" placement="top">
-                                <template #title>Place name in editor</template>
+                        <div class="pl-2 ml-24">
+                            <a-dropdown :trigger="['click']">
                                 <AtlanIcon
-                                    icon="AddAssetName"
-                                    class="w-4 h-4 my-auto"
+                                    icon="SetContext"
+                                    class="w-4 h-4 my-auto outline-none"
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
                                             : 'bg-gray-light-color'
                                     "
-                                ></AtlanIcon>
-                            </a-tooltip>
+                                />
+                                <template #overlay>
+                                    <a-menu>
+                                        <a-menu-item
+                                            @click="setContextInEditor(item)"
+                                            :class="
+                                                readOnly
+                                                    ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                    : ''
+                                            "
+                                        >
+                                            <div class="flex items-center h-8">
+                                                <AtlanIcon
+                                                    icon="Add"
+                                                    class="w-4 h-4 my-auto mr-1.5"
+                                                ></AtlanIcon>
+                                                <span
+                                                    >Set in editor context</span
+                                                >
+                                            </div>
+                                        </a-menu-item>
+                                        <a-menu-item
+                                            @click="
+                                                () => actionClick('add', item)
+                                            "
+                                        >
+                                            <div class="flex items-center h-8">
+                                                <AtlanIcon
+                                                    icon="AddAssetName"
+                                                    class="w-4 h-4 my-auto mr-1.5"
+                                                ></AtlanIcon>
+                                                <span
+                                                    >Place name in editor</span
+                                                >
+                                            </div>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
                         </div>
                     </div>
                     <!-- </div> -->
@@ -671,6 +717,7 @@
                 modifyActiveInlineTab,
                 inlineTabAdd,
                 // activeInlineTabKey,
+                setVQBInInlineTab,
             } = useInlineTab()
             // callback fxn
             const activeInlineTabKey = inject(
@@ -1204,7 +1251,7 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',
@@ -1227,9 +1274,14 @@
                             },
                             collection: {
                                 // copy from last tab
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
                             },
                         },
                     },
@@ -1321,6 +1373,46 @@
                 // )
             }
 
+            const setContextInEditor = (item) => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+
+                let qualifiedName = item?.qualifiedName?.split('/')
+                if (qualifiedName?.length === 5) {
+                    activeInlineTabCopy.playground.editor.context = {
+                        attributeName: 'schemaQualifiedName',
+                        attributeValue: item?.qualifiedName,
+                    }
+                } else if (qualifiedName?.length === 4) {
+                    activeInlineTabCopy.playground.editor.context = {
+                        attributeName: 'databaseQualifiedName',
+                        attributeValue: item?.qualifiedName,
+                    }
+                }
+
+                setVQBInInlineTab(activeInlineTabCopy, inlineTabs)
+            }
+
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
                 // showContextModal,
                 // closeContextModal,
@@ -1342,6 +1434,8 @@
                 item,
                 childCount,
                 openSidebar,
+                setContextInEditor,
+                readOnly,
             }
         },
     })

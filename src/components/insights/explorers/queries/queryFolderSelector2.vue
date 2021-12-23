@@ -174,7 +174,7 @@
                     // console.log('folder select: ', event)
                     // console.log('selected item: ', item)
 
-                    if (item.typeName === 'QueryFolder') {
+                    if (item.typeName === 'Folder') {
                         if (
                             selectedNewFolder?.value.guid ===
                             event.node.dataRef.guid
@@ -211,9 +211,13 @@
 
             const classificationValue = ref()
 
-            const pushGuidToURL = (guid: string) => {
-                const queryParams = { id: guid }
-                if (route?.query?.vqb) queryParams.vqb = true
+            const pushGuidToURL = (item) => {
+                // const queryParams = { id: guid }
+                // if (route?.query?.vqb) queryParams.vqb = true
+
+                const queryParams = {}
+                if (item.guid) queryParams.id = item.guid
+                if (item?.attributes?.isVisualQuery) queryParams.vqb = true
                 router.push({ path: `insights`, query: queryParams })
             }
 

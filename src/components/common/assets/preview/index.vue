@@ -112,6 +112,7 @@
                         <template v-else>
                             <a-tooltip :title="action.label">
                                 <a-button
+                                    v-if="showCTA(action.id)"
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -128,7 +129,7 @@
         </div>
 
         <a-tabs
-            v-model:activeKey="activeKey"
+            :activeKey="activeKey"
             :class="$style.previewtab"
             :style="
                 isProfile
@@ -137,6 +138,7 @@
             "
             tab-position="left"
             :destroy-inactive-tab-pane="true"
+            @change="handleTabChange"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -156,15 +158,23 @@
                         :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
-
+                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
                 <component
                     :is="tab.component"
-                    v-if="tab.component"
+                    v-else-if="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
-                    :read-only="isScrubbed(selectedAsset)"
+                    :read-permission="isScrubbed(selectedAsset)"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(selectedAsset)
+                    "
                     :data="tab.data"
+                    :ref="
+                        (el) => {
+                            if (el) tabChildRef[index] = el
+                        }
+                    "
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -193,6 +203,7 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import NoAccess from '@/common/assets/misc/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -200,6 +211,7 @@
             PreviewTabsIcon,
             CertificateBadge,
             ShareMenu,
+            NoAccess,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
@@ -252,16 +264,23 @@
                 required: false,
                 default: false,
             },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer } = toRefs(props)
-            const { getAllowedActions } = useAssetEvaluate()
+            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { getAllowedActions, getAssetEvaluationsBody } =
+                useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
+            provide('sidebarPage', page)
 
             const {
                 title,
@@ -290,6 +309,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -318,13 +338,9 @@
                 (prev) => {
                     if (prev) {
                         body.value = {
-                            entities: [
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_UPDATE',
-                                },
-                            ],
+                            entities: getAssetEvaluationsBody(
+                                selectedAsset.value
+                            ),
                         }
                         refresh()
                     }
@@ -333,7 +349,7 @@
             )
 
             provide('switchTab', (asset, tabName: string) => {
-                const idx = getPreviewTabs(asset).findIndex(
+                const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
@@ -355,7 +371,31 @@
                 }
             }
 
+            const showCTA = (action) => {
+                return route.path !== '/insights'
+                    ? true
+                    : selectedAsset.value.typeName === 'Query'
+                    ? false
+                    : action === 'query'
+                    ? false
+                    : true
+            }
+
+            const tabChildRef = ref([])
+
+            const handleTabChange = (k) => {
+                if (
+                    k !== activeKey.value &&
+                    tabChildRef.value[activeKey.value]?.isEdit
+                )
+                    tabChildRef.value[activeKey.value]?.handleCancel()
+                else activeKey.value = k
+            }
+
             return {
+                tabChildRef,
+                activeKey,
+                handleTabChange,
                 title,
                 getConnectorImage,
                 assetType,
@@ -372,7 +412,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
-                activeKey,
+
                 getPreviewTabs,
                 refresh,
                 certificateStatus,
@@ -387,6 +427,8 @@
                 handleAction,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
+                showCTA,
             }
         },
     })

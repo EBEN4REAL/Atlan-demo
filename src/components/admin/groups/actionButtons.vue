@@ -1,19 +1,17 @@
 <template>
     <a-button-group>
-        <a-tooltip placement="topLeft">
-            <template #title>
-                <span>Add users</span>
+        <MemberPopover :selected-group='group' @members-added='$emit("membersAdded")'>
+            <template #label>
+                <a-button
+                    v-auth="map.ADD_USER_GROUP"
+                    size="small"
+                    type="secondary"
+                    class="flex mr-3.5 items-center justify-center w-8 h-8 border rounded customShadow cursor-pointer"
+                >
+                    <AtlanIcon icon="AddUser" class="text-gray-500" />
+                </a-button>
             </template>
-            <div
-                v-auth="map.ADD_USER_GROUP"
-                size="small"
-                type="secondary"
-                class="flex mr-3.5 items-center justify-center w-8 h-8 border rounded customShadow cursor-pointer"
-                @click="$emit('addMembers')"
-            >
-                <AtlanIcon icon="AddUser" class="text-gray-500"></AtlanIcon>
-            </div>
-        </a-tooltip>
+        </MemberPopover>
         <!-- <a-tooltip placement="topLeft">
             <template #title>
                 <span>Delete group</span>
@@ -45,11 +43,11 @@
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
         >
-            <div
+            <a-button
                 class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow p-2"
             >
                 <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
-            </div>
+            </a-button>
             <template #overlay>
                 <a-menu>
                     <a-menu-item
@@ -121,9 +119,13 @@
 <script lang="ts">
     import { ref, defineComponent, watch, toRefs } from 'vue'
     import map from '~/constant/accessControl/map'
+    import MemberPopover from '~/components/admin/groups/groupPreview/memberPopover.vue'
 
     export default defineComponent({
         name: 'GroupsActionButton',
+        components: {
+            MemberPopover
+        },
         props: {
             group: {
                 type: Object,
@@ -141,7 +143,7 @@
                 required: true,
             },
         },
-        emits: ['addMembers', 'deleteGroup', 'toggleDefault'],
+        emits: ['addMembers', 'deleteGroup', 'toggleDefault', 'membersAdded'],
         setup(props) {
             const { markAsDefaultLoading, deleteGroupLoading } = toRefs(props)
             const dropDownOpened = ref(false)

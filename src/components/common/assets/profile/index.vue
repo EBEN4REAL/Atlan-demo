@@ -14,11 +14,18 @@
                 :tab="tab.label"
                 :disabled="isScrubbed(asset) && tab.scrubbed"
             >
+                <NoAccess
+                    v-if="isScrubbed(asset) && tab.scrubbed"
+                    :back-button="true"
+                />
+
                 <component
+                    v-else-if="tab.component"
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
-                    :readOnly="isScrubbed(asset)"
+                    :read-permission="isScrubbed(asset)"
+                    :edit-permission="selectedAssetUpdatePermission(asset)"
                     @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
@@ -42,6 +49,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import AssetHeader from './header/index.vue'
+    import NoAccess from '@/common/assets/misc/noAccess.vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
@@ -50,6 +58,7 @@
         name: 'AssetProfile',
         components: {
             AssetHeader,
+            NoAccess,
             Columns: defineAsyncComponent(
                 () => import('./tabs/columns/index.vue')
             ),
@@ -89,7 +98,11 @@
             provide('actions', actions)
             provide('selectedAsset', asset)
 
-            const { getProfileTabs, isScrubbed } = useAssetInfo()
+            const {
+                getProfileTabs,
+                isScrubbed,
+                selectedAssetUpdatePermission,
+            } = useAssetInfo()
 
             const activeKey = ref()
             const route = useRoute()
@@ -108,6 +121,7 @@
                 activeKey,
                 handleChangeTab,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             }
         },
     })
@@ -135,6 +149,9 @@ meta:
 
         :global(.ant-tabs-content-holder) {
             @apply bg-primary-light overflow-y-auto !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply min-h-full !important;
         }
     }
 </style>

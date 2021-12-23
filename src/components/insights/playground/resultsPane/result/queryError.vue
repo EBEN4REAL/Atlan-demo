@@ -9,15 +9,32 @@
             style="width: 300px"
             class="flex flex-col items-center justify-center mt-2"
         >
-            <p class="mb-0 text-base text-center text-gray-700">
-                {{ queryErrorObj?.errorMessage }}
-            </p>
             <p
-                class="mt-2 mb-0 text-base text-gray-500"
+                class="mt-2 mb-0 text-base font-bold text-center text-gray-700"
                 v-if="queryErrorObj?.errorCode"
             >
-                {&nbsp;{{ queryErrorObj?.errorCode }}&nbsp;}
+                {{ errorMessage(queryErrorObj) }}
             </p>
+            <div
+                v-if="
+                    SOURCE_ACCESS_ERROR_NAMES.includes(queryErrorObj.errorName)
+                "
+            >
+                <div
+                    v-if="hasErrorData(queryErrorObj)"
+                    class="text-center text-gray-500"
+                >
+                    User does not has access to the asset
+                    {{ queryErrorObj?.details?.asset.table }}
+                </div>
+            </div>
+            <div
+                v-if="hasErrorAction(queryErrorObj)"
+                style="width: 300px"
+                class="flex flex-col items-center justify-center mt-2"
+            >
+                Action
+            </div>
         </div>
     </div>
     <!-- ---------------------- -->
@@ -26,6 +43,7 @@
 <script lang="ts">
     import { defineComponent, computed, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useError } from '~/components/insights/playground/common/composables/UseError'
 
     export default defineComponent({
         components: {},
@@ -34,6 +52,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -45,9 +64,20 @@
                         .queryErrorObj
             )
 
+            const {
+                errorMessage,
+                SOURCE_ACCESS_ERROR_NAMES,
+                hasErrorAction,
+                hasErrorData,
+            } = useError()
+
             return {
                 isQueryRunning,
                 queryErrorObj,
+                errorMessage,
+                hasErrorAction,
+                hasErrorData,
+                SOURCE_ACCESS_ERROR_NAMES,
             }
         },
     })

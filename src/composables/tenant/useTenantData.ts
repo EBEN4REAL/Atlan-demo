@@ -8,7 +8,7 @@ export default function useTenantData() {
     const tenantStore = useTenantStore()
 
     console.log(tenantStore)
-    const updateSMTPConfig = (value) => {
+    const setSMTPConfig = (value) => {
         tenantStore.setSMTPConfig(value)
     }
     const {
@@ -38,7 +38,7 @@ export default function useTenantData() {
         announcementType,
         announcementUpdatedAt,
         announcementUpdatedBy,
-        updateSMTPConfig,
+        setSMTPConfig,
     }
     // return {
     //     name: tenantStore.displayName,

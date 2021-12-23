@@ -12,7 +12,9 @@ export const SavedQueryAttributes = [
     'variablesSchemaBase64',
     'isSnippet',
     'parentQualifiedName',
-    'collectionQualifiedName'
+    'collectionQualifiedName',
+    'visualBuilderSchemaBase64',
+    'isVisualQuery',
 ]
 
 export const InternalAttributes = [
@@ -50,6 +52,8 @@ export const AssetAttributes = [
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
     'sourceURL',
     'sourceCreatedBy',
     'sourceCreatedAt',
@@ -57,6 +61,8 @@ export const AssetAttributes = [
     'sourceUpdatedBy',
     'ownerUsers',
     'ownerGroups',
+    'adminUsers',
+    'adminGroups',
     'meanings',
     'readme',
     'rawQuery',
@@ -73,7 +79,7 @@ export const AssetAttributes = [
     'allowQueryPreview',
     'parentQualifiedName',
     'collectionQualifiedName',
-    'parent'
+    'parent',
 ]
 
 export const SQLAttributes = [
@@ -116,6 +122,7 @@ export const AssetRelationAttributes = [
     'dataflow',
     'report',
     'page',
+    'qualifiedName',
     '__state',
     '__timestamp',
     '__modificationTimestamp',

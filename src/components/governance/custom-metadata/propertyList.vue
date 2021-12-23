@@ -25,8 +25,19 @@
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
                     <div class="flex items-center">
-                        <div style="width: 44px" class="text-center">
-                            <AtlanIcon class="h-4 inlline" icon="MoveItem" />
+                        <div
+                            style="width: 44px"
+                            class="h-4 text-center"
+                            :class="
+                                checkAccess(map.UPDATE_BUSINESS_METADATA)
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                            "
+                        >
+                            <AtlanIcon
+                                class="inline h-4 grap"
+                                icon="MoveItem"
+                            />
                         </div>
                         <!-- <div style="width: 44px">
                             {{ index + 1 }}
@@ -155,6 +166,9 @@
     import { Types } from '~/services/meta/types'
     import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         props: {
@@ -173,6 +187,7 @@
             const { metadata, properties } = toRefs(props)
             const isSorting = ref(false)
 
+            const { checkAccess } = useAuth()
             // map icon to type
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
@@ -253,10 +268,12 @@
             const sortedProperties = ref([])
 
             const enableDragSort = () => {
-                const sortableLists = properties.value
-                Array.prototype.map.call([sortableLists], (list) => {
-                    enableDragList(list)
-                })
+                if (checkAccess(map.UPDATE_BUSINESS_METADATA)) {
+                    const sortableLists = properties.value
+                    Array.prototype.map.call([sortableLists], (list) => {
+                        enableDragList(list)
+                    })
+                }
             }
 
             const enableDragList = (list) => {
@@ -323,6 +340,11 @@
                             data.value.businessMetadataDefs[0]
                         )
                         store.tickForceRevalidate()
+                        useAddEvent(
+                            'governance',
+                            'custom_metadata',
+                            'property_reordered'
+                        )
                     } else if (error && error.value) {
                         isSorting.value = false
                         message.error('Unable to save order, please try again')
@@ -344,8 +366,9 @@
                 enableDragSort()
             }
 
-            watch(properties, async () => {
+            watch(properties, async (n, o) => {
                 await nextTick() // wait for new property to be available in DOM
+                if (n?.length > o?.length) enableDragSort()
                 // reInitializeDragSort()
             })
 
@@ -357,7 +380,15 @@
                 reInitializeDragSort,
                 mapTypeToIcon,
                 resolveType,
+                map,
+                checkAccess,
             }
         },
     })
 </script>
+
+<style>
+    .grap {
+        cursor: grab;
+    }
+</style>

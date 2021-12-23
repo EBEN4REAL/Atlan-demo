@@ -50,9 +50,10 @@
     import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary.ts'
     import useGlossaryStore from '~/store/glossary'
     import { message } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
-        name: 'AddGtcModal',
+        name: 'RemoveGtcModal',
         components: {
             // AddGtcModalOwners,
             // Categories,
@@ -167,6 +168,15 @@
                 }
                 isLoading.value = loading.value
                 visible.value = false
+                let eventCategory
+                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                    eventCategory = 'category'
+                } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                    eventCategory = 'term'
+                } else {
+                    eventCategory = 'glossary'
+                }
+                useAddEvent('gtc', eventCategory, 'deleted', {})
             }
             return {
                 visible,

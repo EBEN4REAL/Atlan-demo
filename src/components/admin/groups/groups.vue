@@ -71,9 +71,8 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg"
-                :scroll="{ y: 'calc(100vh - 20rem)' }"
-                :table-layout="'fixed'"
+                class="overflow-hidden border rounded-lg users-groups-table"
+                :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
                 :pagination="false"
                 :data-source="groupList"
                 :columns="columns"
@@ -113,9 +112,10 @@
                         :group="group"
                         :mark-as-default-loading="markAsDefaultLoading"
                         :delete-group-loading="deleteGroupLoading"
-                        @addMembers="handleAddMembers(group)"
-                        @deleteGroup="handleDeleteGroup(group)"
-                        @toggleDefault="handleToggleDefault(group)"
+                        @add-members="handleAddMembers(group)"
+                        @delete-group="handleDeleteGroup(group)"
+                        @toggle-default="handleToggleDefault(group)"
+                        @members-added='refreshTable'
                     />
                 </template>
             </a-table>
@@ -294,6 +294,11 @@
                 showGroupPreviewDrawer(group, 'members')
             }
 
+            const refreshTable = () => {
+                groupListAPIParams.offset = 0
+                getGroupList()
+            }
+
             const handleGroupClick = (group: any) => {
                 showGroupPreviewDrawer(group)
             }
@@ -469,46 +474,12 @@
                 deleteGroupLoading,
                 showActionsDropdown,
                 map,
+                refreshTable
             }
         },
     })
 </script>
-<style lang="less">
-    .delete-group-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
-    }
-    .hide-checkbox {
-        .ant-checkbox {
-            display: none;
-        }
-    }
-    .delete-group-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
-<style lang="less" scoped>
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
-    }
-    .hide-checkbox {
-        .ant-checkbox {
-            display: none;
-        }
-    }
-</style>
+<style lang="less" scoped></style>
 <route lang="yaml">
 meta:
     layout: default

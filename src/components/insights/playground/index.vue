@@ -18,16 +18,23 @@
                 >
                     <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-tooltip placement="top">
-                                <template #title>New query</template>
+                            <a-dropdown :trigger="['click']">
                                 <span
                                     class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
-                                    @click="handleAdd"
                                 >
-                                    <!-- <fa icon="fal plus" class="text-gray-700" /> -->
                                     <AtlanIcon icon="Add" />
                                 </span>
-                            </a-tooltip>
+                                <template #overlay>
+                                    <a-menu>
+                                        <a-menu-item @click="handleAdd(false)">
+                                            <span class="h-8"> New Query </span>
+                                        </a-menu-item>
+                                        <a-menu-item @click="handleAdd(true)">
+                                            <span class="h-8"> New VQB </span>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
                         </div>
                     </template>
 
@@ -48,9 +55,9 @@
                                     class="flex items-center inline_tab"
                                     :style="{
                                         width:
-                                            tabs.length == 1 ? '65px' : '49px',
+                                            tabs.length == 1 ? '89px' : '73px',
                                         'max-width':
-                                            tabs.length == 1 ? '65px' : '49px',
+                                            tabs.length == 1 ? '89px' : '73px',
                                     }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
@@ -60,11 +67,13 @@
                                     >
                                         <span
                                             class="text-sm inline_tab_label"
-                                            :class="
+                                            :class="[
                                                 tab.key !== activeInlineTabKey
-                                                    ? 'text-gray-500'
-                                                    : ''
-                                            "
+                                                    ? tabHover === tab.key
+                                                        ? 'text-gray-700'
+                                                        : 'text-gray-500'
+                                                    : '',
+                                            ]"
                                             >{{ tab.label }}</span
                                         >
                                     </div>
@@ -134,7 +143,7 @@
             </splitpanes>
         </div>
         <ResultPaneFooter v-if="activeInlineTabKey" />
-        <NoActiveInlineTab @handleAdd="handleAdd" v-else />
+        <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
@@ -247,7 +256,7 @@
                 return max_number
             }
 
-            const handleAdd = () => {
+            const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
                 const key = generateUUID()
                 const inlineTabData: activeInlineTabInterface = {
@@ -256,7 +265,7 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',
@@ -264,7 +273,7 @@
                     parentQualifiedName: '',
                     isSQLSnippet: false,
                     savedQueryParentFolderTitle: undefined,
-                    collectionQulaifiedName: '',
+                    collectionQualifiedName: '',
                     explorer: {
                         schema: {
                             connectors: {
@@ -296,6 +305,7 @@
                     },
 
                     playground: {
+                        isVQB: isVQB,
                         vqb: {
                             panels: [
                                 {
@@ -369,12 +379,18 @@
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 const queryParams = {}
-                if (route?.query?.vqb) queryParams.vqb = true
+                // if (route?.query?.vqb) queryParams.vqb = true
+                if (isVQB) queryParams.vqb = true
+
                 router.push({ path: `insights`, query: queryParams })
             }
+
             const pushGuidToURL = (guid: string | undefined) => {
                 const queryParams = {}
-                if (route?.query?.vqb) queryParams.vqb = true
+                let isVQB = activeInlineTab.value.playground.isVQB
+                if (isVQB) queryParams.vqb = true
+                // if (route?.query?.vqb) queryParams.vqb = true
+
                 if (guid) {
                     queryParams.id = guid
                     router.push({ path: `insights`, query: queryParams })
@@ -388,7 +404,7 @@
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
-                    handleAdd()
+                    handleAdd(false)
                 } else {
                     /* For closing the tab */
                     console.log(targetKey)
@@ -581,13 +597,19 @@
                 height: 100%;
             }
 
+            &:hover {
+                background-color: #fafafa !important;
+                // @apply text-gray-700 !important;
+                color: #3e4359 !important;
+            }
+
             &.ant-tabs-tab-active {
                 // border-bottom: 1px solid !important;
                 @apply bg-white !important;
 
-                &:hover {
-                    background-color: #fafafa !important;
-                }
+                // &:hover {
+                //     background-color: #fafafa !important;
+                // }
             }
             .ant-tabs-close-x {
                 visibility: hidden;
@@ -636,9 +658,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 49px;
-        width: 49px;
-        min-width: 49px;
+        max-width: 73px;
+        width: 73px;
+        min-width: 73px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem

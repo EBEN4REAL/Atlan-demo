@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
-            v-if="!readOnly"
+            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
@@ -13,7 +13,7 @@
                     v-model="localValue.certificateStatus"
                     :is-radio="true"
                 ></CertificateFacet>
-                <div class="px-3 mt-1">
+                <div class="px-3">
                     <p class="text-sm text-gray-500">Message</p>
                     <a-textarea
                         v-model:value="localValue.certificateStatusMessage"
@@ -25,10 +25,7 @@
         </a-popover>
 
         <CertificatePill
-            v-if="
-                certificateStatus(selectedAsset) !== 'NONE' &&
-                certificateStatus(selectedAsset)
-            "
+            v-if="certificateStatus(selectedAsset)"
             class="w-full"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"
@@ -37,7 +34,7 @@
             @click="() => (isEdit = true)"
         ></CertificatePill>
         <a-button
-            v-else-if="!readOnly"
+            v-else-if="editPermission"
             shape="circle"
             size="small"
             class="text-center shadow hover:bg-primary-light hover:border-primary"
@@ -45,6 +42,9 @@
         >
             <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
         ></a-button>
+        <span v-else-if="showMessage" class="text-sm text-gray-500">{{
+            certificateStatusMessage(selectedAsset)
+        }}</span>
         <span v-else class="text-sm text-gray-500">No certification</span>
     </div>
 </template>
@@ -92,7 +92,7 @@
                 required: false,
                 default: () => {},
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -102,13 +102,20 @@
                 required: false,
                 default: false,
             },
+            showMessage: {
+                type: Boolean,
+                required: false,
+                default: () => {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
-            const { selectedAsset, inProfile, readOnly } = toRefs(props)
+            const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -141,7 +148,7 @@
             )
             const { c, Escape, v, enter, shift } = useMagicKeys()
             whenever(
-                and(c, notUsingInput, !inProfile.value, !readOnly.value),
+                and(c, notUsingInput, !inProfile.value, editPermission.value),
                 () => {
                     if (!isEdit.value) {
                         isEdit.value = true

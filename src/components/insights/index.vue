@@ -142,7 +142,8 @@
     import { generateUUID } from '~/utils/helper/generator'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { message } from 'ant-design-vue'
-
+    import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
+    import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
     export default defineComponent({
         components: {
             Playground,
@@ -195,6 +196,7 @@
             const columnNameFromURL = inject('columnNameFromURL')
 
             const { queryRun } = useRunQuery()
+            const showVQB = ref(false)
 
             // const schemaNameFromURL = ref(route.query?.schemaNameFromURL)
             // const tableNameFromURL = ref(route.query?.tableNameFromURL)
@@ -219,6 +221,21 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+
+            const {
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+            } = useCollectionAccess(activeInlineTab)
+
+            const {
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
+            } = useActiveQueryAccess(activeInlineTab)
+
+            watch(activeInlineTab, () => {})
+
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -270,6 +287,12 @@
                 outputPaneSize,
                 fullSreenState,
                 setEditorInstance,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -305,7 +328,8 @@
                             null,
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
-                            monacoInstance
+                            monacoInstance,
+                            showVQB
                         )
                     }
                 }
@@ -377,7 +401,7 @@
                     label: `${tableNameFromURL} preview`,
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',
@@ -404,6 +428,7 @@
                         },
                     },
                     playground: {
+                        isVQB: false,
                         vqb: {
                             panels: [
                                 {
@@ -516,6 +541,10 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
+                            console.log(
+                                'queryCollections: ',
+                                data.value.entities
+                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0

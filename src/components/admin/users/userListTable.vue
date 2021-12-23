@@ -2,9 +2,8 @@
     <a-table
         v-if="userList"
         id="userList"
-        class="overflow-hidden border rounded-lg rounded-table"
+        class="overflow-hidden border rounded-lg rounded-table users-groups-table"
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
-        :table-layout="'fixed'"
         :data-source="userList"
         :columns="userColumns"
         :row-key="(user) => user.id"
@@ -13,7 +12,10 @@
         @change="(p, f, s) => emit('change', p, f, s)"
     >
         <template #name="{ text: user }">
-            <div class="flex items-center align-middle">
+            <div
+                class="flex items-center align-middle"
+                :style="{ maxWidth: userColumns.filter((column) => column?.key === 'user')[0].width + 'px' }"
+            >
                 <Avatar
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
@@ -23,7 +25,7 @@
                     class="mr-2"
                 />
                 <div
-                    class="truncate"
+                    class="truncate max-w-full"
                     :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {
@@ -49,14 +51,7 @@
         </template>
         <template #status="{ text: user }">
             <div
-                class="
-                    inline-flex
-                    items-center
-                    px-2
-                    py-0.5
-                    rounded-xl
-                    text-gray-700
-                "
+                class="inline-flex items-center px-2 py-0.5 rounded-xl text-gray-700"
                 :class="`bg-${statusColorClass[user.status_object.status]}`"
             >
                 <div>{{ user.status_object.status }}</div>
@@ -92,7 +87,7 @@
                         </template>
                         <div
                             v-if="user.enabled"
-                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                             @click="emit('handleChangeRole', user)"
                         >
                             <AtlanIcon icon="StarCircled"></AtlanIcon>
@@ -128,7 +123,7 @@
                                     "
                                 ></h3>
                                 <div
-                                    class="flex items-center justify-between mt-3  gap-x-3"
+                                    class="flex items-center justify-between mt-3 gap-x-3"
                                 >
                                     <div class="flex-grow"></div>
                                     <AtlanButton
@@ -161,7 +156,7 @@
                         </template>
                         <div
                             size="small"
-                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
                             <AtlanIcon
@@ -182,7 +177,7 @@
                         <span>Resend Invite</span>
                     </template>
                     <div
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                         @click="
                             emit('resendInvite', {
                                 email: user.email,
@@ -195,7 +190,7 @@
                 </a-tooltip>
                 <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
@@ -224,7 +219,7 @@
                                             ?
                                         </h3>
                                         <div
-                                            class="flex items-center justify-between mt-3  gap-x-3"
+                                            class="flex items-center justify-between mt-3 gap-x-3"
                                         >
                                             <div class="flex-grow"></div>
                                             <AtlanButton

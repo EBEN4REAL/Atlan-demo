@@ -648,111 +648,18 @@
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
 
-            // let showContextModal = ref(false)
-            // const closeContextModal = () => {
-            //     showContextModal.value = false
-            // }
-            // const openContextModal = () => {
-            //     showContextModal.value = true
-            // }
-            // let selectedOption = ref(null)
-            // const openInCurrentTab = () => {
-            //     selectedOption.value = 'current'
-            // }
-
-            // const openInNewTab = () => {
-            //     selectedOption.value = 'new'
-            // }
-            // const router = useRouter()
-            // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = generateUUID()
 
-                // const inlineTabData = { ...demoTab }
-
-                // ;(inlineTabData.label = `${previewItem.title} preview`),
-                //     (inlineTabData.key = key),
-                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
-                //     (inlineTabData.isSaved = false),
-                //     (inlineTabData.queryId = undefined),
-                //     (inlineTabData.status = 'DRAFT'),
-                //     (inlineTabData.connectionId = ''),
-                //     (inlineTabData.description = ''),
-                //     (inlineTabData.qualifiedName = ''),
-                //     (inlineTabData.parentGuid = ''),
-                //     (inlineTabData.parentQualifiedName = ''),
-                //     (inlineTabData.isSQLSnippet = false),
-                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
-                //     (inlineTabData.explorer = {
-                //         schema: {
-                //             connectors: {
-                //                 ...context,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector:
-                //                     previewItem.connectionQualifiedName.split(
-                //                         '/'
-                //                     )[1],
-                //             },
-                //         },
-                //     }),
-                //     (inlineTabData.playground.editor = {
-                //         context: {
-                //             ...context,
-                //         },
-                //         text: query,
-                //         dataList: [],
-                //         columnList: [],
-                //         variables: [],
-                //         savedVariables: [],
-                //         limitRows: {
-                //             checked: false,
-                //             rowsCount: -1,
-                //         },
-                //     })
-                // ;(inlineTabData.playground.resultsPane = {
-                //     activeTab:
-                //         activeInlineTab.value?.playground?.resultsPane
-                //             ?.activeTab ?? 0,
-                //     result: {
-                //         title: `${key} Result`,
-                //         runQueryId: undefined,
-                //         isQueryRunning: '',
-                //         queryErrorObj: {},
-                //         totalRowsCount: -1,
-                //         executionTime: -1,
-                //         errorDecorations: [],
-                //         eventSourceInstance: undefined,
-                //         buttonDisable: false,
-                //         isQueryAborted: false,
-                //     },
-                //     metadata: {},
-                //     queries: {},
-                //     joins: {},
-                //     filters: {},
-                //     impersonation: {},
-                //     downstream: {},
-                //     sqlHelp: {},
-                // }),
-                //     (inlineTabData.assetSidebar = {
-                //         // for taking the previous state from active tab
-                //         openingPos: undefined,
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
-                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
-                //     })
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',
@@ -774,9 +681,14 @@
                                     )[1],
                             },
                             collection: {
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
                             },
                         },
                     },

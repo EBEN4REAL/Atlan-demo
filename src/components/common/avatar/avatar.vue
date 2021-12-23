@@ -9,7 +9,7 @@
             >
                 <div
                     v-if="!isReady && uploadStarted"
-                    class="hidden text-center bg-primary-light sm:block"
+                    class="hidden text-sm text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
                         height: avatarSize + 'px',
@@ -26,7 +26,7 @@
                         :key="uploadKey"
                         :shape="avatarShape"
                         :size="avatarSize"
-                        class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
+                        class="hidden text-sm ant-tag-blue text-primary bg-primary-light sm:block"
                         :src="updatedImageUrl"
                     >
                         {{ getNameInitials(getNameInTitleCase(avatarName)) }}
@@ -36,6 +36,23 @@
                     >
                         <span class="font-bold text-white">Change avatar</span>
                     </div>
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full left-20"
+                    >
+                        <div
+                            class="
+                                p-1
+                                bg-gray-100
+                                border border-gray-300
+                                rounded-full
+                                px-1
+                                py-0.5
+                                text-gray-500
+                            "
+                        >
+                            <AtlanIcon icon="Camera" />
+                        </div>
+                    </div>
                 </div>
             </a-upload>
         </div>
@@ -44,7 +61,7 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
+                class="hidden text-sm ant-tag-blue text-primary bg-primary-light sm:block"
                 :src="updatedImageUrl"
             >
                 {{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
@@ -54,7 +71,7 @@
 </template>
 
 <script lang="ts">
-    import { ref, watch, PropType, toRefs } from 'vue'
+    import { ref, watch, PropType, toRefs, unref } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
@@ -82,8 +99,10 @@
                 default: 56,
             },
         },
-        setup(props, context) {
-            const { imageUrl: updatedImageUrl } = toRefs(props)
+        emits: ['imageUpdated'],
+        setup(props, { emit }) {
+            const { imageUrl } = toRefs(props)
+            const updatedImageUrl = ref(unref(imageUrl))
             const uploadStarted = ref(false)
 
             watch(
@@ -102,8 +121,7 @@
                 return true
             }
             watch(uploadKey, () => {
-                context.emit('imageUpdated', updatedImageUrl)
-                console.log(updatedImageUrl)
+                emit('imageUpdated', updatedImageUrl)
             })
             return {
                 handleUploadAvatar,

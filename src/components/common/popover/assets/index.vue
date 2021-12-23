@@ -1,10 +1,10 @@
 <template>
-    <a-popover title="" placement="left">
+    <a-popover title="" placement="left" :mouseEnterDelay="0.5">
         <template #content>
             <div class="relation-ship">
                 <div class="flex justify-between">
-                    <div class="flex items-center">
-                        <img :src="logoTitle" class="h-3 mr-2" />
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <img :src="logoTitle" class="h-3 mr-1 mb-0.5" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
@@ -28,6 +28,37 @@
                             title || item?.typeName
                         }}</span>
 
+                        <div>
+                            <span
+                                v-if="
+                                    rows !== '-' &&
+                                    rows !== '' &&
+                                    item.typeName?.toLowerCase() !== 'column'
+                                "
+                                class="ml-3 text-xs text-gray-500"
+                            >
+                                <span
+                                    class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
+                                    >{{ rows }}</span
+                                >Rows
+                            </span>
+                            <span
+                                v-if="
+                                    cols !== '-' &&
+                                    cols !== '' &&
+                                    item.typeName?.toLowerCase() !== 'column'
+                                "
+                                class="text-xs text-gray-500"
+                                :class="{ 'ml-3': rows === '-' || rows === '' }"
+                            >
+                                <span
+                                    class="text-xs font-semibold tracking-tight text-gray-500"
+                                    >{{ cols }}</span
+                                >
+                                Cols
+                            </span>
+                        </div>
+
                         <slot name="extraHeaders"> </slot>
                     </div>
                     <div
@@ -35,61 +66,29 @@
                             item.typeName?.toLowerCase() === 'column' &&
                             item.attributes?.dataType
                         "
-                        class="flex items-center px-1 text-gray-500 bg-gray-100 border border-gray-300 border-solid"
+                        class="flex items-center px-1 text-gray-500 bg-gray-100 border-gray-300 rounded"
                     >
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 text-gray-500"
+                            style="margin-bottom: 3px"
                         />
-                        {{ item.attributes?.dataType }}
+                        <span>{{ item.attributes?.dataType }}</span>
                     </div>
                 </div>
-                <div class="mb-0.5 text-lg font-semibold truncate ...">
-                    {{ item?.displayText || item?.attributes?.name }}
+                <div class="flex">
+                    <div class="mb-0.5 font-semibold truncate">
+                        {{ item?.displayText || item?.attributes?.name }}
+                    </div>
                     <CertificateBadge
                         v-if="certificateStatus(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
-                        class="mb-0.5"
+                        class="mb-1 ml-1"
                     />
                 </div>
                 <div class="flex flex-wrap items-center gap-x-2">
-                    <span
-                        v-if="
-                            rows !== '-' &&
-                            rows !== '' &&
-                            item.typeName?.toLowerCase() !== 'column'
-                        "
-                        class="text-xs text-gray-500"
-                    >
-                        <span
-                            class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
-                            >{{ rows }}</span
-                        >Rows
-                    </span>
-                    <span
-                        v-if="
-                            cols !== '-' &&
-                            cols !== '' &&
-                            item.typeName?.toLowerCase() !== 'column'
-                        "
-                        class="text-xs text-gray-500"
-                    >
-                        <span
-                            class="text-xs font-semibold tracking-tight text-gray-500"
-                            >{{ cols }}</span
-                        >
-                        Cols
-                    </span>
-                    <div
-                        v-if="
-                            cols !== '-' &&
-                            cols !== '' &&
-                            item.typeName?.toLowerCase() !== 'column'
-                        "
-                        class="dot"
-                    />
                     <div
                         v-if="table"
                         class="flex items-center text-sm text-gray-500"
@@ -139,18 +138,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div
-                    :class="`mt-1 text-sm ${
-                        !item?.attributes?.description ? 'text-gray-500' : ''
-                    }`"
-                >
-                    {{
-                        item?.attributes?.description ||
-                        `This ${title} has no description added`
-                    }}
+                <div v-if="description(item)" class="mt-1 text-sm">
+                    {{ description(item) }}
                 </div>
-                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-2">
+                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-3">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"
@@ -162,10 +153,19 @@
                             :allow-delete="false"
                         ></ClassificationPill>
                     </template>
+                    <template
+                        v-for="term in item.meanings"
+                        :key="term.termGuid"
+                    >
+                        <TermPill :term="term" :allow-delete="false" />
+                    </template>
                 </div>
-                <div v-if="item?.attributes?.ownerUsers.length > 0">
-                    <div class="mt-2 text-xs text-gray-500">Owned by</div>
-                    <div class="flex gap-1">
+                <div
+                    v-if="item?.attributes?.ownerUsers.length > 0"
+                    class="mt-4"
+                >
+                    <div class="mb-1 text-sm text-gray-500">Owners</div>
+                    <div class="flex flex-wrap gap-1">
                         <UserPill
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
                             :key="idx"
@@ -173,21 +173,27 @@
                         />
                     </div>
                 </div>
-                <router-link v-if="!slots?.button" :to="path">
-                    <a-button class="mt-3" block>
-                        <strong>
-                            View
-                            {{
-                                title?.toLowerCase() === 'view'
-                                    ? ''
-                                    : title?.toLowerCase()
-                            }}
-                            profile
-                        </strong>
-                    </a-button>
-                </router-link>
-
-                <slot name="button"></slot>
+                <div class="flex mt-4">
+                    <slot name="button"></slot>
+                    <router-link
+                        v-if="!slots?.button"
+                        :to="path"
+                        class="ml-auto"
+                    >
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                View Profile</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
+                    </router-link>
+                </div>
             </div>
         </template>
         <slot></slot>
@@ -202,6 +208,8 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import TermPill from '@/common/pills/term.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -209,6 +217,8 @@
             ClassificationPill,
             UserPill,
             CertificateBadge,
+            AtlanBtn,
+            TermPill,
         },
         props: {
             item: {
@@ -236,6 +246,7 @@
                 schemaName,
                 tableName,
                 dataTypeCategoryImage,
+                description,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -286,6 +297,7 @@
                 logoTitle,
                 path,
                 slots,
+                description,
             }
         },
     }

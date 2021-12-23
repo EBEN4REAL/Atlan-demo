@@ -7,7 +7,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    v-if="item.typeName === 'QueryFolder'"
+                    v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="parent-ellipsis-container py-1.5">
@@ -32,7 +32,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -114,13 +114,26 @@
                     </template>
 
                     <template #button>
-                        <a-button class="mt-3" @click="openSidebar" block>
+                        <!-- <a-button class="mt-3" @click="openSidebar" block>
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
                                 </div>
                             </div>
-                        </a-button>
+                        </a-button> -->
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                            @click="openSidebar"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                Show Preview</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
                     </template>
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -142,15 +155,37 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
-                                :class="
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
-                                "
+                                        : 'bg-gradient-to-l from-gray-light via-gray-light',
+
+                                    hasWritePermission ? 'right-6' : 'right-0',
+                                ]"
                             >
                                 <div
-                                    class="pl-2 ml-24"
+                                    :data-test-id="'run-saved-query'"
+                                    class="ml-24"
+                                    @click="() => actionClick('play', item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>Run Query</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
+
+                                <div
+                                    class="pl-2"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
@@ -179,7 +214,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -200,13 +235,6 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <!-- <a-menu-item
-                                                key="public"
-                                                @click="
-                                                    showPublishPopover = true
-                                                "
-                                                >Make query public</a-menu-item
-                                            > -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -230,7 +258,7 @@
             <TreeDeletePopover
                 :item="item"
                 @cancel="showDeletePopover = false"
-                @delete="() => delteItem(item.typeName)"
+                @delete="() => delteItem(item?.typeName)"
                 :isSaving="isDeleteLoading"
             />
         </template>
@@ -307,6 +335,7 @@
         toRaw,
         watch,
         ref,
+        computed,
     } from 'vue'
 
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
@@ -330,8 +359,16 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useRoute, useRouter } from 'vue-router'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import AtlanBtn from '@/UI/button.vue'
 
-    const { inlineTabRemove } = useInlineTab()
+    const {
+        inlineTabRemove,
+        modifyActiveInlineTabEditor,
+        modifyActiveInlineTab,
+    } = useInlineTab()
+    const { focusEditor, setSelection } = useEditor()
 
     import { message } from 'ant-design-vue'
 
@@ -342,6 +379,7 @@
             PublishFolderPopover,
             QueryFolderSelector,
             PopoverAsset,
+            AtlanBtn,
         },
         props: {
             item: {
@@ -405,10 +443,27 @@
             )
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
+
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
             const refetchParentNode = inject<
                 (
                     guid: string | 'root',
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchParentNode', () => {})
@@ -416,7 +471,7 @@
             const refetchNode = inject<
                 (
                     guid: string,
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
@@ -424,6 +479,12 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
+            const { openSavedQueryInNewTabAndRun } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -462,9 +523,56 @@
 
                         break
                     }
+                    case 'play': {
+                        openSavedQueryInNewTabAndRun(
+                            item,
+                            getData,
+                            limitRows,
+                            editorInstance,
+                            monacoInstance
+                        )
+                        break
+                    }
                     case 'bookmark': {
                         break
                     }
+                }
+            }
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+
+            const getData = (dataList, columnList) => {
+                if (activeInlineTab && inlineTabs?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     inlineTabs,
+                    //     saveQueryDataInLocalStorage
+                    // )
+
+                    modifyActiveInlineTab(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        activeInlineTabCopy.isSaved,
+                        saveQueryDataInLocalStorage
+                    )
+                    // setSelection(
+                    //     toRaw(editorInstanceRef.value),
+                    //     toRaw(monacoInstanceRef.value),
+                    //     selectionObject.value
+                    // )
+                    focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
 
@@ -491,18 +599,14 @@
                 // })
                 // watch([isLoading], () => {
                 //     if (isLoading.value == false && !error.value) {
-                //         useAddEvent('insights', 'folder', 'space_changed', {
-                //             finalSpace: 'public',
-                //         })
                 //         message.success({
                 //             content: `${item.value?.attributes?.name} was made public!`,
                 //         })
-                //         refetchParentNode(props.item.guid, 'queryFolder')
+                //         refetchParentNode(props.item.guid, 'Folder')
                 //     }
                 // })
             }
             const renameFolder = () => {
-                useAddEvent('insights', 'folder', 'renamed', undefined)
                 const orignalName = item.value.attributes.name
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
@@ -574,6 +678,12 @@
                                                     : 'Folder'
                                             } renamed successfully`,
                                         })
+                                        useAddEvent(
+                                            'insights',
+                                            'folder',
+                                            'renamed',
+                                            undefined
+                                        )
                                     } else {
                                         item.value.attributes.name = orignalName
 
@@ -657,8 +767,10 @@
                 }
             }
 
-            const delteItem = (type: 'Query' | 'QueryFolder') => {
+            const delteItem = (type: 'Query' | 'Folder') => {
                 let key = item.value.guid
+                let parentGuid = item?.value?.attributes?.parent?.guid
+                console.log('delete item: ', item)
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
                     {}
@@ -669,7 +781,6 @@
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
-                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
 
                         inlineTabRemove(
@@ -680,19 +791,19 @@
                         )
 
                         setTimeout(() => {
-                            refetchParentNode(
-                                props.item.guid,
-                                type === 'Query' ? 'query' : 'queryFolder',
-                                savedQueryType.value
+                            refetchNode(
+                                parentGuid,
+                                type === 'Query' ? 'query' : 'Folder'
                             )
-                        }, 500)
+                        }, 1000)
 
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
+                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         // refetchParentNode(
                         //     props.item.guid,
-                        //     type === 'Query' ? 'query' : 'queryFolder',
+                        //     type === 'Query' ? 'query' : 'Folder',
                         //     savedQueryType.value
                         // )
                     }
@@ -805,19 +916,20 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
+                console.log('item to move: ', item)
                 let previousParentGuId = item.attributes.parent.guid
                 let selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
 
+                console.log('selected folder:', selectedFolder.value)
+
                 if (selectedFolder.value) {
                     const newEntity = { ...item, relationshipAttributes: {} }
                     delete newEntity.entity
 
-                    if (
-                        selectedFolder.value.typeName === 'QueryFolderNamespace'
-                    ) {
+                    if (selectedFolder.value.typeName === 'Collection') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -840,9 +952,7 @@
                         // } else {
                         //     newEntity.classifications = []
                         // }
-                    } else if (
-                        selectedFolder.value.typeName === 'QueryFolder'
-                    ) {
+                    } else if (selectedFolder.value.typeName === 'Folder') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -865,7 +975,7 @@
 
                     isUpdating.value = true
 
-                    if (item.typeName == 'QueryFolder') {
+                    if (item.typeName == 'Folder') {
                         const { data, error, isLoading } =
                             Insights.UpdateSavedFolder(
                                 {
@@ -880,24 +990,23 @@
                                 isUpdating.value = false
                                 if (error.value == undefined) {
                                     // props.refetchTreeData()
-                                    message.success({
-                                        content: `Folder moved successfully`,
-                                    })
 
-                                    setTimeout(() => {
-                                        refetchNode(
+                                    setTimeout(async () => {
+                                        await refetchNode(
                                             previousParentGuId,
-                                            'queryFolder'
+                                            'Folder'
                                         )
-                                        refetchNode(
+                                    }, 1000)
+                                    setTimeout(async () => {
+                                        await refetchNode(
                                             selectedParentGuid,
-                                            'queryFolder'
+                                            'Folder'
                                         )
-                                    }, 750)
+                                    }, 2000)
+
+                                    message.success(`Folder moved successfully`)
                                 } else {
-                                    message.success({
-                                        content: `Folder move failed`,
-                                    })
+                                    message.success(`Folder move failed`)
                                 }
                             }
                             showPublishPopover.value = false
@@ -917,34 +1026,22 @@
                             if (isLoading.value == false) {
                                 isUpdating.value = false
                                 if (error.value == undefined) {
-                                    // props.refetchTreeData()
-                                    message.success({
-                                        content: `Query moved successfully`,
-                                    })
-                                    // props.refreshQueryTree(
-                                    //     selectedFolder.value.guid,
-                                    //     'query'
-                                    // )
-                                    // props.refreshQueryTree(
-                                    //     item.attributes.parent.guid,
-                                    //     'query'
-                                    // )
-                                    // props.refreshQueryTree(
-                                    //     [
-                                    //         previousParentGuId,
-                                    //         selectedParentGuid,
-                                    //     ],
-                                    //     'query'
-                                    // )
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            previousParentGuId,
+                                            'query'
+                                        )
+                                    }, 1000)
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            selectedParentGuid,
+                                            'query'
+                                        )
+                                    }, 2000)
 
-                                    setTimeout(() => {
-                                        refetchNode(previousParentGuId, 'query')
-                                        refetchNode(selectedParentGuid, 'query')
-                                    }, 750)
+                                    message.success('Query moved successfully')
                                 } else {
-                                    message.success({
-                                        content: `Query move failed`,
-                                    })
+                                    message.success(`Query move failed`)
                                 }
                             }
                             showFolderPopover.value = false
@@ -993,6 +1090,10 @@
                 isUpdating,
                 isDeleteLoading,
                 openSidebar,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
                 // input,
                 // newFolderName,
             }

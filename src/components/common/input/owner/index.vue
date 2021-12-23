@@ -21,7 +21,7 @@
                 </div>
             </template>
             <a-button
-                v-if="!readOnly"
+                v-if="editPermission"
                 shape="circle"
                 size="small"
                 class="text-center shadow hover:bg-primary-light hover:border-primary"
@@ -34,7 +34,7 @@
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
-                    :allow-delete="!readOnly"
+                    :allow-delete="editPermission"
                     :enable-hover="enableHover"
                     @delete="handleDeleteUser"
                     @click="handleClickUser(username)"
@@ -46,7 +46,7 @@
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
-                    :allow-delete="!readOnly"
+                    :allow-delete="editPermission"
                     :enable-hover="enableHover"
                     @delete="handleDeleteGroup"
                     @click="handleClickGroup(name)"
@@ -54,12 +54,12 @@
             </PopOverGroup>
         </template>
         <span
-            class="-ml-1 text-gray-500"
             v-if="
-                readOnly &&
+                !editPermission &&
                 localValue?.ownerGroups?.length < 1 &&
                 localValue?.ownerUsers?.length < 1
             "
+            class="-ml-1 text-gray-500"
             >No owners assigned</span
         >
     </div>
@@ -112,7 +112,7 @@
             PopOverGroup,
         },
         props: {
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -150,7 +150,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectedAsset, inProfile, readOnly } = toRefs(props)
+            const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -166,7 +166,9 @@
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
-
+            const setLocalValue = (objOwners) => {
+                localValue.value = objOwners
+            }
             const handleClickGroup = (groupAlias: string) => {
                 setGroupUniqueAttribute(groupAlias, 'groupAlias')
                 showGroupPreview({ allowed: ['about', 'assets', 'members'] })
@@ -204,7 +206,7 @@
             )
             const { o, Escape } = useMagicKeys()
             whenever(
-                and(o, notUsingInput, !inProfile.value, !readOnly.value),
+                and(o, notUsingInput, !inProfile.value, editPermission.value),
                 () => {
                     if (!isEdit.value) {
                         isEdit.value = true
@@ -233,6 +235,7 @@
             }
 
             watch(selectedAsset, () => {
+                console.log(ownerGroups(selectedAsset.value))
                 localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
                 localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
             })
@@ -249,6 +252,7 @@
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,
+                setLocalValue,
             }
         },
     })

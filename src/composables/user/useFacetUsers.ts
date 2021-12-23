@@ -1,26 +1,31 @@
-import { computed, ref, ComputedRef, watch } from 'vue'
+import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
+import useUserData from '~/composables/user/useUserData'
 
 export default function useFacetUsers(
-    sort?: string,
-    columns?: string[],
-    immediate = true
+    config: {
+        sort?: string,
+        columns?: string[],
+        immediate?: boolean
+    } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
+
+    const queryText = ref('')
 
     const limit = 20
     let offset = 0
     params.value.append('limit', `${limit}`)
-    if (columns?.length) {
-        params.value.append('sort', sort ?? columns[0])
-        columns.forEach((c) => {
+    if (config.columns?.length) {
+        params.value.append('sort', config.sort ?? config.columns[0])
+        config.columns.forEach((c) => {
             params.value.append('columns', c)
         })
     } else {
-        params.value.append('sort', sort ?? 'firstName')
+        params.value.append('sort', config.sort ?? 'firstName')
         params.value.append('columns', 'firstName')
         params.value.append('columns', 'lastName')
         params.value.append('columns', 'username')
@@ -31,10 +36,14 @@ export default function useFacetUsers(
 
     const { data, mutate, isLoading, error, isReady } = Users.List(params, {
         asyncOptions: {
-            immediate,
+            immediate: config.immediate,
             resetOnExecute: false,
         },
     })
+
+    // myself
+    const { username, firstName, lastName, id } = useUserData()
+
 
     const loadMore = () => {
         offset += limit
@@ -51,6 +60,27 @@ export default function useFacetUsers(
             list.value = []
     })
 
+
+
+    // final user list including myself
+    const userList = computed(() => {
+        if (queryText.value !== '') {
+            return [...list.value]
+        }
+        const tempList = list.value.filter(
+            (obj) => obj.username !== username
+        )
+        return [
+            {
+                username,
+                id,
+                firstName,
+                lastName: `${lastName} (me)`,
+            },
+            ...tempList,
+        ]
+    })
+
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
     const filterTotal = computed(() => data.value?.filterRecord)
 
@@ -61,7 +91,21 @@ export default function useFacetUsers(
     }
 
     let debounce: any = null
+
+    const resetFilter = () => {
+        if (params.value.has('filter')) {
+            // reseting the list if user has does a server search else this messes up the list index
+            const filters = JSON.parse(params.value?.get('filter'))?.$and
+            // as email verified filter is always applied, need to check if more than 1 is applied istead
+            if (filters?.length > 1) {
+                params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
+                mutate()
+            }
+        }
+    }
+
     const handleSearch = (val: Event | string) => {
+        queryText.value = val as string
         offset = 0
         params.value.set('offset', `${offset}`)
         let value = ''
@@ -92,6 +136,8 @@ export default function useFacetUsers(
     }
 
     return {
+        queryText,
+        userList,
         loadMore,
         isLoading,
         error,
@@ -104,5 +150,6 @@ export default function useFacetUsers(
         handleSearch,
         setLimit,
         filterTotal,
+        resetFilter,
     }
 }

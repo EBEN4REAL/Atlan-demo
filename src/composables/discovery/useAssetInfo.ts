@@ -130,7 +130,6 @@ export default function useAssetInfo() {
     const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {
-        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {
@@ -163,6 +162,13 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
+                    excludes: [
+                        'Query',
+                        'Folder',
+                        'AtlasGlossary',
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                    ],
                     image: i.options?.imageId,
                     emoji: i.options?.emoji,
                     name: i.label,
@@ -170,13 +176,12 @@ export default function useAssetInfo() {
                     scrubbed: true,
                     requiredInProfile: true,
                     data: i,
-                    exclude: ['Query'],
                 }
             })
         }
         const allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
-            ...customTabList,
+            ...getTabs(customTabList, assetType(asset)),
         ]
         if (inProfile) {
             return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
@@ -625,6 +630,20 @@ export default function useAssetInfo() {
         return glossaryStore.selectedGTC
     })
 
+    const authStore = useAuthStore()
+
+    const selectedAssetUpdatePermission = (
+        asset: assetInterface,
+        action = 'ENTITY_UPDATE'
+    ) => {
+        return authStore?.evaluations.find(
+            (ev) =>
+                (ev?.entityGuid === asset?.guid ||
+                    ev?.entityGuidEnd2 === asset?.guid) &&
+                ev?.action === action
+        )?.allowed
+    }
+
     const isGTCByType = (typeName) => {
         if (
             [
@@ -981,6 +1000,7 @@ export default function useAssetInfo() {
         getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
+        selectedAssetUpdatePermission,
         isNonBiAsset,
         getLineagePath,
         isUserDescription,

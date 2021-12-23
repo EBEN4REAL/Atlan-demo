@@ -1,14 +1,20 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r"
+            class="flex flex-col w-1/6 h-full overflow-hidden bg-white border-r"
         >
+            <div class="flex items-center px-6 mt-6 font-semibold">
+                <AtlanIcon icon="GovernanceCenter" class="mr-2 -mt-0.5" />
+                <span class="text-base">Governance Center</span>
+            </div>
+
             <div class="flex flex-grow w-full px-6 mt-4 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"
-                    mode="inline"
-                    :class="$style.sidebar"
-                    :inline-indent="0"
+                    mode="vertical"
+                    class="border-none admin-sidebar"
+                    :inlineIndent="1"
+                    style="width: 100%"
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Access Control">
@@ -31,7 +37,8 @@
                         <a-menu-item key="requests" v-auth="[map.LIST_USERS]"
                             >Requests</a-menu-item
                         >
-
+                    </a-menu-item-group>
+                    <a-menu-item-group title="Metadata">
                         <a-menu-item
                             key="custom-metadata"
                             v-auth="[map.LIST_BUSINESS_METADATA]"
@@ -45,7 +52,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto">
+        <div class="w-5/6 max-h-screen overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>
@@ -61,16 +68,13 @@
         setup() {
             const router = useRouter()
             const route = useRoute()
-
             const handleClick = ({ key }) => {
                 router.push(`/governance/${key}`)
             }
-
             const initialRoute = route.path.split('/').slice(-1)
             const current = ref(
                 initialRoute[0] === 'governance' ? ['persona'] : initialRoute
             )
-
             return {
                 handleClick,
                 current,
@@ -79,38 +83,6 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .sidebar {
-        &:global(.ant-menu-inline) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-group) {
-            @apply mb-6;
-        }
-        :global(.ant-menu-item-group-title) {
-            @apply pl-2;
-            @apply text-xs uppercase tracking-wider font-bold leading-none;
-        }
-        :global(.ant-menu-title-content) {
-            @apply pl-2;
-        }
-        :global(.ant-menu-item) {
-            @apply text-sm;
-            @apply py-2;
-            margin: 0px !important;
-        }
-
-        :global(.ant-menu-item::after) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-selected) {
-            @apply rounded !important;
-        }
-    }
-</style>
 
 <route lang="yaml">
 meta:

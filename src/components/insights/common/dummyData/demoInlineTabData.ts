@@ -6,7 +6,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'Untitled',
         isSaved: false,
         queryId: undefined,
-        status: 'DRAFT',
+        status: 'is_null',
         connectionId: '',
         description: '',
         qualifiedName: '',
@@ -29,6 +29,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
         },
         playground: {
+            isVQB: false,
             vqb: {
                 panels: [
                     {

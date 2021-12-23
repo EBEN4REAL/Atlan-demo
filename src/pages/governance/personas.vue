@@ -1,6 +1,7 @@
 <template>
     <PersonaView v-if="isAccess" />
     <NoAccess v-else />
+    <router-view />
 </template>
 
 <script lang="ts">
@@ -9,10 +10,11 @@
     import NoAccess from '@/common/secured/access.vue'
     import PersonaView from '@/governance/personas/personaView.vue'
     import useAuth from '~/composables/auth/useAuth'
+
     export default defineComponent({
         components: {
             PersonaView,
-            NoAccess
+            NoAccess,
         },
         setup() {
             useHead({

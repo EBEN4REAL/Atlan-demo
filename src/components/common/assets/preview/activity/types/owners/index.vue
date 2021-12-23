@@ -1,7 +1,33 @@
 <template>
-    <div v-if="data.value.length < 1" class="mb-3">All Owners removed</div>
-    <div v-else>
-        <PillGroup :data="data">
+    <div
+        v-if="
+            data.value.ownerUsers?.length < 1 &&
+            data.value.ownerGroups?.length < 1
+        "
+        class="mb-3"
+    >
+        All Owners removed
+    </div>
+    <div>
+        <p>
+            Say <span class="mr-2">👋</span>Hello, to the new
+            <b>{{
+                data.value.ownerUsers?.length > 1 ||
+                data.value.ownerGroups?.length > 1
+                    ? 'Owners'
+                    : 'Owner'
+            }}</b>
+        </p>
+        <div class="flex flex-wrap gap-1 my-1">
+            <template v-for="user in data.value.ownerUsers" :key="user">
+                <UserPill
+                    :username="user"
+                    @click="handleClickUser(user)"
+                ></UserPill>
+            </template>
+        </div>
+
+        <!-- <PillGroup :data="data">
             <template #header
                 ><p>
                     Say <span class="mr-2">👋</span>Hello, to the new
@@ -9,7 +35,8 @@
                 </p></template
             >
             <template #pill-content="user">
-                <component
+            <UserPill :username="user.item.name"></UserPill>
+        <component
                     :is="user.item.type === 'user' ? popovers[0] : popovers[1]"
                     :item="user?.item?.name"
                 >
@@ -42,17 +69,12 @@
                                     user.item.name && user.item.type === 'group'
                                 "
                                 icon="Group"
-                                class="
-                                    h-4
-                                    -ml-0.5
-                                    text-primary
-                                    group-hover:text-white
-                                "
+                                class="h-4 -ml-0.5 text-primary group-hover:text-white"
                             /> </template
                     ></Pill>
-                </component>
+                </component> 
             </template>
-        </PillGroup>
+        </PillGroup> -->
     </div>
 </template>
 
@@ -66,20 +88,24 @@
     import Pill from '~/components/UI/pill/pill.vue'
     import { map } from '~/services/service/avatar/key'
 
+    import UserPill from '~/components/common/pills/user.vue'
+
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'OwnersActivity',
         components: {
-            PillGroup,
-            Pill,
-            Avatar,
-            PopOverUser: defineAsyncComponent(
-                () => import('@/common/popover/user/user.vue')
-            ),
-            PopOverGroup: defineAsyncComponent(
-                () => import('@/common/popover/user/groups.vue')
-            ),
+            UserPill,
+            // PillGroup,
+            // UserPill,
+            // Pill,
+            // Avatar,
+            // PopOverUser: defineAsyncComponent(
+            //     () => import('@/common/popover/user/user.vue')
+            // ),
+            // PopOverGroup: defineAsyncComponent(
+            //     () => import('@/common/popover/user/groups.vue')
+            // ),
         },
         props: {
             data: {
@@ -99,18 +125,27 @@
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
-            const handleClickGroup = (groupAlias: string) => {
-                setGroupUniqueAttribute(groupAlias, 'groupAlias')
-                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
-            }
+            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            // const { showGroupPreview, setGroupUniqueAttribute } =
+            //     useGroupPreview()
 
-            const popovers = ref(['PopOverUser', 'PopOverGroup'])
+            // const handleClickUser = (username: string) => {
+            //     setUserUniqueAttribute(username, 'username')
+            //     showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            // }
+
+            // const handleClickGroup = (groupAlias: string) => {
+            //     setGroupUniqueAttribute(groupAlias, 'groupAlias')
+            //     showGroupPreview({ allowed: ['about', 'assets', 'members'] })
+            // }
+
+            // const popovers = ref(['PopOverUser', 'PopOverGroup'])
 
             return {
                 handleClickUser,
-                handleClickGroup,
-                map,
-                popovers,
+                // handleClickGroup,
+                // map,
+                // popovers,
             }
         },
     })

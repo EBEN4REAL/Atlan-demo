@@ -66,7 +66,6 @@
     import { defineComponent, watch, computed, ref, toRefs, Ref } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -101,14 +100,6 @@
             const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
-            // const map = ref({})
-            // const updateMap = (localValue: Ref<any>) => {
-            //     map.value = {}
-            //     localValue.value.map((id) => {
-            //         map.value[id] = true
-            //     })
-            // }
-            // updateMap(localValue)
 
             const map = computed(() => {
                 let data = {}
@@ -119,37 +110,19 @@
             })
 
             const {
-                list,
+                userList,
                 handleSearch,
                 total,
                 filterTotal,
                 loadMore,
                 isLoading,
             } = useFacetUsers()
-            const { username, firstName, lastName, id } = useUserData()
             watch(
-                () => props.queryText,
+                () => queryText.value,
                 () => {
                     handleSearch(queryText.value)
                 }
             )
-            const userList = computed(() => {
-                if (queryText.value !== '') {
-                    return [...list.value]
-                }
-                const tempList = list.value.filter(
-                    (obj) => obj.username !== username
-                )
-                return [
-                    {
-                        username,
-                        id,
-                        firstName: firstName,
-                        lastName: lastName,
-                    },
-                    ...tempList,
-                ]
-            })
 
             const disabledKeyMap = computed(() => {
                 let data = {}
@@ -182,12 +155,10 @@
                 map,
                 userList,
                 fullName,
-                username,
                 handleSearch,
                 total,
                 localValue,
                 filterTotal,
-                queryText,
                 handleChange,
                 disabledKeyMap,
             }

@@ -1,7 +1,9 @@
-import { invoke, until } from '@vueuse/core'
+// import { invoke, until } from '@vueuse/core'
 import { ref, computed, watch } from 'vue'
+// import { useRoute } from 'vue-router'
 import usePersonaService from './usePersonaService'
 import { safeArray } from '~/utils/array'
+
 
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()
@@ -29,7 +31,7 @@ watch(
     [selectedPersonaId, personaList],
     () => {
         if (selectedPersonaId.value) {
-            let t = personaList.value?.find(
+            const t = personaList.value?.find(
                 (ps) => ps.id == selectedPersonaId.value
             )
             if (!t) selectedPersona.value = undefined
@@ -37,25 +39,38 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        return
+        
     },
     { immediate: true }
 )
 // Filtered Persona List
 export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
+    let result = []
     if (searchTerm.value) {
-        return personaList.value.filter((ps) =>
+        result =  personaList.value.filter((ps) =>
             ps.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
         )
+    } else {
+        result =  personaList.value
     }
-    return personaList.value
+    return result.sort((a, b) => {
+        const current = a.displayName.toLowerCase()
+        const last = b.displayName.toLowerCase()
+        if (current < last) {
+            return -1
+        }
+        if (current > last) {
+            return 1
+        }
+        return 0
+    })
 })
 
-invoke(async () => {
-    await until(isPersonaListReady).toBe(true)
-    if (personaList.value?.length)
-        selectedPersonaId.value = personaList.value[0].id!
-})
+// invoke(async () => {
+//     await until(isPersonaListReady).toBe(true)
+//     if (personaList.value?.length)
+//         selectedPersonaId.value = personaList.value[0].id!
+// })

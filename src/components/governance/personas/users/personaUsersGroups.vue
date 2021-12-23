@@ -1,392 +1,423 @@
 <template>
-    <div>
-        <div class="flex items-center mb-6 gap-x-3">
-            <div style="width: 300px">
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    class="bg-white w-80"
-                    :placeholder="placeholder"
-                    size="bordered"
-                />
-            </div>
-            <RaisedTab v-model:active="listType" :data="tabConfig" />
-
-            <a-popover
-                placement="left"
-                v-model:visible="popoverVisible"
-                trigger="click"
-                :destroyTooltipOnHide="true"
-            >
-                <AtlanBtn
-                    color="secondary"
-                    padding="compact"
-                    data-test-id="add-users"
-                    class="items-center ml-auto"
-                    @click="() => setPopoverState(!popoverVisible)"
-                    ><span class="text-xl">+</span>
-                    <span>Add {{ listType }}</span></AtlanBtn
-                >
-                <template #content>
-                    <div
-                        class="flex flex-col items-center px-3 py-4 bg-white rounded"
-                        style="width: 270px"
+    <div class="py-6 bg-white rounded user-group-wrapper">
+        <!-- START Error State -->
+        <div
+            v-if="errorUsersGroups"
+            class="flex flex-col items-center h-full align-middle bg-white"
+        >
+            <ErrorView>
+                <div class="mt-3">
+                    <a-button
+                        size="large"
+                        type="primary"
+                        data-test-id="try-again"
+                        ghost
+                        @click="
+                            () => {
+                                getUserList()
+                                getGroupList()
+                            }
+                        "
                     >
-                        <!-- <OwnersSelector
+                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                    </a-button>
+                </div>
+            </ErrorView>
+        </div>
+        <!-- END Error State -->
+
+        <!-- END Empty state: no persona users and groups -->
+
+        <!-- START Loading state: no persona users and groups -->
+        <div
+            v-else-if="isUsersLoading || isGroupsLoading"
+            class="flex items-center justify-center loading-view"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-7 animate-spin"
+            ></AtlanIcon>
+        </div>
+        <!-- END Loading state: no persona users and groups -->
+
+        <!-- START List -->
+        <div
+            v-else-if="!groupsError && !usersError"
+            class="flex flex-col h-full overflow-y-hidden"
+        >
+            <div class="flex items-center justify-between w-full px-6 mb-2">
+                <div class="flex mr-4 gap-x-2">
+                    <a-radio-group
+                        v-model:value="listType"
+                        class="flex flex-grow"
+                    >
+                        <a-radio-button value="all">All</a-radio-button>
+                        <a-radio-button value="users">Users</a-radio-button>
+                        <a-radio-button value="groups">Groups</a-radio-button>
+                    </a-radio-group>
+                </div>
+                <div>
+                    <a-popover
+                        v-model:visible="popoverVisible"
+                        placement="left"
+                        trigger="click"
+                        :destroy-tooltip-on-hide="true"
+                    >
+                        <a-button
+                            type="primary"
+                            @click="() => setPopoverState(!popoverVisible)"
+                            >Add User/Group</a-button
+                        >
+                        <!-- <AtlanBtn
+                            color="primary"
+                            padding="compact"
+                            :size="'sm'"
+                            data-test-id="add-users"
+                            class="items-center px-6 ml-auto"
+                            ><AtlanIcon icon="Add"></AtlanIcon>
+                            <span>Add </span></AtlanBtn
+                        > -->
+                        <template #content>
+                            <div
+                                class="flex flex-col items-center px-1 py-4 bg-white rounded"
+                                style="width: 270px"
+                            >
+                                <!-- <OwnersSelector
                             :no-owners-assigned="false"
                             :enableTabs="enableTabs"
                             :data="userGroupData"
                             @change="handleUsersChange"
                         /> -->
-                        <OwnersSelector
-                            :showNone="false"
-                            :enableTabs="enableTabs"
-                            selectGroupKey="id"
-                            selectUserKey="id"
-                            :hideDisabledTabs="true"
-                            v-model:modelValue="userGroupData"
-                        />
-                        <div class="w-full mt-2">
-                            <!-- When both tab visible -->
-                            <div
-                                v-if="enableTabs.length == 2"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{
-                                        `${userGroupData.ownerUsers?.length} user(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="
-                                        userGroupData.ownerUsers?.length &&
-                                        userGroupData.ownerGroups?.length
-                                    "
-                                    >{{ `&nbsp;&` }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{
-                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="
-                                        userGroupData.ownerGroups?.length > 0 ||
-                                        userGroupData.ownerUsers?.length > 0
-                                    "
-                                    >{{ `&nbsp;selected` }}</span
-                                >
+                                <OwnersSelector
+                                    v-model:modelValue="userGroupData"
+                                    :show-none="false"
+                                    :enable-tabs="enableTabs"
+                                    select-group-key="id"
+                                    select-user-key="id"
+                                    :hide-disabled-tabs="true"
+                                />
+                                <div class="w-full">
+                                    <div class="flex justify-around">
+                                        <AtlanBtn
+                                            size="sm"
+                                            color="secondary"
+                                            padding="compact"
+                                            class="w-26"
+                                            style="width: 80px"
+                                            data-test-id="cancel-owners"
+                                            @click="handleCancel"
+                                            >Cancel</AtlanBtn
+                                        >
+                                        <AtlanBtn
+                                            size="sm"
+                                            :disabled="addUsersLoading"
+                                            class="flex items-center"
+                                            color="primary"
+                                            padding="compact"
+                                            style="width: 80px"
+                                            @click="handleUpdate"
+                                        >
+                                            <AtlanIcon
+                                                v-if="addUsersLoading"
+                                                icon="CircleLoader"
+                                                style="margin-right: 2.5px"
+                                                data-test-id="add-owners"
+                                                class="w-4 h-4 animate-spin"
+                                            ></AtlanIcon>
+                                            <span>Update</span></AtlanBtn
+                                        >
+                                    </div>
+                                </div>
                             </div>
-                            <!-- -------------- -->
-                            <!-- When only user tab visible -->
-                            <div
-                                v-if="enableTabs[0] === 'users'"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{
-                                        `${userGroupData.ownerUsers?.length} user(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{ `&nbsp;selected` }}</span
-                                >
-                            </div>
-                            <!-- ------------------- -->
-                            <!-- When only group tab visible -->
-                            <div
-                                v-if="enableTabs[0] === 'groups'"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{
-                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{ `&nbsp;selected` }}</span
-                                >
-                            </div>
-                            <!-- -------------- -->
-                            <div class="flex justify-between mt-2">
-                                <AtlanBtn
-                                    size="sm"
-                                    @click="handleCancel"
-                                    color="secondary"
-                                    padding="compact"
-                                    class="w-26"
-                                    style="width: 80px"
-                                    data-test-id="cancel-owners"
-                                    >Cancel</AtlanBtn
-                                >
-                                <AtlanBtn
-                                    @click="handleUpdate"
-                                    size="sm"
-                                    :disabled="addUsersLoading"
-                                    class="flex items-center"
-                                    color="primary"
-                                    padding="compact"
-                                    style="width: 80px"
-                                >
-                                    <AtlanIcon
-                                        v-if="addUsersLoading"
-                                        icon="CircleLoader"
-                                        style="margin-right: 2.5px"
-                                        data-test-id="add-owners"
-                                        class="w-4 h-4 animate-spin"
-                                    ></AtlanIcon>
-                                    <span>Update</span></AtlanBtn
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </a-popover>
-        </div>
-        <div
-            v-if="
-                ![USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
-                    userState
-                )
-            "
-        >
-            <!-- USER TABLE START -->
-            <a-table
-                v-if="filteredList && listType === 'users'"
-                id="userList"
-                :key="persona.id"
-                class="border rounded border-300 persona-user-group-table"
-                :scroll="{ y: 'calc(100vh - 20rem)' }"
-                :table-layout="'fixed'"
-                :data-source="filteredList"
-                :columns="userColumns"
-                :row-key="(user) => user.id"
-                data-test-id="user-table"
-                :loading="
-                    [USER_STATES.PENDING].includes(userState) ||
-                    [USER_STATES.VALIDATING].includes(userState)
-                "
-                @change="handleUsersTableChange"
-            >
-                <template #headerCell="{ title, column }">
-                    <div class="flex justify-center">
-                        <span>{{ title }}</span>
-                    </div>
-                </template>
-                <template #name="{ text: user }">
-                    <div
-                        class="flex items-center align-middle"
-                        :data-test-id="user.username"
-                    >
-                        <avatar
-                            :image-url="imageUrl(user.username)"
-                            :allow-upload="false"
-                            :avatar-name="
-                                user.name ||
-                                user.username ||
-                                user.email ||
-                                user.firstName + user.lastName
-                            "
-                            :avatar-size="40"
-                            class="mr-2"
-                        />
-                        <div
-                            class="truncate cursor-pointer"
-                            @click="
-                                () => {
-                                    showUserPreviewDrawer(user)
-                                }
-                            "
-                        >
-                            <span class="text-primary">{{
-                                user.name || '-'
-                            }}</span>
-                            <p class="mb-0 truncate text-gray">
-                                @{{ user.username || '-' }}
-                            </p>
-                        </div>
-                    </div>
-                </template>
-                <template #role="{ text: user }">
-                    <div
-                        :data-test-id="user.role_object.name"
-                        class="inline-flex items-center px-2 py-0.5 rounded text-gray-500"
-                    >
-                        <div>{{ user.role_object.name || '-' }}</div>
-                    </div>
-                </template>
-                <template #actions="{ text: user }">
-                    <a-button-group>
-                        <a-tooltip placement="top">
-                            <template #title>
-                                <span>Remove User</span>
-                            </template>
-                            <a-popconfirm
-                                placement="leftTop"
-                                overlay-class-name="popoverConfirm"
-                                :title="
-                                    getPopoverContent(user, 'remove', 'user')
-                                "
-                                ok-text="Yes"
-                                :ok-type="'default'"
-                                cancel-text="Cancel"
-                                @confirm="confirmPopover(user, 'user')"
-                            >
-                                <a-button
-                                    size="small"
-                                    data-test-id="remove-user"
-                                    class="ml-3.5 w-8 h-8 rounded"
-                                >
-                                    <AtlanIcon icon="RemoveUser"></AtlanIcon>
-                                </a-button>
-                            </a-popconfirm>
-                        </a-tooltip>
-                    </a-button-group>
-                </template>
-            </a-table>
-        </div>
-        <div
-            v-else-if="
-                listType === 'users' &&
-                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
-                    userState
-                )
-            "
-            class="flex flex-col items-center h-full align-middle bg-white"
-        >
-            <ErrorView>
-                <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        data-test-id="try-again"
-                        ghost
-                        @click="getUserList()"
-                    >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
+                        </template>
+                    </a-popover>
                 </div>
-            </ErrorView>
-        </div>
-
-        <!-- USER TABLE END -->
-        <div
-            v-if="
-                ![GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
-                )
-            "
-        >
-            <a-table
-                v-if="filteredList && listType === 'groups'"
-                id="groupList"
-                :key="persona.id"
-                class="persona-user-group-table"
-                :scroll="{ y: 'calc(100vh - 20rem)' }"
-                :table-layout="'fixed'"
-                data-test-id="group-table"
-                :data-source="filteredList"
-                :columns="groupColumns"
-                :row-key="(group) => group.id"
-                :loading="
-                    [GROUP_STATES.PENDING].includes(groupState) ||
-                    [GROUP_STATES.VALIDATING].includes(groupState)
-                "
-                @change="handleGroupsTableChange"
+            </div>
+            <div class="px-6">
+                <SearchAndFilter
+                    v-model:value="queryText"
+                    class="mt-3 mb-2 bg-white"
+                    :placeholder="placeholder"
+                    size="minimal"
+                />
+            </div>
+            <div
+                class="flex-grow px-6 overflow-y-auto"
+                v-if="filteredList && filteredList.length"
             >
-                <template #headerCell="{ title, column }">
-                    <div class="flex justify-center">
-                        <span>{{ title }}</span>
-                    </div>
-                </template>
-                <template #group="{ text: group }">
+                <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
                     <div
-                        class="flex items-center align-middle"
-                        :data-test-id="group.alias"
+                        v-for="item in filteredList"
+                        :key="item.alias || item.username"
                     >
-                        <avatar
-                            :image-url="imageUrl(group.alias)"
-                            :allow-upload="false"
-                            :avatar-name="group.alias"
-                            :avatar-size="40"
-                            class="mr-2"
-                        />
-                        <div
-                            class="truncate cursor-pointer"
-                            @click="
-                                () => {
-                                    showGroupPreviewDrawer(group)
-                                }
-                            "
-                        >
-                            <span class="text-primary">{{
-                                group.alias || '-'
-                            }}</span>
-                            <p class="mb-0 truncate text-gray">
-                                @{{ group.alias || '-' }}
-                            </p>
+                        <div class="py-2 rounded">
+                            <!--user-->
+                            <div
+                                v-if="item.username"
+                                class="grid items-center w-full grid-cols-12"
+                            >
+                                <div class="col-span-6">
+                                    <div class="flex items-center align-middle">
+                                        <avatar
+                                            :image-url="imageUrl(item.username)"
+                                            :allow-upload="false"
+                                            :avatar-name="
+                                                item.name ||
+                                                item.username ||
+                                                item.email ||
+                                                item.firstName + item.lastName
+                                            "
+                                            :avatar-size="38"
+                                            avatar-shape="circle"
+                                            class="mr-2"
+                                        />
+                                        <div
+                                            class="flex flex-col"
+                                            :data-test-id="item.username"
+                                        >
+                                            <div
+                                                class="truncate cursor-pointer"
+                                                @click="
+                                                    () => {
+                                                        showUserPreviewDrawer(
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                            >
+                                                <span class="text-primary">{{
+                                                    item.name ||
+                                                    item.username ||
+                                                    item.email ||
+                                                    '-'
+                                                }}</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">
+                                                @{{ item.username }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-3">
+                                    <span
+                                        v-if="item?.role_object?.name"
+                                        :data-test-id="item.role_object.name"
+                                        class="text-gray-500"
+                                    >
+                                        <span>
+                                            {{ item.role_object.name || '-' }}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="col-span-3">
+                                    <a-tooltip placement="bottom">
+                                        <template #title>
+                                            <span>Remove User</span>
+                                        </template>
+                                        <a-popover
+                                            placement="leftTop"
+                                            trigger="click"
+                                            :destroy-tooltip-on-hide="true"
+                                            :visible="
+                                                showRemoveUserPopover[item.id]
+                                            "
+                                        >
+                                            <template #content>
+                                                <div class="p-4">
+                                                    <h3
+                                                        v-html="
+                                                            getPopoverContent(
+                                                                item,
+                                                                'remove',
+                                                                'user'
+                                                            )
+                                                        "
+                                                    ></h3>
+                                                    <div
+                                                        class="flex items-center justify-between mt-3 gap-x-3"
+                                                    >
+                                                        <div
+                                                            class="flex-grow"
+                                                        ></div>
+                                                        <AtlanBtn
+                                                            color="minimal"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            @click="
+                                                                showRemoveUserPopover[
+                                                                    item.id
+                                                                ] = false
+                                                            "
+                                                            >Cancel
+                                                        </AtlanBtn>
+                                                        <AtlanBtn
+                                                            :color="'danger'"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            :is-loading="
+                                                                addUsersLoading
+                                                            "
+                                                            :disabled="
+                                                                addUsersLoading
+                                                            "
+                                                            @click="
+                                                                confirmPopover(
+                                                                    item,
+                                                                    'user'
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                addUsersLoading
+                                                                    ? 'Removing'
+                                                                    : 'Remove'
+                                                            }}
+                                                        </AtlanBtn>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div
+                                                class="text-right text-red-500 cursor-pointer"
+                                            >
+                                                Remove
+                                            </div>
+                                        </a-popover>
+                                    </a-tooltip>
+                                </div>
+                            </div>
+
+                            <!--group-->
+                            <div
+                                v-if="item.alias"
+                                class="grid items-center w-full grid-cols-12"
+                            >
+                                <div class="col-span-6">
+                                    <div
+                                        class="flex items-center align-middle"
+                                        :data-test-id="item.alias"
+                                    >
+                                        <div
+                                            class="flex items-center self-center justify-center mr-2 align-middle rounded-full bg-primary-light text-primary"
+                                            style="height: 38px; width: 38px"
+                                        >
+                                            <AtlanIcon
+                                                icon="GroupStatic"
+                                            ></AtlanIcon>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <div
+                                                class="truncate cursor-pointer"
+                                                @click="
+                                                    () => {
+                                                        showGroupPreviewDrawer(
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                            >
+                                                <span class="text-primary">{{
+                                                    item.name || '-'
+                                                }}</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">
+                                                {{
+                                                    item.memberCountString
+                                                }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-3 text-gray-500">
+                                    Group
+                                </div>
+                                <div class="col-span-3">
+                                    <a-tooltip placement="bottom">
+                                        <template #title>
+                                            <span>Remove group</span>
+                                        </template>
+                                        <a-popover
+                                            placement="leftTop"
+                                            trigger="click"
+                                            :destroy-tooltip-on-hide="true"
+                                            :visible="
+                                                showRemoveUserPopover[item.id]
+                                            "
+                                        >
+                                            <template #content>
+                                                <div class="p-4">
+                                                    <h3
+                                                        v-html="
+                                                            getPopoverContent(
+                                                                item,
+                                                                'remove',
+                                                                'group'
+                                                            )
+                                                        "
+                                                    ></h3>
+                                                    <div
+                                                        class="flex items-center justify-between mt-3 gap-x-3"
+                                                    >
+                                                        <div
+                                                            class="flex-grow"
+                                                        ></div>
+                                                        <AtlanBtn
+                                                            color="minimal"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            @click="
+                                                                showRemoveUserPopover[
+                                                                    item.id
+                                                                ] = false
+                                                            "
+                                                            >Cancel
+                                                        </AtlanBtn>
+                                                        <AtlanBtn
+                                                            :color="'danger'"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            :is-loading="
+                                                                addUsersLoading
+                                                            "
+                                                            :disabled="
+                                                                addUsersLoading
+                                                            "
+                                                            @click="
+                                                                confirmPopover(
+                                                                    item,
+                                                                    'group'
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                addUsersLoading
+                                                                    ? 'Removing'
+                                                                    : 'Remove'
+                                                            }}
+                                                        </AtlanBtn>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div
+                                                class="text-right text-red-500 cursor-pointer"
+                                            >
+                                                Remove
+                                            </div>
+                                        </a-popover>
+                                    </a-tooltip>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </template>
-
-                <template #actions="{ text: group }">
-                    <a-button-group>
-                        <a-tooltip placement="top">
-                            <template #title>
-                                <span>Remove group</span>
-                            </template>
-                            <a-popconfirm
-                                placement="leftTop"
-                                overlay-class-name="popoverConfirm"
-                                :title="
-                                    getPopoverContent(group, 'remove', 'group')
-                                "
-                                ok-text="Yes"
-                                :ok-type="'default'"
-                                cancel-text="Cancel"
-                                @confirm="confirmPopover(group, 'group')"
-                            >
-                                <a-button
-                                    size="small"
-                                    class="ml-3.5 w-8 h-8 rounded"
-                                >
-                                    <AtlanIcon
-                                        icon="RemoveUser"
-                                    ></AtlanIcon> </a-button
-                            ></a-popconfirm>
-                        </a-tooltip>
-                    </a-button-group>
-                </template>
-            </a-table>
-        </div>
-        <div
-            v-else-if="
-                listType === 'groups' &&
-                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
-                )
-            "
-            class="flex flex-col items-center h-full align-middle bg-white"
-        >
-            <ErrorView>
-                <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        data-test-id="try-again"
-                        ghost
-                        @click="getGroupList()"
-                    >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
                 </div>
-            </ErrorView>
+            </div>
+            <EmptyView
+                v-else-if="!filteredList.length"
+                empty-screen="NoResultIllustration"
+                desc="No results found"
+            >
+            </EmptyView>
         </div>
+        <!-- END List -->
     </div>
 </template>
 
@@ -400,13 +431,13 @@
         toRefs,
         watch,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
-
-    import AtlanBtn from '@/UI/button.vue'
-    import RaisedTab from '@/UI/raisedTab.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyView from '@common/empty/index.vue'
     import OwnersSelector from '@common/facet/owners/index.vue'
+    import ErrorView from '@common/error/index.vue'
+    import Loader from '@common/loaders/page.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -414,24 +445,22 @@
     import usePersonaGroups from '../composables/usePersonaGroups'
     import usePersonaService from '../composables/usePersonaService'
     import Avatar from '~/components/common/avatar/avatar.vue'
-    import ErrorView from '@common/error/index.vue'
-    import { reFetchList } from '../composables/usePersonaList'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
-
-    import {
-        isEditing,
-        selectedPersonaDirty,
-    } from '../composables/useEditPersona'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { IGroup, IUser } from '~/types/accessPolicies/personas'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
         components: {
             Avatar,
             AtlanBtn,
-            RaisedTab,
             SearchAndFilter,
             OwnersSelector,
             ErrorView,
+            EmptyView,
+            AggregationTabs,
+            Loader,
         },
         props: {
             persona: {
@@ -439,17 +468,11 @@
                 required: true,
             },
         },
-        emits: ['delete'],
-        setup(props, { emit }) {
+        setup(props) {
+            const showRemoveUserPopover = ref({})
             const { persona } = toRefs(props)
-            console.log(persona, 'persona')
-            const listType: Ref<'users' | 'groups'> = ref('users')
-            const enableTabs = computed(() => [listType.value])
-
-            const tabConfig = [
-                { key: 'users', label: 'Users' },
-                { key: 'groups', label: 'Groups' },
-            ]
+            const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
+            const enableTabs = computed(() => ['users', 'groups'])
 
             const queryText = ref('')
             const popoverVisible = ref(false)
@@ -460,25 +483,74 @@
             const { updateUsers } = usePersonaService()
             const {
                 getUserList,
-                userListAPIParams,
                 STATES: USER_STATES,
                 state: userState,
                 userList,
+                isLoading: isUsersLoading,
+                error: usersError,
             } = usePersonaUserList(persona)
             const {
                 getGroupList,
                 STATES: GROUP_STATES,
                 state: groupState,
                 groupList,
+                isLoading: isGroupsLoading,
+                error: groupsError,
             } = usePersonaGroupList(persona)
 
             const filteredList = computed(() => {
                 const qry = queryText.value
+                if (listType.value === 'all') {
+                    let filteredUsersList: IUser[] = []
+                    let filteredGroupsList: IGroup[] = []
+                    // filter by search text
+                    if (queryText.value) {
+                        filteredUsersList = userList.value.filter(
+                            (usr) =>
+                                usr?.lastName
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase()) ||
+                                usr?.firstName
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase()) ||
+                                usr?.username
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase())
+                        )
+                        filteredGroupsList = groupList.value.filter((group) =>
+                            group?.name
+                                ?.toLowerCase()
+                                .includes(qry.toLowerCase())
+                        )
+                    } else {
+                        filteredUsersList = [...userList.value]
+                        filteredGroupsList = [...groupList.value]
+                    }
+                    // sort list alphabetically
+                    if (filteredGroupsList && filteredGroupsList.length)
+                        filteredGroupsList.sort((gp1, gp2) =>
+                            gp1.name < gp2.name
+                                ? -1
+                                : gp1.name > gp2.name
+                                ? 1
+                                : 0
+                        )
+                    if (filteredUsersList && filteredUsersList.length)
+                        filteredUsersList.sort((user1, user2) =>
+                            user1.firstName < user2.firstName
+                                ? -1
+                                : user1.firstName > user2.firstName
+                                ? 1
+                                : 0
+                        )
+
+                    // return collated list
+                    return [...filteredGroupsList, ...filteredUsersList] || []
+                }
                 if (listType.value === 'users') {
                     if (queryText.value)
                         return userList.value.filter(
                             (usr) =>
-                                usr.email?.toLowerCase().includes(qry) ||
                                 usr.lastName?.toLowerCase().includes(qry) ||
                                 usr.firstName?.toLowerCase().includes(qry) ||
                                 usr.username?.toLowerCase().includes(qry)
@@ -494,15 +566,48 @@
                 }
                 return []
             })
-
-            const placeholder = computed(
-                () =>
-                    `Search from ${
+            const tabConfig = computed(() => [
+                {
+                    id: 'all',
+                    label: 'All',
+                    hideIcon: true,
+                    showZero: true,
+                    count:
+                        (userList?.value?.length || 0) +
+                            (groupList?.value?.length || 0) ?? 0,
+                },
+                {
+                    id: 'users',
+                    label: 'Users',
+                    showZero: true,
+                    disabled: !userList?.value?.length,
+                    count: userList?.value?.length ?? 0,
+                },
+                {
+                    id: 'groups',
+                    label: 'Groups',
+                    showZero: true,
+                    disabled: !groupList?.value?.length,
+                    count: groupList?.value?.length ?? 0,
+                },
+            ])
+            const placeholder = computed(() => {
+                if (listType.value !== 'all')
+                    return `Search from ${
                         listType.value === 'users'
                             ? userList.value.length
                             : groupList.value.length
                     } ${listType.value}`
-            )
+
+                if (userList.value.length && groupList.value.length)
+                    return `Search from ${userList.value.length} users and ${groupList.value.length} groups`
+                if (userList.value.length)
+                    return `Search from ${userList.value.length} users`
+                if (groupList.value.length)
+                    return `Search from ${groupList.value.length} groups`
+
+                return ''
+            })
 
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -561,19 +666,16 @@
                 user: any,
                 action: 'remove',
                 type: 'user' | 'group'
-            ) => {
-                return `Are you sure you want to ${action} ${
+            ) =>
+                `Are you sure you want to ${action} <b>${
                     user.name || user.username || user.email || ''
-                }?`
-            }
+                }</b>?`
 
             const confirmPopover = (
                 userOrGroup: any,
                 type: 'user' | 'group'
             ) => {
                 addUsersLoading.value = true
-
-                // console.log(persona.value, 'persona')
                 let updatedUsersIds = userGroupData.value.ownerUsers ?? []
                 let updatedGroupIds = userGroupData.value.ownerGroups ?? []
                 if (type === 'user') {
@@ -596,10 +698,10 @@
                     groups: updatedGroupIds,
                 })
                     .then(() => {
+                        showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
-
                         getUserList()
                         getGroupList()
                     })
@@ -615,35 +717,11 @@
                                 userOrGroup.alias,
                             ]
                         }
+                        showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         message.error('Failed to add users')
                         console.log('Failed to add users', e)
                     })
-            }
-
-            /* Users related functions */
-            const handleUsersTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                if (Object.keys(sorter).length) {
-                    let sortValue = 'firstName'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    userListAPIParams.value.sort = sortValue
-                }
-                getUserList()
-            }
-            /* Group related functions */
-            const handleGroupsTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                getGroupList()
             }
 
             // BEGIN: GROUP PREVIEW
@@ -665,6 +743,20 @@
             watch(persona, () => {
                 userGroupData.value.ownerUsers = persona.value.users ?? []
                 userGroupData.value.ownerGroups = persona.value.groups ?? []
+            })
+
+            const errorUsersGroups = computed(() => {
+                if (usersError.value) {
+                    if (usersError.value.message.includes('cancel')) {
+                        return false
+                    }
+                }
+                if (groupsError.value) {
+                    if (groupsError.value.message.includes('cancel')) {
+                        return false
+                    }
+                }
+                return usersError.value || groupsError.value
             })
 
             return {
@@ -691,14 +783,28 @@
                 listType,
                 userColumns,
                 imageUrl,
-                handleGroupsTableChange,
                 showUserPreviewDrawer,
                 userGroupData,
                 groupColumns,
                 groupList,
-                /* Users */
-                handleUsersTableChange,
+                isGroupsLoading,
+                isUsersLoading,
+                usersError,
+                groupsError,
+                showRemoveUserPopover,
+                errorUsersGroups,
             }
         },
     })
 </script>
+<style lang="less" scoped>
+    .list-wrapper {
+        height: 20rem;
+    }
+    .loading-view {
+        min-height: 10rem;
+    }
+    .user-group-wrapper {
+        height: 30rem;
+    }
+</style>

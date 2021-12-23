@@ -1,7 +1,7 @@
 <template>
-    <div class="add-policy-container">
+    <div class="relative add-policy-container">
         <div>
-            <div class="relative p-5 border-b border-bottom border-slate-300">
+            <div class="relative px-4 pt-5 pb-5">
                 <div
                     v-if="showDrawer"
                     class="close-btn-add-policy"
@@ -9,11 +9,21 @@
                 >
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
-                <div class="flex justify-between">
-                    <div class="text-lg font-bold">New policy</div>
-                </div>
                 <div class="flex items-center">
-                    <AtlanIcon icon="Policies" class="mr-1" />
+                    <AtlanIcon v-if="type === 'meta'" icon="Settings" />
+                    <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
+                    <span class="ml-1 font-semibold"
+                        >{{
+                            policyType === 'meta'
+                                ? 'Metadata Policy'
+                                : 'Data Policy'
+                        }}
+                    </span>
+                    <!-- <div class="ml-1 font-semibold">
+                        {{ isEdit ? selectedPolicy.name : 'New policy' }}
+                    </div> -->
+                </div>
+                <!-- <div class="flex items-center">
                     <span class="mr-1 text-neutral-600"
                         >{{
                             policyType === 'meta'
@@ -25,12 +35,12 @@
                     <span class="text-neutral-600">
                         {{ persona?.displayName }}
                     </span>
-                </div>
+                </div> -->
             </div>
-            <div class="p-5">
-                <div class="relative mt-4">
+            <div class="px-4">
+                <div class="relative">
                     <div class="relative mb-2 text-sm text-gray-500 required">
-                        Policy name <span class="text-red-500">*</span>
+                        Name of the Policy<span class="text-red-500">*</span>
                     </div>
                     <div v-if="isEdit ? canEdit : true">
                         <a-input
@@ -42,6 +52,7 @@
                             v-model:value="policy.name"
                             data-test-id="policy-edit-name"
                             placeholder="Policy Name"
+                            @change="() => (rules.policyName.show = false)"
                             @blur="
                                 () => {
                                     if (!policy.name)
@@ -60,25 +71,26 @@
                         {{ rules.policyName.text }}
                     </div>
                 </div>
-                <div class="relative mt-7">
+                <div class="relative mt-5">
                     <div class="mb-2 text-sm text-gray-500 required">
-                        Connection <span class="text-red-500">*</span>
+                        Select a connection <span class="text-red-500">*</span>
                     </div>
                     <Connector
-                        :footerNodeContent="'You can only view the connections in which you’re added as the owner.'"
-                        :whitelistedConnections="
-                            isEdit ? null : whitelistedConnectionIds
-                        "
-                        :showEmptyParents="isEdit ? true : false"
                         :ref="
                             (el) => {
                                 connectorComponentRef = el
                             }
                         "
                         v-model:data="connectorData"
+                        :footer-node-content="'You can only view the connections in which you’re added as the owner.'"
+                        :whitelisted-connections="
+                            isEdit ? null : whitelistedConnectionIds
+                        "
+                        :show-empty-parents="isEdit ? true : false"
                         class="mb-6"
+                        :class="isEdit ? 'edit-connector' : ''"
                         :disabled="isEdit"
-                        @change="handleConnectorChange"
+                        @changeConnector="handleConnectorChange"
                         @blur="
                             () => {
                                 if (!connectorData.attributeValue)
@@ -95,91 +107,95 @@
                         {{ rules.connection.text }}
                     </div>
                 </div>
-                <div class="mt-5">
-                    <div class="flex justify-between">
+                <div v-if="connectorData.attributeValue" class="mt-5">
+                    <div class="flex items-center justify-between">
                         <div class="text-gray-500">
-                            Asset <span class="text-red-500">*</span>
+                            Select assets
+
+                            <span v-if="policyType === 'data'" class=""
+                                >to allow <b>Query</b>
+                            </span>
+                            <span class="text-red-500">*</span>
                         </div>
                         <div
-                            v-if="!isAddAll && isEdit ? canEdit : true"
-                            class="flex"
+                            v-if="isEdit ? canEdit : true"
+                            class="flex gap-x-1"
                         >
-                            <AtlanBtn
-                                class="flex-none"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                                @click="handleAddAsset"
-                            >
-                                <span class="text-primary"> Custom select</span>
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="ml-1 text-primary"
-                                />
-                            </AtlanBtn>
-                            <span
-                                v-if="policy.assets.length === 0"
-                                class="pt-2 pl-1 pr-1 text-xs text-gray-500 bg-gray-100"
-                                >OR</span
-                            >
-                            <AtlanBtn
-                                v-if="policy.assets.length === 0"
-                                class="flex-none"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
+                            <a-button
+                                v-if="!isAddAll"
+                                size="small"
+                                :disabled="!connectorData.attributeValue"
                                 @click="addConnectionAsset"
                             >
-                                <span class="text-primary"> Add All </span>
+                                <span class="text-primary">
+                                    Include all assets</span
+                                >
+                            </a-button>
+                            <a-button
+                                v-if="!isAddAll && policy.assets.length > 0"
+                                size="small"
+                                @click="handleAddAsset"
+                            >
+                                <span class="text-primary"> Add</span>
                                 <AtlanIcon
-                                    icon="Add"
+                                    icon="ArrowRight"
                                     class="ml-1 text-primary"
                                 />
-                            </AtlanBtn>
+                            </a-button>
                         </div>
                     </div>
+
                     <div
-                        v-if="policy.assets?.length === 0"
-                        class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
-                    >
-                        <span class="p-2 text-xs text-gray-500">
-                            Select the assets your policy should apply to, or
-                            <strong>Add All</strong> to apply the policy to all
-                            assets
-                        </span>
-                    </div>
-                    <div
-                        v-else
-                        class="p-2 mt-1 border border-solid border-bottom border-slate-300"
+                        class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border border-dashed rounded border-bottom border-slate-300 max-h-32"
                     >
                         <div
                             v-for="asset in policy.assets"
                             :key="asset"
-                            class="flex items-center justify-between p-1 wrapper-asset"
+                            class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded wrapper-asset"
                             :class="
-                                isEdit
-                                    ? canEdit
-                                    : true
-                                    ? 'hover:bg-primary-light cursor-pointer'
-                                    : ''
+                                disabledForm
+                                    ? ''
+                                    : 'hover:bg-primary-light cursor-pointer'
                             "
                         >
                             <span class="asset-name">
                                 {{ splitName(asset) }}
                             </span>
-                            <AtlanBtn
+
+                            <!-- <AtlanBtn
+                                v-if="isEdit ? canEdit : true"
                                 class="flex-none btn-delete-asset"
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
+                               
+                            > -->
+                            <AtlanIcon
+                                v-if="!disabledForm"
+                                icon="Cross"
+                                class="h-3 ml-3 text-red-500 rotate-45"
                                 @click="handleDeleteAsset(asset)"
-                                v-if="isEdit ? canEdit : true"
+                            />
+                        </div>
+                        <div
+                            v-if="
+                                isEdit
+                                    ? canEdit
+                                    : true && policy.assets.length === 0
+                            "
+                            class="flex gap-x-1"
+                        >
+                            <a-button
+                                v-if="!isAddAll && policy.assets.length === 0"
+                                size="small"
+                                @click="handleAddAsset"
                             >
+                                <span class="text-primary"> Add</span>
                                 <AtlanIcon
-                                    icon="Add"
+                                    icon="ArrowRight"
                                     class="ml-1 text-primary"
                                 />
-                            </AtlanBtn>
+                            </a-button>
                         </div>
                     </div>
                     <div
@@ -190,42 +206,63 @@
                         {{ rules.assets.text }}
                     </div>
                 </div>
-                <div v-if="policyType === 'meta'" class="mt-5">
+                <div
+                    v-if="policyType === 'meta' && connectorData.attributeValue"
+                    class="mt-5"
+                >
                     <div class="flex justify-between">
                         <div class="text-gray-500">
-                            Permissions <span class="text-red-500">*</span>
+                            Select permissions
+                            <span class="text-red-500">*</span>
                         </div>
-                        <AtlanBtn
-                            class="flex-none"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
+                        <a-button
+                            v-if="
+                                isEdit
+                                    ? canEdit
+                                    : true && selectedPermission.length > 0
+                            "
+                            size="small"
+                            class="text-primary"
+                            :disabled="!connectorData.attributeValue"
                             @click="handleToggleManage"
-                            v-if="isEdit ? canEdit : true"
                         >
-                            <span class="text-primary"> Manage </span>
+                            Edit
                             <AtlanIcon
                                 icon="ArrowRight"
                                 class="ml-1 text-primary"
                             />
-                        </AtlanBtn>
+                        </a-button>
                     </div>
+
                     <div
-                        class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
+                        class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
                     >
-                        <span
-                            v-if="selectedPermition.length === 0"
-                            class="p-2 text-xs text-gray-500"
-                        >
-                            Select from set of permissions for your policy
+                        <span v-if="selectedPermission.length === 0">
+                            <a-button
+                                v-if="isEdit ? canEdit : true"
+                                size="small"
+                                class="text-primary"
+                                @click="handleToggleManage"
+                            >
+                                Edit
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                            </a-button>
                         </span>
                         <div v-else>
                             <div
-                                v-for="el in selectedPermition"
+                                v-for="el in selectedPermission"
                                 :key="el"
-                                class="tag-permission"
+                                class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                             >
-                                {{ el }}
+                                <div class="text-gray-500 title-tag">
+                                    {{ el.title }}
+                                </div>
+                                <div class="font-mono tracking-wide value-tag">
+                                    {{ el.value }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -237,50 +274,63 @@
                         {{ rules.metadata.text }}
                     </div>
                 </div>
-                <div v-else>
-                    <div class="flex items-center mt-7 gap-x-1">
-                        <AtlanIcon class="text-gray-500" icon="Lock" />
+                <div
+                    v-if="policyType === 'data' && connectorData.attributeValue"
+                >
+                    <!-- <div class="flex flex-col mt-7 gap-y-2">
+                        <div class="flex gap-1">
+                            <AtlanIcon class="text-gray-500" icon="Lock" />
+                            <span class="text-sm text-gray-500"
+                                >Query permissions</span
+                            >
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <AtlanIcon
+                                class="h-3 mt-1 text-gray-500"
+                                icon="RunSuccess"
+                            />
+                            <span class="text-sm text-gray-500"
+                                >Query access allowed by default</span
+                            >
+                        </div>
+                    </div> -->
+                    <div class="flex items-center mt-3 mb-2 gap-x-1">
                         <span class="text-sm text-gray-500"
-                            >Query permissions</span
+                            >Masking(Optional)</span
                         >
-                        <AtlanIcon
-                            class="h-3 ml-2 text-gray-500"
-                            icon="RunSuccess"
-                        />
-                        <span class="text-sm text-gray-500"
-                            >Query access allowed by default</span
-                        >
-                    </div>
-                    <div class="flex items-center mb-2 gap-x-1 mt-7">
-                        <span class="text-sm text-gray-500">Masking</span>
                     </div>
 
                     <DataMaskingSelector
-                        v-model:maskType="policy.maskType"
+                        v-model:maskType="policy.type"
                         class="mb-6 w-80"
                     />
                 </div>
 
                 <div
-                    class="flex items-center justify-between"
-                    v-if="isEdit ? canEdit : true"
+                    v-if="
+                        isEdit ? canEdit : true && connectorData.attributeValue
+                    "
+                    class=""
                 >
-                    <div class="mt-4">
-                        <span>Deny Permissions</span>
-                        <a-tooltip placement="right" color="white">
-                            <AtlanIcon icon="Overview" class="mx-2" />
-                            <template #title>
-                                <p class="m-3 text-gray">
-                                    This will deny the permissions you have
-                                    selected above, for all the users in the
-                                    persona, even if they had access to those
-                                    permissions via some other persona or
-                                    purpose.
-                                </p>
-                            </template>
-                        </a-tooltip>
+                    <div class="flex justify-between mt-4">
+                        <div>
+                            <span>Deny Permissions</span>
+                            <a-tooltip placement="top" color="white">
+                                <AtlanIcon icon="Overview" class="mx-2" />
+                                <template #title>
+                                    <p class="m-3 text-gray">
+                                        This will deny the permissions you have
+                                        selected above, for all the users in the
+                                        persona, even if they had access to
+                                        those permissions via some other persona
+                                        or purpose.
+                                    </p>
+                                </template>
+                            </a-tooltip>
+                        </div>
                         <a-switch
-                            :class="policy.allow ? `` : 'bg-red-700'"
+                            :class="policy.allow ? `` : 'bg-red-600'"
                             data-test-id="toggle-switch"
                             class="ml-3"
                             :checked="!policy.allow"
@@ -295,7 +345,7 @@
                 >
                     <div class="mt-4">
                         <span class="text-error">Denied Permissions</span>
-                        <a-tooltip placement="right" color="white">
+                        <a-tooltip placement="top" color="white">
                             <AtlanIcon icon="Overview" class="mx-2" />
                             <template #title>
                                 <p class="m-3 text-gray">
@@ -308,6 +358,7 @@
                         </a-tooltip>
                     </div>
                 </div>
+
                 <AssetSelectorDrawer
                     v-if="connectorData.attributeValue"
                     v-model:visible="assetSelectorVisible"
@@ -324,6 +375,7 @@
                     :visible="isShow"
                     :width="480"
                     :mask="false"
+                    :destroy-on-close="true"
                     @close="handleToggleManage"
                 >
                     <ManagePermission
@@ -335,7 +387,7 @@
                 </a-drawer>
             </div>
         </div>
-        <div class="flex button-container" v-if="isEdit ? canEdit : true">
+        <div v-if="isEdit ? canEdit : true" class="flex button-container">
             <AtlanBtn
                 size="sm"
                 padding="compact"
@@ -343,16 +395,22 @@
                 class="btn-submit"
                 @click="handleClose"
             >
-                Cancel
+                Cancel {{ policy.type }}
             </AtlanBtn>
             <AtlanBtn
                 size="sm"
                 padding="compact"
-                :disabled="isLoading"
+                :disabled="
+                    isLoading ||
+                    !connectorData.attributeValue ||
+                    !policy.name ||
+                    !policy?.assets?.length ||
+                    (policyType === 'meta' && !selectedPermission.length)
+                "
                 class="btn-submit"
                 @click="handleSave"
             >
-                {{ isLoading ? 'Loading' : isEdit ? 'Update' : 'Save' }}
+                {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
             </AtlanBtn>
         </div>
         <div v-else-if="isEdit && !canEdit">
@@ -360,7 +418,7 @@
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're
-                    added as a owner.
+                    added as an owner.
                 </div>
             </div>
         </div>
@@ -375,6 +433,7 @@
         watch,
         toRefs,
         computed,
+        onMounted,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
@@ -452,11 +511,10 @@
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
-            const isAddAll = ref(false)
 
             const rules = ref({
                 policyName: {
-                    text: 'Enter a policy name!',
+                    text: 'Enter a policy name to identify your policy',
                     show: false,
                 },
                 connection: {
@@ -504,17 +562,43 @@
                 },
             })
             const handleConnectorChange = () => {
-                policy.value.assets = []
+                // policy.value.assets = []
+                rules.value.connection.show = false
+
+                addConnectionAsset()
             }
+
+            const isAddAll = computed(() => {
+                if (policy.value.assets.length === 1) {
+                    if (
+                        policy.value.assets[0] ===
+                        connectorData.value.attributeValue
+                    ) {
+                        return true
+                    }
+                }
+                return false
+            })
+
             const initPolicy = () => {
-                isAddAll.value = false
+                rules.value = {
+                    policyName: {
+                        text: 'Enter a policy name!',
+                        show: false,
+                    },
+                    connection: {
+                        text: 'Connection is required!',
+                        show: false,
+                    },
+                    assets: { text: 'Select atleast 1 asset!', show: false },
+                    metadata: {
+                        text: 'Select atleast 1 permissions!',
+                        show: false,
+                    },
+                }
                 if (isEdit.value) {
-                    const newArray = []
-                    selectedPolicy.value.assets.forEach((el) =>
-                        newArray.push(el)
-                    )
-                    policy.value = { ...selectedPolicy.value, assets: newArray }
-                    policyType.value = selectedPolicy.value.type
+                    policy.value = selectedPolicy.value
+                    policyType.value = type.value
                 } else {
                     policyType.value = type.value
                     if (type.value === 'meta') {
@@ -534,7 +618,7 @@
                             assets: [],
                             connectionName: '',
                             connectionId: '',
-                            maskType: 'null',
+                            type: 'null',
                             allow: true,
                             name: '',
                             description: '',
@@ -544,13 +628,12 @@
                 }
             }
             initPolicy()
-            watch(showDrawer, () => {
+            watch([showDrawer, selectedPolicy], () => {
                 if (showDrawer.value) {
                     initPolicy()
+                } else {
+                    handleClose()
                 }
-            })
-            watch(selectedPolicy, () => {
-                initPolicy()
             })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {
@@ -573,7 +656,17 @@
                         { label: connectorData.value.attributeValue },
                     ]
                     policy.value.assets = [connectorData.value.attributeValue]
-                    isAddAll.value = true
+                    policy.value.actions = [
+                        'entity-read',
+                        'entity-update',
+                        'entity-create',
+                        'entity-delete',
+                        'link-assets',
+                        'entity-update-business-metadata',
+                        'entity-update-classification',
+                        'add-terms',
+                        'remove-terms',
+                    ]
                 } else {
                     connectorComponentRef.value?.treeSelectRef?.focus()
                     rules.value.connection.show = true
@@ -583,10 +676,17 @@
                 policy.value.assets = policy.value.assets.filter(
                     (el) => el !== asset
                 )
-                isAddAll.value = false
             }
             const handleClose = () => {
-                emit('close')
+                if (assetSelectorVisible.value || isShow.value) {
+                    assetSelectorVisible.value = false
+                    isShow.value = false
+                    setTimeout(() => {
+                        emit('close')
+                    }, 180)
+                } else {
+                    emit('close')
+                }
             }
             const resetPolicy = () => {
                 initPolicy()
@@ -606,34 +706,40 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
-            const selectedPermition = computed(() => {
+            const selectedPermission = computed(() => {
                 const result = []
                 const assetsPermission = []
-                const govermence = []
+                const governance = []
                 const assetsList = scopeList[0]
-                const govermanceList = scopeList[1]
+                const governanceList = scopeList[1]
                 policy.value.actions.forEach((el) => {
                     const findedAsset = assetsList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    const findedGovrmance = govermanceList.scopes.find(
+                    const findedGovernance = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
                     if (findedAsset) {
                         assetsPermission.push(findedAsset.label)
                     }
-                    if (findedGovrmance) {
-                        govermence.push(findedGovrmance.label)
+                    if (findedGovernance) {
+                        governance.push(findedGovernance.label)
                     }
                 })
                 if (assetsPermission.length > 0) {
-                    result.push(`Assets : ${assetsPermission.join(', ')}`)
+                    result.push({
+                        title: `Assets`,
+                        value: assetsPermission.join(', '),
+                    })
                 }
-                if (govermence.length > 0) {
-                    result.push(`Governance : ${govermence.join(', ')}`)
+                if (governance.length > 0) {
+                    result.push({
+                        title: `Governance`,
+                        value: governance.join(', '),
+                    })
                 }
                 return result
             })
@@ -642,14 +748,31 @@
             }
             const splitName = (name) => {
                 const splited = name.split('/')
-                const sliced = splited.slice(2, splited.length)
+                if (splited && splited.length === 3) {
+                    // connection is selected
+                    const found = connectionStore.getList.find(
+                        (conn) => conn?.attributes?.qualifiedName === name
+                    )
+                    return 'All assets'
+                }
+                const sliced = splited.slice(3, splited.length)
                 return sliced.join('/')
             }
-            const canEdit = computed(() => {
-                return props.whitelistedConnectionIds.includes(
+            const canEdit = computed(() =>
+                props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
+            )
+            onMounted(() => {
+                window.addEventListener('keydown', (keyDown) => {
+                    if (keyDown.keyCode === 27) {
+                        handleClose()
+                    }
+                })
             })
+            const disabledForm = computed(
+                () => !!(isEdit.value && !canEdit.value)
+            )
             return {
                 selectedPersonaDirty,
                 rules,
@@ -670,17 +793,27 @@
                 showDrawer,
                 resetPolicy,
                 handleSave,
-                selectedPermition,
+                selectedPermission,
                 policyType,
                 splitName,
                 handleChangeAssets,
                 canEdit,
+                disabledForm,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .drawerAddAsset {
+        .container-schema-tree {
+            max-height: max-content !important;
+        }
+        .wrapper-asset-tree {
+            height: calc(100vh - 14rem) !important;
+            padding-bottom: 30px !important;
+        }
+    }
     .add-policy-container {
         height: 100vh;
         display: flex;
@@ -725,16 +858,25 @@
         cursor: pointer;
     }
     .tag-permission {
-        padding: 4px 8px;
-        padding-top: 0px;
-        background-color: #f3f3f3;
         text-transform: capitalize;
-        margin-top: 4px;
     }
     .dot {
         height: 4px;
         width: 4px;
         background-color: #e6e6eb;
         border-radius: 50%;
+    }
+    .edit-connector {
+        .ant-select-arrow {
+            display: none !important;
+        }
+        .selected-connetor {
+            color: #3e4359;
+        }
+        .ant-select-selector {
+            border: none !important;
+            box-shadow: none !important;
+            cursor: default;
+        }
     }
 </style>

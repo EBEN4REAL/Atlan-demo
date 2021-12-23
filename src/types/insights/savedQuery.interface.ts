@@ -12,6 +12,8 @@ export type Attributes = {
     certificateUpdatedBy?: string
     ownerUsers?: string
     ownerGroups?: string
+    adminUsers?: string
+    adminGroups?:string
     viewerUsers?: string
     viewerGroups?: string
     certificateUpdatedAt?: number
@@ -27,6 +29,8 @@ export type Attributes = {
     connectionId: string
     defaultSchemaQualifiedName: string
     variablesSchemaBase64: string // base64 string
+    isVisualQuery: boolean
+    visualBuilderSchemaBase64: string
     owner?: string
     __createdBy: string
     __customAttributes: string
@@ -60,7 +64,7 @@ export type Folder = Omit<
     Components.Schemas.AtlasEntityHeader,
     'attributes' | 'typeName' | 'guid'
 > & {
-    typeName: 'QueryFolder'
+    typeName: 'Folder'
     attributes: QueryFolderAttributes
     guid: string
 }
@@ -78,7 +82,7 @@ export type QueryCollection = Omit<
     Components.Schemas.AtlasEntityHeader,
     'attributes' | 'typeName' | 'guid'
 > & {
-    typeName: 'QueryCollection'
+    typeName: 'Collection'
     attributes: QueryCollectionAttributes
     guid: string
 }

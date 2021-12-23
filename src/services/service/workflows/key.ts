@@ -64,13 +64,6 @@ export const map = {
         getAPIPath(BASE_PATH, `/runs/archived/${id}/logs?${params || ''}`),
 
     [WORKFLOW_TEMPLATE_INDEX]: () =>
-        getAPIPath(
-            BASE_PATH,
-            `/es-atlas/tenants/default/atlan_argo_cluster_workflow_templates/_search`
-        ),
-    [WORKFLOW_RUN_INDEX]: () =>
-        getAPIPath(
-            BASE_PATH,
-            `/es-atlas/tenants/default/atlan_argo_workflows/_search`
-        ),
+        getAPIPath(BASE_PATH, `/workflowtemplates/indexsearch`),
+    [WORKFLOW_RUN_INDEX]: () => getAPIPath(BASE_PATH, `/runs/indexsearch`),
 }

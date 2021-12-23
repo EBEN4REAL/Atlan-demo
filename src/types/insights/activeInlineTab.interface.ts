@@ -20,7 +20,7 @@ export interface activeInlineTabInterface {
     parentQualifiedName: string
     isSQLSnippet: boolean
     savedQueryParentFolderTitle: string | undefined
-    collectionQulaifiedName: string
+    collectionQualifiedName: string
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface
@@ -38,6 +38,7 @@ export interface activeInlineTabInterface {
     }
     favico: string | undefined
     playground: {
+        isVQB: Boolean
         editor: {
             context: connectorsWidgetInterface
             text: string

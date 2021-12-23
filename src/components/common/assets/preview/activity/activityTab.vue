@@ -19,8 +19,42 @@
             ></AtlanIcon>
             <span class="ml-1">Getting activity logs</span>
         </div>
-        <div v-else-if="audits.length && !isLoading">
+        <div v-else-if="auditList.length && !isLoading">
             <a-timeline class="mx-5">
+                <a-timeline-item v-for="(log, index) in auditList" :key="index">
+                    <template #dot>
+                        <div
+                            class="border ant-timeline-item-dot border-primary"
+                        ></div>
+                    </template>
+                    <div>
+                        <ActivityType :data="getAuditEventComponent(log)" />
+
+                        <!-- <template
+                            v-if="getDetailsForEntityAuditEvent(log)?.component"
+                        >
+                            <ActivityType
+                                :data="getDetailsForEntityAuditEvent(log)"
+                            />
+                        </template>
+                        <template v-else>
+                            <div class="mb-3">
+                                {{ getEventByAction(log)?.label || 'Event' }}
+                            </div>
+                        </template> -->
+                    </div>
+                    <div class="flex items-center mt-1 text-gray-500">
+                        <div class="flex items-center">
+                            <AtlanIcon icon="User" class="mr-1"></AtlanIcon>
+                            {{ getActionUser(log.user) }}
+                        </div>
+                        <div class="mx-3 timeline-name-time-separator"></div>
+                        <div>{{ timeAgo(log.created) }}</div>
+                    </div>
+                </a-timeline-item>
+            </a-timeline>
+
+            <!-- <a-timeline class="mx-5">
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>
                         <div
@@ -49,19 +83,17 @@
                         <div>{{ timeAgo(log.timestamp) }}</div>
                     </div>
                 </a-timeline-item>
-            </a-timeline>
+            </a-timeline> -->
             <div
                 v-if="!checkAuditsCount && !isAllLogsFetched"
                 class="flex justify-center mb-8 text-center"
             >
                 <a-button
-                    :disabled="isFetchingMore"
                     class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full bg-primary-light text-primary"
-                    :class="isFetchingMore ? 'px-2 w-9' : 'px-5 w-32'"
-                    @click="fetchMore"
+                    @click="handleLoadMore"
                 >
-                    <template v-if="!isFetchingMore"
-                        ><p
+                    <template v-if="isLoadMore && !isLoading">
+                        <p
                             class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
@@ -69,7 +101,7 @@
                         <AtlanIcon icon="ArrowDown"
                     /></template>
                     <AtlanIcon
-                        v-else
+                        v-else-if="isLoading"
                         icon="Loader"
                         class="w-5 w-auto h-5 animate-spin"
                     ></AtlanIcon>
@@ -105,10 +137,11 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen },
+        components: { ActivityType, EmptyScreen, AtlanIcon },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -123,38 +156,52 @@
             const limit = ref(10)
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
-
             const dependentKey = ref('audit')
+            const facets = ref({
+                'entityId.keyword': item.value.guid,
+            })
+            const preference = ref({
+                sort: 'created-desc',
+            })
 
-            const { data } = useAssetAuditSearch({
+            const {
+                data,
+                list: auditList,
+                refresh,
+                error,
+                fetch,
+                isLoading,
+                isLoadMore,
+                totalCount,
+            } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: true,
                 dependentKey,
                 queryText: '',
                 limit,
                 offset,
+                facets,
+                preference,
             })
 
-            const {
-                audits,
-                error,
-                fetchAudits,
-                isLoading,
-                getEventByAction,
-                getDetailsForEntityAuditEvent,
-                getActionUser,
-                fetchMoreAudits,
-                isFetchingMore,
-                isAllLogsFetched,
-            } = useAssetAudit(params, item.value.guid)
+            const { getAuditEventComponent, getActionUser } = useAssetAudit(
+                params,
+                item.value.guid
+            )
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
             }
 
             const refreshAudits = () => {
-                fetchMoreAuditParams.startKey = ''
-                fetchAudits(params, item.value.guid)
+                refresh()
+            }
+
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                fetch()
             }
 
             const fetchMore = () => {
@@ -177,21 +224,24 @@
             )
 
             return {
-                audits,
                 error,
                 isLoading,
                 timeAgo,
-                getDetailsForEntityAuditEvent,
-                getEventByAction,
-                getActionUser,
+
                 refreshAudits,
                 fetchMore,
-                isFetchingMore,
-                isAllLogsFetched,
-                checkAuditsCount,
+                getActionUser,
                 emptyScreen,
                 limit,
                 offset,
+                preference,
+                facets,
+                auditList,
+                getAuditEventComponent,
+                refresh,
+                handleLoadMore,
+                isLoadMore,
+                totalCount,
             }
         },
     })

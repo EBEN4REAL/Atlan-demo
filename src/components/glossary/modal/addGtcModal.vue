@@ -65,8 +65,18 @@
             />
         </div>
 
-        <div class="flex justify-between p-3 border-t border-gray-200">
-            <div class="flex items-center space-x-2">
+        <div
+            class="flex w-full p-3 border-t border-gray-200"
+            :class="
+                entityType !== 'AtlasGlossary'
+                    ? 'justify-between'
+                    : 'justify-end'
+            "
+        >
+            <div
+                v-if="entityType !== 'AtlasGlossary'"
+                class="flex items-center space-x-2"
+            >
                 <a-switch size="small" v-model:checked="isCreateMore" />
                 <p class="p-0 m-0">Create more</p>
             </div>
@@ -75,7 +85,7 @@
                 type="primary"
                 @click="handleSave"
                 :loading="isLoading"
-                class="bg-primary"
+                class="self-end bg-primary"
                 >Create</a-button
             >
         </div>
@@ -125,6 +135,7 @@
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
 
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -314,7 +325,26 @@
                     if (!isCreateMore.value) {
                         visible.value = false
                     }
+                    let eventCategory
+                    let properties = {}
+                    if (localEntityType.value === 'AtlasGlossaryCategory') {
+                        eventCategory = 'category'
+                        properties = {
+                            create_more: isCreateMore.value,
+                        }
+                    } else if (localEntityType.value === 'AtlasGlossaryTerm') {
+                        eventCategory = 'term'
+                        properties = {
+                            create_more: isCreateMore.value,
+                        }
+                    } else {
+                        eventCategory = 'glossary'
+                    }
+                    useAddEvent('gtc', eventCategory, 'created', properties)
+                    resetInput()
                     message.success(`${typeNameTitle.value} created`)
+                    // isCreateMore
+                    // localEntityType: "AtlasGlossaryCategory", "AtlasGlossaryTerm", "AtlasGlossary"
                     // resetInput()
 
                     if (guidCreatedMaps.value?.length > 0) {

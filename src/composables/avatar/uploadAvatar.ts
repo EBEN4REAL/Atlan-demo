@@ -27,8 +27,10 @@ export default function uploadAvatar() {
         options.value
     )
 
-    watch(data, () => {
-        uploadKey.value = Date.now().toString()
+    watch([data, isReady], () => {
+        if (isReady?.value) {
+            uploadKey.value = Date.now().toString()
+        }
     })
 
     const upload = (imageData: any) => {
@@ -44,5 +46,6 @@ export default function uploadAvatar() {
         isReady,
         data,
         uploadKey,
+        refreshImage: mutate,
     }
 }

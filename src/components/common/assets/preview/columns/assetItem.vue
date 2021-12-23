@@ -13,7 +13,7 @@
                     <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
-                            class="h-4 mr-1 mt-0.5 text-gray-500"
+                            class="h-4 mr-1 text-gray-500"
                         />
                         <span
                             class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -65,7 +65,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     :selected-asset="item"
-                    :read-only="isScrubbed(item)"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
                     @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
@@ -89,6 +89,7 @@
         <AssetDrawer
             :data="item"
             :show-drawer="showColumnDrawer"
+            :show-mask="page === 'assets'"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -96,10 +97,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        watch,
+        defineAsyncComponent,
+        inject,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Description from '@/common/input/description/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -111,10 +119,12 @@
         name: 'ColumnListItem',
         components: {
             CertificateBadge,
-            AssetDrawer,
             Description,
             ClassificationPill,
             PopoverClassification,
+            AssetDrawer: defineAsyncComponent(
+                () => import('@/common/assets/preview/drawer.vue')
+            ),
         },
         props: {
             item: {
@@ -145,10 +155,13 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                selectedAssetUpdatePermission,
                 isScrubbed,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
+
+            const page = inject('sidebarPage')
 
             const {
                 localDescription,
@@ -214,8 +227,10 @@
                 handleCloseDrawer,
                 localDescription,
                 handleChangeDescription,
+                page,
                 descriptionRef,
                 isPropagated,
+                selectedAssetUpdatePermission,
                 isScrubbed,
                 list,
             }

@@ -14,6 +14,7 @@ const finalTabs = computed(() => {
         return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
     return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
 })
+const userUpdated = ref(false)
 
 export function useUserPreview() {
     const showUserPreview = (config?: { allowed?: any; blacklisted?: any }) => {
@@ -48,6 +49,21 @@ export function useUserPreview() {
         defaultTab.value = tab
     }
 
+    const getUserProfiles = (user: any) => {
+        const profile = user?.attributes?.profiles
+        let profileObj = {}
+        if (profile && profile.length) {
+            const profileJsonStr = profile[0]
+            try {
+                profileObj = JSON.parse(profileJsonStr)[0]
+                console.log('profileObj', profileObj)
+            } catch (error) {
+                console.error('error parsing user profile json', error)
+            }
+        }
+        return profileObj
+    }
+
     const route = useRoute()
 
     watch(route, () => {
@@ -67,5 +83,7 @@ export function useUserPreview() {
         closePreview,
         defaultTab,
         setDefaultTab,
+        userUpdated,
+        getUserProfiles,
     }
 }

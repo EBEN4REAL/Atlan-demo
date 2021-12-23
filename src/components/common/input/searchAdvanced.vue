@@ -132,6 +132,10 @@
                 handleChange()
             }
 
+            function focusInput() {
+                searchBar.value?.focus()
+            }
+
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
             watch(Escape, (v) => {
                 if (v) {
@@ -151,6 +155,7 @@
                 size,
                 getConnectorImageMap,
                 capitalizeFirstLetter,
+                focusInput,
             }
         },
     })
@@ -181,6 +186,10 @@
                     @apply text-primary !important;
                 }
             }
+        }
+
+        &:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover) {
+            border-right-width: 0px !important;
         }
 
         :global(.ant-input) {

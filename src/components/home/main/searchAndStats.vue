@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between h-24">
+    <!-- <div class="flex items-center justify-between h-24">
         <div class="flex justify-between w-full">
             <img
                 v-if="logoUrl && !logoNotFound"
@@ -20,21 +20,26 @@
                 </div>
             </aside>
         </div>
-    </div>
+    </div> -->
 
-    <SearchAndFilter
-        placeholder="Search across atlan..."
-        class=""
+    <a-input
+        placeholder="Search all your assets"
         @click="showModal"
-    />
-    <!-- <CmndK
-        :isCmndKVisible="isCmndKVisible"
-        @closeModal="isCmndKVisible = false"
-    /> -->
+        size="large"
+    >
+        <template #prefix>
+            <img
+                v-if="logoUrl && !logoNotFound"
+                :src="logoUrl"
+                class="w-auto h-5 mr-2"
+                @error="onLogoNotFound"
+            />
+        </template>
+    </a-input>
 
     <div class="flex items-center justify-end gap-1 mt-2">
         <router-link to="/assets" class="font-bold cursor-pointer text-primary">
-            Discover assets
+            Discover all assets
             <AtlanIcon icon="ArrowRight" />
         </router-link>
     </div>

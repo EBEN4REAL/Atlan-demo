@@ -1,14 +1,14 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            v-model:treeExpandedKeys="expandedKeys"
-            :value="selectedValue"
-            style="width: 100%"
             :ref="
                 (el) => {
                     treeSelectRef = el
                 }
             "
+            v-model:treeExpandedKeys="expandedKeys"
+            :value="selectedValue"
+            style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
@@ -24,11 +24,16 @@
             <template #title="node">
                 <div
                     v-if="node.node.nodeType !== 'info-node'"
-                    class="flex items-center truncate"
+                    class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
-                    {{ node.title }}
+                    <div class="flex flex-col">
+                        {{ node.title }}
+                    </div>
+                    <span class="text-sm text-gray-500" v-if="node.node.count">
+                        ({{ node.node.count }} assets)</span
+                    >
                 </div>
                 <div
                     v-else
@@ -99,7 +104,7 @@
                 default: '',
             },
         },
-        emits: ['change', 'update:data', 'blur'],
+        emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
@@ -186,6 +191,8 @@
                                     connection?.attributes
                                 ),
                                 children: [],
+                                count: connection.assetCount,
+
                                 title:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
@@ -209,9 +216,7 @@
                         children,
                     }
                     if (props.showEmptyParents) tree.push(treeNodeObj)
-                    else {
-                        if (children && children.length) tree.push(treeNodeObj)
-                    }
+                    else if (children && children.length) tree.push(treeNodeObj)
                 })
                 if (props.footerNodeContent)
                     tree.push({
@@ -296,6 +301,7 @@
 
                 emit('update:data', payload)
                 emit('change')
+                emit('changeConnector')
             }
 
             const onBlur = () => {
@@ -396,9 +402,9 @@
         .ant-select-switcher-icon {
             font-weight: normal !important;
         }
-        .ant-select-tree-treenode-leaf-last {
+        .ant-select-tree-treenode.ant-select-tree-treenode-disabled.ant-select-tree-treenode-switcher-close.ant-select-tree-treenode-leaf-last {
             .ant-select-tree-switcher-noop {
-                display: none;
+                display: none; // hides extra left side space for info node
             }
         }
     }

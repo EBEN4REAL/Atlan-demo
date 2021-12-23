@@ -27,8 +27,8 @@
             <div class="relative flex mx-4 my-5">
                 <Avatar
                     v-if="isValidUser"
-                    :image-url="imageUrl"
-                    :allow-upload="isCurrentUser"
+                    :image-url="updatedImageUrl || imageUrl"
+                    :allow-upload="false"
                     :avatar-name="
                         selectedUser.name ||
                         selectedUser.username ||
@@ -41,22 +41,28 @@
                     <div class="flex items-center content-center text-gray-500">
                         <div class="w-4/5">
                             <div
-                                class="flex text-base content-center items-center capitalize text-gray-700 font-bold mb-0.5"
+                                class="flex text-base content-center items-center capitalize text-gray-700 mb-0.5"
                             >
-                                <span class="mr-1">{{ title }}</span>
+                                <span class="mr-1 font-bold">{{ title }}</span>
                                 <SlackMessageCta
                                     v-if="slackEnabled"
                                     :link="slackUrl"
                                 />
+                                <span
+                                    v-if="isValidGroup && selectedGroup.isDefault === 'true'"
+                                    class="px-2 py-1 ml-1 text-xs rounded-full bg-blue-50 text-gray"
+                                >
+                                    Default
+                                </span>
                             </div>
-                            <span class="text-sm truncate w-28">
+                            <span class="text-sm truncate w-28 mr-1">
                                 @{{ name }}
                             </span>
                             <span
                                 v-if="details"
-                                class="content-center px-2 py-1 ml-2 text-xs text-gray-700 uppercase bg-gray-200 rounded"
+                                class="text-sm"
                             >
-                                {{ details }}
+                                &bull; <span class="ml-1">{{ details }}</span>
                             </span>
                         </div>
                         <div class="ml-auto">
@@ -91,9 +97,12 @@
                         :is-current-user="isValidUser ? isCurrentUser : null"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
-                        @updatedUser="handleUpdate"
+                        @updated-user="() => {
+                            userUpdated = true
+                        }"
                         @refreshTable="reload"
                         @success="reload"
+                        @image-updated="handleImageUpdate"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -106,9 +115,10 @@
         defineAsyncComponent,
         computed,
         toRefs,
+        ref
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
-    import Avatar from '@common/avatar/index.vue'
+    import Avatar from '@common/avatar/avatar.vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
@@ -158,6 +168,7 @@
         setup(props) {
             // Is it a user preview drawer or a group one.
             const { previewType } = toRefs(props)
+            const updatedImageUrl = ref(null)
             const isUserPreview = computed(() => previewType.value === 'user')
 
             const {
@@ -171,6 +182,7 @@
                 tabs,
                 imageUrl,
                 activeKey,
+                userUpdated
             } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() =>
                 Boolean(
@@ -250,6 +262,10 @@
                 return ''
             })
 
+            const handleImageUpdate = (newImageUrl) => {
+                updatedImageUrl.value = newImageUrl.value
+            }
+
             const slackEnabled = computed(() => slackProfile.value)
             const slackUrl = computed(() =>
                 slackEnabled.value
@@ -275,6 +291,9 @@
                 imageUrl,
                 slackEnabled,
                 slackUrl,
+                handleImageUpdate,
+                updatedImageUrl,
+                userUpdated
             }
         },
     })

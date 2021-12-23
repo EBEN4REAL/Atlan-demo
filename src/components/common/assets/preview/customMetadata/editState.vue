@@ -12,6 +12,7 @@
                     'text',
                 ].includes(typeName.toLowerCase()) && isMultivalued
             "
+            ref="inputRef"
             v-model="localValue"
             class="flex-grow shadow-none"
             placeholder="Press Enter to add"
@@ -21,6 +22,7 @@
 
         <a-input
             v-else-if="typeName === 'number'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -30,6 +32,7 @@
         />
         <a-input
             v-else-if="typeName === 'float'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -42,6 +45,7 @@
         />
         <a-input
             v-else-if="typeName === 'url'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -51,6 +55,7 @@
         />
         <a-radio-group
             v-else-if="typeName === 'boolean'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow"
@@ -61,6 +66,7 @@
         </a-radio-group>
         <a-date-picker
             v-else-if="typeName === 'date'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow w-100"
@@ -69,6 +75,7 @@
         />
         <a-textarea
             v-else-if="typeName === 'text'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             :auto-size="true"
@@ -79,66 +86,25 @@
             class="flex-grow shadow-none"
             @change="handleChange"
         />
-        <a-select
-            v-else-if="typeName === 'users'"
+        <UserSelector
+            v-if="typeName === 'users'"
+            ref="inputRef"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
-            :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
-            :mode="isMultivalued ? 'multiple' : null"
-            style="width: 100%"
-            :show-arrow="true"
-            @focus="userSearch"
+            :multiple="isMultivalued"
             @change="handleChange"
-        >
-            <template #suffixIcon>
-                <AtlanIcon
-                    v-if="uLoading"
-                    icon="CircleLoader"
-                    class="animate-spin"
-                />
-                <AtlanIcon v-else icon="CaretDown" />
-            </template>
-            <a-select-option
-                v-for="(item, index) in userList"
-                :key="index"
-                :value="item.username"
-                :label="item.username"
-                >{{ item.username }}
-            </a-select-option>
-        </a-select>
-        <a-select
-            v-else-if="typeName === 'groups'"
+        />
+        <GroupSelector
+            v-if="typeName === 'groups'"
+            ref="inputRef"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
-            :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
-            :mode="isMultivalued ? 'multiple' : null"
-            style="width: 100%"
-            :show-arrow="true"
-            @focus="groupSearch"
+            :multiple="isMultivalued"
             @change="handleChange"
-        >
-            <template #suffixIcon>
-                <AtlanIcon
-                    v-if="gLoading"
-                    icon="CircleLoader"
-                    class="animate-spin"
-                />
-                <AtlanIcon v-else icon="CaretDown" />
-            </template>
-            <a-select-option
-                v-for="(item, index) in groupList"
-                :key="index"
-                :value="item.alias"
-                :label="item.alias"
-                >{{ item.alias }}
-            </a-select-option>
-        </a-select>
+        />
         <a-select
             v-else-if="typeName === 'enum'"
+            ref="inputRef"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
+            class="flex-grow shadow-none border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -155,21 +121,32 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        onMounted,
+        nextTick,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
-    import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useFacetGroups from '~/composables/group/useFacetGroups'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
+    import UserSelector from '@/common/select/users.vue'
+    import GroupSelector from '@/common/select/groups.vue'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
-        components: { MultiInput },
+        components: { MultiInput, UserSelector, GroupSelector },
         props: {
             attribute: {
                 type: Object,
+                required: true,
+            },
+            index: {
+                type: Number,
                 required: true,
             },
             modelValue: {
@@ -182,7 +159,8 @@
         emits: ['change', 'update:modelValue'],
 
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, index } = useVModels(props, emit)
+            const inputRef = ref()
 
             const {
                 getDatatypeOfAttribute,
@@ -199,30 +177,6 @@
             if (typeName.value === 'date' && localValue.value)
                 localValue.value = localValue.value.toString()
 
-            const {
-                list: userList,
-                handleSearch: handleUserSearch,
-                isLoading: uLoading,
-                isReady: isUserReady,
-                error: userError,
-            } = useFacetUsers('username', ['username'], false)
-
-            const userSearch = (val) => {
-                if (!isUserReady?.value || userError.value)
-                    handleUserSearch(val)
-            }
-
-            const {
-                list: groupList,
-                handleSearch: handleGroupSearch,
-                isLoading: gLoading,
-                isReady,
-                error,
-            } = useFacetGroups('alias', ['alias'], false)
-            const groupSearch = (val) => {
-                if (!isReady?.value || error.value) handleGroupSearch(val)
-            }
-
             const isMultivalued = ref(
                 props.attribute.options.multiValueSelect === 'true'
             )
@@ -236,7 +190,15 @@
                 emit('change')
             }
 
+            onMounted(() => {
+                if (index.value === 0)
+                    nextTick(() => {
+                        inputRef.value.focus()
+                    })
+            })
+
             return {
+                inputRef,
                 typeName,
                 isMultivalued,
                 getDatatypeOfAttribute,
@@ -245,19 +207,9 @@
                 localValue,
                 getEnumOptions,
                 handleChange,
-                userSearch,
-                userList,
-                groupSearch,
-                groupList,
-                gLoading,
-                uLoading,
             }
         },
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

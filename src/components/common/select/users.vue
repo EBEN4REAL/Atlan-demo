@@ -1,21 +1,26 @@
 <template>
     <a-select
         v-model:value="localValue"
+        ref="inputRef"
         placeholder="Users"
-        class="w-full center-arrow"
+        class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
-        :options="userList"
-        :open="open"
+        :options="finalList"
+        :filter-option="() => true"
         @change="handleChange"
-        @search="handleSearch"
-        @click="open = !open"
-        @select="open = false"
-        @blur="
-            () => {
-                if (!isLoading) open = false
+        @dropdownVisibleChange="
+            (o) => {
+                if (!o) query = ''
             }
         "
+        @click="
+            () => {
+                if (finalList.length < 2) mutate()
+            }
+        "
+        @select="resetFilter"
+        @search="handleSearch"
     >
         <template #option="item">
             <div class="flex">
@@ -48,14 +53,15 @@
                 </div>
                 <div class="flex items-end justify-between">
                     <span v-if="userList?.length" class="text-xs text-gray-500">
-                        showing {{ userList?.length }} of {{ filterTotal }}
+                        {{ userList?.length }} of {{ filterTotal }}
                     </span>
                     <span
                         v-if="userList?.length < filterTotal"
-                        class="cursor-pointer text-primary hover:underline"
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        @mousedown="(e) => e.preventDefault()"
                     >
-                        load more
+                        load more...
                     </span>
                 </div>
             </div>
@@ -78,7 +84,6 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
@@ -103,24 +108,25 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { multiple } = toRefs(props)
 
             const {
-                list,
+                userList,
                 handleSearch,
                 total,
                 isLoading,
                 filterTotal,
                 loadMore,
-            } = useFacetUsers()
-            const { username, firstName, lastName, id } = useUserData()
+                mutate,
+                resetFilter,
+                queryText: query,
+            } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
                 () => {
+                    s
                     handleSearch(props.queryText)
                 }
             )
@@ -130,35 +136,18 @@
                 }
                 return `${item.username}`
             }
-            const userList = computed(() => {
-                if (props.queryText !== '') {
-                    return [
-                        ...list.value.map((u) => ({
-                            ...u,
-                            key: u.id,
-                            value: u.id,
-                        })),
-                    ]
-                }
-                const tempList = list.value.filter(
-                    (obj) => obj.username !== username
-                )
-                return [
-                    {
-                        username,
-                        firstName,
-                        lastName: `${lastName} (me)`,
-                        id,
-                        value: username,
-                        key: id,
-                    },
-                    ...tempList.map((u) => ({
-                        ...u,
-                        key: u.id,
-                        value: u.username,
-                    })),
-                ]
-            })
+
+            const finalList = computed(() =>
+                (userList?.value ?? []).map((u) => ({
+                    ...u,
+                    value: u.username,
+                    key: u.id,
+                    firstName: u.firstName,
+                    lastName: u.lastName,
+                    username: u.username,
+                    label: `${u.firstName ?? ''} ${u.lastName ?? ''}`,
+                }))
+            )
 
             const avatarUrl = (item) =>
                 `${window.location.origin}/api/services/avatar/${item.username}`
@@ -168,18 +157,24 @@
                 emit('change')
             }
 
-            onBeforeUnmount(() => {
-                open.value = false
-            })
+            const inputRef = ref()
+
+            const focus = () => {
+                inputRef.value.focus()
+            }
 
             return {
-                open,
+                query,
+                inputRef,
+                focus,
+                resetFilter,
+                mutate,
+                finalList,
                 loadMore,
                 filterTotal,
                 userList,
                 fullName,
                 avatarUrl,
-                username,
                 handleSearch,
                 isLoading,
                 total,
@@ -190,8 +185,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

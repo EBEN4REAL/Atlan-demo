@@ -1,12 +1,14 @@
 <template>
     <div class="px-4 py-2 tab-content-wrapper overflow-hidden overflow-y-auto">
-        <div class="h-auto">
+        <div class="h-full">
             <EditUser
                 v-if="isEditing"
                 :selected-user="selectedUser"
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
                 @success="$emit('success')"
+                @image-updated="handleImageUpdate"
+                @updated-user="$emit('updatedUser')"
             />
             <ViewUser
                 v-else
@@ -38,7 +40,7 @@
                 default: false,
             },
         },
-        emits: ['updatedUser', 'success'],
+        emits: ['updatedUser', 'success', 'imageUpdated'],
         setup(props, { emit }) {
             const { selectedUser, isCurrentUser } = toRefs(props)
             const isEditing = ref(false)
@@ -46,11 +48,15 @@
                 emit("success")
                 isEditing.value = !isEditing.value
             }
+            const handleImageUpdate = (updatedImageUrl) => {
+                emit('imageUpdated', updatedImageUrl)
+            }
             return {
                 selectedUser,
                 isCurrentUser,
                 isEditing,
-                toggleEdit
+                toggleEdit,
+                handleImageUpdate
             }
         }
     })

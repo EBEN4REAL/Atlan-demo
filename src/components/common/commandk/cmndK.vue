@@ -1,117 +1,36 @@
 <template>
     <div>
-        <div class="flex items-center px-5 py-4 border-b">
-            <svg
-                v-if="isLoading"
-                class="w-5 h-5 mr-1.5 text-primary animate-spin"
-                fill="none"
-                viewBox="0 0 24 24"
-            >
-                <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                ></circle>
-                <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-            </svg>
-            <atlan-icon v-else icon="Search" class="w-auto h-5 mr-1.5" />
-            <!-- TODO: Uncomment when bringing category filter in  -->
-            <!-- <AssetCategoryFilter
-                        v-if="assetCategoryFilter.length"
-                        v-model:checked="assetCategoryFilter"
-                        @change="handleCategoryChange"
-                    >
-                        <template #trigger>
-                            <a-button
-                                class="flex items-center justify-between w-32 h-full px-2 py-1 ml-1 mr-2 border-none group bg-primary-light hover:bg-primary hover:text-white"
-                                ><span class="capitalize truncate">{{
-                                    assetCategoryFilter?.length > 0
-                                        ? getFiltersAppliedString
-                                        : 'All'
-                                }}</span>
-                                <div class="flex items-center space-x-2">
-                                    <AtlanIcon
-                                        icon="ChevronDown"
-                                        class="w-8 h-4 ml-3"
-                                    />
-                                    <AtlanIcon
-                                        @click="assetCategoryFilter = []"
-                                        icon="Cancel"
-                                        class="hidden h-3 group-hover:block"
-                                    />
-                                </div>
-                            </a-button>
-                        </template>
-                    </AssetCategoryFilter> -->
-
+        <div class="flex items-center px-3 py-2 border-b">
+            <div class="w-5 h-5 pb-1 mr-1" style="margin-bottom: 2px">
+                <AtlanIcon
+                    v-if="isLoading"
+                    icon="Loader"
+                    class="w-auto h-5 animate-spin"
+                ></AtlanIcon>
+                <atlan-icon v-else icon="Search" class="w-auto h-5" />
+            </div>
             <a-input
                 ref="inputBox"
                 v-model:value="queryText"
                 class="pl-1 pr-4 text-base text-gray-500 border-0 shadow-none outline-none focus:border-0 force-hide-focus-outline"
                 :class="$style.modalStyles"
-                :placeholder="dynamicSearchPlaceholder"
+                :placeholder="placeholder"
                 @change="handleSearchChange"
             >
-                <template #addonAfter>
-                    <div class="flex items-center space-x-4 text-gray-500">
-                        <div v-if="queryText.length">
-                            <span
-                                class="text-xs text-gray-500 cursor-pointer"
-                                @click="
-                                    () => {
-                                        queryText = ''
-                                        isLoading = false
-                                        handleFocusOnInput()
-                                    }
-                                "
-                                >CLEAR</span
-                            >
-                            <span class="mb-1">|</span>
-                        </div>
-                    </div>
-                </template>
             </a-input>
-            <atlan-icon
-                icon="Cancel"
-                class="w-auto h-5 mr-1 text-gray-500 cursor-pointer"
-                @click="$emit('closeModal')"
-            />
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-4">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
                 :list="assetTypeAggregationList"
                 @change="handleAssetTypeChange"
+                :shortcutEnabled="true"
             >
             </AggregationTabs>
         </div>
         <!-- body starts here -->
-        <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-            <!-- TODO: Uncomment when bringing category filter in  -->
-            <!-- <div class="flex items-center px-4 pb-4 space-x-2">
-                    <template v-for="cat in assetCategoryList" :key="cat.id">
-                        <div
-                            @click="handleCategoryChipClicked(cat)"
-                            class="flex items-center px-3 py-1 capitalize border rounded cursor-pointer hover:bg-primary hover:text-white group"
-                        >
-                            <atlan-icon
-                                :icon="cat?.icon"
-                                class="h-4 mr-2 group-hover:text-white"
-                            />
-                            {{ cat.label }}
-                        </div>
-                    </template>
-                </div> -->
-        </div>
         <div class="relative flex flex-col pt-2 overflow-y-auto max-h-80">
             <div
                 v-if="!list?.length && queryText.length"
@@ -125,33 +44,46 @@
             </div>
             <div
                 v-else-if="!list.length && !queryText.length"
-                class="flex flex-col px-4 mb-6"
+                class="flex items-center justify-around px-4 mb-6 h-80"
             >
-                <!-- <span class="mb-2 text-xs text-gray-500">Recently Viewed</span> -->
-                <span class="text-xs text-gray-500 mb-"
-                    >You haven’t searched for anything just yet ...</span
-                >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
             </div>
             <div
-                :id="`${item.guid}-asset`"
-                v-for="item in list"
+                v-for="(item, index) in list"
                 v-else
+                :id="`${item.guid}-asset`"
                 :key="item?.guid"
                 :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
             >
-                <div
-                    v-if="
-                        [
-                            'AtlasGlossary',
-                            'AtlasGlossaryTerm',
-                            'AtlasGlossaryCategory',
-                        ].includes(item?.typeName)
-                    "
-                    @click="$emit('closeModal')"
-                >
-                    <GtcCard :item="item" class="px-5" />
-                </div>
-                <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
+                <router-link :to="getProfilePath(item)">
+                    <div @click="$emit('closeModal')">
+                        <AssetItem
+                            :item="item"
+                            :itemIndex="index"
+                            class="px-2 cmd-k-asset-card"
+                        />
+                    </div>
+                    <!-- <div
+                        v-if="
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(item?.typeName)
+                        "
+                        @click="$emit('closeModal')"
+                    >
+                        <GtcCard :item="item" class="px-5" />
+                    </div>
+                    <AssetCard
+                        v-else
+                        :item="item"
+                        Modal="$emit('closeModal')"
+                    /> -->
+                </router-link>
             </div>
         </div>
     </div>
@@ -167,7 +99,12 @@
         nextTick,
     } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useDebounceFn, onKeyStroke } from '@vueuse/core'
+    import {
+        useDebounceFn,
+        onKeyStroke,
+        useMagicKeys,
+        whenever,
+    } from '@vueuse/core'
 
     import {
         AssetAttributes,
@@ -181,10 +118,12 @@
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard, AggregationTabs },
+        components: { AssetCard, GtcCard, AggregationTabs, AssetItem },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -213,6 +152,8 @@
                 typeName: '__all',
             })
             const router = useRouter()
+
+            const { getProfilePath } = useAssetInfo()
 
             const defaultAttributes = ref([
                 'anchor',
@@ -258,25 +199,35 @@
                 'shortDescription',
             ])
 
-            const dynamicSearchPlaceholder = ref(
-                'Search for tables, columns, terms and more...'
-            )
-
             const assetCategoryFilter = ref([])
-            const { list, assetTypeAggregationList, quickChange } =
-                useDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    queryText,
-                    facets,
-                    postFacets,
-                    aggregations,
-                    limit,
-                    offset,
-                    attributes: defaultAttributes,
-                    relationAttributes,
-                })
+            const {
+                list,
+                assetTypeAggregationList,
+                quickChange,
+                rotateAggregateTab,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                aggregations,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+            const placeholder = computed(() => {
+                const found = assetTypeAggregationList.value.find(
+                    (item) => item.id === postFacets.value.typeName
+                )
 
+                if (found) {
+                    console.log(found)
+                    return `Search ${found.label.toLowerCase()} assets`
+                }
+                return 'Search all assets'
+            })
             const activeAssetIndex = ref(0)
             const activeAsset = computed(
                 () => list.value[activeAssetIndex.value]
@@ -326,6 +277,22 @@
                 { deep: true }
             )
 
+            const keys = useMagicKeys()
+            const { tab, shift_tab } = keys
+
+            whenever(tab, () => {
+                if (shift_tab.value) {
+                    return
+                }
+                rotateAggregateTab(1, handleFocusOnInput)
+                console.log('go next aggregate', assetTypeAggregationList.value)
+            })
+
+            whenever(shift_tab, () => {
+                console.log('go previous aggregate')
+                rotateAggregateTab(-1, handleFocusOnInput)
+            })
+
             const handleAssetTypeChange = () => {
                 isLoading.value = true
                 offset.value = 0
@@ -365,7 +332,6 @@
                 list,
                 handleSearchChange,
                 queryText,
-                dynamicSearchPlaceholder,
                 assetCategoryFilter,
                 inputBox,
                 assetCategoryList,
@@ -376,6 +342,8 @@
                 handleFocusOnInput,
                 postFacets,
                 activeAsset,
+                placeholder,
+                getProfilePath,
             }
         },
     })
@@ -420,6 +388,11 @@
         }
         .ant-input:focus {
             border: none !important;
+        }
+    }
+    .cmd-k-asset-card {
+        &.my-1 {
+            margin: 0px !important;
         }
     }
 </style>

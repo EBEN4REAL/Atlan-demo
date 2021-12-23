@@ -3,13 +3,13 @@
         <component
             v-if="isAccess"
             :is="
-                identityProviders.length && alias
+                identityProviders && identityProviders.length && alias
                     ? 'router-view'
                     : 'EmptySSOScreen'
             "
             class="flex flex-col justify-center h-3/4"
         />
-       <NoAccess v-else />
+        <NoAccess v-else />
     </div>
 </template>
 <script lang="ts">
@@ -48,12 +48,12 @@
                 identityProviders.value.length
             )
                 router.push(`/admin/sso/${alias.value}`)
-                
+
             const { isAccess } = useAuth()
             return {
                 identityProviders,
                 alias,
-                isAccess
+                isAccess,
             }
         },
     })

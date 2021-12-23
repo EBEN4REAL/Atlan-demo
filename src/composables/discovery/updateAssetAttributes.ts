@@ -175,12 +175,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     // Description Change
     const handleChangeDescription = () => {
-        console.log('entity: ', selectedAsset.value)
         if (description(selectedAsset?.value) !== localDescription.value) {
             entity.value.attributes.userDescription = localDescription.value
             body.value.entities = [entity.value]
 
-            console.log('new entity: ', entity.value)
             currentMessage.value = 'Description has been updated'
             mutate()
         }
@@ -301,6 +299,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         body.value.entities = [entity.value]
 
         currentMessage.value = 'Announcement has been updated'
+        mutate()
+    }
+
+    // Announcement Update
+    const handleSQLQueryUpdate = () => {
+        entity.value.attributes.allowQuery = localSQLQuery.value.allowQuery
+        entity.value.attributes.allowQueryPreview =
+            localSQLQuery.value.allowQueryPreview
+        entity.value.attributes.connectionRowLimit =
+            localSQLQuery.value.connectionRowLimit
+        body.value.entities = [entity.value]
+
+        currentMessage.value = 'SQL Query Config has been updated'
         mutate()
     }
 
@@ -581,6 +592,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleClassificationChange,
         handleAnnouncementUpdate,
         isLoadingClassification,
+        localSQLQuery,
+        handleSQLQueryUpdate,
         nameRef,
         descriptionRef,
         animationPoint,

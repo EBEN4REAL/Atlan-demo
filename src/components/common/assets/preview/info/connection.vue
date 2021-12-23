@@ -97,10 +97,24 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs, ref, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        toRefs,
+        ref,
+        PropType,
+        watch,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Owners from '@/common/input/owner/index.vue'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useTimeoutFn,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
 
     export default defineComponent({
         name: 'ConnectionDetails',
@@ -115,13 +129,18 @@
                 required: false,
                 default: () => {},
             },
+            modelValue: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
-        components: {
-            Owners,
-        },
-        setup(props) {
+        emits: ['update:modelValue', 'change'],
+        setup(props, { emit }) {
             const { editPermission, selectedAsset } = toRefs(props)
             const visible = ref(false)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
 
             const {
                 attributes,
@@ -146,12 +165,25 @@
             }
 
             const handleUpdate = () => {
+                modelValue.value = localValue.value
+                emit('change')
+
                 visible.value = false
             }
 
             const handleCancel = () => {
                 visible.value = false
             }
+
+            watch(selectedAsset, () => {
+                localValue.value.allowQuery = allowQuery(selectedAsset.value)
+                localValue.value.allowQueryPreview = allowQueryPreview(
+                    selectedAsset.value
+                )
+                localValue.value.connectionRowLimit = connectionRowLimit(
+                    selectedAsset.value
+                )
+            })
 
             return {
                 selectedAsset,

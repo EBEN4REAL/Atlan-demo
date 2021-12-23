@@ -109,19 +109,6 @@
                 type: Object,
                 required: true,
             },
-            page: {
-                type: String,
-                required: true,
-            },
-            showCrossIcon: {
-                type: Boolean,
-                required: false,
-            },
-            mutateTooltip: {
-                type: Boolean,
-                default: false,
-                required: false,
-            },
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)

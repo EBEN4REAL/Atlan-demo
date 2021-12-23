@@ -46,6 +46,15 @@ export const previewTabs = [
         requiredInProfile: true,
     },
     {
+        name: 'Queries',
+        component: 'queries',
+        includes: ['Table', 'Column'],
+        icon: 'Relation',
+        tooltip: 'Queries',
+        scrubbed: false,
+        requiredInProfile: true,
+    },
+    {
         name: 'Relations',
         component: 'relations',
         excludes: [

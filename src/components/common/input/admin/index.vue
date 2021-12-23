@@ -1,23 +1,23 @@
 <template>
     <div
         class="flex flex-wrap items-center gap-1 text-sm"
-        data-test-id="owners-popover"
+        data-test-id="admins-popover"
     >
         <a-popover
             v-model:visible="isEdit"
             :placement="placementPos"
-            :overlay-class-name="$style.ownerPopover"
+            :overlay-class-name="$style.adminPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
             @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div class="">
-                    <OwnerFacets
-                        ref="ownerInputRef"
+                    <AdminFacets
+                        ref="adminInputRef"
                         v-model="localValue"
                         :show-none="false"
-                    ></OwnerFacets>
+                    ></AdminFacets>
                 </div>
             </template>
             <a-button
@@ -30,7 +30,7 @@
             ></a-button>
         </a-popover>
 
-        <template v-for="username in localValue?.ownerUsers" :key="username">
+        <template v-for="username in localValue?.adminUsers" :key="username">
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
@@ -42,7 +42,7 @@
             </PopOverUser>
         </template>
 
-        <template v-for="name in localValue?.ownerGroups" :key="name">
+        <template v-for="name in localValue?.adminGroups" :key="name">
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
@@ -56,11 +56,11 @@
         <span
             v-if="
                 !editPermission &&
-                localValue?.ownerGroups?.length < 1 &&
-                localValue?.ownerUsers?.length < 1
+                localValue?.adminGroups?.length < 1 &&
+                localValue?.adminUsers?.length < 1
             "
             class="-ml-1 text-gray-500"
-            >No owners assigned</span
+            >No admins assigned</span
         >
     </div>
 </template>
@@ -88,8 +88,8 @@
     // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
-    import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AdminFacets from '@/common/facet/admins/index.vue'
+
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
 
@@ -106,8 +106,8 @@
         components: {
             UserPill,
             GroupPill,
-            AtlanIcon,
-            OwnerFacets,
+
+            AdminFacets,
             PopOverUser,
             PopOverGroup,
         },
@@ -154,7 +154,7 @@
 
             const localValue = ref(modelValue.value)
 
-            const { ownerGroups, ownerUsers } = useAssetInfo()
+            const { adminGroups, adminUsers } = useAssetInfo()
 
             const isEdit = ref(false)
 
@@ -180,16 +180,16 @@
             }
 
             const handleDeleteUser = (username) => {
-                localValue.value.ownerUsers =
-                    localValue.value?.ownerUsers.filter(
+                localValue.value.adminUsers =
+                    localValue.value?.adminUsers.filter(
                         (item) => item !== username
                     )
 
                 handleChange()
             }
             const handleDeleteGroup = (name) => {
-                localValue.value.ownerGroups =
-                    localValue.value?.ownerGroups.filter(
+                localValue.value.adminGroups =
+                    localValue.value?.adminGroups.filter(
                         (item) => item !== name
                     )
 
@@ -221,12 +221,12 @@
                 }
             })
 
-            const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
+            const adminFacetRef: Ref<null | HTMLInputElement> = ref(null)
 
             const handleVisibleChange = (visible) => {
                 if (isEdit.value) {
-                    if (ownerFacetRef.value?.forceFocus) {
-                        ownerFacetRef.value?.forceFocus()
+                    if (adminFacetRef.value?.forceFocus) {
+                        adminFacetRef.value?.forceFocus()
                     }
                 }
                 if (!visible) {
@@ -235,13 +235,14 @@
             }
 
             watch(selectedAsset, () => {
-                localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
-                localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
+                console.log(adminGroups(selectedAsset.value))
+                localValue.value.adminUsers = adminUsers(selectedAsset.value)
+                localValue.value.adminGroups = adminGroups(selectedAsset.value)
             })
 
             return {
-                ownerGroups,
-                ownerUsers,
+                adminGroups,
+                adminUsers,
                 handleClickUser,
                 handleClickGroup,
                 localValue,
@@ -250,14 +251,14 @@
                 handleDeleteGroup,
                 handleVisibleChange,
                 isEdit,
-                ownerFacetRef,
+                adminFacetRef,
                 setLocalValue,
             }
         },
     })
 </script>
 <style lang="less" module>
-    .ownerPopover {
+    .adminPopover {
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 250px !important;

@@ -2,7 +2,7 @@
     <a-select
         ref="inputRef"
         v-model:value="localValue"
-        placeholder="Users"
+        placeholder="Groups"
         class="w-full center-arrow"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"

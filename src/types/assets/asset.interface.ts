@@ -34,6 +34,9 @@ export interface assetInterface {
         isForeign: boolean
         compiledQuery: string
         rawQuery: string
+        rowLimit: number
+        allowQuery: boolean
+        allowQueryPreview: boolean
         qualifiedName: string
         userDescription: string
         rowCount: number

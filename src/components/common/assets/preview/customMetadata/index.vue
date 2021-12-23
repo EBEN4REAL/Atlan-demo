@@ -2,7 +2,7 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
-    <div v-else class="flex flex-col pl-5 mb-3">
+    <div v-else class="flex flex-col pl-5 mb-3" ref="target">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
@@ -55,9 +55,9 @@
                     <ReadOnly v-if="readOnly" :attribute="a" />
 
                     <EditState
-                        :index="x"
                         v-else-if="!readOnly"
                         v-model="a.value"
+                        :index="x"
                         :attribute="a"
                         @change="handleChange(x, a.value)"
                     />
@@ -77,9 +77,17 @@
         inject,
         defineAsyncComponent,
         Ref,
+        h,
+        resolveComponent,
     } from 'vue'
-    import { whenever, useMagicKeys, onKeyStroke } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
+    import {
+        whenever,
+        useMagicKeys,
+        onKeyStroke,
+        watchOnce,
+        onClickOutside,
+    } from '@vueuse/core'
+    import { message, Modal } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -88,6 +96,7 @@
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import AtlanButton from '@/UI/button.vue'
+    import Confirm from '@/common/modal/confirm.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -266,16 +275,44 @@
                 readOnly.value = true
             }
 
-            const handleCancel = () => {
+            const cancel = () => {
                 applicableList.value.forEach((att) => {
+                    // eslint-disable-next-line no-param-reassign
                     att.value = ''
                 })
                 setAttributesList()
-
                 readOnly.value = true
+                isEdit.value = false
             }
+
+            const handleCancel = () => {
+                if (isEdit.value) {
+                    Modal.confirm({
+                        title: () =>
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                'Discard'
+                            ),
+                        content: () =>
+                            h(Confirm, {
+                                title: data.value.label,
+                            }),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Discard',
+                        onOk: cancel,
+                    })
+                } else cancel()
+            }
+
             const handleChange = (index, value) => {
-                isEdit.value = true
+                if (!isEdit.value) isEdit.value = true
                 applicableList.value[index].value = value
             }
 

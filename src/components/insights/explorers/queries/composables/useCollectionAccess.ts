@@ -65,13 +65,13 @@ const useCollectionAccess = (
             attributes,
         }
 
-        console.log('coll body: ', body.value)
+        // console.log('coll body: ', body.value)
     }
 
     const getSelectedCollectionData = () => {
         // refreshBody()
 
-        console.log('coll body2: ', body.value)
+        // console.log('coll body2: ', body.value)
         return useAPI(
             map.INDEX_SEARCH,
             'POST',
@@ -173,10 +173,10 @@ const useCollectionAccess = (
 
     const isCollectionCreatedByCurrentUser = computed(() => {
         if (selectedCollectionData?.value) {
-            console.log('curr: ', {
-                currentUser: currentUser.value,
-                curr: selectedCollectionData?.value?.entities[0].attributes,
-            })
+            // console.log('curr: ', {
+            //     currentUser: currentUser.value,
+            //     curr: selectedCollectionData?.value?.entities[0].attributes,
+            // })
             return (
                 currentUser.value ===
                 selectedCollectionData?.value?.entities[0].attributes
@@ -190,7 +190,7 @@ const useCollectionAccess = (
     watch(
         activeInlineTab,
         async () => {
-            console.log('activeInlineTab: ', activeInlineTab.value)
+            // console.log('activeInlineTab: ', activeInlineTab.value)
 
             await fetchSelectedCollectionData()
         },

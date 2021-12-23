@@ -47,7 +47,7 @@ jobs:
           else 
             analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
           fi
-          echo "##[set-output name=analytics_keys;]$(echo $analytics_key)"
+          ##set-output name=analytics_keys;
         shell: bash
 
       - name: Check out branch

@@ -100,9 +100,11 @@
                 </pane>
                 <pane
                     :max-size="
-                        activeInlineTab?.assetSidebar?.isVisible ? 25 : 0
+                        activeInlineTab?.assetSidebar?.isVisible
+                            ? sidebarPaneSize
+                            : 0
                     "
-                    :min-size="0"
+                    :min-size="sidebarPaneSize"
                     :size="sidebarPaneSize"
                 >
                     <AssetSidebar />

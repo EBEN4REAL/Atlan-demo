@@ -1,8 +1,5 @@
 <template>
-    <div
-        v-if="selectedAsset?.guid"
-        class="z-20 flex flex-col bg-white border-l border-gray-300"
-    >
+    <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
         <AssetPreview
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset

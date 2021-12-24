@@ -43,9 +43,9 @@
                 @resize="paneResize"
             >
                 <pane
-                    :max-size="24.5"
+                    :max-size="maxExplorerSize"
                     :size="explorerPaneSize"
-                    :min-size="0"
+                    :min-size="minExplorerSize"
                     class="relative explorer_splitpane"
                 >
                     <!--explorer pane start -->
@@ -185,6 +185,8 @@
             ) as Ref<Function>
 
             const {
+                MIN_EXPLORER_WIDTH,
+                MAX_EXPLORER_WIDTH,
                 ASSET_SIDEBAR_WIDTH,
                 EXPLORER_WIDTH,
                 explorerPaneSize,
@@ -192,6 +194,8 @@
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const minExplorerSize = ref(0)
+            const maxExplorerSize = ref(24.5)
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -620,6 +624,10 @@
                 if (offsetWidth > EXPLORER_WIDTH) {
                     explorerPaneSize.value =
                         (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
                 }
                 if (offsetWidth > ASSET_SIDEBAR_WIDTH + EXPLORER_WIDTH) {
                     assetSidebarPaneSize.value =
@@ -634,6 +642,10 @@
                 if (offsetWidth > EXPLORER_WIDTH) {
                     explorerPaneSize.value =
                         (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
                 }
                 if (offsetWidth > ASSET_SIDEBAR_WIDTH + EXPLORER_WIDTH) {
                     assetSidebarPaneSize.value =
@@ -645,6 +657,10 @@
                     const offsetWidth = splitpaneRef?.value?.offsetWidth
                     explorerPaneSize.value =
                         (EXPLORER_WIDTH / offsetWidth) * 100
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
                     assetSidebarPaneSize.value =
                         (ASSET_SIDEBAR_WIDTH / offsetWidth) * 100
                 })
@@ -674,6 +690,8 @@
             // provide('resetQueryTree', resetQueryTree)
 
             return {
+                minExplorerSize,
+                maxExplorerSize,
                 splitpaneRef,
                 editorConfig,
                 activeTab,

@@ -16,7 +16,6 @@
                     :auto-expand-parent="false"
                     :class="$style.tree"
                     @select="selectNode"
-                    @expand="expandNode"
                 >
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />

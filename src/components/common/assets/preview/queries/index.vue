@@ -39,13 +39,14 @@
             :is-load-more="isLoadMore"
             :is-loading="isValidating"
             @loadMore="handleLoadMore"
+            class="mt-4"
         >
             <template #default="{ item, itemIndex }">
                 <AssetItem
                     :item="item"
                     :item-index="itemIndex"
                     :enable-sidebar-drawer="true"
-                    class="m-1"
+                    class="mx-4"
                     @updateDrawer="handleListUpdate"
                 />
             </template>
@@ -75,6 +76,7 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -96,6 +98,7 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
+            const { queries } = useAssetInfo()
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -116,14 +119,10 @@
 
             const updateFacet = () => {
                 facets.value = {}
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
-                    facets.value.tableQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
-                }
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
-                    facets.value.viewQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
-                }
+
+                facets.value.queryGuid = queries(selectedAsset.value)?.map(
+                    (query) => query.guid
+                )
             }
 
             updateFacet()

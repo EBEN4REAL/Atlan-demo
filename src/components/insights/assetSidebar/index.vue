@@ -5,6 +5,7 @@
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
             page="insights"
+            class="w-full"
         ></AssetPreview>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
@@ -112,6 +113,17 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+    .show-sidebar {
+        width: 420px;
+        min-width: 420px;
+    }
+    .hide-sidebar {
+        width: 0px;
+        min-width: 0px;
+    }
+    .sidebar {
+        // transition: all 0.22s;
     }
 </style>
 

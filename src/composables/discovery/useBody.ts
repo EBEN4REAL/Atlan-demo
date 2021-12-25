@@ -235,6 +235,12 @@ export function useBody(
                 }
                 break
             }
+            case 'queryGuid': {
+                if (filterObject) {
+                    base.filter('terms', '__guid', filterObject)
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)

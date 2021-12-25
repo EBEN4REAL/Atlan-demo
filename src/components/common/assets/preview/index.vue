@@ -227,6 +227,7 @@
             activity: defineAsyncComponent(
                 () => import('./activity/activityTab.vue')
             ),
+            queries: defineAsyncComponent(() => import('./queries/index.vue')),
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),

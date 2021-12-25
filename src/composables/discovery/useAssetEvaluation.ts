@@ -57,11 +57,12 @@ export default function useAssetEvaluate() {
                 entityGuidEnd2: asset.guid,
                 entityTypeEnd2: asset.typeName,
             },
-            /*  {
-            typeName: asset.typeName,
-            entityGuid: asset.guid,
-            action: 'ENTITY_UPDATE_BUSINESS_METADATA',
-        }, */
+            {
+                typeName: asset.typeName,
+                entityGuid: asset.guid,
+                action: 'ENTITY_UPDATE_BUSINESS_METADATA',
+                businessMetadata: '*',
+            },
         ]
     }
 

@@ -82,6 +82,7 @@ export const AssetAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
+    'queries',
 ]
 
 export const SQLAttributes = [

@@ -9,9 +9,9 @@
         <EmptyScreen empty-screen="EmptyDiscover" desc="No data found" />
     </div>
     <VirtualList v-else :data="list" data-key="guid" variable-height>
-        <template #default="{ item }">
+        <template #default="{ item, itemIndex }">
             <div
-                class="mx-3 my-1 transition-all duration-300  hover:bg-primary-light"
+                class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
                 :class="
                     item.guid === selectedAssetId
                         ? 'outline-primary bg-primary-light shadow-sm'
@@ -19,13 +19,19 @@
                 "
             >
                 <Popover :item="item">
-                    <MiniAssetItem
+                    <!-- <MiniAssetItem
                         :no-bg="true"
                         :item="item"
                         :preference="preference"
                         has-pop-hover
                         @click="handlePreview(item)"
                         :enableSidebarDrawer="true"
+                    /> -->
+                    <AssetItem
+                        :item="item"
+                        :item-index="itemIndex"
+                        :enable-sidebar-drawer="true"
+                        @updateDrawer="handleListUpdate"
                     />
                 </Popover>
             </div>
@@ -34,18 +40,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, inject } from 'vue'
     import MiniAssetItem from '@/common/assets/list/miniAssetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
     import Popover from '@/common/popover/assets/index.vue'
     import EmptyScreen from '@/common/empty/index.vue'
+    import AssetItem from '@common/assets/list/assetItem.vue'
 
     export default defineComponent({
         name: 'AssetList',
         components: {
-            MiniAssetItem,
+            AssetItem,
             VirtualList,
             Popover,
             EmptyScreen,
@@ -60,12 +67,12 @@
             },
             assetType: {
                 type: String,
-                requred: true,
+                required: false,
                 default: () => '',
             },
             assetId: {
                 type: String,
-                requred: true,
+                required: false,
                 default: () => '',
             },
         },
@@ -82,6 +89,12 @@
                 }
                 emit('preview', item)
             }
+
+            const updateList = inject('updateList')
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+            }
+
             const { fetchRelationAssets } = useRelations
             const { list, isReady, error, isLoading } = fetchRelationAssets(
                 props.assetId,
@@ -89,7 +102,7 @@
             )
 
             return {
-                // handlePreview,
+                handleListUpdate,
                 selectedAssetId,
                 isLoading,
                 list,

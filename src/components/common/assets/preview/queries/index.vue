@@ -42,13 +42,14 @@
             class="mt-4"
         >
             <template #default="{ item, itemIndex }">
-                <AssetItem
-                    :item="item"
-                    :item-index="itemIndex"
-                    :enable-sidebar-drawer="true"
-                    class="mx-4"
-                    @updateDrawer="handleListUpdate"
-                />
+                <Popover :item="item">
+                    <AssetItem
+                        :item="item"
+                        :item-index="itemIndex"
+                        :enable-sidebar-drawer="true"
+                        class="mx-3"
+                        @updateDrawer="handleListUpdate"
+                /></Popover>
             </template>
         </AssetList>
     </div>
@@ -77,6 +78,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -88,6 +90,7 @@
             Sorting,
             EmptyView,
             ErrorView,
+            Popover,
         },
         props: {
             selectedAsset: {

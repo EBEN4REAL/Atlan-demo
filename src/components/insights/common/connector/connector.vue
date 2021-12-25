@@ -271,21 +271,8 @@
                 }
             }
 
-            const expandFolderNode = (event: any, node: any) => {
-                const { isLeaf } = node
-
-                if (isLeaf) {
-                    return
-                }
-
-                // Call internal rc-tree expand function
-                // https://github.com/ant-design/ant-design/issues/12567
-                treeRef.value.current!.onNodeExpand(event as any, node)
-            }
-
             const selectNode = (value, node?: any) => {
                 /* Checking if isLeafNodeSelectable by default it is selectable */
-                expandFolderNode(undefined, node)
 
                 console.log('node: ', node)
                 if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {

@@ -395,7 +395,7 @@
                 class="btn-submit"
                 @click="handleClose"
             >
-                Cancel {{ policy.type }}
+                Cancel 
             </AtlanBtn>
             <AtlanBtn
                 size="sm"

@@ -493,7 +493,8 @@ const useTree = ({
     }
 
     const expandNode = (expanded: string[], event: any) => {
-        console.log('expanded', expanded, event.node.dataRef)
+        console.log('expanded', expanded, expandedKeys.value)
+
         if (!event.node.dataRef.isLeaf) {
             const key: string = event.node.dataRef.key
             const isExpanded = expandedKeys.value?.includes(key)

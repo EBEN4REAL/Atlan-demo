@@ -9,6 +9,7 @@ export interface Actions extends State {
     setIsAuthenticated(value: any): void
     setUserDetails(): void
     setRoles(value: any): void
+    setDecentralizedRoles(value: any): void
 }
 
 export const actions: Actions = {
@@ -65,5 +66,8 @@ export const actions: Actions = {
     },
     setRoles(value) {
         this.roles = value
+    },
+    setDecentralizedRoles(value) {
+        this.decentralizedRole = value
     },
 }

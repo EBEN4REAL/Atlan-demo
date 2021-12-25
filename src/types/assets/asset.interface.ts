@@ -71,6 +71,17 @@ export interface assetInterface {
                 link: string
             }
         }[]
+        queries?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+            attributes: {
+                name: string
+                link: string
+            }
+        }[]
         readme?: {
             guid: string
             typeName: string

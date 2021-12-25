@@ -5,7 +5,14 @@
     <div v-else class="flex flex-col pl-5 mb-3" ref="target">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
-            <div>
+            <div
+                v-if="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                    )
+                "
+            >
                 <a-button v-if="readOnly" @click="() => (readOnly = false)">
                     <AtlanIcon icon="Edit" />
                     <span class="ml-1 text-gray-700">Edit</span>
@@ -122,7 +129,7 @@
             const loading = ref(false)
             const guid = ref()
 
-            const { title } = useAssetInfo()
+            const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
                 isLink,
@@ -217,18 +224,6 @@
                 })
 
                 return mappedPayload
-            }
-            const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers()
-
-            const userSearch = (val) => {
-                handleUserSearch(val)
-            }
-
-            const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups()
-            const groupSearch = (val) => {
-                handleGroupSearch(val)
             }
 
             const {
@@ -392,10 +387,7 @@
                 getEnumOptions,
                 handleChange,
                 loading,
-                userSearch,
-                userList,
-                groupSearch,
-                groupList,
+                selectedAssetUpdatePermission,
             }
         },
     })

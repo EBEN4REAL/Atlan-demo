@@ -9,6 +9,11 @@
         :options="finalList"
         :filter-option="() => true"
         @change="handleChange"
+        @dropdownVisibleChange="
+            (o) => {
+                if (!o) query = ''
+            }
+        "
         @click="
             () => {
                 if (finalList.length < 2) mutate()
@@ -115,11 +120,13 @@
                 loadMore,
                 mutate,
                 resetFilter,
+                queryText: query,
             } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
                 () => {
+                    s
                     handleSearch(props.queryText)
                 }
             )
@@ -157,6 +164,7 @@
             }
 
             return {
+                query,
                 inputRef,
                 focus,
                 resetFilter,

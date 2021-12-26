@@ -493,40 +493,26 @@ const useTree = ({
     }
 
     const expandNode = (expanded: string[], event: any) => {
-        // triggered by select
-        // console.log('expanded', expanded)
-        // if (!event.node.isLeaf) {
-        //     const key: string = event.node.eventKey
-        //     const isExpanded = expandedKeys.value?.includes(key)
-        //     if (!isExpanded) {
-        //         if (isAccordion && event.node.dataRef.isRoot) {
-        //             expandedKeys.value = []
-        //         }
-        //         expandedKeys.value?.push(key)
-        //     } else if (isExpanded) {
-        //         const index = expandedKeys.value?.indexOf(key)
-        //         expandedKeys.value?.splice(index, 1)
-        //     }
-        //     expandedKeys.value = [...expandedKeys.value]
-        // }
-        // store.set(expandedCacheKey, expandedKeys.value)
+        console.log('expanded', expanded, expandedKeys.value)
+
+        if (!event.node.dataRef.isLeaf) {
+            const key: string = event.node.dataRef.key
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
     }
 
     const selectNode = (selected: any, event: any) => {
-        // if (!event.node.isLeaf) {
-        //     expandNode([], event)
-        //     // selectedKeys.value = []
-        // } else {
-        //     if (selectedKeys.value.includes(selected)) {
-        //         // selectedKeys.value = []
-        //     } else {
-        //         // selectedKeys.value = [...selected]
-        //     }
-        //     emit('select', event.node.eventKey)
-        // }
-        // store.set(selectedCacheKey, selectedKeys.value)
-        /* New Logic */
-        if (!event.node.isLeaf) {
+        if (!event.node.dataRef.isLeaf) {
             expandNode([], event)
         }
         if (selectedKeys.value.includes(selected)) {
@@ -724,7 +710,11 @@ const useTree = ({
         ],
         ([c, d, s]) => {
             console.log('reinitialized')
-            console.log('tree filters: ', {facets, sortOrderColumn, sortOrderTable})
+            console.log('tree filters: ', {
+                facets,
+                sortOrderColumn,
+                sortOrderTable,
+            })
             isInitingTree.value = true
             initTreeData(c, d, s)
         }

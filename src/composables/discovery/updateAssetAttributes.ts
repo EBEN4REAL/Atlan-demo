@@ -15,6 +15,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         description,
         ownerGroups,
         ownerUsers,
+        adminGroups,
+        adminUsers,
         classifications,
         certificateStatus,
         certificateUpdatedAt,
@@ -28,6 +30,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         readmeContent,
         meaningRelationships,
         categories,
+        allowQuery,
+        allowQueryPreview,
+        connectionRowLimit,
     } = useAssetInfo()
 
     const entity = ref({
@@ -95,6 +100,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ownerGroups: ownerGroups(selectedAsset.value),
     })
 
+    const localAdmins = ref({
+        adminUsers: adminUsers(selectedAsset.value),
+        adminGroups: adminGroups(selectedAsset.value),
+    })
+
     const localAnnouncement = ref({
         announcementMessage: announcementMessage(selectedAsset.value) || '',
         announcementType:
@@ -112,6 +122,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localReadmeContent = ref(readmeContent(selectedAsset.value))
 
     const localClassifications = ref(classifications(selectedAsset.value))
+
+    const localSQLQuery = ref({
+        allowQuery: allowQuery(selectedAsset.value),
+        allowQueryPreview: allowQueryPreview(selectedAsset.value),
+        connectionRowLimit: connectionRowLimit(selectedAsset.value),
+    })
 
     const currentMessage = ref('')
 
@@ -159,12 +175,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     // Description Change
     const handleChangeDescription = () => {
-        console.log('entity: ', selectedAsset.value)
         if (description(selectedAsset?.value) !== localDescription.value) {
             entity.value.attributes.userDescription = localDescription.value
             body.value.entities = [entity.value]
 
-            console.log('new entity: ', entity.value)
             currentMessage.value = 'Description has been updated'
             mutate()
         }
@@ -209,6 +223,45 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
+    // Admins Change
+    const handleChangeAdmins = () => {
+        let isChanged = false
+
+        if (
+            !entity.value.attributes.adminUsers &&
+            Object.keys(localAdmins.value?.adminUsers).length === 0
+        ) {
+            isChanged = false
+        } else {
+            // Users
+            if (
+                entity.value.attributes.adminUsers?.sort().toString() !==
+                localAdmins.value?.adminUsers?.sort().toString()
+            ) {
+                entity.value.attributes.adminUsers =
+                    localAdmins.value?.adminUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.adminGroups?.sort().toString() !==
+                localAdmins.value?.adminGroups?.sort().toString()
+            ) {
+                entity.value.attributes.adminGroups =
+                    localAdmins.value?.adminGroups
+                isChanged = true
+            }
+        }
+
+        if (isChanged) {
+            body.value.entities = [entity.value]
+
+            currentMessage.value = 'Admins have been updated'
+            mutate()
+        }
+    }
+
     // Certificate Change
     const handleChangeCertificate = () => {
         if (
@@ -246,6 +299,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         body.value.entities = [entity.value]
 
         currentMessage.value = 'Announcement has been updated'
+        mutate()
+    }
+
+    // SQL Query Config Update
+    const handleSQLQueryUpdate = () => {
+        entity.value.attributes.allowQuery = localSQLQuery.value.allowQuery
+        entity.value.attributes.allowQueryPreview =
+            localSQLQuery.value.allowQueryPreview
+        entity.value.attributes.rowLimit =
+            localSQLQuery.value.connectionRowLimit
+        body.value.entities = [entity.value]
+
+        currentMessage.value = 'SQL Query Config has been updated'
         mutate()
     }
 
@@ -521,10 +587,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
+        handleChangeAdmins,
         handleChangeCertificate,
         handleClassificationChange,
         handleAnnouncementUpdate,
         isLoadingClassification,
+        localSQLQuery,
+        handleSQLQueryUpdate,
         nameRef,
         descriptionRef,
         animationPoint,
@@ -539,5 +608,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleCategoriesUpdate,
         shouldDrawerUpdate,
         asset,
+        localAdmins,
     }
 }

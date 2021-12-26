@@ -32,7 +32,9 @@
                 </div> -->
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
-                <span class="text-sm font-normal text-gray-700">Name</span>
+                <span class="text-sm font-normal text-gray-700"
+                    >Collection Name</span
+                >
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
@@ -83,7 +85,7 @@
                 </a-input>
                 <div class="mt-4">
                     <span class="text-sm font-normal text-gray-700"
-                        >Description</span
+                        >Collection Description</span
                     >
                     <a-textarea
                         v-model:value="description"
@@ -95,7 +97,7 @@
             </div>
             <div class="px-4 mt-4">
                 <span class="text-sm font-normal text-gray-700"
-                    >Visibility</span
+                    >Collection Type</span
                 >
                 <!-- {{ isShareable }} -->
                 <div class="mt-2">
@@ -113,7 +115,7 @@
                 </div>
             </div>
             <div
-                class="p-3 mx-4 mt-2 font-normal border border-gray-300 rounded-lg"
+                class="p-3 pb-0 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
                 v-if="isShareable === 'true'"
             >
                 <span class="text-sm text-gray-700">Add users and groups</span>
@@ -166,7 +168,7 @@
                             />
                         </template>
                     </a-dropdown>
-                    <a-dropdown
+                    <!-- <a-dropdown
                         :trigger="['click']"
                         placement="bottomLeft"
                         v-model:visible="userDropdown"
@@ -174,21 +176,33 @@
                         <div
                             class="flex items-center justify-center w-full h-8 pl-4 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
                             @click="showUserDropdown"
-                        >
-                            <!-- <AtlanIcon
+                        > -->
+                    <!-- <AtlanIcon
                                 icon="Search"
                                 class="w-4 h-4 text-gray-500"
                             /> -->
-                            <span class="px-2 font-normal text-gray-700">
+                    <!-- <span class="px-2 font-normal text-gray-700">
                                 Add users & groups
                                 <AtlanIcon
                                     icon="Add"
                                     class="w-4 h-4 font-normal text-gray-700"
                                 />
-                            </span>
-                        </div>
+                            </span> -->
 
-                        <template #overlay>
+                    <div
+                        class="flex items-center justify-center w-full h-8 pl-2 pr-2 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
+                        @click="showUserDropdown"
+                    >
+                        <Owners
+                            :showNone="false"
+                            select-group-key="alias"
+                            select-user-key="username"
+                            v-model:modelValue="userData[selectedType]"
+                            :disabledModalValue="userData[otherType]"
+                        />
+                    </div>
+
+                    <!-- <template #overlay>
                             <div
                                 style="width: 330px"
                                 class="px-2 py-2 pt-4 bg-white rounded-lg shadow-lg"
@@ -202,7 +216,7 @@
                                 />
                             </div>
                         </template>
-                    </a-dropdown>
+                    </a-dropdown> -->
                 </div>
                 <span class="text-xs text-gray-500"
                     >{{
@@ -213,7 +227,7 @@
                 </span>
 
                 <div
-                    style="max-height: 120px"
+                    style="max-height: 172px"
                     class="mt-2 overflow-auto"
                     v-if="
                         userData['edit']['ownerUsers'].length ||
@@ -259,45 +273,39 @@
                     </a-tabs> -->
                 </div>
             </div>
-            <div class="flex items-center w-full px-4 mt-5">
-                <div
-                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
+            <div
+                class="flex items-center justify-end flex-1 w-full px-4 mt-4 text-gray-700"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="flex items-center justify-between h-6 px-6 py-1 ml-3 border border-gray-300 cursor-pointer hover:text-primary"
+                    @click="closeModal"
                 >
-                    <AtlanBtn
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        class="flex items-center justify-between h-6 px-6 py-1 ml-3 border border-gray-300 hover:text-primary"
-                        @click="closeModal"
-                    >
-                        <span>Cancel</span>
-                    </AtlanBtn>
+                    <span>Cancel</span>
+                </AtlanBtn>
 
-                    <AtlanBtn
-                        size="sm"
-                        color="primary"
-                        padding="compact"
-                        class="flex items-center justify-between h-6 px-6 py-1 ml-4 border-none"
-                        @click="saveOrUpdateCollection"
-                    >
-                        <div class="flex items-center text-white rounded">
-                            <AtlanIcon
-                                v-if="isCollectionSaving"
-                                icon="CircleLoader"
-                                style="margin-right: 4px"
-                                class="w-4 h-4 text-white animate-spin"
-                            ></AtlanIcon>
+                <AtlanBtn
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                    class="flex items-center justify-between h-6 px-6 py-1 ml-4 border-none cursor-pointer"
+                    @click="saveOrUpdateCollection"
+                >
+                    <div class="flex items-center text-white rounded">
+                        <AtlanIcon
+                            v-if="isCollectionSaving"
+                            icon="CircleLoader"
+                            style="margin-right: 4px"
+                            class="w-4 h-4 text-white animate-spin"
+                        ></AtlanIcon>
 
-                            <span>{{
-                                isCreate
-                                    ? 'Create'
-                                    : isShare
-                                    ? 'Invite'
-                                    : 'Update'
-                            }}</span>
-                        </div>
-                    </AtlanBtn>
-                </div>
+                        <span>{{
+                            isCreate ? 'Create' : isShare ? 'Invite' : 'Update'
+                        }}</span>
+                    </div>
+                </AtlanBtn>
             </div>
         </div>
     </a-modal>

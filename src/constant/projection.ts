@@ -61,6 +61,8 @@ export const AssetAttributes = [
     'sourceUpdatedBy',
     'ownerUsers',
     'ownerGroups',
+    'adminUsers',
+    'adminGroups',
     'meanings',
     'readme',
     'rawQuery',
@@ -73,11 +75,14 @@ export const AssetAttributes = [
     'lastSyncRunAt',
     'lastSyncWorkflowName',
     'queryConfig',
+    'rowLimit',
+    'credentialStrategy',
     'allowQuery',
     'allowQueryPreview',
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
+    'queries',
 ]
 
 export const SQLAttributes = [

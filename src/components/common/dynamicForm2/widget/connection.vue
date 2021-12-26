@@ -106,6 +106,8 @@
                         '__createdBy',
                         'ownerUsers',
                         'ownerGroups',
+                        'adminUsers',
+                        'adminGroups',
                         'allowQuery',
                         'allowPreview',
                     ],
@@ -212,23 +214,23 @@
                             ],
                         },
                     },
-                    ownerUsers: {
+                    adminUsers: {
                         type: 'string',
 
                         ui: {
                             help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'userMultiple',
-                            label: 'Owner Users',
+                            label: 'Admin Users',
                             start: 1,
                             grid: 5,
                         },
                     },
-                    ownerGroups: {
+                    adminGroups: {
                         type: 'string',
                         ui: {
                             help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'groupMultiple',
-                            label: 'Owner Groups',
+                            label: 'Admin Groups',
 
                             grid: 4,
                         },

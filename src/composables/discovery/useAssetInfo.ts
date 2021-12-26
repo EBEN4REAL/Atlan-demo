@@ -119,6 +119,12 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
+    const connectionRowLimit = (asset: assetInterface) =>
+        attributes(asset)?.rowLimit
+    const allowQuery = (asset: assetInterface) => attributes(asset)?.allowQuery
+    const allowQueryPreview = (asset: assetInterface) =>
+        attributes(asset)?.allowQueryPreview
+
     const links = (asset: assetInterface) => {
         const allLinks = attributes(asset)?.links
 
@@ -128,6 +134,8 @@ export default function useAssetInfo() {
         return activeLinks
     }
     const link = (asset: assetInterface) => attributes(asset)?.link
+
+    const queries = (asset: assetInterface) => attributes(asset)?.queries
 
     const getTabs = (list, typeName: string) => {
         return list.filter((i) => {
@@ -546,6 +554,12 @@ export default function useAssetInfo() {
 
     const ownerUsers = (asset: assetInterface) =>
         attributes(asset)?.ownerUsers || []
+
+    const adminGroups = (asset: assetInterface) =>
+        attributes(asset)?.adminGroups || []
+
+    const adminUsers = (asset: assetInterface) =>
+        attributes(asset)?.adminUsers || []
 
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
@@ -1005,5 +1019,11 @@ export default function useAssetInfo() {
         getLineagePath,
         isUserDescription,
         isScrubbed,
+        adminGroups,
+        adminUsers,
+        connectionRowLimit,
+        allowQuery,
+        allowQueryPreview,
+        queries,
     }
 }

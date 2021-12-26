@@ -32,8 +32,6 @@
         watch,
     } from 'vue'
 
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import AssetsWrapper from '@/assets/index.vue'
 
@@ -42,44 +40,15 @@
         components: {
             AssetsWrapper,
         },
-        emits: ['openAssetsTab'],
         props: {
             classification: {
                 type: Object as PropType<ClassificationInterface>,
                 required: true,
             },
         },
+        emits: ['openAssetsTab'],
         setup(props, { emit }) {
             const { classification: selectedClassification } = toRefs(props)
-
-            const limit = ref(0)
-            const offset = ref(0)
-            const dependentKey = ref('DEFAULT_ASSET_LIST')
-            const facets = ref({
-                __traitNames: {
-                    classifications: [selectedClassification.value.name],
-                },
-            })
-            const preference = ref({
-                sort: 'default',
-                display: [],
-            })
-            const aggregations = ref(['typeName'])
-            const postFacets = ref({
-                typeName: '__all',
-            })
-
-            const { list, isLoading, assetTypeAggregationList, quickChange } =
-                useDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    facets,
-                    postFacets,
-                    aggregations,
-                    preference,
-                    limit,
-                    offset,
-                })
 
             const filterConfig = computed(() => ({
                 __traitNames: {
@@ -87,18 +56,8 @@
                 },
             }))
 
-            watch(selectedClassification, (classification) => {
-                timeAgo.value = classification.updateTime
-                facets.value.__traitNames.classifications = [
-                    classification.name,
-                ]
-                quickChange()
-            })
-
             return {
                 selectedClassification,
-                assetTypeAggregationList,
-                isLoading,
                 filterConfig,
             }
         },

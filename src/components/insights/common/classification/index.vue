@@ -96,9 +96,7 @@
 
             onMounted(async () => {
                 let queryCount = await getAssetCountOnClassification('Query')
-                let folderCount = await getAssetCountOnClassification(
-                    'QueryFolder'
-                )
+                let folderCount = await getAssetCountOnClassification('Folder')
 
                 let query = {}
                 let folder = {}

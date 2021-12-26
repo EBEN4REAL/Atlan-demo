@@ -72,50 +72,56 @@ function generateMarkdown(
     entity: any,
     assetType: string
 ) {
-    let description,
-        ownerString,
-        ownersHTML,
-        descriptionHTML,
-        rowCountHTML = '',
-        guid
+
+    let qualifiedName = entity?.attributes?.qualifiedName?.split('/')
+    let db = qualifiedName[3]
+    let schema = qualifiedName[4]
+    let table = qualifiedName[5]
+    let name = entity?.attributes?.name
+    let description =
+        entity.attributes.userDescription || entity.attributes.description
+
+    let certificateStatus = entity?.attributes?.certificateStatus ? entity?.attributes?.certificateStatus : 'no_certificate'
+    let descriptionHTML = `<div></p><h6>Description:</h6></br>${description}</p></div>`
+    let typeHTML=`<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
+    let ownerString = entity.attributes.ownerUsers.join(', ')
+    let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
+    console.log('asset here: ', entity)
+
+    let rowCount, columnCount,rowCountHTML, isPrimaryHTML
 
     if (assetType === 'TABLE') {
-        description =
-            entity.attributes.userDescription || entity.attributes.description
-        ownerString = entity.attributes.ownerUsers.join(', ')
-        rowCountHTML = `<div>Row count:</div>
-        <p> ${entity.attributes.rowCount}</p>
-        &nbsp; 
+        rowCount = entity?.attributes?.rowCount
+        columnCount = entity?.attributes?.columnCount
+        
+        rowCountHTML = `<div>
+            <h5>${db} / ${schema}</h5><h5>${rowCount} Rows / ${columnCount} Columns</h5>
         </div>`
-        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>&nbsp;`
-        descriptionHTML = `</p> Owned by:</br>${description}</p>`
-        guid = entity.guid
+        
     } else {
-        description =
-            entity.attributes.userDescription || entity.attributes.description
-        ownerString = entity.attributes.ownerUsers.join(', ')
-        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>`
-        descriptionHTML = `</p> Description:</br>${description}</p>`
-        guid = entity.guid
+        rowCountHTML = `<div>
+            <h5>${db} / ${schema} / ${table}</h5>
+        </div>`
+
+        isPrimaryHTML = `<div>
+            <div>isPrimary: <h5>${entity?.attributes?.isPrimary ? entity?.attributes?.isPrimary : 'false'}</h5></div>
+        </div>`
     }
 
-    //<a target="_blank" href="${URL}" rel="noopener noreferrer nofollow">${entity.name}</a>
     return turndownService.turndown(
         `
+        <div>
+        ${typeHTML}
         ${description ? descriptionHTML : ''}
         ${ownerString ? ownersHTML : ''}
-        <div>
-        <div>
+        ${rowCountHTML}
+        ${assetType==='COLUMN' ? isPrimaryHTML : ''}
         </div>
-        <div style="display:flex; color: red">
-            ${rowCountHTML}
-         <div>
-         </div>
-        </div>
-        </div>
-     
+        
         `
     )
+
+    // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
 export function entitiesToEditorKeyword(
@@ -282,7 +288,7 @@ const attributes = [
     'userDescription',
     'ownerUsers',
     'ownerGroups',
-
+    'isPrimary',
     'connectorName',
     'connectionId',
     'connectionQualifiedName',
@@ -291,6 +297,7 @@ const attributes = [
     'rowCount',
     'columnCount',
     'tableCount',
+    'certificateStatus',
     '__guid',
     'qualifiedName',
     'connectionName',

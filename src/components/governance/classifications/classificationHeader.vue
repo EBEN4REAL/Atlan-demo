@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col px-5 bg-white py-7">
         <div class="flex justify-between gap-x-2">
-            <div class="flex flex-col gap-y-2">
+            <div class="flex flex-col gap-y-3">
                 <div class="flex">
                     <ClassificationIcon
                         :color="selectedClassification?.options?.color"
@@ -29,8 +29,35 @@
                         {{ descTrim ? 'show more' : 'show less' }}
                     </span>
                 </div>
-                <div v-else>
+                <div v-else class="text-gray-500">
                     {{ selectedClassification?.description }}
+                </div>
+                <div class="flex items-center gap-2 text-gray-500">
+                    <div class="flex items-center gap-2">
+                        Last Updated
+                        <span class="text-gray-700"> {{ lastUpdatedAt }}</span>
+                        by
+                        <UserPill
+                            :username="selectedClassification.updatedBy"
+                            :allow-delete="false"
+                            :enable-hover="false"
+                            class=""
+                            :border="false"
+                        />
+                    </div>
+                    <span class="text-gray-200">&bull;</span>
+                    <div class="flex items-center gap-2">
+                        Created by
+                        <UserPill
+                            :username="selectedClassification.createdBy"
+                            :allow-delete="false"
+                            :enable-hover="false"
+                            class=""
+                            :border="false"
+                        />
+                        on
+                        <span class="text-gray-700">{{ createdOn }}</span>
+                    </div>
                 </div>
             </div>
             <div class="">
@@ -95,8 +122,10 @@
         h,
     } from 'vue'
     import { Modal } from 'ant-design-vue'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useTimeAgo } from '@vueuse/core'
     import { useRouter } from 'vue-router'
+    import dayjs from 'dayjs'
+    import UserPill from '@/common/pills/user.vue'
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
@@ -117,6 +146,7 @@
         name: 'ClassificationHeader',
         components: {
             Dropdown,
+            UserPill,
             AddClassificationModal,
             AtlanBtn,
             ClassificationColorSelector,
@@ -232,7 +262,17 @@
             // }
 
             const descTrim = ref(true)
+            const timeAgo = ref(selectedClassification.value.updateTime)
+            const lastUpdatedAt = useTimeAgo(timeAgo)
+            const createdOn = computed(() =>
+                dayjs(new Date(selectedClassification.value.createTime)).format(
+                    'Do MMMM YYYY'
+                )
+            )
+
             return {
+                createdOn,
+                lastUpdatedAt,
                 descTrim,
                 isDeleteClassificationModalOpen,
                 closeDeleteClassificationModal,

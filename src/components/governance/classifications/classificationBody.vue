@@ -2,7 +2,7 @@
     <!-- <KeepAlive> -->
     <div class="overflow-y-scroll wrapper-height">
         <ClassificationOverview
-            class="px-5"
+            class="p-5"
             :classification="selectedClassification"
         />
     </div>

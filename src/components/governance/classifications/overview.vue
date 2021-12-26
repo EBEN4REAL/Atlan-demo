@@ -1,28 +1,5 @@
 <template>
     <div>
-        <div class="flex items-center py-6 space-x-4 text-sm text-gray-500">
-            <div class="flex items-center">
-                Created By
-                <UserPill
-                    :username="selectedClassification.createdBy"
-                    :allowDelete="false"
-                    :enableHover="false"
-                    class="h-6 mx-1"
-                ></UserPill>
-                on <span class="ml-1 text-gray-700">{{ createdOn }}</span>
-            </div>
-            <span>&bull;</span>
-            <div class="flex items-center">
-                Last Updated
-                <span class="mx-1 text-gray-700"> {{ lastUpdatedAt }}</span> By
-                <UserPill
-                    :username="selectedClassification.updatedBy"
-                    :allowDelete="false"
-                    :enableHover="false"
-                    class="h-6 mx-1"
-                ></UserPill>
-            </div>
-        </div>
         <div
             class="flex flex-col p-4 overflow-y-scroll bg-white rounded-md"
             style="height: 600px"
@@ -54,10 +31,6 @@
         toRefs,
         watch,
     } from 'vue'
-    import dayjs from 'dayjs'
-    import { useTimeAgo } from '@vueuse/core'
-
-    import UserPill from '@/common/pills/user.vue'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -67,7 +40,6 @@
     export default defineComponent({
         name: 'ClassificationOverviewTab',
         components: {
-            UserPill,
             AssetsWrapper,
         },
         emits: ['openAssetsTab'],
@@ -79,13 +51,6 @@
         },
         setup(props, { emit }) {
             const { classification: selectedClassification } = toRefs(props)
-            const timeAgo = ref(selectedClassification.value.updateTime)
-            const lastUpdatedAt = useTimeAgo(timeAgo)
-            const createdOn = computed(() =>
-                dayjs(new Date(selectedClassification.value.createTime)).format(
-                    'Do MMMM YYYY'
-                )
-            )
 
             const limit = ref(0)
             const offset = ref(0)
@@ -132,8 +97,6 @@
 
             return {
                 selectedClassification,
-                lastUpdatedAt,
-                createdOn,
                 assetTypeAggregationList,
                 isLoading,
                 filterConfig,

@@ -137,6 +137,8 @@
                             :showEmptyState="showEmptyState"
                             :refreshQueryTree="refreshQueryTree"
                             :QueriesFetchError="QueriesFetchError"
+                            :isNodeLoading="isNodeLoading"
+                            :nodeError="nodeError"
                         />
                     </div>
                     <!--explorer pane end -->
@@ -553,12 +555,38 @@
                 const guid = getRelevantTreeData().parentGuid.value
                 // console.log('tree data: ', getRelevantTreeData())
 
+                // console.log('folder data: ', {
+                //     pqn: getRelevantTreeData().parentQualifiedName.value,
+                //     pguid: getRelevantTreeData().parentGuid.value,
+                //     selectedCollection: selectedCollection.value,
+                //     immediateParentGuid: immediateParentGuid.value,
+                // })
+
+                let parentGuid = getRelevantTreeData().parentGuid
+                let parentQualifiedName =
+                    getRelevantTreeData().parentQualifiedName
+
+                if (!parentGuid.value || !parentQualifiedName.value) {
+                    parentGuid.value = selectedCollection?.value?.guid
+                    parentQualifiedName.value =
+                        selectedCollection?.value?.attributes.qualifiedName
+                }
+
+                // console.log('folder data: ', {
+                //     pqn: parentQualifiedName.value,
+                //     pguid: parentGuid.value,
+                //     selectedCollection: selectedCollection.value,
+                //     immediateParentGuid: immediateParentGuid.value,
+                // })
+
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
                     // check if there are existing inputs to avoid duplication
                     if (!existingInputs.length && newFolderCreateable.value) {
                         let parentFolder
-                        if (guid === selectedCollection?.value?.guid) {
+                        if (
+                            parentGuid.value === selectedCollection?.value?.guid
+                        ) {
                             parentFolder =
                                 document.querySelector(
                                     '.query-explorer  .ant-tree'
@@ -583,7 +611,9 @@
                             'h-8'
                         )
                         let childCount = 0
-                        if (guid !== selectedCollection?.value?.guid) {
+                        if (
+                            parentGuid.value !== selectedCollection?.value?.guid
+                        ) {
                             console.log(
                                 'parentChild: ',
                                 parentFolder.children[0].children.length
@@ -608,9 +638,11 @@
                         let caret =
                             '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
 
-                        if (guid !== selectedCollection?.value?.guid) {
+                        if (
+                            parentGuid.value !== selectedCollection?.value?.guid
+                        ) {
                             caret =
-                                '<span class="mr-0.5 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                                '<span class="ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
                         }
 
                         const caretEl = new DOMParser().parseFromString(
@@ -619,7 +651,7 @@
                         ).body.firstElementChild
 
                         const folderSvg =
-                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 w-auto h-5 my-auto mr-1 -ml-0.5" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 my-auto ml-1 mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
                         const folderSvgEl = new DOMParser().parseFromString(
                             folderSvg,
                             'text/html'
@@ -639,8 +671,8 @@
                                 newFolderName.value,
                                 saveQueryLoading,
                                 savedQueryType.value?.name,
-                                getRelevantTreeData().parentQualifiedName,
-                                getRelevantTreeData().parentGuid,
+                                parentQualifiedName,
+                                parentGuid,
                                 selectedCollection
                             )
                             watch(data, async (newData) => {
@@ -648,8 +680,7 @@
                                     newFolderName.value = ''
                                     setTimeout(async () => {
                                         await refetchNode(
-                                            getRelevantTreeData().parentGuid
-                                                .value,
+                                            parentGuid.value,
                                             'Folder'
                                         )
                                         ul.removeChild(div)
@@ -660,7 +691,7 @@
 
                         input.setAttribute(
                             'class',
-                            `outline-none py-0 rounded my-1 w-auto ${inputClassName}`
+                            `outline-none py-0 rounded my-1 w-full ${inputClassName}`
                         )
                         input.setAttribute('placeholder', 'Name your folder')
                         input.addEventListener('input', (e) => {
@@ -709,7 +740,9 @@
                         ul.appendChild(div)
                         // console.log('child: ul: ', ul)
 
-                        if (guid === selectedCollection?.value?.guid) {
+                        if (
+                            parentGuid.value === selectedCollection?.value?.guid
+                        ) {
                             parentFolder.prepend(ul)
                             // console.log('input parent append')
                         } else {
@@ -724,22 +757,22 @@
                 }
 
                 const loaded = getRelevantTreeData().loadedKeys.value.find(
-                    (key) => key === getRelevantTreeData().parentGuid.value
+                    (key) => key === parentGuid.value
                 )
                 let expanded = getRelevantTreeData().expandedKeys.value.find(
-                    (key) => key === getRelevantTreeData().parentGuid.value
+                    (key) => key === parentGuid.value
                 )
 
                 if (loaded && !expanded) {
                     // if the folder is loaded but not expanded, expand it then add input
                     getRelevantTreeData().expandedKeys.value.push(
-                        getRelevantTreeData().parentGuid.value
+                        parentGuid.value
                     )
                     setTimeout(appendInput, 1000)
                 }
                 if (
                     (loaded && expanded) ||
-                    guid === selectedCollection?.value?.guid
+                    parentGuid.value === selectedCollection?.value?.guid
                 ) {
                     appendInput()
                 }
@@ -798,6 +831,8 @@
                 errorReq: QueriesFetchError,
                 isLoading: isQueriesLoading,
                 initTreeData: refreshQueryTree,
+                isNodeLoading: isNodeLoading,
+                nodeError: nodeError,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -1080,6 +1115,8 @@
                 hasCollectionWritePermission,
                 hasWritePermission,
                 map,
+                isNodeLoading,
+                nodeError,
             }
         },
     })

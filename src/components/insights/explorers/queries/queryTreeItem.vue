@@ -618,7 +618,7 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none border py-0 px-1 rounded mx-0 my-0.5 w-auto`
+                    `outline-none py-0 px-1 rounded mx-0 my-0.5 w-full`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 

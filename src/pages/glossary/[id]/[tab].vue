@@ -20,6 +20,7 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
+        GlossaryAttributes
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -64,7 +65,7 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                'categories',
+                ...GlossaryAttributes
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 

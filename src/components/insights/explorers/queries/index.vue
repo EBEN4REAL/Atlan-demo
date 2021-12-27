@@ -405,6 +405,7 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+
             const queryCollectionsError = inject(
                 'queryCollectionsError'
             ) as Ref<any>
@@ -520,8 +521,8 @@
                     selectedFolder.value = item
                     showSaveQueryModal.value = !showSaveQueryModal.value
                 } else if (
-                    item?.typeName === 'QueryFolder' ||
-                    item?.value?.typeName === 'QueryFolder'
+                    item?.typeName === 'Folder' ||
+                    item?.value?.typeName === 'Folder'
                 ) {
                     if (item?.value?.guid) {
                         selectedFolder.value = item
@@ -924,7 +925,7 @@
 
             const refetchParentNode = (
                 guid: string,
-                type: 'query' | 'queryFolder',
+                type: 'query' | 'Folder',
                 tree?: 'personal' | 'all'
             ) => {
                 const all_guid =

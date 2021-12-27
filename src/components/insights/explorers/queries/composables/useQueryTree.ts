@@ -19,6 +19,7 @@ import store from '~/utils/storage'
 
 // composables
 import useLoadQueryData from './useLoadQueryData'
+import { message } from 'ant-design-vue'
 
 type CustomTreeDataItem =
     | (Omit<TreeDataItem, 'children'> &
@@ -299,7 +300,7 @@ const useQueryTree = ({
         //     immediateParentFolderQF.value = item.attributes.parentQualifiedName;
         //     immediateParentGuid.value = nodeToParentKeyMap[item.guid];
 
-        // } else if(item.typeName === 'QueryFolder') {
+        // } else if(item.typeName === 'Folder') {
         //     immediateParentFolderQF.value = item.attributes.qualifiedName;
         //     immediateParentGuid.value = item.guid;
         // }
@@ -320,27 +321,6 @@ const useQueryTree = ({
         }
         store.set(expandedCacheKey, expandedKeys.value)
     }
-
-    // let selectedNodeForFolder = ref(null)
-
-    // const addInputBox = () => {
-    //     if(selectedNodeForFolder.value) {
-    //         selectedNodeForFolder.value.children.unshift(
-    //             {
-    //                 class: 'addInput',
-    //                 key: String(new Date().getTime()),
-    //                 typeName: 'QueryFolder',
-    //             }
-    //         )
-    //     }
-    // }
-    // const removeInputBox = () => {
-    //     if(selectedNodeForFolder.value) {
-    //         if(selectedNodeForFolder.value.children.length && selectedNodeForFolder.value.children[0].class==='addInput') {
-    //             selectedNodeForFolder.value.children.shift()
-    //         }
-    //     }
-    // }
 
     const selectNode = (selected: any, event: any) => {
         console.log('select input: ', selected)
@@ -366,7 +346,7 @@ const useQueryTree = ({
             if (pushGuidToURL) {
                 pushGuidToURL(item)
             }
-        } else if (item.typeName === 'QueryFolder') {
+        } else if (item.typeName === 'Folder') {
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
 
@@ -413,7 +393,7 @@ const useQueryTree = ({
      */
     const refetchNode = async (
         guid: string,
-        refetchEntityType?: 'query' | 'queryFolder'
+        refetchEntityType?: 'query' | 'Folder'
     ) => {
         // if the root level of the tree needs a refetch
         console.log('new refetch: ', {
@@ -424,7 +404,7 @@ const useQueryTree = ({
             let folderResponse: IndexSearchResponse<Folder> | null = null
             let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 
-            if (refetchEntityType === 'queryFolder' || !refetchEntityType) {
+            if (refetchEntityType === 'Folder' || !refetchEntityType) {
                 folderResponse = await getQueryFolders()
             }
 
@@ -440,7 +420,7 @@ const useQueryTree = ({
 
             const updatedFolders = checkAndAppendNewNodes(
                 folderResponse,
-                'QueryFolder',
+                'Folder',
                 true
             )
             const updatedQueries = checkAndAppendNewNodes(
@@ -475,7 +455,7 @@ const useQueryTree = ({
                         null
 
                     if (
-                        refetchEntityType === 'queryFolder' ||
+                        refetchEntityType === 'Folder' ||
                         !refetchEntityType
                     ) {
                         folderResponse = await getSubFolders(node.qualifiedName)
@@ -496,7 +476,7 @@ const useQueryTree = ({
 
                     const updatedFolders = checkAndAppendNewNodes(
                         folderResponse,
-                        'QueryFolder',
+                        'Folder',
                         false,
                         node
                     )
@@ -633,7 +613,7 @@ const useQueryTree = ({
 
     const checkAndAppendNewNodes = (
         response: IndexSearchResponse<SavedQuery | Folder> | null,
-        typeName: 'Query' | 'QueryFolder',
+        typeName: 'Query' | 'Folder',
         isRoot: boolean,
         node?: CustomTreeDataItem
     ) => {
@@ -692,7 +672,7 @@ const useQueryTree = ({
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'QueryFolder') {
+        if (treeNode.dataRef.typeName === 'Folder') {
             const subFoldersResponse = await getSubFolders(
                 treeNode.dataRef.qualifiedName
             )

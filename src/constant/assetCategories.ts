@@ -55,7 +55,7 @@ const AssetTypeList: {
       label: 'Insights',
       children: [
         { id: "Query", label: "Query" },
-        { id: "QueryFolder", label: "Query Folder" },
+        { id: "Folder", label: "Query Folder" },
         { id: "TableauMetric", label: "Tableau Metric" }
       ]
     },

@@ -25,7 +25,7 @@ export const profileTabs = [
             'Database',
             'Schema',
             'Query',
-            'QueryFolder',
+            'Folder',
             'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',

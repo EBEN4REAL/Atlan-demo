@@ -1,6 +1,6 @@
 <template>
     <div class="flex">
-        <div class="mb-3 text-lg font-bold text-gray-500">Profile</div>
+        <div class="mb-3 text-base font-bold text-gray-500">Profile</div>
         <div v-if="isCurrentUser" class="ml-auto">
             <a-button
                 @click="$emit('toggleEdit')"
@@ -35,7 +35,7 @@
             <UpdateSkills
                 class="flex-1 mr-4"
                 :user="selectedUser"
-                :allow-update="isCurrentUser"
+                :allow-update="false"
                 @updated-user="$emit('updatedUser')"
                 @success="$emit('success')"
             />

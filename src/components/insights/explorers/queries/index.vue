@@ -23,7 +23,7 @@
                     <a-dropdown
                         :trigger="['click']"
                         class="ml-auto shadow-none h-7"
-                        placement="bottomRight"
+                        placement="bottomLeft"
                     >
                         <div
                             class="flex items-center h-8 px-3 rounded-lg cursor-pointer"

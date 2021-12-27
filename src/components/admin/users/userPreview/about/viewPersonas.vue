@@ -5,6 +5,7 @@
             :allow-update="false"
             :tags="personas"
             icon="Group"
+            custom-classes="flex content-center items-center bg-white border border-gray-300 py-0.5 px-2 font-normal text-center text-sm rounded-3xl"
         >
             <template #label="{ tag }">
                 {{ tag }}

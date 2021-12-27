@@ -6,9 +6,10 @@
                 :tags="skills"
                 :updating-tags="updatingSkills"
                 :allow-update="allowUpdate"
+                custom-classes="flex content-center items-center bg-white border border-gray-300 py-0.5 px-2 font-normal text-center text-sm rounded-3xl"
                 @update-tags="handleUpdateSkills"
-            ></Tags>
-            <a-spin v-if="updatingSkills" size="small" class="ml-2"></a-spin>
+            />
+            <a-spin v-if="updatingSkills" size="small" class="ml-2" />
         </div>
     </div>
 </template>
@@ -32,7 +33,7 @@
                 default: false,
             },
         },
-emits: ['success'],
+        emits: ['success'],
         setup(props, { emit }) {
             const updatingSkills = ref(false)
             const userObj = ref(props.user)

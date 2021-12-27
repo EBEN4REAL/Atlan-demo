@@ -28,6 +28,11 @@
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
+                                <!-- <AtlanIcon
+                                    icon="Reload"
+                                    class="w-4 h-4 my-auto"
+                                    v-if="!isNodeLoading && nodeError"
+                                ></AtlanIcon> -->
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
@@ -398,6 +403,14 @@
             },
             refreshQueryTree: {
                 type: Function,
+                required: false,
+            },
+            isNodeLoading: {
+                type: Boolean,
+                required: false,
+            },
+            nodeError: {
+                type: String,
                 required: false,
             },
             // parentFolderQF: {

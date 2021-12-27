@@ -4,6 +4,7 @@ import { useInlineTab } from '~/components/insights/common/composables/useInline
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
 
 export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
@@ -318,6 +319,26 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         return sqlVariables.value
     }
 
+    function getValueFromType(type, value) {
+        switch (type) {
+            case 'text': {
+                return value
+            }
+            case 'string': {
+                return value
+            }
+            case 'number': {
+                return value
+            }
+            case 'date': {
+                return dayjs()
+            }
+            default: {
+                return value
+            }
+        }
+    }
+
     function addVariableFromVQB(
         activeInlineTab: ComputedRef<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
@@ -339,13 +360,13 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         const new_variable: CustomVaribaleInterface = {
             name: `variable${len}`,
             key,
-            type: subpanelInfo?.type ?? 'string',
-            value: '',
             options: [],
             allowMultiple: false,
             dummy: '',
             isVQBtype: true,
             ...subpanelInfo,
+            type: subpanelInfo?.type ?? 'string',
+            value: getValueFromType(subpanelInfo?.type, ''),
         }
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
@@ -367,13 +388,13 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                 let variable: CustomVaribaleInterface = {
                     name: `variable${Math.ceil(Math.random() * 100) + len}`,
                     key,
-                    type: subpanelInfo?.type ?? 'string',
-                    value: '',
                     options: [],
                     allowMultiple: false,
                     dummy: '',
                     isVQBtype: false,
                     ...subpanelInfo,
+                    type: subpanelInfo?.type ?? 'string',
+                    value: getValueFromType(subpanelInfo?.type, ''),
                 }
                 activeInlineTabCopy.playground.editor.variables = [
                     ...activeInlineTabCopy.playground.editor.variables,

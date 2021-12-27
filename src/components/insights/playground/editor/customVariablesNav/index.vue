@@ -59,16 +59,7 @@
                     class="relative flex items-center h-8 pr-1 bg-white rounded group border-container"
                     style="width: 162px"
                 >
-                    <a-input
-                        class="border-none group"
-                        style="width: 138px; height: 30px"
-                        v-model:value="variable.value"
-                        @change="onChange(variable)"
-                        :placeholder="`Enter a ${variable.type}`"
-                        :type="variable.type === 'number' ? 'number' : 'text'"
-                        v-if="variable.type !== 'dropdown'"
-                    />
-                    <div v-else>
+                    <div v-if="variable.type === 'dropdown'">
                         <a-dropdown
                             :trigger="['click']"
                             :visible="dropdownVisibleKey === variable.key"
@@ -172,13 +163,31 @@
                             </template>
                         </a-dropdown>
                     </div>
+                    <a-date-picker
+                        v-else-if="variable.type === 'date'"
+                        placeholder="Select Date"
+                        :class="$style.date_picker"
+                        v-model:value="variable.value"
+                        :bordered="false"
+                        style="paddingright: 0 !important"
+                        class="border-0 focus:border-0 focus:outline-none"
+                    />
+                    <a-input
+                        class="border-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
+                        style="width: 138px; height: 30px"
+                        v-model:value="variable.value"
+                        @change="onChange(variable)"
+                        :placeholder="`Enter a ${variable.type}`"
+                        :type="variable.type === 'number' ? 'number' : 'text'"
+                        v-else
+                    />
                     <!-- <template #suffix> -->
                     <a-dropdown
                         :visible="customVariableOpenKey === variable.key"
                         :trigger="['click']"
                     >
                         <div
-                            class="absolute right-0 z-10 p-1 rounded hover:bg-gray-100"
+                            class="absolute right-0 z-10 p-1 rounded opacity-0 group-hover:opacity-100 group-hover:bg-gray-100"
                         >
                             <AtlanIcon
                                 @click="() => openDropdown(variable)"
@@ -262,6 +271,10 @@
                                                         value="number"
                                                         >Number</a-select-option
                                                     >
+                                                    <a-select-option
+                                                        value="date"
+                                                        >Date</a-select-option
+                                                    >
                                                     <!-- <a-select-option
                                                             value="boolean"
                                                             >Boolean</a-select-option
@@ -289,11 +302,25 @@
                                                         placeholder
                                                     /> -->
 
+                                                <a-date-picker
+                                                    v-if="
+                                                        variable.type === 'date'
+                                                    "
+                                                    placeholder="Select Date"
+                                                    :show-time="{
+                                                        format: 'HH:mm',
+                                                    }"
+                                                    v-model:value="
+                                                        variable.value
+                                                    "
+                                                    class="flex-1 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                                                />
+
                                                 <a-select
                                                     v-model:value="
                                                         variable.dummy
                                                     "
-                                                    v-if="
+                                                    v-else-if="
                                                         variable.type ===
                                                         `dropdown`
                                                     "
@@ -417,6 +444,7 @@
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
+    import dayjs from 'dayjs'
 
     export default defineComponent({
         components: {
@@ -424,6 +452,7 @@
         },
         props: {},
         setup(props) {
+            const dateFormat = 'YYYY-MM-DD HH:mm:ss'
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -579,6 +608,10 @@
                 })
             }
 
+            const handleSelectDateChange = (event, variable) => {
+                variable.value = dayjs(event)
+            }
+
             const handleVariableTypeChange = (
                 variable: CustomVaribaleInterface
             ) => {
@@ -586,6 +619,9 @@
                 if (variable.type === 'dropdown') {
                     variable.value = []
                     variable.dummy = []
+                }
+                if (variable.type === 'date') {
+                    variable.value = dayjs()
                 } else {
                     variable.value = ''
                     variable.dummy = ''
@@ -632,6 +668,7 @@
                 // checkInput,
                 inputError,
                 handleSelectInputChange,
+                handleSelectDateChange,
                 handleVariableTypeChange,
                 handleSelectChange,
                 dropdownVisibleKey,
@@ -688,6 +725,10 @@
 
     .input_style {
         @apply relative !important;
+    }
+    .date_picker {
+        padding-right: 2px !important;
+        width: 100%;
     }
 
     input::-webkit-inner-spin-button,

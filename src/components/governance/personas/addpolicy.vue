@@ -367,6 +367,7 @@
                     class="drawerAddAsset"
                     :get-container="'body'"
                     @update:assets="handleChangeAssets"
+                    @close="assetSelectorVisible=false"
                 />
 
                 <a-drawer
@@ -644,7 +645,7 @@
                 }
             }
             const handleToggleManage = () => {
-                isShow.value = true
+                isShow.value = !isShow.value
             }
             const handleSavePermission = (prop) => {
                 policy.value.actions = prop

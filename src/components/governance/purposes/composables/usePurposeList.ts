@@ -3,7 +3,8 @@ import { ref, computed, watch } from 'vue'
 import usePurposeService from './usePurposeService'
 import { safeArray } from '~/utils/array'
 
-// Main Persona List, fetched from API
+// !! THESE ARE ALL PURPOSES, VARIABLE NAMES ARE NEED TO BE CHANGED FROM PERSONA REF TO PURPOSE
+
 const { listPurposes } = usePurposeService()
 const {
     data: list,

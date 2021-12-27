@@ -1,9 +1,6 @@
 <template>
     <div>
-        <div
-            class="flex flex-col p-4 overflow-y-scroll bg-white rounded-md"
-            style="height: 600px"
-        >
+        <div class="flex flex-col p-4 overflow-y-scroll bg-white rounded-md">
             <div class="flex items-center sticky-top">
                 <AtlanIcon icon="AssetIcon" class="h-8" />
                 <div class="mx-2">
@@ -36,7 +33,7 @@
     import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
-        name: 'ClassificationOverviewTab',
+        name: 'ClassificationAssetWidget',
         components: {
             AssetsWrapper,
         },

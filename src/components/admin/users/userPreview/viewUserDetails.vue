@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="pb-6 border-solid border-b border-gray-200">
-        <div class="mb-3">
+        <div class="mb-6">
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Joined</p>
                 <a-tooltip>
@@ -24,14 +24,14 @@
         </div>
         <div
             v-if="selectedUser?.attributes?.designation?.length > 0 && selectedUser?.attributes?.designation[0]"
-            class="mb-3"
+            class="mb-6"
         >
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Designation</p>
                 <p class="text-gray">{{ selectedUser.attributes.designation[0] }}</p>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-6">
             <UpdateSkills
                 class="flex-1 mr-4"
                 :user="selectedUser"
@@ -40,7 +40,7 @@
                 @success="$emit('success')"
             />
         </div>
-        <div class="mb-3">
+        <div class="mb-6">
             <ViewGroups :user="selectedUser" />
         </div>
         <div>
@@ -49,7 +49,7 @@
     </div>
     <div class="py-6">
         <p class="uppercase text-gray-500 text-sm">Contact Details</p>
-        <div class="mt-2">
+        <div class="mt-3">
             <div class="text-gray-500 text-sm">Email Address</div>
             <a
                 :href="`mailto:${selectedUser.email}`"

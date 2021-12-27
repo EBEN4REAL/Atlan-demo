@@ -25,6 +25,7 @@
                         v-model:value="formData.firstName"
                         placeholder="Please enter a first name"
                         :loading="isRequestLoading"
+                        ref="firstNameRef"
                     />
                 </a-form-item>
                 <a-form-item label="Last Name" prop="lastName">
@@ -135,6 +136,7 @@
             const isRequestLoading = ref(false)
             const updateError = ref("")
             const formRef = ref(null)
+            const firstNameRef = ref(null)
 
             watch(isRequestLoading, (n) => {
                 emit('changedLoading', n)
@@ -261,8 +263,14 @@
                 avatarUrl,
                 isRequestLoading,
                 updateError,
-                handleImageUpdate
+                handleImageUpdate,
+                firstNameRef
             }
+        },
+        mounted() {
+            this.$nextTick(function () {
+                this.$refs.firstNameRef.focus()
+            })
         }
     }
 </script>

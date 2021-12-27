@@ -95,6 +95,7 @@
                         :is="tab.component"
                         class="h-full pt-3"
                         :is-current-user="isValidUser ? isCurrentUser : null"
+                        :is-loading="isLoading"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
                         @updated-user="() => {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex flex-col p-4 overflow-y-scroll bg-white rounded-md">
-            <div class="flex items-center sticky-top">
+            <div class="flex items-center mb-7 sticky-top">
                 <AtlanIcon icon="AssetIcon" class="h-8" />
                 <div class="mx-2">
                     <span class="mb-1 text-base font-bold">Assets</span>

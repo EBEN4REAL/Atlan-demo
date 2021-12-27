@@ -12,7 +12,7 @@ import {
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
 import { IndexSearchResponse } from '~/services/meta/search/index'
-import { message } from 'ant-design-vue'
+
 import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
@@ -79,6 +79,7 @@ const useQueryTree = ({
 
     const isNodeLoading = ref(false)
     const nodeError = ref(undefined)
+    const errorNode = ref(undefined)
 
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
@@ -214,10 +215,41 @@ const useQueryTree = ({
 
         isNodeLoading.value = true
         nodeError.value = undefined
+        errorNode.value = undefined
 
 
         if (treeNode.dataRef.typeName === 'Folder') {
             let subFoldersResponse, subQueriesResponse
+
+            // let count = 0;
+            // let maxTries = 3;
+            // let loop=true
+            // while(loop) {
+                
+            //     try {
+            //         subFoldersResponse = await getSubFolders(
+            //             treeNode.dataRef.qualifiedName
+            //         )
+            //         subQueriesResponse = await getFolderQueries(
+            //             treeNode.dataRef.qualifiedName
+            //         )
+
+            //         loop=false
+            //     } catch (error) {
+            //         const er = Object.getOwnPropertyDescriptor(error, 'message')
+            //         isNodeLoading.value = false
+            //         nodeError.value = er?.value
+            //         errorNode.value = treeNode
+                    
+            //         if(++count == maxTries) {
+            //             message.error('folder/query fetch went wrong')
+            //             loadedKeys.value.push(treeNode.dataRef.key)
+            //             loop=false
+            //             throw error
+            //         }
+                    
+            //     }
+            // }
 
             try {
                 subFoldersResponse = await getSubFolders(
@@ -230,9 +262,11 @@ const useQueryTree = ({
                 const er = Object.getOwnPropertyDescriptor(error, 'message')
                 isNodeLoading.value = false
                 nodeError.value = er?.value
+                errorNode.value = treeNode
                 message.error('folder/query fetch went wrong')
 
                 loadedKeys.value.push(treeNode.dataRef.key)
+                return
             }
 
             if (permissions?.readFolders) {
@@ -269,8 +303,8 @@ const useQueryTree = ({
             }
 
             if (
-                !subQueriesResponse.entities?.length &&
-                !subFoldersResponse.entities?.length
+                !subQueriesResponse?.entities?.length &&
+                !subFoldersResponse?.entities?.length
             ) {
                 // TODO: not push anything in array to avoid the empty expansion and title
                 // treeNode.dataRef.children.push({
@@ -746,7 +780,8 @@ const useQueryTree = ({
         initTreeData,
         currentSelectedNode,
         isNodeLoading,
-        nodeError
+        nodeError,
+        errorNode
         // addInputBox,
         // removeInputBox
     }

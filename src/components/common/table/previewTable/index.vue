@@ -42,12 +42,18 @@
                             class="bg-white"
                         >
                             {{ rowData }}
-                            <!-- <template>
-                                <Tooltip
-                                    :tooltip-text="`${rowData}`"
-                                    width="1000px"
-                                />
-                            </template> -->
+                            <!-- <template
+                                v-if="
+                                    variantTypeIndexes.includes(key.toString())
+                                "
+                                ><div style="max-width: 85%" class="truncate">
+                                    {{ rowData }}
+                                </div>
+                                <AtlanIcon
+                                    icon="Expand"
+                                    class="h-4 w-auto mb-0.5"
+                            /></template>
+                            <template v-else>{{ rowData }}</template> -->
                         </td>
                     </tr>
                 </tbody>
@@ -121,7 +127,7 @@
                 return label
             }
 
-            function highlight(td) {
+            function handleClick(td) {
                 if (selectedTD.value) {
                     handleModalClose()
                 }
@@ -147,8 +153,7 @@
                                 td.dataset.key.toString()
                             )
                         ) {
-                            highlight(td)
-                            console.log(td.dataset)
+                            handleClick(td)
                         }
                     }
                     tbody.onmouseover = function (e) {
@@ -167,18 +172,12 @@
                             hoverTD.value.classList.add('hover-state')
                         }
                     }
-                    tbody.onmouseleave = function (e) {
+                    tbody.onmouseout = function (e) {
                         let td = e.target.closest('td')
                         if (!td) return
                         if (!tbody.contains(td)) return
-                        if (
-                            variantTypeIndexes.value.includes(
-                                td.dataset.key.toString()
-                            )
-                        ) {
-                            hoverTD.value = td
-                            hoverTD.value.classList.remove('hover-state')
-                        }
+                        hoverTD.value = td
+                        hoverTD.value.classList.remove('hover-state')
                     }
                 }
             })

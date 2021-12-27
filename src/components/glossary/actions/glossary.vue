@@ -20,8 +20,9 @@
                         </p>
                     </div>
                 </a-menu-item>
-                <!-- Bulk upload hidden for GA  -->
-                <!-- <a-menu-item
+                <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
+                <a-menu-item
+                    v-if="sandbox"
                     key="bulk"
                     class="flex items-center"
                     @click="closeMenu"
@@ -39,7 +40,7 @@
                             </div>
                         </template>
                     </BulkUploadModal>
-                </a-menu-item> -->
+                </a-menu-item>
                 <a-menu-divider></a-menu-divider>
                 <!-- Archive -->
                 <a-menu-item
@@ -77,7 +78,7 @@
         Ref,
         computed,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
 
     // components
     import { message } from 'ant-design-vue'
@@ -154,6 +155,8 @@
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
+            const route = useRoute()
+            const sandbox = computed(() => route?.query?.sandbox || '')
             const showCategories = ref(false)
 
             // injects
@@ -301,6 +304,7 @@
                 categoryQf,
                 showCategories,
                 entity,
+                sandbox,
             }
         },
     })

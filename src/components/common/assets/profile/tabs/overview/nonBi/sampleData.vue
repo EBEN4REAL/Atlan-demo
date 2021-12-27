@@ -62,7 +62,7 @@
         // computed
     } from 'vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import AtlanTable from '@/UI/table.vue'
+    import AtlanTable from '@/common/table/previewTable/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 

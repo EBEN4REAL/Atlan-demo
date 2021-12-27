@@ -1,4 +1,5 @@
 import { ref, computed, Ref, watch } from 'vue'
+
 import { Persona } from '~/services/service/persona'
 
 interface PersonaParams {
@@ -9,24 +10,34 @@ interface PersonaParams {
     searchString?: string
 }
 export default function usePersonaList(params?: Ref<PersonaParams>) {
-    const { data, isLoading, mutate: reFetchList } = Persona.List()
+    const {
+        data,
+        isLoading,
+        mutate: reFetchList,
+    } = Persona.List(params, { asyncOptions: { resetOnExecute: false } })
 
-    const personaList = computed(
-        () =>
-            data?.value?.records?.map((persona) => ({
-                ...persona,
-            })) ?? []
-    )
+    const localPersonasList: Ref<any[]> = ref([])
+    const personaList: Ref<any[]> = ref([])
 
-    const filteredPersonas = computed(() => {
-        if (params?.value?.searchString)
-            return personaList.value.filter((ps) =>
-                ps
-                    .name!.toLowerCase()
-                    .includes(params.value.searchString.toLowerCase())
-            )
-        return personaList.value
+    watch(data, () => {
+        if (data?.value?.records) {
+            personaList.value = [...(data?.value?.records ?? [])]
+            if (params?.value?.offset > 0) {
+                localPersonasList.value = [
+                    ...(localPersonasList.value || []),
+                    ...(data?.value?.records ?? []),
+                ]
+            } else {
+                localPersonasList.value = data?.value?.records ?? []
+            }
+        } else {
+            localPersonasList.value = []
+            personaList.value = []
+        }
     })
+    const personaListConcatenated = computed(
+        () => localPersonasList.value || []
+    )
     const filteredPersonasCount = computed(() => data?.value?.filterRecord)
     const totalPersonasCount = computed(
         () => data?.value?.totalRecord
@@ -34,11 +45,10 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
     )
 
     return {
-        filteredPersonas,
         isLoading,
         reFetchList,
         totalPersonasCount,
         filteredPersonasCount,
-        personaList,
+        filteredPersonas: personaListConcatenated,
     }
 }

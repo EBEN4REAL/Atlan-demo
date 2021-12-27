@@ -1,6 +1,7 @@
 <template>
     <div class="overflow-y-scroll wrapper-height">
         <PurposesWidget
+            v-auth="map.LIST_PURPOSE"
             class="m-5"
             style="height: 384px"
             :classification="selectedClassification"
@@ -17,7 +18,7 @@
     import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
     import AssetWidget from '@/governance/classifications/classificationAssetWidget.vue'
     import PurposesWidget from '@/governance/classifications/classificationPurposeWidget.vue'
-
+    import map from '~/constant/accessControl/map'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
@@ -36,6 +37,7 @@
             const { classification: selectedClassification } = toRefs(props)
 
             return {
+                map,
                 selectedClassification,
             }
         },

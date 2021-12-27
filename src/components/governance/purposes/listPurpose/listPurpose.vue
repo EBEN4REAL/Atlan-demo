@@ -10,7 +10,8 @@
     </template>
     <template v-else-if="!personaList.length && !searchText">
         <EmptyView
-            headline="There is no persona linked to this classification"
+            class="text-center"
+            headline="There is no purpose linked to this classification"
         />
     </template>
     <template v-else>
@@ -51,6 +52,7 @@
     import EmptyView from '@/common/empty/index.vue'
 
     const { classificationList } = useTypedefData()
+    import { useDebounceFn } from '@vueuse/core'
 
     const props = defineProps({
         classificationID: {
@@ -95,7 +97,7 @@
         mutate()
     })
 
-    const handleSearch = () => {
+    const handleSearch = useDebounceFn(() => {
         personaList.value = []
         if (searchText.value) {
             params.value.filter = {
@@ -104,7 +106,7 @@
             }
         } else delete params.value.filter?.displayName
         mutate()
-    }
+    }, 700)
 </script>
 
 <style scoped></style>

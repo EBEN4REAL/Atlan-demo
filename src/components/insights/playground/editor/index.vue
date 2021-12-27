@@ -638,9 +638,12 @@
             const saveQuery = (
                 saveQueryData: any,
                 assetTerms: any,
-                selectedParentType
+                assetClassification: any
             ) => {
-                console.log('assetTerms from editor: ', assetTerms)
+                console.log('assetTerms from editor: ', {
+                    assetTerms,
+                    assetClassification,
+                })
                 saveQueryToDatabaseWithTerms(
                     assetTerms,
                     saveQueryData,
@@ -649,7 +652,6 @@
                     saveModalRef,
                     router,
                     route,
-                    selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
                     activeInlineTab.value,

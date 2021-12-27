@@ -819,13 +819,13 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseWithTerms = async (
         assetTerms: any,
+        assetClassification: any,
         saveQueryData: any,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
         route,
-        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,

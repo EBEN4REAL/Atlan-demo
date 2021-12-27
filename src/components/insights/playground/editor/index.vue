@@ -646,6 +646,7 @@
                 })
                 saveQueryToDatabaseWithTerms(
                     assetTerms,
+                    assetClassification,
                     saveQueryData,
                     saveQueryLoading,
                     showSaveQueryModal,

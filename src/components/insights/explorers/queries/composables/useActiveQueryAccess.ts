@@ -25,6 +25,8 @@ const useActiveQueryAccess = (
         'certificateStatus',
         'ownerUsers',
         'ownerGroups',
+        'adminUsers',
+        'adminGroups',
         '__createdBy',
         '__state',
         '__guid',
@@ -51,7 +53,9 @@ const useActiveQueryAccess = (
         if (activeInlineTab?.value?.qualifiedName?.length) {
             queryQualifiedName =
                 activeInlineTab?.value?.qualifiedName?.split('/')
-            parentQualifiedName = `/${queryQualifiedName[1]}/${queryQualifiedName[2]}/${queryQualifiedName[3]}/${queryQualifiedName[4]}`
+
+            // console.log('queryQualifiedName: ', )
+            parentQualifiedName = `${queryQualifiedName[0]}/${queryQualifiedName[1]}/${queryQualifiedName[2]}/${queryQualifiedName[3]}`
         }
         // console.log('queryQualifiedName: ', parentQualifiedName)
 
@@ -164,29 +168,29 @@ const useActiveQueryAccess = (
             selectedCollectionData?.value &&
             activeInlineTab?.value?.qualifiedName?.length
         ) {
-            let ownerUsers =
+            let adminUsers =
                 selectedCollectionData?.value?.entities?.length &&
                 selectedCollectionData?.value?.entities[0]?.attributes
-                    ?.ownerUsers
+                    ?.adminUsers
                     ? selectedCollectionData?.value?.entities[0]?.attributes
-                          ?.ownerUsers
+                          ?.adminUsers
                     : []
-            let ownerGroups =
+            let adminGroups =
                 selectedCollectionData?.value?.entities?.length &&
                 selectedCollectionData?.value?.entities[0]?.attributes
-                    ?.ownerGroups
+                    ?.adminGroups
                     ? selectedCollectionData.value?.entities[0].attributes
-                          ?.ownerGroups
+                          ?.adminGroups
                     : []
 
-            if (ownerUsers?.length) {
-                let v1 = ownerUsers.find((el) => el === currentUser.value)
+            if (adminUsers?.length) {
+                let v1 = adminUsers.find((el) => el === currentUser.value)
                 if (v1) {
                     return true
                 }
             }
-            if (ownerGroups?.length) {
-                let filteredArray = ownerGroups.filter((value) =>
+            if (adminGroups?.length) {
+                let filteredArray = adminGroups.filter((value) =>
                     userGroups.value.includes(value)
                 )
                 return filteredArray.length > 0
@@ -206,10 +210,10 @@ const useActiveQueryAccess = (
                 ? selectedCollectionData?.value?.entities[0]?.attributes
                       ?.__createdBy
                 : ''
-            console.log('creator: ', {
-                creator,
-                currentUser: currentUser.value,
-            })
+            // console.log('creator: ', {
+            //     creator,
+            //     currentUser: currentUser.value,
+            // })
 
             if (creator == currentUser.value) {
                 return true

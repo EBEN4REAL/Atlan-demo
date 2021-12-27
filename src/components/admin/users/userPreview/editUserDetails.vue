@@ -18,23 +18,6 @@
                             :avatar-size="100"
                             @image-updated="handleImageUpdate"
                         />
-                        <div
-                            class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
-                        >
-                            <div
-                                class="
-                                        p-1
-                                        bg-gray-100
-                                        border border-gray-300
-                                        rounded-full
-                                        px-1
-                                        py-0.5
-                                        text-gray-500
-                                    "
-                            >
-                                <AtlanIcon icon="Camera"></AtlanIcon>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <a-form-item label="First Name" prop="firstName">
@@ -42,6 +25,7 @@
                         v-model:value="formData.firstName"
                         placeholder="Please enter a first name"
                         :loading="isRequestLoading"
+                        ref="firstNameRef"
                     />
                 </a-form-item>
                 <a-form-item label="Last Name" prop="lastName">
@@ -152,6 +136,7 @@
             const isRequestLoading = ref(false)
             const updateError = ref("")
             const formRef = ref(null)
+            const firstNameRef = ref(null)
 
             watch(isRequestLoading, (n) => {
                 emit('changedLoading', n)
@@ -278,8 +263,14 @@
                 avatarUrl,
                 isRequestLoading,
                 updateError,
-                handleImageUpdate
+                handleImageUpdate,
+                firstNameRef
             }
+        },
+        mounted() {
+            this.$nextTick(function () {
+                this.$refs.firstNameRef.focus()
+            })
         }
     }
 </script>

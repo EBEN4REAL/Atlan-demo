@@ -78,7 +78,8 @@ keycloak
             })
             inputFocusDirective(app)
             authDirective(app)
-                ; (window as any).analytics.identify(authStore?.id, {
+            if ((window as any).analytics) {
+                ;(window as any).analytics.identify(authStore?.id, {
                     name: authStore.name || '',
                     firstName: authStore.firstName,
                     lastName: authStore.lastName,
@@ -86,6 +87,7 @@ keycloak
                     username: authStore.username || '',
                     roles: authStore.roles || [],
                 })
+            }
 
             app.use(router).mount('#app')
         }

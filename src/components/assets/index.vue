@@ -1,120 +1,120 @@
 <template>
-    <div class='flex w-full h-full'>
+    <div class="flex w-full h-full">
         <div
-            v-if='showFilters'
-            class='flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets'
+            v-if="showFilters"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
-                v-if='showFilters'
-                :key='dirtyTimestamp'
-                v-model='facets'
-                v-model:activeKey='activeKey'
-                :filter-list='discoveryFilters'
-                :type-name='postFacets.typeName'
-                @change='handleFilterChange'
-                @reset='handleResetEvent'
-                @change-active-key='handleActiveKeyChange'
+                v-if="showFilters"
+                :key="dirtyTimestamp"
+                v-model="facets"
+                v-model:activeKey="activeKey"
+                :filter-list="discoveryFilters"
+                :type-name="postFacets.typeName"
+                @change="handleFilterChange"
+                @reset="handleResetEvent"
+                @change-active-key="handleActiveKeyChange"
             ></AssetFilters>
         </div>
 
-        <div class='flex flex-col items-stretch flex-1 mb-1 w-80'>
-            <div class='flex flex-col h-full'>
-                <div class='flex'>
+        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
+            <div class="flex flex-col h-full">
+                <div class="flex">
                     <SearchAdvanced
-                        :key='searchDirtyTimestamp'
-                        v-model='queryText'
-                        :connector-name='facets?.hierarchy?.connectorName'
-                        :autofocus='true'
-                        :allow-clear='true'
-                        size='large'
+                        :key="searchDirtyTimestamp"
+                        ref="searchBox"
+                        v-model="queryText"
+                        :connector-name="facets?.hierarchy?.connectorName"
+                        :autofocus="true"
+                        :allow-clear="true"
+                        size="large"
                         :class="page !== 'admin' ? 'px-6' : ''"
-                        :placeholder='placeholder'
-                        @change='handleSearchChange'
-                        ref='searchBox'
+                        :placeholder="placeholder"
+                        @change="handleSearchChange"
                     >
                         <template #filter>
                             <a-popover
-                                class='sm:block md:hidden'
-                                placement='bottom'
+                                class="sm:block md:hidden"
+                                placement="bottom"
                                 :trigger="['click']"
-                                :overlay-class-name='$style.filterPopover'
+                                :overlay-class-name="$style.filterPopover"
                             >
                                 <template #content>
                                     <AssetFilters
-                                        :key='dirtyTimestamp'
-                                        v-model='facets'
-                                        v-model:activeKey='activeKey'
-                                        :filter-list='discoveryFilters'
-                                        :type-name='postFacets.typeName'
-                                        @change='handleFilterChange'
-                                        @change-active-key='
+                                        :key="dirtyTimestamp"
+                                        v-model="facets"
+                                        v-model:activeKey="activeKey"
+                                        :filter-list="discoveryFilters"
+                                        :type-name="postFacets.typeName"
+                                        @change="handleFilterChange"
+                                        @change-active-key="
                                             handleActiveKeyChange
-                                        '
-                                    ></AssetFilters
-                                    >
+                                        "
+                                    ></AssetFilters>
                                 </template>
                                 <AtlanIcon
-                                    icon='FilterFunnel'
-                                    class='mr-1'
+                                    icon="FilterFunnel"
+                                    class="mr-1"
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
                         <template #postFilter>
-                            <div style='max-width: 330px'>
+                            <div style="max-width: 330px">
                                 <PreferenceSelector
-                                    v-model='preference'
-                                    @change='handleChangePreference'
-                                    @display='handleDisplayChange'
+                                    v-model="preference"
+                                    @change="handleChangePreference"
+                                    @display="handleDisplayChange"
                                 />
                             </div>
                         </template>
                     </SearchAdvanced>
+                    <slot name="searchAction"></slot>
                 </div>
 
-                <div v-if='showAggrs' class='w-full px-4'>
+                <div v-if="showAggrs" class="w-full px-4">
                     <AggregationTabs
-                        v-model='postFacets.typeName'
-                        class='mt-3'
-                        :list='assetTypeAggregationList'
-                        @change='handleAssetTypeChange'
-                        :shortcutEnabled='true'
+                        v-model="postFacets.typeName"
+                        class="mt-3"
+                        :list="assetTypeAggregationList"
+                        :shortcut-enabled="true"
+                        @change="handleAssetTypeChange"
                     >
                     </AggregationTabs>
                 </div>
 
                 <div
-                    v-if='isLoading'
-                    class='flex items-center justify-center flex-grow'
+                    v-if="isLoading"
+                    class="flex items-center justify-center flex-grow"
                 >
                     <AtlanIcon
-                        icon='Loader'
-                        class='w-auto h-10 animate-spin'
+                        icon="Loader"
+                        class="w-auto h-10 animate-spin"
                     ></AtlanIcon>
                 </div>
                 <div
-                    v-if='!isLoading && error'
-                    class='flex items-center justify-center flex-grow'
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>
                 </div>
                 <div
-                    v-else-if='list.length === 0 && !isLoading'
-                    class='flex-grow'
+                    v-else-if="list.length === 0 && !isLoading"
+                    class="flex-grow"
                 >
                     <EmptyView
-                        empty-screen='EmptyDiscover'
+                        empty-screen="EmptyDiscover"
                         :desc="
                             staticUse
                                 ? emptyViewText || 'No assets found'
-                                : (
-                                    queryText
-                                    ? 'We didn\'t find anything that matches your search criteria'
-                                    : (emptyViewText || 'No assets found')
-                                  )
+                                : queryText
+                                ? 'We didn\'t find anything that matches your search criteria'
+                                : emptyViewText || 'No assets found'
                         "
-                        :button-text="staticUse ? '' : (queryText ? 'Reset Filter' : '')"
-                        class='mb-10'
-                        @event='handleResetEvent'
+                        :button-text="
+                            staticUse ? '' : queryText ? 'Reset Filter' : ''
+                        "
+                        class="mb-10"
+                        @event="handleResetEvent"
                     ></EmptyView>
                 </div>
 
@@ -123,41 +123,42 @@
                             " -->
                 <ListNavigator
                     v-else
-                    :list='list'
-                    @change='onKeyboardNavigate'
-                    :startIndex='selectedAssetIndex'
-                    :blocked='isCmndKVisible'
-                    :htmlIdGetter='getAssetId'
+                    :list="list"
+                    :start-index="selectedAssetIndex"
+                    :blocked="isCmndKVisible"
+                    :html-id-getter="getAssetId"
+                    @change="onKeyboardNavigate"
                 >
                     <AssetList
-                        ref='assetlistRef'
-                        :list='list'
-                        :selectedAsset='selectedAsset'
-                        :isLoadMore='isLoadMore'
-                        :isLoading='isValidating'
-                        @loadMore='handleLoadMore'
+                        ref="assetlistRef"
+                        :list="list"
+                        :selected-asset="selectedAsset"
+                        :is-load-more="isLoadMore"
+                        :is-loading="isValidating"
+                        @loadMore="handleLoadMore"
                     >
-                        <template v-slot:default='{ item, itemIndex }'>
+                        <template #default="{ item, itemIndex }">
                             <AssetItem
-                                :item='item'
-                                :itemIndex='itemIndex'
-                                :selectedGuid='selectedAsset.guid'
-                                @preview='handleClickAssetItem'
-                                @updateDrawer='updateCurrentList'
-                                :preference='preference'
-                                :show-check-box='showCheckBox'
-                                :bulk-select-mode='
+                                :item="item"
+                                :item-index="itemIndex"
+                                :selected-guid="selectedAsset.guid"
+                                :preference="preference"
+                                :show-check-box="showCheckBox"
+                                :id="getAssetId(item)"
+                                :bulk-select-mode="
                                     bulkSelectedAssets &&
                                     bulkSelectedAssets.length
                                         ? true
-                                        : false'
-                                :enableSidebarDrawer='enableSidebarDrawer'
-                                :is-checked='checkSelectedCriteriaFxn(item)'
-                                @listItem:check='
-                                    (e, item) => updateBulkSelectedAssets(item)
-                                '
+                                        : false
+                                "
+                                :enable-sidebar-drawer="enableSidebarDrawer"
+                                :is-checked="checkSelectedCriteriaFxn(item)"
                                 :class="page !== 'admin' ? 'mx-3' : ''"
-                                :id='getAssetId(item)'
+                                @preview="handleClickAssetItem"
+                                @updateDrawer="updateCurrentList"
+                                @listItem:check="
+                                    (e, item) => updateBulkSelectedAssets(item)
+                                "
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -167,7 +168,7 @@
     </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
     import {
         toRaw,
         PropType,
@@ -179,12 +180,17 @@
         inject,
         watch,
         ComputedRef,
+        onMounted,
     } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
-
-    import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
+    import {
+        useDebounceFn,
+        whenever,
+        useMagicKeys,
+        watchOnce,
+    } from '@vueuse/core'
     // import PopOverAsset from '@common/popover/assets/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -200,7 +206,7 @@
         AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
-        GlossaryAttributes
+        GlossaryAttributes,
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -234,8 +240,7 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: () => {
-                },
+                default: () => {},
             },
             preference: {
                 type: Object as PropType<any>,
@@ -283,11 +288,22 @@
                 type: Boolean,
                 default: false,
             },
+            disableHandlePreview: {
+                type: Boolean,
+                default: false,
+            },
         },
         setup(props, { emit }) {
-            const { preference: preferenceProp, checkedCriteria, initialFilters, page, projection, allCheckboxAreaClick } =
-                toRefs(props)
-                
+            const {
+                preference: preferenceProp,
+                checkedCriteria,
+                initialFilters,
+                page,
+                projection,
+                allCheckboxAreaClick,
+                disableHandlePreview
+            } = toRefs(props)
+
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -308,11 +324,11 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
-            if(page.value === 'glossary') {
+            if (page.value === 'glossary') {
                 defaultAttributes.value.push(...GlossaryAttributes)
             }
             const relationAttributes = ref([...AssetRelationAttributes])
-            
+
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
@@ -326,9 +342,7 @@
             if (discoveryStore.activePostFacet && page.value === 'assets') {
                 postFacets.value = discoveryStore.activePostFacet
             }
-            if (discoveryStore.preferences) {
-                console.log(discoveryStore.preferences)
-
+            if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =
@@ -386,7 +400,7 @@
                 // return 0
                 if (selectedAsset.value?.guid) {
                     return list.value.findIndex(
-                        (asset) => asset.guid === selectedAsset.value?.guid,
+                        (asset) => asset.guid === selectedAsset.value?.guid
                     )
                 }
                 return -1
@@ -419,7 +433,7 @@
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: args[1],
                 })
-                if (handlePreview) {
+                if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
             }
@@ -486,7 +500,7 @@
 
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
-                    (item) => item.id === postFacets.value.typeName,
+                    (item) => item.id === postFacets.value.typeName
                 )
 
                 if (found) {
@@ -495,9 +509,7 @@
                 return 'Search all assets'
             })
 
-            const getAssetId = (item) => {
-                return item.guid
-            }
+            const getAssetId = (item) => item.guid
 
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
@@ -526,7 +538,7 @@
             /* BULK SELECTION */
             const store = useBulkUpdateStore()
             const bulkSelectedAssets: Ref<any[]> = ref(
-                toRaw(store.bulkSelectedAssets),
+                toRaw(store.bulkSelectedAssets)
             )
             watch(store, () => {
                 bulkSelectedAssets.value = store.$state.bulkSelectedAssets
@@ -535,7 +547,7 @@
                 switch (checkedCriteria.value) {
                     case 'guid': {
                         const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid,
+                            (item) => item?.guid === listItem?.guid
                         )
                         if (itemIndex >= 0)
                             bulkSelectedAssets.value.splice(itemIndex, 1)
@@ -546,19 +558,19 @@
                         const itemIndex = bulkSelectedAssets?.value?.findIndex(
                             (qualifiedName) =>
                                 qualifiedName ===
-                                listItem?.attributes?.qualifiedName,
+                                listItem?.attributes?.qualifiedName
                         )
                         if (itemIndex >= 0)
                             bulkSelectedAssets.value.splice(itemIndex, 1)
                         else
                             bulkSelectedAssets.value.push(
-                                listItem?.attributes?.qualifiedName,
+                                listItem?.attributes?.qualifiedName
                             )
                         break
                     }
                     default: {
                         const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid,
+                            (item) => item?.guid === listItem?.guid
                         )
                         if (itemIndex >= 0)
                             bulkSelectedAssets.value.splice(itemIndex, 1)
@@ -574,7 +586,7 @@
                     case 'guid': {
                         return (
                             bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid,
+                                (listItem) => listItem.guid === item.guid
                             ) > -1
                         )
                         break
@@ -584,7 +596,7 @@
                             bulkSelectedAssets.value.findIndex(
                                 (qualifiedName) =>
                                     qualifiedName ===
-                                    item?.attributes.qualifiedName,
+                                    item?.attributes.qualifiedName
                             ) > -1
                         )
                         break
@@ -592,12 +604,24 @@
                     default: {
                         return (
                             bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid,
+                                (listItem) => listItem.guid === item.guid
                             ) > -1
                         )
                     }
                 }
             }
+
+            onMounted(() => {
+                console.log('onMounted')
+                watchOnce(isLoading, (v) => {
+                    if (!v && list.value?.length && page.value === 'assets') {
+                        const isNone =
+                            typeof selectedAsset.value === 'object' &&
+                            Object.keys(selectedAsset.value).length === 0
+                        if (isNone) handleClickAssetItem(list.value[0])
+                    }
+                })
+            })
 
             return {
                 checkSelectedCriteriaFxn,
@@ -644,14 +668,14 @@
     })
 </script>
 
-<style lang='less'>
+<style lang="less">
     .facets {
         max-width: 264px;
         width: 25%;
     }
 </style>
 
-<style lang='less' module>
+<style lang="less" module>
     .filterPopover {
         max-width: 200px;
         min-width: 200px;

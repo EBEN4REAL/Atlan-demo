@@ -5,18 +5,19 @@
     <KeepAlive>
         <div class="overflow-y-scroll wrapper-height">
             <ClassificationOverview
-                class="px-5"
                 v-if="activeTabKey === '1'"
+                class="px-5"
                 :classification="selectedClassification"
                 @openAssetsTab="activeTabKey = '2'"
             />
             <AssetsWrapper
                 v-if="activeTabKey === '2'"
-                :initialFilters="filterConfig"
-                :showFilters="false"
-                :staticUse="true"
+                :initial-filters="filterConfig"
+                :show-filters="false"
+                :static-use="true"
                 page="classifications"
                 class="bg-white"
+                :enable-sidebar-drawer="true"
             />
         </div>
     </KeepAlive>

@@ -28,14 +28,14 @@
         <DefaultLayout v-else title="API Keys">
             <template #header>
                 <div class="flex items-center justify-between pb-3">
-                    <a-input-search
-                        v-model:value="searchText"
-                        :placeholder="`Search ${totalAPIKeysCount} api keys`"
-                        class="w-1/3 mr-1 shadow-sm"
-                        size="default"
-                        :allow-clear="true"
-                        @change="handleSearch"
-                    ></a-input-search>
+                    <div class="flex w-1/4">
+                        <SearchAndFilter
+                            v-model:value="searchText"
+                            :placeholder="`Search ${totalAPIKeysCount} api keys`"
+                            size="minimal"
+                        />
+                    </div>
+
                     <div class="flex-grow w-0"></div>
                     <AtlanBtn
                         v-auth="[map.CREATE_APIKEY]"
@@ -106,10 +106,12 @@
     import filteredPersonas from '~/components/governance/personas/personaView.vue'
     import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'ApiKeysView',
         components: {
+            SearchAndFilter,
             DefaultLayout,
             AtlanBtn,
             APIKeysTable,

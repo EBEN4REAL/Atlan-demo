@@ -31,6 +31,7 @@ const attributes = [
     'tableCount',
     'viewCount',
     'columnCount',
+    'connectorName',
     ...InternalAttributes,
     ...BasicSearchAttributes,
 ]
@@ -84,7 +85,10 @@ const useLoadTreeData = (
         console.log('query con: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
+            if (
+                queryText.value.length == 0 &&
+                Object.keys(facets.value).length === 0
+            ) {
                 typeName.value = 'Database'
             } else {
                 typeName.value = ['Table', 'View']
@@ -114,7 +118,10 @@ const useLoadTreeData = (
         // console.log('query sch: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
+            if (
+                queryText.value.length == 0 &&
+                Object.keys(facets.value).length === 0
+            ) {
                 typeName.value = 'Schema'
             } else {
                 typeName.value = ['Table', 'View']

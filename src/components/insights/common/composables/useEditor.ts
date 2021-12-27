@@ -294,12 +294,12 @@ export function useEditor(
                     // })
 
                     // console.log('position query: ', queryPositions)
-                    setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
-                        startLineNumber: queryStartLine,
-                        startColumnNumber: queryStartColumn,
-                        endLineNumber: queryEndLine,
-                        endColumnNumber: queryEndColumn
-                    })
+                    // setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
+                    //     startLineNumber: queryStartLine,
+                    //     startColumnNumber: queryStartColumn,
+                    //     endLineNumber: queryEndLine,
+                    //     endColumnNumber: queryEndColumn
+                    // })
                     let monaco = toRaw(monacoInstance)
                     decorations = toRaw(editorInstance).deltaDecorations(decorations??
                         [],

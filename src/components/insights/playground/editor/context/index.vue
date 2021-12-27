@@ -266,7 +266,11 @@
                                                 .resultsPane?.result?.runQueryId
                                         "
                                         class="text-white"
-                                        >Run</span
+                                        >{{
+                                            editorContentSelectionState
+                                                ? 'Run selected'
+                                                : 'Run'
+                                        }}</span
                                     >
                                     <span
                                         v-else-if="
@@ -378,6 +382,13 @@
                 }
             )
 
+            const editorContentSelectionState = inject(
+                'editorContentSelectionState'
+            ) as Ref<boolean>
+
+            // watch(editorContentSelectionState, () => {
+            //     console.log('context select')
+            // })
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
 
@@ -493,6 +504,7 @@
                 readOnly,
                 map,
                 userHasPermission,
+                editorContentSelectionState,
             }
         },
     })

@@ -1,5 +1,5 @@
 export type Checkbox = {
-    id: string
+    id: any
     label: string
     icon?: string
     iconClass?: string

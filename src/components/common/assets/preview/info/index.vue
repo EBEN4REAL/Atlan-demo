@@ -49,7 +49,13 @@
             />
         </div>
 
-        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+        <Connection
+            v-if="selectedAsset.typeName === 'Connection'"
+            :selected-asset="selectedAsset"
+            v-model="localSQLQuery"
+            :edit-permission="editPermission"
+            @change="handleSQLQueryUpdate"
+        ></Connection>
 
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
@@ -224,7 +230,10 @@
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
         <div
-            v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
+            v-if="
+                selectedAsset.guid &&
+                !['Column', 'Connection'].includes(selectedAsset.typeName)
+            "
             class="flex flex-col"
         >
             <Shortcut
@@ -246,6 +255,25 @@
                 :selected-asset="selectedAsset"
                 :edit-permission="editPermission"
                 @change="handleOwnersChange"
+            />
+        </div>
+
+        <div
+            class="flex flex-col"
+            v-if="selectedAsset.guid && selectedAsset.typeName == 'Connection'"
+        >
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                <span> Admins</span>
+            </div>
+
+            <Admins
+                v-model="localAdmins"
+                class="px-5"
+                :selected-asset="selectedAsset"
+                :edit-permission="editPermission"
+                @change="handleChangeAdmins"
             />
         </div>
 
@@ -275,7 +303,18 @@
             <Classification
                 v-model="localClassifications"
                 :guid="selectedAsset.guid"
-                :edit-permission="editPermission"
+                :edit-permission="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_ADD_CLASSIFICATION'
+                    )
+                "
+                :allowDelete="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_REMOVE_CLASSIFICATION'
+                    )
+                "
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -302,7 +341,18 @@
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
-                :edit-permission="editPermission"
+                :edit-permission="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'RELATIONSHIP_ADD'
+                    )
+                "
+                :allowDelete="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'RELATIONSHIP_REMOVE'
+                    )
+                "
                 @change="handleMeaningsUpdate"
             >
             </Terms>
@@ -378,6 +428,7 @@
     import Description from '@/common/input/description/index.vue'
     import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
+    import Admins from '@/common/input/admin/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
@@ -403,6 +454,7 @@
             Terms,
             Shortcut,
             Categories,
+            Admins,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -458,6 +510,7 @@
                 assetTypeLabel,
                 isGTC,
                 isUserDescription,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const {
@@ -467,6 +520,7 @@
                 localDescription,
                 localCertificate,
                 localOwners,
+                localAdmins,
                 localClassifications,
                 localMeanings,
                 localCategories,
@@ -475,12 +529,15 @@
                 handleChangeName,
                 handleChangeDescription,
                 handleOwnersChange,
+                handleChangeAdmins,
                 handleChangeCertificate,
                 handleClassificationChange,
                 isLoadingClassification,
                 nameRef,
                 descriptionRef,
                 animationPoint,
+                localSQLQuery,
+                handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
@@ -544,6 +601,11 @@
                 handleCategoriesUpdate,
                 isUserDescription,
                 localCategories,
+                handleChangeAdmins,
+                localAdmins,
+                selectedAssetUpdatePermission,
+                localSQLQuery,
+                handleSQLQueryUpdate,
             }
         },
     })

@@ -4,7 +4,7 @@
             v-model:visible="isEditing"
             ok-text="Save"
             title="Edit Persona"
-            @cancel="discardPersona"
+            @cancel="handleCancel"
             @ok="saveEditedPersona"
         >
             <div class="flex flex-col items-stretch pb-4 gap-y-1">
@@ -28,19 +28,30 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex mb-0 bg-white pt-7 gap-x-2">
+
+        <div class="flex px-3 pt-6 mb-0 bg-white gap-x-2">
             <div style="width: 90%">
-                <div class="mb-0 text-xl text-gray-700 truncate">
-                    <span class="font-bold truncate" data-test-id="header-name">
-                        {{ persona.displayName }}</span
+                <div class="flex items-center mb-0 text-sm text-gray-500">
+                    <div class="mb-0 text-xl text-gray-700 truncate">
+                        <span
+                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 capitalize truncate"
+                            data-test-id="header-name"
+                        >
+                            {{ persona.displayName }}</span
+                        >
+                    </div>
+                    <a-tooltip
+                        tabindex="-1"
+                        :title="persona.description"
+                        v-if="persona.description"
+                        placement="right"
                     >
+                        <span
+                            ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                        ></span>
+                    </a-tooltip>
                 </div>
-                <div class="flex mb-0 text-sm text-gray-500">
-                    <span class="truncate" data-test-id="header-description">
-                        {{ persona.description }}</span
-                    >
-                </div>
-                <div class="flex" v-if="persona.updatedBy">
+                <div class="flex text-gray-500" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -82,7 +93,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import CreationModal from '@/admin/common/addModal.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
@@ -100,6 +111,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -109,9 +121,16 @@
                 type: Object as PropType<IPersona>,
                 required: true,
             },
+            openEditModal: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         setup(props, { emit }) {
             const { persona } = toRefs(props)
+            // const { openEditModal } = toRefs(props)
+            const { openEditModal } = useVModels(props, emit)
             const deletePersona = () => {
                 Modal.confirm({
                     title: `Delete persona`,
@@ -196,12 +215,15 @@
 
                     isEditing.value = false
                     reFetchList()
+                    openEditModal.value = false
                 } catch (error) {
                     message.error({
                         content: 'Failed to update persona',
                         duration: 1.5,
                         key: messageKey,
                     })
+                    isEditing.value = false
+                    openEditModal.value = false
                 }
             }
 
@@ -213,6 +235,14 @@
                 }
                 return ''
             }
+            const handleCancel = () => {
+                discardPersona()
+                openEditModal.value = false
+            }
+
+            watch(openEditModal, () => {
+                if (openEditModal.value) isEditing.value = true
+            })
 
             return {
                 personaActions,
@@ -223,6 +253,7 @@
                 timeStamp,
                 map,
                 deletePersona,
+                handleCancel,
             }
         },
     })

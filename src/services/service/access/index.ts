@@ -10,6 +10,14 @@ interface WhoAmIResponse {
         id: string
         name: string
     }[]
+    username: string
+    userId: string
+    groups: { id: string; name: string; path: string }[]
+    decentralizedRole: {
+        level: string
+        roleId: string
+        privelage: string
+    }[]
 }
 
 const WhoAmI = (options?: useOptions) =>

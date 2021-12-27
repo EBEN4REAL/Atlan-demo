@@ -77,6 +77,10 @@ export default function useAssetInfo() {
 
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []
+
+    const assignedEntities = (asset: Term) =>
+        asset.attributes?.assignedEntities
+
     const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
 
     const connectorName = (asset: assetInterface) =>
@@ -119,6 +123,12 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
+    const connectionRowLimit = (asset: assetInterface) =>
+        attributes(asset)?.rowLimit
+    const allowQuery = (asset: assetInterface) => attributes(asset)?.allowQuery
+    const allowQueryPreview = (asset: assetInterface) =>
+        attributes(asset)?.allowQueryPreview
+
     const links = (asset: assetInterface) => {
         const allLinks = attributes(asset)?.links
 
@@ -128,6 +138,8 @@ export default function useAssetInfo() {
         return activeLinks
     }
     const link = (asset: assetInterface) => attributes(asset)?.link
+
+    const queries = (asset: assetInterface) => attributes(asset)?.queries
 
     const getTabs = (list, typeName: string) => {
         return list.filter((i) => {
@@ -164,7 +176,7 @@ export default function useAssetInfo() {
                     component: 'customMetadata',
                     excludes: [
                         'Query',
-                        'QueryFolder',
+                        'Folder',
                         'AtlasGlossary',
                         'AtlasGlossaryTerm',
                         'AtlasGlossaryCategory',
@@ -547,6 +559,12 @@ export default function useAssetInfo() {
     const ownerUsers = (asset: assetInterface) =>
         attributes(asset)?.ownerUsers || []
 
+    const adminGroups = (asset: assetInterface) =>
+        attributes(asset)?.adminGroups || []
+
+    const adminUsers = (asset: assetInterface) =>
+        attributes(asset)?.adminUsers || []
+
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
     }
@@ -632,10 +650,15 @@ export default function useAssetInfo() {
 
     const authStore = useAuthStore()
 
-    const selectedAssetUpdatePermission = (asset: assetInterface) => {
+    const selectedAssetUpdatePermission = (
+        asset: assetInterface,
+        action = 'ENTITY_UPDATE'
+    ) => {
         return authStore?.evaluations.find(
             (ev) =>
-                ev?.entityGuid === asset?.guid && ev?.action === 'ENTITY_UPDATE'
+                (ev?.entityGuid === asset?.guid ||
+                    ev?.entityGuidEnd2 === asset?.guid) &&
+                ev?.action === action
         )?.allowed
     }
 
@@ -1000,5 +1023,12 @@ export default function useAssetInfo() {
         getLineagePath,
         isUserDescription,
         isScrubbed,
+        assignedEntities,
+        adminGroups,
+        adminUsers,
+        connectionRowLimit,
+        allowQuery,
+        allowQueryPreview,
+        queries,
     }
 }

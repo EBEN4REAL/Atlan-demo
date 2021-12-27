@@ -61,6 +61,8 @@ export const AssetAttributes = [
     'sourceUpdatedBy',
     'ownerUsers',
     'ownerGroups',
+    'adminUsers',
+    'adminGroups',
     'meanings',
     'readme',
     'rawQuery',
@@ -73,11 +75,14 @@ export const AssetAttributes = [
     'lastSyncRunAt',
     'lastSyncWorkflowName',
     'queryConfig',
+    'rowLimit',
+    'credentialStrategy',
     'allowQuery',
     'allowQueryPreview',
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
+    'queries',
 ]
 
 export const SQLAttributes = [
@@ -101,7 +106,7 @@ export const SQLAttributes = [
     'view',
 ]
 
-export const GlossaryAttributes = ['categories', 'parentCategory']
+export const GlossaryAttributes = ['categories', 'parentCategory', 'assignedEntities']
 
 export const GlossaryRelationAttributes = ['name']
 

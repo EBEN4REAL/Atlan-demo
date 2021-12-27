@@ -1,6 +1,9 @@
 import keyMap from '~/composables/eventTracking/keyMap'
 
 const useAddEvent = (category, obj, action, props = {}) => {
+    if (!(window as any).analytics || !(window as any).analytics.track) {
+        return
+    }
     // construct params for adding events
     const event = keyMap[category][obj][action]
     const eventName = event.action

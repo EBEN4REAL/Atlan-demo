@@ -21,8 +21,11 @@ export const profileTabs = [
         label: 'Lineage',
         component: 'lineage',
         excludes: [
+            'Connection',
+            'Database',
+            'Schema',
             'Query',
-            'QueryFolder',
+            'Folder',
             'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',

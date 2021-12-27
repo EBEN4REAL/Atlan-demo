@@ -1,11 +1,11 @@
 <template>
     <div class="flex divide-x scroll-container">
         <aside
-            class="flex flex-col w-1/4 h-full overflow-y-hidden pt-7"
+            class="flex flex-col w-1/4 h-full pt-6 overflow-y-hidden"
             v-if="sidebarVisibility"
         >
-            <div class="flex items-center justify-between px-4 mb-2">
-                <span class="text-2xl">{{ title }}</span>
+            <div class="flex items-center justify-between px-4 mb-1">
+                <span class="text-base font-semibold">{{ title }}</span>
                 <slot name="action"></slot>
             </div>
             <span v-if="subTitle" class="px-4 mb-0 text-sm text-gray">{{

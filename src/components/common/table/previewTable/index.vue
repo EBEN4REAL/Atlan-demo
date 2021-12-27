@@ -73,35 +73,12 @@
             </table>
         </div>
     </div>
-    <a-modal
+    <VariantModal
         v-if="modalVisible"
         v-model:visible="modalVisible"
-        :footer="null"
-        :afterClose="() => (selectedData = null)"
-        centered
-        :destroyOnClose="true"
-        :class="$style.variant_modal"
-        width="600px"
-    >
-        <template #title>
-            <div class="flex items-center text-gray-700 gap-x-1.5">
-                <AtlanIcon
-                    icon="Variant"
-                    class="w-auto h-4 text-gray-500 mb-0.5"
-                />
-                Response Type
-            </div>
-        </template>
-        <div
-            class="overflow-auto border rounded border-gray-light variant_body"
-        >
-            <pre>
-                <code>
-                    {{selectedData}}
-                </code>
-            </pre>
-        </div>
-    </a-modal>
+        @close="handleModalClose"
+        :data="selectedData"
+    />
 </template>
 
 <script lang="ts">
@@ -116,13 +93,15 @@
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import VariantModal from './variantModal.vue'
 
     export default defineComponent({
         name: 'AtlanTable',
         components: {
             Tooltip,
             AtlanIcon,
+            VariantModal,
         },
         props: {
             dataList: {
@@ -182,6 +161,11 @@
                 selectedData.value = data
             }
 
+            const handleModalClose = () => {
+                modalVisible.value = false
+                selectedData.value = null
+            }
+
             onMounted(() => {
                 columns.value.forEach((col) => {
                     if (
@@ -202,6 +186,7 @@
                 selectedData,
                 handleOpenModal,
                 modalVisible,
+                handleModalClose,
             }
         },
     })
@@ -209,7 +194,7 @@
 
 <style lang="less" module>
     .tableStyle {
-        @apply rounded !important;
+        @apply rounded overflow-x-auto !important;
         td,
         th {
             max-width: 200px;

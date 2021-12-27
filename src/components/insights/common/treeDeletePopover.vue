@@ -9,10 +9,20 @@
             <p class="mb-2 text-base font-bold text-gray-700">
                 Delete {{ item?.attributes?.name }}
             </p>
-            <p v-if="item.typeName === 'QueryFolder'" class="mb-0 text-black">
+            <p v-if="item.typeName === 'Folder'" class="mb-0 text-black">
                 Deleting the folder will also
                 <span class="font-bold"
                     >delete all the sub-folders and queries</span
+                >
+                inside it.
+            </p>
+            <p
+                v-else-if="item.typeName === 'Collection'"
+                class="mb-0 text-black"
+            >
+                Deleting the collection will also
+                <span class="font-bold"
+                    >delete all the folders, sub-folders and queries</span
                 >
                 inside it.
             </p>

@@ -1,6 +1,7 @@
 <template>
     <a-select
         v-model:value="localValue"
+        ref="inputRef"
         placeholder="Users"
         class="w-full"
         :show-search="true"
@@ -8,6 +9,11 @@
         :options="finalList"
         :filter-option="() => true"
         @change="handleChange"
+        @dropdownVisibleChange="
+            (o) => {
+                if (!o) query = ''
+            }
+        "
         @click="
             () => {
                 if (finalList.length < 2) mutate()
@@ -114,11 +120,13 @@
                 loadMore,
                 mutate,
                 resetFilter,
+                queryText: query,
             } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
                 () => {
+                    s
                     handleSearch(props.queryText)
                 }
             )
@@ -149,10 +157,18 @@
                 emit('change')
             }
 
+            const inputRef = ref()
+
+            const focus = () => {
+                inputRef.value.focus()
+            }
+
             return {
+                query,
+                inputRef,
+                focus,
                 resetFilter,
                 mutate,
-                open,
                 finalList,
                 loadMore,
                 filterTotal,

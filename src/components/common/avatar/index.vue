@@ -43,10 +43,11 @@
                 :size="avatarSize"
                 class="hidden ant-tag-blue text-primary sm:block"
                 :class="avatarBgClass"
-                :src="updatedImageUrl"
+                :src="isAtlan ? atlanLogo : updatedImageUrl"
             >
                 <template #icon>
-                    <AtlanIcon icon="User"></AtlanIcon>
+                    <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
+                    <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
 
                 <!-- {{ getNameInitials(getNameInTitleCase(avatarName)) }} -->
@@ -59,6 +60,7 @@
     import { ref, watch, PropType } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
+    import atlanLogo from '~/assets/images/source/atlan-logo.jpeg'
 
     export default {
         name: 'Avatar',
@@ -86,6 +88,14 @@
             avatarBgClass: {
                 type: String,
                 default: 'bg-primary-light',
+            },
+            isGroup: {
+                type: Boolean,
+                default: false,
+            },
+            isAtlan: {
+                type: Boolean,
+                default: false,
             },
         },
         setup(props, context) {
@@ -119,6 +129,7 @@
                 getNameInitials,
                 getNameInTitleCase,
                 refreshImage,
+                atlanLogo,
             }
         },
     }

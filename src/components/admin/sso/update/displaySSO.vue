@@ -37,7 +37,7 @@
             :closable="false"
             :destroy-on-close="true"
         >
-            <div class="p-5">
+            <div class="p-5 enforce-sso-warning">
                 <div class="mb-4 text-lg">Enforce SSO</div>
                 <div class="mb-3 font-bold">
                     <span class="text-error"> Warning </span>
@@ -48,18 +48,20 @@
                     >
                 </div>
                 <div class="flex mb-2">
-                    <a-checkbox v-model:checked="verifiedSSO" />
-                    <div class="ml-2">
-                        I have verfied the SSO connection by loggin in and out
-                        successfully
-                    </div>
+                    <a-checkbox v-model:checked="verifiedSSO">
+                        <div>
+                            I have verfied the SSO connection by loggin in and
+                            out successfully
+                        </div>
+                    </a-checkbox>
                 </div>
                 <div class="flex">
-                    <a-checkbox v-model:checked="providedNotice" />
-                    <div class="ml-2">
-                        I have provided advanced notice and training for my
-                        company on new login procedures
-                    </div>
+                    <a-checkbox v-model:checked="providedNotice">
+                        <div>
+                            I have provided advanced notice and training for my
+                            company on new login procedures
+                        </div>
+                    </a-checkbox>
                 </div>
                 <div class="flex justify-end mt-3">
                     <AtlanBtn
@@ -96,7 +98,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, reactive, computed } from 'vue'
+    import { defineComponent, ref, reactive, computed, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
     import { Identity } from '~/services/service/identity'
@@ -119,10 +121,10 @@
             const tenantStore = useTenantStore()
 
             const idp: any = computed(
-                () => tenantStore.identityProviders[0] || {}
+                () => tenantStore?.identityProviders?.[0] || {}
             )
             const samlProvider = topSAMLProviders.find(
-                (data) => data.alias === idp.value.alias
+                (data) => data?.alias === idp?.value?.alias
             )
             const provider: any = samlProvider || customSamlProvider
             const verifiedSSO = ref(false)
@@ -157,9 +159,21 @@
                 ssoForm.enabled = idp.value?.enabled
             }
             setConfig()
-            const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setTenant(tenantResponse)
+            const updateTenant = () => {
+                const { data, isReady, error, isLoading } = Tenant.GetTenant()
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            tenantStore.setTenant(data?.value)
+                        } else if (error && error.value) {
+                            console.error(
+                                'Unable to update API Key. Please try again.'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
             }
             const handleChangeEnableSSO = async () => {
                 try {
@@ -172,13 +186,13 @@
                         idp.value?.alias,
                         config
                     )
+
                     await updateIDP()
                     if (!ssoForm.enabled) {
                         const { mutate: deleteDefaultIDP } =
                             Identity.deleteDefaultIDP(idp.value?.alias)
                         await deleteDefaultIDP()
                     }
-
                     await updateTenant()
                     await getDefaultIDPList()
                     await setConfig()
@@ -189,6 +203,7 @@
                         }`,
                     })
                 } catch (error) {
+                    console.log(error)
                     enableSSOChanging.value = false
                     message.error({
                         content: `Unable to ${
@@ -268,6 +283,18 @@
         },
     })
 </script>
+<style lang="less">
+    .enforce-sso-warning {
+        .ant-checkbox-wrapper {
+            @apply flex;
+            @apply items-start;
+            @apply flex-1;
+        }
+        .ant-checkbox {
+            @apply mt-1;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .provider-wrapper {
         max-width: 38rem;

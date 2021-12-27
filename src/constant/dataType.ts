@@ -123,7 +123,7 @@ export const dataTypeCategoryList = [
     {
         id: 'geography',
         label: 'Geography',
-        type: ['GEOGRAPHY', 'OBJECT'],
+        type: ['GEOGRAPHY'],
         image: geography,
         imageText: 'geography',
     },

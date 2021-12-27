@@ -25,10 +25,7 @@
         </a-popover>
 
         <CertificatePill
-            v-if="
-                certificateStatus(selectedAsset) !== 'NONE' &&
-                certificateStatus(selectedAsset)
-            "
+            v-if="certificateStatus(selectedAsset)"
             class="w-full"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"

@@ -12,7 +12,7 @@
             >
                 <PopoverAsset :item="item" placement="right">
                     <template #button>
-                        <a-button
+                        <!-- <a-button
                             class="mt-3"
                             @click="actionClick('info', item)"
                             block
@@ -22,7 +22,20 @@
                                     Open preview sidebar
                                 </div>
                             </div>
-                        </a-button>
+                        </a-button> -->
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                            @click="actionClick('info', item)"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                Show Preview</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
                     </template>
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -201,7 +214,7 @@
                             >
                                 <div
                                     :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-24"
+                                    class="pl-2 ml-4"
                                     @click="() => actionClick('add', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -338,7 +351,7 @@
                         "
                         @click.stop="() => {}"
                     >
-                        <div class="pl-2 ml-24">
+                        <div class="pl-2 ml-4">
                             <a-dropdown :trigger="['click']">
                                 <AtlanIcon
                                     icon="SetContext"
@@ -1261,9 +1274,14 @@
                             },
                             collection: {
                                 // copy from last tab
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
                             },
                         },
                     },

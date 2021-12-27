@@ -131,8 +131,13 @@ export default function useFacetUsers(
 
     const resetFilter = () => {
         if (params.value.has('filter')) {
-            params.value.delete('filter')
-            mutate()
+            // reseting the list if user has does a server search else this messes up the list index
+            const filters = JSON.parse(params.value?.get('filter'))?.$and
+            // as email verified filter is always applied, need to check if more than 1 is applied istead
+            if (filters?.length > 1) {
+                params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
+                mutate()
+            }
         }
     }
 
@@ -168,6 +173,7 @@ export default function useFacetUsers(
     }
 
     return {
+        queryText,
         userList,
         loadMore,
         isLoading,

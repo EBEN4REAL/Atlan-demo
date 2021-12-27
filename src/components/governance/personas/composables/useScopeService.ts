@@ -7,22 +7,22 @@ const purposeScopeList = [
             {
                 value: 'entity-read',
                 label: 'read',
-                desc: 'Read access to private attributes'
+                desc: 'Read access to private attributes',
             },
             {
                 value: 'entity-update',
                 label: 'update',
-                desc: 'Access to update asset metadata'
+                desc: 'Access to update asset metadata',
             },
             {
                 value: 'entity-create',
                 label: 'create',
-                desc: 'Create entities within selected assets'
+                desc: 'Create entities within selected assets',
             },
             {
                 value: 'entity-delete',
                 label: 'delete',
-                desc: 'Permission to delete selected assets'
+                desc: 'Permission to delete selected assets',
             },
         ],
         type: 'Asset',
@@ -33,7 +33,7 @@ const purposeScopeList = [
             {
                 value: 'entity-update-business-metadata',
                 label: 'update: Custom Metadata',
-                desc: 'Update classifications for selected assets'
+                desc: 'Update classifications for selected assets',
             },
             // {
             //     value: 'entity-add-classification',
@@ -48,7 +48,7 @@ const purposeScopeList = [
             {
                 value: 'entity-update-classification',
                 label: 'update: Classifications',
-                desc: 'Update values for BM attributes for selected assets'
+                desc: 'Update values for BM attributes for selected assets',
             },
 
             // {
@@ -108,29 +108,30 @@ const personaScopeList = [
     {
         scopes: [
             {
+                value: 'entity-create',
+                label: 'create',
+                desc: 'Create entities',
+            },
+            {
                 value: 'entity-read',
                 label: 'read',
-                desc: 'Read access to private attributes'
+                desc: 'Read access to private attributes',
             },
             {
                 value: 'entity-update',
                 label: 'update',
-                desc: 'Access to update asset metadata'
+                desc: 'Update asset metadata',
             },
-            {
-                value: 'entity-create',
-                label: 'create',
-                desc: 'Create entities within selected assets'
-            },
+
             {
                 value: 'entity-delete',
                 label: 'delete',
-                desc: 'Permission to delete selected assets'
+                desc: 'Delete/Archive assets',
             },
             {
                 value: 'link-assets',
-                label: 'update: Linked assets',
-                desc: 'Permission to link assets like readme, resources to this asset'
+                label: 'Link other assets',
+                desc: 'Link other assets like readme, resources.',
             },
         ],
         type: 'Assets',
@@ -140,8 +141,8 @@ const personaScopeList = [
         scopes: [
             {
                 value: 'entity-update-business-metadata',
-                label: 'update: Custom Metadata',
-                desc: 'Update classifications for selected assets'
+                label: 'Update Custom Metadata',
+                desc: 'Update values for BM attributes',
             },
             // {
             //     value: 'entity-add-classification',
@@ -153,19 +154,19 @@ const personaScopeList = [
             // },
             {
                 value: 'entity-update-classification',
-                label: 'update: Classifications',
-                desc: 'Update values for BM attributes for selected assets'
+                label: 'Update Classifications',
+                desc: 'Update classifications',
             },
 
             {
                 value: 'add-terms',
-                label: 'Add: Terms',
-                desc: 'Permission to link terms from aselected assets'
+                label: 'Add Terms',
+                desc: 'Link terms',
             },
             {
                 value: 'remove-terms',
-                label: 'Remove: Terms',
-                desc: 'Permission to unlink terms from aselected assets'
+                label: 'Remove Terms',
+                desc: 'Unlink terms',
             },
         ],
         type: 'Governance',
@@ -193,7 +194,8 @@ export default function scopeService() {
             }
     }
     function findActions(actions: string[], type: string) {
-        const scopeList = type === 'persona' ? personaScopeList : purposeScopeList
+        const scopeList =
+            type === 'persona' ? personaScopeList : purposeScopeList
         const res = [
             { label: 'Asset', action: [] },
             { label: 'Classifications', action: [] },

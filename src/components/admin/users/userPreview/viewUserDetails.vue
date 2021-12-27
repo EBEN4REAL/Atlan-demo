@@ -1,17 +1,17 @@
 <template>
     <div class="flex">
-        <div class="mb-3 text-lg font-bold text-gray-500">Profile</div>
+        <div class="mb-3 text-base font-bold text-gray-500">Profile</div>
         <div v-if="isCurrentUser" class="ml-auto">
             <a-button
+                class="flex content-center items-center"
                 @click="$emit('toggleEdit')"
             >
-                <AtlanIcon icon="Edit" />
-                <span class="ml-1 text-gray-700">Edit</span>
+                <AtlanIcon icon="Edit" class="mr-1"/> Edit
             </a-button>
         </div>
     </div>
     <div class="pb-6 border-solid border-b border-gray-200">
-        <div class="mb-3">
+        <div class="mb-6">
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Joined</p>
                 <a-tooltip>
@@ -24,23 +24,23 @@
         </div>
         <div
             v-if="selectedUser?.attributes?.designation?.length > 0 && selectedUser?.attributes?.designation[0]"
-            class="mb-3"
+            class="mb-6"
         >
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Designation</p>
-                <p class="text-gray">{{ selectedUser?.attributes?.designation[0] }}</p>
+                <p class="text-gray">{{ selectedUser.attributes.designation[0] }}</p>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-6">
             <UpdateSkills
                 class="flex-1 mr-4"
                 :user="selectedUser"
-                :allow-update="isCurrentUser"
+                :allow-update="false"
                 @updated-user="$emit('updatedUser')"
                 @success="$emit('success')"
             />
         </div>
-        <div class="mb-3">
+        <div class="mb-6">
             <ViewGroups :user="selectedUser" />
         </div>
         <div>
@@ -49,7 +49,7 @@
     </div>
     <div class="py-6">
         <p class="uppercase text-gray-500 text-sm">Contact Details</p>
-        <div class="mt-2">
+        <div class="mt-3">
             <div class="text-gray-500 text-sm">Email Address</div>
             <a
                 :href="`mailto:${selectedUser.email}`"

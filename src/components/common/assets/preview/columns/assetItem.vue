@@ -89,6 +89,7 @@
         <AssetDrawer
             :data="item"
             :show-drawer="showColumnDrawer"
+            :show-mask="page === 'assets'"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -103,6 +104,7 @@
         computed,
         watch,
         defineAsyncComponent,
+        inject,
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -158,6 +160,8 @@
             } = useAssetInfo()
 
             const { item } = toRefs(props)
+
+            const page = inject('sidebarPage')
 
             const {
                 localDescription,
@@ -223,6 +227,7 @@
                 handleCloseDrawer,
                 localDescription,
                 handleChangeDescription,
+                page,
                 descriptionRef,
                 isPropagated,
                 selectedAssetUpdatePermission,

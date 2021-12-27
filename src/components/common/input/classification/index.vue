@@ -38,9 +38,7 @@
                     :name="classification.name"
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
-                    :allow-delete="
-                        allowDelete === null ? editPermission : allowDelete
-                    "
+                    :allow-delete="allowDelete"
                     :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
@@ -173,8 +171,8 @@
                     ) {
                         localValue.value.push({
                             entityGuid: guid.value,
-                            propagate: false,
-                            removePropagationsOnEntityDelete: false,
+                            propagate: true,
+                            removePropagationsOnEntityDelete: true,
                             typeName: i,
                         })
                     }

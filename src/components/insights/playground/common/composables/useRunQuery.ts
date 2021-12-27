@@ -92,7 +92,6 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
-
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -118,7 +117,7 @@ export default function useProject() {
                 queryText = selectedText
                 activeInlineTab.value.playground.editor.text = queryText
             } else {
-                if(selectedText && selectedText !== '') {
+                if (selectedText && selectedText !== '') {
                     queryText = selectedText
                 } else {
                     queryText = activeInlineTab.value.playground.editor.text
@@ -330,32 +329,27 @@ export default function useProject() {
                     /* ------------------- */
                     /* USE SSE ERROR */
                     console.log('HEKA ERROR: ', error.value)
-                    if (
-                        error.value?.error &&
-                        Array.isArray(error.value?.error?.message)
-                    ) {
+                    if (error.value?.statusText) {
                         activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                             {
                                 requestId: '',
                                 errorName: '',
                                 errorMessage:
-                                    error.value?.error?.message.split('.')[0] ??
+                                    error.value?.statusText ??
                                     'Something went wrong',
-                                errorCode: undefined,
-                                developerMessage: '', // (optional field)enabled in case of unhandled error
+                                errorCode: error.value?.status,
+                                developerMessage: error.value?.statusText,
                             }
-                    } else {
-                        /* Network req error */
-                        const status = error.value?.status ?? error.value?.code
+                    } else if (error.value?.error) {
                         activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                             {
                                 requestId: '',
                                 errorName: '',
                                 errorMessage:
-                                    error.value?.message ??
+                                    error.value?.error?.message ??
                                     'Something went wrong',
-                                errorCode: status,
-                                developerMessage: '', // (optional field)enabled in case of unhandled error
+                                errorCode: '000',
+                                developerMessage: error.value?.statusText,
                             }
                     }
 
@@ -366,7 +360,9 @@ export default function useProject() {
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion('error')
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error(e)
+            }
         })
     }
 

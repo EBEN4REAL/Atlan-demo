@@ -1,13 +1,13 @@
 <template>
     <div
         @click="handleClick"
-        class="flex items-center overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
+        class="flex items-center px-1 overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
     >
         <AtlanIcon
             :icon="'Slack'"
             class="overflow-visible slack-icon"
         ></AtlanIcon>
-        <span class="ml-1 text-sm text-gray-600 cta-text">Say Hi</span>
+        <span class="pr-1 ml-1 text-sm text-gray-600 cta-text">Say Hi 👋</span>
     </div>
 </template>
 
@@ -41,7 +41,7 @@
 </script>
 <style lang="less" scoped>
     .slack-cta {
-        max-width: 22px;
+        max-width: 24px;
         height: 22px;
         transition: max-width 300ms cubic-bezier(0.4, 0, 0.2, 1) 100ms;
         &:hover {
@@ -53,5 +53,6 @@
     }
     .cta-text {
         margin-right: 3px;
+        white-space: nowrap;
     }
 </style>

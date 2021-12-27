@@ -7,12 +7,12 @@
                     <a-tag
                         :key="tag"
                         :closable="allowUpdate"
-                        class="flex content-center items-center bg-white border border-gray-300 py-0.5 px-2 font-normal text-center text-sm rounded-3xl"
                         :class="[
                             updatingTags ? 'text-gray pointer-events-none' : '',
+                            customClasses
                         ]"
                         @close="handleClose(tag)"
-                        >
+                    >
                         <slot name="label" :tag="tag">{{ `${tag.slice(0, 20)}...` }}</slot>
                     </a-tag>
                 </a-tooltip>
@@ -21,10 +21,10 @@
                     :closable="allowUpdate"
                     :class="[
                         updatingTags ? 'text-gray pointer-events-none' : '',
+                        customClasses
                     ]"
-                    class="flex content-center items-center bg-white border border-gray-300 py-1 px-3 font-normal text-center text-sm rounded-3xl"
                     @close="handleClose(tag)"
-                    >
+                >
                     <slot name="label" :tag="tag">{{ tag }}</slot>
                 </a-tag>
             </div>
@@ -42,7 +42,7 @@
             />
             <a-tag
                 v-else-if="!updatingTags && allowUpdate"
-                class="flex content-center items-center bg-gray-100 border border-dashed border-gray-300 py-1 px-3 font-normal text-center text-sm rounded-3xl"
+                :class="customClasses"
                 @click="showInput"
             >
                 + Add
@@ -85,7 +85,13 @@
                 type: String,
                 default: "",
             },
+            customClasses: {
+                type: String,
+                required: false,
+                default: () => "bg-gray-100"
+            }
         },
+        emits: ['updateTags'],
         setup(props, context) {
             const inputRef = ref()
             const defaultTags = computed(() => props.tags)

@@ -1,13 +1,10 @@
 <template>
-    <div class="p-3 bg-white rounded">
-        <div class="flex items-center justify-between mb-8">
+    <div class="p-6 bg-white border border-gray-200 rounded">
+        <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
-                <div class="px-2 py-1 rounded bg-primary-light text-primary">
-                    <AtlanIcon icon="Overview"></AtlanIcon>
-                </div>
-                <div class="ml-2 font-bold">Summary</div>
+                <div class="font-semibold">Details</div>
             </div>
-            <div>
+            <div class="hidden">
                 <a-switch
                     class="ml-auto"
                     data-test-id="toggle-switch"
@@ -20,69 +17,36 @@
                 <span class="ml-2 text-sm text-gray">Enable Purpose</span>
             </div>
         </div>
-        <div class="flex mb-5">
-            <div class="mr-3 info-widget">
-                <div class="mb-1 text-gray-500">Created By</div>
+        <div class="flex flex-col gap-y-2">
+            <div class="">
+                <div class="mb-0 text-gray-500">Name</div>
+                {{ purpose.displayName }}
+            </div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Description</div>
+                <span v-if="purpose.description">{{
+                    purpose.description
+                }}</span>
+                <span v-else class="text-gray-500"
+                    >No description available</span
+                >
+            </div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Created by</div>
                 <div>
-                    <PopOverUser
-                        :item="purpose.createdBy"
-                        class="flex items-center"
-                    >
-                        <Avatar
-                            :image-url="imageUrl(purpose.createdBy)"
-                            :allow-upload="false"
-                            :avatar-name="purpose.createdBy"
-                            :avatar-size="16"
-                            :avatar-shape="'circle'"
-                            class="mr-1"
-                        />
-                        <div>{{ purpose.createdBy }}</div>
-                    </PopOverUser>
+                    {{ purpose.createdBy }}
                 </div>
             </div>
-            <div class="mr-3 info-widget">
-                <div class="mb-1 text-gray-500">Created</div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Created at</div>
                 <a-tooltip
                     class="cursor-default"
                     :title="timeStamp(purpose.createdAt, true)"
-                    placement="bottom"
+                    placement="left"
                     >{{ timeStamp(purpose.createdAt) }}</a-tooltip
                 >
             </div>
-            <div class="mr-3 info-widget" data-test-id="tab-policies">
-                <div class="mb-1 text-gray-500">Policies</div>
-                <div
-                    v-if="
-                        purpose.dataPolicies?.length === 0 &&
-                        purpose.metadataPolicies?.length === 0
-                    "
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'policies')"
-                >
-                    <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon>
-                    Add policies
-                </div>
-                <div
-                    v-else
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'policies')"
-                >
-                    <div>
-                        {{ purpose.metadataPolicies?.length ?? 0 }}
-                        Metadata, {{ purpose.dataPolicies?.length ?? 0 }} Data
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="mb-5">
-            <div class="mb-1 text-gray-500">Description</div>
-            <div>
-                <div data-test-id="header-description">
-                    {{ purpose.description || '-' }}
-                </div>
-            </div>
-        </div>
-        <slot name="classifications"></slot>
     </div>
 </template>
 

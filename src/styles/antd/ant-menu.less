@@ -1,32 +1,37 @@
 .admin-sidebar {
-  .ant-menu {
-    @apply border-0 !important;
-  }
+    .ant-menu {
+        @apply border-0 !important;
+    }
 
-  .ant-menu-item-group {
-      @apply mb-6;
-  }
+    .ant-menu-item-group {
+        @apply mb-6;
+    }
 
-  .ant-menu-item-group-title {
-      @apply pl-2;
-      @apply text-xs uppercase tracking-wider font-bold leading-none;
-  }
+    .ant-menu-item-group-title {
+        @apply pl-0 !important;
 
-  .ant-menu-title-content {
-      @apply pl-2;
-  }
+        @apply text-xs uppercase tracking-wider
+            font-bold;
+    }
 
-  .ant-menu-item {
-      @apply text-sm;
-      @apply py-2;
-      margin: 0px !important;
-  }
+    .ant-menu-title-content {
+        @apply pl-2;
+    }
 
-  .ant-menu-item::after {
-      @apply border-none !important;
-  }
+    .ant-menu-item {
+        // @apply text-sm;
+        // @apply py-2;
+        @apply px-0;
+        // margin: 0px !important;
+        line-height: 36px !important;
+        height: 36px !important;
+    }
 
-  .ant-menu-item-selected {
-      @apply rounded !important;
-  }
+    .ant-menu-item::after {
+        @apply border-none !important;
+    }
+
+    .ant-menu-item-selected {
+        @apply rounded !important;
+    }
 }

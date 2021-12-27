@@ -14,7 +14,13 @@
                 :tab="tab.label"
                 :disabled="isScrubbed(asset) && tab.scrubbed"
             >
+                <NoAccess
+                    v-if="isScrubbed(asset) && tab.scrubbed"
+                    :back-button="true"
+                />
+
                 <component
+                    v-else-if="tab.component"
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
@@ -43,6 +49,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import AssetHeader from './header/index.vue'
+    import NoAccess from '@/common/assets/misc/noAccess.vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
@@ -51,6 +58,7 @@
         name: 'AssetProfile',
         components: {
             AssetHeader,
+            NoAccess,
             Columns: defineAsyncComponent(
                 () => import('./tabs/columns/index.vue')
             ),
@@ -141,6 +149,9 @@ meta:
 
         :global(.ant-tabs-content-holder) {
             @apply bg-primary-light overflow-y-auto !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply min-h-full !important;
         }
     }
 </style>

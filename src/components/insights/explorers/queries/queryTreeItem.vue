@@ -7,7 +7,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    v-if="item.typeName === 'QueryFolder'"
+                    v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="parent-ellipsis-container py-1.5">
@@ -28,6 +28,11 @@
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
+                                <!-- <AtlanIcon
+                                    icon="Reload"
+                                    class="w-4 h-4 my-auto"
+                                    v-if="!isNodeLoading && nodeError"
+                                ></AtlanIcon> -->
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
@@ -114,13 +119,26 @@
                     </template>
 
                     <template #button>
-                        <a-button class="mt-3" @click="openSidebar" block>
+                        <!-- <a-button class="mt-3" @click="openSidebar" block>
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
                                 </div>
                             </div>
-                        </a-button>
+                        </a-button> -->
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                            @click="openSidebar"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                Show Preview</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
                     </template>
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -152,7 +170,27 @@
                                 ]"
                             >
                                 <div
-                                    class="pl-2 ml-24"
+                                    :data-test-id="'run-saved-query'"
+                                    class="ml-24"
+                                    @click="() => actionClick('play', item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>Run Query</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
+
+                                <div
+                                    class="pl-2"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
@@ -326,8 +364,16 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useRoute, useRouter } from 'vue-router'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import AtlanBtn from '@/UI/button.vue'
 
-    const { inlineTabRemove } = useInlineTab()
+    const {
+        inlineTabRemove,
+        modifyActiveInlineTabEditor,
+        modifyActiveInlineTab,
+    } = useInlineTab()
+    const { focusEditor, setSelection } = useEditor()
 
     import { message } from 'ant-design-vue'
 
@@ -338,6 +384,7 @@
             PublishFolderPopover,
             QueryFolderSelector,
             PopoverAsset,
+            AtlanBtn,
         },
         props: {
             item: {
@@ -356,6 +403,14 @@
             },
             refreshQueryTree: {
                 type: Function,
+                required: false,
+            },
+            isNodeLoading: {
+                type: Boolean,
+                required: false,
+            },
+            nodeError: {
+                type: String,
                 required: false,
             },
             // parentFolderQF: {
@@ -421,7 +476,7 @@
             const refetchParentNode = inject<
                 (
                     guid: string | 'root',
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchParentNode', () => {})
@@ -429,7 +484,7 @@
             const refetchNode = inject<
                 (
                     guid: string,
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
@@ -437,6 +492,12 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
+            const { openSavedQueryInNewTabAndRun } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -475,9 +536,56 @@
 
                         break
                     }
+                    case 'play': {
+                        openSavedQueryInNewTabAndRun(
+                            item,
+                            getData,
+                            limitRows,
+                            editorInstance,
+                            monacoInstance
+                        )
+                        break
+                    }
                     case 'bookmark': {
                         break
                     }
+                }
+            }
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+
+            const getData = (dataList, columnList) => {
+                if (activeInlineTab && inlineTabs?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     inlineTabs,
+                    //     saveQueryDataInLocalStorage
+                    // )
+
+                    modifyActiveInlineTab(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        activeInlineTabCopy.isSaved,
+                        saveQueryDataInLocalStorage
+                    )
+                    // setSelection(
+                    //     toRaw(editorInstanceRef.value),
+                    //     toRaw(monacoInstanceRef.value),
+                    //     selectionObject.value
+                    // )
+                    focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
 
@@ -507,7 +615,7 @@
                 //         message.success({
                 //             content: `${item.value?.attributes?.name} was made public!`,
                 //         })
-                //         refetchParentNode(props.item.guid, 'queryFolder')
+                //         refetchParentNode(props.item.guid, 'Folder')
                 //     }
                 // })
             }
@@ -523,7 +631,7 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none border py-0 px-1 rounded mx-0 my-0.5 w-auto`
+                    `outline-none py-0 px-1 rounded mx-0 my-0.5 w-full`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
@@ -672,7 +780,7 @@
                 }
             }
 
-            const delteItem = (type: 'Query' | 'QueryFolder') => {
+            const delteItem = (type: 'Query' | 'Folder') => {
                 let key = item.value.guid
                 let parentGuid = item?.value?.attributes?.parent?.guid
                 console.log('delete item: ', item)
@@ -698,7 +806,7 @@
                         setTimeout(() => {
                             refetchNode(
                                 parentGuid,
-                                type === 'Query' ? 'query' : 'queryFolder'
+                                type === 'Query' ? 'query' : 'Folder'
                             )
                         }, 1000)
 
@@ -708,7 +816,7 @@
                         useAddEvent('insights', 'folder', 'deleted', undefined)
                         // refetchParentNode(
                         //     props.item.guid,
-                        //     type === 'Query' ? 'query' : 'queryFolder',
+                        //     type === 'Query' ? 'query' : 'Folder',
                         //     savedQueryType.value
                         // )
                     }
@@ -834,7 +942,7 @@
                     const newEntity = { ...item, relationshipAttributes: {} }
                     delete newEntity.entity
 
-                    if (selectedFolder.value.typeName === 'QueryCollection') {
+                    if (selectedFolder.value.typeName === 'Collection') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -857,9 +965,7 @@
                         // } else {
                         //     newEntity.classifications = []
                         // }
-                    } else if (
-                        selectedFolder.value.typeName === 'QueryFolder'
-                    ) {
+                    } else if (selectedFolder.value.typeName === 'Folder') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -882,7 +988,7 @@
 
                     isUpdating.value = true
 
-                    if (item.typeName == 'QueryFolder') {
+                    if (item.typeName == 'Folder') {
                         const { data, error, isLoading } =
                             Insights.UpdateSavedFolder(
                                 {
@@ -901,13 +1007,13 @@
                                     setTimeout(async () => {
                                         await refetchNode(
                                             previousParentGuId,
-                                            'queryFolder'
+                                            'Folder'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
                                         await refetchNode(
                                             selectedParentGuid,
-                                            'queryFolder'
+                                            'Folder'
                                         )
                                     }, 2000)
 

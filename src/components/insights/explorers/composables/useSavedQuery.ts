@@ -21,7 +21,6 @@ import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { useTenantStore } from '~/store/tenant'
-import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -53,13 +52,11 @@ export function useSavedQuery(
         modifyActiveInlineTabEditor,
     } = useInlineTab(treeSelectedKeys)
 
-    const { queryRun } = useRunQuery()
-
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         console.log('query entity2: ', savedQuery)
 
         let decodedVariables = decodeBase64Data(
-            savedQuery?.attributes?.variablesSchemaBase64
+            savedQuery.attributes.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
         // debugger
         // console.log(decodedVariables, savedQuery)
@@ -220,37 +217,6 @@ export function useSavedQuery(
             overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
         }
-    }
-
-    const openSavedQueryInNewTabAndRun = (
-        savedQuery,
-        getData: (rows: any[], columns: any[], executionTime: number) => void,
-        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
-        editorInstance: Ref<any>,
-        monacoInstance: Ref<any>,
-    ) => {
-        openSavedQueryInNewTab({
-            ...savedQuery?.value,
-            parentTitle:
-                savedQuery?.value?.attributes?.parent?.attributes
-                    ?.name,
-        })
-        setTimeout(()=> {
-            queryRun(
-                activeInlineTab,
-                getData,
-                limitRows,
-                null,
-                null,
-                savedQuery.value?.attributes.rawQuery,
-                editorInstance,
-                monacoInstance,
-                activeInlineTab?.value?.playground?.isVQB
-            )
-        }, 250)
-
-        
-        
     }
 
     const getCollectionByQualifiedName = (qualifiedName: string) => {
@@ -637,12 +603,12 @@ export function useSavedQuery(
         if (parentFolderQF.includes('/folder')) {
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'Folder',
+                typeName: 'QueryFolder',
             }
         } else {
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'Collection',
+                typeName: 'QueryCollection',
             }
         }
         // chaing loading to true
@@ -660,12 +626,10 @@ export function useSavedQuery(
 
                     // const guid = data.value.mutatedEntities.CREATE[0].guid
 
-                    console.log()
-
-                    const parentGuid = parentFolderGuid
+                    const parentGuid = data.value.mutatedEntities.UPDATE[0].guid
                     const parentQualifiedName =
-                        data.value.mutatedEntities.CREATE[0].attributes
-                            .parentQualifiedName
+                        data.value.mutatedEntities.UPDATE[0].attributes
+                            .qualifiedName
 
                     console.log(data.value, 'saved')
                     /* Not present in response */
@@ -755,18 +719,18 @@ export function useSavedQuery(
 
         const body = ref<Record<string, any>>({
             entity: {
-                typeName: 'Folder',
+                typeName: 'QueryFolder',
                 attributes: {
-                    connectorName,
+                    // connectorName,
                     name,
                     qualifiedName,
-                    connectionName,
-                    defaultSchemaQualifiedName,
-                    connectionQualifiedName,
+                    // connectionName,
+                    // defaultSchemaQualifiedName,
+                    // connectionQualifiedName,
                     collectionQualifiedName,
                     ownerUsers: [username.value],
                     tenantId: 'default',
-                    connectionId: connectionGuid,
+                    // connectionId: connectionGuid,
                     isPrivate: true,
                 },
                 /*TODO Created by will eventually change according to the owners*/
@@ -781,13 +745,13 @@ export function useSavedQuery(
             // parent is folder
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid.value,
-                typeName: 'Folder',
+                typeName: 'QueryFolder',
             }
         } else {
             // parent is collection
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid.value,
-                typeName: 'Collection',
+                typeName: 'QueryCollection',
             }
         }
         // chaing loading to true
@@ -921,13 +885,13 @@ export function useSavedQuery(
             // folder is parent
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'Folder',
+                typeName: 'QueryFolder',
             }
         } else {
             // collection is parent
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'Collection',
+                typeName: 'QueryCollection',
             }
         }
         console.log('hola hola hola parentFolderQF', parentFolderQF)
@@ -988,10 +952,10 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     const guid = data.value.mutatedEntities.CREATE[0].guid
 
-                    const parentGuid = parentFolderGuid
+                    const parentGuid = data.value.mutatedEntities.UPDATE[0].guid
                     const parentQualifiedName =
-                        data.value.mutatedEntities.CREATE[0].attributes
-                            .parentQualifiedName
+                        data.value.mutatedEntities.UPDATE[0].attributes
+                            .qualifiedName
 
                     console.log(data.value, 'saved')
                     /* Not present in response */
@@ -1062,6 +1026,5 @@ export function useSavedQuery(
         openSavedQueryInNewTab,
         createFolder,
         saveQueryToDatabaseWithTerms,
-        openSavedQueryInNewTabAndRun
     }
 }

@@ -49,13 +49,12 @@
                 placeholder="Search terms & categories..."
             >
                 <template v-if="showCollapseAll" #filter>
-                    <a-tooltip>
+                    <a-tooltip v-if="!queryText">
                         <template #title>Collapse all </template>
 
                         <atlan-icon
-                            v-if="!queryText"
                             icon="TreeCollapseAll"
-                            class="h-4 mt-2 ml-0 outline-none cursor-pointer"
+                            class="h-4 ml-0 outline-none cursor-pointer"
                             @click="handleCollapse"
                         >
                         </atlan-icon>
@@ -528,9 +527,8 @@
     }
 
     .checkableTree {
-        .searchResults {
-            max-height: 500px;
-        }
+        max-height: 300px;
+        min-height: 300px;
 
         :global(.glossaryTreeWrapper) {
             @apply overflow-y-auto;

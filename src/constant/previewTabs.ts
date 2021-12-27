@@ -22,7 +22,7 @@ export const previewTabs = [
         component: 'lineage',
         excludes: [
             'Query',
-            'Folder',
+            'QueryFolder',
             'AtlasGlossary',
             'AtlasGlossaryTerm',
             'AtlasGlossaryCategory',
@@ -39,10 +39,19 @@ export const previewTabs = [
     {
         name: 'Activity',
         component: 'activity',
-        excludes: ['Query', 'Folder'],
+        excludes: ['Query', 'QueryFolder'],
         icon: 'ActivityLogs',
         tooltip: 'Activity',
         scrubbed: true,
+        requiredInProfile: true,
+    },
+    {
+        name: 'Queries',
+        component: 'queries',
+        includes: ['Table', 'Column'],
+        icon: 'Relation',
+        tooltip: 'Queries',
+        scrubbed: false,
         requiredInProfile: true,
     },
     {
@@ -63,7 +72,7 @@ export const previewTabs = [
         ],
         icon: 'Relation',
         tooltip: 'Relationships',
-        scrubbed: false,
+        scrubbed: true,
         requiredInProfile: false,
     },
     {

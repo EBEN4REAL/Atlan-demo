@@ -1,5 +1,7 @@
 <template>
-    <div class="mx-auto text-gray-600 bg-white rounded">
+    <div
+        class="flex flex-col flex-grow overflow-y-auto text-gray-600 bg-white rounded"
+    >
         <div class="mt-5 provider-wrapper">
             <div>
                 <div class="p-4 mb-6 bg-gray-100 rounded">
@@ -16,17 +18,17 @@
                                 }}
                             </div>
                             <div
-                                class="flex items-center cursor-pointer  text-primary"
+                                class="flex items-center cursor-pointer text-primary"
+                                @click="
+                                    copyText(
+                                        getSamlAssertionUrl(ssoForm.alias)
+                                            .redirectUrl
+                                    )
+                                "
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
                                     class="mb-0.5"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(ssoForm.alias)
-                                                .redirectUrl
-                                        )
-                                    "
                                 ></AtlanIcon>
                                 <div class="ml-1">Copy</div>
                             </div>
@@ -44,17 +46,17 @@
                                 }}
                             </div>
                             <div
-                                class="flex items-center cursor-pointer  text-primary"
+                                class="flex items-center cursor-pointer text-primary"
+                                @click="
+                                    copyText(
+                                        getSamlAssertionUrl(ssoForm.alias)
+                                            .audienceUrl
+                                    )
+                                "
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
                                     class="mb-0.5"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(ssoForm.alias)
-                                                .audienceUrl
-                                        )
-                                    "
                                 ></AtlanIcon>
                                 <div class="ml-1">Copy</div>
                             </div>
@@ -126,7 +128,7 @@
                         Attribute Mapper
                     </div>
                     <div
-                        class="flex flex-row items-center justify-between w-full "
+                        class="flex flex-row items-center justify-between w-full"
                     >
                         <div class="w-5/12 mb-2">IDP Attribute</div>
                         <div class="w-5/12 mb-2">User Attribute</div>
@@ -135,7 +137,7 @@
                     <div
                         v-for="(mapper, index) in mapperLists"
                         :key="index"
-                        class="flex flex-row items-center justify-between w-full mb-8 "
+                        class="flex flex-row items-center justify-between w-full mb-8"
                     >
                         <div class="w-5/12">
                             <!-- this will change when we start getting config details -->
@@ -227,7 +229,9 @@
         computed,
         onMounted,
         toRaw,
+        watch,
     } from 'vue'
+    import { storeToRefs, storeToRefs } from 'pinia'
     import { message } from 'ant-design-vue'
     import { useRouter } from 'vue-router'
     import emptySSOImage from '~/assets/images/emptyCreds.png'
@@ -263,15 +267,35 @@
             const allowAddDeleteMappers = ref(false)
             const tenantStore = useTenantStore()
             const router = useRouter()
-            const tenantData: any = computed(() => tenantStore.getTenant)
+            const { identityProviderMappers, identityProviders } =
+                storeToRefs(tenantStore)
+            const ssoProvider: any = ref({})
+
+            watch(
+                identityProviders,
+                () => {
+                    const ssoProviders = (
+                        identityProviders?.value || []
+                    )?.filter((idp) => {
+                        if (idp?.alias === props.alias) return idp
+                    })
+                    ssoProvider.value = ssoProviders[0] || {}
+                },
+                { deep: true, immediate: true }
+            )
+
             const defaultMappers = ref([])
-            defaultMappers.value = (
-                tenantStore.identityProviderMappers || []
-            ).map((m) => ({
-                userAttr: m?.config?.['user.attribute'] ?? '',
-                id: m.id ?? '',
-                idpAttr: m?.config?.['attribute.name'] ?? '',
-            }))
+            defaultMappers.value = (identityProviderMappers.value || [])
+                .filter(
+                    (mapper) =>
+                        mapper?.identityProviderAlias ===
+                        identityProviders?.value?.[0].alias
+                )
+                .map((mapper) => ({
+                    userAttr: mapper?.config?.['user.attribute'] ?? '',
+                    id: mapper?.id ?? '',
+                    idpAttr: mapper?.config?.['attribute.name'] ?? '',
+                }))
             const mapperLists = ref(defaultMappers)
             const mappers: {
                 name: any
@@ -284,17 +308,6 @@
                     'attribute.name': any
                 }
             }[] = []
-
-            const identityProviders: Array<any> =
-                tenantData?.value?.identityProviders || []
-            const ssoProvider: any = computed(() => {
-                const ssoProviders = identityProviders.filter((idp) => {
-                    if (idp?.alias === props.alias) return idp
-                })
-                return ssoProviders[0] || {}
-            })
-            // TODO: create mappers with user and idp attributes when we start getting info in config
-            const idpMappers = ref([])
 
             const ssoForm: UnwrapRef<FormState> = reactive({
                 alias: props.alias,
@@ -364,10 +377,21 @@
                 const type = 'text/xml'
                 downloadFile(data, filename, type)
             }
-
-            const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setTenant(tenantResponse)
+            const updateTenant = () => {
+                const { data, isReady, error, isLoading } = Tenant.GetTenant()
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            tenantStore.setTenant(data?.value)
+                        } else if (error && error.value) {
+                            console.error(
+                                'Unable to update API Key. Please try again.'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
             }
 
             onMounted(() => {
@@ -450,7 +474,6 @@
                         },
                         displayName: ssoForm.displayName,
                     }
-                    console.log(config)
                     mapperLists.value.map(
                         (mapper) => mapper?.userAttr && addMapper(mapper)
                     )
@@ -466,7 +489,7 @@
                     })
                     await Promise.all([...mapperResponse])
 
-                    await updateTenant()
+                    updateTenant()
                     isLoading.value = false
                     message.success({
                         content: 'Details Updated',
@@ -500,7 +523,6 @@
                 addNewMapper,
                 allowAddDeleteMappers,
                 mapperLists,
-                idpMappers,
             }
         },
     })

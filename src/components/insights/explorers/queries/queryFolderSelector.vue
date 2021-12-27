@@ -225,7 +225,7 @@
 
                         emit('folderChange', data)
                     } else {
-                        if (item?.typeName === 'Folder') {
+                        if (item?.typeName === 'QueryFolder') {
                             selectedKey.value = [item.guid]
                             selectedFolder.value = item.title
                             dropdownVisible.value = false
@@ -266,7 +266,7 @@
                 } else {
                     const item = event.node.dataRef.entity
 
-                    if (item.typeName === 'Folder') {
+                    if (item.typeName === 'QueryFolder') {
                         selectedKey.value = [item.guid]
                         selectedFolder.value = event?.node?.dataRef.title
                         dropdownVisible.value = false

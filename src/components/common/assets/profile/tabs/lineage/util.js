@@ -25,7 +25,7 @@ export const getNodeTypeText = {
     PowerBIWorkspace: 'PowerBIWorkspace',
     Process: 'Process',
     Query: 'Query',
-    QueryFolder: 'Folder',
+    QueryFolder: 'QueryFolder',
     QueryFolderNamespace: 'QueryFolderNamespace',
     Table: 'Table',
     View: 'View',

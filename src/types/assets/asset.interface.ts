@@ -34,6 +34,9 @@ export interface assetInterface {
         isForeign: boolean
         compiledQuery: string
         rawQuery: string
+        rowLimit: number
+        allowQuery: boolean
+        allowQueryPreview: boolean
         qualifiedName: string
         userDescription: string
         rowCount: number
@@ -58,6 +61,17 @@ export interface assetInterface {
             }
         }
         links?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+            attributes: {
+                name: string
+                link: string
+            }
+        }[]
+        queries?: {
             guid: string
             typeName: string
             uniqueAttributes: {

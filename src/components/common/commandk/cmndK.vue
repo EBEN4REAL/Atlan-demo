@@ -380,7 +380,7 @@
     }
 </style>
 
-<style lang="less">
+<style lang="less" scoped>
     .force-hide-focus-outline {
         border-radius: 0px;
         &:focus {

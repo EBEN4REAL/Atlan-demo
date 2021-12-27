@@ -630,7 +630,6 @@
                     editorConfig,
                     themeName
                 )
-                toRaw(editorInstance?.value)?.focus()
             }
             console.log('editor data: ', editorConfig.value)
 
@@ -640,7 +639,6 @@
                     editorConfig,
                     tabSpace
                 )
-                toRaw(editorInstance?.value)?.focus()
             }
             const fontSizeChange = (fontSize: number) => {
                 setFontSizes(
@@ -648,7 +646,6 @@
                     editorConfig,
                     fontSize
                 )
-                toRaw(editorInstance?.value)?.focus()
             }
 
             const themeHoverChange = (theme: string) => {
@@ -680,7 +677,6 @@
                     editorConfig,
                     cursorStyle
                 )
-                toRaw(editorInstance?.value)?.focus()
             }
             const cursorHoverChange = (cursorStyle: string) => {
                 setCursorStyle(

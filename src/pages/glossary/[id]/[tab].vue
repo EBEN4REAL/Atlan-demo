@@ -38,7 +38,6 @@
             useHead({
                 title: 'Glossary',
             })
-            console.log('mounted-----------------------')
             const { selectedAsset } = toRefs(props)
             const localSelected = ref()
             const route = useRoute()
@@ -50,7 +49,6 @@
                 guid: id.value,
             })
             if (selectedAsset.value?.guid === id.value) {
-                console.log(selectedAsset.value)
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
@@ -81,7 +79,6 @@
             })
 
             watch(list, () => {
-                console.log('list changed')
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
                     handlePreview(list.value[0])
@@ -92,7 +89,6 @@
                     dependentKey.value = id.value
                     facets.value.guid = id.value
                     fetch()
-                    console.log('fetch gtc again on route chage')
                 }
             })
             watch(selectedAsset, () => {

@@ -6,7 +6,10 @@
                 <span class="mb-1 text-base font-bold">Purposes</span>
             </div>
         </div>
-        <PurposeList class="flex-grow" />
+        <PurposeList
+            class="flex-grow"
+            :classification-i-d="selectedClassification.name"
+        />
     </div>
 </template>
 

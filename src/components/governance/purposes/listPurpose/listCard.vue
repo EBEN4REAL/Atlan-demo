@@ -37,20 +37,20 @@
     const { p, classificationList } = toRefs(props)
     const allClassifications: Ref<object[]> = ref([])
 
-    p.value.tags.forEach((c) => {
-        const classification: CF | undefined = classificationList.value.find(
-            (cf) => cf.name === c
-        )
-        if (classification)
-            allClassifications.value.push({
-                typeName: classification.name,
-                entityGuid: classification.guid,
-                entityStatus: 'ACTIVE',
-                propagate: false,
-                validityPeriods: [],
-                removePropagationsOnEntityDelete: false,
-            })
-    })
+    if (p.value?.tags?.length)
+        p.value.tags.forEach((c) => {
+            const classification: CF | undefined =
+                classificationList.value.find((cf) => cf.name === c)
+            if (classification)
+                allClassifications.value.push({
+                    typeName: classification.name,
+                    entityGuid: classification.guid,
+                    entityStatus: 'ACTIVE',
+                    propagate: false,
+                    validityPeriods: [],
+                    removePropagationsOnEntityDelete: false,
+                })
+        })
 </script>
 
 <style scoped></style>

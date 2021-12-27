@@ -97,7 +97,7 @@
                         </PillGroup>
                         <template #content>
                             <PersonaList
-                                class="persona-list"
+                                class="py-2 persona-list"
                                 :selected-personas="apiKeyDirty.personas"
                             />
                         </template>

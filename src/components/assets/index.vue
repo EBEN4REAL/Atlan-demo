@@ -68,6 +68,7 @@
                             </div>
                         </template>
                     </SearchAdvanced>
+                    <slot name="searchAction"></slot>
                 </div>
 
                 <div v-if="showAggrs" class="w-full px-4">
@@ -287,6 +288,10 @@
                 type: Boolean,
                 default: false,
             },
+            disableHandlePreview: {
+                type: Boolean,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -296,6 +301,7 @@
                 page,
                 projection,
                 allCheckboxAreaClick,
+                disableHandlePreview
             } = toRefs(props)
 
             const limit = ref(20)
@@ -427,7 +433,7 @@
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: args[1],
                 })
-                if (handlePreview) {
+                if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
             }

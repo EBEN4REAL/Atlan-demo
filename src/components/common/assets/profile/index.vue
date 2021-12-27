@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full max-profile-width">
         <AssetHeader :item="asset" />
         <a-tabs
             v-model:activeKey="activeKey"
@@ -153,5 +153,11 @@ meta:
         :global(.ant-tabs-content) {
             @apply min-h-full !important;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 420px);
     }
 </style>

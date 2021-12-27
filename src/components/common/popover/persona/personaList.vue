@@ -30,20 +30,25 @@
             </div>
             <div
                 v-if="filteredPersonas.length"
-                class="mt-4 persona-list-wrapper"
+                class="mt-2 persona-list-wrapper"
             >
                 <div
                     v-for="persona in filteredPersonas"
                     :key="persona.id"
                     class=""
                 >
-                    <a-popover :trigger="hover" placement="right">
+                    <a-popover :trigger="hover" placement="left">
                         <template #content>
-                            <div class="mb-2 font-bold">
-                                {{ persona.displayName }}
-                            </div>
-                            <div class="">
-                                {{ persona.description || '-' }}
+                            <div class="max-w-xs p-2">
+                                <div class="font-bold">
+                                    {{ persona.displayName }}
+                                </div>
+                                <div v-if="persona.description" class="text-xs">
+                                    {{ persona.description }}
+                                </div>
+                                <div v-else class="text-xs text-gray-500">
+                                    No description
+                                </div>
                             </div>
                         </template>
                         <a-checkbox

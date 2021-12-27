@@ -209,7 +209,7 @@
 
 <style lang="less" module>
     .tableStyle {
-        @apply rounded !important;
+        @apply rounded overflow-x-auto !important;
         td,
         th {
             max-width: 200px;

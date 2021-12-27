@@ -518,11 +518,17 @@ const useGlossaryTree = ({
                 }
                 nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] =
                     node.guid as string
-
-                return {
-                    ...node,
-                    children: updatedChildren,
+                if (
+                    loadedKeys.value.find(
+                        (key) => node?.key === key || node?.value?.key === key
+                    )
+                ) {
+                    return {
+                        ...node,
+                        children: updatedChildren,
+                    }
                 }
+                return node
             }
             const updatedChildren: TreeDataItem[] = []
 

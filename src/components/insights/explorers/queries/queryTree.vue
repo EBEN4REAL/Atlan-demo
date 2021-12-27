@@ -20,13 +20,20 @@ TR
                     </template>
 
                     <template #title="item">
+                        <!-- {{ isNodeLoading }} -->
+                        <!-- {{ nodeError }} -->
                         <QueryTreeItem
                             :item="item"
                             v-if="item.title !== 'Load more'"
                             :expandedKeys="expandedKeys"
                             :connector="connector"
                             :refreshQueryTree="refreshQueryTree"
+                            :isNodeLoading="isNodeLoading"
+                            :nodeError="nodeError"
                         />
+                        <!-- <div v-else-if="isNodeLoading === false && nodeError">
+                            {{ nodeError }}
+                        </div> -->
                         <div
                             :data-test-id="'loadMore'"
                             v-else
@@ -222,6 +229,14 @@ TR
                 default: () => {},
             },
             QueriesFetchError: {
+                type: Object,
+            },
+            isNodeLoading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            nodeError: {
                 type: Object,
             },
             // refetchTreeData: {

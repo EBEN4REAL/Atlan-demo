@@ -27,8 +27,6 @@ const useActiveQueryAccess = (
         'ownerGroups',
         'adminUsers',
         'adminGroups',
-
-        
         '__createdBy',
         '__state',
         '__guid',

@@ -28,6 +28,11 @@
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
+                                <!-- <AtlanIcon
+                                    icon="Reload"
+                                    class="w-4 h-4 my-auto"
+                                    v-if="!isNodeLoading && nodeError"
+                                ></AtlanIcon> -->
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
@@ -400,6 +405,14 @@
                 type: Function,
                 required: false,
             },
+            isNodeLoading: {
+                type: Boolean,
+                required: false,
+            },
+            nodeError: {
+                type: String,
+                required: false,
+            },
             // parentFolderQF: {
             //     type: String,
             //     required: true,
@@ -618,7 +631,7 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none border py-0 px-1 rounded mx-0 my-0.5 w-auto`
+                    `outline-none py-0 px-1 rounded mx-0 my-0.5 w-full`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 

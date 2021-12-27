@@ -141,9 +141,9 @@ export function entitiesToEditorKeyword(
             const entities = res.entities ?? []
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
-            // console.log('suggestion: ', {
-            //     entities
-            // })
+            console.log('suggestion: ', {
+                entities
+            })
             for (let i = 0; i < len; i++) {
                 // console.log('su counter: ', i)
                 let keyword
@@ -309,26 +309,93 @@ const refreshBody = () => {
         dsl: {
             from: 0,
             size: 100,
-            sort: [
-                {
-                    'name.keyword': {
-                        order: 'asc',
-                    },
-                },
-            ],
+            // sort: [
+            //     {
+            //         'name.keyword': {
+            //             order: 'asc',
+            //         },
+            //     },
+            // ],
+            // query: {
+            //     bool: {
+            //         filter: {
+            //             bool: {
+            //                 must: [],
+            //             },
+            //         },
+            //     },
+            // },
             query: {
-                bool: {
-                    filter: {
+                function_score: {
+                    query: {
                         bool: {
-                            must: [],
+                            filter: {
+                                bool: {
+                                    must: [],
+                                },
+                            },
+                            
                         },
                     },
+                    functions: [
+                        {
+                            filter: {
+                                match: {
+                                    certificateStatus: 'VERIFIED',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    certificateStatus: 'DRAFT',
+                                },
+                            },
+                            weight: 4,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'Table',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'View',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'Column',
+                                },
+                            },
+                            weight: 3,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'AtlasGlossaryTerm',
+                                },
+                            },
+                            weight: 4,
+                        },
+                    ],
+                    boost_mode: 'sum',
+                    score_mode: 'sum',
                 },
             },
         },
         attributes,
     }
 }
+
 async function getSuggestionsUsingType(
     type: string = 'TABLE',
     token: string,
@@ -342,26 +409,26 @@ async function getSuggestionsUsingType(
 ) {
     refreshBody()
     if (connectorsInfo.schemaName) {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 schemaQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}`,
             },
         })
     } else if (connectorsInfo.databaseName) {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 databaseQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}`,
             },
         })
     } else {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 connectionQualifiedName: `${connectorsInfo.connectionQualifiedName}`,
             },
         })
     }
 
-    body.value.dsl.query.bool.filter.bool.must.push({
+    body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
         regexp: {
             'name.keyword': `${currentWord}.*`,
         },
@@ -369,7 +436,7 @@ async function getSuggestionsUsingType(
 
     switch (type) {
         case 'TABLE': {
-            body.value.dsl.query.bool.filter.bool.must.push({
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
                 terms: {
                     '__typeName.keyword': ['Table', 'View'],
                 },
@@ -403,7 +470,7 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
-            body.value.dsl.query.bool.filter.bool.must.push({
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
                 terms: {
                     '__typeName.keyword': ['Column'],
                 },

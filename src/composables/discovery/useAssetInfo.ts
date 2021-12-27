@@ -77,6 +77,10 @@ export default function useAssetInfo() {
 
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []
+
+    const assignedEntities = (asset: Term) =>
+        asset.attributes?.assignedEntities
+
     const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
 
     const connectorName = (asset: assetInterface) =>
@@ -1019,6 +1023,7 @@ export default function useAssetInfo() {
         getLineagePath,
         isUserDescription,
         isScrubbed,
+        assignedEntities,
         adminGroups,
         adminUsers,
         connectionRowLimit,

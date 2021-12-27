@@ -1,6 +1,9 @@
 <template>
     <div class="px-4 py-2 tab-content-wrapper overflow-hidden overflow-y-auto">
-        <div class="h-full">
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+        </div>
+        <div v-else class="h-full">
             <EditUser
                 v-if="isEditing"
                 :selected-user="selectedUser"
@@ -39,10 +42,14 @@
                 type: Boolean,
                 default: false,
             },
+            isLoading: {
+                type: Boolean,
+                default: false
+            }
         },
         emits: ['updatedUser', 'success', 'imageUpdated'],
         setup(props, { emit }) {
-            const { selectedUser, isCurrentUser } = toRefs(props)
+            const { selectedUser, isCurrentUser, isLoading } = toRefs(props)
             const isEditing = ref(false)
             const toggleEdit = () => {
                 emit("success")
@@ -56,7 +63,8 @@
                 isCurrentUser,
                 isEditing,
                 toggleEdit,
-                handleImageUpdate
+                handleImageUpdate,
+                isLoading
             }
         }
     })

@@ -11,7 +11,7 @@
     <template v-else-if="!personaList.length && !searchText">
         <EmptyView
             class="text-center"
-            headline="There is no purpose linked to this classification"
+            headline="No purpose is associated with this classification"
         />
     </template>
     <template v-else>

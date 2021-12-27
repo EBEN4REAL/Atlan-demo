@@ -47,22 +47,27 @@
                                 'cursor-pointer hover:bg-primary-light':
                                     variantTypeIndexes.includes(key.toString()),
                             }"
+                            @mouseover="showExpand = `${key}.${index}`"
+                            @mouseleave="showExpand = ''"
                         >
                             <div
                                 v-if="
                                     variantTypeIndexes.includes(key.toString())
                                 "
-                                @mouseover="showExpand = true"
-                                @mouseleave="showExpand = false"
                                 class="flex items-center justify-between"
                                 @click="
                                     handleOpenModal(rowData, `${key}.${index}`)
                                 "
                             >
-                                <div style="max-width: 80%" class="truncate">
+                                <div style="max-width: 85%" class="truncate">
                                     {{ rowData }}
                                 </div>
                                 <AtlanIcon
+                                    v-if="
+                                        showExpand === `${key}.${index}` ||
+                                        (modalVisible &&
+                                            selectedIndex === `${key}.${index}`)
+                                    "
                                     icon="Expand"
                                     class="h-4 w-auto mb-0.5"
                                 />
@@ -133,9 +138,9 @@
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
-            const selectedData = ref(null)
+            const selectedData = ref('')
             const selectedIndex = ref('')
-            const showExpand = ref(false)
+            const showExpand = ref('')
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
                 let label = ''
@@ -171,7 +176,7 @@
 
             const handleModalClose = () => {
                 modalVisible.value = false
-                selectedData.value = null
+                selectedData.value = ''
                 selectedIndex.value = ''
             }
 

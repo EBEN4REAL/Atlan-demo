@@ -172,7 +172,7 @@ export default function useAssetInfo() {
                     component: 'customMetadata',
                     excludes: [
                         'Query',
-                        'Folder',
+                        'QueryFolder',
                         'AtlasGlossary',
                         'AtlasGlossaryTerm',
                         'AtlasGlossaryCategory',

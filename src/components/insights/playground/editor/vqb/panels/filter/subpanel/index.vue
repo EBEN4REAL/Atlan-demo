@@ -327,12 +327,14 @@
                     addVariableFromVQB(activeInlineTab, tabs, {
                         vqbPanelId: subpanel.id,
                         subpanelId: subpanel.id,
+                        type: subpanel?.column?.type?.toLowerCase(),
                     })
                     /* If fileds are more than one, then it will have inputFiledValue 2 */
                     if (totalFiledsMapWithInput[subpanel?.filter?.type] > 1) {
                         addVariableFromVQB(activeInlineTab, tabs, {
                             vqbPanelId: `${subpanel.id}${2}`,
                             subpanelId: `${subpanel.id}${2}`,
+                            type: subpanel?.column?.type.toLowerCase(),
                         })
                     }
                 }

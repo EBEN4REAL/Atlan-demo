@@ -324,6 +324,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         subpanelInfo: {
             vqbPanelId: string
             subpanelId: string
+            type: string
         }
     ) {
         if (!editorInstance && !monacoInstance) {
@@ -338,7 +339,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         const new_variable: CustomVaribaleInterface = {
             name: `variable${len}`,
             key,
-            type: 'string',
+            type: subpanelInfo?.type ?? 'string',
             value: '',
             options: [],
             allowMultiple: false,
@@ -366,7 +367,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                 let variable: CustomVaribaleInterface = {
                     name: `variable${Math.ceil(Math.random() * 100) + len}`,
                     key,
-                    type: 'string',
+                    type: subpanelInfo?.type ?? 'string',
                     value: '',
                     options: [],
                     allowMultiple: false,

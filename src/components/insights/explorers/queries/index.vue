@@ -30,7 +30,9 @@
                             :class="$style.filterButton"
                             v-auth="[map.CREATE_COLLECTION]"
                         >
-                            <span class="text-xs text-gray-700">New</span>
+                            <span class="text-xs font-bold text-gray-700"
+                                >New</span
+                            >
                         </div>
                         <template #overlay>
                             <a-menu>

@@ -16,6 +16,16 @@
                 >
                 inside it.
             </p>
+            <p
+                v-else-if="item.typeName === 'Collection'"
+                class="mb-0 text-black"
+            >
+                Deleting the collection will also
+                <span class="font-bold"
+                    >delete all the folders, sub-folders and queries</span
+                >
+                inside it.
+            </p>
             <p v-if="item.typeName === 'Query'" class="mb-0 text-black">
                 This action can't be undone.
             </p>

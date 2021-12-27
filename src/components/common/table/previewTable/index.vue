@@ -29,7 +29,7 @@
                             :class="
                                 rowClassNames !== ''
                                     ? rowClassNames
-                                    : 'truncate '
+                                    : 'truncate'
                             "
                         >
                             {{ index + 1 }}
@@ -38,46 +38,16 @@
                         <td
                             v-for="(rowData, key) in row"
                             :key="key"
+                            :data-key="key"
                             class="bg-white"
-                            :class="{
-                                'selected-state bg-primary-light':
-                                    selectedData === rowData &&
-                                    modalVisible &&
-                                    selectedIndex === `${key}.${index}`,
-                                'cursor-pointer hover:bg-primary-light':
-                                    variantTypeIndexes.includes(key.toString()),
-                            }"
-                            @mouseover="showExpand = `${key}.${index}`"
-                            @mouseleave="showExpand = ''"
                         >
-                            <div
-                                v-if="
-                                    variantTypeIndexes.includes(key.toString())
-                                "
-                                class="flex items-center justify-between"
-                                @click="
-                                    handleOpenModal(rowData, `${key}.${index}`)
-                                "
-                            >
-                                <div style="max-width: 85%" class="truncate">
-                                    {{ rowData }}
-                                </div>
-                                <AtlanIcon
-                                    v-if="
-                                        showExpand === `${key}.${index}` ||
-                                        (modalVisible &&
-                                            selectedIndex === `${key}.${index}`)
-                                    "
-                                    icon="Expand"
-                                    class="h-4 w-auto mb-0.5"
-                                />
-                            </div>
-                            <div v-else>
+                            {{ rowData }}
+                            <!-- <template>
                                 <Tooltip
                                     :tooltip-text="`${rowData}`"
                                     width="1000px"
                                 />
-                            </div>
+                            </template> -->
                         </td>
                     </tr>
                 </tbody>
@@ -87,7 +57,6 @@
     <VariantModal
         v-if="modalVisible"
         v-model:visible="modalVisible"
-        @close="handleModalClose"
         :data="selectedData"
     />
 </template>
@@ -139,8 +108,10 @@
             const tableRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref('')
-            const selectedIndex = ref('')
             const showExpand = ref('')
+            const selectedTD = ref(null)
+            const hoverTD = ref(null)
+
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
                 let label = ''
@@ -150,12 +121,65 @@
                 return label
             }
 
+            function highlight(td) {
+                if (selectedTD.value) {
+                    handleModalClose()
+                }
+                selectedTD.value = td
+                handleOpenModal(td.innerText)
+            }
+
             watch([tableRef, dataList], () => {
                 if (tableRef.value) {
-                    /*  new Clusterize({
+                    new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
-                    }) */
+                    })
+
+                    const tbody = document.getElementById('contentArea')
+
+                    tbody.onclick = function (e) {
+                        let td = e.target.closest('td') // (1)
+                        if (!td) return // (2)
+                        if (!tbody.contains(td)) return // (3)
+                        if (
+                            variantTypeIndexes.value.includes(
+                                td.dataset.key.toString()
+                            )
+                        ) {
+                            highlight(td)
+                            console.log(td.dataset)
+                        }
+                    }
+                    tbody.onmouseover = function (e) {
+                        let td = e.target.closest('td')
+                        if (!td) return
+                        if (!tbody.contains(td)) return
+                        if (
+                            variantTypeIndexes.value.includes(
+                                td.dataset.key.toString()
+                            )
+                        ) {
+                            if (hoverTD.value) {
+                                hoverTD.value.classList.remove('hover-state')
+                            }
+                            hoverTD.value = td
+                            hoverTD.value.classList.add('hover-state')
+                        }
+                    }
+                    tbody.onmouseleave = function (e) {
+                        let td = e.target.closest('td')
+                        if (!td) return
+                        if (!tbody.contains(td)) return
+                        if (
+                            variantTypeIndexes.value.includes(
+                                td.dataset.key.toString()
+                            )
+                        ) {
+                            hoverTD.value = td
+                            hoverTD.value.classList.remove('hover-state')
+                        }
+                    }
                 }
             })
 
@@ -168,16 +192,15 @@
                 }
             })
 
-            const handleOpenModal = (data, uniqueIndex) => {
+            const handleOpenModal = (data) => {
                 modalVisible.value = true
                 selectedData.value = data
-                selectedIndex.value = uniqueIndex
+                selectedTD.value.classList.add('selected-state')
             }
 
             const handleModalClose = () => {
-                modalVisible.value = false
                 selectedData.value = ''
-                selectedIndex.value = ''
+                selectedTD.value.classList.remove('selected-state')
             }
 
             onMounted(() => {
@@ -191,6 +214,12 @@
                 })
             })
 
+            watch(modalVisible, () => {
+                if (!modalVisible.value) {
+                    handleModalClose()
+                }
+            })
+
             return {
                 tableRef,
                 images,
@@ -201,7 +230,6 @@
                 modalVisible,
                 handleModalClose,
                 showExpand,
-                selectedIndex,
             }
         },
     })
@@ -218,7 +246,7 @@
             height: 32px !important;
             padding: 0px 16px !important;
             font-size: 12px !important;
-            @apply border border-gray-light !important;
+            @apply border border-gray-light truncate !important;
         }
         tbody {
             font-family: Hack !important;
@@ -280,5 +308,10 @@
 
     .selected-state {
         box-shadow: inset 0px 0px 0px 1px rgba(82, 119, 215);
+        @apply bg-primary-light !important;
+    }
+
+    .hover-state {
+        @apply bg-primary-light cursor-pointer !important;
     }
 </style>

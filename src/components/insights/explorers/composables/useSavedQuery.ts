@@ -22,6 +22,7 @@ import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { useTenantStore } from '~/store/tenant'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+import useSetClassifications from '~/composables/discovery/useSetClassifications'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -956,6 +957,7 @@ export function useSavedQuery(
                         assetTerms.checked
                     )
 
+                    console.log('saved query data: ', data.value)
                     if (assetTerms.length) {
                         assetTerms.map((el_guid) => {
                             const { response, loading } = assignLinkedAssets(
@@ -972,6 +974,60 @@ export function useSavedQuery(
                                 )
                             })
                         })
+                    }
+
+                    if(assetClassification.length) {
+
+                        let data2 = assetClassification.map(el=> {
+                            return {
+                                entityGuid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                                propagate: true,
+                                removePropagationsOnEntityDelete: true,
+                                typeName: el
+                            }
+                        })
+
+                        const classificationBody = ref({
+                            guidHeaderMap: {
+                                [data?.value?.mutatedEntities?.CREATE[0]?.guid]: {
+                                    classifications: data2
+                                },
+                                attributes: {
+                                    collectionQualifiedName: collectionQualifiedName,
+                                    name: name,
+                                    parent: {
+                                        guid: parentFolderGuid, 
+                                        typeName: parentFolderQF.includes('/folder') ? 'Folder' : 'Collection'
+                                    },
+                                    parentQualifiedName: parentFolderQF,
+                                    qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                                    tenantId: "default"
+                                },
+                                guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                                typeName: 'Query'
+                            },
+                        })
+                    
+                        const {
+                            mutate: mutateClassification,
+                            isLoading: isLoadingClassification,
+                            isReady: isReadyClassification,
+                            error: isErrorClassification,
+                        } = useSetClassifications(classificationBody)
+
+                        mutateClassification()
+
+                        watch([isLoadingClassification, isErrorClassification], () => {
+                            console.log('classification linked: ')
+
+                            // useAddEvent(
+                            //     'discovery',
+                            //     'metadata',
+                            //     'terms_updated',
+                            //     undefined
+                            // )
+                        })
+                    
                     }
 
                     // handleCancel()

@@ -433,7 +433,7 @@
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: args[1],
                 })
-                if (handlePreview && !disableHandlePreview) {
+                if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
             }

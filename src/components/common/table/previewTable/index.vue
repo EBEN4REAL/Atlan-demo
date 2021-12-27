@@ -41,22 +41,33 @@
                             class="bg-white"
                             :class="{
                                 'selected-state bg-primary-light':
-                                    selectedData === rowData && modalVisible,
+                                    selectedData === rowData &&
+                                    modalVisible &&
+                                    selectedIndex === `${key}.${index}`,
                                 'cursor-pointer hover:bg-primary-light':
                                     variantTypeIndexes.includes(key.toString()),
                             }"
+                            @mouseover="showExpand = `${key}.${index}`"
+                            @mouseleave="showExpand = ''"
                         >
                             <div
                                 v-if="
                                     variantTypeIndexes.includes(key.toString())
                                 "
                                 class="flex items-center justify-between"
-                                v-on:click="handleOpenModal(rowData, key)"
+                                @click="
+                                    handleOpenModal(rowData, `${key}.${index}`)
+                                "
                             >
-                                <div style="max-width: 80%" class="truncate">
+                                <div style="max-width: 85%" class="truncate">
                                     {{ rowData }}
                                 </div>
                                 <AtlanIcon
+                                    v-if="
+                                        showExpand === `${key}.${index}` ||
+                                        (modalVisible &&
+                                            selectedIndex === `${key}.${index}`)
+                                    "
                                     icon="Expand"
                                     class="h-4 w-auto mb-0.5"
                                 />
@@ -73,35 +84,12 @@
             </table>
         </div>
     </div>
-    <a-modal
+    <VariantModal
         v-if="modalVisible"
         v-model:visible="modalVisible"
-        :footer="null"
-        :afterClose="() => (selectedData = null)"
-        centered
-        :destroyOnClose="true"
-        :class="$style.variant_modal"
-        width="600px"
-    >
-        <template #title>
-            <div class="flex items-center text-gray-700 gap-x-1.5">
-                <AtlanIcon
-                    icon="Variant"
-                    class="w-auto h-4 text-gray-500 mb-0.5"
-                />
-                Response Type
-            </div>
-        </template>
-        <div
-            class="overflow-auto border rounded border-gray-light variant_body"
-        >
-            <pre>
-                <code>
-                    {{selectedData}}
-                </code>
-            </pre>
-        </div>
-    </a-modal>
+        @close="handleModalClose"
+        :data="selectedData"
+    />
 </template>
 
 <script lang="ts">
@@ -116,13 +104,15 @@
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import VariantModal from './variantModal.vue'
 
     export default defineComponent({
         name: 'AtlanTable',
         components: {
             Tooltip,
             AtlanIcon,
+            VariantModal,
         },
         props: {
             dataList: {
@@ -148,7 +138,9 @@
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
-            const selectedData = ref(null)
+            const selectedData = ref('')
+            const selectedIndex = ref('')
+            const showExpand = ref('')
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
                 let label = ''
@@ -176,10 +168,16 @@
                 }
             })
 
-            const handleOpenModal = (data, index) => {
-                console.log(index)
+            const handleOpenModal = (data, uniqueIndex) => {
                 modalVisible.value = true
                 selectedData.value = data
+                selectedIndex.value = uniqueIndex
+            }
+
+            const handleModalClose = () => {
+                modalVisible.value = false
+                selectedData.value = ''
+                selectedIndex.value = ''
             }
 
             onMounted(() => {
@@ -191,7 +189,6 @@
                         variantTypeIndexes.value.push(col.title)
                     }
                 })
-                console.log(variantTypeIndexes.value)
             })
 
             return {
@@ -202,6 +199,9 @@
                 selectedData,
                 handleOpenModal,
                 modalVisible,
+                handleModalClose,
+                showExpand,
+                selectedIndex,
             }
         },
     })

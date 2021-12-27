@@ -271,8 +271,8 @@
                                         icon="SidebarTrigger"
                                         class="w-4 h-4 text-gray-500"
                                     />
-                                </div>
-                            </a-tooltip>
+                                </a-tooltip>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -69,6 +69,7 @@
         </div>
 
         <a-popover
+            v-if="canDelete"
             v-model:visible="visibleDelete"
             trigger="click"
             placement="topRight"

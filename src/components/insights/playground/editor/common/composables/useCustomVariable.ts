@@ -3,6 +3,7 @@ import { CustomVaribaleInterface } from '~/types/insights/customVariable.interfa
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { generateUUID } from '~/utils/helper/generator'
+import { message } from 'ant-design-vue'
 
 export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
@@ -15,11 +16,29 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         currVariable: Ref<CustomVaribaleInterface | undefined>
         // sqlVariables: Ref<CustomVaribaleInterface[]>
     ) {
+        /* Logic for if variable name already exists */
+        const Varindex =
+            activeInlineTab.value.playground.editor.variables.findIndex(
+                (vx) => currVariable.value?.key === vx.key
+            )
+        const _index =
+            activeInlineTab.value.playground.editor.variables.findIndex(
+                (vx, index) => vx.name === variable.name && Varindex !== index
+            )
+
+        if (_index > 0) {
+            message.error({
+                content: `Custom variable with same name already exits!`,
+            })
+            return false
+        }
+        /* ------------------------------------------ */
+
         if (!editorInstance && !monacoInstance) {
             console.error(
                 'Pass editorInstance & monaco Instance to the useCustomVariable'
             )
-            return
+            return false
         }
         const oldVariableName = currVariable.value?.name
         let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
@@ -61,6 +80,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             dummy: variable.dummy,
         }
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+        return true
     }
 
     function editVariable(

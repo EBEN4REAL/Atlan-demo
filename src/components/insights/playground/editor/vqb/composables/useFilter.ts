@@ -65,6 +65,13 @@ export function useFilter() {
     let object = ['VARIANT', 'OBJECT']
     let geography = ['GEOGRAPHY', 'OBJECT']
 
+    const totalFiledsMapWithInput = {
+        multi_input: 2,
+        range_input: 2,
+        input: 1,
+        none: 1,
+    }
+
     function filterList(type: string) {
         let all = [
             {
@@ -229,6 +236,7 @@ export function useFilter() {
         if (geography.includes(columnType)) return 'geography'
     }
     return {
+        totalFiledsMapWithInput,
         nameMap,
         getInputTypeFromColumnType,
         filterList,

@@ -70,27 +70,61 @@
 
                     <!-- Custom variable placeholder -->
                     <div
+                        class="flex items-center"
                         v-if="subpanel?.filter?.isVariable"
-                        class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                        style="height: 32px !important"
                     >
-                        <code class="px-3 truncate">
-                            <a-tooltip placement="bottomLeft">
-                                <template #title
-                                    >{{
-                                        getInputTypeFromColumnType(
-                                            subpanel?.column?.type
-                                        )?.toUpperCase()
-                                    }}:&nbsp;
-                                    {{ getCustomVariable(subpanel.id).value }}
-                                </template>
-                                <div
-                                    class="truncate cursor-pointer moustacheDecoration"
-                                >
-                                    {{ getCustomVariableText(subpanel.id) }}
-                                </div>
-                            </a-tooltip>
-                        </code>
+                        <div
+                            class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                            style="height: 32px !important"
+                        >
+                            <code class="px-3 truncate">
+                                <a-tooltip placement="bottomLeft">
+                                    <template #title
+                                        >{{
+                                            getInputTypeFromColumnType(
+                                                subpanel?.column?.type
+                                            )?.toUpperCase()
+                                        }}:&nbsp;
+                                        {{ getCustomVariable(subpanel).value }}
+                                    </template>
+                                    <div
+                                        class="truncate cursor-pointer moustacheDecoration"
+                                    >
+                                        {{ getCustomVariableText(subpanel) }}
+                                    </div>
+                                </a-tooltip>
+                            </code>
+                        </div>
+                        <!-- Second input field if it is there -->
+                        <div
+                            v-if="
+                                totalFiledsMapWithInput[
+                                    subpanel?.filter?.type
+                                ] > 1
+                            "
+                            class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                            style="height: 32px !important"
+                        >
+                            <code class="px-3 truncate">
+                                <a-tooltip placement="bottomLeft">
+                                    <template #title
+                                        >{{
+                                            getInputTypeFromColumnType(
+                                                subpanel?.column?.type
+                                            )?.toUpperCase()
+                                        }}:&nbsp;
+                                        {{
+                                            getCustomVariable(subpanel, 2).value
+                                        }}
+                                    </template>
+                                    <div
+                                        class="truncate cursor-pointer moustacheDecoration"
+                                    >
+                                        {{ getCustomVariableText(subpanel, 2) }}
+                                    </div>
+                                </a-tooltip>
+                            </code>
+                        </div>
                     </div>
                     <!--  -->
                     <div class="flex items-center ml-3 text-gray-500">
@@ -214,7 +248,8 @@
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
-            const { getInputTypeFromColumnType } = useFilter()
+            const { getInputTypeFromColumnType, totalFiledsMapWithInput } =
+                useFilter()
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -283,15 +318,23 @@
                 subpanels.value.splice(index, 1)
             }
             const toggleVariableType = (currVal, index, subpanel) => {
+                /* Check if variable already exists */
                 const Varindex =
                     activeInlineTab.value.playground.editor.variables.findIndex(
                         (variable) => variable?.subpanelId === subpanel.id
                     )
                 if (Varindex < 0) {
                     addVariableFromVQB(activeInlineTab, tabs, {
-                        vqbPanelId: 'filter',
+                        vqbPanelId: subpanel.id,
                         subpanelId: subpanel.id,
                     })
+                    /* If fileds are more than one, then it will have inputFiledValue 2 */
+                    if (totalFiledsMapWithInput[subpanel?.filter?.type] > 1) {
+                        addVariableFromVQB(activeInlineTab, tabs, {
+                            vqbPanelId: `${subpanel.id}${2}`,
+                            subpanelId: `${subpanel.id}${2}`,
+                        })
+                    }
                 }
                 subpanels.value[index].filter.isVariable = !currVal
                 showcustomVariablesToolBar.value = !currVal
@@ -300,18 +343,40 @@
             const changeColumn = (column) => {
                 console.log('columns: ', column)
             }
-            const getCustomVariableText = (id) => {
+
+            /* If any subpanel have more than one filed i,e = 2 then the second filed id 
+            will be panelid+inputFiledNum eg: filter2 ( second filed Id).
+            otherwise field will have id as same as panelid eg: filter
+             */
+
+            const getCustomVariableText = (
+                subpanel,
+                inputFieldNum?: number
+            ) => {
+                let subpanelId = subpanel.id
+                if (inputFieldNum) {
+                    subpanelId = `${subpanelId}${inputFieldNum}`
+                }
                 const variable = getCustomVaribleByVQBFilterSubpanelId(
-                    id,
+                    subpanelId,
                     activeInlineTab
                 )
                 if (variable) {
                     return `{{${variable.name}}}`
                 } else return false
             }
-            const getCustomVariable = (id) => {
+
+            /* If any subpanel have more than one filed i,e = 2 then the second filed id 
+            will be panelid+inputFiledNum eg: filter2 ( second filed Id).
+            otherwise field will have id as same as panelid eg: filter
+             */
+            const getCustomVariable = (subpanel, inputFieldNum?: number) => {
+                let subpanelId = subpanel.id
+                if (inputFieldNum) {
+                    subpanelId = `${subpanelId}${inputFieldNum}`
+                }
                 return getCustomVaribleByVQBFilterSubpanelId(
-                    id,
+                    subpanelId,
                     activeInlineTab
                 )
             }
@@ -319,6 +384,7 @@
             let hoverItem = ref(null)
 
             return {
+                totalFiledsMapWithInput,
                 getCustomVariable,
                 getCustomVariableText,
                 toggleVariableType,

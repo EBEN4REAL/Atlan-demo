@@ -513,9 +513,18 @@
                 // console.log('old data: ', currVariable.value)
                 console.log('select saved: ', variable)
                 if (varTest.test(variable.name)) {
-                    inputError.value = false
-                    saveVariable(activeInlineTab, tabs, variable, currVariable)
-                    closeDropdown()
+                    if (
+                        saveVariable(
+                            activeInlineTab,
+                            tabs,
+                            variable,
+                            currVariable
+                        )
+                    ) {
+                        /* If successfully variable saved then close the dropdown */
+                        inputError.value = false
+                        closeDropdown()
+                    }
                 } else {
                     inputError.value = true
                 }

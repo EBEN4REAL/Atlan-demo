@@ -17,7 +17,8 @@
                                         class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
                                     ></component>
                                 </a-tooltip>
-                                <Tooltip :tooltip-text="`${col.title}`" />
+                                <!-- <Tooltip :tooltip-text="`${col.title}`" /> -->
+                                {{ col.title }}
                             </div>
                         </th>
                     </tr>
@@ -117,6 +118,7 @@
             const showExpand = ref('')
             const selectedTD = ref(null)
             const hoverTD = ref(null)
+            const hoverTH = ref(null)
 
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
@@ -145,9 +147,9 @@
                     const tbody = document.getElementById('contentArea')
 
                     tbody.onclick = function (e) {
-                        let td = e.target.closest('td') // (1)
-                        if (!td) return // (2)
-                        if (!tbody.contains(td)) return // (3)
+                        let td = e.target.closest('td')
+                        if (!td) return
+                        if (!tbody.contains(td)) return
                         if (
                             variantTypeIndexes.value.includes(
                                 td.dataset.key.toString()
@@ -184,10 +186,31 @@
 
             watch([tableRef, columns], () => {
                 if (tableRef.value) {
-                    /* new Clusterize({
+                    new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'headerArea',
-                    }) */
+                    })
+
+                    const thead = document.getElementById('headerArea')
+
+                    thead.onmouseover = function (e) {
+                        let svg = e.target.closest('svg')
+                        if (!svg) return
+                        if (!thead.contains(svg)) return
+                        if (hoverTH.value) {
+                            hoverTH.value.classList.remove('ant-tooltip-open')
+                        }
+                        hoverTH.value = svg
+                        hoverTH.value.classList.add('ant-tooltip-open')
+                        console.log(hoverTH.value)
+                    }
+                    thead.onmouseout = function (e) {
+                        let svg = e.target.closest('svg')
+                        if (!svg) return
+                        if (!thead.contains(svg)) return
+                        hoverTH.value = svg
+                        hoverTH.value.classList.remove('ant-tooltip-open')
+                    }
                 }
             })
 

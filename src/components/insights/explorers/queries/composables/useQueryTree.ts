@@ -12,7 +12,7 @@ import {
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
 import { IndexSearchResponse } from '~/services/meta/search/index'
-
+import { message } from 'ant-design-vue'
 import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
@@ -75,6 +75,9 @@ const useQueryTree = ({
 
     const isInitingTree = ref(false)
     const errorReq = ref(undefined)
+
+    const isNodeLoading = ref(false)
+    const nodeError = ref(undefined)
 
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
@@ -156,10 +159,10 @@ const useQueryTree = ({
             isLoading.value = false
         }
 
-        console.log('permission_tree: ', permissions)
+        // console.log('permission_tree: ', permissions)
 
-        console.log('tree data query: ', queries)
-        console.log('tree data folder: ', folders)
+        // console.log('tree data query: ', queries)
+        // console.log('tree data folder: ', folders)
 
         if (permissions?.readFolders) {
             folders.entities?.forEach((folder) => {
@@ -190,7 +193,7 @@ const useQueryTree = ({
             })
         }
 
-        console.log('tree data init:', treeData.value)
+        // console.log('tree data init:', treeData.value)
         isInitingTree.value = false
         isLoading.value = false
     }
@@ -202,43 +205,66 @@ const useQueryTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
+        // console.log('expand node: ', treeNode)
+        
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'QueryFolder') {
-            const subFoldersResponse = await getSubFolders(
-                treeNode.dataRef.qualifiedName
-            )
-            const subQueriesResponse = await getFolderQueries(
-                treeNode.dataRef.qualifiedName
-            )
+        isNodeLoading.value = true
+        nodeError.value = undefined
+
+
+        if (treeNode.dataRef.typeName === 'Folder') {
+            let subFoldersResponse, subQueriesResponse
+
+            try {
+                subFoldersResponse = await getSubFolders(
+                    treeNode.dataRef.qualifiedName
+                )
+                subQueriesResponse = await getFolderQueries(
+                    treeNode.dataRef.qualifiedName
+                )
+            } catch (error) {
+                const er = Object.getOwnPropertyDescriptor(error, 'message')
+                isNodeLoading.value = false
+                nodeError.value = er?.value
+                message.error('folder/query fetch went wrong')
+
+                loadedKeys.value.push(treeNode.dataRef.key)
+            }
+
             if (permissions?.readFolders) {
-                subFoldersResponse.entities?.forEach((folder) => {
-                    if (!loadedKeys.value.find((key) => folder.guid === key)) {
+                if(subFoldersResponse?.entities?.length) {
+                    subFoldersResponse.entities?.forEach((folder) => {
+                        if (!loadedKeys.value.find((key) => folder.guid === key)) {
+                            treeNode.dataRef.children?.push({
+                                ...returnTreeDataItemAttributes(folder),
+                                parentTitle: treeNode.dataRef.title
+                                    ? treeNode.dataRef.title
+                                    : 'root',
+                            })
+                            nodeToParentKeyMap[folder.guid] = treeNode.dataRef.guid
+                            nodeToParentNameMap[folder.guid] =
+                                treeNode.dataRef.title
+                        }
+                    })
+                }
+                
+            }
+            if (permissions?.readQueries) {
+                if(subQueriesResponse?.entities?.length) { 
+                    subQueriesResponse.entities?.forEach((query) => {
                         treeNode.dataRef.children?.push({
-                            ...returnTreeDataItemAttributes(folder),
+                            ...returnTreeDataItemAttributes(query),
                             parentTitle: treeNode.dataRef.title
                                 ? treeNode.dataRef.title
                                 : 'root',
                         })
-                        nodeToParentKeyMap[folder.guid] = treeNode.dataRef.guid
-                        nodeToParentNameMap[folder.guid] =
-                            treeNode.dataRef.title
-                    }
-                })
-            }
-            if (permissions?.readQueries) {
-                subQueriesResponse.entities?.forEach((query) => {
-                    treeNode.dataRef.children?.push({
-                        ...returnTreeDataItemAttributes(query),
-                        parentTitle: treeNode.dataRef.title
-                            ? treeNode.dataRef.title
-                            : 'root',
+                        nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
+                        nodeToParentNameMap[query.guid] = treeNode.dataRef.title
                     })
-                    nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
-                    nodeToParentNameMap[query.guid] = treeNode.dataRef.title
-                })
+                }
             }
 
             if (
@@ -739,6 +765,8 @@ const useQueryTree = ({
         refetchNode,
         initTreeData,
         currentSelectedNode,
+        isNodeLoading,
+        nodeError
         // addInputBox,
         // removeInputBox
     }

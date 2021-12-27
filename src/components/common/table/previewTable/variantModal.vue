@@ -15,31 +15,32 @@
                 Response Type
             </div>
         </template>
-        <div
-            class="overflow-auto border rounded border-gray-light variant_body"
-        >
-            <pre>
-                <code>
-                    {{data}}
-                </code>
-            </pre>
+
+        <div class="flex items-center justify-between mb-3">
+            <a-radio-group v-model:value="mode" button-style="solid">
+                <a-radio-button value="tree">Tree</a-radio-button>
+                <a-radio-button value="code">Code</a-radio-button>
+
+                <a-radio-button value="text">Raw</a-radio-button>
+            </a-radio-group>
         </div>
+
+        <Vue3JsonEditor
+            :key="`modal_${mode}`"
+            v-model="formattedData"
+            :mode="mode"
+            :showBtns="false"
+        />
     </a-modal>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        toRefs,
-        watch,
-        ref,
-        onMounted,
-    } from 'vue'
+    import { defineComponent, PropType, toRefs, computed, ref } from 'vue'
+    import { Vue3JsonEditor } from 'vue3-json-editor'
 
     export default defineComponent({
         name: 'VariantModal',
-        components: {},
+        components: { Vue3JsonEditor },
         props: {
             data: {
                 type: Object as PropType<any>,
@@ -47,7 +48,13 @@
             },
         },
         setup(props) {
-            return {}
+            const mode = ref('code')
+
+            const { data } = toRefs(props)
+
+            const formattedData = computed(() => JSON.parse(data.value))
+
+            return { mode, formattedData }
         },
     })
 </script>
@@ -60,8 +67,22 @@
     }
 </style>
 
-<style lang="less" scoped>
-    .variant_body {
-        max-height: 400px;
+<style lang="less">
+    .jsoneditor {
+        @apply overflow-y-auto border rounded border-gray-light !important;
+    }
+    .ace-jsoneditor,
+    .jsoneditor-text {
+        max-height: 400px !important;
+        min-height: 400px !important;
+    }
+    .jsoneditor-menu {
+        @apply hidden;
+    }
+    .jsoneditor-dragarea {
+        @apply hidden;
+    }
+    .jsoneditor-contextmenu {
+        @apply hidden;
     }
 </style>

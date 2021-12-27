@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col px-8 py-8 gap-y-4 max-profile-width">
+    <div class="flex flex-col px-8 py-8 gap-y-4">
         <Summary :asset="selectedAsset" :editPermission="editPermission">
             <template #announcement>
                 <AnnouncementWidget

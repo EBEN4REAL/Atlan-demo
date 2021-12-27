@@ -3,10 +3,10 @@
         <div class="mb-3 text-base font-bold text-gray-500">Profile</div>
         <div v-if="isCurrentUser" class="ml-auto">
             <a-button
+                class="flex content-center items-center"
                 @click="$emit('toggleEdit')"
             >
-                <AtlanIcon icon="Edit" />
-                <span class="ml-1 text-gray-700">Edit</span>
+                <AtlanIcon icon="Edit" class="mr-1"/> Edit
             </a-button>
         </div>
     </div>

@@ -41,7 +41,9 @@
                             class="bg-white"
                             :class="{
                                 'selected-state bg-primary-light':
-                                    selectedData === rowData && modalVisible,
+                                    selectedData === rowData &&
+                                    modalVisible &&
+                                    selectedIndex === `${key}.${index}`,
                                 'cursor-pointer hover:bg-primary-light':
                                     variantTypeIndexes.includes(key.toString()),
                             }"
@@ -50,8 +52,12 @@
                                 v-if="
                                     variantTypeIndexes.includes(key.toString())
                                 "
+                                @mouseover="showExpand = true"
+                                @mouseleave="showExpand = false"
                                 class="flex items-center justify-between"
-                                v-on:click="handleOpenModal(rowData, key)"
+                                @click="
+                                    handleOpenModal(rowData, `${key}.${index}`)
+                                "
                             >
                                 <div style="max-width: 80%" class="truncate">
                                     {{ rowData }}
@@ -128,6 +134,8 @@
             const tableRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref(null)
+            const selectedIndex = ref('')
+            const showExpand = ref(false)
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
                 let label = ''
@@ -155,15 +163,16 @@
                 }
             })
 
-            const handleOpenModal = (data, index) => {
-                console.log(index)
+            const handleOpenModal = (data, uniqueIndex) => {
                 modalVisible.value = true
                 selectedData.value = data
+                selectedIndex.value = uniqueIndex
             }
 
             const handleModalClose = () => {
                 modalVisible.value = false
                 selectedData.value = null
+                selectedIndex.value = ''
             }
 
             onMounted(() => {
@@ -175,7 +184,6 @@
                         variantTypeIndexes.value.push(col.title)
                     }
                 })
-                console.log(variantTypeIndexes.value)
             })
 
             return {
@@ -187,6 +195,8 @@
                 handleOpenModal,
                 modalVisible,
                 handleModalClose,
+                showExpand,
+                selectedIndex,
             }
         },
     })

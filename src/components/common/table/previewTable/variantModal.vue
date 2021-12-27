@@ -30,12 +30,13 @@
             v-model="formattedData"
             :mode="mode"
             :showBtns="false"
+            :class="$style.variant_editer"
         />
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed, ref } from 'vue'
+    import { defineComponent, toRefs, computed, ref } from 'vue'
     import { Vue3JsonEditor } from 'vue3-json-editor'
 
     export default defineComponent({
@@ -43,7 +44,7 @@
         components: { Vue3JsonEditor },
         props: {
             data: {
-                type: Object as PropType<any>,
+                type: String,
                 required: true,
             },
         },
@@ -65,24 +66,23 @@
             padding: 1rem !important;
         }
     }
-</style>
-
-<style lang="less">
-    .jsoneditor {
-        @apply overflow-y-auto border rounded border-gray-light !important;
-    }
-    .ace-jsoneditor,
-    .jsoneditor-text {
-        max-height: 400px !important;
-        min-height: 400px !important;
-    }
-    .jsoneditor-menu {
-        @apply hidden;
-    }
-    .jsoneditor-dragarea {
-        @apply hidden;
-    }
-    .jsoneditor-contextmenu {
-        @apply hidden;
+    .variant_editer {
+        :global(.jsoneditor) {
+            @apply overflow-y-auto border rounded border-gray-light !important;
+        }
+        :global(.ace-jsoneditor),
+        :global(.jsoneditor-text) {
+            max-height: 400px !important;
+            min-height: 400px !important;
+        }
+        :global(.jsoneditor-menu) {
+            @apply hidden !important;
+        }
+        :global(.jsoneditor-dragarea) {
+            @apply hidden !important;
+        }
+        :global(.jsoneditor-contextmenu) {
+            @apply hidden !important;
+        }
     }
 </style>

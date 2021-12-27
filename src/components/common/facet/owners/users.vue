@@ -126,22 +126,10 @@
                 filterTotal,
                 loadMore,
                 isLoading,
-                isEnriching,
-                limit,
-                offset
+                isEnriching
             } = useFacetUsers({
                 groupId
             })
-
-            // watch(userList, () => {
-            //     modelValue.value = [
-            //         ...modelValue.value,
-            //         ...userList.value
-            //             .slice(offset.value, offset.value + limit.value)
-            //             .filter((user) => user.isPartOfGroup)
-            //             .map((user) => user[selectUserKey.value])
-            //     ]
-            // })
 
             watch(
                 () => queryText.value,

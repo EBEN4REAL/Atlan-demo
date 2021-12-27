@@ -30,6 +30,7 @@ TR
                             :refreshQueryTree="refreshQueryTree"
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
+                            :errorNode="errorNode"
                         />
                         <!-- <div v-else-if="isNodeLoading === false && nodeError">
                             {{ nodeError }}
@@ -66,11 +67,6 @@ TR
                 class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
             >
                 <div class="flex flex-col items-center justify-center">
-                    <!-- <AtlanIcon
-                        v-if="savedQueryType === 'personal'"
-                        icon="NoSavedQueriesPersonal"
-                        class="h-32 no-svaved-query-icon text-primary"
-                    /> -->
                     <AtlanIcon
                         icon="NoSavedQueriesAll"
                         class="h-32 no-svaved-query-icon text-primary"
@@ -237,7 +233,12 @@ TR
                 default: false,
             },
             nodeError: {
+                type: String,
+                required: false,
+            },
+            errorNode: {
                 type: Object,
+                required: false,
             },
             // refetchTreeData: {
             //     type: Function,

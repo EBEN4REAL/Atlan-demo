@@ -4,6 +4,8 @@
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
+        <!-- {{ errorNode }} -->
+
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
@@ -25,14 +27,19 @@
                                 class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
+                            <!-- <AtlanIcon
+                                icon="Reload"
+                                class="w-4 h-4 my-auto"
+                                v-if="
+                                    !isNodeLoading &&
+                                    nodeError &&
+                                    errorNode?.guid === item?.guid
+                                "
+                            ></AtlanIcon> -->
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
-                                <!-- <AtlanIcon
-                                    icon="Reload"
-                                    class="w-4 h-4 my-auto"
-                                    v-if="!isNodeLoading && nodeError"
-                                ></AtlanIcon> -->
+                                <!-- {{ errorNode?.guid }} : {{ item?.guid }} -->
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
@@ -413,6 +420,10 @@
                 type: String,
                 required: false,
             },
+            errorNode: {
+                type: Object,
+                required: false,
+            },
             // parentFolderQF: {
             //     type: String,
             //     required: true,
@@ -429,6 +440,7 @@
             const {
                 expandedKeys,
                 item,
+                errorNode,
                 connector: currentConnector,
             } = toRefs(props)
             const {
@@ -1071,6 +1083,11 @@
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
+
+            // console.log('error node: ', {
+            //     errorNode: errorNode.value,
+            //     item: item.value,
+            // })
 
             return {
                 evaluatePermisson,

@@ -13,26 +13,22 @@
         >
             <AtlanIcon icon="FolderClosed"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                Term
+                Classification
             </span>
         </AtlanBtn>
 
         <template #overlay>
             <div class="popover-container" @mouseleave="closeDropdown">
                 <div class="p-2 py-4">
-                    <div>
-                        <GlossaryTree
-                            v-model:checkedGuids="checkedGuids"
-                            :checkable="true"
-                            @check="onCheck"
-                            @searchItemCheck="onSearchItemCheck"
-                        />
+                    <div style="">
+                        <ClassificationFacet
+                            ref="classificationFacetRef"
+                            v-model="selectedValue"
+                            :show-none="false"
+                        ></ClassificationFacet>
                     </div>
 
-                    <div
-                        class="flex items-center justify-end w-full px-4 mt-3"
-                        style=""
-                    >
+                    <div class="flex items-center justify-end w-full px-4 mt-3">
                         <div class="space-x-4">
                             <a-button class="px-4" @click="closeDropdown"
                                 >Cancel</a-button
@@ -62,13 +58,14 @@
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
-    import GlossaryTree from '~/components/glossary/index.vue'
+    // import GlossaryTree from '~/components/glossary/index.vue'
+    import ClassificationFacet from '~/components/common/facet/classification/index.vue'
 
     export default defineComponent({
         components: {
             // Governance,
             AtlanBtn,
-            GlossaryTree,
+            ClassificationFacet,
         },
         props: {
             selectedAsset: {
@@ -76,33 +73,22 @@
                 required: true,
             },
         },
-        emits: ['update:selectedAsset', 'saveTerms'],
+        emits: ['update:selectedAsset', 'saveClassifications'],
         setup(props, { emit }) {
             // data
             const sendTerm = ref(true)
-            let checkedTerms = ref([])
+            let checkedClassification = ref([])
 
-            const checkedGuids = ref(
-                checkedTerms.value.map((term) => term.termGuid)
-            )
+            const selectedValue = ref({})
             // link term on click ok
             const createTerm = () => {
-                emit('saveTerms', checkedTerms)
-                console.log('checked terms: ', checkedTerms.value)
+                emit('saveClassifications', selectedValue)
+                console.log('checked terms: ', selectedValue.value)
                 closeDropdown()
-            }
-
-            const handleTermChange = (data) => {
-                console.log('term data: ', data.value)
-                if (data) {
-                    checkedTerms.value = data.value
-                    console.log('checked terms: ', checkedTerms.value)
-                }
             }
 
             let dropdownVisible = ref(false)
             const toggleDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = !dropdownVisible.value
             }
 
@@ -114,46 +100,14 @@
                 dropdownVisible.value = true
             }
 
-            const onCheck = (checkedNodes) => {
-                checkedNodes.forEach((term) => {
-                    if (
-                        !checkedTerms.value.find(
-                            (localTerm) =>
-                                (localTerm.guid ?? localTerm.termGuid) ===
-                                term.guid
-                        )
-                    )
-                        checkedTerms.value.push(term)
-                })
-                checkedTerms.value = checkedTerms.value.filter((term) =>
-                    checkedGuids.value.includes(term.termGuid ?? term.guid)
-                )
-            }
-
-            const onSearchItemCheck = (checkedNode, checked) => {
-                if (checked) {
-                    checkedTerms.value.push(checkedNode)
-                } else {
-                    checkedTerms.value = checkedTerms.value?.filter(
-                        (localTerm) =>
-                            (localTerm.guid ?? localTerm.termGuid) !==
-                            checkedNode.guid
-                    )
-                }
-            }
-
             return {
-                checkedGuids,
-                handleTermChange,
                 sendTerm,
-                checkedTerms,
                 toggleDropdown,
                 showDropdown,
                 closeDropdown,
                 dropdownVisible,
-                onCheck,
-                onSearchItemCheck,
                 createTerm,
+                selectedValue,
             }
         },
     })
@@ -196,6 +150,7 @@
         // height: 257px;
 
         width: 320px;
+        // height: 420px;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);

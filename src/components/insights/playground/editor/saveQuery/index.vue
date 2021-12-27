@@ -61,6 +61,15 @@
             </div>
         </template>
 
+        <template #footerLeft>
+            <div class="flex items-center gap-x-1">
+                <AddClassification
+                    @save-classifications="saveClassifications"
+                />
+                <AddTerms @save-terms="saveTerms" />
+            </div>
+        </template>
+
         <template #actionButtons>
             <AtlanBtn
                 size="sm"
@@ -122,11 +131,20 @@
     // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { message } from 'ant-design-vue'
     import AtlanModal from '~/components/common/modal/modal.vue'
-    // import AddTerms from './addTerms.vue'
+    // import GlossaryTree from '~/components/glossary/index.vue'
+    import AddTerms from './addTerms.vue'
+    import AddClassification from './addClassification.vue'
 
     export default defineComponent({
         name: 'SavedQueryModal',
-        components: { StatusBadge, QueryFolderSelector, AtlanBtn, AtlanModal },
+        components: {
+            AddTerms,
+            AddClassification,
+            StatusBadge,
+            QueryFolderSelector,
+            AtlanBtn,
+            AtlanModal,
+        },
         props: {
             showSaveQueryModal: {
                 type: Boolean as PropType<boolean>,
@@ -160,10 +178,7 @@
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
-            // const queryFolderNamespace = inject<Ref<Folder>>(
-            //     'queryFolderNamespace',
-            //     ref({}) as Ref<Folder>
-            // )
+
             const selectedParentFolder = ref<Folder | null>(null)
 
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
@@ -204,11 +219,21 @@
             }
 
             let assetTerms = []
+            let assetClassification = []
 
             const saveTerms = (terms: any) => {
-                assetTerms = terms.value.map((el) => el?.props?.guid)
+                assetTerms = terms.value.map((el) => el?.guid)
 
-                console.log('assetTerms save query: ', assetTerms)
+                console.log('assetTerms save query: ', { terms, assetTerms })
+            }
+
+            const saveClassifications = (classifications: any) => {
+                assetClassification = classifications.value.classifications
+
+                console.log('asset classifications save query: ', {
+                    classifications,
+                    assetClassification,
+                })
             }
 
             const createSaveQuery = () => {
@@ -230,7 +255,12 @@
                                 ?.qualifiedName,
                         parentGuid: selectedParentFolder.value?.guid,
                     }
-                    emit('onSaveQuery', saveQueryData, assetTerms)
+                    emit(
+                        'onSaveQuery',
+                        saveQueryData,
+                        assetTerms,
+                        assetClassification
+                    )
                 } else {
                     message.error('No collection selected')
                 }
@@ -239,6 +269,8 @@
                 await nextTick()
                 titleBarRef.value?.focus()
             })
+
+            // term selector:
 
             return {
                 getLastUntitledNumber,
@@ -261,6 +293,7 @@
                 setSelectedFolder,
 
                 saveTerms,
+                saveClassifications,
             }
         },
     })

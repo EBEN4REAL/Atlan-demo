@@ -106,7 +106,7 @@ export const SQLAttributes = [
     'view',
 ]
 
-export const GlossaryAttributes = ['categories', 'parentCategory']
+export const GlossaryAttributes = ['categories', 'parentCategory', 'assignedEntities']
 
 export const GlossaryRelationAttributes = ['name']
 

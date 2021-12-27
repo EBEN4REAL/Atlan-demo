@@ -37,8 +37,6 @@ const useQueryCollection = () => {
         'certificateStatus',
         'ownerUsers',
         'ownerGroups',
-        'adminUsers',
-        'adminGroups',
         'viewerUsers',
         'viewerGroups',
         'classifications',
@@ -74,8 +72,8 @@ const useQueryCollection = () => {
     const createCollection = ({
         name,
         description,
-        adminUsers,
-        adminGroups,
+        ownerUsers,
+        ownerGroups,
         viewerUsers,
         viewerGroups,
         icon,
@@ -86,13 +84,13 @@ const useQueryCollection = () => {
 
         const body = ref<Record<string, any>>({
             entity: {
-                typeName: 'Collection',
+                typeName: 'QueryCollection',
                 attributes: {
                     name,
                     description,
                     qualifiedName,
-                    adminUsers,
-                    adminGroups,
+                    ownerUsers,
+                    ownerGroups,
                     viewerUsers,
                     viewerGroups,
                     tenantId,
@@ -217,16 +215,14 @@ export const isCollectionPrivate = (
     // created by user
     // owner/viewer are empty
     // eslint-disable-next-line no-underscore-dangle
-
-    // console.log('isCollectionPrivate: ', {collection, username})
     const isCreatedByCurrentUser =
         collection?.attributes?.__createdBy === username
     const hasNoViewers =
-        collection?.attributes?.viewerUsers?.length === 0 &&
-        collection?.attributes?.viewerGroups?.length === 0
+        collection?.attributes?.viewerUsers.length === 0 &&
+        collection?.attributes?.viewerGroups.length === 0
     const hasNoUsers =
-        collection?.attributes?.adminUsers?.length === 0 &&
-        collection?.attributes?.adminGroups?.length === 0
+        collection?.attributes?.ownerUsers.length === 0 &&
+        collection?.attributes?.ownerGroups.length === 0
     return isCreatedByCurrentUser && hasNoUsers && hasNoViewers
 }
 

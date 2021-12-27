@@ -26,8 +26,6 @@ const useLoadClassification = ({
         'userDescription',
         'certificateStatus',
         'ownerUsers',
-        'adminUsers',
-        'adminGroups',
         'ownerGroups',
         'classifications',
 

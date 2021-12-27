@@ -42,6 +42,7 @@
                     </template>
                 </AssetList> -->
                 <AssetsWrapper
+                    ref="linkedAssetsWrapperRef"
                     :show-filters="false"
                     :initial-filters="tabFilter"
                     :static-use="true"
@@ -126,6 +127,7 @@
         computed,
         toRefs,
         ref,
+        Ref,
         watch,
     } from 'vue'
 
@@ -170,7 +172,8 @@
                 sort: 'default',
                 display: [],
             })
-            const tabFilter = computed(() => ({
+            const linkedAssetsWrapperRef = ref(null)
+            const tabFilter = ref({
                 terms: {
                     terms: [
                         {
@@ -178,7 +181,7 @@
                         },
                     ],
                 },
-            }))
+            })
 
             const isVisible = ref(false)
             function closeDrawer() {
@@ -231,7 +234,14 @@
                 closeDrawer()
             }
 
-
+            watch(localAssignedEntities, () => {
+                if(linkedAssetsWrapperRef?.value?.quickChange) {
+                    setTimeout(() => {
+                        linkedAssetsWrapperRef.value.quickChange()
+                    }, 1000)
+                    
+                }
+            })
             return {
                 handleCancel,
                 openLinkDrawer,
@@ -243,6 +253,7 @@
                 localAssignedEntities,
                 selectedAssetCount,
                 tabFilter,
+                linkedAssetsWrapperRef
             }
         },
     })

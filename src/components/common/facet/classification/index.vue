@@ -1,9 +1,6 @@
 <template>
     <div class="w-full" data-test-id="classifications-facet">
-        <div
-            class="flex items-center justify-between px-4"
-            v-if="filteredList.length > 3"
-        >
+        <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="classificationSearchRef"
                 v-model="queryText"

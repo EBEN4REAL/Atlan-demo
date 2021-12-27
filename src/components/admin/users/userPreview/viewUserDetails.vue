@@ -35,7 +35,7 @@
             <UpdateSkills
                 class="flex-1 mr-4"
                 :user="selectedUser"
-                :allow-update="isCurrentUser"
+                :allow-update="false"
                 @updated-user="$emit('updatedUser')"
                 @success="$emit('success')"
             />

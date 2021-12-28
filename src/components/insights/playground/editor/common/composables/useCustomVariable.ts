@@ -213,10 +213,11 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     function deleteVariable(
         activeInlineTab: ComputedRef<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
-        currVariable: CustomVaribaleInterface
+        currVariable: CustomVaribaleInterface,
+        forceDelete: boolean = false
     ) {
         /* Prevent the deletion of custom variable which are associated with VQB */
-        if (currVariable?.vqbPanelId) {
+        if (!forceDelete && currVariable?.vqbPanelId) {
             message.error({
                 content: `Unable to delete! this variable is associated with VQB!`,
             })
@@ -385,6 +386,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             activeInlineTab.value.playground.editor.savedVariables.findIndex(
                 (variable) => variable.name === new_variable.name
             )
+        debugger
         console.log('index: ', index)
         if (index !== -1) {
             let currIndex =
@@ -416,11 +418,21 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     text: `{{${variable.name}}}`,
                 })
             } else {
-                activeInlineTabCopy.playground.editor.variables = [
-                    ...activeInlineTabCopy.playground.editor.variables,
+                let savedVariableRetrival =
                     activeInlineTab.value.playground.editor.savedVariables[
                         index
-                    ],
+                    ]
+                /* NOTE: This is imp step as we have to change the Ids,val,type of subpanel of the previous ones */
+                if (subpanelInfo?.subpanelId) {
+                    savedVariableRetrival = {
+                        ...savedVariableRetrival,
+                        ...subpanelInfo,
+                        value: getValueFromType(subpanelInfo?.type, ''),
+                    }
+                }
+                activeInlineTabCopy.playground.editor.variables = [
+                    ...activeInlineTabCopy.playground.editor.variables,
+                    savedVariableRetrival,
                 ]
                 editorInstance.trigger('keyboard', 'type', {
                     text: `{{${activeInlineTab.value.playground.editor.savedVariables[index].name}}}`,

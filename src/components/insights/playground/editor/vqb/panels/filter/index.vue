@@ -127,19 +127,58 @@
                             <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                :disabled="Number(index) === 0"
-                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
+                            <a-popover
+                                placement="leftTop"
+                                trigger="click"
+                                :destroy-tooltip-on-hide="true"
+                                :visible="confirmDeletePopover"
+                                :overlayStyle="{ width: '400px' }"
                             >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                                <template #content>
+                                    <div class="p-4">
+                                        <h3 v-html="getPopoverContent()"></h3>
+                                        <div
+                                            class="flex items-center justify-between mt-3 gap-x-3"
+                                        >
+                                            <div class="flex-grow"></div>
+                                            <AtlanBtn
+                                                color="minimal"
+                                                size="sm"
+                                                padding="compact"
+                                                @click.stop="
+                                                    confirmDeletePopover = false
+                                                "
+                                                >Cancel
+                                            </AtlanBtn>
+                                            <AtlanBtn
+                                                :color="'danger'"
+                                                size="sm"
+                                                padding="compact"
+                                                @click.stop="
+                                                    () => handleDelete(index)
+                                                "
+                                            >
+                                                Delete
+                                            </AtlanBtn>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <AtlanBtn
+                                    @click.stop="
+                                        () => toggleConfirmPopover(index)
+                                    "
+                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                    size="sm"
+                                    color="secondary"
+                                    padding="compact"
+                                >
+                                    <AtlanIcon
+                                        icon="Delete"
+                                        class="-mx-1"
+                                    ></AtlanIcon>
+                                </AtlanBtn>
+                            </a-popover>
                         </div>
                     </div>
                 </div>
@@ -211,7 +250,11 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import FilterSubPanel from './subpanel/index.vue'
+    import { editor } from 'monaco-editor'
+
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -233,7 +276,19 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const { totalFiledsMapWithInput } = useFilter()
+            const editorInstanceRef = inject(
+                'editorInstance'
+            ) as Ref<editor.IStandaloneCodeEditor>
+            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
+            const editorInstance = toRaw(editorInstanceRef.value)
+            const monacoInstance = toRaw(monacoInstanceRef.value)
             const { getSummarisedInfoOfFilterPanel } = useUtils()
+            const { deleteVariable } = useCustomVariable(
+                editorInstance,
+                monacoInstance
+            )
+            const confirmDeletePopover = ref(false)
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -284,6 +339,38 @@
             }
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
+                /* Delete all the custom variables related to it */
+
+                // get all custom variables related to this panel
+                const subpanelIds = panel.value.subpanels.map(
+                    (subpanel) => subpanel.id
+                )
+                let variables: any = []
+                activeInlineTab.value.playground.editor.variables.map(
+                    (_variable) => {
+                        subpanelIds.forEach((subpanelId) => {
+                            if (_variable?.subpanelId?.includes(subpanelId)) {
+                                variables.push(_variable)
+                            }
+                        })
+                    }
+                )
+                try {
+                    const forceDelete = true
+                    // delete all the custom variables
+                    variables.forEach((variable) => {
+                        if (variable !== undefined)
+                            deleteVariable(
+                                activeInlineTab,
+                                inlineTabs,
+                                variable,
+                                forceDelete
+                            )
+                    })
+                } catch (e) {
+                    console.error('Failed to delete custom variable')
+                }
+                debugger
             }
             const toggleExpand = () => {
                 expand.value = !expand.value
@@ -300,6 +387,36 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
+            const getPopoverContent = () => {
+                let _customVariableCount = 0
+                panel.value.subpanels.forEach((subpanel) => {
+                    if (subpanel.filter.isVariable === true) {
+                        _customVariableCount +=
+                            totalFiledsMapWithInput[subpanel?.filter?.type]
+                    }
+                })
+
+                return `Are you sure you want to delete?
+                There are total of <b>${_customVariableCount} variable${
+                    _customVariableCount > 1 ? '(s)' : ''
+                } </b> associated with this panel
+                 `
+            }
+
+            const toggleConfirmPopover = (_index) => {
+                /* Check if there is alteast one custom variable which is associated with this filter panel
+                    otherwise don't show the confirm popover */
+
+                const index = panel.value.subpanels.findIndex(
+                    (subpanel) => subpanel.filter.isVariable === true
+                )
+                if (index > -1) {
+                    confirmDeletePopover.value = true
+                } else {
+                    handleDelete(_index)
+                }
+            }
+
             watch(
                 activeInlineTab,
                 () => {
@@ -309,6 +426,9 @@
             )
 
             return {
+                toggleConfirmPopover,
+                getPopoverContent,
+                confirmDeletePopover,
                 getSummarisedInfoOfFilterPanel,
                 isChecked,
                 submenuHovered,

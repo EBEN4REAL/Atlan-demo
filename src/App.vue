@@ -4,6 +4,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, inject, computed } from 'vue'
+    import { useI18n } from 'vue-i18n'
     import useTypedefs from '~/composables/typedefs/useTypedefs'
 
     import useTenant from '~/composables/tenant/useTenant'
@@ -17,6 +18,10 @@
         setup(props, context) {
             // const isPermissionsReady = ref(false)
             // const isTypedefReady = ref(false)
+
+            const { locale, t } = useI18n({
+                inheritLocale: true
+             })
 
             const authStore = useAuthStore()
             authStore.setUserDetails()
@@ -45,7 +50,7 @@
             //     isTypedefReady.value = true
             // })
 
-            return {}
+            return { locale, t }
         },
     })
 </script>

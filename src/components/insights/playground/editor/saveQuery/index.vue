@@ -65,8 +65,12 @@
             <div class="flex items-center gap-x-1">
                 <AddClassification
                     @save-classifications="saveClassifications"
+                    :selectedClassifications="selectedClassifications"
                 />
-                <AddTerms @save-terms="saveTerms" />
+                <AddTerms
+                    @save-terms="saveTerms"
+                    :selectedTerms="selectedTerms"
+                />
             </div>
         </template>
 
@@ -120,18 +124,11 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import {
-        Folder,
-        // QueryCollection,
-    } from '~/types/insights/savedQuery.interface'
+    import { Folder } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
-
-    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { message } from 'ant-design-vue'
     import AtlanModal from '~/components/common/modal/modal.vue'
-    // import GlossaryTree from '~/components/glossary/index.vue'
     import AddTerms from './addTerms.vue'
     import AddClassification from './addClassification.vue'
 
@@ -219,15 +216,20 @@
             }
 
             let assetTerms = []
+            let selectedTerms = ref([])
+            let selectedClassifications = ref([])
             let assetClassification = []
 
             const saveTerms = (terms: any) => {
+                selectedTerms.value = terms.value
                 assetTerms = terms.value.map((el) => el?.guid)
 
                 console.log('assetTerms save query: ', { terms, assetTerms })
             }
 
             const saveClassifications = (classifications: any) => {
+                selectedClassifications.value = classifications.value
+
                 assetClassification = classifications.value.classifications
 
                 console.log('asset classifications save query: ', {
@@ -237,10 +239,9 @@
             }
 
             const createSaveQuery = () => {
-                // console.log(
-                //     'selectedParentFolder: ',
-                //     Object.keys(toRaw(selectedParentFolder.value)).length
-                // )
+                // let terms = assetTerms
+                // let classifications = assetClassification
+
                 if (Object.keys(toRaw(selectedParentFolder.value)).length) {
                     const saveQueryData = {
                         title:
@@ -261,6 +262,11 @@
                         assetTerms,
                         assetClassification
                     )
+
+                    assetClassification = []
+                    assetTerms = []
+                    selectedClassifications.value = {}
+                    selectedTerms.value = []
                 } else {
                     message.error('No collection selected')
                 }
@@ -269,8 +275,6 @@
                 await nextTick()
                 titleBarRef.value?.focus()
             })
-
-            // term selector:
 
             return {
                 getLastUntitledNumber,
@@ -292,8 +296,10 @@
                 selectedParentFolder,
                 setSelectedFolder,
 
-                saveTerms,
+                selectedTerms,
                 saveClassifications,
+                selectedClassifications,
+                saveTerms,
             }
         },
     })

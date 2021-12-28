@@ -10,17 +10,26 @@
                 queries in your organisation.
             </p>
         </div>
-        <div class="flex flex-col items-center w-full">
-            <AtlanIcon icon="CollectionBody" class="w-full h-48" />
+        <div class="flex flex-col items-center w-full mt-2 mb-4">
+            <!-- <AtlanIcon icon="CollectionBody" class="" /> -->
+            <img
+                src="src/assets/images/insights/collection/body.svg"
+                alt=""
+                class="w-7/12"
+            />
 
-            <p style="max-width: 18rem" class="mt-3 text-base text-center">
+            <p style="max-width: 18rem" class="-mt-2 text-base text-center">
                 Organise queries relevant for your project in folders.
             </p>
         </div>
-        <div class="flex flex-col items-center w-full">
-            <AtlanIcon icon="CollectionFooter" class="w-full h-48" />
+        <div class="flex flex-col items-center w-full mt-2">
+            <img
+                src="src/assets/images/insights/collection/footer.svg"
+                alt=""
+                class="w-7/12"
+            />
 
-            <p style="max-width: 18rem" class="mt-3 text-base text-center">
+            <p style="max-width: 18rem" class="text-base text-center">
                 Share collections with your team.
             </p>
         </div>

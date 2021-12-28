@@ -11,9 +11,12 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="FolderClosed"></AtlanIcon>
+            <AtlanIcon icon="Term"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 Term
+                <span v-if="checkedTerms?.length" class="ml-0.5">
+                    ({{ checkedTerms?.length }})</span
+                >
             </span>
         </AtlanBtn>
 
@@ -28,23 +31,6 @@
                             @searchItemCheck="onSearchItemCheck"
                         />
                     </div>
-
-                    <div
-                        class="flex items-center justify-end w-full px-4 mt-3"
-                        style=""
-                    >
-                        <div class="space-x-4">
-                            <a-button class="px-4" @click="closeDropdown"
-                                >Cancel</a-button
-                            >
-                            <a-button
-                                type="primary"
-                                class="px-4"
-                                @click="createTerm"
-                                >Link</a-button
-                            >
-                        </div>
-                    </div>
                 </div>
             </div>
         </template>
@@ -52,21 +38,13 @@
 </template>
 
 <script lang="ts">
-    import {
-        // computed,
-        defineComponent,
-        PropType,
-        ref,
-        watch,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
     import GlossaryTree from '~/components/glossary/index.vue'
 
     export default defineComponent({
         components: {
-            // Governance,
             AtlanBtn,
             GlossaryTree,
         },
@@ -75,39 +53,26 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            selectedTerms: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['update:selectedAsset', 'saveTerms'],
         setup(props, { emit }) {
-            // data
-            const sendTerm = ref(true)
-            let checkedTerms = ref([])
+            const { selectedTerms } = toRefs(props)
+            let checkedTerms = ref(selectedTerms?.value)
 
             const checkedGuids = ref(
-                checkedTerms.value.map((term) => term.termGuid)
+                checkedTerms.value.map((term) => term.guid)
             )
-            // link term on click ok
-            const createTerm = () => {
-                emit('saveTerms', checkedTerms)
-                console.log('checked terms: ', checkedTerms.value)
-                closeDropdown()
-            }
-
-            const handleTermChange = (data) => {
-                console.log('term data: ', data.value)
-                if (data) {
-                    checkedTerms.value = data.value
-                    console.log('checked terms: ', checkedTerms.value)
-                }
-            }
 
             let dropdownVisible = ref(false)
             const toggleDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = !dropdownVisible.value
             }
 
             const closeDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = false
             }
             const showDropdown = () => {
@@ -128,6 +93,10 @@
                 checkedTerms.value = checkedTerms.value.filter((term) =>
                     checkedGuids.value.includes(term.termGuid ?? term.guid)
                 )
+
+                console.log('checked terms: ', checkedTerms.value)
+
+                emit('saveTerms', checkedTerms)
             }
 
             const onSearchItemCheck = (checkedNode, checked) => {
@@ -144,8 +113,6 @@
 
             return {
                 checkedGuids,
-                handleTermChange,
-                sendTerm,
                 checkedTerms,
                 toggleDropdown,
                 showDropdown,
@@ -153,12 +120,9 @@
                 dropdownVisible,
                 onCheck,
                 onSearchItemCheck,
-                createTerm,
             }
         },
     })
-
-    // typeName is name in classification
 </script>
 
 <style lang="less" module>
@@ -191,6 +155,18 @@
     }
 </style>
 <style lang="less" scoped>
+    .folderBtn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 4px 8px !important;
+
+        min-width: 71px !important;
+        height: 22px !important;
+
+        box-sizing: border-box !important;
+        border-radius: 4px !important;
+    }
     .popover-container {
         // width: 295px*1.5;
         // height: 257px;

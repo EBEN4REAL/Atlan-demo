@@ -44,20 +44,14 @@
                             :data-index="index"
                             class="bg-white"
                         >
-                            <div
-                                v-if="showExpand === `${key}.${index}`"
-                                class="flex items-center"
-                            >
-                                <div style="max-width: 80%" class="truncate">
+                            <div class="flex items-center">
+                                <div class="truncate">
                                     {{ rowData }}
                                 </div>
                                 <AtlanIcon
                                     icon="Expand"
-                                    class="h-4 w-auto mb-0.5"
+                                    class="h-4 w-auto mb-0.5 hidden"
                                 />
-                            </div>
-                            <div v-else class="truncate">
-                                {{ rowData }}
                             </div>
                         </td>
                     </tr>
@@ -80,12 +74,14 @@
         watch,
         ref,
         onMounted,
+        createApp,
     } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import VariantModal from './variantModal.vue'
+    import ExpandIcon from '../../../../assets/images/icons/expand.svg'
 
     export default defineComponent({
         name: 'AtlanTable',
@@ -176,7 +172,18 @@
                             }
                             hoverTD.value = td
                             hoverTD.value.classList.add('hover-state')
-                            showExpand.value = `${td.dataset.key}.${td.dataset.index}`
+
+                            // Decreasing text width on hover
+                            hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+                                '85%'
+
+                            // Showing Expand Icon
+                            hoverTD.value.childNodes[0].childNodes[1].classList.add(
+                                'block'
+                            )
+                            hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+                                'hidden'
+                            )
                         }
                     }
                     tbody.onmouseout = function (e) {
@@ -185,7 +192,16 @@
                         if (!tbody.contains(td)) return
                         hoverTD.value = td
                         hoverTD.value.classList.remove('hover-state')
-                        showExpand.value = ''
+
+                        hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+                            '100%'
+
+                        hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+                            'block'
+                        )
+                        hoverTD.value.childNodes[0].childNodes[1].classList.add(
+                            'hidden'
+                        )
                     }
                 }
             })

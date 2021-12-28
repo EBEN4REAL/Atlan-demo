@@ -17,11 +17,15 @@ export default function usePersonaService() {
         return Persona.updatePersona(newPersona)
     }
 
-    function addNewPolicy(newPersona: IPersona, id: String) {
+    function createPolicy(newPersona: IPersona, id: String) {
         return Persona.createPolicy(newPersona, id)
     }
 
-    function updateDataPolicy(newPersona: IPersona, idPolicy: String, idPersona: String) {
+    function updateDataPolicy(
+        newPersona: IPersona,
+        idPolicy: String,
+        idPersona: String
+    ) {
         return Persona.updatePolicy(newPersona, idPolicy, idPersona)
     }
 
@@ -50,8 +54,8 @@ export default function usePersonaService() {
         deletePersona,
         updateUsers,
         enableDisablePersona,
-        addNewPolicy,
+        createPolicy,
         updateDataPolicy,
-        deleteDataPolicy
+        deleteDataPolicy,
     }
 }

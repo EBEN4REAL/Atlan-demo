@@ -33,7 +33,6 @@ const usePurposeList = (options) => {
 
 
     watch([data, error], (a, b) => {
-        console.log(a, b)
         if (data.value?.records)
             results.value = data.value.records
         else results.value = []

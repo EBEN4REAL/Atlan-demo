@@ -15,10 +15,11 @@
                                     :is="images[getDataType(col.data_type)]"
                                     :data-tooltip="col.data_type"
                                     class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
+                                    style="min-width: 1rem"
                                 ></component>
 
                                 <!-- <Tooltip :tooltip-text="`${col.title}`" /> -->
-                                {{ col.title }}
+                                <span class="truncate">{{ col.title }}</span>
                             </div>
                         </th>
                     </tr>
@@ -311,7 +312,7 @@
             border-top: 0;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700 bg-gray-100 border-r border-gray-light truncate;
+            @apply text-gray-700 bg-gray-100 border-r border-gray-light;
             font-weight: 400 !important;
         }
         td:first-child {

@@ -47,7 +47,6 @@ export const dataTypeCategoryList = [
         id: 'decimal',
         label: 'Decimal',
         type: [
-            'NUMBER',
             'NUMERIC',
             'DECIMAL',
             'FLOAT4',

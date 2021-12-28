@@ -111,7 +111,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const checkedGuids = ref(
-                modelValue.value.map((term) => term.termGuid)
+                modelValue.value.map((term) => term.guid)
             )
             const hasBeenEdited = ref(false)
 
@@ -156,6 +156,7 @@
             }
 
             const handleDeleteTerm = (term) => {
+                console.log(term, 'bruh')
                 localValue.value = localValue.value?.filter(
                     (localTerm) =>
                         (localTerm.guid ?? localTerm.termGuid) !==

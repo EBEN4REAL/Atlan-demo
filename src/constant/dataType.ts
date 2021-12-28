@@ -115,7 +115,7 @@ export const dataTypeCategoryList = [
     {
         id: 'object',
         label: 'Object',
-        type: ['OBJECT'],
+        type: ['OBJECT', 'STRUCT'],
         image: struct,
         imageText: 'struct',
     },

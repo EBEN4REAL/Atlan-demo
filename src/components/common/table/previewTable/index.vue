@@ -260,7 +260,9 @@
                 columns.value.forEach((col) => {
                     if (
                         col.data_type.toLowerCase() === 'any' ||
-                        col.data_type.toLowerCase() === 'variant'
+                        col.data_type.toLowerCase() === 'variant' ||
+                        col.data_type.toLowerCase() === 'object' ||
+                        col.data_type.toLowerCase() === 'struct'
                     ) {
                         variantTypeIndexes.value.push(col.title)
                     }

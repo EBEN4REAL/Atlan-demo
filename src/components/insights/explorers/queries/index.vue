@@ -887,13 +887,18 @@
                     connector.value = undefined
                 }
             })
-            const saveQuery = async (saveQueryData: {
-                saveQueryData: any
-                assetTerms: any
-            }) => {
-                console.log('saving query: ', savedQueryType.value)
+            const saveQuery = async (
+                saveQueryData: any,
+                assetTerms: any,
+                assetClassification: any
+            ) => {
+                // console.log('saving query: ', savedQueryType.value)
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
-                    saveQueryData,
+                    {
+                        ...saveQueryData,
+                        assetTerms,
+                        assetClassification,
+                    },
                     editorInstance,
                     saveQueryLoading,
                     showSaveQueryModal,

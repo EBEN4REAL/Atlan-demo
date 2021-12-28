@@ -463,7 +463,11 @@
                 }
             }
 
-            const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
+            const saveQueryOnCloseTab = (
+                saveQueryDataParam: any,
+                assetTerms: any,
+                assetClassification: any
+            ) => {
                 saveQueryData.value = saveQueryDataParam
                 const key = saveCloseTabKey.value
                 let tabData: activeInlineTabInterface | undefined
@@ -485,7 +489,11 @@
                 }
                 if (saveQueryData.value) {
                     saveQueryToDatabase(
-                        saveQueryData.value,
+                        {
+                            ...saveQueryData.value,
+                            assetTerms,
+                            assetClassification,
+                        },
                         saveQueryLoading,
                         showSaveQueryModal,
                         saveModalRef,

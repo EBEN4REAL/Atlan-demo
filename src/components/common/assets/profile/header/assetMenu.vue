@@ -125,7 +125,7 @@
                                         ? map.DELETE_GLOSSARY
                                         : asset.typeName ===
                                           'AtlasGlossaryCategory'
-                                        ? map.DELETE_GLOSSARY
+                                        ? map.DELETE_CATEGORY
                                         : map.DELETE_TERM
                                 "
                             >

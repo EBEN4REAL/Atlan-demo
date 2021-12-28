@@ -5,6 +5,7 @@ import { setupLayouts } from 'virtual:generated-layouts'
 import { createHead } from '@vueuse/head'
 import Keycloak from 'keycloak-js'
 import { createPinia } from 'pinia'
+import { createI18n } from 'vue-i18n'
 
 import App from './App.vue'
 
@@ -16,10 +17,35 @@ import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
 
+const messages = {
+    en: {
+        message: {
+            hello: 'hello world'
+        }
+    },
+    ja: {
+        message: {
+            hello: 'こんにちは、世界'
+        }
+    }
+}
+
+//configs for i18n
+const i18n = createI18n({
+    legacy: false,
+    locale: 'en', // set locale
+    fallbackLocale: 'en', // set fallback locale
+    messages,
+})
+
 const app = createApp(App)
+//initialize store
 app.use(createPinia())
+//vue-head
 const head = createHead()
 app.use(head)
+//setup i18n 
+app.use(i18n)
 
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
@@ -79,7 +105,7 @@ keycloak
             inputFocusDirective(app)
             authDirective(app)
             if ((window as any).analytics) {
-                ;(window as any).analytics.identify(authStore?.id, {
+                ; (window as any).analytics.identify(authStore?.id, {
                     name: authStore.name || '',
                     firstName: authStore.firstName,
                     lastName: authStore.lastName,

@@ -442,7 +442,7 @@
                                 :key="term.guid"
                             >
                                 <div
-                                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                                 >
                                     <AtlanIcon
                                         :icon="termIcon(term)"

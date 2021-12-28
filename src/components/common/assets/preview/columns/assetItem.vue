@@ -79,7 +79,9 @@
                                 :display-name="classification?.displayName"
                                 :is-propagated="isPropagated(classification)"
                                 :allow-delete="false"
-                                :color="classification.options?.color"
+                                :color="
+                                    classification.options?.color.toLowerCase()
+                                "
                             ></ClassificationPill>
                         </PopoverClassification>
                     </template>

@@ -115,7 +115,7 @@
             <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div
                     v-if="!searchQuery?.length && !totalFilteredCount"
-                    class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
+                    class="relative w-full px-4 pt-0 pb-6 mt-2 overflow-y-auto"
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh - 140px )'
@@ -193,18 +193,7 @@
                     </div>
                 </div>
             </div>
-            <!-- <EmptyView
-                v-else
-                empty-screen="EmptyCollections"
-                headline="Collections"
-                desc="Organise queries relevant for your project or team into collections and  share it with others. "
-                button-text="Create Collection"
-                @event="
-                    () => {
-                        showCollectionModal = true
-                    }
-                "
-            /> -->
+
             <EmptyCollection
                 @event="
                     () => {
@@ -1136,6 +1125,7 @@
                 isNodeLoading,
                 nodeError,
                 errorNode,
+                refetchNode,
             }
         },
     })

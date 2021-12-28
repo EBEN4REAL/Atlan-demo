@@ -11,7 +11,16 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="FolderClosed"></AtlanIcon>
+            <AtlanIcon
+                icon="CollectionIconSmall"
+                class="w-4 h-4"
+                v-if="
+                    selectedFolderContext?.typeName === 'Collection' ||
+                    Object.keys(selectedFolderContext)?.length === 0
+                "
+            ></AtlanIcon>
+            <AtlanIcon icon="FolderClosed" v-else></AtlanIcon>
+
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 {{ selectedFolder ? selectedFolder : 'Collection' }}
             </span>
@@ -20,66 +29,79 @@
         <template #overlay>
             <div class="popover-container" @mouseleave="closeDropdown">
                 <div
-                    class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11"
+                    class="w-full h-full pt-3 pb-4 overflow-y-hidden"
                     v-if="queryCollections?.length"
                 >
-                    <div class="flex w-full mt-4">
+                    <div class="flex items-center justify-between px-4">
+                        <span class="text-sm font-bold text-gray-700"
+                            >Save query to</span
+                        >
                         <AtlanIcon
-                            :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
-                            class="my-auto mr-0.5 cursor-pointer"
-                            @click="toggleFolder"
-                        ></AtlanIcon>
+                            color="#5277D7"
+                            icon="NewFolder"
+                            class="h-4 outline-none hover:text-primary"
+                            @click="createFolderInput"
+                        />
+                    </div>
+                    <div
+                        class="flex items-center justify-between w-full h-8 px-4 mt-2"
+                        :class="`${
+                            selectedFolderContext?.guid ===
+                            selectedCollection?.guid
+                                ? 'bg-primary-light'
+                                : 'bg-white hover:bg-gray-100'
+                        }`"
+                    >
                         <div
                             @click="onSelect('root', 'root')"
-                            class="flex w-full px-1 py-1 rounded cursor-pointer"
-                            :class="`${
-                                selectedFolderContext?.guid ===
-                                selectedCollection?.guid
-                                    ? 'bg-primary-selected-focus w-9/11'
-                                    : 'bg-white'
-                            }`"
+                            class="flex items-center w-full cursor-pointer"
                         >
                             <AtlanIcon
-                                :icon="
-                                    folderOpened ? 'FolderOpen' : 'FolderClosed'
-                                "
-                                class="w-2 h-5 my-auto mr-1"
+                                icon="CollectionIconSmall"
+                                class="w-4 h-4 my-auto mr-2"
                             ></AtlanIcon>
                             <span
                                 class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ selectedCollection?.attributes.name }}</span
                             >
                         </div>
+
+                        <AtlanIcon
+                            v-if="
+                                selectedFolderContext?.guid ===
+                                selectedCollection?.guid
+                            "
+                            icon="Check"
+                            class="w-4 h-4 text-primary"
+                        />
                     </div>
-                    <div
-                        class="w-full h-full py-0 pl-3 pr-4 bg-white"
-                        v-if="folderOpened"
-                    >
-                        <div class="mt-1 ml-3">
-                            <query-tree-list
-                                :savedQueryType="savedQueryType2"
-                                :tree-data="treeData"
-                                :on-load-data="onLoadData"
-                                :select-node="onSelect"
-                                :expand-node="expandNode"
-                                :is-loading="isInitingTree"
-                                :loaded-keys="loadedKeys"
-                                :selected-keys="selectedKeys"
-                                :expanded-keys="expandedKeys"
-                                v-if="newTreeData.length"
-                                :selectedNewFolder="selectedFolderContext"
-                            />
-                            <div
-                                v-else
-                                class="flex flex-col items-center justify-center mt-4"
+
+                    <div class="w-full h-full pb-12 overflow-y-scroll bg-white">
+                        <query-tree-list
+                            @createFolderInput="createFolderInput"
+                            :savedQueryType="savedQueryType2"
+                            :tree-data="newTreeData"
+                            :on-load-data="onLoadData"
+                            :select-node="onSelect"
+                            :expand-node="expandNode"
+                            :is-loading="isInitingTree"
+                            :loaded-keys="loadedKeys"
+                            :selected-keys="selectedKey"
+                            :expanded-keys="expandedKeys"
+                            v-if="newTreeData.length"
+                            :selectedNewFolder="selectedFolderContext"
+                            class="collection-list"
+                        />
+                        <div
+                            v-else
+                            class="flex flex-col items-center justify-center mt-4 collection-list"
+                        >
+                            <!-- <p
+                                class="my-2 mb-0 mb-6 text-xs text-center text-gray-700 max-width-text"
                             >
-                                <p
-                                    class="my-2 mb-0 mb-6 text-xs text-center text-gray-700 max-width-text"
-                                >
-                                    Sorry, no data found <br />in selected
-                                    collection
-                                </p>
-                            </div>
+                                Sorry, no data found <br />in selected
+                                collection
+                            </p> -->
                         </div>
                     </div>
                 </div>
@@ -313,17 +335,21 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
-            const { openSavedQueryInNewTab } = useSavedQuery(
+            const { openSavedQueryInNewTab, createFolder } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
                 activeInlineTabKey
             )
 
+            const newFolderName = ref('')
+            const newFolderCreateable = ref(true)
+            let showEmptyState = ref(true)
+
             const {
                 treeData: treeData,
                 loadedKeys: loadedKeys,
                 isInitingTree: isInitingTree,
-                selectedKeys: selectedKeys,
+                // selectedKeys: selectedKeys,
                 expandedKeys: expandedKeys,
                 immediateParentFolderQF: immediateParentFolderQF,
                 onLoadFolderData: onLoadData,
@@ -354,10 +380,6 @@
                 return data
             })
 
-            const folderOpened = ref(true)
-            const toggleFolder = () => {
-                folderOpened.value = !folderOpened.value
-            }
             onMounted(() => {
                 if (!parentFolder.value || !parentFolder.value.guid) {
                     onSelect('root', 'root')
@@ -370,6 +392,158 @@
                 showCollectionModal.value = !showCollectionModal.value
             }
 
+            // const getRelevantTreeData = () => {
+            //     return {
+            //         parentQualifiedName: immediateParentFolderQF,
+            //         parentGuid: immediateParentGuid,
+            //         loadedKeys: loadedKeys,
+            //         expandedKeys: expandedKeys,
+            //     }
+            // }
+
+            let saveFolderLoading = ref(false)
+
+            const createFolderInput = () => {
+                const inputClassName = `${selectedCollection?.value?.guid}_folder_input`
+
+                const existingInputs =
+                    document.getElementsByClassName(inputClassName)
+
+                let parentGuid = ref(selectedCollection?.value?.guid)
+                let parentQualifiedName = ref(
+                    selectedCollection?.value?.attributes.qualifiedName
+                )
+
+                const appendInput = () => {
+                    if (!existingInputs.length && newFolderCreateable.value) {
+                        let parentFolder =
+                            document.querySelector(
+                                '.collection-list'
+                            )?.parentNode
+                        let ul = document.createElement('div')
+                        const div = document.createElement('div')
+
+                        showEmptyState.value = false
+
+                        div.classList.add(
+                            'flex',
+                            'items-center',
+                            'active-input',
+                            'h-8'
+                        )
+
+                        let caret =
+                            '<span class="mt-2 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+
+                        const caretEl = new DOMParser().parseFromString(
+                            caret,
+                            'text/html'
+                        ).body.firstElementChild
+
+                        const folderSvg =
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 my-auto mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+
+                        const folderSvgEl = new DOMParser().parseFromString(
+                            folderSvg,
+                            'text/html'
+                        ).body.firstElementChild
+
+                        let space = `<span style="padding-left:16px;" class="h-2"></span>`
+                        let spaceEl = new DOMParser().parseFromString(
+                            space,
+                            'text/html'
+                        ).body.firstElementChild
+
+                        div.appendChild(spaceEl)
+                        div.appendChild(caretEl)
+                        div.appendChild(folderSvgEl)
+
+                        const input = document.createElement('input')
+
+                        const makeCreateFolderRequest = () => {
+                            const { data } = createFolder(
+                                newFolderName.value,
+                                saveFolderLoading,
+                                '',
+                                parentQualifiedName,
+                                parentGuid,
+                                selectedCollection
+                            )
+                            watch(data, async (newData) => {
+                                if (newData) {
+                                    newFolderName.value = ''
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            parentGuid.value,
+                                            'Folder'
+                                        )
+                                        ul.removeChild(div)
+                                    }, 1000)
+                                }
+                            })
+                        }
+
+                        input.setAttribute(
+                            'class',
+                            `outline-none py-0 rounded my-1 w-full ${inputClassName}`
+                        )
+                        input.setAttribute('placeholder', 'Name your folder')
+                        input.addEventListener('input', (e) => {
+                            newFolderName.value = e.target?.value
+                        })
+
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape') {
+                                newFolderName.value = ''
+                                ul.removeChild(div)
+                                // removeInputBox()
+                                showEmptyState.value = true
+                            }
+                            if (e.key === 'Enter') {
+                                // create folder request
+                                if (newFolderName.value.length) {
+                                    makeCreateFolderRequest()
+                                    newFolderName.value = ''
+                                    showEmptyState.value = false
+                                } else {
+                                    newFolderName.value = ''
+                                    ul.removeChild(div)
+                                    showEmptyState.value = true
+                                    // removeInputBox()
+                                }
+                            }
+                        })
+                        input.addEventListener('blur', (e) => {
+                            if (newFolderName.value.length) {
+                                makeCreateFolderRequest()
+                                showEmptyState.value = false
+                            } else {
+                                div.removeChild(input)
+                                div.setAttribute('class', 'hidden')
+                                // removeInputBox()
+                                newFolderName.value = ''
+                                newFolderCreateable.value = false
+                                setTimeout(() => {
+                                    newFolderCreateable.value = true
+                                    showEmptyState.value = true
+                                }, 300)
+                            }
+                        })
+
+                        div.appendChild(input)
+                        ul.appendChild(div)
+                        parentFolder?.prepend(ul)
+                        // parentFolder?.insertBefore(ul, parentFolder?.firstChild)
+
+                        input.focus()
+                    }
+                }
+
+                appendInput()
+
+                // if the folder is not loaded, don't do anything
+            }
+
             return {
                 onSelect,
                 selectedFolder,
@@ -377,7 +551,7 @@
                 treeData,
                 loadedKeys,
                 isInitingTree,
-                selectedKeys,
+                selectedKey,
                 expandedKeys,
                 onLoadData,
                 expandNode,
@@ -390,8 +564,6 @@
                 dropdownVisible,
                 closeDropdown,
                 showDropdown,
-                folderOpened,
-                toggleFolder,
                 currentSelectedNode,
                 selectedFolderContext,
                 queryFolderNamespace,
@@ -400,6 +572,7 @@
                 queryCollections,
                 showCollectionModal,
                 toggleCollectionModal,
+                createFolderInput,
             }
         },
     })
@@ -408,7 +581,7 @@
 <style lang="less" scoped>
     .popover-container {
         width: 295px;
-        height: 257px;
+        max-height: 272px;
 
         background: #ffffff;
 

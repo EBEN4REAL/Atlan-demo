@@ -17,7 +17,7 @@ export default function useInsightsTabList(): {
             id: 'queries',
             name: 'Queries',
             component: 'queries',
-            icon: 'FolderNav24',
+            icon: 'CollectionIconLarge',
             isVisible: true,
         },
         {

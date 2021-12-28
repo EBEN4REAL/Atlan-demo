@@ -725,6 +725,10 @@ const useQueryTree = ({
 
             if (!subFoldersResponse.entities?.length) {
                 // TODO: not push anything in array to avoid the empty expansion and title
+                // treeNode.dataRef.children?.push({
+                //     title: 'emptyNode',
+                //     isLeaf: true
+                // })
             }
         }
         loadedKeys.value.push(treeNode.dataRef.key)

@@ -670,7 +670,7 @@
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
-                observer.value.unobserve(splitpaneRef.value)
+                observer?.value?.unobserve(splitpaneRef?.value)
             })
 
             const resetTree = ref(false)

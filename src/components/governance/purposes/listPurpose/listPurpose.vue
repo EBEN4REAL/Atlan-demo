@@ -8,7 +8,8 @@
     <template v-else-if="error">
         <ErrorView />
     </template>
-    <template v-else-if="!personaList.length && !searchText">
+    <template v-else-if="!personaList.length && !filter.displayName">
+        <!-- !filter.displayName instead of !searchText -> leakage logic due to debounce, find better way to solve }} -->
         <EmptyView
             class="text-center"
             headline="No purpose is associated with this classification"
@@ -30,7 +31,7 @@
         </div>
         <template v-else-if="!personaList.length">
             <EmptyView
-                :desc="`No persona found for '${searchText}'`"
+                :desc="searchText ? `No persona found for '${searchText}'` : ''"
                 empty-screen="EmptyDiscover"
             />
         </template>
@@ -43,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, ref, toRefs, watch } from 'vue'
+    import { computed, Ref, ref, toRefs, watch } from 'vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PurposeCard from './listCard.vue'
     import Search from '@/common/input/searchAdvanced.vue'
@@ -52,7 +53,6 @@
     import EmptyView from '@/common/empty/index.vue'
 
     const { classificationList } = useTypedefData()
-    import { useDebounceFn } from '@vueuse/core'
 
     const props = defineProps({
         classificationID: {
@@ -63,50 +63,39 @@
 
     const { classificationID } = toRefs(props)
 
-    const params = ref({
-        limit: 100,
-        filter: {
-            tags: {
-                $elemMatch: [classificationID.value],
-            },
-        },
-    })
-
-    const searchText = ref('')
-
     const {
         results: personaList,
+        searchText,
+        handleSearch,
         data,
         isLoading,
         error,
         isReady,
+        params,
         mutate,
-    } = usePurposeList(params, { asyncOptions: { immediate: true } })
+        filter,
+    } = usePurposeList({ asyncOptions: { immediate: false } })
+
+    params.value.set('limit', '100')
+    mutate()
+
+    filter.value = {
+        tags: {
+            $elemMatch: [classificationID.value],
+        },
+    }
 
     watch(classificationID, (v) => {
         searchText.value = ''
         personaList.value = []
-        params.value = {
-            limit: 100,
-            filter: {
-                tags: {
-                    $elemMatch: [classificationID.value],
-                },
+        filter.value = {
+            tags: {
+                $elemMatch: [v],
             },
         }
+        params.value.set('filter', JSON.stringify(filter.value))
         mutate()
     })
-
-    const handleSearch = useDebounceFn(() => {
-        personaList.value = []
-        if (searchText.value) {
-            params.value.filter = {
-                ...params.value.filter,
-                displayName: { $ilike: `%25${searchText.value}%25` },
-            }
-        } else delete params.value.filter?.displayName
-        mutate()
-    }, 700)
 </script>
 
 <style scoped></style>

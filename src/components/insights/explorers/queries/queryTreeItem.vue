@@ -307,7 +307,7 @@
 
     <a-popover :visible="showFolderPopover" placement="rightTop">
         <template #content>
-            <div class="p-4">
+            <div>
                 <QueryFolderSelector
                     :connector="currentConnector"
                     :savedQueryType="savedQueryType"
@@ -315,7 +315,7 @@
                     :selectedNewFolder="item"
                 />
 
-                <div class="flex justify-end w-full pt-2">
+                <div class="flex justify-end w-full pt-1 pb-4 pr-4">
                     <a-button
                         class="px-5 mr-4 text-sm border rounded"
                         style="width: 100px"

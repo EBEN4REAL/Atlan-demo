@@ -55,56 +55,6 @@
         @closeDrawer="closeDrawer"
         @saveAssets="saveAssets"
     />
-    <!-- <a-drawer
-        placement="right"
-        :destroy-on-close="true"
-        :visible="isVisible"
-        :get-container="false"
-        :closable="false"
-        :mask="false"
-        :class="$style.drawerStyle"
-        :width="460"
-    >
-        <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
-            <div class="absolute w-full h-full py-6 bg-white">
-                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
-                    >Search from your assets</span
-                >
-                    <AssetsWrapper
-                        :show-filters="false"
-                        :static-use="true"
-                        :show-aggrs="true"
-                        :showCheckBox="true"
-                        :preference="preference"
-                        :allCheckboxAreaClick="true"
-                        :disableHandlePreview="true"
-                        class="asset-list-height"
-                        key="all-assets"
-                        page="glossary"
-                    />
-            </div>
-        </div>
-        <div class="flex items-center justify-end m-2 mt-6 gap-x-2">
-            <span class="text-base font-bold text-gray-500"
-                >{{ selectedAssetCount || 'No' }} items selected</span
-            >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                color="secondary"
-                @click="closeDrawer"
-                data-test-id="cancel"
-                >Cancel</AtlanBtn
-            >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                data-test-id="save"
-                @click="saveAssets"
-                >Save</AtlanBtn
-            >
-        </div>
-    </a-drawer> -->
 </template>
 
 <script lang="ts">

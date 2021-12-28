@@ -455,8 +455,8 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
-                emit('check', checkedNodes, { checkedKeys, checked })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
             }
             const onSearchItemCheck = (checkedNode, checked) => {
                 if (checkedNode.typeName === 'AtlasGlossaryTerm') {

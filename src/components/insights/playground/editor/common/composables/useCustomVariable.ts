@@ -215,6 +215,13 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         tabs: Ref<activeInlineTabInterface[]>,
         currVariable: CustomVaribaleInterface
     ) {
+        /* Prevent the deletion of custom variable which are associated with VQB */
+        if (currVariable?.vqbPanelId) {
+            message.error({
+                content: `Unable to delete! this variable is associated with VQB!`,
+            })
+            return
+        }
         if (!editorInstance && !monacoInstance) {
             console.error(
                 'Pass editorInstance & monaco Instance to the useCustomVariable'

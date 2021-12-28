@@ -21,26 +21,6 @@
                 >
             </div>
             <div v-else>
-                <div class="flex items-center justify-between p-3 space-x-3">
-                    <!-- <SearchAndFilter
-                        v-model:value="searchText"
-                        placeholder="Search linked assets..."
-                        class="mr-1"
-                        size="minimal"
-                        @change="onSearch"
-                    /> -->
-
-
-                </div>
-                <!-- <AssetList
-                    :list="localAssignedEntities"
-                    :isLoadMore="false"
-                    :isLoading="false"
-                >
-                    <template v-slot:default="{ item }">
-                        <AssetItem :item="item"></AssetItem>
-                    </template>
-                </AssetList> -->
                 <AssetsWrapper
                     ref="linkedAssetsWrapperRef"
                     :show-filters="false"
@@ -50,7 +30,6 @@
                     :showCheckBox="false"
                     :preference="preference"
                     :enableSidebarDrawer="true"
-                    :isCache="false"
                     key="linked-assets"
                     class="asset-list-height"
                     page="glossary"

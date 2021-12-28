@@ -197,6 +197,7 @@ import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
 import TableDraft from '~/assets/images/icons/table_draft.svg'
 import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
+import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
@@ -319,6 +320,7 @@ import CollectionBody from '~/assets/images/insights/collection/body.svg'
 import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
 
 export default {
+    PolicyAlt,
     FlashColor,
     BuilderGroup,
     Trigger,

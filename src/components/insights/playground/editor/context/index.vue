@@ -231,71 +231,79 @@
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
                     <div class="flex">
-                        <AtlanBtn
-                            class="flex items-center h-6 px-3 button-shadow"
-                            size="sm"
-                            color="primary"
-                            padding="compact"
-                            :disabled="
-                                activeInlineTab?.playground?.resultsPane?.result
-                                    ?.buttonDisable
-                            "
-                            @click="$emit('onClickRunQuery')"
+                        <a-tooltip
+                            placement="bottom"
+                            color="#363636"
+                            class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer"
                         >
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    v-if="
-                                        isQueryRunning === 'loading'
-                                            ? false
-                                            : true
-                                    "
-                                    style="margin-right: 2.5px"
-                                    icon="Play"
-                                    class="text-white rounded"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    v-else
-                                    icon="CircleLoader"
-                                    style="margin-right: 2.5px"
-                                    class="w-4 h-4 text-white animate-spin"
-                                ></AtlanIcon>
-                                <div>
-                                    <span
+                            <template #title>
+                                {{
+                                    editorContentSelectionState
+                                        ? 'Run selected'
+                                        : 'Run query'
+                                }}
+                            </template>
+                            <AtlanBtn
+                                class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                :disabled="
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                "
+                                @click="$emit('onClickRunQuery')"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
                                         v-if="
-                                            !activeInlineTab?.playground
-                                                .resultsPane?.result?.runQueryId
+                                            isQueryRunning === 'loading'
+                                                ? false
+                                                : true
                                         "
-                                        class="text-white"
-                                        >{{
-                                            editorContentSelectionState
-                                                ? 'Run selected'
-                                                : 'Run'
-                                        }}</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                .resultsPane?.result
-                                                ?.runQueryId &&
-                                            !activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Abort</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Aborting</span
-                                    >
+                                        icon="Play"
+                                        class="mr-1 text-white rounded"
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        v-else
+                                        icon="CircleLoader"
+                                        class="w-4 h-4 mr-1 text-white animate-spin"
+                                    ></AtlanIcon>
+                                    <div>
+                                        <span
+                                            v-if="
+                                                !activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId
+                                            "
+                                            class="text-white"
+                                            >Run</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId &&
+                                                !activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Abort</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Aborting</span
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                        </AtlanBtn>
+                            </AtlanBtn>
+                        </a-tooltip>
                     </div>
                     <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
                 </div>

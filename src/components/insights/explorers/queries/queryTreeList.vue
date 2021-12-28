@@ -21,7 +21,7 @@
                     <template #title="item">
                         <QueryTreeListItem
                             :item="item"
-                            v-if="item.typeName === 'QueryFolder'"
+                            v-if="item.typeName === 'Folder'"
                             :expandedKeys="expandedKeys"
                             :selectedNewFolder="selectedNewFolder"
                             :selectedFolderHide="selectedFolderHide"

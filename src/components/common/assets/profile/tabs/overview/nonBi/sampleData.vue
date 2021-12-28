@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full border rounded h-96 border-gray-light"
+        class="flex items-center justify-center w-full border rounded max-profile-width h-96 border-gray-light"
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
             <AtlanIcon
@@ -62,7 +62,7 @@
         // computed
     } from 'vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import AtlanTable from '@/UI/table.vue'
+    import AtlanTable from '@/common/table/previewTable/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -132,3 +132,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 476px);
+    }
+</style>

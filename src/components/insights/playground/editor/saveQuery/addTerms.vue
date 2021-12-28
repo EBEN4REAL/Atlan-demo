@@ -11,39 +11,25 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="FolderClosed"></AtlanIcon>
+            <AtlanIcon icon="Term"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 Term
+                <span v-if="checkedTerms?.length" class="ml-0.5">
+                    ({{ checkedTerms?.length }})</span
+                >
             </span>
         </AtlanBtn>
 
         <template #overlay>
             <div class="popover-container" @mouseleave="closeDropdown">
-                <div class="p-6">
-                    <p class="mb-2 text-sm text-gray-700">Select Terms</p>
-                    <div style="height: 300px">
-                        <!-- <Governance
-                            :data="checkedTerms"
-                            :sendTerm="sendTerm"
-                            @change="handleTermChange"
-                        /> -->
-                    </div>
-
-                    <div
-                        class="flex items-center justify-end w-full mt-2"
-                        style=""
-                    >
-                        <div class="space-x-4">
-                            <a-button class="px-4" @click="closeDropdown"
-                                >Cancel</a-button
-                            >
-                            <a-button
-                                type="primary"
-                                class="px-4"
-                                @click="createTerm"
-                                >Link</a-button
-                            >
-                        </div>
+                <div class="p-2 py-4">
+                    <div>
+                        <GlossaryTree
+                            v-model:checkedGuids="checkedGuids"
+                            :checkable="true"
+                            @check="onCheck"
+                            @searchItemCheck="onSearchItemCheck"
+                        />
                     </div>
                 </div>
             </div>
@@ -52,108 +38,91 @@
 </template>
 
 <script lang="ts">
-    import {
-        // computed,
-        defineComponent,
-        PropType,
-        ref,
-        watch,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    // import Governance from '@/common/facets/governance.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    // import { exitCode } from '@tiptap/core/dist/packages/core/src/commands/exitCode'
-    // import { message } from 'ant-design-vue'
+    import GlossaryTree from '~/components/glossary/index.vue'
 
     export default defineComponent({
         components: {
-            // Governance,
             AtlanBtn,
+            GlossaryTree,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            selectedTerms: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['update:selectedAsset', 'saveTerms'],
         setup(props, { emit }) {
-            // data
-            const sendTerm = ref(true)
-            let checkedTerms = ref([])
-            // link term on click ok
-            const createTerm = () => {
-                emit('saveTerms', checkedTerms)
-                console.log('checked terms: ', checkedTerms.value)
-                closeDropdown()
-            }
+            const { selectedTerms } = toRefs(props)
+            let checkedTerms = ref(selectedTerms?.value)
 
-            const handleTermChange = (data) => {
-                console.log('term data: ', data.value)
-                if (data) {
-                    checkedTerms.value = data.value
-                    console.log('checked terms: ', checkedTerms.value)
-                }
-            }
+            const checkedGuids = ref(
+                checkedTerms.value.map((term) => term.guid)
+            )
 
             let dropdownVisible = ref(false)
             const toggleDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = !dropdownVisible.value
             }
 
             const closeDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = false
             }
             const showDropdown = () => {
                 dropdownVisible.value = true
             }
 
-            // watch(linkTermPopover, () => {
-            //     if (linkTermPopover === false) sendTerm.value = false
-            // })
-            // watch(
-            //     selectedAsset,
-            //     () => {
-            //         pillTerms.value = [...props.selectedAsset?.meanings]
-            //     },
-            //     { deep: true }
-            // )
+            const onCheck = (checkedNodes) => {
+                checkedNodes.forEach((term) => {
+                    if (
+                        !checkedTerms.value.find(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) ===
+                                term.guid
+                        )
+                    )
+                        checkedTerms.value.push(term)
+                })
+                checkedTerms.value = checkedTerms.value.filter((term) =>
+                    checkedGuids.value.includes(term.termGuid ?? term.guid)
+                )
+
+                console.log('checked terms: ', checkedTerms.value)
+
+                emit('saveTerms', checkedTerms)
+            }
+
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if (checked) {
+                    checkedTerms.value.push(checkedNode)
+                } else {
+                    checkedTerms.value = checkedTerms.value?.filter(
+                        (localTerm) =>
+                            (localTerm.guid ?? localTerm.termGuid) !==
+                            checkedNode.guid
+                    )
+                }
+            }
 
             return {
-                // asset,
-                // selectedAsset,
-                // createClassificationFormRef,
-                // showLinkTermPopover,
-                // selectedTermForLink,
-                // linkTermPopover,
-                // createErrorText,
-                // handlePopoverVisibleChange,
-                // toggleLinkTermPopover,
-                // availableTerms,
-                // handleCancel,
-                createTerm,
-                // pillTerms,
-                // unLinkTerm,
-                handleTermChange,
-                sendTerm,
+                checkedGuids,
                 checkedTerms,
                 toggleDropdown,
                 showDropdown,
                 closeDropdown,
                 dropdownVisible,
+                onCheck,
+                onSearchItemCheck,
             }
         },
     })
-
-    // typeName is name in classification
 </script>
 
 <style lang="less" module>
@@ -186,12 +155,23 @@
     }
 </style>
 <style lang="less" scoped>
+    .folderBtn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 4px 8px !important;
+
+        min-width: 71px !important;
+        height: 22px !important;
+
+        box-sizing: border-box !important;
+        border-radius: 4px !important;
+    }
     .popover-container {
         // width: 295px*1.5;
         // height: 257px;
 
-        width: 350px;
-        height: 420px;
+        width: 320px;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);

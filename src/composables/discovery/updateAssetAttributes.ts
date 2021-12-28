@@ -8,6 +8,7 @@ import useSetClassifications from '~/composables/discovery/useSetClassifications
 import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
 import { Entity } from '~/services/meta/entity/index'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -30,6 +31,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         readmeContent,
         meaningRelationships,
         categories,
+        assignedEntities,
         allowQuery,
         allowQueryPreview,
         connectionRowLimit,
@@ -113,6 +115,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     const localMeanings = ref(meaningRelationships(selectedAsset.value))
+    const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
 
     const localResource = ref({
@@ -339,6 +342,84 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Terms have been updated'
         mutate()
+    }
+
+    const handleAssignedEntitiesUpdate = ({
+        linkedAssets,
+        unlinkedAssets,
+        term
+    }: { 
+        linkedAssets: assetInterface[]
+        unlinkedAssets: assetInterface[]
+        term: assetInterface
+    }) => {
+        // [
+        //     {
+        //       "guid": "ba3dd30d-1822-48c6-a1b7-e0aa46f9c81c",
+        //       "typeName": "Table",
+        //       "attributes": {
+        //         "name": "COVID_COUNTY_LEVEL_PIVOT",
+        //         "qualifiedName": "default/snowflake/1639483386/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT",
+        //         "tenantId": "default"
+        //       },
+        //       "relationshipAttributes": {
+        //         "meanings": [
+        //           {
+        //             "typeName": "AtlasGlossaryTerm",
+        //             "guid": "6fbb73e1-5e56-47ee-9c7d-bb251470b5fa"
+        //           },
+        //           {
+        //             "typeName": "AtlasGlossaryTerm",
+        //             "guid": "310d3ca8-d2ad-44f1-b94a-4a7ada47151d"
+        //           }
+        //         ]
+        //       }
+        //     }
+        //   ]
+
+        const linked = linkedAssets.map((assignedEntitiy) => {
+            const meanings = assignedEntitiy.attributes.meanings ?? []
+            if(!meanings.find((meaning) => meaning.guid === term.guid)) {
+                meanings.push({
+                    typeName: "AtlasGlossaryTerm",
+                    guid: term.guid
+                })
+            }
+            return ({
+                guid: assignedEntitiy.guid,
+                typeName: assignedEntitiy.typeName,
+                attributes: {
+                    ...assignedEntitiy.attributes,
+                    ...assignedEntitiy.uniqueAttributes
+                },
+                relationshipAttributes: {
+                    meanings
+                }
+            })
+        });
+
+        const unlinked = unlinkedAssets.map((unassignedEntity) => {
+            return ({
+                guid: unassignedEntity.guid,
+                typeName: unassignedEntity.typeName,
+                attributes: {
+                    ...unassignedEntity.attributes,
+                    ...unassignedEntity.uniqueAttributes
+                },
+                relationshipAttributes: {
+                    meanings: unassignedEntity.attributes.meanings?.filter((meaning) => meaning.guid !== term.guid) ?? []
+                }
+            })
+        })
+
+        body.value.entities = [...linked, ...unlinked]
+        currentMessage.value = 'Linked assets updated'
+        mutate()
+
+        whenever(isUpdateReady, () => {
+            console.log('bruh 1', assignedEntities(selectedAsset.value), asset)
+            localAssignedEntities.value = assignedEntities(asset.value)
+        })
     }
 
     const handleCategoriesUpdate = () => {
@@ -608,6 +689,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleCategoriesUpdate,
         shouldDrawerUpdate,
         asset,
+        localAssignedEntities,
+        handleAssignedEntitiesUpdate,
         localAdmins,
     }
 }

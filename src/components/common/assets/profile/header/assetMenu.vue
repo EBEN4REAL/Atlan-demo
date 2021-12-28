@@ -86,8 +86,8 @@
                     </a-menu-item>
                 </a-sub-menu>-->
                 <a-menu-item
+                    v-if="editPermission"
                     key="announcement"
-                    :disabled="!editPermission"
                     @click="closeMenu"
                     ><AnnouncementModal
                         :updating="announcementTitle(asset) ? true : false"
@@ -140,12 +140,23 @@
                         :redirect="true"
                     >
                         <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Trash"
-                                    class="m-0 mr-2 text-red-700"
-                                />
-                                <p class="p-0 m-0">Archive</p>
+                            <div
+                                v-auth="
+                                    asset.typeName === 'AtlasGlossary'
+                                        ? map.DELETE_GLOSSARY
+                                        : asset.typeName ===
+                                          'AtlasGlossaryCategory'
+                                        ? map.DELETE_CATEGORY
+                                        : map.DELETE_TERM
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Trash"
+                                        class="m-0 mr-2 text-red-700"
+                                    />
+                                    <p class="p-0 m-0">Archive</p>
+                                </div>
                             </div>
                         </template>
                     </RemoveGTCModal>
@@ -183,6 +194,9 @@
 
     // utils
     import { assetInterface } from '~/types/assets/asset.interface'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
+
     export default defineComponent({
         components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal },
         props: {
@@ -207,12 +221,15 @@
             const closeMenu = () => {
                 isVisible.value = false
             }
+            const { checkAccess } = useAuth()
             return {
                 isVisible,
                 announcementTitle,
                 closeMenu,
                 isGTC,
                 sandbox,
+                map,
+                checkAccess,
             }
         },
     })

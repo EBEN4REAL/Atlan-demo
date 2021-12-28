@@ -3,6 +3,10 @@ import { IEnableDisablePayload } from '~/types/accessPolicies/personas'
 import { Persona } from '../../../../services/service/purpose'
 
 export default function usePurposeService() {
+    function list(params, options) {
+        return Persona.List(params, options)
+    }
+    // Refactor 
     function listPurposes() {
         return Persona.listPurposes()
     }
@@ -30,6 +34,7 @@ export default function usePurposeService() {
     }
 
     return {
+        list,
         listPurposes,
         createPersona,
         updatePersona,

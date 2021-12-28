@@ -105,8 +105,8 @@ export const assetTypeList: {
         count: 0,
     },
     /*   {
-        id: 'QueryFolder',
-        label: 'QueryFolder',
+        id: 'Folder',
+        label: 'Folder',
         qualifiedNameAttribute: 'parentQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
         children: ['Query'],

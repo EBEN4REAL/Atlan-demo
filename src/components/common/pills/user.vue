@@ -1,17 +1,17 @@
 <template>
     <div
-        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer"
+        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white rounded-full cursor-pointer"
         :data-test-id="username"
-        :class="
-            enableHover
-                ? ' hover:bg-primary group hover:border-primary hover:text-white'
-                : ''
-        "
+        :class="{
+            ' border border-gray-200 ': border,
+            'hover:bg-primary group hover:border-primary hover:text-white':
+                enableHover,
+        }"
         @click.stop="() => {}"
     >
         <UserAvatar
             :username="username"
-            style-class="border border-primary bg-primary-light "
+            style-class="border border-primary bg-primary-light"
         ></UserAvatar>
         <div class="">
             {{ getUserName() }}
@@ -42,6 +42,11 @@
             username: {
                 type: String,
                 default: '',
+            },
+            border: {
+                required: false,
+                default: true,
+                type: Boolean,
             },
             allowDelete: {
                 type: Boolean,

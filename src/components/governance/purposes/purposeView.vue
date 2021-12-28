@@ -184,7 +184,7 @@
     import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
-        name: 'PersonaView',
+        name: 'PurposeView',
         components: {
             ErrorView,
             AtlanBtn,

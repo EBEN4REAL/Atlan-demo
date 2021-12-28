@@ -47,7 +47,6 @@ export const dataTypeCategoryList = [
         id: 'decimal',
         label: 'Decimal',
         type: [
-            'NUMBER',
             'NUMERIC',
             'DECIMAL',
             'FLOAT4',
@@ -116,14 +115,14 @@ export const dataTypeCategoryList = [
     {
         id: 'object',
         label: 'Object',
-        type: ['OBJECT'],
+        type: ['OBJECT', 'STRUCT'],
         image: struct,
         imageText: 'struct',
     },
     {
         id: 'geography',
         label: 'Geography',
-        type: ['GEOGRAPHY', 'OBJECT'],
+        type: ['GEOGRAPHY'],
         image: geography,
         imageText: 'geography',
     },

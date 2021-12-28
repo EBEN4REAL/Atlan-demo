@@ -31,15 +31,15 @@
         </div>
     </a-dropdown>
     <div v-else>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
             <span
                 v-for="option in options"
                 :key="option.color"
-                class="flex items-center px-2 rounded hover:bg-gray-light"
+                class="flex items-center px-2 rounded h-7 hover:bg-gray-light"
                 @click="selectedColor = option.color"
             >
                 <AtlanIcon
-                    icon="ShieldFilled"
+                    icon="Shield"
                     class="self-center mr-1"
                     :class="option.text"
                 />

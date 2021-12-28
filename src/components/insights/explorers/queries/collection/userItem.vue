@@ -34,7 +34,7 @@
         </div>
         <a-dropdown :trigger="['click']" placement="topRight">
             <div
-                class="flex items-center justify-center text-gray-700 cursor-pointer"
+                class="flex items-center justify-end text-gray-700 cursor-pointer"
                 style="width: 104px"
             >
                 <span class="mr-1.5 pl-1 text-sm text-gray-500">

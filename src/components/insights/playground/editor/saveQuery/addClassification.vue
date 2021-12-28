@@ -11,9 +11,15 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="FolderClosed"></AtlanIcon>
+            <AtlanIcon icon="Shield"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 Classification
+                <span
+                    v-if="selectedValue?.classifications?.length"
+                    class="ml-0.5"
+                >
+                    ({{ selectedValue?.classifications?.length }})</span
+                >
             </span>
         </AtlanBtn>
 
@@ -22,24 +28,10 @@
                 <div class="p-2 py-4">
                     <div style="">
                         <ClassificationFacet
-                            ref="classificationFacetRef"
                             v-model="selectedValue"
                             :show-none="false"
+                            @change="handleChange"
                         ></ClassificationFacet>
-                    </div>
-
-                    <div class="flex items-center justify-end w-full px-4 mt-3">
-                        <div class="space-x-4">
-                            <a-button class="px-4" @click="closeDropdown"
-                                >Cancel</a-button
-                            >
-                            <a-button
-                                type="primary"
-                                class="px-4"
-                                @click="createTerm"
-                                >Link</a-button
-                            >
-                        </div>
                     </div>
                 </div>
             </div>
@@ -48,17 +40,9 @@
 </template>
 
 <script lang="ts">
-    import {
-        // computed,
-        defineComponent,
-        PropType,
-        ref,
-        watch,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
-    // import GlossaryTree from '~/components/glossary/index.vue'
     import ClassificationFacet from '~/components/common/facet/classification/index.vue'
 
     export default defineComponent({
@@ -72,19 +56,19 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            selectedClassifications: {
+                type: Object,
+                required: true,
+            },
         },
         emits: ['update:selectedAsset', 'saveClassifications'],
         setup(props, { emit }) {
-            // data
-            const sendTerm = ref(true)
-            let checkedClassification = ref([])
+            const { selectedClassifications } = toRefs(props)
+            const selectedValue = ref(selectedClassifications.value)
 
-            const selectedValue = ref({})
-            // link term on click ok
-            const createTerm = () => {
+            const handleChange = () => {
                 emit('saveClassifications', selectedValue)
                 console.log('checked terms: ', selectedValue.value)
-                closeDropdown()
             }
 
             let dropdownVisible = ref(false)
@@ -93,7 +77,6 @@
             }
 
             const closeDropdown = () => {
-                // checkedTerms.value = []
                 dropdownVisible.value = false
             }
             const showDropdown = () => {
@@ -101,18 +84,15 @@
             }
 
             return {
-                sendTerm,
                 toggleDropdown,
                 showDropdown,
                 closeDropdown,
                 dropdownVisible,
-                createTerm,
                 selectedValue,
+                handleChange,
             }
         },
     })
-
-    // typeName is name in classification
 </script>
 
 <style lang="less" module>
@@ -145,6 +125,18 @@
     }
 </style>
 <style lang="less" scoped>
+    .folderBtn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 4px 8px !important;
+
+        min-width: 71px !important;
+        height: 22px !important;
+
+        box-sizing: border-box !important;
+        border-radius: 4px !important;
+    }
     .popover-container {
         // width: 295px*1.5;
         // height: 257px;

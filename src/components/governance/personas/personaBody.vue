@@ -52,7 +52,7 @@
             </MinimalTab>
         </div>
 
-        <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
+        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PersonaMeta
                 class="pb-0"
                 :persona="persona"
@@ -132,8 +132,8 @@
                         :selected-policy="selectedPolicy"
                         :whitelisted-connection-ids="whitelistedConnectionIds"
                         @edit="setEditFlag('meta', policy.id!)"
-                        @delete="deletePolicyUI('meta', policy.id!)"
-                        @cancel="discardPolicy('meta', policy.id!)"
+                        @delete="deletePolicyUI(policy.id)"
+                        @cancel="discardPolicy('meta', policy.id)"
                         @clickCard="handleSelectPolicy"
                     />
                 </template>
@@ -147,7 +147,7 @@
                         :selected-policy="selectedPolicy"
                         :whitelisted-connection-ids="whitelistedConnectionIds"
                         @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI('data', policy.id!)"
+                        @delete="deletePolicyUI(policy.id)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
                     />
@@ -227,15 +227,17 @@
     import {
         newIdTag,
         selectedPersonaDirty,
-        // addPolicy,
+        addPolicy,
         updateSelectedPersona,
-        deletePolicy,
+        // deletePolicy,
         policyEditMap,
         setEditFlag,
         removeEditFlag,
-        savePolicy,
+        // savePolicy,
+        updatePolicy,
         discardPolicy,
         PolicyType,
+        deletePolicyV2,
     } from './composables/useEditPersona'
 
     export default defineComponent({
@@ -304,8 +306,9 @@
                     duration: 0,
                     key: messageKey,
                 })
+                const action = isEdit ? updatePolicy : addPolicy
                 try {
-                    await savePolicy(type, dataPolicy)
+                    await action(type, dataPolicy)
                     updateSelectedPersona()
                     addpolicyVisible.value = false
                     // savePolicyLocally(type, id)
@@ -338,7 +341,7 @@
                 }
             }
 
-            async function deletePolicyUI(type: PolicyType, id: string) {
+            async function deletePolicyUI(id: string) {
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Deleting policy',
@@ -346,7 +349,7 @@
                     key: messageKey,
                 })
                 try {
-                    await deletePolicy(type, id)
+                    await deletePolicyV2(id)
                     updateSelectedPersona()
                     message.success({
                         content: 'Policy deleted',

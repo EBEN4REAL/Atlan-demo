@@ -7,24 +7,31 @@ export function useFullScreen() {
     const toggleFullScreenMode = (fullSreenState: Ref<boolean>) => {
         // Get the element that we want to take into fullscreen mode
         const element: any = document.getElementById(fullScreenId)
+
+        console.log('full screen: ', fullSreenState.value)
         if (fullSreenState.value) {
             fullSreenState.value = !fullSreenState.value
 
             if (document?.exitFullscreen) {
                 document?.exitFullscreen()
             } else if (document?.mozCancelFullScreen) {
-                document?.mozCancelFullScreen()
+                document.mozCancelFullScreen()
             } else if (document?.webkitCancelFullScreen) {
-                document?.webkitCancelFullScreen()
+                document.webkitCancelFullScreen()
             } else if (document?.msExitFullscreen) {
-                document?.msExitFullscreen()
+                document.msExitFullscreen()
             }
+
+
         } else {
             fullSreenState.value = !fullSreenState.value
             // These function will not exist in the browsers that don't support fullscreen mode yet,
             // so we'll have to check to see if they're available before calling them.
-
-            if (element?.mozRequestFullScreen) {
+            if (element?.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element?.msRequestFullscreen) { /* IE11 */
+                element.msRequestFullscreen();
+            } else if (element?.mozRequestFullScreen) {
                 // This is how to go into fullscren mode in Firefox
                 // Note the "moz" prefix, which is short for Mozilla.
                 element?.mozRequestFullScreen()

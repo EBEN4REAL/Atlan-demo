@@ -416,8 +416,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = 'Linked assets updated'
         mutate()
 
-        whenever(isReady, () => {
-            localAssignedEntities.value = assignedEntities(selectedAsset.value)
+        whenever(isUpdateReady, () => {
+            console.log('bruh 1', assignedEntities(selectedAsset.value), asset)
+            localAssignedEntities.value = assignedEntities(asset.value)
         })
     }
 

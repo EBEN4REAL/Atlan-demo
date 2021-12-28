@@ -30,9 +30,15 @@ const listPersonas = () =>
 const Create = (body: IPersona, options?: useOptions) =>
     useAPI<IPersona>(map.CREATE_PERSONA, 'POST', { body }, options || {})
 
+const createPolicy = ( body: IPersona, id: String) => useAPIPromise(map.CREATE_POLICY({id}), 'POST', { body})
+
+const updatePolicy = ( body: IPersona, idPolicy: String, idPersona: String) => useAPIPromise(map.UPDATE_POLICY({idPolicy, idPersona}), 'POST', { body})
+
+const deletePolicy = ( idPolicy: String, idPersona: String) => useAPIPromise(map.DELETE_POLICY({idPolicy, idPersona}), 'DELETE', {})
+
 const createPersona = (body: IPersona) =>
     useAPIPromise(map.CREATE_PERSONA(), 'POST', {
-        body: body,
+        body,
     })
 
 const Update = (body: IPersona, options?: useOptions) =>
@@ -50,7 +56,7 @@ const Update = (body: IPersona, options?: useOptions) =>
 
 const updatePersona = (body: IPersona) =>
     useAPIPromise(map.UPDATE_PERSONA({ guid: body.id! }), 'POST', {
-        body: body,
+        body,
     })
 
 const updatePersonaUsers = ({ personaId, users, groups }) =>
@@ -76,4 +82,7 @@ export const Persona = {
     updatePersona,
     deletePersona,
     enableDisablePersona,
+    createPolicy,
+    updatePolicy,
+    deletePolicy
 }

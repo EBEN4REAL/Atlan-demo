@@ -86,8 +86,8 @@
                     </a-menu-item>
                 </a-sub-menu>-->
                 <a-menu-item
+                    v-if="editPermission"
                     key="announcement"
-                    :disabled="!editPermission"
                     @click="closeMenu"
                     ><AnnouncementModal
                         :updating="announcementTitle(asset) ? true : false"
@@ -108,6 +108,27 @@
                         ></AnnouncementModal
                     ></a-menu-item
                 >
+                <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
+                <a-menu-item
+                    v-if="asset?.typeName === 'AtlasGlossary' && sandbox"
+                    key="bulk upload"
+                    @click="closeMenu"
+                >
+                    <BulkUploadModal :entity="asset">
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Download"
+                                    class="m-0 mr-2 transform rotate-180 text-primary"
+                                />
+                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                    Bulk upload terms
+                                </p>
+                            </div>
+                        </template>
+                    </BulkUploadModal>
+                </a-menu-item>
+
                 <a-menu-item
                     v-if="isGTC(asset)"
                     key="archive"
@@ -119,12 +140,23 @@
                         :redirect="true"
                     >
                         <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Trash"
-                                    class="m-0 mr-2 text-red-700"
-                                />
-                                <p class="p-0 m-0">Archive</p>
+                            <div
+                                v-auth="
+                                    asset.typeName === 'AtlasGlossary'
+                                        ? map.DELETE_GLOSSARY
+                                        : asset.typeName ===
+                                          'AtlasGlossaryCategory'
+                                        ? map.DELETE_CATEGORY
+                                        : map.DELETE_TERM
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Trash"
+                                        class="m-0 mr-2 text-red-700"
+                                    />
+                                    <p class="p-0 m-0">Archive</p>
+                                </div>
                             </div>
                         </template>
                     </RemoveGTCModal>
@@ -144,17 +176,29 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, inject } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        toRefs,
+        inject,
+        computed,
+    } from 'vue'
+    import { useRoute } from 'vue-router'
 
     // components
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
     import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // utils
     import { assetInterface } from '~/types/assets/asset.interface'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
+
     export default defineComponent({
-        components: { AnnouncementModal, RemoveGTCModal },
+        components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -171,14 +215,21 @@
             // data
             const isVisible = ref(false)
             const { isGTC, announcementTitle } = useAssetInfo()
+            const route = useRoute()
+            const sandbox = computed(() => route?.query?.sandbox || '')
+
             const closeMenu = () => {
                 isVisible.value = false
             }
+            const { checkAccess } = useAuth()
             return {
                 isVisible,
                 announcementTitle,
                 closeMenu,
                 isGTC,
+                sandbox,
+                map,
+                checkAccess,
             }
         },
     })

@@ -322,8 +322,16 @@ import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
 import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
 import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
 import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
+import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
+import EnumType from '~/assets/images/dataType/enum.svg'
+import Float from '~/assets/images/dataType/float.svg'
+import Array from '~/assets/images/dataType/array.svg'
 
 export default {
+    Array,
+    Float,
+    EnumType,
+    EmptyCM,
     PolicyAlt,
     FlashColor,
     BuilderGroup,

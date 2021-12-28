@@ -16,10 +16,14 @@ import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
 
+
 const app = createApp(App)
+//initialize store
 app.use(createPinia())
+//vue-head
 const head = createHead()
 app.use(head)
+
 
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
@@ -79,7 +83,7 @@ keycloak
             inputFocusDirective(app)
             authDirective(app)
             if ((window as any).analytics) {
-                ;(window as any).analytics.identify(authStore?.id, {
+                ; (window as any).analytics.identify(authStore?.id, {
                     name: authStore.name || '',
                     firstName: authStore.firstName,
                     lastName: authStore.lastName,

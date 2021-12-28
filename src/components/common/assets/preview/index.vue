@@ -15,7 +15,7 @@
                 >
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"
-                        class="h-5 text-gray-500 mb-0.5"
+                        class="h-4 text-gray-500 mb-0.5"
                     />
                 </div>
 

@@ -273,7 +273,7 @@
                                     isDist(item) ||
                                     isPartition(item)
                                 "
-                                class="flex"
+                                class="flex ml-1 text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="PrimaryKey"
@@ -282,17 +282,17 @@
 
                                 <span
                                     v-if="isPrimary(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Primary</span
                                 >
                                 <span
                                     v-if="isDist(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Dist</span
                                 >
                                 <span
                                     v-if="isPartition(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Partition</span
                                 >
                             </div>

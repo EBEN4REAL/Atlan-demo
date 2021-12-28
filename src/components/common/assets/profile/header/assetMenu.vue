@@ -108,6 +108,27 @@
                         ></AnnouncementModal
                     ></a-menu-item
                 >
+                <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
+                <a-menu-item
+                    v-if="asset?.typeName === 'AtlasGlossary' && sandbox"
+                    key="bulk upload"
+                    @click="closeMenu"
+                >
+                    <BulkUploadModal :entity="asset">
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Download"
+                                    class="m-0 mr-2 transform rotate-180 text-primary"
+                                />
+                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                    Bulk upload terms
+                                </p>
+                            </div>
+                        </template>
+                    </BulkUploadModal>
+                </a-menu-item>
+
                 <a-menu-item
                     v-if="isGTC(asset)"
                     key="archive"
@@ -144,17 +165,26 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, inject } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        toRefs,
+        inject,
+        computed,
+    } from 'vue'
+    import { useRoute } from 'vue-router'
 
     // components
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
     import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // utils
     import { assetInterface } from '~/types/assets/asset.interface'
     export default defineComponent({
-        components: { AnnouncementModal, RemoveGTCModal },
+        components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -171,6 +201,9 @@
             // data
             const isVisible = ref(false)
             const { isGTC, announcementTitle } = useAssetInfo()
+            const route = useRoute()
+            const sandbox = computed(() => route?.query?.sandbox || '')
+
             const closeMenu = () => {
                 isVisible.value = false
             }
@@ -179,6 +212,7 @@
                 announcementTitle,
                 closeMenu,
                 isGTC,
+                sandbox,
             }
         },
     })

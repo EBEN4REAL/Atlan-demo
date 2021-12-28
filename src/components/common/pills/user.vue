@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center py-1 text-sm text-gray-700 bg-white rounded-full cursor-pointer"
+        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white rounded-full cursor-pointer"
         :data-test-id="username"
         :class="{
             ' border border-gray-200 ': border,

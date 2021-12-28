@@ -663,6 +663,7 @@
                 selectedAssetIndex,
                 isCmndKVisible,
                 getAssetId,
+                quickChange,
             }
         },
     })

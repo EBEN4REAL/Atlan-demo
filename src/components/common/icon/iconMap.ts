@@ -314,6 +314,9 @@ import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
+import CollectionHeader from '~/assets/images/insights/collection/header.svg'
+import CollectionBody from '~/assets/images/insights/collection/body.svg'
+import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
 
 export default {
     FlashColor,
@@ -620,5 +623,8 @@ export default {
     NoSelectedAsset,
     QueryGrey,
     NoResultIllustration,
-    SetContext
+    SetContext,
+    CollectionHeader,
+    CollectionBody,
+    CollectionFooter
 }

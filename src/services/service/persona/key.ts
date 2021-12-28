@@ -18,4 +18,10 @@ export const map = {
     LIST_SCOPES: () => getAPIPath('/service', '/scopes'),
     ENABLE_DISABLE_PERSONA: ({ id }: PathParams) =>
         getAPIPath('/service', `/personas/${id}/action`),
+    CREATE_POLICY: ({ id }: PathParams) =>
+        getAPIPath('/service', `/personas/${id}/policies`),
+    UPDATE_POLICY: ({ idPolicy, idPersona }: PathParams) =>
+        getAPIPath('/service', `/personas/${idPersona}/policies/${idPolicy}`),
+    DELETE_POLICY: ({ idPolicy, idPersona }: PathParams) =>
+        getAPIPath('/service', `/personas/${idPersona}/policies/${idPolicy}`),
 }

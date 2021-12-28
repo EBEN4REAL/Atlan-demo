@@ -17,11 +17,11 @@ import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/meta/insights/index'
 import { generateUUID } from '~/utils/helper/generator'
-import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
-import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { useTenantStore } from '~/store/tenant'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+import useSetClassifications from '~/composables/discovery/useSetClassifications'
+import updateAsset from '~/composables/discovery/updateAsset'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -410,6 +410,9 @@ export function useSavedQuery(
             {},
             activeInlineTab
         )
+
+        const {assetTerms, assetClassification} = saveQueryData
+
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
         activeInlineTabCopy.status = saveQueryData.certificateStatus
@@ -503,6 +506,33 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
+
+                    linkTerms(
+                        assetTerms, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
+                    )
+
+                    linkClassification(
+                        assetClassification, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
+                    )
+
                     useAddEvent('insights', 'query', 'saved', {
                         variables_count: getVariableCount(),
                         visual_query: !!activeInlineTab.playground.isVQB,
@@ -567,17 +597,14 @@ export function useSavedQuery(
         // activeInlineTabCopy.playground.editor.text = ''
         const uuidv4 = generateUUID()
 
+        const {assetTerms, assetClassification} = saveQueryData
+
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
         if(isVQB) {
-            // visualBuilderSchemaBase64 = serializeQuery(
-            //     activeInlineTabCopy?.playground.vqb
-            // )
             visualBuilderSchemaBase64 = undefined
             isVisualQuery = true 
         }
-
-        
 
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
@@ -656,30 +683,39 @@ export function useSavedQuery(
             if (isLoading.value === false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
+
+                    linkTerms(
+                        assetTerms, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
+                    )
+
+                    linkClassification(
+                        assetClassification, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
+                    )
+
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
-
-                    // const guid = data.value.mutatedEntities.CREATE[0].guid
-
-                    console.log()
 
                     const parentGuid = parentFolderGuid
                     const parentQualifiedName =
                         data.value.mutatedEntities.CREATE[0].attributes
                             .parentQualifiedName
-
-                    console.log(data.value, 'saved')
-                    /* Not present in response */
-                    // activeInlineTabCopy.updateTime = Date.now()
-                    // activeInlineTabCopy.updatedBy = username.value
-                    // /* ----------------------------------------------- */
-                    // activeInlineTabCopy.qualifiedName = qualifiedName
-                    // activeInlineTabCopy.queryId = guid
-
-                    // activeInlineTabCopy.parentGuid = parentGuid
-                    // activeInlineTabCopy.parentQualifiedName =
-                    //     parentQualifiedName
-                    // activeInlineTabCopy.collectionQualifiedName =
-                    //     collectionQualifiedName
                         
                     savedQuery.attributes.variablesSchemaBase64 = []
                     savedQuery.attributes = {
@@ -689,12 +725,9 @@ export function useSavedQuery(
                             qualifiedName: parentQualifiedName
                         }
                     }
-                    /* end: properties not coming in the response */
 
                     showSaveQueryModal.value = false
-                    message.success({
-                        content: `${name} query saved!`,
-                    })
+                    message.success(`${name} query saved!`)
                     saveModalRef.value?.clearData()
                     // const guid = savedQuery.guid
                     console.log(data.value, 'saved')
@@ -703,18 +736,12 @@ export function useSavedQuery(
                         if (route?.query?.vqb) queryParams.vqb = true
                         router.push({ path: `insights`, query: queryParams })
                     }
-                    // activeInlineTabCopy.queryId = guid
-                    // activeInlineTabCopy.collectionQualifiedName =
-                    //     collectionQualifiedName
 
                     openSavedQueryInNewTab(savedQuery)
-                    // modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
 
                 } else {
                     console.log(error.value.toString())
-                    message.error({
-                        content: `Error in saving query!`,
-                    })
+                    message.error(`Error in saving query!`)
                 }
             }
         })
@@ -819,13 +846,13 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseWithTerms = async (
         assetTerms: any,
+        assetClassification: any,
         saveQueryData: any,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
         route,
-        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
@@ -942,37 +969,36 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-                    // console.log('saved query data: ', data)
 
                     if (Callback) {
-                        // console.log('queryTree callback: ', Callback)
                         Callback(parentFolderGuid, 'query')
                     }
 
-                    // save term
-                    const { assignLinkedAssets } = useLinkAssets()
-                    console.log(
-                        'asset terms inside conposable: ',
-                        assetTerms.checked
+                    linkTerms(
+                        assetTerms, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
                     )
 
-                    if (assetTerms.length) {
-                        assetTerms.map((el_guid) => {
-                            const { response, loading } = assignLinkedAssets(
-                                el_guid,
-                                [data.value.mutatedEntities.CREATE[0]]
-                            )
-                            watch(response, (data) => {
-                                console.log('terms linked: ', data)
-                                useAddEvent(
-                                    'discovery',
-                                    'metadata',
-                                    'terms_updated',
-                                    undefined
-                                )
-                            })
-                        })
-                    }
+                    linkClassification(
+                        assetClassification, 
+                        {
+                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
+                            collectionQualifiedName: collectionQualifiedName,
+                            parentFolderGuid:parentFolderGuid,
+                            parentFolderQF: parentFolderQF,
+                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
+                            name: name
+                        },
+                        'Query'
+                    )
 
                     // handleCancel()
                     // console.log('checked terms: ', assetTerms.value)
@@ -1053,6 +1079,108 @@ export function useSavedQuery(
             return 0
         }
         return variables.length
+    }
+
+    const linkTerms = (assetTerms, assetData, type) => {
+        if (assetTerms?.length) {
+            let data2 = assetTerms.map(el=> {
+                return {
+                    typeName: "AtlasGlossaryTerm",
+                    guid: el
+                }
+            })
+            const body = ref({
+                entities: [
+                    {
+                        guid: assetData?.guid,
+                        typeName: type,
+                        attributes: {
+                            collectionQualifiedName: assetData?.collectionQualifiedName,
+                            name: assetData?.name,
+                            parent: {
+                                guid: assetData?.parentFolderGuid, 
+                                typeName: assetData?.parentFolderQF.includes('/folder') ? 'Folder' : 'Collection',
+                                uniqueAttributes: {
+                                    qualifiedName: assetData?.parentFolderQF
+                                }
+                            },
+                            parentQualifiedName: assetData?.parentFolderQF,
+                            qualifiedName: assetData?.qualifiedName,
+                            tenantId: "default"
+                        },
+                        relationshipAttributes: {
+                            meanings: [
+                                ...data2                    
+                            ]
+                        }
+                    }
+                ],
+            })
+
+            const {
+                mutate: mutateAsset,
+                isLoading: isLoadingTerm,
+                isReady: isReadyTerm,
+                error: isTermError,
+            } = updateAsset(body)
+
+
+            mutateAsset()
+
+            watch([isLoadingTerm, isTermError], () => {
+                // console.log('terms linked: ')
+            })
+        }
+    }
+
+    const linkClassification = (assetClassification, assetData, type) => {
+
+        if(assetClassification?.length) {
+
+            let data2 = assetClassification.map(el=> {
+                return {
+                    entityGuid: assetData?.guid,
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: el
+                }
+            })
+
+            const classificationBody = ref({
+                guidHeaderMap: {
+                    [assetData?.guid]: {
+                        classifications: data2,
+                        attributes: {
+                            collectionQualifiedName: assetData?.collectionQualifiedName,
+                            name: assetData?.name,
+                            parent: {
+                                guid: assetData?.parentFolderGuid, 
+                                typeName: assetData?.parentFolderQF.includes('/folder') ? 'Folder' : 'Collection'
+                            },
+                            parentQualifiedName: assetData?.parentFolderQF,
+                            qualifiedName: assetData?.qualifiedName,
+                            tenantId: "default"
+                        },
+                        guid: assetData?.guid,
+                        typeName: type
+                    }
+                },
+            })
+        
+            const {
+                mutate: mutateClassification,
+                isLoading: isLoadingClassification,
+                isReady: isReadyClassification,
+                error: isErrorClassification,
+            } = useSetClassifications(classificationBody)
+
+            mutateClassification()
+
+            watch([isLoadingClassification, isErrorClassification], () => {
+                console.log('classification linked: ')
+            })
+        
+        }
     }
 
     return {

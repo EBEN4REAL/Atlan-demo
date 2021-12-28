@@ -58,7 +58,7 @@
                 @click="handleOk"
                 :loading="mode === 'create' ? createLoading : editLoading"
             >
-                {{ mode === 'create' ? 'Create' : 'Edit' }}
+                {{ mode === 'create' ? 'Create' : 'Update' }}
             </a-button>
         </div>
     </a-modal>

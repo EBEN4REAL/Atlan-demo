@@ -110,7 +110,7 @@
                     </a-popover>
                 </div>
             </div>
-            <div v-else style="height: 35%"></div>
+            <!-- <div v-else style="height: 35%"></div> -->
             <!-- <div class="w-full my-4 border-b"></div> -->
             <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div
@@ -141,6 +141,7 @@
                             :QueriesFetchError="QueriesFetchError"
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
+                            :errorNode="errorNode"
                         />
                     </div>
                     <!--explorer pane end -->
@@ -192,12 +193,19 @@
                     </div>
                 </div>
             </div>
-            <EmptyView
+            <!-- <EmptyView
                 v-else
                 empty-screen="EmptyCollections"
                 headline="Collections"
                 desc="Organise queries relevant for your project or team into collections and  share it with others. "
                 button-text="Create Collection"
+                @event="
+                    () => {
+                        showCollectionModal = true
+                    }
+                "
+            /> -->
+            <EmptyCollection
                 @event="
                     () => {
                         showCollectionModal = true
@@ -283,6 +291,7 @@
 
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import EmptyView from '@common/empty/index.vue'
+    import EmptyCollection from './collection/EmptyCollection.vue'
 
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
@@ -314,6 +323,7 @@
         name: 'QueryExplorer',
         components: {
             EmptyView,
+            EmptyCollection,
             Loader,
             RaisedTab,
             QueryTree,
@@ -835,6 +845,7 @@
                 initTreeData: refreshQueryTree,
                 isNodeLoading: isNodeLoading,
                 nodeError: nodeError,
+                errorNode: errorNode,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -876,13 +887,18 @@
                     connector.value = undefined
                 }
             })
-            const saveQuery = async (saveQueryData: {
-                saveQueryData: any
-                assetTerms: any
-            }) => {
-                console.log('saving query: ', savedQueryType.value)
+            const saveQuery = async (
+                saveQueryData: any,
+                assetTerms: any,
+                assetClassification: any
+            ) => {
+                // console.log('saving query: ', savedQueryType.value)
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
-                    saveQueryData,
+                    {
+                        ...saveQueryData,
+                        assetTerms,
+                        assetClassification,
+                    },
                     editorInstance,
                     saveQueryLoading,
                     showSaveQueryModal,
@@ -1119,6 +1135,7 @@
                 map,
                 isNodeLoading,
                 nodeError,
+                errorNode,
             }
         },
     })

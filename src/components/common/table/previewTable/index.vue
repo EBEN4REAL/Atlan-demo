@@ -40,21 +40,24 @@
                             v-for="(rowData, key) in row"
                             :key="key"
                             :data-key="key"
+                            :data-index="index"
                             class="bg-white"
                         >
-                            {{ rowData }}
-                            <!-- <template
-                                v-if="
-                                    variantTypeIndexes.includes(key.toString())
-                                "
-                                ><div style="max-width: 85%" class="truncate">
+                            <div
+                                v-if="showExpand === `${key}.${index}`"
+                                class="flex items-center"
+                            >
+                                <div style="max-width: 80%" class="truncate">
                                     {{ rowData }}
                                 </div>
                                 <AtlanIcon
                                     icon="Expand"
                                     class="h-4 w-auto mb-0.5"
-                            /></template>
-                            <template v-else>{{ rowData }}</template> -->
+                                />
+                            </div>
+                            <div v-else class="truncate">
+                                {{ rowData }}
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -172,6 +175,7 @@
                             }
                             hoverTD.value = td
                             hoverTD.value.classList.add('hover-state')
+                            showExpand.value = `${td.dataset.key}.${td.dataset.index}`
                         }
                     }
                     tbody.onmouseout = function (e) {
@@ -180,6 +184,7 @@
                         if (!tbody.contains(td)) return
                         hoverTD.value = td
                         hoverTD.value.classList.remove('hover-state')
+                        showExpand.value = ''
                     }
                 }
             })
@@ -268,7 +273,7 @@
             height: 32px !important;
             padding: 0px 16px !important;
             font-size: 12px !important;
-            @apply border border-gray-light truncate !important;
+            @apply border border-gray-light  !important;
         }
         tbody {
             font-family: Hack !important;
@@ -281,7 +286,7 @@
             border-top: 0;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700 bg-gray-100 border-r border-gray-light;
+            @apply text-gray-700 bg-gray-100 border-r border-gray-light truncate;
             font-weight: 400 !important;
         }
         td:first-child {

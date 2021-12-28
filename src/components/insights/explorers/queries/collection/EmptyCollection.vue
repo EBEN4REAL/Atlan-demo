@@ -11,23 +11,14 @@
             </p>
         </div>
         <div class="flex flex-col items-center w-full mt-2 mb-4">
-            <!-- <AtlanIcon icon="CollectionBody" class="" /> -->
-            <img
-                src="src/assets/images/insights/collection/body.svg"
-                alt=""
-                class="w-7/12"
-            />
+            <img :src="Body" alt="" class="w-7/12" />
 
             <p style="max-width: 18rem" class="-mt-2 text-base text-center">
                 Organise queries relevant for your project in folders.
             </p>
         </div>
         <div class="flex flex-col items-center w-full mt-2">
-            <img
-                src="src/assets/images/insights/collection/footer.svg"
-                alt=""
-                class="w-7/12"
-            />
+            <img :src="Footer" alt="" class="w-7/12" />
 
             <p style="max-width: 18rem" class="text-base text-center">
                 Share collections with your team.
@@ -50,6 +41,8 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import AtlanButton from '~/components/UI/button.vue'
+    import Body from '~/assets/images/insights/collection/body.png'
+    import Footer from '~/assets/images/insights/collection/footer.png'
 
     export default defineComponent({
         name: 'EmptyCollection',
@@ -62,6 +55,8 @@
             }
             return {
                 handleClick,
+                Body,
+                Footer,
             }
         },
     })

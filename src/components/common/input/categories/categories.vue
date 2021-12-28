@@ -17,6 +17,7 @@
                     :defaultOpen="true"
                     :open="true"
                     :loading="true"
+                    treeNodeFilterProp="title"
                     style="width: 100%"
                     :dropdownStyle="{ position: 'static', overflow: 'hidden' }"
                     tree-checkable

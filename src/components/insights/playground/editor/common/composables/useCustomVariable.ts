@@ -347,6 +347,20 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         }
     }
 
+    function getCustomVariableTypeFromSubpanelType(type: string) {
+        switch (type) {
+            case 'number': {
+                return 'number'
+            }
+            case 'date': {
+                return 'date'
+            }
+            default: {
+                return 'string'
+            }
+        }
+    }
+
     function addVariableFromVQB(
         activeInlineTab: ComputedRef<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
@@ -454,6 +468,44 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
 
+    function changeVariableTypeFromVQB(
+        activeInlineTab: ComputedRef<activeInlineTabInterface>,
+        tabs: Ref<activeInlineTabInterface[]>,
+        curr_variable: CustomVaribaleInterface,
+        subpaneltype: string
+    ) {
+        if (!editorInstance && !monacoInstance) {
+            console.error(
+                'Pass editorInstance & monaco Instance to the useCustomVariable'
+            )
+            return
+        }
+
+        let index = activeInlineTab.value.playground.editor.variables.findIndex(
+            (variable) => variable.name === curr_variable.name
+        )
+        let savedIndex =
+            activeInlineTab.value.playground.editor.savedVariables.findIndex(
+                (variable) => variable.name === curr_variable.name
+            )
+
+        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            {},
+            activeInlineTab.value
+        )
+        activeInlineTabCopy.playground.editor.variables[index] = {
+            ...activeInlineTabCopy.playground.editor.variables[index],
+            type: getCustomVariableTypeFromSubpanelType(subpaneltype),
+            value: getValueFromType(subpaneltype, ''),
+        }
+        activeInlineTabCopy.playground.editor.savedVariables[savedIndex] = {
+            ...activeInlineTabCopy.playground.editor.savedVariables[savedIndex],
+            type: getCustomVariableTypeFromSubpanelType(subpaneltype),
+            value: getValueFromType(subpaneltype, ''),
+        }
+        modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+    }
+
     function getCustomVaribleByVQBFilterSubpanelId(
         subpanelId: string,
         activeInlineTab: ComputedRef<activeInlineTabInterface>
@@ -527,6 +579,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     }
 
     return {
+        changeVariableTypeFromVQB,
         getCustomVaribleByVQBFilterSubpanelId,
         addVariableFromVQB,
         deleteVariable,

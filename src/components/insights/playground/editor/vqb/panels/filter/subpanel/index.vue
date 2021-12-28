@@ -23,7 +23,9 @@
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
-                        @change="(val) => handleColumnChange(val, index)"
+                        @change="
+                            (val) => handleColumnChange(val, index, subpanel)
+                        "
                     />
 
                     <FilterSelector
@@ -265,6 +267,7 @@
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
             const {
+                changeVariableTypeFromVQB,
                 addVariableFromVQB,
                 getCustomVaribleByVQBFilterSubpanelId,
             } = useCustomVariable(editorInstance, monacoInstance)
@@ -284,7 +287,7 @@
                 console.log('checked array: ', checkedArr)
             }
 
-            const handleColumnChange = (val, index) => {
+            const handleColumnChange = (val, index, subpanel) => {
                 console.log('col change: ', val)
 
                 const copySubPanel = JSON.parse(
@@ -296,6 +299,34 @@
 
                 subpanels.value[index] = copySubPanel
                 // console.log(subpanels.value)
+
+                /* If there are custom variables change there types */
+
+                // get all custom variables related to this panel
+                const subpanelIds = subpanels.value.map(
+                    (subpanel) => subpanel.id
+                )
+                debugger
+                let variables: any = []
+                activeInlineTab.value.playground.editor.variables.map(
+                    (_variable) => {
+                        subpanelIds.forEach((subpanelId) => {
+                            if (_variable?.subpanelId?.includes(subpanelId)) {
+                                variables.push(_variable)
+                            }
+                        })
+                    }
+                )
+                if (variables?.length > 0) {
+                    variables.forEach((variable) => {
+                        changeVariableTypeFromVQB(
+                            activeInlineTab,
+                            tabs,
+                            variable,
+                            val?.type?.toLowerCase() ?? 'string'
+                        )
+                    })
+                }
             }
 
             const handleAddPanel = () => {

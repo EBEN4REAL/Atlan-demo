@@ -83,7 +83,8 @@
                                     getSummarisedInfoOfFilterPanel(
                                         activeInlineTab.playground.vqb.panels[
                                             index
-                                        ].subpanels
+                                        ].subpanels,
+                                        activeInlineTab
                                     )
                                 }}
                             </p>

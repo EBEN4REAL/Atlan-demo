@@ -50,6 +50,7 @@
                     :showCheckBox="false"
                     :preference="preference"
                     :enableSidebarDrawer="true"
+                    :isCache="false"
                     key="linked-assets"
                     class="asset-list-height"
                     page="glossary"
@@ -68,7 +69,14 @@
             </div>
         </div>
     </div>
-    <a-drawer
+    <LinkAssetsDrawer 
+        :isVisible="isVisible" 
+        :preference="preference"
+        :selectedAssetCount="selectedAssetCount"
+        @closeDrawer="closeDrawer"
+        @saveAssets="saveAssets"
+    />
+    <!-- <a-drawer
         placement="right"
         :destroy-on-close="true"
         :visible="isVisible"
@@ -83,18 +91,18 @@
                 <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                     >Search from your assets</span
                 >
-                <AssetsWrapper
-                    :show-filters="false"
-                    :static-use="true"
-                    :show-aggrs="true"
-                    :showCheckBox="true"
-                    :preference="preference"
-                    :allCheckboxAreaClick="true"
-                    :disableHandlePreview="true"
-                    class="asset-list-height"
-                    key="all-assets"
-                    page="glossary"
-                />
+                    <AssetsWrapper
+                        :show-filters="false"
+                        :static-use="true"
+                        :show-aggrs="true"
+                        :showCheckBox="true"
+                        :preference="preference"
+                        :allCheckboxAreaClick="true"
+                        :disableHandlePreview="true"
+                        class="asset-list-height"
+                        key="all-assets"
+                        page="glossary"
+                    />
             </div>
         </div>
         <div class="flex items-center justify-end m-2 mt-6 gap-x-2">
@@ -117,7 +125,7 @@
                 >Save</AtlanBtn
             >
         </div>
-    </a-drawer>
+    </a-drawer> -->
 </template>
 
 <script lang="ts">
@@ -143,6 +151,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import LinkAssetsDrawer from './linkDrawer.vue'
 
     export default defineComponent({
         name: 'LinkedAssetsTab',
@@ -154,6 +163,7 @@
             AssetItem,
             AtlanBtn,
             AssetsWrapper,
+            LinkAssetsDrawer
         },
         props: {
             selectedAsset: {

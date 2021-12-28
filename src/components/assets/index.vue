@@ -292,6 +292,11 @@
                 type: Boolean,
                 default: false,
             },
+            isCache: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         setup(props, { emit }) {
             const {
@@ -301,7 +306,8 @@
                 page,
                 projection,
                 allCheckboxAreaClick,
-                disableHandlePreview
+                disableHandlePreview,
+                isCache
             } = toRefs(props)
 
             const limit = ref(20)
@@ -383,7 +389,7 @@
                 updateList,
                 rotateAggregateTab,
             } = useDiscoverList({
-                isCache: true,
+                isCache: isCache.value,
                 dependentKey,
                 queryText,
                 facets,

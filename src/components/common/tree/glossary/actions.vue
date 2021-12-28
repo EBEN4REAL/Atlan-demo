@@ -10,81 +10,100 @@
 
         <template #overlay>
             <a-menu>
-                <a-menu-item
-                    v-if="
-                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
-                    "
-                    key="add"
-                    @click="closeMenu"
-                >
-                    <AddGtcModal
-                        entityType="AtlasGlossaryCategory"
-                        :glossaryName="glossaryName"
-                        :categoryName="categoryName"
-                        @add="handleAdd"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        :categoryGuid="categoryId"
+                <div v-auth="map.CREATE_CATEGORY">
+                    <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
+                        key="add"
+                        @click="closeMenu"
                     >
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Category" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Category</p>
-                            </div>
-                        </template>
-                    </AddGtcModal>
-                </a-menu-item>
-
-                <a-menu-item
-                    v-if="
-                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
-                    "
-                    key="add"
-                    @click="closeMenu"
-                >
-                    <AddGtcModal
-                        entityType="AtlasGlossaryTerm"
-                        :glossaryName="glossaryName"
-                        :categoryName="categoryName"
-                        @add="handleAdd"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        :categoryGuid="categoryId"
+                        <AddGtcModal
+                            entityType="AtlasGlossaryCategory"
+                            :glossaryName="glossaryName"
+                            :categoryName="categoryName"
+                            @add="handleAdd"
+                            :glossary-qualified-name="glossaryQualifiedName"
+                            :categoryGuid="categoryId"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Add Category</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item>
+                </div>
+                <div v-auth="map.CREATE_TERM">
+                    <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
+                        key="add"
+                        @click="closeMenu"
                     >
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Term</p>
-                            </div>
-                        </template>
-                    </AddGtcModal>
-                </a-menu-item>
-                <a-menu-divider
-                    v-if="
-                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
+                        <AddGtcModal
+                            entityType="AtlasGlossaryTerm"
+                            :glossaryName="glossaryName"
+                            :categoryName="categoryName"
+                            @add="handleAdd"
+                            :glossary-qualified-name="glossaryQualifiedName"
+                            :categoryGuid="categoryId"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add Term</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item>
+                </div>
+                <div
+                    v-auth="
+                        entity?.typeName === 'AtlasGlossaryTerm'
+                            ? map.DELETE_TERM
+                            : entity?.typeName === 'AtlasGlossaryCategory'
+                            ? map.DELETE_CATEGORY
+                            : map.DELETE_GLOSSARY
                     "
-                    class="p-0 m-0"
-                ></a-menu-divider>
-                <a-menu-item
-                    v-if="showGtcCrud"
-                    key="archive"
-                    @click="closeMenu"
                 >
-                    <RemoveGTCModal
-                        :entityType="entity.typeName"
-                        :entity="entity"
-                        @delete="handleDelete"
-                        :redirect="shouldRedirect"
+                    <a-menu-divider
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
+                        class="p-0 m-0"
+                    ></a-menu-divider>
+                    <a-menu-item
+                        v-if="showGtcCrud"
+                        key="archive"
+                        @click="closeMenu"
                     >
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Trash"
-                                    class="m-0 mr-2 text-red-700"
-                                />
-                                <p class="p-0 m-0">Archive</p>
-                            </div>
-                        </template>
-                    </RemoveGTCModal>
-                </a-menu-item>
+                        <RemoveGTCModal
+                            :entityType="entity.typeName"
+                            :entity="entity"
+                            @delete="handleDelete"
+                            :redirect="shouldRedirect"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Trash"
+                                        class="m-0 mr-2 text-red-700"
+                                    />
+                                    <p class="p-0 m-0">Archive</p>
+                                </div>
+                            </template>
+                        </RemoveGTCModal>
+                    </a-menu-item>
+                </div>
             </a-menu>
         </template>
     </a-dropdown>
@@ -124,6 +143,7 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -264,6 +284,7 @@
                 addGTCNode,
                 handleDelete,
                 shouldRedirect,
+                map,
             }
         },
     })

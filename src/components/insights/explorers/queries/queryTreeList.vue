@@ -26,6 +26,15 @@
                             :selectedNewFolder="selectedNewFolder"
                             :selectedFolderHide="selectedFolderHide"
                         />
+                        <!-- <div
+                            class="flex items-center h-8 text-sm text-gray-500"
+                            v-if="item?.title === `emptyNode`"
+                        >
+                            <span>folder is empty,&nbsp;</span
+                            ><span class="text-primary"
+                                >create a folder&nbsp;</span
+                            ><span> here</span>
+                        </div> -->
                         <div
                             v-else-if="item.title === 'Load more'"
                             class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
@@ -117,6 +126,8 @@
                 required: false,
             },
         },
+        emits: ['createFolderInput'],
+
         setup(props, { emit }) {
             // data
             const onExpand = (expanded: string[], event: any) => {
@@ -157,21 +168,39 @@
                 .ant-tree-node-content-wrapper) {
             @apply w-full !important;
         }
+
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
+            @apply bg-gray-100;
         }
-        :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg);
+        :global(.ant-tree-switcher) {
+            width: 16px !important;
         }
-        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
-        }
+
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
             overflow: hidden;
+            @apply h-8 !important;
         }
-        :global(.ant-tree .ant-tree-treenode) {
-            @apply p-0 !important;
+
+        :global(.ant-tree-treenode) {
+            padding-bottom: 0px !important;
+            @apply hover:bg-gray-100 !important;
+            transition: none !important;
+            padding-left: 24px !important;
+        }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply hover:bg-gray-100 !important;
+            transition: none !important;
+        }
+
+        :global(.ant-tree-node-selected) {
+            @apply bg-primary-light !important;
+            @apply hover:bg-primary-light !important;
+            // @apply hover:bg-gray-light !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            @apply bg-primary-light !important;
+            @apply hover:bg-primary-light !important;
         }
     }
 </style>

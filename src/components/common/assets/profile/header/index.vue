@@ -276,7 +276,7 @@
                 >
                     <a-button
                         v-if="
-                            selectedAssetUpdatePermission(item) ||
+                            isGTC(item) &&
                             checkAccess(
                                 [
                                     map.DELETE_TERM,
@@ -285,6 +285,20 @@
                                 ],
                                 'or'
                             )
+                        "
+                        block
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                    </a-button>
+                </AssetMenu>
+                <AssetMenu
+                    :asset="item"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
+                >
+                    <a-button
+                        v-if="
+                            !isGTC(item) && selectedAssetUpdatePermission(item)
                         "
                         block
                         class="flex items-center justify-center"

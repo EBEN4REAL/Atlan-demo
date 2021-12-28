@@ -273,7 +273,7 @@
                                     isDist(item) ||
                                     isPartition(item)
                                 "
-                                class="flex"
+                                class="flex ml-1 text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="PrimaryKey"
@@ -282,17 +282,17 @@
 
                                 <span
                                     v-if="isPrimary(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Primary</span
                                 >
                                 <span
                                     v-if="isDist(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Dist</span
                                 >
                                 <span
                                     v-if="isPartition(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Partition</span
                                 >
                             </div>
@@ -442,7 +442,7 @@
                                 :key="term.guid"
                             >
                                 <div
-                                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                                 >
                                     <AtlanIcon
                                         :icon="termIcon(term)"

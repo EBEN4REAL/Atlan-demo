@@ -1,66 +1,107 @@
 <template>
-    <div class="flex flex-col px-5 bg-white pt-7">
-        <div class="flex items-center justify-between gap-x-2">
-            <div class="flex items-center">
-                <ClassificationIcon
-                    :color="selectedClassification?.options?.color"
-                    class="h-6 mr-1"
-                />
-                <span class="text-xl truncate text-gray">{{
-                    selectedClassification?.displayName
-                }}</span>
-            </div>
-            <a-dropdown>
-                <AtlanBtn
-                    class="flex-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    @click.prevent
+    <div class="flex flex-col px-5 bg-white py-7">
+        <div class="flex justify-between gap-x-2">
+            <div class="flex flex-col gap-y-3">
+                <div class="flex">
+                    <ClassificationIcon
+                        :color="selectedClassification?.options?.color"
+                        class="h-6 mr-1"
+                    />
+                    <span class="text-xl truncate text-gray">
+                        {{ selectedClassification?.displayName }}
+                    </span>
+                </div>
+                <!-- can extract below lines into a show more show less component -->
+                <div
+                    v-if="
+                        selectedClassification?.description &&
+                        selectedClassification?.description?.length > 80
+                    "
+                    class="relative w-3/4 overflow-hidden text-gray-500"
+                    :class="descTrim ? 'h-5 flex' : ''"
                 >
-                    <AtlanIcon icon="KebabMenu" class="-mx-1 text-gray" />
-                </AtlanBtn>
-
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item
-                            v-auth="map.UPDATE_CLASSIFICATION"
-                            @click="editClassification"
-                        >
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Edit" />
-                                <span class="pl-2 text-sm">Edit</span>
-                            </div>
-                        </a-menu-item>
-                        <a-menu-item
-                            v-auth="map.DELETE_CLASSIFICATION"
-                            @click="deleteClassification"
-                        >
-                            <div class="flex items-center text-red-700">
-                                <AtlanIcon icon="Trash" />
-                                <span class="pl-2 text-sm">Delete</span>
-                            </div>
-                        </a-menu-item>
-                        <a-sub-menu v-auth="map.UPDATE_CLASSIFICATION">
-                            <template #title>
-                                <span class="flex items-center">
-                                    <ClassificationIcon
-                                        class="self-center mr-1"
-                                        :color="classificationColor"
+                    {{ selectedClassification?.description }}
+                    <span
+                        class="right-0 pl-2 bg-white rounded cursor-pointer text-primary hover:underline"
+                        :class="descTrim ? 'absolute' : ''"
+                        @click="descTrim = !descTrim"
+                    >
+                        {{ descTrim ? 'show more' : 'show less' }}
+                    </span>
+                </div>
+                <div v-else class="text-gray-500">
+                    {{ selectedClassification?.description }}
+                </div>
+                <div class="flex items-center gap-2 text-gray-500">
+                    <div class="flex items-center gap-2">
+                        Last Updated
+                        <span class="text-gray-700"> {{ lastUpdatedAt }}</span>
+                        by
+                        <UserPill
+                            :username="selectedClassification.updatedBy"
+                            :allow-delete="false"
+                            :enable-hover="false"
+                            class=""
+                            :border="false"
+                        />
+                    </div>
+                    <span class="text-gray-200">&bull;</span>
+                    <div class="flex items-center gap-2">
+                        Created by
+                        <UserPill
+                            :username="selectedClassification.createdBy"
+                            :allow-delete="false"
+                            :enable-hover="false"
+                            class=""
+                            :border="false"
+                        />
+                        on
+                        <span class="text-gray-700">{{ createdOn }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <a-button-group class="">
+                    <a-dropdown>
+                        <a-button class="px-2.5">
+                            <ClassificationIcon
+                                class=""
+                                :color="classificationColor"
+                            />
+                        </a-button>
+                        <template #overlay>
+                            <a-menu v-auth="map.UPDATE_CLASSIFICATION">
+                                <a-menu-item class="p-0 m-0 bg-white w-28">
+                                    <ClassificationColorSelector
+                                        v-model:selectedColor="
+                                            classificationColor
+                                        "
+                                        menu-mode
                                     />
-                                    <span class="self-center">Color</span>
-                                </span>
-                            </template>
-                            <a-menu-item class="p-0 m-0 bg-white w-28">
-                                <ClassificationColorSelector
-                                    v-model:selectedColor="classificationColor"
-                                    menuMode
-                                />
-                            </a-menu-item>
-                        </a-sub-menu>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <a-button
+                        v-auth="map.UPDATE_CLASSIFICATION"
+                        class="px-2.5"
+                        @click="editClassification"
+                    >
+                        <div>
+                            <AtlanIcon icon="Pencil" />
+                        </div>
+                    </a-button>
+                    <a-button
+                        v-auth="map.DELETE_CLASSIFICATION"
+                        class="px-2.5"
+                        @click="deleteClassification"
+                    >
+                        <div class="flex items-center text-red-700">
+                            <AtlanIcon icon="Delete" />
+                        </div>
+                    </a-button>
+                </a-button-group>
+            </div>
         </div>
         <AddClassificationModal
             v-model:modalVisible="isEditClassificationModalOpen"
@@ -81,8 +122,10 @@
         h,
     } from 'vue'
     import { Modal } from 'ant-design-vue'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useTimeAgo } from '@vueuse/core'
     import { useRouter } from 'vue-router'
+    import dayjs from 'dayjs'
+    import UserPill from '@/common/pills/user.vue'
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
@@ -103,6 +146,7 @@
         name: 'ClassificationHeader',
         components: {
             Dropdown,
+            UserPill,
             AddClassificationModal,
             AtlanBtn,
             ClassificationColorSelector,
@@ -138,8 +182,8 @@
                 Modal.confirm({
                     title: 'Delete Classification',
                     class: 'delete-classification-modal',
-                    content: () => {
-                        return h('div', [
+                    content: () =>
+                        h('div', [
                             'Are you sure you want to delete classification',
                             h('span', [' ']),
                             h(
@@ -150,8 +194,7 @@
                                 [`${displayName.value}`]
                             ),
                             h('span', '?'),
-                        ])
-                    },
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
@@ -169,8 +212,8 @@
                         mutateDelete()
                         whenever(isDeleteReady, () => {
                             if (typedefStore.classificationList.length) {
-                                const name =
-                                    typedefStore.classificationList[0].name
+                                const { name } =
+                                    typedefStore.classificationList[0]
                                 router.push(
                                     `/governance/classifications/${name}`
                                 )
@@ -217,7 +260,20 @@
             //     setUserUniqueAttribute(username, 'username')
             //     showUserPreview({ allowed: ['about'] })
             // }
+
+            const descTrim = ref(true)
+            const timeAgo = ref(selectedClassification.value.updateTime)
+            const lastUpdatedAt = useTimeAgo(timeAgo)
+            const createdOn = computed(() =>
+                dayjs(new Date(selectedClassification.value.createTime)).format(
+                    'Do MMMM YYYY'
+                )
+            )
+
             return {
+                createdOn,
+                lastUpdatedAt,
+                descTrim,
                 isDeleteClassificationModalOpen,
                 closeDeleteClassificationModal,
                 closeEditClassificationModal,

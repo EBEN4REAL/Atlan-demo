@@ -19,7 +19,10 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex">
+                <div
+                    class="flex"
+                    :class="page === 'classifications' ? 'max-w-sm' : ''"
+                >
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
                         ref="searchBox"
@@ -28,7 +31,11 @@
                         :autofocus="true"
                         :allow-clear="true"
                         size="large"
-                        :class="page !== 'admin' ? 'px-6' : ''"
+                        :class="
+                            ['admin', 'classifications'].includes(page)
+                                ? ''
+                                : 'px-6'
+                        "
                         :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
@@ -292,6 +299,11 @@
                 type: Boolean,
                 default: false,
             },
+            isCache: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         setup(props, { emit }) {
             const {
@@ -301,7 +313,8 @@
                 page,
                 projection,
                 allCheckboxAreaClick,
-                disableHandlePreview
+                disableHandlePreview,
+                isCache
             } = toRefs(props)
 
             const limit = ref(20)
@@ -383,7 +396,7 @@
                 updateList,
                 rotateAggregateTab,
             } = useDiscoverList({
-                isCache: true,
+                isCache: isCache.value,
                 dependentKey,
                 queryText,
                 facets,
@@ -663,6 +676,7 @@
                 selectedAssetIndex,
                 isCmndKVisible,
                 getAssetId,
+                quickChange,
             }
         },
     })

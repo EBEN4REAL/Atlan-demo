@@ -12,11 +12,8 @@
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
-    // import { useClassificationStore } from '~/components/admin/classifications/_store'
-    // import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
     import ClassificationHeader from '@/governance/classifications/classificationHeader.vue'
     import ClassificationBody from '@/governance/classifications/classificationBody.vue'
-    // import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 

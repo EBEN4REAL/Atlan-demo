@@ -132,6 +132,7 @@
             const { checkedGuids } = useVModels(props, emit)
             const { selectedGlossary } = useAssetInfo()
             const glossaryStore = useGlossaryStore()
+            const localCheckedNodes = ref([])
             const parentGlossaryGuid = computed(() => {
                 const selectedGtc = glossaryStore.list.find(
                     (el) =>
@@ -162,6 +163,7 @@
                 parentGlossaryGuid,
                 checkable: props.checkable,
                 checkedGuids: checkedGuids.value,
+                localCheckedNodes
             })
 
             const addGlossary = (asset) => {
@@ -202,9 +204,9 @@
                             (guid) => guid !== node.guid
                         )
                     }
-                    // checkedKeys.value = checkedNodes.map((node) => node.key)
                 }
-                emit('check', checkedNodes, { checkedKeys: e, checked })
+                localCheckedNodes.value = checkedNodes
+                emit('check', checkedNodes)
             }
             const updateTreeNode = (asset) => {
                 updateNode(asset)
@@ -213,18 +215,25 @@
                 reInitTree()
             })
             const handleSelect = (selected: any, event: any) => {
+                console.log(selected, event, localCheckedNodes.value)
                 if (
                     props.checkable &&
                     event?.node?.typeName === 'AtlasGlossaryTerm'
                 ) {
-                    // const found = checkedKeys.value.find(
-                    //     (el) => el === event?.node?.key
-                    // )
-                    // onCheck(event, {
-                    //     checkedNodes: event.selectedNodes,
-                    //     checked: !found,
-                    //     node: event.node,
-                    // })
+                    const found = checkedKeys.value.find(
+                        (el) => el === event?.node?.key
+                    )
+                    let newCheckedNodes;
+                    if(found) {
+                        newCheckedNodes = localCheckedNodes.value.filter((localNode: any) => localNode.guid !== event.node.guid)
+                    } else {
+                        newCheckedNodes = [ ...localCheckedNodes.value, event.node ]
+                    }
+                    onCheck(event, {
+                        checkedNodes: newCheckedNodes,
+                        checked: !found,
+                        node: event.node,
+                    })
                 } else selectNode(selected, event)
             }
             const handleAddSelectedKey = (key) => {

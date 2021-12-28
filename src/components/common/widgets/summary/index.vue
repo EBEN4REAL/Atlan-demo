@@ -78,10 +78,10 @@
                         }}</span>
                     </div>
                 </div>
-                <div class="flex flex-col">
+                <!-- <div class="flex flex-col">
                     <p class="text-gray-500">Asset Type</p>
                     {{ asset.typeName }}
-                </div>
+                </div> -->
             </div>
         </div>
         <slot></slot>

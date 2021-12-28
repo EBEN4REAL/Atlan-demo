@@ -8,6 +8,7 @@ import postcss from './postcss.config.js'
 import styleImport from 'vite-plugin-style-import'
 import svgLoader from 'vite-svg-loader'
 import strip from '@rollup/plugin-strip'
+import VueI18n from '@intlify/vite-plugin-vue-i18n'
 // import Components from 'unplugin-vue-components/vite'
 
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -72,6 +73,12 @@ export default defineConfig(({ mode }) => {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
                 apply: 'build',
             },
+            VueI18n({
+                runtimeOnly: true,
+                compositionOnly: true,
+                include: [path.resolve(__dirname, 'locales/**')],
+            }),
+
             // Components(),
         ],
         optimizeDeps: {

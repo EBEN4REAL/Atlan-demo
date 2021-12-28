@@ -11,12 +11,12 @@
                         <th class="truncate">#</th>
                         <th v-for="(col, index) in columns" :key="index">
                             <div class="flex items-center">
-                                <a-tooltip :title="col.data_type">
-                                    <component
-                                        :is="images[getDataType(col.data_type)]"
-                                        class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
-                                    ></component>
-                                </a-tooltip>
+                                <component
+                                    :is="images[getDataType(col.data_type)]"
+                                    :data-tooltip="col.data_type"
+                                    class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
+                                ></component>
+
                                 <!-- <Tooltip :tooltip-text="`${col.title}`" /> -->
                                 {{ col.title }}
                             </div>
@@ -121,7 +121,7 @@
             const showExpand = ref('')
             const selectedTD = ref(null)
             const hoverTD = ref(null)
-            const hoverTH = ref(null)
+            const hoverTH = ref()
 
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
@@ -202,19 +202,44 @@
                         let svg = e.target.closest('svg')
                         if (!svg) return
                         if (!thead.contains(svg)) return
-                        if (hoverTH.value) {
-                            hoverTH.value.classList.remove('ant-tooltip-open')
+                        // if we have tooltip HTML...
+                        let tooltipContent = svg.dataset.tooltip
+                        if (!tooltipContent) return
+
+                        // ...create the tooltip element
+
+                        hoverTH.value = document.createElement('div')
+                        hoverTH.value.className = 'tooltip'
+                        hoverTH.value.innerHTML = tooltipContent
+                        document.body.append(hoverTH.value)
+
+                        // position it above the annotated element (top-center)
+                        let coords = svg.getBoundingClientRect()
+
+                        let left =
+                            coords.left +
+                            (svg.offsetWidth - hoverTH.value.offsetWidth) / 2
+                        if (left < 0) left = 0 // don't cross the left window edge
+
+                        let top = coords.top - hoverTH.value.offsetHeight - 5
+                        if (top < 0) {
+                            // if crossing the top window edge, show below instead
+                            top = coords.top + svg.offsetHeight + 5
                         }
-                        hoverTH.value = svg
-                        hoverTH.value.classList.add('ant-tooltip-open')
+
+                        hoverTH.value.style.top = top + 'px'
+                        hoverTH.value.style.left = left + 'px'
+
                         console.log(hoverTH.value)
                     }
+
                     thead.onmouseout = function (e) {
                         let svg = e.target.closest('svg')
                         if (!svg) return
                         if (!thead.contains(svg)) return
-                        hoverTH.value = svg
-                        hoverTH.value.classList.remove('ant-tooltip-open')
+
+                        hoverTH.value.remove()
+                        hoverTH.value = null
                     }
                 }
             })
@@ -340,5 +365,9 @@
 
     .hover-state {
         @apply bg-primary-light cursor-pointer !important;
+    }
+
+    .tooltip {
+        @apply bg-black text-white px-6 py-3 rounded opacity-80 fixed z-50 !important;
     }
 </style>

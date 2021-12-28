@@ -318,8 +318,16 @@ import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
 import CollectionBody from '~/assets/images/insights/collection/body.svg'
 import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
+import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
+import EnumType from '~/assets/images/dataType/enum.svg'
+import Float from '~/assets/images/dataType/float.svg'
+import Array from '~/assets/images/dataType/array.svg'
 
 export default {
+    Array,
+    Float,
+    EnumType,
+    EmptyCM,
     PolicyAlt,
     FlashColor,
     BuilderGroup,

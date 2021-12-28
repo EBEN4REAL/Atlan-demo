@@ -32,6 +32,7 @@
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         v-model:selectedFilter="subpanel.filter"
+                        @change="() => handleFilterChange(subpanel)"
                     />
 
                     <Input
@@ -383,9 +384,32 @@
                 )
             }
 
+            const handleFilterChange = (subpanel) => {
+                /* If user moves from 1 field to 2 */
+                if (totalFiledsMapWithInput[subpanel?.filter?.type] > 1) {
+                    /* Check if 2nd field is there, if there then don't create otherwise create it */
+
+                    /* Check if variable already exists */
+                    /* If fileds are more than one, then it will have inputFiledValue 2 */
+                    const Varindex2 =
+                        activeInlineTab.value.playground.editor.variables.findIndex(
+                            (variable) =>
+                                variable?.subpanelId === `${subpanel.id}${2}`
+                        )
+                    if (Varindex2 < 0) {
+                        addVariableFromVQB(activeInlineTab, tabs, {
+                            vqbPanelId: `${subpanel.id}${2}`,
+                            subpanelId: `${subpanel.id}${2}`,
+                            type: subpanel?.column?.type.toLowerCase(),
+                        })
+                    }
+                }
+            }
+
             let hoverItem = ref(null)
 
             return {
+                handleFilterChange,
                 totalFiledsMapWithInput,
                 getCustomVariable,
                 getCustomVariableText,

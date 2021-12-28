@@ -1,3 +1,4 @@
+import { format } from 'sql-formatter'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import squel from 'squel'
 import { useUtils } from './useUtils'
@@ -138,16 +139,59 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value?.length > 0) {
-                            const firstVal = getValueStringFromType(
+                        if (subpanel.filter?.isVariable) {
+                            const variable1 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId === subpanel.id
+                                )
+                            // inputNumField
+                            const variable2 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId ===
+                                        `${subpanel.id}2`
+                                )
+
+                            let firstVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[0] ?? ''
+                                variable1?.value ?? ''
                             )
-                            const secondVal = getValueStringFromType(
+                            let secondVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[1] ?? ''
+                                variable2?.value ?? ''
                             )
+                            debugger
+                            /* Check if the type is date */
+                            if (
+                                subpanel?.column?.type?.toLowerCase() === 'date'
+                            ) {
+                                firstVal = getValueStringFromType(
+                                    subpanel,
+                                    variable1?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                                secondVal = getValueStringFromType(
+                                    subpanel,
+                                    variable2?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                            }
                             res += `${firstVal} AND ${secondVal}`
+                        } else {
+                            if (subpanel?.filter?.value?.length > 0) {
+                                const firstVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[0] ?? ''
+                                )
+                                const secondVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[1] ?? ''
+                                )
+                                res += `${firstVal} AND ${secondVal}`
+                            }
                         }
                     }
                     break
@@ -160,11 +204,22 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                                     variable?.subpanelId === subpanel.id
                             )
 
-                        res += `
-                        ${getValueStringFromType(
-                            subpanel,
-                            variable?.value ?? ''
-                        )}`
+                        /* Check if the type is date */
+                        if (subpanel?.column?.type?.toLowerCase() === 'date') {
+                            res += `
+                                ${getValueStringFromType(
+                                    subpanel,
+                                    variable?.value.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )}`
+                        } else {
+                            res += `
+                                  ${getValueStringFromType(
+                                      subpanel,
+                                      variable?.value ?? ''
+                                  )}`
+                        }
                     } else {
                         res += `${getValueStringFromType(
                             subpanel,

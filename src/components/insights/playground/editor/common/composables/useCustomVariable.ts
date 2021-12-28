@@ -432,7 +432,6 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                 text: `{{variable${len}}}`,
             })
         }
-
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
 

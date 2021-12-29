@@ -4,6 +4,7 @@
 import { assetInterface } from '~/types/assets/asset.interface'
 
 import { useAuthStore } from '~/store/auth'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -11,6 +12,7 @@ import { useAuthStore } from '~/store/auth'
 
 export default function useAssetEvaluate() {
     const authStore = useAuthStore()
+    const { isGTC } = useAssetInfo()
 
     const getEvaluations = (asset: assetInterface) => {
         return authStore.evaluations.filter((i) => i.entityGuid === asset.guid)
@@ -23,21 +25,36 @@ export default function useAssetEvaluate() {
     }
 
     const getAssetEvaluationsBody = (asset: assetInterface) => {
+        if (isGTC(asset)) {
+            return [
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_UPDATE',
+                },
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_UPDATE_BUSINESS_METADATA',
+                    businessMetadata: '*',
+                },
+            ]
+        }
         return [
             {
-                typeName: asset.typeName,
-                entityGuid: asset.guid,
+                typeName: asset?.typeName,
+                entityGuid: asset?.guid,
                 action: 'ENTITY_UPDATE',
             },
             {
-                typeName: asset.typeName,
-                entityGuid: asset.guid,
+                typeName: asset?.typeName,
+                entityGuid: asset?.guid,
                 action: 'ENTITY_ADD_CLASSIFICATION',
                 classification: '*',
             },
             {
-                typeName: asset.typeName,
-                entityGuid: asset.guid,
+                typeName: asset?.typeName,
+                entityGuid: asset?.guid,
                 action: 'ENTITY_REMOVE_CLASSIFICATION',
                 classification: '*',
             },
@@ -46,20 +63,20 @@ export default function useAssetEvaluate() {
                 relationShipTypeName: 'AtlasGlossarySemanticAssignment',
                 entityIdEnd1: '*',
                 entityTypeEnd1: 'AtlasGlossaryTerm',
-                entityGuidEnd2: asset.guid,
-                entityTypeEnd2: asset.typeName,
+                entityGuidEnd2: asset?.guid,
+                entityTypeEnd2: asset?.typeName,
             },
             {
                 action: 'RELATIONSHIP_REMOVE',
                 relationShipTypeName: 'AtlasGlossarySemanticAssignment',
                 entityIdEnd1: '*',
                 entityTypeEnd1: 'AtlasGlossaryTerm',
-                entityGuidEnd2: asset.guid,
-                entityTypeEnd2: asset.typeName,
+                entityGuidEnd2: asset?.guid,
+                entityTypeEnd2: asset?.typeName,
             },
             {
-                typeName: asset.typeName,
-                entityGuid: asset.guid,
+                typeName: asset?.typeName,
+                entityGuid: asset?.guid,
                 action: 'ENTITY_UPDATE_BUSINESS_METADATA',
                 businessMetadata: '*',
             },

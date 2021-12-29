@@ -346,7 +346,7 @@
                         refresh()
                     }
                 },
-                { debounce: 100 }
+                { debounce: 100, immediate: true }
             )
 
             provide('switchTab', (asset, tabName: string) => {

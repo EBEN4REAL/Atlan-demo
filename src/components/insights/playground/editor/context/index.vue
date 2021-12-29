@@ -31,7 +31,7 @@
                     />
                 </div>
             </a-tooltip> -->
-            <div class="flex items-center w-64">
+            <div class="flex items-center" style="max-width: 16rem">
                 <div class="mt-1">
                     <AtlanIcon
                         :icon="

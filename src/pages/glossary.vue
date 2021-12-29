@@ -120,6 +120,9 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
+                glossaryStore.setActiveGlossaryQualifiedName(
+                    asset?.attributes?.qualifiedName
+                )
             }
 
             watch(selectedGlossary, () => {
@@ -133,7 +136,7 @@
             }
             const handleAddGlossary = (asset) => {
                 glossaryStore.addGlossary(asset)
-                glossaryStore.setSelectedGTC(asset?.attributes?.qualifiedName)
+                glossaryStore.setSelectedGTC(asset)
                 router.push(
                     `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
                 )
@@ -149,14 +152,20 @@
 
             // re-route on no id present in params
             const reRoute = () => {
-                if (selectedGlossaryQf.value?.length) {
+                if (
+                    selectedGlossaryQf.value?.length &&
+                    getGlossaryByQF(selectedGlossaryQf.value)
+                ) {
                     updateList(getGlossaryByQF(selectedGlossaryQf.value))
                     router.push(
                         `/glossary/${
                             getGlossaryByQF(selectedGlossaryQf.value)?.guid
                         }/overview`
                     )
-                } else if (getFirstGlossaryQF()) {
+                } else if (
+                    getFirstGlossaryQF() &&
+                    getGlossaryByQF(getFirstGlossaryQF())
+                ) {
                     updateList(getGlossaryByQF(getFirstGlossaryQF()))
                     router.replace(
                         `/glossary/${

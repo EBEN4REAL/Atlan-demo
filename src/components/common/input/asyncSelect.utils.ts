@@ -32,10 +32,10 @@ export const getStringFromPath = (
                     const isArr = arrayReg.test(pp)
                     if (isArr) {
                         const index = parseInt(
-                            pp.match('/(?:\[).+?(?=\])/')[0],
+                            pp.match(/\[\s*(\d+)\s*\]/)[1],
                             10
                         )
-                        word = (word as object)[pp.split('[')[0]][index]
+                        word = (word as object)[pp.split('[')[1]][index]
                     } else word = (word as object)[pp]
                 })
                 if (typeof word === 'undefined') missingValues = true
@@ -49,7 +49,7 @@ export const getStringFromPath = (
                 if (!p) return
                 const isArr = arrayReg.test(p)
                 if (isArr) {
-                    const index = parseInt(p.match('/(?:\[).+?(?=\])/')[0], 10)
+                    const index = parseInt(p.match(/\[\s*(\d+)\s*\]/)[1], 10)
                     label = (label as string)[p.split('[')[0]][index]
                 } else label = (label as string)[p]
                 if (typeof label === 'undefined') missingValues = true

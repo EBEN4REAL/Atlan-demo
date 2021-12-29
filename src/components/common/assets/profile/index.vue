@@ -25,7 +25,7 @@
                     :key="tab.id"
                     :selected-asset="asset"
                     :read-permission="isScrubbed(asset)"
-                    :edit-permission="selectedAssetUpdatePermission(asset)"
+                    :readmeEditPermission="readmeEditPermission"
                     @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
@@ -102,6 +102,7 @@
                 getProfileTabs,
                 isScrubbed,
                 selectedAssetUpdatePermission,
+                createPermission,
             } = useAssetInfo()
 
             const activeKey = ref()
@@ -116,12 +117,21 @@
                 activeKey.value = route?.params?.tab
             })
 
+            const readmeEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        asset.value,
+                        'RELATIONSHIP_ADD',
+                        'Readme'
+                    ) && createPermission('Readme')
+            )
+
             return {
                 getProfileTabs,
                 activeKey,
                 handleChangeTab,
                 isScrubbed,
-                selectedAssetUpdatePermission,
+                readmeEditPermission,
             }
         },
     })

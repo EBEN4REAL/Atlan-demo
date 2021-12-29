@@ -663,6 +663,12 @@ export default function useAssetInfo() {
         )?.allowed
     }
 
+    const createPermission = (typeName, action = 'ENTITY_CREATE') => {
+        return authStore?.evaluations.find(
+            (ev) => ev?.typeName === typeName && ev?.action === action
+        )?.allowed
+    }
+
     const isGTCByType = (typeName) => {
         if (
             [
@@ -1031,5 +1037,6 @@ export default function useAssetInfo() {
         allowQuery,
         allowQueryPreview,
         queries,
+        createPermission,
     }
 }

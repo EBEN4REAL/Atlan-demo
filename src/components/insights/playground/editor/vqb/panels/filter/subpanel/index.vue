@@ -132,7 +132,7 @@
                     <!--  -->
                     <div class="flex items-center ml-3 text-gray-500">
                         <AtlanIcon
-                            @click.stop="() => handleDelete(index)"
+                            @click.stop="() => handleDelete(index, subpanel)"
                             icon="Close"
                             class="w-6 h-6 mr-3 text-gray-500 opacity-0 mt-0.5 cursor-pointer group-hover:opacity-100"
                         />
@@ -267,6 +267,7 @@
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
             const {
+                deleteVariable,
                 changeVariableTypeFromVQB,
                 addVariableFromVQB,
                 getCustomVaribleByVQBFilterSubpanelId,
@@ -346,8 +347,36 @@
 
                 // console.log('subpanels: ', copySubPanels)
             }
-            const handleDelete = (index) => {
+            const handleDelete = (index, subpanel) => {
                 subpanels.value.splice(index, 1)
+                /* FIXME: This needed an improvment when variable is used more than one place
+                right now it assuems that it present in only one place */
+                const subpanelIds = [subpanel.id]
+                let variables: any = []
+                activeInlineTab.value.playground.editor.variables.map(
+                    (_variable) => {
+                        subpanelIds.forEach((subpanelId) => {
+                            if (_variable?.subpanelId?.includes(subpanelId)) {
+                                variables.push(_variable)
+                            }
+                        })
+                    }
+                )
+                try {
+                    const forceDelete = true
+                    // delete all the custom variables
+                    variables.forEach((variable) => {
+                        if (variable !== undefined)
+                            deleteVariable(
+                                activeInlineTab,
+                                tabs,
+                                variable,
+                                forceDelete
+                            )
+                    })
+                } catch (e) {
+                    console.error('Failed to delete custom variable')
+                }
             }
             const toggleVariableType = (currVal, index, subpanel) => {
                 /* Check if variable already exists */
@@ -446,6 +475,33 @@
                             subpanelId: `${subpanel.id}${2}`,
                             type: subpanel?.column?.type.toLowerCase(),
                         })
+                    }
+                }
+
+                /* FIXME: Delete only if there are no instance used in other subpanels */
+                /* If user moves from 2 field to 1 then kill the 2nd variable */
+                if (
+                    totalFiledsMapWithInput[subpanel?.filter?.type] < 2 &&
+                    subpanel?.filter?.isVariable
+                ) {
+                    /* Check if 2nd field is there*/
+                    const Varindex2 =
+                        activeInlineTab.value.playground.editor.variables.findIndex(
+                            (variable) =>
+                                variable?.subpanelId === `${subpanel.id}${2}`
+                        )
+                    if (Varindex2 > -1) {
+                        let forceDelete = true
+                        const variable = {
+                            ...activeInlineTab.value.playground.editor
+                                .variables[Varindex2],
+                        }
+                        deleteVariable(
+                            activeInlineTab,
+                            tabs,
+                            variable,
+                            forceDelete
+                        )
                     }
                 }
             }

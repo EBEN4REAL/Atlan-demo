@@ -128,58 +128,18 @@
                             <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
-                            <a-popover
-                                placement="leftTop"
-                                trigger="click"
-                                :destroy-tooltip-on-hide="true"
-                                :visible="confirmDeletePopover"
-                                :overlayStyle="{ width: '400px' }"
+                            <AtlanBtn
+                                @click.stop="() => handleDelete(index)"
+                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
                             >
-                                <template #content>
-                                    <div class="p-4">
-                                        <h3 v-html="getPopoverContent()"></h3>
-                                        <div
-                                            class="flex items-center justify-between mt-3 gap-x-3"
-                                        >
-                                            <div class="flex-grow"></div>
-                                            <AtlanBtn
-                                                color="minimal"
-                                                size="sm"
-                                                padding="compact"
-                                                @click.stop="
-                                                    confirmDeletePopover = false
-                                                "
-                                                >Cancel
-                                            </AtlanBtn>
-                                            <AtlanBtn
-                                                :color="'danger'"
-                                                size="sm"
-                                                padding="compact"
-                                                @click.stop="
-                                                    () => handleDelete(index)
-                                                "
-                                            >
-                                                Delete
-                                            </AtlanBtn>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <AtlanBtn
-                                    @click.stop="
-                                        () => toggleConfirmPopover(index)
-                                    "
-                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                    size="sm"
-                                    color="secondary"
-                                    padding="compact"
-                                >
-                                    <AtlanIcon
-                                        icon="Delete"
-                                        class="-mx-1"
-                                    ></AtlanIcon>
-                                </AtlanBtn>
-                            </a-popover>
+                                <AtlanIcon
+                                    icon="Delete"
+                                    class="-mx-1"
+                                ></AtlanIcon>
+                            </AtlanBtn>
                         </div>
                     </div>
                 </div>

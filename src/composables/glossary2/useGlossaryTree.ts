@@ -468,6 +468,7 @@ const useGlossaryTree = ({
     }
 
     const { getAnchorQualifiedName } = useAssetInfo()
+
     const recursivelyAddOrDeleteNode = async (asset, guid, action) => {
         let parentStack: string[]
 
@@ -571,6 +572,7 @@ const useGlossaryTree = ({
         }
 
         treeData.value = updatedTreeData
+        console.log(treeData.value)
     }
     const deleteNode = (asset, guid) => {
         if (guid === 'root') {
@@ -769,14 +771,19 @@ const useGlossaryTree = ({
                 !newCategories?.find((newCat) => newCat.guid === category.guid)
         )
 
-        if (addedCategories?.length)
+        if (addedCategories?.length) {
             addedCategories.forEach((cat) => {
-                // addNode(asset, cat)
-                reOrderNodes(asset, undefined, cat.guid)
+                setTimeout(() => {
+                    addNode(asset, cat)
+                }, 0)
+                // reOrderNodes(asset, undefined, cat.guid)
             })
-        // removedCategories.forEach((cat) => {
-        //     deleteNode(asset, cat?.guid)
-        // })
+        }
+        removedCategories.forEach((cat) => {
+            setTimeout(() => {
+                deleteNode(asset, cat?.guid)
+            }, 0)
+        })
     }
 
     const updateNode = (asset) => {

@@ -21,6 +21,7 @@
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
             <AssetPreview
+                v-if="visible"
                 :selected-asset="data"
                 :is-drawer="true"
                 @closeDrawer="$emit('closeDrawer')"

@@ -28,7 +28,15 @@
                         ></div>
                     </template>
                     <div>
-                        <ActivityType :data="getAuditEventComponent(log)" />
+                        <ActivityType
+                            :data="getAuditEventComponent(log)"
+                            v-if="getAuditEventComponent(log)"
+                        />
+                        <template v-else>
+                            <div class="">
+                                {{ log.action }}
+                            </div>
+                        </template>
 
                         <!-- <template
                             v-if="getDetailsForEntityAuditEvent(log)?.component"
@@ -36,12 +44,7 @@
                             <ActivityType
                                 :data="getDetailsForEntityAuditEvent(log)"
                             />
-                        </template>
-                        <template v-else>
-                            <div class="mb-3">
-                                {{ getEventByAction(log)?.label || 'Event' }}
-                            </div>
-                        </template> -->
+                        </template>-->
                     </div>
                     <div class="flex items-center mt-1 text-gray-500">
                         <div class="flex items-center">
@@ -158,7 +161,7 @@
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
             const dependentKey = ref('audit')
             const facets = ref({
-                'entityId.keyword': item.value.guid,
+                entityId: item.value.guid,
             })
             const preference = ref({
                 sort: 'created-desc',
@@ -173,6 +176,7 @@
                 isLoading,
                 isLoadMore,
                 totalCount,
+                quickChange,
             } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: true,
@@ -198,10 +202,12 @@
             }
 
             const handleLoadMore = () => {
+                console.log('load more')
                 if (isLoadMore.value) {
                     offset.value += limit.value
                 }
-                fetch()
+                console.log('load more')
+                quickChange()
             }
 
             const fetchMore = () => {
@@ -215,6 +221,11 @@
                 () => item.value.guid,
                 (newValue) => {
                     fetchMoreAuditParams.startKey = ''
+
+                    facets.value = {
+                        entityId: item.value.guid,
+                    }
+
                     fetchAudits(params, newValue)
                 }
             )
@@ -242,6 +253,7 @@
                 handleLoadMore,
                 isLoadMore,
                 totalCount,
+                quickChange,
             }
         },
     })

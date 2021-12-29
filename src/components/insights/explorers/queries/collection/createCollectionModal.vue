@@ -35,21 +35,22 @@
                 >
                     <template #prefix>
                         <div
-                            class="relative flex w-4 h-4 mr-1 hover:bg-gray-200"
+                            class="relative flex w-6 h-6 mr-1 -ml-2 duration-200 ease-in-out rounded-sm cursor-pointer hover:bg-gray-light"
                         >
                             <div
+                                class="flex items-center ml-0.5"
                                 @click="toggleEmojiPicker"
-                                class="flex items-center"
                             >
                                 <span
                                     v-if="selectedEmoji"
-                                    class="mt-1 cursor-pointer"
+                                    class="w-4 h-4 -mt-2"
+                                    style="font-size: 18px; margin-left: 0.5px"
                                 >
                                     {{ selectedEmoji }}
                                 </span>
                                 <AtlanIcon
                                     v-else
-                                    class="w-4 h-4 cursor-pointer"
+                                    class="w-4 h-4 ml-0.5"
                                     :icon="'NoAvatar'"
                                 ></AtlanIcon>
                             </div>

@@ -35,6 +35,9 @@
             Announcement: defineAsyncComponent(
                 () => import('./types/announcement/index.vue')
             ),
+            Create: defineAsyncComponent(
+                () => import('./types/create/index.vue')
+            ),
         },
         props: {
             data: {

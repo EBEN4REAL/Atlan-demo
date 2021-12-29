@@ -28,7 +28,6 @@
                         ></div>
                     </template>
                     <div>
-                        {{ log.action }}
                         <ActivityType
                             :data="getAuditEventComponent(log)"
                             v-if="getAuditEventComponent(log)"

@@ -95,7 +95,7 @@
             <div v-if="readOnly" class="">
                 <span
                     v-if="[...applicableList].filter((i) => hasValue(i)).length"
-                    class="text-gray-500 border-b border-gray-300 border-dashed cursor-pointer hover:border-gray-400"
+                    class="text-gray-500 border-b border-gray-300 border-dashed cursor-pointer hover:text-primary hover:border-primary"
                     @click="showMore = !showMore"
                 >
                     <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
@@ -103,7 +103,7 @@
                         showMore
                             ? 'Hide empty properties'
                             : `Show ${
-                                  [...applicableList].filter((i) => hasValue(i))
+                                  applicableList.filter((i) => !hasValue(i))
                                       .length
                               } empty properties`
                     }}

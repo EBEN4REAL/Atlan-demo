@@ -79,14 +79,6 @@
             PermissionType,
         },
         props: {
-            // user: {
-            //     type: String,
-            //     required: true,
-            // },
-            // permission: {
-            //     type: String,
-            //     required: true,
-            // },
             userData: {
                 type: Object,
                 required: true,
@@ -139,18 +131,6 @@
 
             const handleChange = (type, item) => {
                 if (type !== 'remove' && item['permission'] !== type) {
-                    // dataArray.value.forEach((el) => {
-                    //     if (el['user'] === item['user']) {
-                    //         el['permission'] = type
-                    //     }
-                    // })
-                    // console.log('change permission: ', item['permission'])
-                    console.log('change: ', localValue.value)
-
-                    // localValue.value[item['permission']][item['type']]
-
-                    // console.log('')
-
                     const index = localValue.value[item['permission']][
                         item['type']
                     ].indexOf(item['user'])

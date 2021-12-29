@@ -115,12 +115,21 @@ export default function useProject() {
             console.log('no semi colon')
             if (showVQB.value) {
                 queryText = selectedText
-                activeInlineTab.value.playground.editor.text = queryText
+                activeInlineTab.value.playground.editor.text = getParsedQuery(
+                    activeInlineTab.value.playground.editor.variables,
+                    queryText
+                )
             } else {
                 if (selectedText && selectedText !== '') {
-                    queryText = selectedText
+                    queryText = getParsedQuery(
+                        activeInlineTab.value.playground.editor.variables,
+                        selectedText
+                    )
                 } else {
-                    queryText = activeInlineTab.value.playground.editor.text
+                    queryText = getParsedQuery(
+                        activeInlineTab.value.playground.editor.variables,
+                        activeInlineTab.value.playground.editor.text
+                    )
                 }
             }
         } else if (selectedText && selectedText !== '') {

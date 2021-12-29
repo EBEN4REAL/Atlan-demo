@@ -1,9 +1,9 @@
 <template>
-    <div class="flex items-center justify-between w-full px-3 mt-2">
+    <div class="flex flex-wrap items-center justify-between w-full px-3 mt-2">
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <a-tooltip
+            <!-- <a-tooltip
                 color="#363636"
                 class="flex items-center h-6 border-none"
                 v-if="activeInlineTab?.description?.length"
@@ -23,12 +23,15 @@
                             class="w-4 h-4 my-auto mr-1 -mt-0.5"
                         ></AtlanIcon>
                     </div>
-                    <span class="mt-1 mr-1 text-base text-gray-700">{{
-                        activeInlineTab.label
-                    }}</span>
+ 
+
+                    <Tooltip
+                        :tooltip-text="`${activeInlineTab.label}`"
+                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                    />
                 </div>
-            </a-tooltip>
-            <div class="flex items-center" v-else>
+            </a-tooltip> -->
+            <div class="flex items-center" style="max-width: 16rem">
                 <div class="mt-1">
                     <AtlanIcon
                         :icon="
@@ -40,9 +43,16 @@
                         class="w-4 h-4 my-auto mr-1 -mt-0.5"
                     ></AtlanIcon>
                 </div>
-                <span class="mt-1 mr-1 text-base text-gray-700">{{
-                    activeInlineTab.label
-                }}</span>
+                <!-- <span
+                    class="mt-1 mr-1 text-base text-gray-700 truncate overflow-ellipsis"
+                    >{{ activeInlineTab.label }}</span
+                > -->
+
+                <Tooltip
+                    :tooltip-text="`${activeInlineTab.label}`"
+                    :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                    tooltipColor="#363636"
+                />
             </div>
 
             <span
@@ -183,74 +193,96 @@
                             :src="connectorAsset?.image"
                             class="w-4 h-4 mx-1 connector_icon"
                         />
-                        <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-
-                        <div v-if="connectionName">
-                            <div
-                                class="flex items-center"
-                                v-if="
-                                    activeInlineTab?.explorer?.schema
-                                        ?.connectors?.attributeValue !==
-                                    activeInlineTab?.playground?.editor?.context
-                                        ?.attributeValue
-                                "
-                            >
-                                <div class="text-gray-700">
-                                    {{ connectionName }}
-                                </div>
-                                <div
-                                    :class="
-                                        schemaName
-                                            ? `text-gray-700`
-                                            : `text-gray-500`
-                                    "
-                                    class="text-base font-bold"
-                                >
-                                    .
-                                </div>
-                            </div>
-                        </div>
-
-                        <span v-else class="text-gray-500"
-                            >Select Connector</span
-                        >
-                    </div>
-                    <div class="flex items-center" v-if="connectionName">
-                        <!-- <div class="mx-1">/</div> -->
-                        <!-- <AtlanIcon
-                            class="w-4 h-4 mr-1 -mt-0.5"
-                            icon="DatabaseGrayscale"
-                        /> -->
-                        <div v-if="databaseName" class="text-gray-700">
-                            {{ databaseName }}
-                        </div>
-                        <div
-                            v-if="databaseName"
-                            :class="
-                                schemaName ? `text-gray-700` : `text-gray-500`
-                            "
-                            class="text-base font-bold"
-                        >
-                            .
-                        </div>
-                        <span v-else class="text-gray-500"
-                            >Select database</span
-                        >
-                        <!-- <div class="mx-1">/</div> -->
                     </div>
                     <div
                         class="flex items-center"
-                        v-if="connectionName && databaseName"
+                        v-if="!activeInlineTab?.assetSidebar?.isVisible"
                     >
-                        <!-- <AtlanIcon
+                        <div class="flex items-center">
+                            <!-- <AtlanIcon
+                            icon="Lock"
+                            class="w-4 h-4 mr-1"
+                            v-if="readOnly"
+                        />
+                        <img
+                            v-if="connectionName"
+                            :src="connectorAsset?.image"
+                            class="w-4 h-4 mx-1 connector_icon"
+                        /> -->
+                            <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
+
+                            <div v-if="connectionName">
+                                <div
+                                    class="flex items-center"
+                                    v-if="
+                                        activeInlineTab?.explorer?.schema
+                                            ?.connectors?.attributeValue !==
+                                        activeInlineTab?.playground?.editor
+                                            ?.context?.attributeValue
+                                    "
+                                >
+                                    <div class="text-gray-700">
+                                        {{ connectionName }}
+                                    </div>
+                                    <div
+                                        :class="
+                                            schemaName
+                                                ? `text-gray-700`
+                                                : `text-gray-500`
+                                        "
+                                        class="text-base font-bold"
+                                    >
+                                        .
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span v-else class="text-gray-500"
+                                >Select Connector</span
+                            >
+                        </div>
+                        <div class="flex items-center" v-if="connectionName">
+                            <!-- <div class="mx-1">/</div> -->
+                            <!-- <AtlanIcon
+                            class="w-4 h-4 mr-1 -mt-0.5"
+                            icon="DatabaseGrayscale"
+                        /> -->
+                            <div v-if="databaseName" class="text-gray-700">
+                                {{ databaseName }}
+                            </div>
+                            <div
+                                v-if="databaseName"
+                                :class="
+                                    schemaName
+                                        ? `text-gray-700`
+                                        : `text-gray-500`
+                                "
+                                class="text-base font-bold"
+                            >
+                                .
+                            </div>
+                            <span v-else class="text-gray-500"
+                                >Select database</span
+                            >
+                            <!-- <div class="mx-1">/</div> -->
+                        </div>
+                        <div
+                            class="flex items-center"
+                            v-if="connectionName && databaseName"
+                        >
+                            <!-- <AtlanIcon
                             class="w-4 h-4 mr-1 -mt-0.5"
                             icon="SchemaGrayscale"
                         /> -->
-                        <span v-if="schemaName" class="text-gray-700">{{
-                            schemaName
-                        }}</span>
-                        <span v-else class="text-gray-500">select schema</span>
+                            <span v-if="schemaName" class="text-gray-700">{{
+                                schemaName
+                            }}</span>
+                            <span v-else class="text-gray-500"
+                                >select schema</span
+                            >
+                        </div>
                     </div>
+
                     <div class="flex items-center">
                         <AtlanIcon
                             class="w-4 h-4 ml-1 -mt-0.5"
@@ -259,9 +291,10 @@
                     </div>
                 </div>
             </a-popover>
+
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
-                    <div class="flex">
+                    <div class="flex mr-1">
                         <a-tooltip
                             placement="bottom"
                             color="#363636"
@@ -370,6 +403,7 @@
     import { storeToRefs } from 'pinia'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
@@ -382,6 +416,7 @@
             AtlanBtn,
             ThreeDotMenu,
             AtlanIcon,
+            Tooltip,
         },
         props: {
             isUpdating: {

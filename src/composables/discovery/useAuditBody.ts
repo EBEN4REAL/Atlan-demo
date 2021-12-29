@@ -72,6 +72,20 @@ export function useAuditBody(
                 }
                 break
             }
+            case 'entityQualifiedName': {
+                if (filterObject) {
+                    base.filter('bool', (q) => {
+                        q.orFilter(
+                            'wildcard',
+                            'entityQualifiedName',
+                            `${filterObject}/*`
+                        )
+                        q.orFilter('term', 'entityQualifiedName', filterObject)
+                        return q
+                    })
+                }
+                break
+            }
         }
     })
 

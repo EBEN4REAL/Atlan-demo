@@ -55,11 +55,11 @@
                     {{ list.length }} of {{ total }} groups
                 </p> -->
                 <template v-if="list?.length < filterTotal">
-                    <div class="flex justify-center" v-if="isLoading">
+                    <div class="flex justify-center ml-auto" v-if="isLoading">
                         <a-spin size="small"></a-spin>
                     </div>
                     <div
-                        class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                     >
                         load more...

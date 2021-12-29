@@ -483,15 +483,6 @@
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
                         >Open command palette</a-menu-item
                     >
-                    <a-menu-item
-                        @click="toggleVQB"
-                        v-if="vqbQueryRoute"
-                        class="px-4 py-2"
-                    >
-                        <span v-if="showVQB">Close </span>
-                        <span v-else>Open </span>
-                        VQB</a-menu-item
-                    >
                 </a-menu>
             </template>
         </a-dropdown>
@@ -718,26 +709,7 @@
                     undefined
                 )
             }
-            const toggleVQB = () => {
-                // showVQB.value = !showVQB.value
-                // activeInlineTab.value.playground.isVQB =
-                //     !activeInlineTab?.value?.playground?.isVQB
 
-                // console.log('show vqb: ', showVQB.value)
-                console.log('route: ', route.query?.vqb)
-                console.log('route: ', vqbQueryRoute.value)
-                // console.log('route: ', vqbRoute.value)
-
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-
-                activeInlineTabCopy.playground.isVQB =
-                    !activeInlineTabCopy?.playground?.isVQB
-
-                setVQBInInlineTab(activeInlineTabCopy, tabsArray, true)
-
-                // emit('toggleVQB', showVQB.value)
-            }
             const copyURL = () => {
                 const URL = window.location.href
                 copyToClipboard(URL)
@@ -749,7 +721,6 @@
             return {
                 vqbQueryRoute,
                 showVQB,
-                toggleVQB,
                 getThemeLabelFromName,
                 openCommandPallete,
                 activeInlineTab,

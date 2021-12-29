@@ -144,8 +144,6 @@ export function useBody(
 
                             return q
                         })
-                    } else {
-                        base.filter('terms', 'certificateStatus', filterObject)
                     }
                 }
 

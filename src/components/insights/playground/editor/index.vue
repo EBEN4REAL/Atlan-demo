@@ -240,15 +240,22 @@
                                             ? 0.1
                                             : 0.5
                                     "
+                                    placement="topRight"
                                 >
                                     <template #title
                                         >Toggle output pane ( ctrl + j
                                         )</template
                                     >
-                                    <AtlanIcon
-                                        icon="OutputpaneTrigger"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
+
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="OutputpaneTrigger"
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
                             <div
@@ -257,6 +264,7 @@
                                 @mouseout="recordTooltipPresence"
                             >
                                 <a-tooltip
+                                    placement="topRight"
                                     color="#363636"
                                     :mouseEnterDelay="
                                         lastTooltipPresence !== undefined
@@ -267,10 +275,15 @@
                                     <template #title
                                         >Toggle asset preview</template
                                     >
-                                    <AtlanIcon
-                                        icon="SidebarTrigger"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="SidebarTrigger"
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
                         </div>

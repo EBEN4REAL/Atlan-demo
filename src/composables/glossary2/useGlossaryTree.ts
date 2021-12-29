@@ -635,6 +635,124 @@ const useGlossaryTree = ({
     const collapseAll = () => {
         expandedKeys.value = []
     }
+    const reOrderNodes = (
+        nodeToReorder,
+        fromGuid?: string,
+        toGuid?: string
+    ) => {
+        let parentStack: string[]
+        const nodeGuid = nodeToReorder?.guid
+        let from_guid = fromGuid
+        if (!from_guid && nodeToParentKeyMap[nodeGuid]) {
+            from_guid = nodeToParentKeyMap[nodeGuid][0]
+        }
+
+        const removeNode = (node: TreeDataItem): TreeDataItem => {
+            const currentPath = parentStack.pop()
+            if (node.guid === from_guid && !currentPath) {
+                if (fromGuid)
+                    return {
+                        ...node,
+                        children: node.children?.filter(
+                            (childNode) => childNode.guid !== nodeGuid
+                        ),
+                    }
+                return node
+            }
+            return {
+                ...node,
+                children: node.children?.map((childNode: TreeDataItem) => {
+                    if (childNode.guid === currentPath) {
+                        return removeNode(childNode) ?? childNode
+                    }
+                    return childNode
+                }),
+            }
+        }
+        const pushNode = (node: TreeDataItem): TreeDataItem => {
+            console.log('pushing to node -> ', node?.displayText)
+            const currentPath = parentStack.pop()
+            const newChildren: TreeDataItem[] = []
+
+            node.children?.forEach((childNode: TreeDataItem) => {
+                if (childNode.guid === currentPath) {
+                    newChildren.push(pushNode(childNode) ?? childNode)
+                } else {
+                    newChildren.push(childNode)
+                }
+            })
+            if (node.guid === toGuid && !currentPath && nodeToReorder) {
+                console.log(
+                    'adding ',
+                    nodeToReorder?.displayText,
+                    ' to ',
+                    node?.displayText
+                )
+                nodeToReorder.id = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
+                nodeToReorder.key = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
+                nodeToReorder.isLeaf = false
+                newChildren.push(nodeToReorder)
+            }
+            console.log(newChildren)
+            if (loadedKeys.value.find((key) => node.key === key)) {
+                return {
+                    ...node,
+                    children: newChildren,
+                }
+            }
+            return node
+        }
+
+        // remove
+        if (from_guid) {
+            parentStack = recursivelyFindPath(from_guid)[0]
+            const parent = parentStack?.pop()
+
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if (node.guid === parent) return removeNode(node)
+                return node
+            })
+        }
+        console.log(toGuid, nodeToReorder)
+        // add
+        if (toGuid) {
+            if (toGuid === 'root') {
+                treeData.value.push(nodeToReorder)
+            } else {
+                parentStack = recursivelyFindPath(toGuid)[0]
+                const toParent = parentStack?.pop()
+                const updatedTreeData: TreeDataItem[] = []
+                // eslint-disable-next-line no-restricted-syntax
+                // for (const node of treeData.value) {
+                //     if (node.key === toParent || node.guid === toParent) {
+                //         const updatedNode = await pushNode(node)
+                //         updatedTreeData.push(updatedNode)
+                //     } else {
+                //         updatedTreeData.push(node)
+                //     }
+                // }
+
+                // treeData.value = updatedTreeData
+
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.guid === toParent) return pushNode(node)
+                    return node
+                })
+                console.log(treeData.value)
+            }
+        }
+
+        let currentParent = nodeToParentKeyMap[nodeGuid]
+        if (currentParent && typeof currentParent !== 'string') {
+            currentParent = currentParent.filter((guid) => guid !== fromGuid)
+            if (!currentParent.includes(toGuid)) {
+                currentParent.push(toGuid)
+            }
+        } else {
+            currentParent = [toGuid]
+        }
+        nodeToParentKeyMap[nodeGuid] = currentParent
+    }
     const handleCategoriesChange = (
         existingCategories,
         newCategories,
@@ -653,7 +771,8 @@ const useGlossaryTree = ({
 
         if (addedCategories?.length)
             addedCategories.forEach((cat) => {
-                addNode(asset, cat)
+                // addNode(asset, cat)
+                reOrderNodes(asset, undefined, cat.guid)
             })
         // removedCategories.forEach((cat) => {
         //     deleteNode(asset, cat?.guid)

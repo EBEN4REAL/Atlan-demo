@@ -648,13 +648,9 @@
             }
 
             onMounted(() => {
-                console.log('onMounted')
                 watchOnce(isLoading, (v) => {
                     if (!v && list.value?.length && page.value === 'assets') {
-                        const isNone =
-                            typeof selectedAsset.value === 'object' &&
-                            Object.keys(selectedAsset.value).length === 0
-                        if (isNone) handleClickAssetItem(list.value[0])
+                        handleClickAssetItem(list.value[0])
                     }
                 })
             })

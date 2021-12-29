@@ -57,12 +57,13 @@
             class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
         >
             <template
-                v-for="(a, x) in showMore
+                v-for="(a, x) in showMore &&
+                applicableList.filter((i) => hasValue(i)).length
                     ? readOnly
                         ? [...applicableList].sort(readOnlySort)
                         : applicableList
                     : readOnly
-                    ? [...applicableList].filter((i) => hasValue(i))
+                    ? applicableList.filter((i) => hasValue(i))
                     : applicableList"
                 :key="x"
             >

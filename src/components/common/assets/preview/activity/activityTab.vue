@@ -20,7 +20,7 @@
             <span class="ml-1">Getting activity logs</span>
         </div>
         <div v-else-if="auditList.length && !isLoading">
-            <a-timeline class="mx-5">
+            <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
                         <div

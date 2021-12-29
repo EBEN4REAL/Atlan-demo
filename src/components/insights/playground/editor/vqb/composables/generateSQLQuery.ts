@@ -46,7 +46,7 @@ function getJoinFormattedColumnName(columnQualifiedName: string) {
         return `"${spiltArray[5]}"."${spiltArray[6]}"`
     }
 }
-function getTableName(columnQualifiedName: string) {
+export function getTableName(columnQualifiedName: string) {
     const spiltArray = columnQualifiedName.split('/')
     if (spiltArray.length > 5) {
         return `"${spiltArray[5]}"`

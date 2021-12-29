@@ -41,6 +41,7 @@
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
+                        style="min-width: 24px"
                         class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0

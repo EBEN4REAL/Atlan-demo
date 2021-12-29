@@ -78,8 +78,7 @@ export default function useAssetInfo() {
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []
 
-    const assignedEntities = (asset: Term) =>
-        asset.attributes?.assignedEntities
+    const assignedEntities = (asset: Term) => asset.attributes?.assignedEntities
 
     const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
 
@@ -174,13 +173,7 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
-                    excludes: [
-                        'Query',
-                        'Folder',
-                        'AtlasGlossary',
-                        'AtlasGlossaryTerm',
-                        'AtlasGlossaryCategory',
-                    ],
+                    excludes: ['Query', 'Folder'],
                     image: i.options?.imageId,
                     emoji: i.options?.emoji,
                     name: i.label,
@@ -652,13 +645,21 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (
         asset: assetInterface,
-        action = 'ENTITY_UPDATE'
+        action = 'ENTITY_UPDATE',
+        typeName?
     ) => {
+        if (typeName) {
+            return authStore?.evaluations.find(
+                (ev) =>
+                    (ev?.entityGuidEnd1 === asset?.guid ||
+                        ev?.entityGuidEnd2 === asset?.guid) &&
+                    ev?.action === action &&
+                    (ev?.entityTypeEnd1 === typeName ||
+                        ev?.entityTypeEnd2 === typeName)
+            )?.allowed
+        }
         return authStore?.evaluations.find(
-            (ev) =>
-                (ev?.entityGuid === asset?.guid ||
-                    ev?.entityGuidEnd2 === asset?.guid) &&
-                ev?.action === action
+            (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
         )?.allowed
     }
 

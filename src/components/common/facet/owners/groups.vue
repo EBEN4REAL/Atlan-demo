@@ -55,11 +55,11 @@
                     {{ list.length }} of {{ total }} groups
                 </p> -->
                 <template v-if="list?.length < filterTotal">
-                    <div class="flex justify-center" v-if="isLoading || isEnriching">
+                    <div class="flex justify-center ml-auto" v-if="isLoading || isEnriching">
                         <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"></AtlanIcon>
                     </div>
                     <div
-                        class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                     >
                         load more...

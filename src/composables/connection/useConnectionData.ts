@@ -38,6 +38,7 @@ export default function useConnectionData() {
     return {
         getConnection,
         list: connectionStore.list,
+        sourceFilteredList: connectionStore.getFilteredSourceList,
         sourceList: connectionStore.getSourceList,
     }
 }

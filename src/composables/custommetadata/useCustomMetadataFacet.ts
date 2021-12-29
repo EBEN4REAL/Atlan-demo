@@ -16,6 +16,7 @@ export default function useCustomMetadataFacet() {
                     bm.attributeDefs.some((a) => a.options?.isFacet === 'true')
                 )
                 .map((bm) => ({
+                    description: bm.description,
                     id: bm.name,
                     label: bm.displayName,
                     component: 'properties',
@@ -69,6 +70,7 @@ export default function useCustomMetadataFacet() {
             })
             if (attributeList.length > 0) {
                 list.push({
+                    description: bm.description,
                     id: bm.name,
                     label: bm.displayName,
                     component: 'properties',

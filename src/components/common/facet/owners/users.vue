@@ -48,12 +48,6 @@
                                     class="text-sm leading-none capitalize text-gray"
                                 >
                                     {{ fullName(item) }}
-                                    <span
-                                        v-if="item.username === username"
-                                        class="text-sm text-gray-500"
-                                    >
-                                        (me)
-                                    </span>
                                 </div>
                             </div>
                         </a-checkbox>
@@ -68,11 +62,11 @@
                     {{ userList.length }} of {{ filterTotal }} users
                 </p> -->
                 <template v-if="userList?.length < filterTotal">
-                    <div class="flex justify-center" v-if="isLoading || isEnriching">
+                    <div class="flex justify-center ml-auto" v-if="isLoading || isEnriching">
                         <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"/>
                     </div>
                     <div
-                        class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                         v-else
                     >
@@ -94,6 +88,7 @@
     import { useVModels, onKeyStroke } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -146,11 +141,17 @@
                 type: String,
                 required: false,
             },
+            showLoggedInUser: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys } = useVModels(props, emit)
-            const { selectUserKey, queryText, groupId } = toRefs(props)
+            const { selectUserKey, queryText, groupId, showLoggedInUser } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
 
             const map = computed(() => {
@@ -162,10 +163,10 @@
             })
 
             const {
-                userList,
+                userList: users,
                 handleSearch,
                 total,
-                filterTotal,
+                filterTotal: totalUsers,
                 loadMore,
                 isLoading,
                 isEnriching,
@@ -179,6 +180,28 @@
                     handleSearch(queryText.value)
                 }
             )
+
+            const { username } = whoami()
+
+            // to filter out loggedIn user if needed from list based on showLoggedInUser
+            let userList = computed(() => {
+                if (showLoggedInUser.value) {
+                    return users.value
+                } else {
+                    return users.value.filter(
+                        (user) => user['username'] !== username.value
+                    )
+                }
+            })
+
+            // to decrease the total users count if loggedIn user is removed from list based on showLoggedInUser
+            let filterTotal = computed(() => {
+                if (showLoggedInUser.value) {
+                    return totalUsers.value
+                } else {
+                    return totalUsers.value - 1
+                }
+            })
 
             const disabledKeyMap = computed(() => {
                 let data = {}
@@ -248,6 +271,7 @@
                 disabledKeyMap,
                 isEnriching,
                 imageUrl,
+                username,
             }
         },
     })

@@ -28,6 +28,7 @@
                     :static-use="true"
                     :show-aggrs="true"
                     :showCheckBox="false"
+                    cacheKey="LINKED_ASSET_LIST"
                     :preference="preference"
                     :enableSidebarDrawer="true"
                     key="linked-assets"

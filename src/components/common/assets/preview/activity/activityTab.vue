@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="flex justify-between px-5 pt-4 pb-8">
+    <div class="flex flex-col h-full overflow-y-hidden">
+        <div class="flex justify-between px-5 pt-4 pb-4">
             <span class="font-semibold text-gray-500">Activity</span>
 
             <AtlanIcon
@@ -10,7 +10,7 @@
             />
         </div>
         <div
-            v-if="isLoading"
+            v-if="auditList.length === 0 && isLoading"
             class="flex items-center justify-center text-sm leading-none"
         >
             <AtlanIcon
@@ -19,7 +19,11 @@
             ></AtlanIcon>
             <span class="ml-1">Getting activity logs</span>
         </div>
-        <div v-else-if="auditList.length && !isLoading">
+
+        <div
+            v-else-if="auditList.length > 0"
+            class="flex-grow pt-3 overflow-y-auto"
+        >
             <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
@@ -99,10 +103,7 @@
                     </div>
                 </a-timeline-item>
             </a-timeline> -->
-            <div
-                v-if="!checkAuditsCount && !isAllLogsFetched"
-                class="flex justify-center mb-8 text-center"
-            >
+            <div class="flex justify-center mb-8 text-center">
                 <a-button
                     class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full bg-primary-light text-primary"
                     @click="handleLoadMore"
@@ -209,7 +210,7 @@
                 quickChange,
             } = useAssetAuditSearch({
                 guid: item.value.guid,
-                isCache: true,
+                isCache: false,
                 dependentKey,
                 queryText: '',
                 limit,
@@ -247,18 +248,18 @@
                 fetchMoreAudits(fetchMoreAuditParams)
             }
 
-            watch(
-                () => item.value.guid,
-                (newValue) => {
-                    fetchMoreAuditParams.startKey = ''
+            // watch(
+            //     () => item.value.guid,
+            //     (newValue) => {
+            //         fetchMoreAuditParams.startKey = ''
 
-                    facets.value = {
-                        entityId: item.value.guid,
-                    }
+            //         facets.value = {
+            //             entityId: item.value.guid,
+            //         }
 
-                    fetchAudits(params, newValue)
-                }
-            )
+            //         fetchAudits(params, newValue)
+            //     }
+            // )
 
             const checkAuditsCount = computed(
                 () => audits.value?.length < params.count

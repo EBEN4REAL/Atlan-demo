@@ -83,6 +83,7 @@
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
+                            :showLoggedInUser="false"
                         ></Users>
 
                         <Groups

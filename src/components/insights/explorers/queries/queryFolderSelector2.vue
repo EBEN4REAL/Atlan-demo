@@ -1,16 +1,21 @@
 <template>
     <div class="popover-container">
-        <div class="w-full h-full pb-4">
+        <div class="w-full h-full">
             <!--explorer pane start -->
-            <div class="w-full h-full pt-3 pb-4 overflow-y-hidden">
+            <div class="w-full h-full pt-3 overflow-y-hidden">
                 <div class="flex items-center justify-between px-4">
                     <span class="text-sm font-bold text-gray-700">move to</span>
-                    <AtlanIcon
-                        color="#5277D7"
-                        icon="NewFolder"
-                        class="h-4 outline-none hover:text-primary"
-                        @click="createFolderInput"
-                    />
+
+                    <a-tooltip placement="right" color="#363636">
+                        <template #title> Add folder </template>
+
+                        <AtlanIcon
+                            color="#5277D7"
+                            icon="NewFolder"
+                            class="h-4 outline-none hover:text-primary"
+                            @click="createFolderInput"
+                        />
+                    </a-tooltip>
                 </div>
                 <div
                     class="flex items-center justify-between w-full h-8 px-4 mt-2"
@@ -44,7 +49,7 @@
                     />
                 </div>
 
-                <div class="w-full h-full pb-12 overflow-y-scroll bg-white">
+                <div class="w-full h-full overflow-y-scroll bg-white">
                     <query-tree-list
                         v-if="newTreeData?.length"
                         :tree-data="newTreeData"
@@ -57,7 +62,7 @@
                         :expanded-keys="expandedKeys"
                         :selected-new-folder="selectedFolderContext"
                         :selected-folder-hide="selectedNewFolder"
-                        class="folder-list"
+                        class="pb-4 folder-list"
                     />
                     <div
                         v-else
@@ -326,7 +331,7 @@
                         )
 
                         let caret =
-                            '<span class="mt-2 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                            '<span class="mt-2 ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
 
                         const caretEl = new DOMParser().parseFromString(
                             caret,
@@ -334,7 +339,7 @@
                         ).body.firstElementChild
 
                         const folderSvg =
-                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 my-auto mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                            '<span class="w-4 h-4 mr-1 -ml-1 mb-0.5"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
 
                         const folderSvgEl = new DOMParser().parseFromString(
                             folderSvg,

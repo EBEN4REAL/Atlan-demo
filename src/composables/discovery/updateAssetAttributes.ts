@@ -353,30 +353,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         unlinkedAssets: assetInterface[]
         term: assetInterface
     }) => {
-        // [
-        //     {
-        //       "guid": "ba3dd30d-1822-48c6-a1b7-e0aa46f9c81c",
-        //       "typeName": "Table",
-        //       "attributes": {
-        //         "name": "COVID_COUNTY_LEVEL_PIVOT",
-        //         "qualifiedName": "default/snowflake/1639483386/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT",
-        //         "tenantId": "default"
-        //       },
-        //       "relationshipAttributes": {
-        //         "meanings": [
-        //           {
-        //             "typeName": "AtlasGlossaryTerm",
-        //             "guid": "6fbb73e1-5e56-47ee-9c7d-bb251470b5fa"
-        //           },
-        //           {
-        //             "typeName": "AtlasGlossaryTerm",
-        //             "guid": "310d3ca8-d2ad-44f1-b94a-4a7ada47151d"
-        //           }
-        //         ]
-        //       }
-        //     }
-        //   ]
-
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
             if(!meanings.find((meaning) => meaning.guid === term.guid)) {
@@ -417,7 +393,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
 
         whenever(isUpdateReady, () => {
-            console.log('bruh 1', assignedEntities(selectedAsset.value), asset)
             localAssignedEntities.value = assignedEntities(asset.value)
         })
     }

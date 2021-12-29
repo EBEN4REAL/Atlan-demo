@@ -22,7 +22,6 @@
                         :preference="preference"
                         :allCheckboxAreaClick="true"
                         :disableHandlePreview="true"
-                        :isCache="false"
                         class="asset-list-height"
                         key="all-assets"
                         page="glossary"

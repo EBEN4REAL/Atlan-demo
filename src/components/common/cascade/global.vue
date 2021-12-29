@@ -25,7 +25,7 @@
                             v-if="index !== selectedValue.length - 1"
                         />
 
-                        <div>
+                        <div class="capitalize">
                             {{ getPersona(selectedValue[1])?.displayName }}
                         </div>
                     </div>
@@ -44,6 +44,7 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, ref, computed } from 'vue'
     import { usePersonaStore } from '~/store/persona'
+    import { capitalizeFirstLetter } from '~/utils/string'
     interface Option {
         value: string
         label: string
@@ -87,7 +88,7 @@
                 personaStore.list.forEach((item) => {
                     persona.children.push({
                         value: item.id,
-                        label: item.displayName,
+                        label: capitalizeFirstLetter(item.displayName),
                     })
                 })
                 temp.push(persona)

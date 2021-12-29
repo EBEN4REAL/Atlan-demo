@@ -75,21 +75,24 @@ export function useBody(
                 const connectionIdList = personaStore.getConnectionList(
                     globalState[1]
                 )
-                console.log(
-                    'persona global',
-                    connectionStore.list
-                        .filter((i) => connectionIdList.includes(i.guid))
-                        .map((i) => i.attributes.qualifiedName)
-                )
+
+                const getAssetList = personaStore.getAssetList(globalState[1])
 
                 base.filter('bool', (q) => {
                     connectionStore.list
                         .filter((i) => connectionIdList.includes(i.guid))
                         .map((i) => i.attributes.qualifiedName)
                         .forEach((i) => {
-                            q.orFilter('term', 'connectionQualifiedName', i)
                             q.orFilter('term', 'qualifiedName', i)
                         })
+                    getAssetList.forEach((i) => {
+                        if (i.includes('*')) {
+                            q.orFilter('wildcard', 'qualifiedName', i)
+                        } else {
+                            q.orFilter('wildcard', 'qualifiedName', `${i}/*`)
+                            q.orFilter('term', 'qualifiedName', `${i}`)
+                        }
+                    })
 
                     return q
                 })

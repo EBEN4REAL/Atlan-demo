@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="filters">
+        <div class="pb-8 filters">
             <AssetFilters
                 :key="dirtyTimestamp"
                 v-model="facets"
@@ -133,7 +133,7 @@
 <style lang="less" scoped>
     .container {
         width: 240px;
-        min-height: 440px;
+        max-height: 440px;
         border-radius: 8px;
         background: #ffffff;
 
@@ -155,10 +155,9 @@
     .filters {
         overflow-y: scroll;
         border-radius: 8px !important;
-        height: 447px !important;
+        max-height: 447px !important;
     }
 </style>
-
 
 <!-- 
 <route lang="yaml">

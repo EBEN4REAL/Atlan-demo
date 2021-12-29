@@ -72,6 +72,16 @@ export function useAuditBody(
                 }
                 break
             }
+            case 'entityQualifiedName': {
+                if (filterObject) {
+                    base.filter(
+                        'wildcard',
+                        'entityQualifiedName',
+                        `${filterObject}*`
+                    )
+                }
+                break
+            }
         }
     })
 

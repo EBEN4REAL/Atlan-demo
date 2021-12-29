@@ -68,14 +68,13 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                <!-- {{
-                                    getSummarisedInfoOfGroupPanel(
+                                {{
+                                    getSummarisedInfoOfJoinPanel(
                                         activeInlineTab.playground.vqb.panels[
                                             index
                                         ].subpanels
                                     )
-                                }} -->
-                                summarised info
+                                }}
                             </p>
                         </div>
                     </div>
@@ -219,7 +218,7 @@
             },
         },
         setup(props, { emit }) {
-            const { getSummarisedInfoOfGroupPanel } = useUtils()
+            const { getSummarisedInfoOfJoinPanel } = useUtils()
 
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
@@ -313,7 +312,7 @@
                 handleDelete,
                 handleAddPanel,
                 findTimeLineHeight,
-                getSummarisedInfoOfGroupPanel,
+                getSummarisedInfoOfJoinPanel,
             }
         },
     })

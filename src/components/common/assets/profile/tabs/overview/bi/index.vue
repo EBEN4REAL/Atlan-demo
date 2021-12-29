@@ -3,11 +3,11 @@
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
-        <Summary :asset="selectedAsset" :editPermission="editPermission" />
+        <Summary :asset="selectedAsset" />
         <Readme
-            v-if="readmeContent(selectedAsset) || editPermission"
+            v-if="readmeContent(selectedAsset) || readmeEditPermission"
             :asset="selectedAsset"
-            :isEdit="editPermission"
+            :isEdit="readmeEditPermission"
         />
     </div>
 </template>
@@ -29,7 +29,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
+            readmeEditPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

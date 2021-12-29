@@ -29,11 +29,6 @@ export default function getUserGroups(
         asyncOptions: {
             immediate: groupListAPIParams.value.immediate,
         },
-        cacheKey: groupListAPIParams.value.userId,
-        cacheOptions: {
-            refreshInterval: 0,
-            dedupingInterval: 2000,
-        },
     })
 
     watch(data, () => {

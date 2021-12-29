@@ -8,6 +8,7 @@
                     placement="bottom"
                     :trigger="['click']"
                     :destroy-tooltip-on-hide="true"
+                    :overlay-class-name="$style.ownerPopover"
                 >
                     <template #content>
                         <div class="">
@@ -17,6 +18,7 @@
                                 :enableTabs="['groups']"
                                 :hideDisabledTabs="true"
                                 selectGroupKey="id"
+                                :user-id="selectedUser.id"
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">
@@ -38,13 +40,23 @@
                     <AtlanButton
                         size="sm"
                         padding="compact"
-                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
+                        class="text-gray-500 bg-transparent border-gray-300  hover:bg-transparent hover:text-primary hover:border-primary"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
                             <div>Add to groups</div>
                         </div></AtlanButton
                     >
+                    <!-- <AtlanButton
+                        size="sm"
+                        padding="compact"
+                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
+                            <div>Add to groups</div>
+                        </div></AtlanButton
+                    > -->
                 </a-popover>
             </div>
             <div v-else>
@@ -60,7 +72,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-auth="map.LIST_GROUPS" class="overflow-y-auto group-list">
+        <div v-auth="map.LIST_GROUPS" class="h-full">
             <div
                 v-if="totalGroupCount || isLoading"
                 class="flex flex-row justify-between"
@@ -132,7 +144,7 @@
                     />
                 </div>
             </div>
-            <div v-else class="mt-4 mb-2">
+            <div v-else class="mt-4 mb-2 overflow-y-auto group-list">
                 <div v-for="group in groupList" :key="group.id">
                     <div
                         class="flex items-center justify-between px-3 py-2 group hover:bg-gray-100"
@@ -178,16 +190,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div v-else-if="!showUserGroups" v-auth="map.LIST_GROUPS">
-            <GroupList
-                :add-to-group-loading="addToGroupLoading"
-                :show-back-button="false"
-                :show-add-button="false"
-                @updateSelectedGroups="updateSelectedGroups"
-                @showUserGroups="handleShowUserGroups"
-                @addUserToGroups="addUserToGroups"
-            />
-        </div> -->
     </div>
 </template>
 
@@ -207,7 +209,8 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import EmptyState from '@/common/empty/index.vue'
     import map from '~/constant/accessControl/map'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'UserPreviewGroups',
@@ -216,7 +219,8 @@
             GroupList,
             EmptyState,
             SearchAndFilter,
-            AtlanIcon,
+            AtlanButton,
+            OwnerFacets
         },
         props: {
             selectedUser: {
@@ -227,11 +231,12 @@
         setup(props) {
             const { selectedUser } = toRefs(props)
             const showUserGroups = ref(true)
+            const showGroupsPopover = ref(false)
             const searchText = ref('')
             const showAddToGroupModal = ref(false)
             const addToGroupLoading = ref(false)
             const removeFromGroupLoading = ref({})
-            const selectedGroupIds = ref([])
+            const selectedGroupIds = ref({ ownerGroups: [] })
             const filter = computed(() => searchText.value
                 ? {
                     $or: [
@@ -270,7 +275,7 @@
             }
             watch(selectedUser, () => {
                 getUserGroupList()
-            })
+            },{immediate:true})
             const showLoadMore = computed(() =>
                 getIsLoadMore(
                     // TODO: check if there's a better way access memberList and not use ref in a ref
@@ -283,7 +288,7 @@
                 )
             )
             const addUserToGroups = async () => {
-                const groupIds = [...selectedGroupIds.value]
+                const groupIds = [...selectedGroupIds.value.ownerGroups]
                 if (groupIds && groupIds.length) {
                     const requestPayload = ref({
                         groups: groupIds,
@@ -306,7 +311,8 @@
                                 offset.value = 0
                                 getUserGroupList()
                                 message.success('User added to groups')
-                                showUserGroups.value = true
+                                showGroupsPopover.value = false
+                                selectedGroupIds.value.ownerGroups = []
                             } else if (addError && addError.value) {
                                 message.error(
                                     'Unable to add user to groups, please try again.'
@@ -316,7 +322,7 @@
                         { immediate: true }
                     )
                 }
-                showUserGroups.value = true
+                showGroupsPopover.value = false
             }
 
             const removeUserFromGroup = (group: any) => {
@@ -405,14 +411,12 @@
             }
             const handleAddToGroup = () => {
                 // showAddToGroupModal.value = true;
-                showUserGroups.value = false
+                // showUserGroups.value = false
+                showGroupsPopover.value = true
             }
             const handleShowUserGroups = () => {
                 // showAddToGroupModal.value = false;
                 showUserGroups.value = true
-            }
-            const updateSelectedGroups = (groupList) => {
-                selectedGroupIds.value = [...groupList]
             }
 
             return {
@@ -433,10 +437,10 @@
                 removeFromGroupLoading,
                 showAddToGroupModal,
                 addUserToGroups,
-                updateSelectedGroups,
                 showUserGroups,
                 handleShowUserGroups,
                 selectedGroupIds,
+                showGroupsPopover
             }
         },
     })
@@ -446,5 +450,15 @@
     .componentHeight {
         height: calc(100vh - 12rem);
     }
+    .group-list {
+        height: calc(100vh - 14rem) !important;
+    }
 </style>
-<style lang="less"></style>
+<style lang="less" module>
+.ownerPopover {
+    :global(.ant-popover-inner-content) {
+        @apply px-0 py-3 !important;
+        width: 250px !important;
+    }
+}
+</style>

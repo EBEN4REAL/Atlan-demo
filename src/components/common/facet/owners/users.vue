@@ -13,10 +13,7 @@
             :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
             <div class="w-full px-3">
-                <div v-if="isEnriching" class="flex justify-center">
-                    <a-spin size="small"></a-spin>
-                </div>
-                <div v-else>
+                <div>
                     <template
                         v-for="item in userList"
                         :key="item[selectUserKey]"
@@ -65,8 +62,8 @@
                     {{ userList.length }} of {{ filterTotal }} users
                 </p> -->
                 <template v-if="userList?.length < filterTotal">
-                    <div class="flex justify-center ml-auto" v-if="isLoading">
-                        <a-spin size="small"></a-spin>
+                    <div class="flex justify-center ml-auto" v-if="isLoading || isEnriching">
+                        <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"/>
                     </div>
                     <div
                         class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"

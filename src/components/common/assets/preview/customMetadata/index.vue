@@ -54,7 +54,7 @@
             </div>
         </div>
         <div
-            class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
+            class="flex flex-col flex-grow pr-5 overflow-auto transition-all scrollheight"
         >
             <template
                 v-for="(a, x) in showMore &&
@@ -67,7 +67,21 @@
                     : applicableList"
                 :key="x"
             >
-                <div>
+                <div
+                    :class="{
+                        'border-b pb-6 mb-6':
+                            readOnly &&
+                            showMore &&
+                            applicableList.filter((i) => hasValue(i)).length &&
+                            hasValue(
+                                [...applicableList].sort(readOnlySort)[x]
+                            ) &&
+                            !hasValue(
+                                [...applicableList].sort(readOnlySort)[x + 1]
+                            ),
+                        'mb-5': !readOnly || (readOnly && hasValue(a)),
+                    }"
+                >
                     <div class="mb-2 font-normal text-gray-500">
                         <span class="">{{ a.displayName }}</span>
                         <a-tooltip>
@@ -82,7 +96,7 @@
                         </a-tooltip>
                     </div>
 
-                    <ReadOnly v-if="readOnly" :attribute="a" />
+                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
 
                     <EditState
                         v-else-if="!readOnly"
@@ -93,7 +107,7 @@
                     />
                 </div>
             </template>
-            <div v-if="readOnly" class="">
+            <div v-if="readOnly" :class="showMore ? 'mt-4' : ''">
                 <span
                     v-if="[...applicableList].filter((i) => hasValue(i)).length"
                     class="text-gray-500 border-b border-gray-300 border-dashed cursor-pointer hover:text-primary hover:border-primary"
@@ -436,6 +450,9 @@
             }
 
             const handleCancel = () => {
+                cancel()
+                return
+                //! disabling unsaved changes confirmation temporarily
                 if (isEdit.value) {
                     Modal.confirm({
                         title: () =>

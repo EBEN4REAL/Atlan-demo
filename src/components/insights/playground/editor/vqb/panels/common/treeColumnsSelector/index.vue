@@ -355,6 +355,8 @@
                         'certificateStatus',
                         'dataType',
                         'order',
+                        'isPrimary',
+                        'isForeign',
                     ],
                 }
             }

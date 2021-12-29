@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between w-full px-3 mt-2">
+    <div class="flex flex-wrap items-center justify-between w-full px-3 mt-2">
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">

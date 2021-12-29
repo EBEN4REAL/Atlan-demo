@@ -111,7 +111,7 @@
                     <EmptyView
                         empty-screen="EmptyDiscover"
                         :desc="
-                            staticUse
+                            staticUse && !queryText
                                 ? emptyViewText || 'No assets found'
                                 : queryText
                                 ? 'We didn\'t find anything that matches your search criteria'
@@ -302,8 +302,12 @@
             isCache: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
+            cacheKey: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -314,13 +318,15 @@
                 projection,
                 allCheckboxAreaClick,
                 disableHandlePreview,
-                isCache
+                isCache,
+                cacheKey,
             } = toRefs(props)
 
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
+            const globalState = ref([])
             const selectedAssetId = ref('')
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
@@ -328,7 +334,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const dependentKey = ref(cacheKey.value || 'DEFAULT_ASSET_LIST')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -367,6 +373,11 @@
             } else {
                 activeKey.value = ['hierarchy']
             }
+
+            if (discoveryStore.globalState?.length > 0) {
+                globalState.value = discoveryStore.globalState
+            }
+
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
@@ -381,6 +392,17 @@
                 }
                 quickChange()
             })
+
+            watch(
+                () => discoveryStore.globalState,
+                () => {
+                    globalState.value = discoveryStore.globalState
+                    handleResetEvent()
+                },
+                {
+                    deep: true,
+                }
+            )
 
             const {
                 list,
@@ -407,6 +429,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                globalState,
             })
 
             const selectedAssetIndex = computed(() => {
@@ -625,9 +648,8 @@
             }
 
             onMounted(() => {
-                console.log('onMounted')
                 watchOnce(isLoading, (v) => {
-                    if (!v && list.value?.length && page.value === 'assets') {
+                    if (!v && list.value?.length) {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
                             Object.keys(selectedAsset.value).length === 0

@@ -25,6 +25,7 @@ interface DiscoverListParams {
     preference?: Ref<any>
     attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
+    globalState?: Ref<string[]>
 }
 
 export function useDiscoverList({
@@ -39,6 +40,7 @@ export function useDiscoverList({
     offset = ref(0),
     attributes,
     relationAttributes,
+    globalState,
 }: DiscoverListParams) {
     const defaultBody = ref({})
     const generateBody = () => {
@@ -49,7 +51,8 @@ export function useDiscoverList({
             facets?.value,
             postFacets?.value,
             aggregations?.value,
-            preference?.value
+            preference?.value,
+            globalState?.value
         )
         defaultBody.value = {
             dsl,

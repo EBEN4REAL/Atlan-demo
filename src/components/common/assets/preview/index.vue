@@ -2,9 +2,9 @@
     <div v-if="selectedAsset?.guid" class="flex flex-col h-full">
         <div
             v-if="!isProfile"
-            class="flex flex-col px-4 py-3 border-b border-gray-200"
+            class="flex flex-col px-4 py-4 border-b border-gray-200"
         >
-            <div class="flex items-center mb-2" style="padding-bottom: 1px">
+            <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <div
                     v-if="
                         ['column'].includes(
@@ -29,7 +29,7 @@
                             ? 'pointer-events-none text-gray-500'
                             : 'text-primary'
                     "
-                    class="flex-shrink mb-0 overflow-hidden font-bold leading-none truncate bg-transparent cursor-pointer text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden font-bold truncate bg-transparent cursor-pointer hover:underline overflow-ellipsis whitespace-nowrap"
                     @click="() => $emit('closeDrawer')"
                 >
                     {{ title(selectedAsset) }}
@@ -40,7 +40,7 @@
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
-                    class="mb-0.5 ml-1"
+                    class="ml-1"
                 ></CertificateBadge>
                 <a-tooltip placement="bottomRight"
                     ><template #title>Limited Access</template>
@@ -129,7 +129,7 @@
         </div>
 
         <a-tabs
-            :activeKey="activeKey"
+            v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="
                 isProfile
@@ -138,7 +138,6 @@
             "
             tab-position="left"
             :destroy-inactive-tab-pane="true"
-            @change="handleTabChange"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -346,7 +345,7 @@
                         refresh()
                     }
                 },
-                { debounce: 100 }
+                { debounce: 100, immediate: true }
             )
 
             provide('switchTab', (asset, tabName: string) => {
@@ -385,12 +384,13 @@
             const tabChildRef = ref([])
 
             const handleTabChange = (k) => {
-                if (
-                    k !== activeKey.value &&
-                    tabChildRef.value[activeKey.value]?.isEdit
-                )
-                    tabChildRef.value[activeKey.value]?.handleCancel()
-                else activeKey.value = k
+                // ! disabling this temporarily
+                // if (
+                //     k !== activeKey.value &&
+                //     tabChildRef.value[activeKey.value]?.isEdit
+                // )
+                //     tabChildRef.value[activeKey.value]?.handleCancel()
+                // else activeKey.value = k
             }
 
             return {

@@ -65,6 +65,13 @@ export function useFilter() {
     let object = ['VARIANT', 'OBJECT']
     let geography = ['GEOGRAPHY', 'OBJECT']
 
+    const totalFiledsMapWithInput = {
+        multi_input: 2,
+        range_input: 2,
+        input: 1,
+        none: 1,
+    }
+
     function filterList(type: string) {
         let all = [
             {
@@ -108,16 +115,16 @@ export function useFilter() {
                         type: 'range_input',
                         name: 'Between',
                     },
-                    {
-                        key: 'is_one_of',
-                        type: 'multi_input',
-                        name: 'Is one of',
-                    },
-                    {
-                        key: 'is_not_one_of',
-                        type: 'multi_input',
-                        name: 'Is not one of',
-                    },
+                    // {
+                    //     key: 'is_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is one of',
+                    // },
+                    // {
+                    //     key: 'is_not_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is not one of',
+                    // },
                 ],
             },
             {
@@ -229,6 +236,7 @@ export function useFilter() {
         if (geography.includes(columnType)) return 'geography'
     }
     return {
+        totalFiledsMapWithInput,
         nameMap,
         getInputTypeFromColumnType,
         filterList,

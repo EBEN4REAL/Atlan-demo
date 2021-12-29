@@ -90,7 +90,7 @@ export function useEditor(
         const queryTextValues = query?.split(';')
         // always select the first one for now
         let queryText = ''
-        if(queryTextValues && queryTextValues.length) {
+        if (queryTextValues && queryTextValues.length) {
             queryText = queryTextValues[0]
         }
         return queryText
@@ -106,7 +106,14 @@ export function useEditor(
             const queryText = semicolonSeparateQuery(query)
             const parseVariables: { [key: string]: string } = {}
             variables.forEach((v) => {
-                parseVariables[v.name] = v.value
+                /* Check for date type */
+                if (v?.type === 'date') {
+                    parseVariables[v.name] = `'${v.value?.format(
+                        'YYYY-MM-DD'
+                    )}'`
+                } else {
+                    parseVariables[v.name] = v.value
+                }
             })
             return moustacheInterpolator(queryText, parseVariables)
         }
@@ -141,198 +148,232 @@ export function useEditor(
         monacoInstance: any
     ) {
         // console.log('cursor')
-        
-            // console.log('cursor')
-            if(type==='auto') {
-                // 1. find cursor position done
-                const pos = editorInstance?.getPosition()
 
-                console.log('position cursor: ', pos)
-                console.log('position editor: ', editorInstance)
-                
-                // let parsedQuery = getParsedQueryData(variables, query)
-                // parsedQuery = parsedQuery.replace(/(\r\n|\n|\r)/gm, "")
-                console.log('position match query parsed: ', query)
+        // console.log('cursor')
+        if (type === 'auto') {
+            // 1. find cursor position done
+            const pos = editorInstance?.getPosition()
 
-                const queryTextValues = query?.split(';')
-                console.log('position match query: ', queryTextValues)
+            console.log('position cursor: ', pos)
+            console.log('position editor: ', editorInstance)
 
-                const queryPositions = []
-                if(queryTextValues && queryTextValues.length) {
-                    queryTextValues.forEach(query=> {
-                        let q = `${query};`
-                        let match = toRaw(editorInstance)?.getModel()?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
-                        queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, ''), rawQuery: query})
+            // let parsedQuery = getParsedQueryData(variables, query)
+            // parsedQuery = parsedQuery.replace(/(\r\n|\n|\r)/gm, "")
+            console.log('position match query parsed: ', query)
+
+            const queryTextValues = query?.split(';')
+            console.log('position match query: ', queryTextValues)
+
+            const queryPositions = []
+            if (queryTextValues && queryTextValues.length) {
+                queryTextValues.forEach((query) => {
+                    let q = `${query};`
+                    let match = toRaw(editorInstance)
+                        ?.getModel()
+                        ?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`)
+                    queryPositions.push({
+                        match: match,
+                        token: query.replace(/^\s+|\s+$/g, ''),
+                        rawQuery: query,
                     })
-                }
-                
-                console.log('position match: ', queryPositions) 
+                })
+            }
 
-                let semiColonMatchs = toRaw(editorInstance)?.getModel()?.findMatches(';');
-                console.log('position match semi: ', semiColonMatchs)
+            console.log('position match: ', queryPositions)
 
-                let independentQueryMatches = semiColonMatchs.map((match, index)=> {
-                    let data = queryPositions[index].match.map(m=> {
-                        if(m.range.endLineNumber ===match.range.endLineNumber && (m.range.endColumn) ===match.range.endColumn){
+            let semiColonMatchs = toRaw(editorInstance)
+                ?.getModel()
+                ?.findMatches(';')
+            console.log('position match semi: ', semiColonMatchs)
+
+            let independentQueryMatches = semiColonMatchs.map(
+                (match, index) => {
+                    let data = queryPositions[index].match.map((m) => {
+                        if (
+                            m.range.endLineNumber ===
+                                match.range.endLineNumber &&
+                            m.range.endColumn === match.range.endColumn
+                        ) {
                             return {
-                                range:m.range,
-                                rawQuery: queryPositions[index].rawQuery
+                                range: m.range,
+                                rawQuery: queryPositions[index].rawQuery,
                             }
                         }
-                        
                     })
-                    for(var i=0;i<data.length;i++) {
-                        if(data[i]!==undefined) {
-                            return data[i];
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i] !== undefined) {
+                            return data[i]
                         }
                     }
-                })
+                }
+            )
 
-                console.log('position match final: ', independentQueryMatches)
+            console.log('position match final: ', independentQueryMatches)
 
-                // let lineIndex = semiColonMatchs.findIndex((match)=> {
-                //     if(match.range.endLineNumber>pos.lineNumber) {
-                //         return match   
-                //     }
-                //     if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
-                //         return match
-                //     }
+            // let lineIndex = semiColonMatchs.findIndex((match)=> {
+            //     if(match.range.endLineNumber>pos.lineNumber) {
+            //         return match
+            //     }
+            //     if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
+            //         return match
+            //     }
+            // })
+
+            let lineIndex
+            for (var i = 0; i < independentQueryMatches.length - 1; i++) {
+                console.log('position match: ', independentQueryMatches[i + 1])
+                if (
+                    pos.lineNumber <
+                    independentQueryMatches[i + 1].range.startLineNumber
+                ) {
+                    //different line, pick 1st query
+                    lineIndex = independentQueryMatches[i]
+                    console.log('position match line less: ', lineIndex)
+                    break
+                } else if (
+                    pos.lineNumber ===
+                    independentQueryMatches[i + 1].range.startLineNumber
+                ) {
+                    // same line, check start column of second
+
+                    // find all lines with starting point on this line
+                    var start = i + 1
+                    var end = i + 1
+
+                    while (end < independentQueryMatches.length) {
+                        if (
+                            pos.lineNumber ===
+                            independentQueryMatches[end].range.startLineNumber
+                        ) {
+                            end++
+                        } else {
+                            end = end - 1
+                            break
+                        }
+                    }
+                    if (end === independentQueryMatches.length) {
+                        end = end - 1
+                    }
+                    console.log('position match here: ', { start, end })
+                    lineIndex = independentQueryMatches[start]
+                    for (var j = start; j + 1 <= end; j++) {
+                        if (
+                            pos.column >
+                            independentQueryMatches[j + 1].range.startColumn
+                        ) {
+                            lineIndex = independentQueryMatches[j + 1]
+                        }
+                    }
+                    break
+                } else if (
+                    pos.lineNumber ===
+                    independentQueryMatches[i + 1].range.endLineNumber
+                ) {
+                    console.log('position match 2nd line')
+                    lineIndex = independentQueryMatches[i + 1]
+                    // find all lines with starting point on this line
+                    console.log('position match 2nd line: ', lineIndex)
+                    var start = i + 2
+                    var end = i + 2
+
+                    while (end < independentQueryMatches.length) {
+                        if (
+                            pos.lineNumber ===
+                            independentQueryMatches[end].range.startLineNumber
+                        ) {
+                            end++
+                        } else {
+                            end = end - 1
+                            break
+                        }
+                    }
+                    if (end === independentQueryMatches.length) {
+                        end = end - 1
+                    }
+                    console.log('position match here: ', { start, end })
+
+                    // lineIndex = independentQueryMatches[start]
+                    for (var j = start; j <= end; j++) {
+                        if (
+                            pos.column >
+                            independentQueryMatches[j].range.startColumn
+                        ) {
+                            lineIndex = independentQueryMatches[j]
+                        }
+                    }
+                    console.log('position match 2nd line: ', lineIndex)
+                    break
+                } else {
+                }
+            }
+            if (lineIndex == undefined) {
+                lineIndex =
+                    independentQueryMatches[independentQueryMatches.length - 1]
+            }
+
+            console.log('position match line: ', lineIndex)
+
+            if (lineIndex) {
+                let queryStartLine
+                let queryEndLine
+                let queryStartColumn
+                let queryEndColumn
+
+                let data = lineIndex.range
+                queryStartLine = data.startLineNumber
+                queryStartColumn = data.startColumn
+                queryEndLine = data.endLineNumber
+                queryEndColumn = data.endColumn
+
+                // console.log('position query: ', {
+                //     queryStartLine,
+                //     queryEndLine,
+                //     queryStartColumn,
+                //     queryEndColumn
                 // })
 
-                let lineIndex;
-                for(var i=0;i<independentQueryMatches.length-1;i++) {
-                    console.log('position match: ', independentQueryMatches[i+1])
-                    if(pos.lineNumber<independentQueryMatches[i+1].range.startLineNumber) {
-                        //different line, pick 1st query
-                        lineIndex = independentQueryMatches[i]
-                        console.log('position match line less: ', lineIndex)
-                        break;
-                    } else if(pos.lineNumber===independentQueryMatches[i+1].range.startLineNumber) {
-                        // same line, check start column of second
-
-                        // find all lines with starting point on this line
-                        var start = i+1;
-                        var end=i+1
-
-                        while(end<independentQueryMatches.length) {
-                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
-                                end++;
-                            } else {
-                                end=end-1
-                                break;
-                            }
-                        }
-                        if(end===independentQueryMatches.length) {
-                            end=end-1
-                        }
-                        console.log('position match here: ', {start, end})
-                        lineIndex = independentQueryMatches[start]
-                        for(var j=start;j+1<=end;j++) {
-                            if(pos.column>independentQueryMatches[j+1].range.startColumn) {
-                                lineIndex = independentQueryMatches[j+1]
-                            }
-                        }
-                        break;
-                    } else if(pos.lineNumber===independentQueryMatches[i+1].range.endLineNumber) {
-                        console.log('position match 2nd line')
-                        lineIndex = independentQueryMatches[i+1]
-                        // find all lines with starting point on this line
-                        console.log('position match 2nd line: ', lineIndex)
-                        var start = i+2;
-                        var end=i+2
-
-                        while(end<independentQueryMatches.length) {
-                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
-                                end++;
-                            } else {
-                                end=end-1
-                                break;
-                            }
-                        }
-                        if(end===independentQueryMatches.length) {
-                            end=end-1
-                        }
-                        console.log('position match here: ', {start, end})
-
-                        // lineIndex = independentQueryMatches[start]
-                        for(var j=start;j<=end;j++) {
-                            if(pos.column>independentQueryMatches[j].range.startColumn) {
-                                lineIndex = independentQueryMatches[j]
-                            }
-                        }
-                        console.log('position match 2nd line: ', lineIndex)
-                        break;
-                    } else {
-                        
-                    }
-                }
-                if(lineIndex==undefined) {
-                    lineIndex = independentQueryMatches[independentQueryMatches.length-1]
-                }
-
-                
-                console.log('position match line: ', lineIndex)
-
-
-                if(lineIndex) {
-                    let queryStartLine
-                    let queryEndLine
-                    let queryStartColumn
-                    let queryEndColumn
-
-                    let data = lineIndex.range
-                    queryStartLine=data.startLineNumber;
-                    queryStartColumn=data.startColumn;
-                    queryEndLine = data.endLineNumber
-                    queryEndColumn = data.endColumn
-
-                    // console.log('position query: ', {
-                    //     queryStartLine,
-                    //     queryEndLine,
-                    //     queryStartColumn,
-                    //     queryEndColumn
-                    // })
-
-                    // console.log('position query: ', queryPositions)
-                    // setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
-                    //     startLineNumber: queryStartLine,
-                    //     startColumnNumber: queryStartColumn,
-                    //     endLineNumber: queryEndLine,
-                    //     endColumnNumber: queryEndColumn
-                    // })
-                    let monaco = toRaw(monacoInstance)
-                    decorations = toRaw(editorInstance).deltaDecorations(decorations??
-                        [],
-                        []
-                    );
-                    decorations = toRaw(editorInstance).deltaDecorations(
-                        [],
-                        [
-                            {
-                                range: new monaco.Range(Number(queryStartLine), 1, Number(queryEndLine), 1),
-                                options: {
-                                    isWholeLine: true,
-                                    linesDecorationsClassName: 'myLineDecoration'
-                                }
-                            }
-                        ]
-                    );
-                    return lineIndex
-                }
-
-
-               
-                // 3. check position and find raw query
-
+                // console.log('position query: ', queryPositions)
+                // setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
+                //     startLineNumber: queryStartLine,
+                //     startColumnNumber: queryStartColumn,
+                //     endLineNumber: queryEndLine,
+                //     endColumnNumber: queryEndColumn
+                // })
+                let monaco = toRaw(monacoInstance)
+                decorations = toRaw(editorInstance).deltaDecorations(
+                    decorations ?? [],
+                    []
+                )
+                decorations = toRaw(editorInstance).deltaDecorations(
+                    [],
+                    [
+                        {
+                            range: new monaco.Range(
+                                Number(queryStartLine),
+                                1,
+                                Number(queryEndLine),
+                                1
+                            ),
+                            options: {
+                                isWholeLine: true,
+                                linesDecorationsClassName: 'myLineDecoration',
+                            },
+                        },
+                    ]
+                )
+                return lineIndex
             }
-            // const queryText = semicolonSeparateQuery(query)
-            // const parseVariables: { [key: string]: string } = {}
-            // variables.forEach((v) => {
-            //     parseVariables[v.name] = v.value
-            // })
-            // return moustacheInterpolator(queryText, parseVariables)
-        
-            return ''
+
+            // 3. check position and find raw query
+        }
+        // const queryText = semicolonSeparateQuery(query)
+        // const parseVariables: { [key: string]: string } = {}
+        // variables.forEach((v) => {
+        //     parseVariables[v.name] = v.value
+        // })
+        // return moustacheInterpolator(queryText, parseVariables)
+
+        return ''
         // return semicolonSeparateQuery(query)
     }
     // const clearLineDecoration = (editorInstance: any) => {
@@ -475,7 +516,11 @@ export function useEditor(
             activeInlineTab.value.playground.resultsPane.result.errorDecorations
                 ?.length > 0
         ) {
-            console.log('error deco: ', activeInlineTab.value.playground.resultsPane.result.errorDecorations)
+            console.log(
+                'error deco: ',
+                activeInlineTab.value.playground.resultsPane.result
+                    .errorDecorations
+            )
             const lineRegex = /(?:line )([0-9]+)/gim
             /* [["Line 3", "3"], ["line 3", "3"]] */
             const linesInfo = [
@@ -535,6 +580,6 @@ export function useEditor(
         modifyEditorContent,
         onEditorContentChange,
         getParsedQuery,
-        getParsedQueryCursor
+        getParsedQueryCursor,
     }
 }

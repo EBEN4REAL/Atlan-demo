@@ -8,15 +8,16 @@
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
-
-            <router-link v-if="logoUrl && !logoNotFound" to="/">
-                <img
-                    :src="logoUrl"
-                    class="w-auto h-4 cursor-pointer select-none"
-                    :alt="defaultLogo"
-                    @error="onLogoNotFound"
-                />
-            </router-link>
+            <div v-if="logoUrl && !logoNotFound" class="mb-1">
+                <router-link to="/">
+                    <img
+                        :src="logoUrl"
+                        class="w-auto h-4 cursor-pointer select-none"
+                        :alt="defaultLogo"
+                        @error="onLogoNotFound"
+                    />
+                </router-link>
+            </div>
             <p
                 v-else
                 class="mt-1 text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary"
@@ -24,6 +25,13 @@
             >
                 {{ logoName }}
             </p>
+            <div class="flex items-center ml-1 gap-x-1">
+                <AtlanIcon icon="ChevronRight"></AtlanIcon>
+                <GlobalSelection
+                    v-model="globalState"
+                    @change="handleGlobalStateChange"
+                ></GlobalSelection>
+            </div>
         </div>
         <div class="flex items-center h-full cursor-pointer justify-self-end">
             <a-dropdown placement="bottomRight">
@@ -79,16 +87,23 @@
     import { computed, defineComponent, ref } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
+    import GlobalSelection from '@/common/cascade/global.vue'
     import { useTenantStore } from '~/store/tenant'
     import { useRoute, useRouter } from 'vue-router'
     import defaultLogo from '~/assets/images/your_company.png'
     import AtlanIcon from '../icon/atlanIcon.vue'
     import AssetMenu from '../assets/profile/header/assetMenu.vue'
     import map from '~/constant/accessControl/map'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'Navigation Menu',
-        components: { UserPersonalAvatar, AtlanIcon, AssetMenu },
+        components: {
+            UserPersonalAvatar,
+            AtlanIcon,
+            AssetMenu,
+            GlobalSelection,
+        },
         props: {
             page: { type: String, required: false },
             isSidebarActive: {
@@ -129,6 +144,17 @@
                 logoNotFound.value = true
             }
 
+            const assetStore = useAssetStore()
+            const globalState = ref([])
+
+            if (assetStore.globalState) {
+                globalState.value = assetStore.globalState
+            }
+
+            const handleGlobalStateChange = () => {
+                assetStore.setGlobalState(globalState.value)
+            }
+
             return {
                 page,
                 isHome,
@@ -140,6 +166,8 @@
                 onLogoNotFound,
                 logoNotFound,
                 map,
+                handleGlobalStateChange,
+                globalState,
             }
         },
     })

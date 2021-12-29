@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, provide, ref } from 'vue'
+    import { computed, defineComponent, onMounted, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'

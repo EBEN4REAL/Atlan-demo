@@ -19,11 +19,7 @@
                         class="flex items-center"
                     >
                         <div v-if="selectedValue[0] === 'persona'">Persona</div>
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="mx-1"
-                            v-if="index !== selectedValue.length - 1"
-                        />
+                        <AtlanIcon icon="ChevronRight" class="mx-1" />
 
                         <div class="capitalize">
                             {{ getPersona(selectedValue[1])?.displayName }}

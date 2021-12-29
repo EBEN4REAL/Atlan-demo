@@ -344,13 +344,15 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_ADD'
+                        'RELATIONSHIP_ADD',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_REMOVE'
+                        'RELATIONSHIP_REMOVE',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 @change="handleMeaningsUpdate"

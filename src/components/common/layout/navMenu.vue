@@ -26,7 +26,7 @@
                 {{ logoName }}
             </p>
 
-            <div class="flex items-center ml-1 gap-x-1">
+            <div class="flex items-center ml-1 gap-x-1" v-if="isAssets">
                 <AtlanIcon icon="ChevronRight"></AtlanIcon>
                 <GlobalSelection
                     v-model="globalState"
@@ -127,6 +127,13 @@
                 return false
             })
 
+            const isAssets = computed(() => {
+                if (currentRoute.path.startsWith('/assets')) {
+                    return true
+                }
+                return false
+            })
+
             const logoUrl = computed(() => {
                 if (tenantStore.displayNameHtml) {
                     return `${window.location.origin}/api/service/avatars/_logo_`
@@ -169,6 +176,7 @@
                 map,
                 handleGlobalStateChange,
                 globalState,
+                isAssets,
             }
         },
     })

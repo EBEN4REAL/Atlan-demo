@@ -72,11 +72,13 @@ export function useAssetAuditSearch({
             if (!dependentKey.value) {
                 options.asyncOptions = ref({
                     immediate: false,
+                    resetOnExecute: false,
                 })
             }
         } else {
             options.asyncOptions = ref({
                 immediate: true,
+                resetOnExecute: false,
             })
         }
     } else {
@@ -94,11 +96,14 @@ export function useAssetAuditSearch({
     const { data, mutate, error, isLoading, isValidating, isReady } =
         Entity.AuditSearch(guid, defaultBody, options)
 
+    watch(isReady, () => {
+        console.log(isReady, 'isReady')
+    })
     const list = ref([])
+
     watch(
         data,
         () => {
-            console.log('chnaged data')
             if (offset?.value > 0) {
                 if (data.value?.entityAudits) {
                     list.value.push(...data.value?.entityAudits)

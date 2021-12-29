@@ -304,6 +304,10 @@
                 required: false,
                 default: true,
             },
+            cacheKey: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -315,6 +319,7 @@
                 allCheckboxAreaClick,
                 disableHandlePreview,
                 isCache,
+                cacheKey,
             } = toRefs(props)
 
             const limit = ref(20)
@@ -329,7 +334,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const dependentKey = ref(cacheKey.value || 'DEFAULT_ASSET_LIST')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([

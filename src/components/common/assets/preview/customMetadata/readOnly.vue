@@ -39,8 +39,8 @@
                 />
                 {{ attribute.value }}
             </div>
-            <span v-else>-</span></a
-        >
+            <span v-else>-</span>
+        </a>
         <template
             v-else-if="
                 ['text', 'int', 'float', 'number', 'decimal'].includes(

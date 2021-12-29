@@ -346,7 +346,7 @@
                         refresh()
                     }
                 },
-                { debounce: 100 }
+                { debounce: 100, immediate: true }
             )
 
             provide('switchTab', (asset, tabName: string) => {
@@ -385,12 +385,13 @@
             const tabChildRef = ref([])
 
             const handleTabChange = (k) => {
-                if (
-                    k !== activeKey.value &&
-                    tabChildRef.value[activeKey.value]?.isEdit
-                )
-                    tabChildRef.value[activeKey.value]?.handleCancel()
-                else activeKey.value = k
+                // ! disabling this temporarily
+                // if (
+                //     k !== activeKey.value &&
+                //     tabChildRef.value[activeKey.value]?.isEdit
+                // )
+                //     tabChildRef.value[activeKey.value]?.handleCancel()
+                // else activeKey.value = k
             }
 
             return {

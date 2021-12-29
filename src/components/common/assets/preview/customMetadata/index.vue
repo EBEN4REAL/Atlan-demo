@@ -82,7 +82,7 @@
                         </a-tooltip>
                     </div>
 
-                    <ReadOnly v-if="readOnly" :attribute="a" />
+                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
 
                     <EditState
                         v-else-if="!readOnly"
@@ -436,6 +436,9 @@
             }
 
             const handleCancel = () => {
+                cancel()
+                return
+                //! disabling unsaved changes confirmation temporarily
                 if (isEdit.value) {
                     Modal.confirm({
                         title: () =>

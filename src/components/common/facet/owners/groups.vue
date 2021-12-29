@@ -9,6 +9,7 @@
             </div>
         </div>
         <div
+            v-else
             class="flex flex-col w-full overflow-y-auto"
             :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
@@ -61,6 +62,7 @@
                     <div
                         class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        v-else
                     >
                         load more...
                     </div>

@@ -72,7 +72,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-auth="map.LIST_GROUPS" class="overflow-y-auto group-list">
+        <div v-auth="map.LIST_GROUPS" class="h-full">
             <div
                 v-if="totalGroupCount || isLoading"
                 class="flex flex-row justify-between"
@@ -144,7 +144,7 @@
                     />
                 </div>
             </div>
-            <div v-else class="mt-4 mb-2">
+            <div v-else class="mt-4 mb-2 overflow-y-auto group-list">
                 <div v-for="group in groupList" :key="group.id">
                     <div
                         class="flex items-center justify-between px-3 py-2 group hover:bg-gray-100"
@@ -449,6 +449,9 @@
 <style lang="less" scoped>
     .componentHeight {
         height: calc(100vh - 12rem);
+    }
+    .group-list {
+        height: calc(100vh - 14rem) !important;
     }
 </style>
 <style lang="less" module>

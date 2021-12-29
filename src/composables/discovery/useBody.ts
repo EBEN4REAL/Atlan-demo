@@ -44,7 +44,6 @@ export function useBody(
         })
         base.orQuery('wildcard', 'name', {
             value: `${queryText}*`,
-            case_insensitive: true,
         })
         base.orQuery('match', 'description', {
             query: queryText,

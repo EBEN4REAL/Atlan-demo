@@ -4,7 +4,21 @@
     </div>
     <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
-            <div class="font-semibold text-gray-500">{{ data.label }}</div>
+            <div class="font-semibold text-gray-500">
+                <div class="flex items-center gap-x-1">
+                    <span>{{ data.label }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ data?.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="data?.description"
+                            class="h-3 text-gray-400 hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
+                </div>
+            </div>
             <div
                 v-if="
                     selectedAssetUpdatePermission(
@@ -13,7 +27,11 @@
                     )
                 "
             >
-                <a-button v-if="readOnly" @click="() => (readOnly = false)">
+                <a-button
+                    v-if="readOnly"
+                    v-show="applicableList.filter((i) => hasValue(i)).length"
+                    @click="() => (readOnly = false)"
+                >
                     <AtlanIcon icon="Edit" />
                     <span class="ml-1 text-gray-700">Edit</span>
                 </a-button>
@@ -98,7 +116,7 @@
                         <div class="">
                             <a-popover
                                 placement="bottom"
-                                :destroyTooltipOnHide="true"
+                                :destroy-tooltip-on-hide="true"
                             >
                                 <template #content>
                                     <div
@@ -110,9 +128,29 @@
                                             :key="p.name"
                                         >
                                             <div class="flex flex-col">
-                                                <span class="text-gray-700">
-                                                    {{ p.displayName }}
-                                                </span>
+                                                <div
+                                                    class="flex items-center gap-x-1"
+                                                >
+                                                    <span class="text-gray-700">
+                                                        {{ p.displayName }}
+                                                    </span>
+                                                    <a-tooltip>
+                                                        <template #title>
+                                                            <span>{{
+                                                                p.options
+                                                                    .description
+                                                            }}</span>
+                                                        </template>
+                                                        <AtlanIcon
+                                                            v-if="
+                                                                p.options
+                                                                    .description
+                                                            "
+                                                            class="h-3 text-gray-400 hover:text-gray-500"
+                                                            icon="Info"
+                                                        />
+                                                    </a-tooltip>
+                                                </div>
                                                 <span
                                                     class="flex items-center text-gray-500 capitalize gap-x-1"
                                                 >
@@ -177,7 +215,7 @@
                             padding="compact"
                             @click="() => (readOnly = false)"
                         >
-                            <AtlanIcon icon="Edit" /> Start Editting
+                            <AtlanIcon icon="Edit" /> Start Editing
                         </AtlanButton>
                     </div>
                 </template>

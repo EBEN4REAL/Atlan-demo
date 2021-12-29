@@ -20,9 +20,10 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
-        GlossaryAttributes
+        GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         components: {
@@ -60,12 +61,15 @@
                 }
                 return id.value
             })
+            const { customMetadataProjections } = useTypedefData()
+
             const dependentKey = ref(fetchKey.value)
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                ...GlossaryAttributes
+                ...GlossaryAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 

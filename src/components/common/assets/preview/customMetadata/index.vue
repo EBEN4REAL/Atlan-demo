@@ -82,7 +82,7 @@
                         </a-tooltip>
                     </div>
 
-                    <ReadOnly v-if="readOnly" :attribute="a" />
+                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
 
                     <EditState
                         v-else-if="!readOnly"

@@ -32,7 +32,16 @@
                 </div>
             </div>
         </div>
-        <a-dropdown :trigger="['click']" placement="topRight">
+
+        <div
+            class="flex items-center justify-end text-gray-700 cursor-pointer"
+            style="width: 104px"
+            v-if="item['user'] === username"
+        >
+            <span class="mr-1.5 pl-1 text-sm text-gray-500"> Owner </span>
+        </div>
+
+        <a-dropdown :trigger="['click']" placement="topRight" v-else>
             <div
                 class="flex items-center justify-end text-gray-700 cursor-pointer"
                 style="width: 104px"
@@ -52,73 +61,6 @@
                     v-model:selectedType="item['permission']"
                     :item="item"
                 />
-                <!-- <a-menu style="width: 217px" :selectedKeys="item['permission']">
-                    <a-menu-item
-                        key="view"
-                        class="rounded hover:bg-primary-light"
-                        @click="handleChange(item, 'view')"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div>
-                                    <span class="text-sm text-gray-700"
-                                        >Can view</span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="text-xs text-gray-500"
-                                        >Can view and run all <br />the queries,
-                                        but not edit</span
-                                    >
-                                </div>
-                            </div>
-                            <AtlanIcon
-                                v-if="item['permission'] === 'view'"
-                                icon="Check"
-                                class="text-primary"
-                            />
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item
-                        key="edit"
-                        class="rounded hover:bg-primary-light"
-                        @click="handleChange(item, 'edit')"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div>
-                                    <span class="text-sm text-gray-700"
-                                        >Can edit</span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="text-xs text-gray-500"
-                                        >Can view, run and edit all <br />
-                                        queries</span
-                                    >
-                                </div>
-                            </div>
-                            <AtlanIcon
-                                v-if="item['permission'] === 'edit'"
-                                icon="Check"
-                                class="text-primary"
-                            />
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item
-                        key="remove"
-                        class="rounded hover:bg-primary-light"
-                        @click="handleChange(item, 'remove')"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="text-sm" style="color: #d21919"
-                                    >Remove</span
-                                >
-                            </div>
-                        </div>
-                    </a-menu-item>
-                </a-menu> -->
             </template>
         </a-dropdown>
     </div>
@@ -128,6 +70,7 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import { useVModels } from '@vueuse/core'
     import PermissionType from './permissionType.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'userItem',
@@ -192,6 +135,7 @@
             })
 
             let otherType = ref()
+            const { username } = whoami()
 
             const handleChange = (type, item) => {
                 if (type !== 'remove' && item['permission'] !== type) {
@@ -243,7 +187,7 @@
 
             console.log('url: ', imageUrl)
 
-            return { imageUrl, dataArray, handleChange }
+            return { imageUrl, dataArray, handleChange, username }
         },
     })
 </script>

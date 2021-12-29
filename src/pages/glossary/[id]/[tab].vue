@@ -50,7 +50,7 @@
             const facets = ref({
                 guid: id.value,
             })
-            if (selectedAsset.value?.guid === id.value) {
+            if (selectedAsset.value?.guid === id?.value) {
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }

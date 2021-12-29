@@ -105,7 +105,7 @@ export function useBody(
       //facet filters
     if((typeName==='Table' || Array.isArray(typeName))) {
         Object.keys(facets ?? {}).forEach((mkey) => {
-            const filterObject = facets[mkey]
+            let filterObject = facets[mkey]
             switch (mkey) {
                 case 'hierarchy': {
                     if (filterObject.connectorName) {
@@ -139,10 +139,20 @@ export function useBody(
                 case 'certificateStatus': {
                     if (filterObject) {
                         if (filterObject.length > 0) {
-                            const index = filterObject.indexOf(existsValue)
+
+                            // replace null
+                            let filter = [...filterObject]
+
+                            for(var i=0;i<filter.length;i++) {
+                                if (filter[i] == null) {
+                                    filter[i] = "NONE";
+                                  }
+                            }
+
+                            const index = filter.indexOf(existsValue)
                             if (index > -1) {
                                 const temp = []
-                                filterObject.forEach((element) => {
+                                filter.forEach((element) => {
                                     if (element !== existsValue) {
                                         temp.push(element)
                                     }
@@ -168,7 +178,7 @@ export function useBody(
                                 base.filter(
                                     'terms',
                                     'certificateStatus',
-                                    filterObject
+                                    filter
                                 )
                             }
                         }

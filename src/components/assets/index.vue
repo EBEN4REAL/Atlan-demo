@@ -649,8 +649,11 @@
 
             onMounted(() => {
                 watchOnce(isLoading, (v) => {
-                    if (!v && list.value?.length && page.value === 'assets') {
-                        handleClickAssetItem(list.value[0])
+                    if (!v && list.value?.length) {
+                        const isNone =
+                            typeof selectedAsset.value === 'object' &&
+                            Object.keys(selectedAsset.value).length === 0
+                        if (isNone) handleClickAssetItem(list.value[0])
                     }
                 })
             })

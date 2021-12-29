@@ -39,7 +39,7 @@
                 />
                 {{ attribute.value }}
             </div>
-            <span v-else></span>
+            <span v-else>-</span>
         </a>
         <template
             v-else-if="

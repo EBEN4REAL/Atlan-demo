@@ -158,7 +158,7 @@
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
             const dependentKey = ref('audit')
             const facets = ref({
-                'entityId.keyword': item.value.guid,
+                entityId: item.value.guid,
             })
             const preference = ref({
                 sort: 'created-desc',
@@ -215,6 +215,11 @@
                 () => item.value.guid,
                 (newValue) => {
                     fetchMoreAuditParams.startKey = ''
+
+                    facets.value = {
+                        entityId: item.value.guid,
+                    }
+
                     fetchAudits(params, newValue)
                 }
             )

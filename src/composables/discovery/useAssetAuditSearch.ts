@@ -96,7 +96,6 @@ export function useAssetAuditSearch({
 
     const list = ref([])
     watch(data, () => {
-        console.log(offset.value)
         if (offset?.value > 0) {
             if (data.value?.entityAudits) {
                 list.value.push(...data.value?.entityAudits)

@@ -80,7 +80,7 @@
                             class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                             style="height: 32px !important"
                         >
-                            <code class="px-3 truncate">
+                            <code class="px-3 truncate bg-white">
                                 <a-tooltip placement="bottomLeft">
                                     <template #title
                                         >{{
@@ -108,7 +108,7 @@
                             class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                             style="height: 32px !important"
                         >
-                            <code class="px-3 truncate">
+                            <code class="px-3 truncate bg-white">
                                 <a-tooltip placement="bottomLeft">
                                     <template #title
                                         >{{
@@ -303,9 +303,10 @@
                 /* If there are custom variables change there types */
 
                 // get all custom variables related to this panel
-                const subpanelIds = subpanels.value.map(
-                    (subpanel) => subpanel.id
-                )
+                const subpanelIds = subpanels.value
+                    .filter((subpanel) => subpanel.id === copySubPanel.id)
+                    .map((_subpanel) => _subpanel.id)
+
                 let variables: any = []
                 activeInlineTab.value.playground.editor.variables.map(
                     (_variable) => {
@@ -354,19 +355,30 @@
                     activeInlineTab.value.playground.editor.variables.findIndex(
                         (variable) => variable?.subpanelId === subpanel.id
                     )
+
+                const Varindex2 =
+                    activeInlineTab.value.playground.editor.variables.findIndex(
+                        (variable) =>
+                            variable?.subpanelId === `${subpanel.id}${2}`
+                    )
                 if (Varindex < 0) {
                     addVariableFromVQB(activeInlineTab, tabs, {
                         vqbPanelId: subpanel.id,
                         subpanelId: subpanel.id,
                         type: subpanel?.column?.type?.toLowerCase(),
                     })
+
                     /* If fileds are more than one, then it will have inputFiledValue 2 */
-                    if (totalFiledsMapWithInput[subpanel?.filter?.type] > 1) {
-                        addVariableFromVQB(activeInlineTab, tabs, {
-                            vqbPanelId: `${subpanel.id}${2}`,
-                            subpanelId: `${subpanel.id}${2}`,
-                            type: subpanel?.column?.type.toLowerCase(),
-                        })
+                    if (Varindex2 < 0) {
+                        if (
+                            totalFiledsMapWithInput[subpanel?.filter?.type] > 1
+                        ) {
+                            addVariableFromVQB(activeInlineTab, tabs, {
+                                vqbPanelId: `${subpanel.id}${2}`,
+                                subpanelId: `${subpanel.id}${2}`,
+                                type: subpanel?.column?.type.toLowerCase(),
+                            })
+                        }
                     }
                 }
                 subpanels.value[index].filter.isVariable = !currVal
@@ -416,9 +428,11 @@
 
             const handleFilterChange = (subpanel) => {
                 /* If user moves from 1 field to 2 */
-                if (totalFiledsMapWithInput[subpanel?.filter?.type] > 1) {
+                if (
+                    totalFiledsMapWithInput[subpanel?.filter?.type] > 1 &&
+                    subpanel?.filter?.isVariable
+                ) {
                     /* Check if 2nd field is there, if there then don't create otherwise create it */
-
                     /* Check if variable already exists */
                     /* If fileds are more than one, then it will have inputFiledValue 2 */
                     const Varindex2 =

@@ -387,83 +387,21 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             dummy: '',
             isVQBtype: true,
             ...subpanelInfo,
-            type: subpanelInfo?.type ?? 'string',
+            type: getCustomVariableTypeFromSubpanelType(subpanelInfo?.type),
             value: getValueFromType(subpanelInfo?.type, ''),
         }
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
         )
-        //check if variable is present in cache
-        let index = null
-        index =
-            activeInlineTab.value.playground.editor.savedVariables.findIndex(
-                (variable) => variable.name === new_variable.name
-            )
-        console.log('index: ', index)
-        if (index !== -1) {
-            let currIndex =
-                activeInlineTab.value.playground.editor.variables.findIndex(
-                    (variable) => variable.name === new_variable.name
-                )
-            if (currIndex !== -1) {
-                let variable: CustomVaribaleInterface = {
-                    name: `variable${Math.ceil(Math.random() * 100) + len}`,
-                    key,
-                    options: [],
-                    allowMultiple: false,
-                    dummy: '',
-                    isVQBtype: false,
-                    ...subpanelInfo,
-                    type: subpanelInfo?.type ?? 'string',
-                    value: getValueFromType(subpanelInfo?.type, ''),
-                }
-                activeInlineTabCopy.playground.editor.variables = [
-                    ...activeInlineTabCopy.playground.editor.variables,
-                    variable,
-                ]
-                activeInlineTabCopy.playground.editor.savedVariables = [
-                    ...activeInlineTabCopy.playground.editor.savedVariables,
-                    variable,
-                ]
+        activeInlineTabCopy.playground.editor.variables = [
+            ...activeInlineTabCopy.playground.editor.variables,
+            new_variable,
+        ]
+        editorInstance.trigger('keyboard', 'type', {
+            text: `{{variable${len}}}`,
+        })
 
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${variable.name}}}`,
-                })
-            } else {
-                let savedVariableRetrival =
-                    activeInlineTab.value.playground.editor.savedVariables[
-                        index
-                    ]
-                /* NOTE: This is imp step as we have to change the Ids,val,type of subpanel of the previous ones */
-                if (subpanelInfo?.subpanelId) {
-                    savedVariableRetrival = {
-                        ...savedVariableRetrival,
-                        ...subpanelInfo,
-                        value: getValueFromType(subpanelInfo?.type, ''),
-                    }
-                }
-                activeInlineTabCopy.playground.editor.variables = [
-                    ...activeInlineTabCopy.playground.editor.variables,
-                    savedVariableRetrival,
-                ]
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${activeInlineTab.value.playground.editor.savedVariables[index].name}}}`,
-                })
-            }
-        } else {
-            activeInlineTabCopy.playground.editor.variables = [
-                ...activeInlineTabCopy.playground.editor.variables,
-                new_variable,
-            ]
-            activeInlineTabCopy.playground.editor.savedVariables = [
-                ...activeInlineTabCopy.playground.editor.savedVariables,
-                new_variable,
-            ]
-            editorInstance.trigger('keyboard', 'type', {
-                text: `{{variable${len}}}`,
-            })
-        }
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
 
@@ -483,10 +421,6 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         let index = activeInlineTab.value.playground.editor.variables.findIndex(
             (variable) => variable.name === curr_variable.name
         )
-        let savedIndex =
-            activeInlineTab.value.playground.editor.savedVariables.findIndex(
-                (variable) => variable.name === curr_variable.name
-            )
 
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
@@ -494,11 +428,6 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         )
         activeInlineTabCopy.playground.editor.variables[index] = {
             ...activeInlineTabCopy.playground.editor.variables[index],
-            type: getCustomVariableTypeFromSubpanelType(subpaneltype),
-            value: getValueFromType(subpaneltype, ''),
-        }
-        activeInlineTabCopy.playground.editor.savedVariables[savedIndex] = {
-            ...activeInlineTabCopy.playground.editor.savedVariables[savedIndex],
             type: getCustomVariableTypeFromSubpanelType(subpaneltype),
             value: getValueFromType(subpaneltype, ''),
         }

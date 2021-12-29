@@ -4,6 +4,7 @@
         :placement="placement"
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
+        :color="tooltipColor"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
             <template v-if="routeTo">
                 <router-link :to="routeTo">
@@ -56,6 +57,10 @@
                 default: 'topRight',
             },
             routeTo: {
+                type: String,
+                required: false,
+            },
+            tooltipColor: {
                 type: String,
                 required: false,
             },

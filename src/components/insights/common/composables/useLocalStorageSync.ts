@@ -1,6 +1,8 @@
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 import dayjs from 'dayjs'
+import { message } from 'ant-design-vue'
+
 const InsightsLocalStorageKeys = {
     inlinetabs: 'insights_inlinetabs',
     activeInlineTab: 'insights_active_inlinetab',
@@ -10,6 +12,10 @@ export function useLocalStorageSync() {
         tabsArray: activeInlineTabInterface[],
         queryDataStore?: boolean
     ) {
+        message.success({
+            content: `Local storage sync!`,
+        })
+
         if (!queryDataStore) {
             // for not saving the querying data into the local storage
             const alteredTabsArray = [...tabsArray].map((tab) => {

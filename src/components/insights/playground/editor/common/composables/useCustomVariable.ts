@@ -400,7 +400,6 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             activeInlineTab.value.playground.editor.savedVariables.findIndex(
                 (variable) => variable.name === new_variable.name
             )
-        debugger
         console.log('index: ', index)
         if (index !== -1) {
             let currIndex =

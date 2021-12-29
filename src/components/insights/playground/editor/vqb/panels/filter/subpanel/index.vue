@@ -306,7 +306,6 @@
                 const subpanelIds = subpanels.value.map(
                     (subpanel) => subpanel.id
                 )
-                debugger
                 let variables: any = []
                 activeInlineTab.value.playground.editor.variables.map(
                     (_variable) => {

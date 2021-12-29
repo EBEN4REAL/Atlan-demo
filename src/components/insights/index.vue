@@ -331,6 +331,13 @@
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
+            // watch(
+            //     () => activeInlineTab.value?.playground.vqb,
+            //     () => {
+            //         syncInlineTabsInLocalStorage(tabsArray.value)
+            //     },
+            //     { deep: true }
+            // )
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
                     // const savedQueryInlineTab =

@@ -161,7 +161,6 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                                 subpanel,
                                 variable2?.value ?? ''
                             )
-                            debugger
                             /* Check if the type is date */
                             if (
                                 subpanel?.column?.type?.toLowerCase() === 'date'

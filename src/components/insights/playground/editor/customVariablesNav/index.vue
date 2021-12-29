@@ -167,6 +167,7 @@
                         v-else-if="variable.type === 'date'"
                         placeholder="Select Date"
                         :class="$style.date_picker"
+                        :show-time="{ format: 'HH:mm' }"
                         v-model:value="variable.value"
                         :bordered="false"
                         style="paddingright: 0 !important"

@@ -371,7 +371,6 @@
                 } catch (e) {
                     console.error('Failed to delete custom variable')
                 }
-                debugger
             }
             const toggleExpand = () => {
                 expand.value = !expand.value

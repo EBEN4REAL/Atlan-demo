@@ -3,17 +3,48 @@
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <div class="mt-1">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon('query', activeInlineTab?.status)
-                    "
-                    class="w-4 h-4 my-auto mr-1 -mt-0.5"
-                ></AtlanIcon>
+            <a-tooltip
+                color="#363636"
+                class="flex items-center h-6 border-none"
+                v-if="activeInlineTab?.description?.length"
+            >
+                <template #title>
+                    {{ activeInlineTab?.description }}
+                </template>
+                <div class="flex items-center">
+                    <div class="mt-1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    'query',
+                                    activeInlineTab?.status
+                                )
+                            "
+                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                        ></AtlanIcon>
+                    </div>
+                    <span class="mt-1 mr-1 text-base text-gray-700">{{
+                        activeInlineTab.label
+                    }}</span>
+                </div>
+            </a-tooltip>
+            <div class="flex items-center" v-else>
+                <div class="mt-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                'query',
+                                activeInlineTab?.status
+                            )
+                        "
+                        class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                    ></AtlanIcon>
+                </div>
+                <span class="mt-1 mr-1 text-base text-gray-700">{{
+                    activeInlineTab.label
+                }}</span>
             </div>
-            <span class="mt-1 mr-1 text-base text-gray-700">{{
-                activeInlineTab.label
-            }}</span>
+
             <span
                 v-if="readOnly"
                 class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"
@@ -231,71 +262,79 @@
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
                     <div class="flex">
-                        <AtlanBtn
-                            class="flex items-center h-6 px-3 button-shadow"
-                            size="sm"
-                            color="primary"
-                            padding="compact"
-                            :disabled="
-                                activeInlineTab?.playground?.resultsPane?.result
-                                    ?.buttonDisable
-                            "
-                            @click="$emit('onClickRunQuery')"
+                        <a-tooltip
+                            placement="bottom"
+                            color="#363636"
+                            class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer"
                         >
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    v-if="
-                                        isQueryRunning === 'loading'
-                                            ? false
-                                            : true
-                                    "
-                                    style="margin-right: 2.5px"
-                                    icon="Play"
-                                    class="text-white rounded"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    v-else
-                                    icon="CircleLoader"
-                                    style="margin-right: 2.5px"
-                                    class="w-4 h-4 text-white animate-spin"
-                                ></AtlanIcon>
-                                <div>
-                                    <span
+                            <template #title>
+                                {{
+                                    editorContentSelectionState
+                                        ? 'Run selected'
+                                        : 'Run query'
+                                }}
+                            </template>
+                            <AtlanBtn
+                                class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                :disabled="
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                "
+                                @click="$emit('onClickRunQuery')"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
                                         v-if="
-                                            !activeInlineTab?.playground
-                                                .resultsPane?.result?.runQueryId
+                                            isQueryRunning === 'loading'
+                                                ? false
+                                                : true
                                         "
-                                        class="text-white"
-                                        >{{
-                                            editorContentSelectionState
-                                                ? 'Run selected'
-                                                : 'Run'
-                                        }}</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                .resultsPane?.result
-                                                ?.runQueryId &&
-                                            !activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Abort</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Aborting</span
-                                    >
+                                        icon="Play"
+                                        class="mr-1 text-white rounded"
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        v-else
+                                        icon="CircleLoader"
+                                        class="w-4 h-4 mr-1 text-white animate-spin"
+                                    ></AtlanIcon>
+                                    <div>
+                                        <span
+                                            v-if="
+                                                !activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId
+                                            "
+                                            class="text-white"
+                                            >Run</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId &&
+                                                !activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Abort</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Aborting</span
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                        </AtlanBtn>
+                            </AtlanBtn>
+                        </a-tooltip>
                     </div>
                     <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
                 </div>

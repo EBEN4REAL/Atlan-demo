@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col p-4 bg-white rounded"
+        class="flex flex-col p-6 bg-white border border-gray-200 rounded"
         :class="isEditMode ? 'editor-open' : 'editor-close'"
     >
         <div class="flex items-center justify-between mb-3">

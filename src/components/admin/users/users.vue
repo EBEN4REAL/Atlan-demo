@@ -65,14 +65,7 @@
                 @event="clearFilter"
             />
             <template v-else>
-                <div
-                    v-if="isLoading"
-                    class="flex items-center justify-center h-full"
-                >
-                    <AtlanIcon icon="Loader" class="h-7 animate-spin" />
-                </div>
                 <UserListTable
-                    v-else
                     v-auth="map.LIST_USERS"
                     :user-list="userList"
                     :loading="isLoading"

@@ -34,7 +34,7 @@
                     <a-button
                         type="primary"
                         :loading="isLoading"
-                        :disabled="!form.name"
+                        :disabled="!form.name || !form.elementDefs?.length"
                         @click="handleOK"
                         >{{ isEdit ? 'Update' : 'Create' }}</a-button
                     >

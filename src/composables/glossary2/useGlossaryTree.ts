@@ -37,6 +37,7 @@ interface UseTreeParams {
     nodesKey?: 'qualifiedName' | 'guid'
     checkable: Boolean
     checkedGuids?: string[]
+    localCheckedNodes?: Ref<Array<any>>
 }
 
 const useGlossaryTree = ({
@@ -50,6 +51,7 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
     checkedGuids = [],
+    localCheckedNodes,
 }: UseTreeParams) => {
     const limit = ref(100)
     const offset = ref(0)
@@ -161,6 +163,7 @@ const useGlossaryTree = ({
                                 ) {
                                     console.log(el.guid)
                                     const key = `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                    localCheckedNodes?.value?.push(el)
                                     if (!checkedKeys.value.includes(key)) {
                                         checkedKeys.value.push(key)
                                     }
@@ -267,6 +270,7 @@ const useGlossaryTree = ({
                                     ) {
                                         console.log(el.guid)
                                         const key = `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                        localCheckedNodes?.value?.push(el)
                                         if (!checkedKeys.value.includes(key)) {
                                             checkedKeys.value.push(key)
                                         }
@@ -521,7 +525,8 @@ const useGlossaryTree = ({
                 if (
                     loadedKeys.value.find(
                         (key) => node?.key === key || node?.value?.key === key
-                    )
+                    ) ||
+                    action === 'delete'
                 ) {
                     return {
                         ...node,
@@ -842,7 +847,9 @@ const useGlossaryTree = ({
                         }
                         if (checkable && checkedGuids?.includes(el.guid)) {
                             console.log(el.guid)
+
                             const key = `${parentGlossaryQf}_${parentCategoryQf}_${el.attributes?.qualifiedName}`
+                            localCheckedNodes?.value?.push(el)
                             if (!checkedKeys.value.includes(key)) {
                                 checkedKeys.value.push(key)
                             }

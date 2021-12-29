@@ -97,7 +97,7 @@
                         </PillGroup>
                         <template #content>
                             <PersonaList
-                                class="persona-list"
+                                class="py-2 persona-list"
                                 :selected-personas="apiKeyDirty.personas"
                             />
                         </template>
@@ -233,7 +233,10 @@
                             apiKeyDirty.rawKey.attributes.validityString
                         }}</template>
                         {{
-                            apiKeyDirty.rawKey.attributes.validityStringRelative
+                             apiKeyDirty.rawKey.attributes.validity.$y >
+                            new Date().getFullYear() + 5
+                                ? 'Never'
+                                : apiKeyDirty.rawKey.attributes.validityStringRelative
                         }}
                     </a-tooltip>
                     <div v-else>

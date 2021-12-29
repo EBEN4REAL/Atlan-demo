@@ -8,6 +8,7 @@
         :mask="false"
         :class="$style.drawerStyle"
         :width="460"
+        @close="$emit('close')"
     >
         <div class="flex flex-col h-full">
             <div class="flex items-center px-4 pt-4">

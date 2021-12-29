@@ -197,6 +197,7 @@ import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
 import TableDraft from '~/assets/images/icons/table_draft.svg'
 import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
+import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
@@ -314,8 +315,24 @@ import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
+import CollectionHeader from '~/assets/images/insights/collection/header.svg'
+import CollectionBody from '~/assets/images/insights/collection/body.svg'
+import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
+import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
+import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
+import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
+import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
+import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
+import EnumType from '~/assets/images/dataType/enum.svg'
+import Float from '~/assets/images/dataType/float.svg'
+import Array from '~/assets/images/dataType/array.svg'
 
 export default {
+    Array,
+    Float,
+    EnumType,
+    EmptyCM,
+    PolicyAlt,
     FlashColor,
     BuilderGroup,
     Trigger,
@@ -620,5 +637,12 @@ export default {
     NoSelectedAsset,
     QueryGrey,
     NoResultIllustration,
-    SetContext
+    SetContext,
+    CollectionHeader,
+    CollectionBody,
+    CollectionFooter,
+    CollectionIconSmall,
+    CollectionIconLarge,
+    CollectionIconSmallGray,
+    CollectionIconLargeActive
 }

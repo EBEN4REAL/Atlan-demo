@@ -13,22 +13,21 @@
                 />
             </div>
             <div class="flex flex-col">
-                <a
-                    class="flex cursor-pointer gap-x-2 hover:underline"
-                    :href="`${link(item)}`"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    <span class="font-bold">{{ title(item) }}</span>
+                <a :href="`${link(item)}`" target="_blank" rel="noreferrer"
+                    ><Tooltip
+                        :tooltip-text="title(item) || link(item)"
+                        classes="hover:text-primary font-bold cursor-pointer hover:underline"
+                    />
                 </a>
-                <span
+                <div
                     v-if="createdBy(item) === modifiedBy(item)"
                     class="text-sm text-gray-500"
-                    >Added by {{ createdBy(item) }} {{ createdAt(item) }}
-                </span>
-                <span v-else class="text-sm text-gray-500"
-                    >Edited by {{ modifiedBy(item) }} {{ modifiedAt(item) }}
-                </span>
+                >
+                    Added by {{ createdBy(item) }} {{ createdAt(item) }}
+                </div>
+                <div v-else class="text-sm text-gray-500">
+                    Edited by {{ modifiedBy(item) }} {{ modifiedAt(item) }}
+                </div>
             </div>
         </div>
         <div>
@@ -89,9 +88,10 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { DeleteResource, EditResource },
+        components: { DeleteResource, EditResource, Tooltip },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,

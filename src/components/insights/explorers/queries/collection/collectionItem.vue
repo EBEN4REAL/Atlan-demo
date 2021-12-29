@@ -47,6 +47,13 @@
                             @click="toggleShowCollectionModal"
                             >Edit collection</a-menu-item
                         >
+                        <a-menu-item
+                            key="delete"
+                            class="text-red-600"
+                            @click="showDeletePopover = true"
+                            v-if="username === item?.createdBy"
+                            >Delete collection</a-menu-item
+                        >
                     </a-menu>
                 </template>
             </a-dropdown>
@@ -68,6 +75,16 @@
             :is-share="true"
             :item="item"
         />
+        <a-popover :visible="showDeletePopover" placement="rightTop">
+            <template #content>
+                <TreeDeletePopover
+                    :item="item"
+                    @cancel="showDeletePopover = false"
+                    @delete="() => delteItem()"
+                    :isSaving="isDeleteLoading"
+                />
+            </template>
+        </a-popover>
     </div>
 </template>
 
@@ -87,10 +104,14 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import whoami from '~/composables/user/whoami'
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import { Insights } from '~/services/meta/insights/index'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
             AtlanIcon,
+            TreeDeletePopover,
             ShareCollectionModal: defineAsyncComponent(
                 () =>
                     import(
@@ -141,6 +162,40 @@
                 'hasCollectionWritePermission'
             )
 
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Ref<Function>
+
+            const showDeletePopover = ref(false)
+            let isDeleteLoading = ref(false)
+
+            const delteItem = () => {
+                const { data, error, isLoading } = Insights.DeleteEntity(
+                    item.value.guid,
+                    {}
+                )
+                isDeleteLoading.value = true
+
+                watch([data, error, isLoading], ([newData, newError]) => {
+                    isDeleteLoading.value = isLoading.value
+                    if (newData && !newError) {
+                        showDeletePopover.value = false
+
+                        setTimeout(() => {
+                            refetchQueryCollection.value()
+                        }, 750)
+
+                        message.success(
+                            `${item.value?.attributes?.name} deleted!`
+                        )
+                    } else {
+                        message.success(
+                            `${item.value?.attributes?.name} deletion failed!`
+                        )
+                    }
+                })
+            }
+
             return {
                 item,
                 handleChange,
@@ -154,6 +209,9 @@
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
+                showDeletePopover,
+                isDeleteLoading,
+                delteItem,
             }
         },
     })

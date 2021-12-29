@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="max-profile-width">
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
             <SearchAdvanced
@@ -541,5 +541,9 @@
     .data-type {
         font-family: Hack !important;
         @apply text-gray-500 text-xs !important;
+    }
+
+    .max-profile-width {
+        max-width: calc(100vw - 476px);
     }
 </style>

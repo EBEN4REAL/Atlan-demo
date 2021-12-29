@@ -1,16 +1,20 @@
 <template>
+    <!-- :get-popup-container="(target) => target.parentNode" -->
+
     <a-popover
         v-model:visible="isVisible"
-        :get-popup-container="(target) => target.parentNode"
         placement="bottomLeft"
         trigger="['click']"
-        overlayClassName="collectionSelectPopover"
         :overlay-class-name="$style.classificationPopover"
     >
         <template #content>
             <div
                 class="flex flex-col pt-4 mt-0"
-                style="width: 315px !important; height: 338px"
+                style="
+                    width: 315px !important;
+                    height: 338px;
+                    /* z-index: 100 !important; */
+                "
             >
                 <div class="px-3">
                     <a-input
@@ -152,7 +156,6 @@
             // store
             const authStore = useAuthStore()
             const inputRef = ref()
-            // variables
 
             const isVisible = ref(false)
             const queryText = ref('')

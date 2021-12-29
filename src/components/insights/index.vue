@@ -577,6 +577,10 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
+                            console.log(
+                                'queryCollections: ',
+                                data.value.entities
+                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
@@ -673,7 +677,7 @@
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
-                observer.value.unobserve(splitpaneRef.value)
+                observer?.value?.unobserve(splitpaneRef?.value)
             })
 
             const resetTree = ref(false)

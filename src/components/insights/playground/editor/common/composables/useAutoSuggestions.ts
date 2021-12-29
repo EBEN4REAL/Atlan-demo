@@ -72,50 +72,56 @@ function generateMarkdown(
     entity: any,
     assetType: string
 ) {
-    let description,
-        ownerString,
-        ownersHTML,
-        descriptionHTML,
-        rowCountHTML = '',
-        guid
+
+    let qualifiedName = entity?.attributes?.qualifiedName?.split('/')
+    let db = qualifiedName[3]
+    let schema = qualifiedName[4]
+    let table = qualifiedName[5]
+    let name = entity?.attributes?.name
+    let description =
+        entity.attributes.userDescription || entity.attributes.description
+
+    let certificateStatus = entity?.attributes?.certificateStatus ? entity?.attributes?.certificateStatus : 'no_certificate'
+    let descriptionHTML = `<div></p><h6>Description:</h6></br>${description}</p></div>`
+    let typeHTML=`<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
+    let ownerString = entity.attributes.ownerUsers.join(', ')
+    let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
+    console.log('asset here: ', entity)
+
+    let rowCount, columnCount,rowCountHTML, isPrimaryHTML
 
     if (assetType === 'TABLE') {
-        description =
-            entity.attributes.userDescription || entity.attributes.description
-        ownerString = entity.attributes.ownerUsers.join(', ')
-        rowCountHTML = `<div>Row count:</div>
-        <p> ${entity.attributes.rowCount}</p>
-        &nbsp; 
+        rowCount = entity?.attributes?.rowCount
+        columnCount = entity?.attributes?.columnCount
+        
+        rowCountHTML = `<div>
+            <h5>${db} / ${schema}</h5><h5>${rowCount} Rows / ${columnCount} Columns</h5>
         </div>`
-        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>&nbsp;`
-        descriptionHTML = `</p> Owned by:</br>${description}</p>`
-        guid = entity.guid
+        
     } else {
-        description =
-            entity.attributes.userDescription || entity.attributes.description
-        ownerString = entity.attributes.ownerUsers.join(', ')
-        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>`
-        descriptionHTML = `</p> Description:</br>${description}</p>`
-        guid = entity.guid
+        rowCountHTML = `<div>
+            <h5>${db} / ${schema} / ${table}</h5>
+        </div>`
+
+        isPrimaryHTML = `<div>
+            <div>isPrimary: <h5>${entity?.attributes?.isPrimary ? entity?.attributes?.isPrimary : 'false'}</h5></div>
+        </div>`
     }
 
-    //<a target="_blank" href="${URL}" rel="noopener noreferrer nofollow">${entity.name}</a>
     return turndownService.turndown(
         `
+        <div>
+        ${typeHTML}
         ${description ? descriptionHTML : ''}
         ${ownerString ? ownersHTML : ''}
-        <div>
-        <div>
+        ${rowCountHTML}
+        ${assetType==='COLUMN' ? isPrimaryHTML : ''}
         </div>
-        <div style="display:flex; color: red">
-            ${rowCountHTML}
-         <div>
-         </div>
-        </div>
-        </div>
-     
+        
         `
     )
+
+    // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
 export function entitiesToEditorKeyword(
@@ -135,9 +141,9 @@ export function entitiesToEditorKeyword(
             const entities = res.entities ?? []
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
-            // console.log('suggestion: ', {
-            //     entities
-            // })
+            console.log('suggestion: ', {
+                entities
+            })
             for (let i = 0; i < len; i++) {
                 // console.log('su counter: ', i)
                 let keyword
@@ -282,7 +288,7 @@ const attributes = [
     'userDescription',
     'ownerUsers',
     'ownerGroups',
-
+    'isPrimary',
     'connectorName',
     'connectionId',
     'connectionQualifiedName',
@@ -291,6 +297,7 @@ const attributes = [
     'rowCount',
     'columnCount',
     'tableCount',
+    'certificateStatus',
     '__guid',
     'qualifiedName',
     'connectionName',
@@ -302,26 +309,93 @@ const refreshBody = () => {
         dsl: {
             from: 0,
             size: 100,
-            sort: [
-                {
-                    'name.keyword': {
-                        order: 'asc',
-                    },
-                },
-            ],
+            // sort: [
+            //     {
+            //         'name.keyword': {
+            //             order: 'asc',
+            //         },
+            //     },
+            // ],
+            // query: {
+            //     bool: {
+            //         filter: {
+            //             bool: {
+            //                 must: [],
+            //             },
+            //         },
+            //     },
+            // },
             query: {
-                bool: {
-                    filter: {
+                function_score: {
+                    query: {
                         bool: {
-                            must: [],
+                            filter: {
+                                bool: {
+                                    must: [],
+                                },
+                            },
+                            
                         },
                     },
+                    functions: [
+                        {
+                            filter: {
+                                match: {
+                                    certificateStatus: 'VERIFIED',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    certificateStatus: 'DRAFT',
+                                },
+                            },
+                            weight: 4,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'Table',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'View',
+                                },
+                            },
+                            weight: 5,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'Column',
+                                },
+                            },
+                            weight: 3,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    __typeName: 'AtlasGlossaryTerm',
+                                },
+                            },
+                            weight: 4,
+                        },
+                    ],
+                    boost_mode: 'sum',
+                    score_mode: 'sum',
                 },
             },
         },
         attributes,
     }
 }
+
 async function getSuggestionsUsingType(
     type: string = 'TABLE',
     token: string,
@@ -335,26 +409,26 @@ async function getSuggestionsUsingType(
 ) {
     refreshBody()
     if (connectorsInfo.schemaName) {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 schemaQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}`,
             },
         })
     } else if (connectorsInfo.databaseName) {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 databaseQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}`,
             },
         })
     } else {
-        body.value.dsl.query.bool.filter.bool.must.push({
+        body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
             term: {
                 connectionQualifiedName: `${connectorsInfo.connectionQualifiedName}`,
             },
         })
     }
 
-    body.value.dsl.query.bool.filter.bool.must.push({
+    body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
         regexp: {
             'name.keyword': `${currentWord}.*`,
         },
@@ -362,7 +436,7 @@ async function getSuggestionsUsingType(
 
     switch (type) {
         case 'TABLE': {
-            body.value.dsl.query.bool.filter.bool.must.push({
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
                 terms: {
                     '__typeName.keyword': ['Table', 'View'],
                 },
@@ -396,7 +470,7 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
-            body.value.dsl.query.bool.filter.bool.must.push({
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
                 terms: {
                     '__typeName.keyword': ['Column'],
                 },

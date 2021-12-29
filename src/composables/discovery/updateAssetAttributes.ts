@@ -192,7 +192,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         let isChanged = false
 
         if (
-            !entity.value.attributes.ownerUsers &&
+            ownerUsers(selectedAsset.value).length === 0 &&
             Object.keys(localOwners.value?.ownerUsers).length === 0
         ) {
             isChanged = false
@@ -231,7 +231,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         let isChanged = false
 
         if (
-            !entity.value.attributes.adminUsers &&
+            adminUsers(selectedAsset.value).length === 0 &&
             Object.keys(localAdmins.value?.adminUsers).length === 0
         ) {
             isChanged = false
@@ -347,8 +347,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleAssignedEntitiesUpdate = ({
         linkedAssets,
         unlinkedAssets,
-        term
-    }: { 
+        term,
+    }: {
         linkedAssets: assetInterface[]
         unlinkedAssets: assetInterface[]
         term: assetInterface
@@ -379,45 +379,49 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
-            if(!meanings.find((meaning) => meaning.guid === term.guid)) {
+            if (!meanings.find((meaning) => meaning.guid === term.guid)) {
                 meanings.push({
-                    typeName: "AtlasGlossaryTerm",
-                    guid: term.guid
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
                 })
             }
-            return ({
+            return {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
                     ...assignedEntitiy.attributes,
-                    ...assignedEntitiy.uniqueAttributes
+                    ...assignedEntitiy.uniqueAttributes,
                 },
                 relationshipAttributes: {
-                    meanings
-                }
-            })
-        });
+                    meanings,
+                },
+            }
+        })
 
         const unlinked = unlinkedAssets.map((unassignedEntity) => {
-            return ({
+            return {
                 guid: unassignedEntity.guid,
                 typeName: unassignedEntity.typeName,
                 attributes: {
                     ...unassignedEntity.attributes,
-                    ...unassignedEntity.uniqueAttributes
+                    ...unassignedEntity.uniqueAttributes,
                 },
                 relationshipAttributes: {
-                    meanings: unassignedEntity.attributes.meanings?.filter((meaning) => meaning.guid !== term.guid) ?? []
-                }
-            })
+                    meanings:
+                        unassignedEntity.attributes.meanings?.filter(
+                            (meaning) => meaning.guid !== term.guid
+                        ) ?? [],
+                },
+            }
         })
 
         body.value.entities = [...linked, ...unlinked]
         currentMessage.value = 'Linked assets updated'
         mutate()
 
-        whenever(isReady, () => {
-            localAssignedEntities.value = assignedEntities(selectedAsset.value)
+        whenever(isUpdateReady, () => {
+            console.log('bruh 1', assignedEntities(selectedAsset.value), asset)
+            localAssignedEntities.value = assignedEntities(asset.value)
         })
     }
 

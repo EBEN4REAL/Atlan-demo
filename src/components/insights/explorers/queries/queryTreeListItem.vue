@@ -4,17 +4,11 @@
         :style="`opacity: ${
             selectedFolderHide?.guid === item?.guid ? 0.5 : 1
         };`"
-        :class="`${
-            selectedNewFolder?.guid === item?.guid
-                ? 'bg-primary-selected-focus w-9/11'
-                : 'bg-white'
-        }`"
     >
-        <!-- {{ selectedNewFolder }} -->
-        <div class="flex justify-between w-full overflow-hidden">
+        <div class="flex justify-between w-full overflow-hidden item-center">
             <div class="flex w-full m-0">
                 <div
-                    v-if="item.typeName === 'QueryFolder'"
+                    v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1 parent-ellipsis-container">
@@ -25,16 +19,22 @@
                                         ? 'FolderOpen'
                                         : 'FolderClosed'
                                 "
-                                class="w-5 h-5 my-auto mr-1"
+                                class="w-4 h-4 mr-1"
+                                style="margin-top: 3px"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                class="text-sm text-gray-700 parent-ellipsis-container-base mt-0.5"
                                 >{{ title(item) }}</span
                             >
                         </div>
                     </div>
                 </div>
             </div>
+            <AtlanIcon
+                v-if="selectedNewFolder?.guid === item?.guid"
+                icon="Check"
+                class="w-4 h-4 pr-4 mt-2 text-primary"
+            />
         </div>
     </div>
 </template>

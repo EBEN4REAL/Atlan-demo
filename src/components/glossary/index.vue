@@ -12,7 +12,7 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <div class="flex">
+            <div class="flex" v-auth="map.CREATE_GLOSSARY">
                 <AddGTCModal
                     :key="selectedGlossaryQf"
                     :entityType="defaultEntityType"
@@ -189,6 +189,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GlossaryExplorer',
@@ -455,8 +456,8 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
-                emit('check', checkedNodes, { checkedKeys, checked })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
             }
             const onSearchItemCheck = (checkedNode, checked) => {
                 if (checkedNode.typeName === 'AtlasGlossaryTerm') {
@@ -512,6 +513,7 @@
                 searchBar,
                 onSearchItemCheck,
                 showCollapseAll,
+                map
             }
         },
     })

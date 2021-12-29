@@ -70,8 +70,8 @@ export function useAssetSidebar(
 
     const refreshBody = (asset) => {
         const base = bodybuilder()
-        base.filter('term', '__typeName.keyword', asset.typeName)
-        base.filter('term','qualifiedName', asset.attributes.qualifiedName)
+        base.filter('term', '__typeName.keyword', asset?.typeName)
+        base.filter('term','qualifiedName', asset?.attributes?.qualifiedName)
 
         return base.build()
     }

@@ -24,12 +24,6 @@
                         >{{ item?.attributes?.name }}</span
                     ></span
                 >
-                <!-- <div class="flex items-center">
-                    <span class="mr-2 text-sm font-normal text-gray-700"
-                        >Share with others</span
-                    >
-                    <a-switch v-model:checked="isShareable" size="small" />
-                </div> -->
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
                 <span class="text-sm font-normal text-gray-700"
@@ -121,27 +115,6 @@
                 <span class="text-sm text-gray-700">Add users and groups</span>
 
                 <div class="flex items-center mb-1.5">
-                    <!-- <UserList
-                        user-list-header-class="min-w-full"
-                        :user-list-style="{
-                            maxHeight: '250px',
-                        }"
-                        :minimal="true"
-                        :showHeaderButtons="true"
-                        class="w-full"
-                        v-model:selectedUsers="
-                            userData[selectedType].ownerUsers
-                        "
-                        v-model:selectedUsersData="
-                            userDataDetail[selectedType].ownerUsers
-                        "
-                        v-model:selectedGroups="
-                            userData[selectedType].ownerGroups
-                        "
-                        v-model:selectedGroupsData="
-                            userDataDetail[selectedType].ownerGroups
-                        "
-                    /> -->
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
                             class="flex items-center justify-center h-8 mt-2 text-gray-700 border border-r-0 border-gray-300 rounded-lg rounded-r-none cursor-pointer"
@@ -168,26 +141,6 @@
                             />
                         </template>
                     </a-dropdown>
-                    <!-- <a-dropdown
-                        :trigger="['click']"
-                        placement="bottomLeft"
-                        v-model:visible="userDropdown"
-                    >
-                        <div
-                            class="flex items-center justify-center w-full h-8 pl-4 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
-                            @click="showUserDropdown"
-                        > -->
-                    <!-- <AtlanIcon
-                                icon="Search"
-                                class="w-4 h-4 text-gray-500"
-                            /> -->
-                    <!-- <span class="px-2 font-normal text-gray-700">
-                                Add users & groups
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="w-4 h-4 font-normal text-gray-700"
-                                />
-                            </span> -->
 
                     <div
                         class="flex items-center justify-center w-full h-8 pl-2 pr-2 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
@@ -201,30 +154,14 @@
                             :disabledModalValue="userData[otherType]"
                         />
                     </div>
-
-                    <!-- <template #overlay>
-                            <div
-                                style="width: 330px"
-                                class="px-2 py-2 pt-4 bg-white rounded-lg shadow-lg"
-                            >
-                                <Owners
-                                    :showNone="false"
-                                    select-group-key="alias"
-                                    select-user-key="username"
-                                    v-model:modelValue="userData[selectedType]"
-                                    :disabledModalValue="userData[otherType]"
-                                />
-                            </div>
-                        </template>
-                    </a-dropdown> -->
                 </div>
-                <span class="text-xs text-gray-500"
+                <!-- <span class="text-xs text-gray-500"
                     >{{
                         selectedType === 'view'
                             ? 'Can view and run all the queries, but not edit'
                             : 'Can view, run and edit all queries'
                     }}
-                </span>
+                </span> -->
 
                 <div
                     style="max-height: 172px"
@@ -237,40 +174,6 @@
                     "
                 >
                     <UserItem v-model:userData="userData" />
-                    <!-- </template>
-                    </div> -->
-                    <!-- <a-tabs
-                        v-model:activeKey="editors"
-                        size="small"
-                        :class="$style.tabBar"
-                    >
-                        <a-tab-pane key="editors" tab="Editors">
-                            <div
-                                class="overflow-auto"
-                                style="max-height: 150px"
-                            >
-                                
-                            </div>
-                        </a-tab-pane>
-                        <a-tab-pane key="viewers" tab="Viewers">
-                            <div
-                                class="overflow-y-auto"
-                                style="max-height: 150px"
-                            >
-                                <template
-                                    v-for="item in [
-                                        ...userData['view'].ownerUsers,
-                                        ...userData['view'].ownerGroups,
-                                    ]"
-                                >
-                                    <UserItem
-                                        :user="item"
-                                        permission="Viewers"
-                                    />
-                                </template>
-                            </div>
-                        </a-tab-pane>
-                    </a-tabs> -->
                 </div>
             </div>
             <div
@@ -404,11 +307,11 @@
                 if (isCreate.value) {
                     return 'true'
                 } else {
-                    let x1 = item?.value?.attributes?.ownerGroups
-                        ? item?.value?.attributes?.ownerGroups
+                    let x1 = item?.value?.attributes?.adminGroups
+                        ? item?.value?.attributes?.adminGroups
                         : []
-                    let x2 = item?.value?.attributes?.ownerUsers
-                        ? item?.value?.attributes?.ownerUsers
+                    let x2 = item?.value?.attributes?.adminUsers
+                        ? item?.value?.attributes?.adminUsers
                         : []
                     let x3 = item?.value?.attributes?.viewerUsers
                         ? item?.value?.attributes?.viewerUsers
@@ -449,10 +352,10 @@
                 edit: {
                     ownerGroups: isCreate.value
                         ? []
-                        : item?.value?.attributes?.ownerGroups,
+                        : item?.value?.attributes?.adminGroups,
                     ownerUsers: isCreate.value
                         ? [username.value]
-                        : item?.value?.attributes?.ownerUsers,
+                        : item?.value?.attributes?.adminUsers,
                 },
                 view: {
                     ownerGroups: isCreate.value
@@ -525,14 +428,14 @@
                 let ownersData =
                     isShareable.value === 'true'
                         ? {
-                              ownerUsers: userData.value['edit'].ownerUsers,
-                              ownerGroups: userData.value['edit'].ownerGroups,
+                              adminUsers: userData.value['edit'].ownerUsers,
+                              adminGroups: userData.value['edit'].ownerGroups,
                               viewerUsers: userData.value['view'].ownerUsers,
                               viewerGroups: userData.value['view'].ownerGroups,
                           }
                         : {
-                              ownerUsers: [],
-                              ownerGroups: [],
+                              adminUsers: [],
+                              adminGroups: [],
                               viewerUsers: [],
                               viewerGroups: [],
                           }
@@ -577,20 +480,20 @@
                 let ownersData =
                     isShareable.value === 'true'
                         ? {
-                              ownerUsers: userData.value['edit'].ownerUsers,
-                              ownerGroups: userData.value['edit'].ownerGroups,
+                              adminUsers: userData.value['edit'].ownerUsers,
+                              adminGroups: userData.value['edit'].ownerGroups,
                               viewerUsers: userData.value['view'].ownerUsers,
                               viewerGroups: userData.value['view'].ownerGroups,
                           }
                         : {
-                              ownerUsers: [],
-                              ownerGroups: [],
+                              adminUsers: [],
+                              adminGroups: [],
                               viewerUsers: [],
                               viewerGroups: [],
                           }
 
                 const entity = {
-                    typeName: 'QueryCollection',
+                    typeName: 'Collection',
                     attributes: {
                         ...item?.value?.attributes,
                         ...ownersData,

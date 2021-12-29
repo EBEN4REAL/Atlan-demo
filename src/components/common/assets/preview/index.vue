@@ -15,7 +15,7 @@
                 >
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"
-                        class="h-5 text-gray-500 mb-0.5"
+                        class="h-4 text-gray-500 mb-0.5"
                     />
                 </div>
 
@@ -29,7 +29,7 @@
                             ? 'pointer-events-none text-gray-500'
                             : 'text-primary'
                     "
-                    class="flex-shrink mb-0 overflow-hidden font-bold leading-none truncate cursor-pointer text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden font-bold leading-none truncate bg-transparent cursor-pointer text-md hover:underline overflow-ellipsis whitespace-nowrap"
                     @click="() => $emit('closeDrawer')"
                 >
                     {{ title(selectedAsset) }}

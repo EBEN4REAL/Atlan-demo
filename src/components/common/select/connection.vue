@@ -40,6 +40,7 @@
 
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { usePersonaStore } from '~/store/persona'
 
     export default defineComponent({
         props: {
@@ -64,10 +65,19 @@
                     return ''
                 },
             },
+            persona: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { connector, showCount } = toRefs(props)
+            const { connector, showCount, persona } = toRefs(props)
+
+            const personaStore = usePersonaStore()
 
             const { modelValue } = useVModels(props, emit)
             const selectedValue = ref(modelValue.value)
@@ -76,6 +86,13 @@
             const queryText = ref('')
 
             const { getConnectorImage } = useAssetInfo()
+
+            const applicableConnectionArray = computed(() => {
+                const found = personaStore.list.find(
+                    (item) => item.id === persona.value
+                )
+                return found?.metadataPolicies.map((i) => i.connectionId) || []
+            })
 
             const filteredList = computed(() =>
                 list
@@ -99,6 +116,14 @@
                             return item.attributes.name
                                 .toLowerCase()
                                 .includes(queryText.value.toLowerCase())
+                        }
+                        return true
+                    })
+                    .filter((item) => {
+                        if (persona.value) {
+                            return applicableConnectionArray.value.includes(
+                                item.guid
+                            )
                         }
                         return true
                     })
@@ -128,6 +153,7 @@
                 handleSearch,
                 showCount,
                 getConnectorImage,
+                applicableConnectionArray,
             }
         },
     })

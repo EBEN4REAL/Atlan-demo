@@ -120,9 +120,11 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                glossaryStore.setActiveGlossaryQualifiedName(
-                    asset?.attributes?.qualifiedName
-                )
+                if (asset?.typeName === 'AtlasGlossary') {
+                    glossaryStore.setActiveGlossaryQualifiedName(
+                        asset?.attributes?.qualifiedName
+                    )
+                }
             }
 
             watch(selectedGlossary, () => {
@@ -157,7 +159,7 @@
                     getGlossaryByQF(selectedGlossaryQf.value)
                 ) {
                     updateList(getGlossaryByQF(selectedGlossaryQf.value))
-                    router.push(
+                    router.replace(
                         `/glossary/${
                             getGlossaryByQF(selectedGlossaryQf.value)?.guid
                         }/overview`

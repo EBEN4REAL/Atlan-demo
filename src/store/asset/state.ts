@@ -6,6 +6,7 @@ export interface State {
     activeFacet: any
     preferences: any
     activePostFacet: any
+    globalState: string[]
 }
 
 export const state: State = {
@@ -14,4 +15,5 @@ export const state: State = {
     preferences: useStorage('asset_preferences', {}),
     activeFacet: useStorage('asset_activeFacet', {}),
     activePostFacet: useStorage('asset_activePostFacet', {}),
+    globalState: useStorage('asset_globalState', []),
 }

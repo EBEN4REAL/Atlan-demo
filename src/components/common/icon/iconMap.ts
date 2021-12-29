@@ -318,6 +318,10 @@ import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
 import CollectionBody from '~/assets/images/insights/collection/body.svg'
 import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
+import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
+import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
+import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
+import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
 import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
@@ -636,5 +640,9 @@ export default {
     SetContext,
     CollectionHeader,
     CollectionBody,
-    CollectionFooter
+    CollectionFooter,
+    CollectionIconSmall,
+    CollectionIconLarge,
+    CollectionIconSmallGray,
+    CollectionIconLargeActive
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-44" :class="listClass">
+    <div class="w-full" :class="listClass ? listClass : 'h-44'">
         <div
             v-if="userList.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -9,64 +9,67 @@
             </div>
         </div>
         <div
-            class="flex flex-col w-full h-40 overflow-y-auto"
-            :class="checkboxListClass"
+            class="flex flex-col w-full overflow-y-auto"
+            :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
             <div class="w-full px-3">
                 <div v-if="isEnriching" class="flex justify-center">
                     <a-spin size="small"></a-spin>
                 </div>
                 <div v-else>
-                    <template v-for="item in userList" :key="item[selectUserKey]">
-                    <a-checkbox
-                        :checked="
-                            map[item[selectUserKey]] ||
-                            disabledKeyMap[item[selectUserKey]]
-                        "
-                        :disabled="
-                            disabledKeyMap[item[selectUserKey]] &&
-                            disabledKeyMap[item[selectUserKey]] === true
-                        "
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
-                        :class="listItemClass"
-                        @change="
-                            (checked) =>
-                                handleChange(checked, item[selectUserKey])
-                        "
+                    <template
+                        v-for="item in userList"
+                        :key="item[selectUserKey]"
                     >
-                        <div class="flex items-center">
-                            <Avatar
-                                v-if="showAvatar"
-                                avatar-shape="circle"
-                                :image-url="imageUrl(item.username)"
-                                :allow-upload="false"
-                                :avatar-name="item.username"
-                                :avatar-size="20"
-                                class="mr-2"
-                            />
-                            <div
-                                class="text-sm leading-none capitalize text-gray"
-                            >
-                                {{ fullName(item) }}
-                                <span
-                                    v-if="item.username === username"
-                                    class="text-sm text-gray-500"
+                        <a-checkbox
+                            :checked="
+                                map[item[selectUserKey]] ||
+                                disabledKeyMap[item[selectUserKey]]
+                            "
+                            :disabled="
+                                disabledKeyMap[item[selectUserKey]] &&
+                                disabledKeyMap[item[selectUserKey]] === true
+                            "
+                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                            :class="listItemClass"
+                            @change="
+                                (checked) =>
+                                    handleChange(checked, item[selectUserKey])
+                            "
+                        >
+                            <div class="flex items-center">
+                                <Avatar
+                                    v-if="showAvatar"
+                                    avatar-shape="circle"
+                                    :image-url="imageUrl(item.username)"
+                                    :allow-upload="false"
+                                    :avatar-name="item.username"
+                                    :avatar-size="20"
+                                    class="mr-2"
+                                />
+                                <div
+                                    class="text-sm leading-none capitalize text-gray"
                                 >
-                                    (me)
-                                </span>
+                                    {{ fullName(item) }}
+                                    <span
+                                        v-if="item.username === username"
+                                        class="text-sm text-gray-500"
+                                    >
+                                        (me)
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </a-checkbox>
-                </template>
+                        </a-checkbox>
+                    </template>
                 </div>
             </div>
             <div
                 v-if="userList.length > 0"
                 class="flex items-center justify-between px-4"
             >
-                <p class="text-xs text-gray-500">
+                <!-- <p class="text-xs text-gray-500">
                     {{ userList.length }} of {{ filterTotal }} users
-                </p>
+                </p> -->
                 <template v-if="userList?.length < filterTotal">
                     <div class="flex justify-center" v-if="isLoading">
                         <a-spin size="small"></a-spin>
@@ -80,6 +83,11 @@
                     </div>
                 </template>
             </div>
+        </div>
+        <div class="pl-4">
+            <p class="text-xs text-gray-500">
+                {{ userList.length }} of {{ filterTotal }} users
+            </p>
         </div>
     </div>
 </template>
@@ -123,7 +131,7 @@
             groupId: {
                 type: String,
                 required: false,
-                default: ""
+                default: '',
             },
             showAvatar: {
                 type: Boolean,
@@ -163,9 +171,9 @@
                 filterTotal,
                 loadMore,
                 isLoading,
-                isEnriching
+                isEnriching,
             } = useFacetUsers({
-                groupId
+                groupId,
             })
 
             watch(

@@ -7,9 +7,8 @@
             >
         </div> -->
         <slot name="announcement"></slot>
-
-        <div class="grid grid-cols-2">
-            <div class="flex flex-col gap-y-3">
+        <div class="flex flex-col gap-y-3">
+            <div class="grid grid-cols-2">
                 <div class="flex flex-col">
                     <p class="text-gray-500">Name</p>
                     <div class="flex items-center mb-0 overflow-hidden">
@@ -49,39 +48,45 @@
                         ></a-tooltip>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <p class="text-gray-500">Description</p>
-                    <Description
-                        ref="descriptionRef"
-                        v-model="localDescription"
-                        :selected-asset="asset"
-                        :edit-permission="false"
-                        :in-profile="true"
-                        class="-ml-1"
-                        @change="handleChangeDescription"
-                    />
-                </div>
-            </div>
-            <div class="flex flex-col gap-y-3">
-                <div
-                    v-if="
-                        !isGTC(asset) &&
-                        !['Connection', 'Process'].includes(asset.typeName)
-                    "
-                    class="flex flex-col text-sm"
-                >
-                    <span class="mb-1 text-gray-500">Connection</span>
-                    <div class="flex items-center">
-                        <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
-                        <span>{{
-                            `${connectorName(asset)}/${connectionName(asset)}`
-                        }}</span>
+
+                <div class="flex flex-col gap-y-3">
+                    <div
+                        v-if="
+                            !isGTC(asset) &&
+                            !['Connection', 'Process'].includes(asset.typeName)
+                        "
+                        class="flex flex-col text-sm"
+                    >
+                        <span class="mb-1 text-gray-500">Connection</span>
+                        <div class="flex items-center">
+                            <img
+                                :src="getConnectorImage(asset)"
+                                class="h-4 mr-1"
+                            />
+                            <span>{{
+                                `${connectorName(asset)}/${connectionName(
+                                    asset
+                                )}`
+                            }}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-col">
+                    <!-- <div class="flex flex-col">
                     <p class="text-gray-500">Asset Type</p>
                     {{ asset.typeName }}
+                </div> -->
                 </div>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-gray-500">Description</p>
+                <Description
+                    ref="descriptionRef"
+                    v-model="localDescription"
+                    :selected-asset="asset"
+                    :edit-permission="false"
+                    :in-profile="true"
+                    class="-ml-1"
+                    @change="handleChangeDescription"
+                />
             </div>
         </div>
         <slot></slot>

@@ -51,7 +51,7 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
     checkedGuids = [],
-    localCheckedNodes
+    localCheckedNodes,
 }: UseTreeParams) => {
     const limit = ref(100)
     const offset = ref(0)
@@ -525,7 +525,8 @@ const useGlossaryTree = ({
                 if (
                     loadedKeys.value.find(
                         (key) => node?.key === key || node?.value?.key === key
-                    )
+                    ) ||
+                    action === 'delete'
                 ) {
                     return {
                         ...node,

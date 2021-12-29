@@ -3,17 +3,48 @@
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <div class="mt-1">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon('query', activeInlineTab?.status)
-                    "
-                    class="w-4 h-4 my-auto mr-1 -mt-0.5"
-                ></AtlanIcon>
+            <a-tooltip
+                color="#363636"
+                class="flex items-center h-6 border-none"
+                v-if="activeInlineTab?.description?.length"
+            >
+                <template #title>
+                    {{ activeInlineTab?.description }}
+                </template>
+                <div class="flex items-center">
+                    <div class="mt-1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    'query',
+                                    activeInlineTab?.status
+                                )
+                            "
+                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                        ></AtlanIcon>
+                    </div>
+                    <span class="mt-1 mr-1 text-base text-gray-700">{{
+                        activeInlineTab.label
+                    }}</span>
+                </div>
+            </a-tooltip>
+            <div class="flex items-center" v-else>
+                <div class="mt-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                'query',
+                                activeInlineTab?.status
+                            )
+                        "
+                        class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                    ></AtlanIcon>
+                </div>
+                <span class="mt-1 mr-1 text-base text-gray-700">{{
+                    activeInlineTab.label
+                }}</span>
             </div>
-            <span class="mt-1 mr-1 text-base text-gray-700">{{
-                activeInlineTab.label
-            }}</span>
+
             <span
                 v-if="readOnly"
                 class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"

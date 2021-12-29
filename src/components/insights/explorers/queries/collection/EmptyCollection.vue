@@ -1,32 +1,32 @@
 <template>
     <div class="flex flex-col items-center w-full h-full">
         <div class="flex flex-col items-center w-full">
-            <AtlanIcon icon="CollectionHeader" class="w-full h-32" />
+            <AtlanIcon icon="CollectionHeader" class="w-full h-auto" />
             <span class="-mt-12 text-2xl font-bold bg-transparent"
                 >Collections</span
             >
-            <p style="max-width: 18rem" class="mt-3 text-base text-center">
-                Collections brings harmony to the growing pile of important
-                queries in your organisation.
+            <p style="max-width: 18rem" class="mt-2 text-base text-center">
+                Collections brings harmony to the growing pile of queries in
+                your organisation.
             </p>
         </div>
-        <div class="flex flex-col items-center w-full mt-2 mb-4">
-            <img :src="Body" alt="" class="w-7/12" />
+        <div class="flex flex-col items-center w-full">
+            <img :src="Body" alt="" class="w-9/12 mt-7" />
 
-            <p style="max-width: 18rem" class="-mt-2 text-base text-center">
-                Organise queries relevant for your project in folders.
+            <p style="max-width: 18rem" class="text-sm font-bold text-center">
+                Enrich your collection with Folders and Queries
             </p>
         </div>
-        <div class="flex flex-col items-center w-full mt-2">
-            <img :src="Footer" alt="" class="w-7/12" />
+        <div class="flex flex-col items-center w-full">
+            <img :src="Footer" alt="" class="w-9/12 mt-6" />
 
-            <p style="max-width: 18rem" class="text-base text-center">
-                Share collections with your team.
+            <p style="max-width: 18rem" class="text-sm font-bold text-center">
+                Share collections with your team
             </p>
         </div>
 
         <AtlanButton
-            class="font-bold w-36 mt-11"
+            class="mt-16 font-bold w-36"
             size="lg"
             color="primary"
             padding="compact"

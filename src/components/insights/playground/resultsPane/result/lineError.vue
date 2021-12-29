@@ -344,6 +344,7 @@
     }
 
     .errorPanel {
+        // height: calc(100% - 4.5rem);
         overflow-y: auto;
     }
 </style>

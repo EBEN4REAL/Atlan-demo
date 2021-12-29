@@ -97,7 +97,7 @@
                     style="width: 90%"
                 >
                     <span
-                        class="text-base font-bold text-gray-700 truncate mr-2.5"
+                        class="mr-1 text-base font-bold text-gray-700 truncate"
                         >{{ selectedCollection?.attributes?.name }}</span
                     >
                     <AtlanIcon

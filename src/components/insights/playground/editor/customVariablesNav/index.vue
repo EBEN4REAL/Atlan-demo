@@ -64,7 +64,7 @@
                         style="width: 138px; height: 30px"
                         v-model:value="variable.value"
                         @change="onChange(variable)"
-                        :placeholder="`Enter a ${variable.type}`"
+                        :placeholder="`Enter a value`"
                         :type="variable.type === 'number' ? 'number' : 'text'"
                         v-if="variable.type !== 'dropdown'"
                     />
@@ -101,7 +101,7 @@
                                             "
                                             class="px-4 pt-2 pb-2"
                                         >
-                                            Check all
+                                            Select all
                                         </a-checkbox>
                                         <div class="checkbox-border"></div>
 
@@ -188,7 +188,7 @@
                         </div>
                         <template #overlay>
                             <a-menu>
-                                <div class="p-4" style="width: 215px">
+                                <div class="p-4" style="width: 240px">
                                     <div
                                         class="flex items-center justify-between mb-3"
                                     >
@@ -196,24 +196,41 @@
                                             variable.name
                                         }}</span>
                                         <div class="flex items-center">
-                                            <AtlanIcon
-                                                @click="
-                                                    () =>
-                                                        onCopyVariable(variable)
-                                                "
-                                                class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
-                                                icon="CopyOutlined"
-                                            />
-                                            <AtlanIcon
-                                                @click="
-                                                    () =>
-                                                        onDeleteVariable(
-                                                            variable
-                                                        )
-                                                "
-                                                class="w-4 h-4 text-gray-500 cursor-pointer"
-                                                icon="Delete"
-                                            />
+                                            <a-tooltip
+                                                placement="bottom"
+                                                color="#363636"
+                                            >
+                                                <template #title>Copy</template>
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onCopyVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
+                                                    icon="CopyOutlined"
+                                                />
+                                            </a-tooltip>
+
+                                            <a-tooltip
+                                                placement="bottom"
+                                                color="#363636"
+                                            >
+                                                <template #title
+                                                    >Delete</template
+                                                >
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onDeleteVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 text-gray-500 cursor-pointer"
+                                                    icon="Delete"
+                                                />
+                                            </a-tooltip>
                                         </div>
                                     </div>
                                     <div class>
@@ -223,7 +240,7 @@
                                             ref="formRef"
                                         >
                                             <a-form-item
-                                                label="Variable name"
+                                                label="Name"
                                                 class="mb-4 text-gray-700 tex-sm"
                                                 name="name"
                                             >
@@ -231,7 +248,7 @@
                                                     v-model:value="
                                                         variable.name
                                                     "
-                                                    placeholder="new_variable"
+                                                    placeholder="Name"
                                                     :class="
                                                         inputError
                                                             ? `border-red-300`
@@ -240,7 +257,7 @@
                                                 />
                                             </a-form-item>
                                             <a-form-item
-                                                label="Variable type"
+                                                label="Type"
                                                 class="mb-4 text-gray-700 tex-sm"
                                                 name="type"
                                             >
@@ -307,14 +324,18 @@
                                                         )
                                                     "
                                                     :options="variable.options"
-                                                ></a-select>
+                                                >
+                                                    <!-- <template
+                                                        #dropdownRender
+                                                    ></template> -->
+                                                </a-select>
 
                                                 <a-input
                                                     v-else
                                                     v-model:value="
                                                         variable.value
                                                     "
-                                                    :placeholder="`Enter a ${variable.type}`"
+                                                    :placeholder="`Enter a value`"
                                                     :type="
                                                         variable.type ===
                                                         'number'

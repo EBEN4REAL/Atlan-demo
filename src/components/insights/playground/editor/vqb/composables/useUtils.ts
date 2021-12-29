@@ -3,6 +3,7 @@ import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interfa
 import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
 import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -68,7 +69,10 @@ export function useUtils() {
         })
         return res
     }
-    function getSummarisedInfoOfFilterPanel(subpanels: SubpanelFilter[]) {
+    function getSummarisedInfoOfFilterPanel(
+        subpanels: SubpanelFilter[],
+        activeInlineTab: activeInlineTabInterface
+    ) {
         if (subpanels.length == 0) return 'No Columns Added for filter'
         let res = ' '
         subpanels.forEach((subpanel, i) => {
@@ -78,25 +82,96 @@ export function useUtils() {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value?.length > 0) {
-                            const firstVal = getValueStringFromType(
+                        if (subpanel.filter?.isVariable) {
+                            let firstVal = ''
+                            let secondVal = ''
+                            const variable1 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId === subpanel.id
+                                )
+                            // inputNumField
+                            const variable2 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId ===
+                                        `${subpanel.id}2`
+                                )
+
+                            firstVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[0] ?? ''
+                                variable1?.value ?? ''
                             )
-                            const secondVal = getValueStringFromType(
+                            secondVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[1] ?? ''
+                                variable2?.value ?? ''
                             )
+
+                            /* Check if the type is date */
+                            if (
+                                subpanel?.column?.type?.toLowerCase() === 'date'
+                            ) {
+                                firstVal = getValueStringFromType(
+                                    subpanel,
+                                    variable1?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                                secondVal = getValueStringFromType(
+                                    subpanel,
+                                    variable2?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                            }
+
                             res += ` ${firstVal} AND ${secondVal}`
+                        } else {
+                            if (subpanel?.filter?.value?.length > 0) {
+                                let firstVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[0] ?? ''
+                                )
+                                let secondVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[1] ?? ''
+                                )
+                                res += ` ${firstVal} AND ${secondVal}`
+                            }
                         }
                     }
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    if (subpanel.filter?.isVariable) {
+                        const variable =
+                            activeInlineTab.playground.editor.variables.find(
+                                (variable) =>
+                                    variable?.subpanelId === subpanel.id
+                            )
+
+                        /* Check if the type is date */
+                        if (subpanel?.column?.type?.toLowerCase() === 'date') {
+                            res += `
+                                ${getValueStringFromType(
+                                    subpanel,
+                                    variable?.value.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )}`
+                        } else {
+                            res += `
+                                  ${getValueStringFromType(
+                                      subpanel,
+                                      variable?.value ?? ''
+                                  )}`
+                        }
+                    } else {
+                        res += ` ${getValueStringFromType(
+                            subpanel,
+                            subpanel?.filter?.value ?? ''
+                        )}`
+                    }
                     break
                 }
                 case 'multi_input': {

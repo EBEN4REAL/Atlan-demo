@@ -779,26 +779,29 @@
                     }
                     //prevent the default action
                 }
-                if (e.key === 'Q' || e.key === 'q') {
-                    if (e.ctrlKey) {
-                        e.preventDefault()
-                        if (vqbQueryRoute.value) {
-                            // showVQB.value = !showVQB.value
-                            const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
 
-                            activeInlineTabCopy.playground.isVQB =
-                                !activeInlineTabCopy?.playground?.isVQB
+                /* Toggle VQB CODE */
+                // if (e.key === 'Q' || e.key === 'q') {
+                //     if (e.ctrlKey) {
+                //         e.preventDefault()
+                //         if (vqbQueryRoute.value) {
+                //             // showVQB.value = !showVQB.value
+                //             const activeInlineTabCopy: activeInlineTabInterface =
+                //                 Object.assign({}, activeInlineTab.value)
 
-                            setVQBInInlineTab(
-                                activeInlineTabCopy,
-                                inlineTabs,
-                                true
-                            )
-                        }
-                    }
-                    //prevent the default action
-                }
+                //             activeInlineTabCopy.playground.isVQB =
+                //                 !activeInlineTabCopy?.playground?.isVQB
+
+                //             setVQBInInlineTab(
+                //                 activeInlineTabCopy,
+                //                 inlineTabs,
+                //                 true
+                //             )
+                //         }
+                //     }
+                //     //prevent the default action
+                // }
+                /* ----------------------------- */
             }
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)

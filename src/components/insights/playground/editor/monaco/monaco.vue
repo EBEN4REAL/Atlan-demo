@@ -169,7 +169,7 @@
                         setMoustacheTemplateColor(editor, monaco, matches)
                         return
                     }
-
+                    /* FIXME: THIS LOGIC SHOULD MOVE IN SEPRATE FXN */
                     if (matches && matches?.length >= 0) {
                         createDebounce()(() => {
                             const resultsLeft = matches.filter(
@@ -198,6 +198,7 @@
                                 resultsLeft
                             )
                         }, 500)
+                        /* --------------------------------------------------- */
                         // console.log('variables: ', matches)
                         setMoustacheTemplateColor(editor, monaco, matches)
                     } else {

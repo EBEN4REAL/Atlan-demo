@@ -302,8 +302,8 @@
             isCache: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -314,13 +314,14 @@
                 projection,
                 allCheckboxAreaClick,
                 disableHandlePreview,
-                isCache
+                isCache,
             } = toRefs(props)
 
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
+            const globalState = ref([])
             const selectedAssetId = ref('')
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
@@ -367,6 +368,11 @@
             } else {
                 activeKey.value = ['hierarchy']
             }
+
+            if (discoveryStore.globalState?.length > 0) {
+                globalState.value = discoveryStore.globalState
+            }
+
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
@@ -381,6 +387,17 @@
                 }
                 quickChange()
             })
+
+            watch(
+                () => discoveryStore.globalState,
+                () => {
+                    globalState.value = discoveryStore.globalState
+                    handleResetEvent()
+                },
+                {
+                    deep: true,
+                }
+            )
 
             const {
                 list,
@@ -407,6 +424,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                globalState,
             })
 
             const selectedAssetIndex = computed(() => {

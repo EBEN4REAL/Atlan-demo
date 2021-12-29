@@ -6,6 +6,7 @@ export interface Actions extends State {
     setPreferences(value: any): void
     setActiveFacet(value: any): void
     setActivePostFacet(value: any): void
+    setGlobalState(value: any): void
 }
 
 export const actions: Actions = {
@@ -23,6 +24,10 @@ export const actions: Actions = {
     },
     setActivePostFacet(value) {
         this.activePostFacet = value
+    },
+    setGlobalState(value) {
+        console.log('set global state', value)
+        this.globalState = value
     },
 }
 export default actions

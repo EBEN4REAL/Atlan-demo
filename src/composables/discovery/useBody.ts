@@ -2,6 +2,8 @@
 import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
 import { ref } from 'vue'
+import { useConnectionStore } from '~/store/connection'
+import { usePersonaStore } from '~/store/persona'
 
 const agg_prefix = 'group_by'
 
@@ -14,7 +16,8 @@ export function useBody(
     facets?: Record<string, any>,
     postFacets?: Record<string, any>,
     aggregations?: string[],
-    preference?: Record<string, any>
+    preference?: Record<string, any>,
+    globalState?: string[]
 ) {
     const base = bodybuilder()
 
@@ -62,6 +65,37 @@ export function useBody(
 
     base.from(offset || 0)
     base.size(limit || 0)
+
+    const personaStore = usePersonaStore()
+    const connectionStore = useConnectionStore()
+
+    if (globalState?.length > 0) {
+        if (globalState?.length == 2) {
+            if (globalState[0] === 'persona') {
+                const connectionIdList = personaStore.getConnectionList(
+                    globalState[1]
+                )
+                console.log(
+                    'persona global',
+                    connectionStore.list
+                        .filter((i) => connectionIdList.includes(i.guid))
+                        .map((i) => i.attributes.qualifiedName)
+                )
+
+                base.filter('bool', (q) => {
+                    connectionStore.list
+                        .filter((i) => connectionIdList.includes(i.guid))
+                        .map((i) => i.attributes.qualifiedName)
+                        .forEach((i) => {
+                            q.orFilter('term', 'connectionQualifiedName', i)
+                            q.orFilter('term', 'qualifiedName', i)
+                        })
+
+                    return q
+                })
+            }
+        }
+    }
 
     // Only showing ACTIVE assets for a connection
 

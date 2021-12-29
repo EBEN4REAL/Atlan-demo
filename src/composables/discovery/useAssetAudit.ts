@@ -177,7 +177,6 @@ const useAssetAudit = (params: any, guid: string) => {
     const getAuditEventComponent = (
         auditEvent: any
     ): activityInterface | null => {
-        console.log(auditEvent)
         if (auditEvent.detail) {
             const eventDetail = auditEvent.detail
             const data: activityInterface = {
@@ -187,6 +186,7 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (eventDetail) {
+                console.log(auditEvent.action)
                 switch (auditEvent.action) {
                     // case 'LABEL_ADD':
                     //     data.displayValue = `Label <b>${eventDetail[1].trim()}</b> added`
@@ -295,6 +295,11 @@ const useAssetAudit = (params: any, guid: string) => {
                         } catch (error) {
                             return null
                         }
+                    case 'ENTITY_CREATE':
+                        data.value = eventDetail
+                        data.component = 'Create'
+                        return data
+
                     case 'ENTITY_UPDATE':
                         return getEntityUpdateLogs(eventDetail)
 

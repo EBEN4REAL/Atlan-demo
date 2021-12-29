@@ -20,7 +20,7 @@
             <span class="ml-1">Getting activity logs</span>
         </div>
         <div v-else-if="auditList.length && !isLoading">
-            <a-timeline class="mx-5">
+            <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
                         <div
@@ -28,7 +28,15 @@
                         ></div>
                     </template>
                     <div>
-                        <ActivityType :data="getAuditEventComponent(log)" />
+                        <ActivityType
+                            :data="getAuditEventComponent(log)"
+                            v-if="getAuditEventComponent(log)"
+                        />
+                        <template v-else>
+                            <div class="">
+                                {{ log.action }}
+                            </div>
+                        </template>
 
                         <!-- <template
                             v-if="getDetailsForEntityAuditEvent(log)?.component"
@@ -36,12 +44,19 @@
                             <ActivityType
                                 :data="getDetailsForEntityAuditEvent(log)"
                             />
-                        </template>
-                        <template v-else>
-                            <div class="mb-3">
-                                {{ getEventByAction(log)?.label || 'Event' }}
-                            </div>
-                        </template> -->
+                        </template>-->
+                    </div>
+                    <div
+                        v-if="
+                            log.entityId !== item.guid &&
+                            ['Table', 'View'].includes(item.typeName)
+                        "
+                        class="flex items-center mt-1 text-gray-700"
+                    >
+                        {{ getColumnName(log) }} (<span
+                            class="tracking-wide text-gray-500 uppercase"
+                            >Column</span
+                        >)
                     </div>
                     <div class="flex items-center mt-1 text-gray-500">
                         <div class="flex items-center">
@@ -157,12 +172,30 @@
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
             const dependentKey = ref('audit')
-            const facets = ref({
-                entityId: item.value.guid,
-            })
+
+            const facets = ref()
+
+            if (['Table', 'View'].includes(item.value.typeName)) {
+                facets.value = {
+                    entityQualifiedName: item.value.attributes.qualifiedName,
+                }
+            } else {
+                facets.value = {
+                    entityId: item.value.guid,
+                }
+            }
+
             const preference = ref({
                 sort: 'created-desc',
             })
+
+            const getColumnName = (log) => {
+                if (log.entityQualifiedName) {
+                    const splitArray = log.entityQualifiedName.split('/')
+                    return splitArray[splitArray.length - 1]
+                }
+                return ''
+            }
 
             const {
                 data,
@@ -173,6 +206,7 @@
                 isLoading,
                 isLoadMore,
                 totalCount,
+                quickChange,
             } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: true,
@@ -198,10 +232,12 @@
             }
 
             const handleLoadMore = () => {
+                console.log('load more')
                 if (isLoadMore.value) {
                     offset.value += limit.value
                 }
-                fetch()
+                console.log('load more')
+                quickChange()
             }
 
             const fetchMore = () => {
@@ -232,7 +268,7 @@
                 error,
                 isLoading,
                 timeAgo,
-
+                item,
                 refreshAudits,
                 fetchMore,
                 getActionUser,
@@ -247,6 +283,8 @@
                 handleLoadMore,
                 isLoadMore,
                 totalCount,
+                quickChange,
+                getColumnName,
             }
         },
     })

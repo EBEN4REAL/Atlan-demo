@@ -95,20 +95,24 @@ export function useAssetAuditSearch({
         Entity.AuditSearch(guid, defaultBody, options)
 
     const list = ref([])
-    watch(data, () => {
-        console.log(offset.value)
-        if (offset?.value > 0) {
-            if (data.value?.entityAudits) {
-                list.value.push(...data.value?.entityAudits)
-            }
-        } else {
-            if (data.value?.entityAudits) {
-                list.value = [...data?.value?.entityAudits]
+    watch(
+        data,
+        () => {
+            console.log('chnaged data')
+            if (offset?.value > 0) {
+                if (data.value?.entityAudits) {
+                    list.value.push(...data.value?.entityAudits)
+                }
             } else {
-                list.value = []
+                if (data.value?.entityAudits) {
+                    list.value = [...data?.value?.entityAudits]
+                } else {
+                    list.value = []
+                }
             }
-        }
-    })
+        },
+        { deep: true }
+    )
 
     const cancelRequest = () => {
         if (cancel) {
@@ -201,11 +205,12 @@ export function useAssetAuditSearch({
     const quickChange = () => {
         generateBody()
         cancelRequest()
-        if (localKey.value) {
-            localKey.value = `dirty_${Date.now().toString()}`
-        } else {
-            refresh()
-        }
+        refresh()
+        // if (localKey.value) {
+        //     localKey.value = `dirty_${Date.now().toString()}`
+        // } else {
+        //     refresh()
+        // }
     }
 
     const aggregationMap = (key, isNested?) => {

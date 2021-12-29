@@ -61,7 +61,6 @@ const AuditSearch = (
         'POST',
         {
             body,
-            pathVariables: { guid },
         },
         options || {}
     )

@@ -38,6 +38,21 @@ export function getValueStringFromType(subpanel, value) {
     } else if (type === 'date') res += `DATE '${value}'`
     return res
 }
+// "TABLENAME"."COLUMNNAME"
+// "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
+function getJoinFormattedColumnName(columnQualifiedName: string) {
+    const spiltArray = columnQualifiedName.split('/')
+    if (spiltArray.length > 6) {
+        return `"${spiltArray[5]}"."${spiltArray[6]}"`
+    }
+}
+function getTableName(columnQualifiedName: string) {
+    const spiltArray = columnQualifiedName.split('/')
+    if (spiltArray.length > 5) {
+        return `"${spiltArray[5]}"`
+    }
+}
+
 export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const { getTableNameFromTableQualifiedName } = useUtils()
 
@@ -74,7 +89,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                         subpanel.tableQualfiedName
                     )
                     if (tableName) {
-                        select.from(tableName)
+                        select.from(`"${tableName}"`)
                     }
                 }
                 subpanel.columns.forEach((columnName) => {
@@ -241,41 +256,61 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
 
     if (join?.hide) {
         console.log('join: ', join)
-        // .join("table2", "t2", "t1.id = t2.id")
 
-        // let columnDataLeft = join?.subpanels[0]?.columnDataLeft
-        // let columnDataRight = join?.subpanels[0]?.columnDataRight
-
-        // let leftContext = columnDataLeft?.columnQualifiedName?.split('/')
-        // let columnLeft = leftContext[leftContext.length-1]
-        // let TableLeft = leftContext[leftContext.length-2]
-
-        // let schemaName = leftContext[leftContext.length-2]
-
-        //backup
-        // select.join(`COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"
-        //  ON COVID_19."COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION"= COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"."COUNTRY_REGION"`)
-
-        const query = `SELECT
-        "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE",
-        "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED",
-        "COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION",
-        SUM (ACTIVE) AS "sum_ACTIVE"
-        FROM
-            COVID_COUNTY_LEVEL_PIVOT
-        INNER JOIN COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"
-        ON COVID_19."COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION"= COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"."COUNTRY_REGION"
-        WHERE
-            ("ACTIVE" = 32)
-        GROUP BY
-            "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE",
-            "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED",
-            "COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION"
-        ORDER BY
-             "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE" ASC,
-             "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED" DESC`
-
-        return query
+        join?.subpanels.forEach((subpanel, i) => {
+            // leftColumnName = "TABLENAME"."COLUMNNAME"
+            const leftColumnName = getJoinFormattedColumnName(
+                subpanel.columnsDataLeft.columnQualifiedName
+            )
+            const rightColumnName = getJoinFormattedColumnName(
+                subpanel.columnsDataRight.columnQualifiedName
+            )
+            // leftTableName = "TABLENAME"
+            const rightTableName = getTableName(
+                subpanel.columnsDataRight.columnQualifiedName
+            )
+            switch (subpanel.joinType.type) {
+                case 'inner_join': {
+                    select.join(
+                        rightTableName,
+                        null,
+                        `${leftColumnName} = ${rightColumnName}`
+                    )
+                    break
+                }
+                case 'outer_join': {
+                    select.outer_join(
+                        rightTableName,
+                        null,
+                        `${leftColumnName} = ${rightColumnName}`
+                    )
+                    break
+                }
+                case 'left_join': {
+                    select.left_join(
+                        rightTableName,
+                        null,
+                        `${leftColumnName} = ${rightColumnName}`
+                    )
+                    break
+                }
+                case 'right_join': {
+                    select.right_join(
+                        rightTableName,
+                        null,
+                        `${leftColumnName} = ${rightColumnName}`
+                    )
+                    break
+                }
+                default: {
+                    select.join(
+                        rightTableName,
+                        null,
+                        `${leftColumnName} = ${rightColumnName}`
+                    )
+                }
+            }
+        })
     }
 
     console.log(select.toString(), 'select.toString()')

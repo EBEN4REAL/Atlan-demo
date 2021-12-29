@@ -109,7 +109,7 @@
                 <a-checkbox
                     v-model:checked="selectAll"
                     @change="onSelectAll"
-                    class="atlanReverse inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
+                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light"
                 >
                     <div class="flex items-center">
                         <span class="mb-0 ml-1 text-sm text-gray-700">
@@ -141,7 +141,7 @@
                                 (checked) =>
                                     onCheckboxChange(checked, item.value)
                             "
-                            class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         >
                             <div
                                 class="justify-between parent-ellipsis-container"
@@ -159,7 +159,7 @@
                                 </div>
                                 <div
                                     class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary"
+                                    v-if="item.isPrimary || item.isForeign"
                                 >
                                     <div
                                         class="absolute right-0 flex items-center -top-2.5"
@@ -173,6 +173,22 @@
                                             style="color: #3ca5bc"
                                             class="text-sm"
                                             >Pkey</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="absolute flex items-center -top-2.5"
+                                        :class="
+                                            item.isPrimary
+                                                ? 'right-14'
+                                                : 'right-0'
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="ForeignKey"
+                                            class="w-4 h-4 mr-1 text-purple-700"
+                                        ></AtlanIcon>
+                                        <span class="text-sm text-purple-700"
+                                            >Fkey</span
                                         >
                                     </div>
                                 </div>
@@ -314,6 +330,7 @@
                         'displayName',
                         'dataType',
                         'isPrimary',
+                        'isForeign',
                     ],
                 }
             }
@@ -345,6 +362,7 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
                     value: ls.attributes?.displayName || ls.attributes?.name,
                 }))
                 data.sort((x, y) => {

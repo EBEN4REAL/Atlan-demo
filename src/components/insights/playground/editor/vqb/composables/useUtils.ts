@@ -1,5 +1,6 @@
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
 import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
 import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
@@ -10,6 +11,12 @@ export function useUtils() {
         const vals = tableQualifiedName?.split('/')
         if (vals?.length > 0) return vals[vals?.length - 1]
         else return ''
+    }
+    function getTableName(columnQualifiedName: string) {
+        const spiltArray = columnQualifiedName.split('/')
+        if (spiltArray.length > 5) {
+            return `"${spiltArray[5]}"`
+        }
     }
     function getTableNamesStringFromQualfieidNames(
         tableQualfieidNames: string[]
@@ -189,7 +196,39 @@ export function useUtils() {
         return res
     }
 
+    function getSummarisedInfoOfJoinPanel(subpanels: SubpanelJoin[]) {
+        if (subpanels.length == 0) return 'No Table Added for Join'
+        let res = 'by '
+        subpanels.forEach((subpanel, i) => {
+            if (i == 0) {
+                if (subpanel.columnsDataLeft.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataLeft.columnQualifiedName
+                    )} and `
+                }
+            }
+            if (i < subpanels.length - 1) {
+                if (subpanel.columnsDataRight.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataRight.columnQualifiedName
+                    )} using ${subpanel.joinType.name}, and `
+                }
+            }
+            if (i == subpanels.length - 1) {
+                if (subpanel.columnsDataRight.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataRight.columnQualifiedName
+                    )} using ${subpanel.joinType.name}`
+                }
+            }
+
+            if (res === 'by ') res = 'No Columns Added for Aggregation'
+        })
+        return res
+    }
+
     return {
+        getSummarisedInfoOfJoinPanel,
         getSummarisedInfoOfFilterPanel,
         getSummarisedInfoOfGroupPanel,
         getSummarisedInfoOfAggregationPanel,

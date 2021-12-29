@@ -2,7 +2,7 @@ export interface SubpanelColumnData {
     label: string
     type: string
     value: string
-    columnQualfiedName: string | undefined
+    columnQualifiedName: string | undefined
 }
 export interface SubpanelAggregator {
     id: string

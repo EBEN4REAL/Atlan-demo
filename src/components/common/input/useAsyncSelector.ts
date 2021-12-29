@@ -20,15 +20,15 @@ export default function useAsyncSelector(
         })
         const data = root
             ? root.map((o: any) => {
-                  // labelPath - {{.name}} - a - {{.attribute.displayName}}
-                  const label = getStringFromPath(o, labelPath)
-                  const value = getStringFromPath(o, valuePath)
-                  return {
-                      value,
-                      label,
-                      data: o,
-                  }
-              })
+                // labelPath - {{.name}} - a - {{.attribute.displayName}}
+                const label = getStringFromPath(o, labelPath)
+                const value = getStringFromPath(o, valuePath)
+                return {
+                    value,
+                    label,
+                    data: o,
+                }
+            })
             : []
 
         asyncData.value = data
@@ -59,7 +59,7 @@ export default function useAsyncSelector(
         rootPathParts.forEach((p: string) => {
             const isArr = arrayReg.test(p)
             if (isArr) {
-                const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
+                const index = parseInt(p.match(/\[\s*(\d+)\s*\]/)[1], 10)
                 data = data[p.split('[')[0]][index]
             } else data = data[p]
         })

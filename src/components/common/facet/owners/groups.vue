@@ -55,8 +55,8 @@
                     {{ list.length }} of {{ total }} groups
                 </p> -->
                 <template v-if="list?.length < filterTotal">
-                    <div class="flex justify-center" v-if="isLoading">
-                        <a-spin size="small"></a-spin>
+                    <div class="flex justify-center" v-if="isLoading || isEnriching">
+                        <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"></AtlanIcon>
                     </div>
                     <div
                         class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
@@ -133,11 +133,16 @@
                 type: String,
                 required: false,
             },
+            userId: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys } = useVModels(props, emit)
-            const { selectGroupKey } = toRefs(props)
+            const { selectGroupKey, userId } = toRefs(props)
             const localValue = ref(modelValue.value)
             // const map = ref({})
             // const updateMap = (localValue: Ref<any>) => {
@@ -162,7 +167,8 @@
                 filterTotal,
                 isLoading,
                 loadMore,
-            } = useFacetGroups()
+                isEnriching,
+            } = useFacetGroups('name', [], true, userId)
             watch(
                 () => props.queryText,
                 () => {
@@ -173,6 +179,11 @@
                 let data = {}
                 disabledKeys?.value?.forEach((key) => {
                     data[key] = true
+                })
+                list.value.forEach((group) => {
+                    if (group.hasUserAsMember) {
+                        data[group[selectGroupKey.value]] = true
+                    }
                 })
                 // console.log('disabled keys grp: ', data)
                 return data
@@ -218,6 +229,7 @@
                 isLoading,
                 loadMore,
                 disabledKeyMap,
+                isEnriching,
             }
         },
         components: { AtlanIcon },

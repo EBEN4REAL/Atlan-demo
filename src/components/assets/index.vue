@@ -111,7 +111,7 @@
                     <EmptyView
                         empty-screen="EmptyDiscover"
                         :desc="
-                            staticUse
+                            staticUse && !queryText
                                 ? emptyViewText || 'No assets found'
                                 : queryText
                                 ? 'We didn\'t find anything that matches your search criteria'
@@ -302,8 +302,8 @@
             isCache: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -314,7 +314,7 @@
                 projection,
                 allCheckboxAreaClick,
                 disableHandlePreview,
-                isCache
+                isCache,
             } = toRefs(props)
 
             const limit = ref(20)

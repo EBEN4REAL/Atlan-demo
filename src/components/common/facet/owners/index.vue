@@ -75,6 +75,7 @@
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                :user-id="userId"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -153,6 +154,11 @@
                 default: false,
             },
             groupId: {
+                type: String,
+                required: false,
+                default: ""
+            },
+            userId: {
                 type: String,
                 required: false,
                 default: ""

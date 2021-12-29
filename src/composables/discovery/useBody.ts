@@ -68,7 +68,7 @@ export function useBody(
 
     const personaStore = usePersonaStore()
     const connectionStore = useConnectionStore()
-
+    console.log(globalState)
     if (globalState?.length > 0) {
         if (globalState?.length == 2) {
             if (globalState[0] === 'persona') {

@@ -25,6 +25,7 @@
             >
                 {{ logoName }}
             </p>
+
             <div class="flex items-center ml-1 gap-x-1">
                 <AtlanIcon icon="ChevronRight"></AtlanIcon>
                 <GlobalSelection

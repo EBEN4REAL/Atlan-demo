@@ -46,7 +46,7 @@
                                 <span class="mr-1 font-bold">{{ title }}</span>
                                 <SlackMessageCta
                                     v-if="slackEnabled"
-                                    :link="slackUrl"
+                                    :slackLink="slackUrl"
                                 />
                                 <span
                                     v-if="isValidGroup && selectedGroup.isDefault === 'true'"
@@ -104,6 +104,7 @@
                         @refreshTable="reload"
                         @success="reload"
                         @image-updated="handleImageUpdate"
+                        @changeTab="handleChangeTab"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -273,6 +274,9 @@
                     ? getDeepLinkFromUserDmLink(slackEnabled.value)
                     : '#'
             )
+            const handleChangeTab=(tabKey)=>{
+                activeKey.value = tabKey
+            }
             return {
                 tabs,
                 isValidEntity,
@@ -294,7 +298,8 @@
                 slackUrl,
                 handleImageUpdate,
                 updatedImageUrl,
-                userUpdated
+                userUpdated,
+                handleChangeTab
             }
         },
     })

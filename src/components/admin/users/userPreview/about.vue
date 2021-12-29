@@ -19,6 +19,7 @@
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
                 @success="$emit('success')"
+                @changeTab="$emit('changeTab','groups')"
             />
         </div>
     </div>
@@ -47,7 +48,7 @@
                 default: false
             }
         },
-        emits: ['updatedUser', 'success', 'imageUpdated'],
+        emits: ['updatedUser', 'success', 'imageUpdated', 'changeTab'],
         setup(props, { emit }) {
             const { selectedUser, isCurrentUser, isLoading } = toRefs(props)
             const isEditing = ref(false)

@@ -66,7 +66,8 @@ export function useLocalStorageSync() {
                 t.playground.editor.variables =
                     t.playground.editor.variables?.map((_variable) => {
                         const copy__variable = { ..._variable }
-                        copy__variable.value = dayjs(copy__variable.value)
+                        if (copy__variable.type === 'date')
+                            copy__variable.value = dayjs(copy__variable.value)
                         return copy__variable
                     })
                 return t

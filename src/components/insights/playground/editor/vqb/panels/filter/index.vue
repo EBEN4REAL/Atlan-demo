@@ -236,6 +236,7 @@
             },
         },
         setup(props, { emit }) {
+            const STRING_CHECK = 'ksdghkjsdhfksdfhkjsdhfkjshfkjshfkjhsfkjh'
             const { index, panel } = toRefs(props)
             const { totalFiledsMapWithInput } = useFilter()
             const editorInstanceRef = inject(
@@ -386,6 +387,7 @@
             )
 
             return {
+                STRING_CHECK,
                 toggleConfirmPopover,
                 getPopoverContent,
                 confirmDeletePopover,

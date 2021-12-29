@@ -129,7 +129,7 @@
         </div>
 
         <a-tabs
-            :activeKey="activeKey"
+            v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="
                 isProfile
@@ -138,7 +138,6 @@
             "
             tab-position="left"
             :destroy-inactive-tab-pane="true"
-            @change="handleTabChange"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"

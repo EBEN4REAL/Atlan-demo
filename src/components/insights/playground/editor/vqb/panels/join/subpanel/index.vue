@@ -41,6 +41,7 @@
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
+                        style="min-width: 24px"
                         class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
@@ -50,14 +51,12 @@
             </template>
         </div>
 
-        <span>
-            <div
-                class="items-center mt-3 cursor-pointer text-primary"
-                @click.stop="handleAddPanel"
-            >
-                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-                <span>Add condition</span>
-            </div>
+        <span
+            class="items-center mt-3 cursor-pointer text-primary"
+            @click.stop="handleAddPanel"
+        >
+            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+            <span>Add condition</span>
         </span>
     </div>
 </template>

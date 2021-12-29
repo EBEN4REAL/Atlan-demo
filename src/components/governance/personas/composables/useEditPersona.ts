@@ -8,8 +8,14 @@ import {
     selectedPersonaId,
 } from './usePersonaList'
 
-const { updatePersona, deletePersona, enableDisablePersona } =
-    usePersonaService()
+const {
+    updatePersona,
+    deletePersona,
+    enableDisablePersona,
+    createPolicy,
+    updateDataPolicy,
+    deleteDataPolicy,
+} = usePersonaService()
 
 export const newIdTag = 'new_'
 export type PolicyType = 'meta' | 'data'
@@ -74,36 +80,44 @@ export function updateSelectedPersona() {
     reFetchList()
 }
 
-export function addPolicy(type: PolicyType) {
-    const id = `${newIdTag}${Date.now()}`
-    if (type === 'meta') {
-        selectedPersonaDirty.value?.metadataPolicies?.push({
-            id,
-            actions: [],
-            assets: [],
-            connectionId: '',
-            allow: true,
-            name: '',
-            description: '',
-            isNew: true,
-        })
-        policyEditMap.value.metadataPolicies[id] = true
+export async function addPolicy(type: String, dataPolicyProp: any) {
+    const dataPolicy = dataPolicyProp
+    delete dataPolicy?.isNew
+    if (dataPolicy.actions.includes('entity-update-classification')) {
+        dataPolicy.actions.push('entity-add-classification')
+        dataPolicy.actions.push('entity-remove-classification')
     }
     if (type === 'data') {
-        selectedPersonaDirty.value?.dataPolicies?.push({
-            id,
-            actions: ['select'],
-            assets: [],
-            connectionName: '',
-            connectionId: '',
-            maskType: 'null',
-            allow: true,
-            name: '',
-            description: '',
-            isNew: true,
-        })
-        policyEditMap.value.dataPolicies[id] = true
+        dataPolicy.actions = ['select']
     }
+    const payload = {
+        type: type === 'meta' ? 'metadataPolicy' : 'dataPolicy',
+        policy: dataPolicy,
+    }
+    return createPolicy(payload, selectedPersona.value.id)
+}
+
+export async function updatePolicy(type: String, dataPolicyProp: any) {
+    const dataPolicy = dataPolicyProp
+    const idPolicy = dataPolicyProp.id
+    delete dataPolicy?.id
+    if (dataPolicy.actions.includes('entity-update-classification')) {
+        dataPolicy.actions.push('entity-add-classification')
+        dataPolicy.actions.push('entity-remove-classification')
+    }
+    if (type === 'data') {
+        dataPolicy.actions = ['select']
+    }
+    const payload = {
+        type: type === 'meta' ? 'metadataPolicy' : 'dataPolicy',
+        policy: dataPolicy,
+    }
+    return updateDataPolicy(payload, idPolicy, selectedPersona.value.id)
+    // return createPolicy(payload, selectedPersona.value.id)
+}
+
+export async function deletePolicyV2(idPolicy: String) {
+    return deleteDataPolicy(idPolicy, selectedPersona.value.id)
 }
 
 export async function deletePolicy(type: PolicyType, id: string) {
@@ -136,8 +150,8 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
     if (dataPolicy?.isNew) {
         delete dataPolicy?.isNew
         delete dataPolicy?.id
-    } 
-    if(dataPolicy.actions.includes('entity-update-classification')){
+    }
+    if (dataPolicy.actions.includes('entity-update-classification')) {
         dataPolicy.actions.push('entity-add-classification')
         dataPolicy.actions.push('entity-remove-classification')
     }
@@ -156,15 +170,18 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         }
     }
     if (type === 'data') {
-        if(dataPolicy.id){
+        if (dataPolicy.id) {
             tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
-                if(el.id === dataPolicy.id){
-                    return {...dataPolicy, actions: ['select']}
+                if (el.id === dataPolicy.id) {
+                    return { ...dataPolicy, actions: ['select'] }
                 }
-                    return {...el, actions: ['select']}
+                return { ...el, actions: ['select'] }
             })
-        }else {
-            tempPersona.dataPolicies.push({...dataPolicy, actions: ['select']})
+        } else {
+            tempPersona.dataPolicies.push({
+                ...dataPolicy,
+                actions: ['select'],
+            })
         }
     }
     return savePersona(tempPersona)
@@ -228,8 +245,6 @@ export function discardPolicy(type: PolicyType, id: string) {
                 }
                 selectedPersonaDirty.value = copySelectedPersonaDirty
             }
-
-            console.log(type, id, policyEditMap.value)
         }
         if (type === 'data') {
             const policyIndex = selectedPersona.value?.dataPolicies?.findIndex(

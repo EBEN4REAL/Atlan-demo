@@ -2,9 +2,23 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
-    <div v-else class="flex flex-col pl-5 mb-3" ref="target">
+    <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
-            <div class="font-semibold text-gray-500">{{ data.label }}</div>
+            <div class="font-semibold text-gray-500">
+                <div class="flex items-center gap-x-1">
+                    <span>{{ data.label }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ data?.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="data?.description"
+                            class="h-3 text-gray-400 hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
+                </div>
+            </div>
             <div
                 v-if="
                     selectedAssetUpdatePermission(
@@ -13,7 +27,11 @@
                     )
                 "
             >
-                <a-button v-if="readOnly" @click="() => (readOnly = false)">
+                <a-button
+                    v-if="readOnly"
+                    v-show="applicableList.filter((i) => hasValue(i)).length"
+                    @click="() => (readOnly = false)"
+                >
                     <AtlanIcon icon="Edit" />
                     <span class="ml-1 text-gray-700">Edit</span>
                 </a-button>
@@ -39,8 +57,13 @@
             class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
         >
             <template
-                v-for="(a, x) in readOnly
-                    ? [...applicableList].sort(readOnlySort)
+                v-for="(a, x) in showMore &&
+                applicableList.filter((i) => hasValue(i)).length
+                    ? readOnly
+                        ? [...applicableList].sort(readOnlySort)
+                        : applicableList
+                    : readOnly
+                    ? applicableList.filter((i) => hasValue(i))
                     : applicableList"
                 :key="x"
             >
@@ -59,7 +82,7 @@
                         </a-tooltip>
                     </div>
 
-                    <ReadOnly v-if="readOnly" :attribute="a" />
+                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
 
                     <EditState
                         v-else-if="!readOnly"
@@ -70,6 +93,134 @@
                     />
                 </div>
             </template>
+            <div v-if="readOnly" class="">
+                <span
+                    v-if="[...applicableList].filter((i) => hasValue(i)).length"
+                    class="text-gray-500 border-b border-gray-300 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                    @click="showMore = !showMore"
+                >
+                    <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
+                    {{
+                        showMore
+                            ? 'Hide empty properties'
+                            : `Show ${
+                                  applicableList.filter((i) => !hasValue(i))
+                                      .length
+                              } empty properties`
+                    }}
+                </span>
+                <template v-else>
+                    <EmptyView empty-screen="EmptyCM" class="h-24 mb-6" />
+                    <div
+                        class="flex flex-col items-center text-gray-500 gap-y-7"
+                    >
+                        <div class="">
+                            <a-popover
+                                placement="bottom"
+                                :destroy-tooltip-on-hide="true"
+                            >
+                                <template #content>
+                                    <div
+                                        class="p-4 space-y-4 overflow-x-auto max-h-60 w-44"
+                                    >
+                                        <h1 class="font-bold">Properties</h1>
+                                        <template
+                                            v-for="p in applicableList"
+                                            :key="p.name"
+                                        >
+                                            <div class="flex flex-col">
+                                                <div
+                                                    class="flex items-center gap-x-1"
+                                                >
+                                                    <span class="text-gray-700">
+                                                        {{ p.displayName }}
+                                                    </span>
+                                                    <a-tooltip>
+                                                        <template #title>
+                                                            <span>{{
+                                                                p.options
+                                                                    .description
+                                                            }}</span>
+                                                        </template>
+                                                        <AtlanIcon
+                                                            v-if="
+                                                                p.options
+                                                                    .description
+                                                            "
+                                                            class="h-3 text-gray-400 hover:text-gray-500"
+                                                            icon="Info"
+                                                        />
+                                                    </a-tooltip>
+                                                </div>
+                                                <span
+                                                    class="flex items-center text-gray-500 capitalize gap-x-1"
+                                                >
+                                                    <div class="flex">
+                                                        <AtlanIcon
+                                                            v-if="
+                                                                p.options
+                                                                    .multiValueSelect ===
+                                                                'true'
+                                                            "
+                                                            icon="Array"
+                                                            class="h-3.5"
+                                                        />
+                                                        <AtlanIcon
+                                                            :icon="
+                                                                getDataTypeIcon(
+                                                                    p?.options
+                                                                        ?.primitiveType
+                                                                )
+                                                            "
+                                                            class="h-3.5"
+                                                        />
+                                                    </div>
+                                                    {{
+                                                        getDatatypeOfAttribute(
+                                                            p
+                                                        )
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                                <span
+                                    class="underline cursor-pointer text-primary"
+                                    >{{
+                                        applicableList.length
+                                    }}
+                                    properties</span
+                                >
+                            </a-popover>
+                            <span
+                                v-if="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
+                                "
+                            >
+                                are available to be populated.</span
+                            >
+                            <span v-else> haven’t been populated yet. </span>
+                        </div>
+                        <AtlanButton
+                            v-if="
+                                selectedAssetUpdatePermission(
+                                    selectedAsset,
+                                    'ENTITY_UPDATE_BUSINESS_METADATA'
+                                )
+                            "
+                            color="primary"
+                            padding="compact"
+                            @click="() => (readOnly = false)"
+                        >
+                            <AtlanIcon icon="Edit" /> Start Editing
+                        </AtlanButton>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -104,6 +255,8 @@
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import AtlanButton from '@/UI/button.vue'
     import Confirm from '@/common/modal/confirm.vue'
+    import EmptyView from '@/common/empty/index.vue'
+    import { getDataTypeIcon } from '~/utils/dataType'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -111,6 +264,7 @@
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
             AtlanButton,
+            EmptyView,
         },
         props: {
             selectedAsset: {
@@ -127,6 +281,7 @@
 
             const readOnly = ref(true)
             const loading = ref(false)
+            const showMore = ref(false)
             const guid = ref()
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
@@ -281,6 +436,9 @@
             }
 
             const handleCancel = () => {
+                cancel()
+                return
+                //! disabling unsaved changes confirmation temporarily
                 if (isEdit.value) {
                     Modal.confirm({
                         title: () =>
@@ -374,6 +532,8 @@
             })
 
             return {
+                getDataTypeIcon,
+                showMore,
                 readOnlySort,
                 hasValue,
                 isEdit,

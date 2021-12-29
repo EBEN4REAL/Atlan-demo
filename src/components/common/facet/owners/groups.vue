@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-44" :class="listClass">
+    <div class="w-full" :class="listClass ? listClass : 'h-44'">
         <div
             v-if="list.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -9,8 +9,8 @@
             </div>
         </div>
         <div
-            class="flex flex-col w-full h-40 overflow-y-auto"
-            :class="checkboxListClass"
+            class="flex flex-col w-full overflow-y-auto"
+            :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
             <div class="w-full px-3">
                 <template v-for="item in list" :key="item[selectGroupKey]">
@@ -51,21 +51,26 @@
                 </template>
             </div>
             <div class="flex items-center justify-between px-4">
-                <p class="text-xs text-gray-500">
+                <!-- <p class="text-xs text-gray-500">
                     {{ list.length }} of {{ total }} groups
-                </p>
+                </p> -->
                 <template v-if="list?.length < filterTotal">
-                    <div class="flex justify-center" v-if="isLoading">
+                    <div class="flex justify-center ml-auto" v-if="isLoading">
                         <a-spin size="small"></a-spin>
                     </div>
                     <div
-                        class="flex items-center justify-center text-xs cursor-pointer text-primary hover:underline"
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                     >
                         load more...
                     </div>
                 </template>
             </div>
+        </div>
+        <div>
+            <p class="pl-4 text-xs text-gray-500">
+                {{ list.length }} of {{ total }} groups
+            </p>
         </div>
     </div>
 </template>

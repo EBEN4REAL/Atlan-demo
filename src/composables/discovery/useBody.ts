@@ -42,7 +42,7 @@ export function useBody(
             query: queryText,
             boost: 70,
         })
-        base.orQuery('wildcard', 'name.keyword', {
+        base.orQuery('wildcard', 'name', {
             value: `${queryText}*`,
         })
         base.orQuery('match', 'description', {
@@ -118,40 +118,34 @@ export function useBody(
             case 'certificateStatus': {
                 if (filterObject) {
                     if (filterObject.length > 0) {
-                        const index = filterObject.indexOf(existsValue)
-                        if (index > -1) {
-                            const temp = []
-                            filterObject.forEach((element) => {
-                                if (element !== existsValue) {
-                                    temp.push(element)
-                                }
-                            })
-                            base.filter('bool', (q) => {
-                                if (temp.length > 0) {
-                                    q.orFilter(
-                                        'terms',
-                                        'certificateStatus',
-                                        temp
-                                    )
-                                }
+                        const temp = []
+                        let isExists = false
+                        filterObject.forEach((element) => {
+                            if (element) {
+                                temp.push(element)
+                            } else {
+                                isExists = true
+                            }
+                        })
+                        base.filter('bool', (q) => {
+                            if (temp.length > 0) {
+                                q.orFilter('terms', 'certificateStatus', temp)
+                            }
 
+                            if (isExists) {
                                 q.orFilter('bool', (query) => {
                                     return query.notFilter(
                                         'exists',
                                         'certificateStatus'
                                     )
                                 })
-                                return q
-                            })
-                        } else {
-                            base.filter(
-                                'terms',
-                                'certificateStatus',
-                                filterObject
-                            )
-                        }
+                            }
+
+                            return q
+                        })
                     }
                 }
+
                 break
             }
             case 'owners': {

@@ -127,7 +127,7 @@
             <p class="text-gray-500">Links</p>
             <div class="flex flex-col">
                 <a
-                    href="https://support.atlan.com"
+                    href="https://ask.atlan.com"
                     class="text-primary"
                     target="_blank"
                     >Support</a

@@ -77,6 +77,7 @@
         "vue": "^3.2.26",
         "vue-axios": "^3.4.0",
         "vue-chart-3": "^3.0.4",
+        "vue-i18n": "^9.2.0-beta.25",
         "vue-linkify": "^1.0.1",
         "vue-router": "^4.0.12",
         "vue3-json-editor": "^1.1.3",

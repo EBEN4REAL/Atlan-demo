@@ -77,13 +77,14 @@
     } = usePurposeList({ asyncOptions: { immediate: false } })
 
     params.value.set('limit', '100')
-    mutate()
-
     filter.value = {
         tags: {
             $elemMatch: [classificationID.value],
         },
     }
+    params.value.set('filter', JSON.stringify(filter.value))
+
+    mutate()
 
     watch(classificationID, (v) => {
         searchText.value = ''

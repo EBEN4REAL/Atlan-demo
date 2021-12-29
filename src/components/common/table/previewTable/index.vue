@@ -10,7 +10,7 @@
                     <tr>
                         <th class="truncate">#</th>
                         <th v-for="(col, index) in columns" :key="index">
-                            <div class="flex items-center">
+                            <div class="relative flex items-center">
                                 <component
                                     :is="images[getDataType(col.data_type)]"
                                     :data-tooltip="col.data_type"
@@ -44,20 +44,14 @@
                             :data-index="index"
                             class="bg-white"
                         >
-                            <div
-                                v-if="showExpand === `${key}.${index}`"
-                                class="flex items-center"
-                            >
-                                <div style="max-width: 80%" class="truncate">
+                            <div class="flex items-center">
+                                <div class="truncate">
                                     {{ rowData }}
                                 </div>
                                 <AtlanIcon
                                     icon="Expand"
-                                    class="h-4 w-auto mb-0.5"
+                                    class="h-4 w-auto mb-0.5 hidden"
                                 />
-                            </div>
-                            <div v-else class="truncate">
-                                {{ rowData }}
                             </div>
                         </td>
                     </tr>
@@ -80,12 +74,14 @@
         watch,
         ref,
         onMounted,
+        createApp,
     } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import VariantModal from './variantModal.vue'
+    import ExpandIcon from '../../../../assets/images/icons/expand.svg'
 
     export default defineComponent({
         name: 'AtlanTable',
@@ -176,7 +172,18 @@
                             }
                             hoverTD.value = td
                             hoverTD.value.classList.add('hover-state')
-                            showExpand.value = `${td.dataset.key}.${td.dataset.index}`
+
+                            // Decreasing text width on hover
+                            hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+                                '85%'
+
+                            // Showing Expand Icon
+                            hoverTD.value.childNodes[0].childNodes[1].classList.add(
+                                'block'
+                            )
+                            hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+                                'hidden'
+                            )
                         }
                     }
                     tbody.onmouseout = function (e) {
@@ -185,7 +192,16 @@
                         if (!tbody.contains(td)) return
                         hoverTD.value = td
                         hoverTD.value.classList.remove('hover-state')
-                        showExpand.value = ''
+
+                        hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+                            '100%'
+
+                        hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+                            'block'
+                        )
+                        hoverTD.value.childNodes[0].childNodes[1].classList.add(
+                            'hidden'
+                        )
                     }
                 }
             })
@@ -203,35 +219,16 @@
                         let svg = e.target.closest('svg')
                         if (!svg) return
                         if (!thead.contains(svg)) return
-                        // if we have tooltip HTML...
+
                         let tooltipContent = svg.dataset.tooltip
                         if (!tooltipContent) return
 
-                        // ...create the tooltip element
-
                         hoverTH.value = document.createElement('div')
-                        hoverTH.value.className = 'tooltip'
+                        hoverTH.value.className =
+                            'bg-black text-white px-3 py-1 rounded opacity-80 absolute z-50 top-7 mx-auto'
                         hoverTH.value.innerHTML = tooltipContent
-                        document.body.append(hoverTH.value)
 
-                        // position it above the annotated element (top-center)
-                        let coords = svg.getBoundingClientRect()
-
-                        let left =
-                            coords.left +
-                            (svg.offsetWidth - hoverTH.value.offsetWidth) / 2
-                        if (left < 0) left = 0 // don't cross the left window edge
-
-                        let top = coords.top - hoverTH.value.offsetHeight - 5
-                        if (top < 0) {
-                            // if crossing the top window edge, show below instead
-                            top = coords.top + svg.offsetHeight + 5
-                        }
-
-                        hoverTH.value.style.top = top + 'px'
-                        hoverTH.value.style.left = left + 'px'
-
-                        console.log(hoverTH.value)
+                        svg.parentElement.append(hoverTH.value)
                     }
 
                     thead.onmouseout = function (e) {
@@ -260,7 +257,9 @@
                 columns.value.forEach((col) => {
                     if (
                         col.data_type.toLowerCase() === 'any' ||
-                        col.data_type.toLowerCase() === 'variant'
+                        col.data_type.toLowerCase() === 'variant' ||
+                        col.data_type.toLowerCase() === 'object' ||
+                        col.data_type.toLowerCase() === 'struct'
                     ) {
                         variantTypeIndexes.value.push(col.title)
                     }
@@ -369,6 +368,6 @@
     }
 
     .tooltip {
-        @apply bg-black text-white px-6 py-3 rounded opacity-80 fixed z-50 !important;
+        @apply bg-black text-white px-6 py-3 rounded opacity-80 absolute z-50 !important;
     }
 </style>

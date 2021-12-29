@@ -20,7 +20,7 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
-        GlossaryAttributes
+        GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -49,7 +49,7 @@
             const facets = ref({
                 guid: id.value,
             })
-            if (selectedAsset.value?.guid === id.value) {
+            if (selectedAsset.value?.guid === id?.value) {
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
@@ -65,7 +65,7 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                ...GlossaryAttributes
+                ...GlossaryAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 

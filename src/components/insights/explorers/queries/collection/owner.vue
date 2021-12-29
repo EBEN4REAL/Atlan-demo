@@ -69,7 +69,7 @@
             </div>
 
             <template #content>
-                <div style="width: 330px" class="">
+                <div style="width: 330px" class="pb-2">
                     <div>
                         <Users
                             v-if="componentType == 'users'"
@@ -81,8 +81,9 @@
                             @change="handleChange"
                             :show-avatar="true"
                             list-class="h-52"
-                            checkbox-list-class="py-2 h-52"
+                            checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
+                            :showLoggedInUser="false"
                         ></Users>
 
                         <Groups
@@ -97,7 +98,7 @@
                             @change="handleChange"
                             :show-avatar="true"
                             list-class="h-52"
-                            checkbox-list-class="py-2 h-52"
+                            checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
                         ></Groups>
                     </div>

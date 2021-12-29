@@ -14,9 +14,7 @@
                 <div class="">
                     <Announcements />
                 </div>
-
                 <Relevant />
-
                 <!--section>
                 <YourOrgs />
             </section-->

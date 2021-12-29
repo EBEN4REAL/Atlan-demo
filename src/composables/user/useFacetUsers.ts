@@ -110,7 +110,9 @@ export default function useFacetUsers(
         const myIndex = list.value.findIndex((obj) => obj.username === username)
         return [
             {
-                ...list.value[myIndex],
+                firstName,
+                id,
+                username,
                 lastName: `${lastName} (me)`,
             },
             ...tempList,

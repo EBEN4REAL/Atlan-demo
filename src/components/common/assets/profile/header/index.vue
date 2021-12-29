@@ -274,7 +274,35 @@
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
                 >
-                    <a-button block class="flex items-center justify-center">
+                    <a-button
+                        v-if="
+                            isGTC(item) &&
+                            checkAccess(
+                                [
+                                    map.DELETE_TERM,
+                                    map.DELETE_GLOSSARY,
+                                    map.DELETE_CATEGORY,
+                                ],
+                                'or'
+                            )
+                        "
+                        block
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                    </a-button>
+                </AssetMenu>
+                <AssetMenu
+                    :asset="item"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
+                >
+                    <a-button
+                        v-if="
+                            !isGTC(item) && selectedAssetUpdatePermission(item)
+                        "
+                        block
+                        class="flex items-center justify-center"
+                    >
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
                 </AssetMenu>
@@ -294,6 +322,8 @@
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -370,6 +400,7 @@
             whenever(and(Escape, notUsingInput), (v) => {
                 if (v) back()
             })
+            const { checkAccess } = useAuth()
 
             return {
                 title,
@@ -400,6 +431,8 @@
                 selectedAssetUpdatePermission,
                 assetTypeLabel,
                 isGTC,
+                map,
+                checkAccess,
             }
         },
     })

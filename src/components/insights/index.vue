@@ -331,6 +331,16 @@
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
+
+            /* Watcher for all the things changes in activeInline tab */
+            watch(
+                () => activeInlineTab.value?.playground.vqb,
+                () => {
+                    syncInlineTabsInLocalStorage(tabsArray.value)
+                },
+                { deep: true }
+            )
+
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
                     // const savedQueryInlineTab =
@@ -670,7 +680,7 @@
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
-                observer.value.unobserve(splitpaneRef.value)
+                observer?.value?.unobserve(splitpaneRef?.value)
             })
 
             const resetTree = ref(false)

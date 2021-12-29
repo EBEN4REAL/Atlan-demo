@@ -1,7 +1,7 @@
 <template>
     <span class="text-sm text-gray-500">Groups</span>
     <div v-if="!error && !isLoading" class="flex flex-wrap mt-1">
-        <div v-if="filteredGroupCount > 0" class="flex flex-wrap mt-1">
+        <div v-if="filteredGroupCount > 0" class="flex flex-wrap gap-y-1 mt-1">
             <Tags
                 :allow-update="false"
                 :tags="groups.slice(0, groupTagLimit)"

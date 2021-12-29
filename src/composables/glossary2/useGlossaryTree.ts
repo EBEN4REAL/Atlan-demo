@@ -635,6 +635,30 @@ const useGlossaryTree = ({
     const collapseAll = () => {
         expandedKeys.value = []
     }
+    const handleCategoriesChange = (
+        existingCategories,
+        newCategories,
+        asset
+    ) => {
+        const addedCategories = newCategories.filter(
+            (category) =>
+                !existingCategories.find(
+                    (existing) => existing.guid === category.guid
+                )
+        )
+        const removedCategories = existingCategories.filter(
+            (category) =>
+                !newCategories?.find((newCat) => newCat.guid === category.guid)
+        )
+
+        if (addedCategories?.length)
+            addedCategories.forEach((cat) => {
+                addNode(asset, cat)
+            })
+        // removedCategories.forEach((cat) => {
+        //     deleteNode(asset, cat?.guid)
+        // })
+    }
 
     const updateNode = (asset) => {
         const currentParents = nodeToParentKeyMap[asset?.guid]
@@ -646,6 +670,12 @@ const useGlossaryTree = ({
             ) {
                 treeData.value = treeData.value.map((treeNode) => {
                     if (treeNode.guid === asset?.guid) {
+                        handleCategoriesChange(
+                            treeNode?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         treeNode.attributes = asset?.attributes
                     }
                     return treeNode
@@ -661,6 +691,12 @@ const useGlossaryTree = ({
 
                     // if the target node is reached
                     if (node.guid === asset?.guid || !currentPath) {
+                        handleCategoriesChange(
+                            node?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         node.attributes = asset.attributes
                         return {
                             ...node,

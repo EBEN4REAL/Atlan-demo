@@ -8,7 +8,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject, ref, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        inject,
+        ref,
+        watch,
+        nextTick,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -25,6 +32,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -38,6 +46,7 @@
             const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
+            const profileActiveTab = computed(() => route?.params?.tab)
             const handlePreview = inject('preview')
 
             if (selectedAsset.value?.guid === id.value) {
@@ -86,6 +95,13 @@
                 relationAttributes,
             })
 
+            const sendPageTrack = () => {
+                useTrackPage('assets', 'asset_profile', {
+                    type: localSelected?.value?.typeName,
+                    tab: profileActiveTab.value,
+                })
+            }
+
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
@@ -95,6 +111,21 @@
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
+            })
+
+            watch(isLoading, async () => {
+                await nextTick()
+                console.log(
+                    'asset profile loaded',
+                    localSelected.value.typeName,
+                    { profileActiveTab: profileActiveTab.value }
+                )
+                sendPageTrack()
+            })
+
+            watch(profileActiveTab, () => {
+                console.log('profileActiveTab', profileActiveTab.value)
+                sendPageTrack()
             })
 
             return {

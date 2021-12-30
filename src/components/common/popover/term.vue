@@ -6,8 +6,9 @@
     >
         <template #content>
             <div class="p-4" style="width: 374px">
+                <!-- using v-if="!fetchedTerm" below as when using loader the loader dissapears if changes too quicky -->
                 <div
-                    v-if="!fetchedTerm && !isReady"
+                    v-if="!fetchedTerm"
                     class="flex items-center justify-center w-full h-full"
                 >
                     <AtlanIcon icon="Loader" class="animate-spin h-7" />

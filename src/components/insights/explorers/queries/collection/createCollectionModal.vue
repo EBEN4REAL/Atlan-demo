@@ -115,19 +115,6 @@
                 <span class="text-sm text-gray-700">Users and groups</span>
 
                 <div class="flex items-center mb-1.5">
-                    <!-- <div
-                        class="flex items-center justify-center w-full h-8 pl-2 pr-2 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-r-none cursor-pointer"
-                        @click="showUserDropdown"
-                    >
-                        <Owners
-                            :showNone="false"
-                            select-group-key="alias"
-                            select-user-key="username"
-                            v-model:modelValue="userData[selectedType]"
-                            :disabledModalValue="userData[otherType]"
-                        />
-                    </div> -->
-
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
                             class="flex items-center justify-center h-8 mt-2 text-gray-700 border border-r-0 border-gray-300 rounded-lg rounded-r-none cursor-pointer"

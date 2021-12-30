@@ -22,7 +22,7 @@
 
         <template #overlay>
             <div class="popover-container" @mouseleave="closeDropdown">
-                <div class="p-2 py-4">
+                <div class="py-2">
                     <div>
                         <GlossaryTree
                             v-model:checkedGuids="checkedGuids"
@@ -168,10 +168,8 @@
         border-radius: 4px !important;
     }
     .popover-container {
-        // width: 295px*1.5;
-        // height: 257px;
-
-        width: 320px;
+        width: 295px;
+        max-height: 312px;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);

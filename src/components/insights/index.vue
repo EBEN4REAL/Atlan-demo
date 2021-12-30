@@ -295,9 +295,26 @@
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
 
+            const resetTree = ref(false)
+            const resetParentGuid = ref(null)
+            const resetType = ref(null)
+            const refreshQueryTree = (guid, type) => {
+                resetTree.value = true
+                resetParentGuid.value = guid
+                resetType.value = type
+                // console.log('QueryTree refresh: ', resetTree.value)
+            }
+            const resetQueryTree = () => {
+                resetTree.value = false
+                resetParentGuid.value = null
+                resetType.value = null
+                // console.log('QueryTree reset: ', resetTree.value)
+            }
+
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
+
             const provideData: provideDataInterface = {
                 activeInlineTab,
                 queryCollections,
@@ -320,6 +337,7 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 editorContentSelectionState,
+                refreshQueryTree,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -680,22 +698,6 @@
                 window.removeEventListener('keydown', _keyListener)
                 observer?.value?.unobserve(splitpaneRef?.value)
             })
-
-            const resetTree = ref(false)
-            const resetParentGuid = ref(null)
-            const resetType = ref(null)
-            const refreshQueryTree = (guid, type) => {
-                resetTree.value = true
-                resetParentGuid.value = guid
-                resetType.value = type
-                // console.log('QueryTree refresh: ', resetTree.value)
-            }
-            const resetQueryTree = () => {
-                resetTree.value = false
-                resetParentGuid.value = null
-                resetType.value = null
-                // console.log('QueryTree reset: ', resetTree.value)
-            }
 
             // provide('refreshQueryTree', refreshQueryTree)
             // provide('resetQueryTree', resetQueryTree)

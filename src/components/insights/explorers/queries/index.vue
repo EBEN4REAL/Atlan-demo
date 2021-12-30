@@ -156,7 +156,7 @@
                 </div>
                 <div
                     v-else
-                    class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
+                    class="relative w-full px-4 pt-0 pb-6 mt-2 overflow-y-auto"
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh- 140px )'

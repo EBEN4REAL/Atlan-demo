@@ -56,8 +56,8 @@
                 </p>
 
                 <div
-                    class="relative flex items-center h-8 pr-1 bg-white rounded group border-container"
-                    style="width: 162px"
+                    class="relative flex items-center pr-1 bg-white rounded group border-container"
+                    style="width: 162px; height: 34px !important"
                 >
                     <div v-if="variable.type === 'dropdown'">
                         <a-dropdown
@@ -67,7 +67,7 @@
                             <a-button
                                 @click="() => openSelectDropdown(variable)"
                                 class="flex items-center justify-between bg-white border-none shadow-none"
-                                style="width: 138px; height: 30px"
+                                style="width: 138px; height: 32px"
                                 ><span class="text-gray-500 truncate">{{
                                     variable.value.length
                                         ? variable.value.join(', ')
@@ -170,12 +170,15 @@
                         :show-time="{ format: 'HH:mm' }"
                         v-model:value="variable.value"
                         :bordered="false"
-                        style="paddingright: 0 !important"
-                        class="border-0 focus:border-0 focus:outline-none"
-                    />
+                        style="padding-right: 0 !important; max-width: 127px"
+                        class="truncate border-0 focus:border-0 focus:outline-none"
+                        :allowClear="false"
+                    >
+                        <template #suffixIcon></template>
+                    </a-date-picker>
                     <a-input
-                        class="border-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
-                        style="width: 138px; height: 30px"
+                        class="border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
+                        style="width: 138px; height: 32px"
                         v-model:value="variable.value"
                         @change="onChange(variable)"
                         :placeholder="`Enter a ${variable.type}`"
@@ -188,13 +191,17 @@
                         :trigger="['click']"
                     >
                         <div
-                            class="absolute right-0 z-10 p-1 rounded opacity-0 group-hover:opacity-100 group-hover:bg-gray-100"
+                            class="absolute right-0 z-10 p-1 px-1.5 rounded opacity-0 group-hover:opacity-100"
                         >
-                            <AtlanIcon
+                            <span
                                 @click="() => openDropdown(variable)"
-                                class="w-4 h-4 text-gray-500 cursor-pointer"
-                                icon="Settings"
-                            />
+                                class="p-1 rounded cursor-pointer hover:bg-gray-light"
+                            >
+                                <AtlanIcon
+                                    class="w-4 h-4 text-gray-500 mb-0.5"
+                                    icon="Settings"
+                                />
+                            </span>
                         </div>
                         <template #overlay>
                             <a-menu>
@@ -388,6 +395,7 @@
                                                 v-if="
                                                     variable.type === `dropdown`
                                                 "
+                                                class="mb-2 -mt-4"
                                             >
                                                 <a-checkbox
                                                     :class="
@@ -405,7 +413,7 @@
                                                 </a-checkbox>
                                             </a-form-item>
                                         </a-form>
-                                        <div class="flex justify-between mt-6">
+                                        <div class="flex justify-between">
                                             <AtlanBtn
                                                 size="sm"
                                                 color="secondary"
@@ -744,6 +752,12 @@
             @apply px-1 !important;
         }
     }
+
+    // .item_style {
+    //     :global(.ant-form-item) {
+    //         margin-bottom: 0px !important;
+    //     }
+    // }
 
     .input_style {
         @apply relative !important;

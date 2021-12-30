@@ -97,6 +97,7 @@
                 "
             />
         </div>
+
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
@@ -105,7 +106,7 @@
                 'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
-            <div class="border-b border-gray-300">
+            <div class="border-b border-gray-300" v-if="showSelectAll">
                 <a-checkbox
                     v-model:checked="selectAll"
                     @change="onSelectAll"
@@ -259,10 +260,15 @@
                 type: String,
                 required: true,
             },
+            showSelectAll: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName } = toRefs(props)
+            const { tableQualfiedName, showSelectAll } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const map = ref({})
@@ -518,6 +524,7 @@
             })
 
             return {
+                showSelectAll,
                 initialRef,
                 queryText,
                 clearAllSelected,

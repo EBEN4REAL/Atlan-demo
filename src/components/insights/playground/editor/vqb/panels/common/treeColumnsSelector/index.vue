@@ -231,6 +231,9 @@
                 type: Object,
                 required: true,
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<string[]>,
+            },
         },
         setup(props, { emit }) {
             const activeInlineTab = inject(
@@ -240,7 +243,8 @@
             const tableText = ref('')
             const columnText = ref('')
 
-            const { selectedColumn } = useVModels(props)
+            const { selectedColumn, selectedTablesQualifiedNames } =
+                useVModels(props)
 
             const {
                 isPrimary,
@@ -259,6 +263,7 @@
                                 .attributeValue,
 
                         searchText: tableText.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames.value,
                     }),
                     attributes: [
                         'name',
@@ -284,6 +289,10 @@
             )
             watch(tableText, () => {
                 replaceBody(getTableInitialBody())
+            })
+
+            watch(selectedTablesQualifiedNames, () => {
+                getTableInitialBody()
             })
 
             let tableSelected = ref(null)

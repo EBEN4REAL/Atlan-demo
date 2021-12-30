@@ -165,6 +165,7 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
+import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
@@ -201,6 +202,7 @@ import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
+import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
@@ -368,6 +370,7 @@ export default {
     ResendInvite,
     StarCircled,
     EmptyLineage,
+    EmptyLineageTab,
     EmptyResource,
     IssuesFilled,
     ExplorerTrigger,
@@ -377,6 +380,7 @@ export default {
     NoDataInsights,
     SomethingWrong,
     NoSavedQueriesPersonal,
+    EmptyQueriesTab,
     EmptyCollections,
     AddQuery,
     RunHistory,
@@ -644,5 +648,5 @@ export default {
     CollectionIconSmall,
     CollectionIconLarge,
     CollectionIconSmallGray,
-    CollectionIconLargeActive
+    CollectionIconLargeActive,
 }

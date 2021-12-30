@@ -24,8 +24,10 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
+        name: 'GlossaryIdPage',
         components: {
             GlossaryProfile,
             Loader,
@@ -83,6 +85,17 @@
                 relationAttributes,
             })
 
+            const sendPageEvent = () => {
+                let name = 'glossary'
+                const type = localSelected?.value?.typeName
+                if (type === 'AtlasGlossaryCategory') {
+                    name = 'category'
+                } else if (type === 'AtlasGlossaryTerm') {
+                    name = 'term'
+                }
+                useTrackPage('gtc', name)
+            }
+
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
@@ -98,6 +111,7 @@
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
+                sendPageEvent()
             })
 
             return {

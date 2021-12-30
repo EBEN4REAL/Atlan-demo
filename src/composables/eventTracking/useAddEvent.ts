@@ -21,4 +21,23 @@ const useAddEvent = (category, obj, action, props = {}) => {
         ;(window as any).analytics.track(eventName)
     }
 }
+
+export const useTrackPage = (category, name, props = {}) => {
+    const baseProps = {
+        referrer: document.referrer,
+        path: window.location.pathname,
+        search: window.location.search,
+        url: window.location.href,
+    }
+    props = {
+        ...props,
+        ...baseProps,
+    }
+    console.log('analytics page', { category, name, props })
+    if (!(window as any).analytics || !(window as any).analytics.page) {
+        return
+    }
+    ;(window as any).analytics.page(category, name, props)
+}
+
 export default useAddEvent

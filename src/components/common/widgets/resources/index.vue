@@ -149,7 +149,7 @@
                         selectedAsset.value,
                         'RELATIONSHIP_ADD',
                         'Link'
-                    ) && assetPermission('CREATE_README')
+                    ) && assetPermission('CREATE_LINK')
             )
 
             return {

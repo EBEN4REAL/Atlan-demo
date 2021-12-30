@@ -785,7 +785,7 @@ const useGlossaryTree = ({
                     deleteNode(asset, cat?.guid)
                 }, 0)
             })
-        if (!newCategories?.length) {
+        if (!newCategories?.length && removedCategories?.length) {
             setTimeout(() => {
                 if (parentGlossaryQualifiedName?.value !== '') {
                     addNode(asset)

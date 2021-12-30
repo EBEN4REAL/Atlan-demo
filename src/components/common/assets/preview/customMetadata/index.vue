@@ -110,7 +110,7 @@
             <div v-if="readOnly" :class="showMore ? 'mt-4' : ''">
                 <span
                     v-if="[...applicableList].filter((i) => hasValue(i)).length"
-                    class="text-gray-500 border-b border-gray-300 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                    class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
                     @click="showMore = !showMore"
                 >
                     <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />

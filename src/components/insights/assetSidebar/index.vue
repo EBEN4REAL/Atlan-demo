@@ -34,6 +34,7 @@
     import useAssetStore from '~/store/asset'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { AssetPreview, AtlanIcon },
@@ -90,12 +91,31 @@
                 fetchAsset()
             })
 
-            const updateList = (asset) => {
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
 
-                activeInlineTabCopy.assetSidebar.assetInfo = asset
-                modifyActiveInlineTab(activeInlineTabCopy, tabs, false, true)
+            const updateList = (asset) => {
+                let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
+
+                assetSidebarUpdatedData.value = asset
+
+                activeInlineTabCopy = {
+                    ...activeInlineTabCopy,
+                    updateTime:
+                        asset?.updateTime ??
+                        asset?.attributes.__modificationTimestamp,
+                    updatedBy:
+                        asset?.updatedBy ?? asset?.attributes.__modifiedBy,
+                    description: asset?.attributes.description,
+                    status: asset?.attributes.certificateStatus,
+                    attributes: asset?.attribute,
+                }
+
+                // console.log('old data update: ', asset)
+                modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
             }
 
             provide('updateList', updateList)

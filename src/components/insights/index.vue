@@ -311,6 +311,8 @@
                 // console.log('QueryTree reset: ', resetTree.value)
             }
 
+            const assetSidebarUpdatedData = ref({})
+
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -338,6 +340,7 @@
                 hasQueryWritePermission,
                 editorContentSelectionState,
                 refreshQueryTree,
+                assetSidebarUpdatedData,
             }
             useProvide(provideData)
             /*-------------------------------------*/

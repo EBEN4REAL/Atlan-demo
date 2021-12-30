@@ -546,5 +546,5 @@
     }
     .treeStyles {
         max-height: calc(100vh - 11rem) !important;
-    }
+      }
 </style>

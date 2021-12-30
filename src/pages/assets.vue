@@ -18,12 +18,20 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, onMounted, provide, ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        onMounted,
+        provide,
+        ref,
+        watch,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
     import useAssetStore from '~/store/asset'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -54,6 +62,23 @@
 
             provide('updateList', updateList)
             provide('preview', handlePreview)
+
+            const sendPageEvent = () => {
+                useTrackPage('assets', 'discovery')
+            }
+
+            watch(isItem, (isAssetProfile) => {
+                if (!isAssetProfile) {
+                    sendPageEvent()
+                }
+            })
+
+            onMounted(() => {
+                if (!isItem.value) {
+                    sendPageEvent()
+                }
+                console.log('onMounted assets')
+            })
 
             return {
                 isItem,

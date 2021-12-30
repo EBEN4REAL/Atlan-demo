@@ -6,11 +6,12 @@
     >
         <template #content>
             <div class="p-4" style="width: 374px">
-                <AtlanIcon
-                    v-if="isLoading"
-                    icon="Loader"
-                    class="animate-spin"
-                />
+                <div
+                    v-if="!fetchedTerm && !isReady"
+                    class="flex items-center justify-center w-full h-full"
+                >
+                    <AtlanIcon icon="Loader" class="animate-spin h-7" />
+                </div>
                 <div v-else-if="fetchedTerm" class="space-y-2">
                     <div class="flex text-xs gap-x-2">
                         <div class="flex space-x-2 text-gray-700">
@@ -103,6 +104,9 @@
                         </router-link>
                     </div>
                 </div>
+                <div v-else-if="error" class="">
+                    <ErrorView />
+                </div>
             </div>
         </template>
         <slot />
@@ -124,6 +128,7 @@
     import Owners from '@/common/input/owner/index.vue'
     import Category from '@/common/input/categories/categories.vue'
     import AtlanButton from '@/UI/button.vue'
+    import ErrorView from '@/common/error/index.vue'
 
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -131,14 +136,7 @@
     //types
     import { Term } from '~/types/glossary/glossary.interface'
 
-    import {
-        AssetAttributes,
-        InternalAttributes,
-        SQLAttributes,
-        AssetRelationAttributes,
-        GlossaryAttributes,
-    } from '~/constant/projection'
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    // import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
@@ -146,12 +144,29 @@
         name: 'TermPopover',
         components: {
             Owners,
+            ErrorView,
             Category,
             AtlanButton,
             CertificateBadge,
         },
         props: {
             term: {
+                type: Object,
+                required: true,
+            },
+            loading: {
+                type: Boolean,
+                required: true,
+            },
+            error: {
+                type: Error,
+                required: true,
+            },
+            isReady: {
+                type: Boolean,
+                required: true,
+            },
+            fetchedTerm: {
                 type: Object,
                 required: true,
             },
@@ -166,8 +181,11 @@
                 default: 'hover',
             },
         },
+        emits: ['visible'],
         setup(props, { emit }) {
             const { term } = toRefs(props)
+
+            const { fetchedTerm, loading } = toRefs(props)
 
             const {
                 isScrubbed,
@@ -177,47 +195,21 @@
                 anchorAttributes,
             } = useAssetInfo()
 
-            const limit = ref(1)
-            const offset = ref(0)
-            const facets = ref({
-                guid: term.value.termGuid,
-            })
-
-            const dependentKey = ref(facets.value.guid)
-
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...GlossaryAttributes,
-            ])
-            const relationAttributes = ref([...AssetRelationAttributes])
-
-            const { list, isLoading, fetch } = useDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                relationAttributes,
-            })
-
-            const fetchedTerm = computed(() => {
-                if (list.value.length) return list.value[0]
-                return null
-            })
+            const scrubbed = computed(() => isScrubbed(fetchedTerm.value))
 
             const attributes = ref()
 
-            watch([isLoading, list], () => {
+            watch([loading, fetchedTerm], () => {
                 if (fetchedTerm.value) {
                     attributes.value = updateAssetAttributes(fetchedTerm)
                 }
             })
 
             const handleVisibleChange = (v) => {
-                console.log({ v })
-                if (!list.value?.length && v) fetch()
+                emit('visible', v, term.value)
+                // console.log({ v })
+                // if (!list.value?.length && v) quickChange()
+                // // fetch()
             }
 
             onMounted(() => {
@@ -231,10 +223,7 @@
                 certificateUpdatedAt,
                 isScrubbed,
                 certificateStatus,
-                fetchedTerm,
                 handleVisibleChange,
-                isLoading,
-                list,
             }
         },
     })

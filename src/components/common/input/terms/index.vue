@@ -26,7 +26,15 @@
         </a-popover>
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
-                <TermPopover :term="term" trigger="click">
+                <TermPopover
+                    :term="term"
+                    :loading="termLoading"
+                    :fetchedTerm="fetchedTerm"
+                    :error="termError"
+                    trigger="hover"
+                    :ready="isReady"
+                    @visible="handleTermPopoverVisibility"
+                >
                     <teamplate>
                         <TermPill
                             :term="term"
@@ -60,6 +68,14 @@
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
     import TermPopover from '@/common/popover/term.vue'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import {
+        AssetAttributes,
+        InternalAttributes,
+        SQLAttributes,
+        AssetRelationAttributes,
+        GlossaryAttributes,
+    } from '~/constant/projection'
 
     export default defineComponent({
         name: 'TermsWidget',
@@ -161,7 +177,56 @@
                 )
             })
 
+            const limit = ref(1)
+            const offset = ref(0)
+            const facets = ref({
+                guid: '',
+            })
+
+            const dependentKey = ref(facets.value.guid)
+
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...GlossaryAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            const {
+                list: fetchTermArr,
+                isLoading: termLoading,
+                fetch,
+                isReady,
+                error: termError,
+                quickChange,
+            } = useDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
+            const fetchedTerm = computed(() => {
+                if (fetchTermArr.value.length) return fetchTermArr.value[0]
+                return null
+            })
+
+            const handleTermPopoverVisibility = (v, term) => {
+                if (v) {
+                    facets.value.guid = term.termGuid
+                    quickChange()
+                }
+            }
+
             return {
+                isReady,
+                termError,
+                termLoading,
+                fetchedTerm,
+                handleTermPopoverVisibility,
                 list,
                 onCheck,
                 onPopoverClose,

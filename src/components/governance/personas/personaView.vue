@@ -66,7 +66,10 @@
                                     {{ item.groups.length }} groups</span
                                 >
                                 <span
-                                    v-if="item.groups.length > 0"
+                                    v-if="
+                                        item.metadataPolicies.length > 0 ||
+                                        item.dataPolicies.length > 0
+                                    "
                                     class="text-xs text-gray-500"
                                 >
                                     {{

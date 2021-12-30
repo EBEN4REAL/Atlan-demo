@@ -113,6 +113,8 @@ export function useVQB() {
             Number(activeInlineTab.value.playground.vqb.panels.length) + 1
         addPanelsInVQB(Number(index), panelCopy, activeInlineTabKey, inlineTabs)
     }
+
+    function updateSelectedTables() {}
     return {
         handleAdd,
         deletePanelsInVQB,

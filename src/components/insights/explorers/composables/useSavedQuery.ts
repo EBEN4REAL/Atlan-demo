@@ -136,6 +136,7 @@ export function useSavedQuery(
                 vqb: isVisualQuery
                     ? decodedVQB
                     : {
+                          selectedTables: [],
                           panels: [
                               {
                                   order: 1,
@@ -227,15 +228,14 @@ export function useSavedQuery(
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
-        monacoInstance: Ref<any>,
+        monacoInstance: Ref<any>
     ) => {
         openSavedQueryInNewTab({
             ...savedQuery?.value,
             parentTitle:
-                savedQuery?.value?.attributes?.parent?.attributes
-                    ?.name,
+                savedQuery?.value?.attributes?.parent?.attributes?.name,
         })
-        setTimeout(()=> {
+        setTimeout(() => {
             queryRun(
                 activeInlineTab,
                 getData,
@@ -248,9 +248,6 @@ export function useSavedQuery(
                 activeInlineTab?.value?.playground?.isVQB
             )
         }, 250)
-
-        
-        
     }
 
     const getCollectionByQualifiedName = (qualifiedName: string) => {
@@ -411,7 +408,7 @@ export function useSavedQuery(
             activeInlineTab
         )
 
-        const {assetTerms, assetClassification} = saveQueryData
+        const { assetTerms, assetClassification } = saveQueryData
 
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
@@ -506,29 +503,32 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-
                     linkTerms(
-                        assetTerms, 
+                        assetTerms,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
 
                     linkClassification(
-                        assetClassification, 
+                        assetClassification,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
@@ -592,18 +592,18 @@ export function useSavedQuery(
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         // eslint-disable-next-line prefer-object-spread
-        
+
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
         const uuidv4 = generateUUID()
 
-        const {assetTerms, assetClassification} = saveQueryData
+        const { assetTerms, assetClassification } = saveQueryData
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if(isVQB) {
+        if (isVQB) {
             visualBuilderSchemaBase64 = undefined
-            isVisualQuery = true 
+            isVisualQuery = true
         }
 
         const connectorName = getConnectorName(attributeValue) ?? ''
@@ -683,29 +683,32 @@ export function useSavedQuery(
             if (isLoading.value === false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-
                     linkTerms(
-                        assetTerms, 
+                        assetTerms,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
 
                     linkClassification(
-                        assetClassification, 
+                        assetClassification,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
@@ -716,14 +719,14 @@ export function useSavedQuery(
                     const parentQualifiedName =
                         data.value.mutatedEntities.CREATE[0].attributes
                             .parentQualifiedName
-                        
+
                     savedQuery.attributes.variablesSchemaBase64 = []
                     savedQuery.attributes = {
                         ...savedQuery.attributes,
                         parent: {
                             guid: parentGuid,
-                            qualifiedName: parentQualifiedName
-                        }
+                            qualifiedName: parentQualifiedName,
+                        },
                     }
 
                     showSaveQueryModal.value = false
@@ -738,7 +741,6 @@ export function useSavedQuery(
                     }
 
                     openSavedQueryInNewTab(savedQuery)
-
                 } else {
                     console.log(error.value.toString())
                     message.error(`Error in saving query!`)
@@ -969,33 +971,36 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-
                     if (Callback) {
                         Callback(parentFolderGuid, 'query')
                     }
 
                     linkTerms(
-                        assetTerms, 
+                        assetTerms,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
 
                     linkClassification(
-                        assetClassification, 
+                        assetClassification,
                         {
                             guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
                             collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid:parentFolderGuid,
+                            parentFolderGuid: parentFolderGuid,
                             parentFolderQF: parentFolderQF,
-                            qualifiedName: data?.value?.mutatedEntities?.CREATE[0]?.attributes?.qualifiedName,
-                            name: name
+                            qualifiedName:
+                                data?.value?.mutatedEntities?.CREATE[0]
+                                    ?.attributes?.qualifiedName,
+                            name: name,
                         },
                         'Query'
                     )
@@ -1083,10 +1088,10 @@ export function useSavedQuery(
 
     const linkTerms = (assetTerms, assetData, type) => {
         if (assetTerms?.length) {
-            let data2 = assetTerms.map(el=> {
+            let data2 = assetTerms.map((el) => {
                 return {
-                    typeName: "AtlasGlossaryTerm",
-                    guid: el
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: el,
                 }
             })
             const body = ref({
@@ -1095,25 +1100,28 @@ export function useSavedQuery(
                         guid: assetData?.guid,
                         typeName: type,
                         attributes: {
-                            collectionQualifiedName: assetData?.collectionQualifiedName,
+                            collectionQualifiedName:
+                                assetData?.collectionQualifiedName,
                             name: assetData?.name,
                             parent: {
-                                guid: assetData?.parentFolderGuid, 
-                                typeName: assetData?.parentFolderQF.includes('/folder') ? 'Folder' : 'Collection',
+                                guid: assetData?.parentFolderGuid,
+                                typeName: assetData?.parentFolderQF.includes(
+                                    '/folder'
+                                )
+                                    ? 'Folder'
+                                    : 'Collection',
                                 uniqueAttributes: {
-                                    qualifiedName: assetData?.parentFolderQF
-                                }
+                                    qualifiedName: assetData?.parentFolderQF,
+                                },
                             },
                             parentQualifiedName: assetData?.parentFolderQF,
                             qualifiedName: assetData?.qualifiedName,
-                            tenantId: "default"
+                            tenantId: 'default',
                         },
                         relationshipAttributes: {
-                            meanings: [
-                                ...data2                    
-                            ]
-                        }
-                    }
+                            meanings: [...data2],
+                        },
+                    },
                 ],
             })
 
@@ -1124,7 +1132,6 @@ export function useSavedQuery(
                 error: isTermError,
             } = updateAsset(body)
 
-
             mutateAsset()
 
             watch([isLoadingTerm, isTermError], () => {
@@ -1134,15 +1141,13 @@ export function useSavedQuery(
     }
 
     const linkClassification = (assetClassification, assetData, type) => {
-
-        if(assetClassification?.length) {
-
-            let data2 = assetClassification.map(el=> {
+        if (assetClassification?.length) {
+            let data2 = assetClassification.map((el) => {
                 return {
                     entityGuid: assetData?.guid,
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: el
+                    typeName: el,
                 }
             })
 
@@ -1151,22 +1156,27 @@ export function useSavedQuery(
                     [assetData?.guid]: {
                         classifications: data2,
                         attributes: {
-                            collectionQualifiedName: assetData?.collectionQualifiedName,
+                            collectionQualifiedName:
+                                assetData?.collectionQualifiedName,
                             name: assetData?.name,
                             parent: {
-                                guid: assetData?.parentFolderGuid, 
-                                typeName: assetData?.parentFolderQF.includes('/folder') ? 'Folder' : 'Collection'
+                                guid: assetData?.parentFolderGuid,
+                                typeName: assetData?.parentFolderQF.includes(
+                                    '/folder'
+                                )
+                                    ? 'Folder'
+                                    : 'Collection',
                             },
                             parentQualifiedName: assetData?.parentFolderQF,
                             qualifiedName: assetData?.qualifiedName,
-                            tenantId: "default"
+                            tenantId: 'default',
                         },
                         guid: assetData?.guid,
-                        typeName: type
-                    }
+                        typeName: type,
+                    },
                 },
             })
-        
+
             const {
                 mutate: mutateClassification,
                 isLoading: isLoadingClassification,
@@ -1179,7 +1189,6 @@ export function useSavedQuery(
             watch([isLoadingClassification, isErrorClassification], () => {
                 console.log('classification linked: ')
             })
-        
         }
     }
 
@@ -1190,6 +1199,6 @@ export function useSavedQuery(
         openSavedQueryInNewTab,
         createFolder,
         saveQueryToDatabaseWithTerms,
-        openSavedQueryInNewTabAndRun
+        openSavedQueryInNewTabAndRun,
     }
 }

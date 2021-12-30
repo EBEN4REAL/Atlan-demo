@@ -19,6 +19,13 @@
                         class="flex-1"
                         style="max-width: 30%"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index
+                                )
+                        "
                     />
                     <div>
                         <a-tooltip placement="top" color="#363636">
@@ -36,6 +43,13 @@
                         class="flex-1"
                         style="max-width: 30%"
                         v-model:selectedColumn="subpanel.columnsDataRight"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index
+                                )
+                        "
                     />
 
                     <AtlanIcon
@@ -71,6 +85,8 @@
     import { useVModels } from '@vueuse/core'
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
     // import ColumnSelector from '../columnSelector/index.vue'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -89,13 +105,19 @@
                 required: true,
                 default: [],
             },
+            selectedTables: {
+                type: Object as PropType<selectedTables>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
+            const { getTableQualifiedNameFromColumnQualifiedName } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
 
-            const { subpanels } = useVModels(props)
+            const { subpanels, selectedTables } = useVModels(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
@@ -109,16 +131,38 @@
                 console.log('checked array: ', checkedArr)
             }
 
-            const handleColumnChange = (val, index) => {
-                console.log('col change: ', val)
+            const handleColumnChange = (
+                columnQualifiedName: string,
+                uniqueSubpanelString: string
+            ) => {
+                if (columnQualifiedName) {
+                    const tableQualifiedName =
+                        getTableQualifiedNameFromColumnQualifiedName(
+                            columnQualifiedName
+                        )
+                    const addedBy = `joins-${uniqueSubpanelString}`
+                    const copySelectedTables = JSON.parse(
+                        JSON.stringify(toRaw(selectedTables.value))
+                    )
+                    const _index = copySelectedTables?.findIndex(
+                        (table) =>
+                            table.addedBy === `joins-${uniqueSubpanelString}`
+                    )
+                    const t = { ...copySelectedTables[_index] }
+                    /* Already a tableName there for this subpanel field */
+                    if (_index > -1) {
+                        t.tableQualifiedName = tableQualifiedName
+                        copySelectedTables.splice(_index, 1, t)
+                    } else {
+                        copySelectedTables.push({
+                            tableQualifiedName,
+                            addedBy,
+                        })
+                    }
 
-                const copySubPanel = JSON.parse(
-                    JSON.stringify(toRaw(subpanels.value[index]))
-                )
-                copySubPanel.column = val
-                // copySubPanel.filter = {}
+                    selectedTables.value = copySelectedTables
+                }
 
-                subpanels.value[index] = copySubPanel
                 // console.log(subpanels.value)
             }
 

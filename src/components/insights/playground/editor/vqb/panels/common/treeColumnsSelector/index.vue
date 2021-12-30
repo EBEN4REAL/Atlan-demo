@@ -223,6 +223,7 @@
 
     export default defineComponent({
         name: 'Table Selector',
+        emits: ['change'],
         components: {
             Loader,
         },
@@ -394,6 +395,7 @@
                     value: item.label,
                     columnQualifiedName: item.qualifiedName,
                 }
+                emit('change', item.qualifiedName)
                 console.log()
             }
 

@@ -31,6 +31,16 @@ export function useUtils() {
             .join(',')
         return res
     }
+    function getTableQualifiedNameFromColumnQualifiedName(
+        qualifiedName: string | undefined
+    ) {
+        if (qualifiedName) {
+            const t = qualifiedName.split('/')
+            t.pop()
+            return t.join('/')
+        }
+        return ''
+    }
     function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
 
@@ -227,7 +237,26 @@ export function useUtils() {
         return res
     }
 
+    function getDistinctTableQualifiedNamesFromJoinPanel(
+        subpanels: SubpanelJoin[]
+    ) {
+        const distinctTableQualifiedNames = new Set()
+        subpanels.forEach((subpanel) => {
+            const q1 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataLeft.columnQualifiedName
+            )
+            const q2 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataRight.columnQualifiedName
+            )
+            distinctTableQualifiedNames.add(q1)
+            distinctTableQualifiedNames.add(q2)
+        })
+        return Array.from(distinctTableQualifiedNames)
+    }
+
     return {
+        getTableQualifiedNameFromColumnQualifiedName,
+        getDistinctTableQualifiedNamesFromJoinPanel,
         getSummarisedInfoOfJoinPanel,
         getSummarisedInfoOfFilterPanel,
         getSummarisedInfoOfGroupPanel,

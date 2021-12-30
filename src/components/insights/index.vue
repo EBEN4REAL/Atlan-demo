@@ -469,6 +469,7 @@
                     playground: {
                         isVQB: false,
                         vqb: {
+                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,

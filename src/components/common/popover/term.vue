@@ -53,8 +53,8 @@
                             {{ attributes.localDescription }}
                         </div>
                     </div>
-                    <div
-                        v-if="attributes.localCategories"
+                    <!-- <div
+                        v-if="attributes.localCategories?.length"
                         style="font-size: 12px"
                         class=""
                     >
@@ -62,13 +62,13 @@
                         <div
                             class="leading-5 text-gray-700 truncate overflow-ellipsis"
                         >
-                            <!-- <Category
+                            <Category
                                 v-modal="attributes.localCategories"
                                 :selected-asset="fetchedTerm"
                                 :edit-permission="false"
-                            /> -->
+                            />
                         </div>
-                    </div>
+                    </div> -->
 
                     <div
                         v-if="
@@ -88,6 +88,19 @@
                                 :selected-asset="fetchedTerm"
                             />
                         </div>
+                    </div>
+                    <div class="w-full pt-4">
+                        <router-link
+                            :to="`/glossary/${term.termGuid}/overview`"
+                        >
+                            <AtlanButton
+                                color="secondary"
+                                class="w-full p-0 h-7"
+                                padding="compact"
+                            >
+                                View Term profile
+                            </AtlanButton>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -110,6 +123,7 @@
     // components
     import Owners from '@/common/input/owner/index.vue'
     import Category from '@/common/input/categories/categories.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -133,6 +147,7 @@
         components: {
             Owners,
             Category,
+            AtlanButton,
             CertificateBadge,
         },
         props: {

@@ -24,6 +24,7 @@
                 empty-screen="EmptyQueriesTab"
                 desc="This asset doesn't have any saved queries"
                 buttonText="Create a new query"
+                @event="handleCreateQuery"
             ></EmptyView>
         </div>
 
@@ -119,7 +120,7 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const { queries } = useAssetInfo()
+            const { queries, getAssetQueryPath } = useAssetInfo()
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -198,6 +199,10 @@
                 quickChange()
             }, 150)
 
+            const handleCreateQuery = () => {
+                window.open(getAssetQueryPath(selectedAsset.value))
+            }
+
             return {
                 isLoading,
                 queryText,
@@ -214,6 +219,7 @@
                 error,
                 isValidating,
                 handleListUpdate,
+                handleCreateQuery,
             }
         },
     })

@@ -14,6 +14,7 @@
     import { useAuthStore } from './store/auth'
     import useGlossary from './composables/glossary2/useGlossary'
     import usePersona from './composables/persona/usePersona'
+    import usePurpose from './composables/purpose/usePurpose'
 
     export default defineComponent({
         setup(props, context) {
@@ -45,6 +46,8 @@
             useIntegration()
 
             usePersona()
+
+            usePurpose()
 
             // watch([data], () => {
             //     isPermissionsReady.value = true

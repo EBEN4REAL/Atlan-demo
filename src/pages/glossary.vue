@@ -120,11 +120,6 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                if (asset?.typeName === 'AtlasGlossary') {
-                    glossaryStore.setActiveGlossaryQualifiedName(
-                        asset?.attributes?.qualifiedName
-                    )
-                }
             }
 
             watch(selectedGlossary, () => {

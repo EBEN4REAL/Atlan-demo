@@ -29,6 +29,7 @@
             <div class="flex items-center ml-1 gap-x-1" v-if="isAssets">
                 <AtlanIcon icon="ChevronRight"></AtlanIcon>
                 <GlobalSelection
+                    :key="dirtyTimestamp"
                     v-model="globalState"
                     @change="handleGlobalStateChange"
                 ></GlobalSelection>
@@ -85,7 +86,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref } from 'vue'
+    import { computed, defineComponent, ref, watch } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
@@ -155,9 +156,18 @@
             const assetStore = useAssetStore()
             const globalState = ref([])
 
-            if (assetStore.globalState) {
-                globalState.value = assetStore.globalState
-            }
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
+            watch(
+                () => assetStore.globalState,
+                (newValue) => {
+                    globalState.value = newValue
+                    dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                },
+                {
+                    immediate: true,
+                }
+            )
 
             const handleGlobalStateChange = () => {
                 assetStore.setGlobalState(globalState.value)
@@ -177,6 +187,7 @@
                 handleGlobalStateChange,
                 globalState,
                 isAssets,
+                dirtyTimestamp,
             }
         },
     })

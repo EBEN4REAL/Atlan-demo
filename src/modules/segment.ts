@@ -1,4 +1,4 @@
-//WARNING: We sue our own CDN not the default one from Segment. Mindful when you change
+//WARNING: We use our own CDN not the default one from Segment. Mindful when you change
 
 import { UserModule } from '~/types/vitessg'
 

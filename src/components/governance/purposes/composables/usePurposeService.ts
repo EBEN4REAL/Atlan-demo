@@ -1,36 +1,36 @@
 import { IPurpose } from '~/types/accessPolicies/purposes'
 import { IEnableDisablePayload } from '~/types/accessPolicies/personas'
-import { Persona } from '../../../../services/service/purpose'
+import { Purpose } from '../../../../services/service/purpose'
 
 export default function usePurposeService() {
     function list(params, options) {
-        return Persona.List(params, options)
+        return Purpose.List(params, options)
     }
-    // Refactor 
+    // Refactor
     function listPurposes() {
-        return Persona.listPurposes()
+        return Purpose.listPurposes()
     }
 
     function createPersona(newPersona: IPurpose) {
-        return Persona.createPersona(newPersona)
+        return Purpose.createPersona(newPersona)
     }
 
     function updatePersona(newPersona: IPurpose) {
-        return Persona.updatePersona(newPersona)
+        return Purpose.updatePersona(newPersona)
     }
 
     function deletePersona(id: string) {
-        return Persona.deletePersona(id)
+        return Purpose.deletePersona(id)
     }
     function updateUsers({ id, users, groups }) {
-        return Persona.updatePersonaUsers({
+        return Purpose.updatePersonaUsers({
             personaId: id,
             users,
             groups,
         })
     }
     function enableDisablePurpose(id: string, payload: IEnableDisablePayload) {
-        return Persona.enableDisablePurpose(id, payload)
+        return Purpose.enableDisablePurpose(id, payload)
     }
 
     return {

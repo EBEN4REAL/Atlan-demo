@@ -23,7 +23,7 @@
                     tree-checkable
                     allow-clear
                     :show-checked-strategy="SHOW_ALL"
-                    placeholder="Please select"
+                    placeholder="Search categories"
                     ref="treeSelectRef"
                 >
                     <template #suffixIcon><AtlanIcon icon="Search" /></template>
@@ -212,10 +212,27 @@
 </script>
 <style lang="less" module>
     .categoryPopover {
+        -webkit-transition: border 500ms ease-out;
+        -moz-transition: border 500ms ease-out;
+        -o-transition: border 500ms ease-out;
+        transition: border 500ms ease-out;
+
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;
             width: 350px !important;
         }
+        :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+            @apply border-0 border-b border-gray-200 rounded-none;
+        }
+        :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+            @apply border-primary border-b border-solid border-t-0 border-l-0 border-r-0  !important;
+            outline: 0 !important;
+            box-shadow: none;
+        }
+        :global(.ant-select-tree) {
+            @apply -ml-2;
+        }
+
     }
 
     .categoryWidget {

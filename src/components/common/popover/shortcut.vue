@@ -5,7 +5,7 @@
         :destroyTooltipOnHide="true"
     >
         <template v-if="editPermission" #content>
-            <div class="flex items-center text-gray-3]500 gap-x-2">
+            <div class="flex items-center text-gray-500 gap-x-2">
                 <span class="capitalize">{{ action }}</span>
 
                 <div

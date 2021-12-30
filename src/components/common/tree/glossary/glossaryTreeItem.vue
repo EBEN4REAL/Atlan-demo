@@ -1,6 +1,10 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div v-if="item?.typeName === 'cta'" class="flex flex-col" :class="!hasCreateAccess ? '':   'space-y-2'">
+        <div
+            v-if="item?.typeName === 'cta'"
+            class="flex flex-col"
+            :class="!hasCreateAccess ? '' : 'space-y-2'"
+        >
             <AddGtcModal
                 v-if="!checkable"
                 entityType="AtlasGlossaryTerm"
@@ -12,7 +16,9 @@
             >
                 <template #trigger>
                     <div v-auth="map.CREATE_TERM">
-                        <div class="flex items-center hover:underline text-primary">
+                        <div
+                            class="flex items-center hover:underline text-primary"
+                        >
                             <AtlanIcon
                                 icon="Term"
                                 class="m-0 mr-1 align-text-bottom"
@@ -33,7 +39,9 @@
             >
                 <template #trigger>
                     <div v-auth="map.CREATE_CATEGORY">
-                        <div class="flex items-center hover:underline text-primary">
+                        <div
+                            class="flex items-center hover:underline text-primary"
+                        >
                             <AtlanIcon
                                 icon="Category"
                                 class="m-0 mr-1 align-text-bottom"
@@ -44,15 +52,22 @@
                 </template>
             </AddGtcModal>
             <div v-if="checkable || !hasCreateAccess">
-                This 
+                This
                 <span v-if="item.categoryName">category</span>
                 <span v-else-if="item.glossaryName">glossary</span>
                 <span v-else>node</span>
-                is empty!  
-                <br>
-                <span v-auth="map.CREATE_TERM">Go to the <span class="hover:underline text-primary" @click="ctaToProfile">profile</span> to add some terms.</span>
+                is empty!
+                <br />
+                <span v-auth="map.CREATE_TERM"
+                    >Go to the
+                    <span
+                        class="hover:underline text-primary"
+                        @click="ctaToProfile"
+                        >profile</span
+                    >
+                    to add some terms.</span
+                >
             </div>
-
         </div>
 
         <div
@@ -76,7 +91,10 @@
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center w-11/12 py-0 pr-2">
+            <div
+                class="flex items-center py-0 pr-2"
+                :class="[checkable ? 'w-8/12' : 'w-11/12']"
+            >
                 <div class="w-4 mr-1">
                     <AtlanIcon
                         :icon="
@@ -95,14 +113,7 @@
                 />
             </div>
 
-            <div v-if="item.dataRef.isLoading">
-                <a-spin
-                    size="small"
-                    icon="Loader"
-                    class="w-auto h-4 mr-1 animate-spin"
-                ></a-spin>
-            </div>
-            <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
+            <div v-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
             <div
@@ -235,7 +246,8 @@
             }
             const ctaToProfile = () => {
                 console.log(item.value)
-                if(item.value.categoryGuid) router.push(`/glossary/${item.value.categoryGuid}`)
+                if (item.value.categoryGuid)
+                    router.push(`/glossary/${item.value.categoryGuid}`)
                 else router.push(`/glossary/${item.value.glossaryGuid}`)
             }
             onMounted(addSelectedKey)
@@ -243,8 +255,8 @@
                 addSelectedKey()
             })
 
-           const hasCreateAccess = computed(() => 
-                 checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
+            const hasCreateAccess = computed(() =>
+                checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
             )
             return {
                 getEntityStatusIcon,
@@ -260,8 +272,7 @@
                 profileId,
                 ctaToProfile,
                 map,
-                hasCreateAccess
-                
+                hasCreateAccess,
             }
         },
     })

@@ -315,6 +315,7 @@
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
+                :is-loading="isLoadingClassification"
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -337,7 +338,7 @@
             >
                 Terms
             </p>
-            <Terms
+            <TermsWidget
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
@@ -357,7 +358,7 @@
                 "
                 @change="handleMeaningsUpdate"
             >
-            </Terms>
+            </TermsWidget>
         </div>
 
         <div ref="animationPoint" class="flex flex-col">
@@ -433,7 +434,7 @@
     import Admins from '@/common/input/admin/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
-    import Terms from '@/common/input/terms/index.vue'
+    import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
@@ -453,7 +454,7 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
-            Terms,
+            TermsWidget,
             Shortcut,
             Categories,
             Admins,

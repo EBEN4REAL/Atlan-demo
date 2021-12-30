@@ -41,6 +41,7 @@
                     >
                         <template #filter>
                             <a-popover
+                                v-if="showFilters"
                                 class="sm:block md:hidden"
                                 placement="bottom"
                                 :trigger="['click']"
@@ -78,7 +79,11 @@
                     <slot name="searchAction"></slot>
                 </div>
 
-                <div v-if="showAggrs" class="w-full px-4">
+                <div
+                    v-if="showAggrs"
+                    class="w-full"
+                    :class="page === 'admin' ? '' : 'px-4'"
+                >
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -148,7 +153,9 @@
                             <AssetItem
                                 :item="item"
                                 :item-index="itemIndex"
-                                :selected-guid="selectedAsset.guid"
+                                :selected-guid="
+                                    page === 'admin' ? null : selectedAsset.guid
+                                "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
                                 :id="getAssetId(item)"
@@ -490,7 +497,8 @@
             const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
-                discoveryStore.setActivePostFacet(postFacets.value)
+                if (page.value !== 'admin')
+                    discoveryStore.setActivePostFacet(postFacets.value)
                 useAddEvent('discovery', 'aggregate_tab', 'changed', {
                     name: tabName,
                 })

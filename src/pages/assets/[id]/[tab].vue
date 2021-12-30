@@ -20,6 +20,7 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
+        GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -72,6 +73,7 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...customMetadataProjections,
+                ...GlossaryAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const { list, isLoading } = useDiscoverList({

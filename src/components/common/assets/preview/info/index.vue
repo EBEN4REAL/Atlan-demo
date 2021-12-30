@@ -336,9 +336,9 @@
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                Terms
+                TermsWidget
             </p>
-            <Terms
+            <TermsWidget
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
@@ -358,7 +358,7 @@
                 "
                 @change="handleMeaningsUpdate"
             >
-            </Terms>
+            </TermsWidget>
         </div>
 
         <div ref="animationPoint" class="flex flex-col">
@@ -434,7 +434,7 @@
     import Admins from '@/common/input/admin/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
-    import Terms from '@/common/input/terms/index.vue'
+    import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
@@ -454,7 +454,7 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
-            Terms,
+            TermsWidget,
             Shortcut,
             Categories,
             Admins,

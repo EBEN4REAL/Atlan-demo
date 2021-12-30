@@ -40,15 +40,19 @@ export const actions: Actions = {
     setEvaluations(value) {
         const valueMap = value.map(
             (evaluation) =>
-                `${evaluation.entityGuid || evaluation.entityGuidEnd2}_${
-                    evaluation.action
-                }`
+                `${
+                    evaluation.entityGuid ||
+                    evaluation.entityGuidEnd1 ||
+                    evaluation.entityGuidEnd2
+                }_${evaluation.action}`
         )
         const evaluationMap = this.evaluations.map(
             (evaluation) =>
-                `${evaluation.entityGuid || evaluation.entityGuidEnd2}_${
-                    evaluation.action
-                }`
+                `${
+                    evaluation.entityGuid ||
+                    evaluation.entityGuidEnd1 ||
+                    evaluation.entityGuidEnd2
+                }_${evaluation.action}`
         )
         const uniqueValues = valueMap.filter(
             (val) => evaluationMap.indexOf(val) < 0
@@ -56,7 +60,9 @@ export const actions: Actions = {
         const uniqueArray = value.filter(
             (i) =>
                 uniqueValues.indexOf(
-                    `${i.entityGuid || i.entityGuidEnd2}_${i.action}`
+                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${
+                        i.action
+                    }`
                 ) >= 0
         )
         if (this.evaluations.length + uniqueArray.length > 30) {

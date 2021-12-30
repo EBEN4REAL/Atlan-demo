@@ -280,7 +280,7 @@
             facets.value = {
                 ...facets.value,
                 ...initialFilters.value,
-                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                typeNames: props.checkable ? ['AtlasGlossaryTerm'] : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 

@@ -85,14 +85,6 @@ keycloak
                 const tenantStore = useTenantStore()
                 const domain = window.location.host
                 const groupId = domain
-                // group
-                if ((window as any).analytics.group) {
-                    ;(window as any).analytics.group(groupId, {
-                        tenant_domain: domain,
-                        tenant_name: tenantStore.displayName,
-                    })
-                }
-
                 // identify
                 if ((window as any).analytics.identify) {
                     ;(window as any).analytics.identify(authStore?.id, {
@@ -102,6 +94,13 @@ keycloak
                         email: authStore.email || '',
                         username: authStore.username || '',
                         roles: authStore.roles || [],
+                    })
+                }
+                // group
+                if ((window as any).analytics.group) {
+                    ;(window as any).analytics.group(groupId, {
+                        tenant_domain: domain,
+                        tenant_name: tenantStore.displayName,
                     })
                 }
             }

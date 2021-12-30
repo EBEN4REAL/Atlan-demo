@@ -64,7 +64,7 @@
                         <div
                             class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500"
                         >
-                            <AtlanIcon icon="Camera"></AtlanIcon>
+                            <AtlanIcon icon="Pencil"></AtlanIcon>
                         </div>
                     </div>
                     <div class="ml-5 text-2xl text-gray-700">

@@ -163,7 +163,7 @@
                 parentGlossaryGuid,
                 checkable: props.checkable,
                 checkedGuids: checkedGuids.value,
-                localCheckedNodes
+                localCheckedNodes,
             })
 
             const addGlossary = (asset) => {
@@ -215,7 +215,6 @@
                 reInitTree()
             })
             const handleSelect = (selected: any, event: any) => {
-                console.log(selected, event, localCheckedNodes.value)
                 if (
                     props.checkable &&
                     event?.node?.typeName === 'AtlasGlossaryTerm'
@@ -223,11 +222,17 @@
                     const found = checkedKeys.value.find(
                         (el) => el === event?.node?.key
                     )
-                    let newCheckedNodes;
-                    if(found) {
-                        newCheckedNodes = localCheckedNodes.value.filter((localNode: any) => localNode.guid !== event.node.guid)
+                    let newCheckedNodes
+                    if (found) {
+                        newCheckedNodes = localCheckedNodes.value.filter(
+                            (localNode: any) =>
+                                localNode.guid !== event.node.guid
+                        )
                     } else {
-                        newCheckedNodes = [ ...localCheckedNodes.value, event.node ]
+                        newCheckedNodes = [
+                            ...localCheckedNodes.value,
+                            event.node,
+                        ]
                     }
                     onCheck(event, {
                         checkedNodes: newCheckedNodes,

@@ -24,32 +24,28 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <div class="flex flex-wrap gap-1 text-sm">
-            <template v-for="term in list" :key="term.guid">
-                <TermPopover
-                    :term="term"
-                    :loading="termLoading"
-                    :fetchedTerm="fetchedTerm"
-                    :error="termError"
-                    trigger="hover"
-                    :ready="isReady"
-                    @visible="handleTermPopoverVisibility"
-                >
-                    <teamplate>
-                        <TermPill
-                            :term="term"
-                            :allow-delete="allowDelete"
-                            @delete="handleDeleteTerm"
-                        />
-                    </teamplate>
-                </TermPopover>
-            </template>
-            <span
-                v-if="!editPermission && list?.length < 1"
-                class="-ml-1 text-gray-500"
-                >No linked terms</span
+        <template v-for="term in list" :key="term.guid">
+            <TermPopover
+                :term="term"
+                :loading="termLoading"
+                :fetchedTerm="fetchedTerm"
+                :error="termError"
+                trigger="hover"
+                :ready="isReady"
+                @visible="handleTermPopoverVisibility"
             >
-        </div>
+                <TermPill
+                    :term="term"
+                    :allow-delete="allowDelete"
+                    @delete="handleDeleteTerm"
+                />
+            </TermPopover>
+        </template>
+        <span
+            v-if="!editPermission && list?.length < 1"
+            class="-ml-1 text-gray-500"
+            >No linked terms</span
+        >
     </div>
 </template>
 

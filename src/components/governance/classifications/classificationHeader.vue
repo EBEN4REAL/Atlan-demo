@@ -1,18 +1,28 @@
 <template>
-    <div class="flex flex-col px-5 bg-white py-7">
+    <div class="flex flex-col px-5 py-5 bg-white">
         <div class="flex justify-between gap-x-2">
             <div class="flex flex-col gap-y-3">
-                <div class="flex">
+                <div class="flex items-start">
                     <ClassificationIcon
                         :color="selectedClassification?.options?.color"
-                        class="h-6 mr-1"
+                        class="h-6 mr-2"
                     />
-                    <span class="text-xl truncate text-gray">
-                        {{ selectedClassification?.displayName }}
-                    </span>
+                    <div class="flex flex-col" style="margin-top: -5px">
+                        <span class="text-xl truncate text-gray">
+                            {{ selectedClassification?.displayName }}
+                        </span>
+                        <div
+                            v-if="selectedClassification.updatedBy"
+                            class="flex text-gray-500"
+                        >
+                            last updated by
+                            {{ selectedClassification.updatedBy }},
+                            {{ lastUpdatedAt }}
+                        </div>
+                    </div>
                 </div>
                 <!-- can extract below lines into a show more show less component -->
-                <div
+                <!-- <div
                     v-if="
                         selectedClassification?.description &&
                         selectedClassification?.description?.length > 80
@@ -31,8 +41,8 @@
                 </div>
                 <div v-else class="text-gray-500">
                     {{ selectedClassification?.description }}
-                </div>
-                <div class="flex items-center gap-2 text-gray-500">
+                </div> -->
+                <!-- <div class="flex items-center gap-2 text-gray-500">
                     <div class="flex items-center gap-2">
                         Last Updated
                         <span class="text-gray-700"> {{ lastUpdatedAt }}</span>
@@ -58,7 +68,7 @@
                         on
                         <span class="text-gray-700">{{ createdOn }}</span>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="">
                 <a-button-group class="">

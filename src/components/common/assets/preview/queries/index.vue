@@ -1,15 +1,5 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div class="px-4 pt-3 pb-0">
-            <SearchAdvanced
-                v-model:value="queryText"
-                :autofocus="true"
-                :placeholder="`Search ${totalCount} queries`"
-                class=""
-                @change="handleSearchChange"
-            />
-        </div>
-
         <div
             v-if="isLoading"
             class="flex items-center justify-center flex-grow"
@@ -25,33 +15,61 @@
         >
             <ErrorView></ErrorView>
         </div>
-        <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
+
+        <div
+            v-else-if="list.length === 0 && !isLoading && queryText === ''"
+            class="flex-grow"
+        >
             <EmptyView
-                empty-screen="EmptyDiscover"
-                desc="No queries found"
+                empty-screen="EmptyQueriesTab"
+                desc="This asset doesn't have any saved queries"
+                buttonText="Create a new query"
             ></EmptyView>
         </div>
-        <!-- {{ list }} -->
-        <AssetList
-            v-else
-            ref="assetlistRef"
-            :list="list"
-            :is-load-more="isLoadMore"
-            :is-loading="isValidating"
-            @loadMore="handleLoadMore"
-            class="mt-4"
-        >
-            <template #default="{ item, itemIndex }">
-                <Popover :item="item">
-                    <AssetItem
-                        :item="item"
-                        :item-index="itemIndex"
-                        :enable-sidebar-drawer="true"
-                        class="mx-3"
-                        @updateDrawer="handleListUpdate"
-                /></Popover>
-            </template>
-        </AssetList>
+
+        <div v-else class="flex flex-col flex-grow">
+            <div class="px-4 pt-3 pb-0">
+                <SearchAdvanced
+                    v-model:value="queryText"
+                    :autofocus="true"
+                    :placeholder="`Search ${totalCount} queries`"
+                    class=""
+                    @change="handleSearchChange"
+                />
+            </div>
+
+            <div
+                v-if="list.length === 0 && !isLoading && queryText !== ''"
+                class="flex items-center justify-center flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No queries found"
+                ></EmptyView>
+            </div>
+
+            <!-- {{ list }} -->
+            <AssetList
+                v-else
+                ref="assetlistRef"
+                :list="list"
+                :is-load-more="isLoadMore"
+                :is-loading="isValidating"
+                @loadMore="handleLoadMore"
+                class="mt-4"
+            >
+                <template #default="{ item, itemIndex }">
+                    <Popover :item="item">
+                        <AssetItem
+                            :item="item"
+                            :item-index="itemIndex"
+                            :enable-sidebar-drawer="true"
+                            class="mx-3"
+                            @updateDrawer="handleListUpdate"
+                    /></Popover>
+                </template>
+            </AssetList>
+        </div>
     </div>
 </template>
 

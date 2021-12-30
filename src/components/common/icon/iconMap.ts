@@ -165,6 +165,7 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
+import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
@@ -379,6 +380,7 @@ export default {
     NoDataInsights,
     SomethingWrong,
     NoSavedQueriesPersonal,
+    EmptyQueriesTab,
     EmptyCollections,
     AddQuery,
     RunHistory,

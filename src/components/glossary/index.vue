@@ -21,12 +21,25 @@
                     :glossaryName="selectedGlosaryName"
                 >
                     <template #trigger>
-                        <a-button class="ml-3" size="small">
-                            <AtlanIcon
-                                icon="Add"
-                                class="transition duration-300 text-primary"
-                            />
-                        </a-button>
+                        <a-tooltip>
+                            <template #title
+                                >Add new
+                                {{
+                                    `${
+                                        defaultEntityType === 'AtlasGlossary'
+                                            ? 'Glossary'
+                                            : 'Term/Category'
+                                    }`
+                                }}</template
+                            >
+
+                            <a-button class="ml-3" size="small">
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="transition duration-300 text-primary"
+                                />
+                            </a-button>
+                        </a-tooltip>
                     </template>
                 </AddGTCModal>
 
@@ -546,5 +559,5 @@
     }
     .treeStyles {
         max-height: calc(100vh - 11rem) !important;
-      }
+    }
 </style>

@@ -447,6 +447,10 @@
                     isCollectionCreatedByCurrentUser.value
             )
 
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
+
             // console.log('collection permission: ', {
             //     isCollectionCreatedByCurrentUser,
             //     hasCollectionReadPermission,
@@ -963,32 +967,47 @@
             provide('refetchNode', refetchNode)
 
             /* Watcher for updating the node in tree */
-            watch(selectedAsset, () => {
+            watch(assetSidebarUpdatedData, () => {
                 /* For classificationNames len ==1 for public */
-                const inlineTab = inlineTabs.value.find(
-                    (tab) => tab?.queryId === selectedAsset.value?.guid
-                )
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                if (selectedAsset.value?.guid) {
-                    updateNode({
-                        qualifiedName: qualifiedName(
-                            selectedAsset as unknown as assetInterface
-                        ),
-                        entity: selectedAsset.value as any,
-                    })
-                    // }
-                    activeInlineTabCopy.status = selectedAsset.value.attributes
-                        .certificateStatus as string
-                    activeInlineTabCopy.attributes =
-                        selectedAsset.value.attributes
+                // const inlineTab = inlineTabs.value.find(
+                //     (tab) => tab?.queryId === selectedAsset.value?.guid
+                // )
 
-                    modifyActiveInlineTab(
-                        activeInlineTabCopy,
-                        inlineTabs,
-                        activeInlineTabCopy.isSaved
+                // console.log('query tree update:', assetSidebarUpdatedData.value)
+
+                if (assetSidebarUpdatedData?.value?.typeName === 'Query') {
+                    console.log(
+                        'query tree update:',
+                        assetSidebarUpdatedData.value
                     )
+                    if (assetSidebarUpdatedData?.value?.guid) {
+                        updateNode({
+                            guid: assetSidebarUpdatedData?.value?.guid,
+                            entity: toRaw(assetSidebarUpdatedData.value) as any,
+                        })
+                    }
                 }
+                // const activeInlineTabCopy: activeInlineTabInterface =
+                //     Object.assign({}, activeInlineTab.value)
+                // if (selectedAsset.value?.guid) {
+                //     updateNode({
+                //         qualifiedName: qualifiedName(
+                //             selectedAsset as unknown as assetInterface
+                //         ),
+                //         entity: selectedAsset.value as any,
+                //     })
+                //     // }
+                //     // activeInlineTabCopy.status = selectedAsset.value.attributes
+                //     //     .certificateStatus as string
+                //     // activeInlineTabCopy.attributes =
+                //     //     selectedAsset.value.attributes
+
+                //     // modifyActiveInlineTab(
+                //     //     activeInlineTabCopy,
+                //     //     inlineTabs,
+                //     //     activeInlineTabCopy.isSaved
+                //     // )
+                // }
             })
 
             let searchTreeData = ref([])

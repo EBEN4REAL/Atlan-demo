@@ -118,22 +118,22 @@ const useTree = ({
      * [ targetNode, ....., child2, child1, topParent ]
      */
     const recursivelyFindPath = (
-        targetGuid: string,
+        qualifiedName: string,
         initialStack?: string[]
     ) => {
-        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+        const parentStack = initialStack?.length ? initialStack : [qualifiedName]
 
-        const findPath = (currGuid: string) => {
+        const findPath = (currQualifiedName: string) => {
             if (
-                nodeToParentKeyMap[currGuid] &&
-                nodeToParentKeyMap[currGuid] !== 'root'
+                nodeToParentKeyMap[currQualifiedName] &&
+                nodeToParentKeyMap[currQualifiedName] !== 'root'
             ) {
-                parentStack.push(nodeToParentKeyMap[currGuid])
-                findPath(nodeToParentKeyMap[currGuid])
+                parentStack.push(nodeToParentKeyMap[currQualifiedName])
+                findPath(nodeToParentKeyMap[currQualifiedName])
             }
         }
 
-        findPath(targetGuid)
+        findPath(qualifiedName)
 
         return parentStack
     }
@@ -180,7 +180,7 @@ const useTree = ({
                 )
                 tableResponse.entities?.forEach((table) => {
                     treeData.value.push(returnTreeDataItemAttributes(table))
-                    nodeToParentKeyMap[table.attributes.qualifiedName] = 'root'
+                    nodeToParentKeyMap[table?.attributes?.qualifiedName] = 'root'
                 })
 
                 checkAndAddLoadMoreNode(
@@ -563,13 +563,16 @@ const useTree = ({
         entity: Database | Schema | Table | Column | View
     }) => {
         const currentParents = nodeToParentKeyMap[qualifiedName]
+        // console.log('schema tree update: ', treeData)
+        
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
+            // console.log('schema tree update: ', treeData)
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === qualifiedName)
                     return {
                         ...treeNode,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 return treeNode
             })
@@ -586,7 +589,7 @@ const useTree = ({
                 if (node.key === qualifiedName || !currentPath) {
                     return {
                         ...node,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 }
                 return {

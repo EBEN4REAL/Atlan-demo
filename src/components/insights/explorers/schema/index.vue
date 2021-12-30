@@ -96,6 +96,7 @@
         watch,
         computed,
         ComputedRef,
+        toRaw,
     } from 'vue'
     import { storeToRefs } from 'pinia'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
@@ -172,6 +173,10 @@
                     attributeValue: undefined,
                 }
             )
+
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
 
             const handleChange = () => {
                 /* Here we are making a change, so isSaved will be false */
@@ -305,19 +310,28 @@
             })
 
             /* Watcher for updating the node in tree */
-            watch(selectedAsset, () =>
-                updateNode({
-                    qualifiedName: qualifiedName(
-                        selectedAsset as unknown as assetInterface
-                    ),
-                    entity: selectedAsset.value as unknown as
-                        | Database
-                        | Schema
-                        | Table
-                        | Column
-                        | View,
-                })
-            )
+            watch(assetSidebarUpdatedData, () => {
+                console.log(
+                    'table/ column update: ',
+                    assetSidebarUpdatedData.value
+                )
+
+                if (assetSidebarUpdatedData?.value?.typeName !== 'Query') {
+                    if (assetSidebarUpdatedData?.value?.guid) {
+                        updateNode({
+                            qualifiedName: qualifiedName(
+                                assetSidebarUpdatedData.value as unknown as assetInterface
+                            ),
+                            entity: assetSidebarUpdatedData.value as unknown as
+                                | Database
+                                | Schema
+                                | Table
+                                | Column
+                                | View,
+                        })
+                    }
+                }
+            })
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(

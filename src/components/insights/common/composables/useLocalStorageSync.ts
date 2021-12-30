@@ -59,13 +59,17 @@ export function useLocalStorageSync() {
 
             const alteredTabsArray = parsedInlineTabs?.map((tab) => {
                 const t = JSON.parse(JSON.stringify(tab))
-                t.playground.editor.variables =
-                    t.playground.editor.variables?.map((_variable) => {
+                // console.log('type of: ', Array.isArray(t?.playground?.editor?.variables))
+                if(Array.isArray(t?.playground?.editor?.variables)) {
+                    t.playground.editor.variables =
+                    t?.playground?.editor?.variables?.map((_variable) => {
                         const copy__variable = { ..._variable }
                         if (copy__variable.type === 'date')
                             copy__variable.value = dayjs(copy__variable.value)
                         return copy__variable
                     })
+                }
+                
                 return t
             })
             return alteredTabsArray

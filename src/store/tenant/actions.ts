@@ -7,7 +7,7 @@ export interface Actions extends State {
 
 export const actions: Actions = {
     setTenant(value) {
-        console.log('value', value)
+        console.log('tenant value', value)
         this.displayName = value?.displayName
         this.displayNameHtml = value?.displayNameHtml
         this.smtpServer = value?.smtpServer

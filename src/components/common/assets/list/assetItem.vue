@@ -39,13 +39,20 @@
                             />
                         </div>
 
-                        <router-link
+                        <!-- <router-link
                             :to="getProfilePath(item)"
                             class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             @click="(e) => e.stopPropagation()"
                         >
                             {{ title(item) }}
-                        </router-link>
+                        </router-link> -->
+                        <Tooltip
+                            :tooltip-text="`${title(item)}`"
+                            :routeTo="getProfilePath(item)"
+                            classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
+                            @click="(e) => e.stopPropagation()"
+                        />
+
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"

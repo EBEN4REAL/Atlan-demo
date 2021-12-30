@@ -6,9 +6,12 @@
         :size="size"
         data-test-id="input-text"
         type="text"
-        :class="$style.transparent"
-        @change="handleChange"
+        :class="{
+            [$style.transparent]: true,
+            [allowTabShortcut]: true,
+        }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
+        @change="handleChange"
     >
         <template #prefix>
             <a-tooltip
@@ -69,6 +72,7 @@
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import { allowTabShortcut } from '~/composables/shortcuts/useShortcuts'
 
     export default defineComponent({
         name: 'SearchAndFilter',
@@ -156,6 +160,7 @@
                 getConnectorImageMap,
                 capitalizeFirstLetter,
                 focusInput,
+                allowTabShortcut,
             }
         },
     })

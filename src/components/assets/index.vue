@@ -222,6 +222,7 @@
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useShortcuts from '~/composables/shortcuts/useShortcuts'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -555,8 +556,15 @@
                 searchBox?.value?.focusInput()
             }
 
+            const { allowedTabShortcut } = useShortcuts()
+
             whenever(tab, () => {
-                if (shift_tab.value || isCmndKVisible.value) {
+                console.log('tab allowedTabShortcut', allowedTabShortcut.value)
+                if (
+                    shift_tab.value ||
+                    isCmndKVisible.value ||
+                    !allowedTabShortcut.value
+                ) {
                     // don't run if cmd k is on
                     return
                 }
@@ -564,7 +572,7 @@
             })
 
             whenever(shift_tab, () => {
-                if (isCmndKVisible.value) {
+                if (isCmndKVisible.value || !allowedTabShortcut.value) {
                     // don't run if cmd k is on
                     return
                 }

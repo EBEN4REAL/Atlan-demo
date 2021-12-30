@@ -7,7 +7,10 @@
             class="group-hover:text-white text-purple"
         ></AtlanIcon>
 
-        <div class="ml-1 group-hover:text-white">
+        <div
+            class="ml-1 truncate group-hover:text-white overflow-ellipsis"
+            style="max-width: 150px"
+        >
             {{ term.attributes?.name ?? term.displayText }}
         </div>
 
@@ -28,7 +31,7 @@
             term: {
                 type: Object,
                 default: () => {},
-                required: true
+                required: true,
             },
             allowDelete: {
                 type: Boolean,
@@ -44,7 +47,6 @@
             const handleRemove = () => {
                 emit('delete', props.term)
             }
-
 
             const icon = (term) => {
                 if (

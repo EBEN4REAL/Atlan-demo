@@ -66,7 +66,7 @@
         </div>
 
         <div
-            class="flex w-full p-3 border-t border-gray-200"
+            class="flex w-full px-5 py-3 border-t border-gray-200"
             :class="
                 entityType !== 'AtlasGlossary'
                     ? 'justify-between'

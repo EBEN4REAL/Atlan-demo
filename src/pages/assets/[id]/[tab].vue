@@ -8,7 +8,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject, ref, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        inject,
+        ref,
+        watch,
+        nextTick,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -25,6 +32,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -95,6 +103,15 @@
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
+            })
+
+            watch(isLoading, async () => {
+                await nextTick()
+                console.log(
+                    'asset profile loaded',
+                    localSelected.value.typeName
+                )
+                useTrackPage('asset_profile')
             })
 
             return {

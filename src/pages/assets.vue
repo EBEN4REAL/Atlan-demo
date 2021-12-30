@@ -24,6 +24,7 @@
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
     import useAssetStore from '~/store/asset'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -54,6 +55,13 @@
 
             provide('updateList', updateList)
             provide('preview', handlePreview)
+
+            onMounted(() => {
+                if (!isItem.value) {
+                    useTrackPage('discovery')
+                }
+                console.log('onMounted assets')
+            })
 
             return {
                 isItem,

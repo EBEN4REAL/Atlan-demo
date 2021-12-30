@@ -66,7 +66,6 @@ export const install: UserModule = ({ app }) => {
                     analytics.load(segmentKey)
                     app.config.globalProperties.$analytics = window.analytics
                     app.provide('$analytics', window.analytics)
-                    //analytics.page();
                 }
         })()
     }

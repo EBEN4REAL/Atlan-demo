@@ -24,6 +24,8 @@
         InternalAttributes,
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+
     export default defineComponent({
         name: 'Insights Page',
         components: { InsightsComponent },
@@ -144,6 +146,10 @@
                 if (savedQueryGuidFromURL.value) {
                     fetchAndPassSavedQueryInfo()
                 }
+                const name = savedQueryGuidFromURL.value
+                    ? 'saved_query'
+                    : 'home'
+                useTrackPage('insights', name)
             })
         },
     })

@@ -76,7 +76,7 @@ const enableDisablePurpose = (id: string, body: IEnableDisablePayload) =>
     useAPIPromise(map.ENABLE_DISABLE_PURPOSE({ id }), 'POST', {
         body,
     })
-export const Persona = {
+export const Purpose = {
     List,
     Create,
     Update,

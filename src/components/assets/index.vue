@@ -111,7 +111,7 @@
                     <EmptyView
                         empty-screen="EmptyDiscover"
                         :desc="
-                            staticUse
+                            staticUse && !queryText
                                 ? emptyViewText || 'No assets found'
                                 : queryText
                                 ? 'We didn\'t find anything that matches your search criteria'
@@ -652,7 +652,8 @@
                     if (!v && list.value?.length) {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
-                            Object.keys(selectedAsset.value).length === 0
+                            Object.keys(selectedAsset.value).length === 0 &&
+                            page.value === 'assets'
                         if (isNone) handleClickAssetItem(list.value[0])
                     }
                 })

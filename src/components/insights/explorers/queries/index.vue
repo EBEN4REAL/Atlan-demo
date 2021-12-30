@@ -30,9 +30,7 @@
                             :class="$style.filterButton"
                             v-auth="[map.CREATE_COLLECTION]"
                         >
-                            <span class="text-xs font-bold text-gray-700"
-                                >New</span
-                            >
+                            <span class="text-sm text-gray-700">New</span>
                         </div>
                         <template #overlay>
                             <a-menu>
@@ -75,8 +73,7 @@
                                 >
                                     <div class="flex items-center">
                                         <AtlanIcon
-                                            color="#5277D7"
-                                            icon="Platform"
+                                            icon="CollectionIconSmall"
                                             class="h-4 mr-2 outline-none hover:text-primary"
                                         />
                                         <span>New Collection</span>
@@ -86,7 +83,7 @@
                         </template>
                     </a-dropdown>
                 </div>
-                <div class="flex flex-row space-x-2">
+                <div class="flex flex-row space-x-2" v-if="treeData?.length">
                     <a-input
                         v-model:value="searchQuery"
                         class="h-8 mt-2 rounded"
@@ -102,7 +99,18 @@
                             class="flex items-center w-8 h-8 p-2 mt-2"
                             :class="$style.filterButton"
                         >
-                            <AtlanIcon icon="Filter" />
+                            <template #icon>
+                                <AtlanIcon
+                                    v-if="totalFilteredCount === 0"
+                                    icon="Filter"
+                                    class="-ml-0.5"
+                                />
+                                <AtlanIcon
+                                    v-else
+                                    icon="FilterDot"
+                                    class="-ml-0.5"
+                                />
+                            </template>
                         </a-button>
                         <template #content>
                             <QueryFilter @change="onFilterChange" />

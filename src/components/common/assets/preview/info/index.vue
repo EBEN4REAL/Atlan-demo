@@ -315,6 +315,7 @@
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
+                :is-loading="isLoadingClassification"
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -344,13 +345,15 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_ADD'
+                        'RELATIONSHIP_ADD',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_REMOVE'
+                        'RELATIONSHIP_REMOVE',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 @change="handleMeaningsUpdate"

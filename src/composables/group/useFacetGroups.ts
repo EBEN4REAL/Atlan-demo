@@ -2,17 +2,20 @@ import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import { groupInterface } from '~/types/groups/group.interface'
+import getUserGroups from '~/composables/user/getUserGroups'
 
 export default function useFacetGroups(
     sort?: string,
     columns?: string[],
-    immediate = true
+    immediate = true,
+    userId?: Ref<string>
 ) {
     const params = ref(new URLSearchParams())
     params.value.set('sort', sort ?? 'name')
-    const limit = 20
-    let offset = 0
-    params.value.append('limit', `${limit}`)
+    const isEnriching = ref(false)
+    const limit = ref(20)
+    const offset = ref(0)
+    params.value.append('limit', `${limit.value}`)
 
     if (columns?.length) {
         params.value.set('sort', sort ?? columns[0])
@@ -29,19 +32,55 @@ export default function useFacetGroups(
     })
 
     const loadMore = () => {
-        offset += limit
-        params.value.set('offset', `${offset}`)
+        offset.value += limit.value
+        params.value.set('offset', `${offset.value}`)
         mutate()
     }
 
     const list = ref<groupInterface[]>([])
+    /**
+     * Enrich the fetched records by adding another property: `hasUserAsMember`.
+     * If a user ID is provided, this will be an indicator of whether the
+     * group has this user or not.
+     */
+    const enrichRecords = () => {
+        if (userId?.value !== '') {
+            isEnriching.value = true
+            // Accumulate the IDs of all users for the filter.
+            const groupIds = list.value.map((user) => ({ id: user.id }))
+
+            // Fetch the groups with the user IDs as the filter.
+            const groupListParams = computed(() => ({
+                userId: userId?.value,
+                params: {
+                    filter: {
+                        $or: groupIds,
+                    },
+                },
+            }))
+
+            const { groupList: userGroupsList } = getUserGroups(groupListParams)
+
+            // When the userGroup list is ready, enrich the records (groups).
+            watch(userGroupsList, () => {
+                list.value = list.value.map((group) => ({
+                    ...group,
+                    hasUserAsMember:
+                    userGroupsList.value.findIndex(
+                            (userGroup) => userGroup.id === group.id
+                        ) !== -1,
+                }))
+                isEnriching.value = false
+            })
+        }
+    }
+
     watch(data, () => {
         if (data.value?.records) {
-            if (offset > 0) list.value.push(...data.value.records)
+            if (offset.value > 0) list.value.push(...data.value.records)
             else list.value = [...data.value.records]
-        } else
-            list.value = []
-
+        } else list.value = []
+        enrichRecords()
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
@@ -50,6 +89,7 @@ export default function useFacetGroups(
     const total = computed(() => data.value?.totalRecord)
 
     function setLimit(l = 20) {
+        limit.value = l
         params.value.set('limit', `${l}`)
     }
 
@@ -62,8 +102,8 @@ export default function useFacetGroups(
     }
 
     const handleSearch = (val: Event | string) => {
-        offset = 0
-        params.value.set('offset', `${offset}`)
+        offset.value = 0
+        params.value.set('offset', `${offset.value}`)
         let value = ''
         if (typeof val !== 'string') {
             value = (<HTMLInputElement>val.target).value as string
@@ -103,5 +143,8 @@ export default function useFacetGroups(
         setLimit,
         filterTotal,
         isLoading,
+        isEnriching,
+        limit,
+        offset,
     }
 }

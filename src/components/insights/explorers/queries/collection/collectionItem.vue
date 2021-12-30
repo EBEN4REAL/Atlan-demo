@@ -8,12 +8,12 @@
         @click="handleChange(item.guid)"
     >
         <div class="flex items-center overflow-x-hidden">
-            <span class="w-5 h-5 -mt-1 mr-2.5 text-lg">{{
+            <span class="w-5 h-5 mr-2 -mt-1 text-lg">{{
                 item?.attributes?.icon ? item?.attributes?.icon : '🗃'
             }}</span>
 
             <div class="truncate group-hover:text-primary" style="width: 90%">
-                <span class="text-sm text-gray-700 truncate mr-2.5">{{
+                <span class="mr-1 text-sm text-gray-700 truncate">{{
                     item.attributes.name
                 }}</span>
                 <AtlanIcon

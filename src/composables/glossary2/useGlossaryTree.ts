@@ -468,6 +468,7 @@ const useGlossaryTree = ({
     }
 
     const { getAnchorQualifiedName } = useAssetInfo()
+
     const recursivelyAddOrDeleteNode = async (asset, guid, action) => {
         let parentStack: string[]
 
@@ -594,46 +595,203 @@ const useGlossaryTree = ({
             )
         } else {
             nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] = 'root'
+            const found = treeData.value?.find((el) => el?.guid === asset?.guid)
+            if (!found) {
+                if (asset.typeName === 'AtlasGlossary') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: asset.attributes?.qualifiedName,
+                        key: asset.attributes?.qualifiedName,
+                        isLeaf: false,
+                    })
+                }
 
-            if (asset.typeName === 'AtlasGlossary') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: asset.attributes?.qualifiedName,
-                    key: asset.attributes?.qualifiedName,
-                    isLeaf: false,
-                })
-            }
+                if (asset.typeName === 'AtlasGlossaryTerm') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        key: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        isLeaf: true,
+                    })
+                }
 
-            if (asset.typeName === 'AtlasGlossaryTerm') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: true,
-                })
-            }
-
-            if (asset.typeName === 'AtlasGlossaryCategory') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: false,
-                })
+                if (asset.typeName === 'AtlasGlossaryCategory') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        key: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        isLeaf: false,
+                    })
+                }
             }
         }
     }
 
     const collapseAll = () => {
         expandedKeys.value = []
+    }
+    const reOrderNodes = (
+        nodeToReorder,
+        fromGuid?: string,
+        toGuid?: string
+    ) => {
+        let parentStack: string[]
+        const nodeGuid = nodeToReorder?.guid
+        let from_guid = fromGuid
+        if (!from_guid && nodeToParentKeyMap[nodeGuid]) {
+            from_guid = nodeToParentKeyMap[nodeGuid][0]
+        }
+
+        const removeNode = (node: TreeDataItem): TreeDataItem => {
+            const currentPath = parentStack.pop()
+            if (node.guid === from_guid && !currentPath) {
+                if (fromGuid)
+                    return {
+                        ...node,
+                        children: node.children?.filter(
+                            (childNode) => childNode.guid !== nodeGuid
+                        ),
+                    }
+                return node
+            }
+            return {
+                ...node,
+                children: node.children?.map((childNode: TreeDataItem) => {
+                    if (childNode.guid === currentPath) {
+                        return removeNode(childNode) ?? childNode
+                    }
+                    return childNode
+                }),
+            }
+        }
+        const pushNode = (node: TreeDataItem): TreeDataItem => {
+            console.log('pushing to node -> ', node?.displayText)
+            const currentPath = parentStack.pop()
+            const newChildren: TreeDataItem[] = []
+
+            node.children?.forEach((childNode: TreeDataItem) => {
+                if (childNode.guid === currentPath) {
+                    newChildren.push(pushNode(childNode) ?? childNode)
+                } else {
+                    newChildren.push(childNode)
+                }
+            })
+            if (node.guid === toGuid && !currentPath && nodeToReorder) {
+                console.log(
+                    'adding ',
+                    nodeToReorder?.displayText,
+                    ' to ',
+                    node?.displayText
+                )
+                nodeToReorder.id = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
+                nodeToReorder.key = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
+                nodeToReorder.isLeaf = false
+                newChildren.push(nodeToReorder)
+            }
+            console.log(newChildren)
+            if (loadedKeys.value.find((key) => node.key === key)) {
+                return {
+                    ...node,
+                    children: newChildren,
+                }
+            }
+            return node
+        }
+
+        // remove
+        if (from_guid) {
+            parentStack = recursivelyFindPath(from_guid)[0]
+            const parent = parentStack?.pop()
+
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if (node.guid === parent) return removeNode(node)
+                return node
+            })
+        }
+        console.log(toGuid, nodeToReorder)
+        // add
+        if (toGuid) {
+            if (toGuid === 'root') {
+                treeData.value.push(nodeToReorder)
+            } else {
+                parentStack = recursivelyFindPath(toGuid)[0]
+                const toParent = parentStack?.pop()
+                const updatedTreeData: TreeDataItem[] = []
+                // eslint-disable-next-line no-restricted-syntax
+                // for (const node of treeData.value) {
+                //     if (node.key === toParent || node.guid === toParent) {
+                //         const updatedNode = await pushNode(node)
+                //         updatedTreeData.push(updatedNode)
+                //     } else {
+                //         updatedTreeData.push(node)
+                //     }
+                // }
+
+                // treeData.value = updatedTreeData
+
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.guid === toParent) return pushNode(node)
+                    return node
+                })
+                console.log(treeData.value)
+            }
+        }
+
+        let currentParent = nodeToParentKeyMap[nodeGuid]
+        if (currentParent && typeof currentParent !== 'string') {
+            currentParent = currentParent.filter((guid) => guid !== fromGuid)
+            if (!currentParent.includes(toGuid)) {
+                currentParent.push(toGuid)
+            }
+        } else {
+            currentParent = [toGuid]
+        }
+        nodeToParentKeyMap[nodeGuid] = currentParent
+    }
+    const handleCategoriesChange = (
+        existingCategories,
+        newCategories,
+        asset
+    ) => {
+        const addedCategories = newCategories?.filter(
+            (category) =>
+                !existingCategories.find(
+                    (existing) => existing.guid === category.guid
+                )
+        )
+        const removedCategories = existingCategories?.filter(
+            (category) =>
+                !newCategories?.find((newCat) => newCat.guid === category.guid)
+        )
+
+        if (addedCategories?.length) {
+            addedCategories.forEach((cat) => {
+                setTimeout(() => {
+                    addNode(asset, cat)
+                }, 0)
+            })
+        }
+        if (removedCategories?.length)
+            removedCategories.forEach((cat) => {
+                setTimeout(() => {
+                    deleteNode(asset, cat?.guid)
+                }, 0)
+            })
+        if (!newCategories?.length) {
+            setTimeout(() => {
+                if (parentGlossaryQualifiedName?.value !== '') {
+                    addNode(asset)
+                } else addNode(asset, asset?.attributes?.anchor)
+            }, 0)
+        }
     }
 
     const updateNode = (asset) => {
@@ -646,6 +804,12 @@ const useGlossaryTree = ({
             ) {
                 treeData.value = treeData.value.map((treeNode) => {
                     if (treeNode.guid === asset?.guid) {
+                        handleCategoriesChange(
+                            treeNode?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         treeNode.attributes = asset?.attributes
                     }
                     return treeNode
@@ -661,6 +825,12 @@ const useGlossaryTree = ({
 
                     // if the target node is reached
                     if (node.guid === asset?.guid || !currentPath) {
+                        handleCategoriesChange(
+                            node?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         node.attributes = asset.attributes
                         return {
                             ...node,

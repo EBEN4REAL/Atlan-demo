@@ -18,15 +18,15 @@
         :data-test-id="displayName"
     >
         <ClassificationIcon
+            v-if="isPropagated"
             icon="ShieldFilled"
             :color="color"
-            v-if="isPropagated"
-        ></ClassificationIcon>
+        />
         <ClassificationIcon
+            v-else
             icon="Shield"
             :color="color"
-            v-else
-        ></ClassificationIcon>
+        />
 
         <div class="ml-1">
             {{ displayName || name }}

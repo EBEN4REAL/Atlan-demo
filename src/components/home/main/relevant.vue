@@ -3,21 +3,23 @@
     <a-tabs
         v-model:activeKey="relevantTab"
         :class="$style.hometab"
+        class="px-6 py-1.5 border border-gray-200 rounded-lg"
         @change="selectRelevantTab($event)"
-        class="px-6 py-3 border border-gray-200 rounded-lg"
     >
-        <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name"
-            ><component
-                height="150px"
+        <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name">
+            <component
                 :is="t.component"
+                height="150px"
                 :username="myUsername"
-                :typeNames="t.typeName"
-                :initialFilters="t.filter"
+                :type-names="t.typeName"
+                :initial-filters="t.filter"
                 :icon="t.icon"
                 :empty-text="t.emptyText"
-            >
-            </component
-        ></a-tab-pane>
+                :preference="{
+                    sort: '__modificationTimestamp-desc'
+                }"
+            />
+        </a-tab-pane>
     </a-tabs>
 </template>
 
@@ -37,7 +39,7 @@
             ),
         },
         setup() {
-            const relevantTab = ref(1)
+            const relevantTab = ref(2)
             const { username: myUsername } = whoami()
 
             const relevantTabList = [
@@ -72,7 +74,18 @@
                     },
                     emptyText: 'All your assets will appear here.',
                 },
-                /*{
+                {
+                    id: 3,
+                    name: 'Recently Verified Assets',
+                    component: 'AssetList',
+                    typeName: ['Table'],
+                    icon: 'NoRelevantAsset',
+                    filter: {
+                        certificateStatus: ['VERIFIED']
+                    },
+                    emptyText: 'The most recently verified assets will show up here.',
+                },
+                /* {
                     id: 2,
                     name: 'Your terms',
                     component: 'AssetList',

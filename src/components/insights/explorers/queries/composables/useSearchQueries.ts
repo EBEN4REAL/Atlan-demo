@@ -70,10 +70,19 @@ const searchQueries = (
                     case 'certificateStatus': {
                         if (filterObject) {
                             if (filterObject.length > 0) {
-                                const index = filterObject.indexOf(existsValue)
+
+                                let filter = [...filterObject]
+
+                                for(var i=0;i<filter.length;i++) {
+                                    if (filter[i] == null) {
+                                        filter[i] = "NONE";
+                                    }
+                                }
+                                
+                                const index = filter.indexOf(existsValue)
                                 if (index > -1) {
                                     const temp = []
-                                    filterObject.forEach((element) => {
+                                    filter.forEach((element) => {
                                         if (element !== existsValue) {
                                             temp.push(element)
                                         }
@@ -99,7 +108,7 @@ const searchQueries = (
                                     base.filter(
                                         'terms',
                                         'certificateStatus',
-                                        filterObject
+                                        filter
                                     )
                                 }
                             }

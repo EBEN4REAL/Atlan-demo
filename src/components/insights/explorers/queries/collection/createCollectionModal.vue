@@ -115,7 +115,7 @@
                 <span class="text-sm text-gray-700">Users and groups</span>
 
                 <div class="flex items-center mb-1.5">
-                    <div
+                    <!-- <div
                         class="flex items-center justify-center w-full h-8 pl-2 pr-2 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-r-none cursor-pointer"
                         @click="showUserDropdown"
                     >
@@ -126,11 +126,11 @@
                             v-model:modelValue="userData[selectedType]"
                             :disabledModalValue="userData[otherType]"
                         />
-                    </div>
+                    </div> -->
 
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
-                            class="flex items-center justify-center h-8 mt-2 text-gray-700 border border-l-0 border-gray-300 rounded-lg rounded-l-none cursor-pointer"
+                            class="flex items-center justify-center h-8 mt-2 text-gray-700 border border-r-0 border-gray-300 rounded-lg rounded-r-none cursor-pointer"
                             style="width: 133px !important"
                         >
                             <span class="mr-1.5 pl-1 text-sm">
@@ -155,7 +155,7 @@
                         </template>
                     </a-dropdown>
 
-                    <!-- <div
+                    <div
                         class="flex items-center justify-center w-full h-8 pl-2 pr-2 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
                         @click="showUserDropdown"
                     >
@@ -166,7 +166,7 @@
                             v-model:modelValue="userData[selectedType]"
                             :disabledModalValue="userData[otherType]"
                         />
-                    </div> -->
+                    </div>
                 </div>
                 <!-- <span class="text-xs text-gray-500"
                     >{{
@@ -210,7 +210,7 @@
                     <UserItem v-model:userData="userData" />
                 </div>
             </div>
-            <div
+            <!-- <div
                 class="px-3 py-1 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
                 v-else
             >
@@ -244,7 +244,7 @@
                         </span>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div
                 class="flex items-center justify-end flex-1 w-full px-4 mt-4 text-gray-700"
             >

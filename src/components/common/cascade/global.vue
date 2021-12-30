@@ -19,10 +19,20 @@
                         class="flex items-center"
                     >
                         <div v-if="selectedValue[0] === 'persona'">Persona</div>
+                        <div v-if="selectedValue[0] === 'purpose'">Purpose</div>
                         <AtlanIcon icon="ChevronRight" class="mx-1" />
 
-                        <div class="capitalize">
+                        <div
+                            class="capitalize"
+                            v-if="selectedValue[0] === 'persona'"
+                        >
                             {{ getPersona(selectedValue[1])?.displayName }}
+                        </div>
+                        <div
+                            class="capitalize"
+                            v-if="selectedValue[0] === 'purpose'"
+                        >
+                            {{ getPurpose(selectedValue[1])?.displayName }}
                         </div>
                     </div>
                 </div>
@@ -40,6 +50,7 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, ref, computed } from 'vue'
     import { usePersonaStore } from '~/store/persona'
+    import { usePurposeStore } from '~/store/purpose'
     import { capitalizeFirstLetter } from '~/utils/string'
     interface Option {
         value: string
@@ -63,6 +74,9 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const personaStore = usePersonaStore()
+
+            const purposeStore = usePurposeStore()
+
             const text = ref<string[]>([])
 
             const selectedValue = ref(modelValue.value)
@@ -88,6 +102,20 @@
                     })
                 })
                 temp.push(persona)
+
+                const purpose = {
+                    value: 'purpose',
+                    label: 'Purpose',
+                    children: [],
+                }
+
+                purposeStore.list.forEach((item) => {
+                    purpose.children.push({
+                        value: item.id,
+                        label: capitalizeFirstLetter(item.displayName),
+                    })
+                })
+                temp.push(purpose)
                 return temp
             })
 
@@ -99,6 +127,9 @@
             const getPersona = (id) =>
                 personaStore.list.find((item) => item.id === id)
 
+            const getPurpose = (id) =>
+                purposeStore.list.find((item) => item.id === id)
+
             return {
                 selectedValue,
                 text,
@@ -106,6 +137,7 @@
                 onChange,
                 getPersona,
                 tree,
+                getPurpose,
             }
         },
     })

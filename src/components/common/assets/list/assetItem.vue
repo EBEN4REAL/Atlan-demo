@@ -435,7 +435,7 @@
                                 meaningRelationships(item).length > 0 &&
                                 preference?.display?.includes('terms')
                             "
-                            class="flex flex-wrap mt-1 gap-x-1"
+                            class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
                                 v-for="term in meaningRelationships(item)"

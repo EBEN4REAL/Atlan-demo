@@ -38,6 +38,24 @@ export default function useAssetEvaluate() {
                     action: 'ENTITY_UPDATE_BUSINESS_METADATA',
                     businessMetadata: '*',
                 },
+                {
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'asset_readme',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: asset?.typeName,
+                    entityIdEnd2: '*',
+                    entityTypeEnd2: 'Readme',
+                },
+                { action: 'ENTITY_CREATE', typeName: 'Readme', entityId: '*' },
+                {
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'asset_links',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: asset?.typeName,
+                    entityIdEnd2: '*',
+                    entityTypeEnd2: 'Link',
+                },
+                { action: 'ENTITY_CREATE', typeName: 'Link', entityId: '*' },
             ]
         }
         return [
@@ -74,6 +92,24 @@ export default function useAssetEvaluate() {
                 entityGuidEnd2: asset?.guid,
                 entityTypeEnd2: asset?.typeName,
             },
+            {
+                action: 'RELATIONSHIP_ADD',
+                relationShipTypeName: 'asset_readme',
+                entityGuidEnd1: asset?.guid,
+                entityTypeEnd1: asset?.typeName,
+                entityIdEnd2: '*',
+                entityTypeEnd2: 'Readme',
+            },
+            { action: 'ENTITY_CREATE', typeName: 'Readme', entityId: '*' },
+            {
+                action: 'RELATIONSHIP_ADD',
+                relationShipTypeName: 'asset_links',
+                entityGuidEnd1: asset?.guid,
+                entityTypeEnd1: asset?.typeName,
+                entityIdEnd2: '*',
+                entityTypeEnd2: 'Link',
+            },
+            { action: 'ENTITY_CREATE', typeName: 'Link', entityId: '*' },
             {
                 typeName: asset?.typeName,
                 entityGuid: asset?.guid,

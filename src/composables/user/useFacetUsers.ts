@@ -79,7 +79,7 @@ export default function useFacetUsers(
 
             const { memberList } = useGroupMembers(memberListParams)
 
-            // When the group list is ready, enrich the records.
+            // When the member list is ready, enrich the records(list of users).
             watch(memberList, () => {
                 list.value = list.value.map((user) => ({
                     ...user,

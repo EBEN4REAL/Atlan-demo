@@ -128,7 +128,17 @@
             </div>
         </div>
 
+        <div
+            v-if="isEvaluating"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
+        </div>
         <a-tabs
+            v-else
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="
@@ -332,7 +342,10 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false)
+            const { refresh, isLoading: isEvaluating } = useEvaluate(
+                body,
+                false
+            )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
@@ -413,7 +426,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
-
+                isEvaluating,
                 getPreviewTabs,
                 refresh,
                 certificateStatus,

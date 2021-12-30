@@ -217,6 +217,10 @@
                 return collection
             })
 
+            const refreshQueryTree = inject<
+                (guid: string, type: 'query' | 'Folder') => void
+            >('refreshQueryTree', () => {})
+
             // console.log('already selected: ', props.selectedFolderQF)
             // console.log('already selected: ', parentFolder)
 
@@ -483,6 +487,14 @@
                                         )
                                         ul.removeChild(div)
                                     }, 1000)
+
+                                    //refetch tree
+                                    setTimeout(async () => {
+                                        await refreshQueryTree(
+                                            parentGuid.value,
+                                            'Folder'
+                                        )
+                                    }, 1500)
                                 }
                             })
                         }

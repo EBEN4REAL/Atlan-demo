@@ -663,10 +663,10 @@ export default function useAssetInfo() {
         )?.allowed
     }
 
-    const createPermission = (typeName, action = 'ENTITY_CREATE') => {
-        return authStore?.evaluations.find(
-            (ev) => ev?.typeName === typeName && ev?.action === action
-        )?.allowed
+    const assetPermission = (permission) => {
+        return authStore?.permissions.find((per) => per === permission)
+            ? true
+            : false
     }
 
     const isGTCByType = (typeName) => {
@@ -1037,6 +1037,6 @@ export default function useAssetInfo() {
         allowQuery,
         allowQueryPreview,
         queries,
-        createPermission,
+        assetPermission,
     }
 }

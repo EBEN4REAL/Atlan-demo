@@ -132,7 +132,7 @@
                     v-else
                     :list="list"
                     :start-index="selectedAssetIndex"
-                    :blocked="isCmndKVisible"
+                    :blocked="isCmndKVisible || isAssetProfile"
                     :html-id-getter="getAssetId"
                     @change="onKeyboardNavigate"
                 >
@@ -223,6 +223,7 @@
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -525,9 +526,12 @@
                 discoveryStore.setActivePanel(activeKey.value)
             }
 
+            const route = useRoute()
+            const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
                 handleClickAssetItem(asset, index)
                 console.log('onKeyboardNavigate', {
+                    isAssetProfile: isAssetProfile.value,
                     index,
                     asset: asset.attributes.name,
                     selectedAssetIndex: selectedAssetIndex.value,
@@ -708,6 +712,7 @@
                 isCmndKVisible,
                 getAssetId,
                 quickChange,
+                isAssetProfile,
             }
         },
     })

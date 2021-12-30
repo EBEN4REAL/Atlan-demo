@@ -48,7 +48,7 @@ export const previewTabs = [
     {
         name: 'Queries',
         component: 'queries',
-        includes: ['Table', 'Column'],
+        includes: ['Table', 'Column', 'View'],
         icon: 'Relation',
         tooltip: 'Queries',
         scrubbed: false,

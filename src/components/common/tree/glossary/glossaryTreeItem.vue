@@ -113,14 +113,7 @@
                 />
             </div>
 
-            <div v-if="item.dataRef.isLoading">
-                <a-spin
-                    size="small"
-                    icon="Loader"
-                    class="w-auto h-4 mr-1 animate-spin"
-                ></a-spin>
-            </div>
-            <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
+            <div v-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
             <div

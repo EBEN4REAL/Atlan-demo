@@ -16,16 +16,22 @@
             group
             `"
         :data-test-id="displayName"
+        @mouseover="() => {
+            shieldColour = 'White'
+        }"
+        @mouseleave="() => {
+            shieldColour = originalColour
+        }"
     >
         <ClassificationIcon
             v-if="isPropagated"
             icon="ShieldFilled"
-            :color="color"
+            :color="shieldColour"
         />
         <ClassificationIcon
             v-else
             icon="Shield"
-            :color="color"
+            :color="shieldColour"
         />
 
         <div class="ml-1">
@@ -42,7 +48,7 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed } from 'vue'
+    import { toRefs, computed, unref, ref } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default {
@@ -81,6 +87,8 @@
         emits: ['delete'],
         setup(props, { emit }) {
             const { name, isPropagated, displayName, color } = toRefs(props)
+            const shieldColour = ref(unref(color))
+            const originalColour = ref(unref(color))
 
             const handleRemove = () => {
                 emit('delete', name.value)
@@ -107,9 +115,9 @@
                 handleRemove,
                 color,
                 bgHover,
+                originalColour,
+                shieldColour
             }
         },
     }
 </script>
-
-<style></style>

@@ -31,7 +31,7 @@
             <img
                 v-if="logoUrl && !logoNotFound"
                 :src="logoUrl"
-                class="w-auto h-5 mr-2"
+                class="w-auto h-4 mr-2"
                 @error="onLogoNotFound"
             />
         </template>

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, watch, toRefs } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import NonBiOverview from './nonBi/index.vue'
@@ -51,23 +51,19 @@
                 isGTC,
                 isNonBiAsset,
                 selectedAssetUpdatePermission,
-                createPermission,
+                assetPermission,
             } = useAssetInfo()
 
             const { selectedAsset } = toRefs(props)
 
-            const readmeEditPermission = computed(() =>
-                selectedAssetUpdatePermission(
-                    selectedAsset.value,
-                    'RELATIONSHIP_ADD',
-                    'Readme'
-                )
+            const readmeEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        'RELATIONSHIP_ADD',
+                        'Readme'
+                    ) && assetPermission('CREATE_README')
             )
-
-            watch(readmeEditPermission, () => {
-                console.log(readmeEditPermission.value)
-                console.log('hello')
-            })
 
             return { isBiAsset, isGTC, isNonBiAsset, readmeEditPermission }
         },

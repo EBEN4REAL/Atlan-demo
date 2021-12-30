@@ -117,7 +117,7 @@
         },
         setup(props) {
             const timeAgo = (time: string) => dayjs().from(time, true)
-            const { links, selectedAssetUpdatePermission, createPermission } =
+            const { links, selectedAssetUpdatePermission, assetPermission } =
                 useAssetInfo()
             const hasUserLevelSlackIntegration = true
             const hasTenantLevelSlackIntegration = true
@@ -149,7 +149,7 @@
                         selectedAsset.value,
                         'RELATIONSHIP_ADD',
                         'Link'
-                    ) && createPermission('Link')
+                    ) && assetPermission('CREATE_README')
             )
 
             return {

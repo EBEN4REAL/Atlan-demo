@@ -61,6 +61,8 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const toggleCMDK: Function = inject('togglecmdK')
+
             const editorConfig = inject(
                 'editorConfig'
             ) as Ref<editorConfigInterface>
@@ -378,6 +380,11 @@
                         )
                     }
                 )
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
+                    // console.log('cmd+k: ', 'presses')
+                    toggleCMDK()
+                })
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {

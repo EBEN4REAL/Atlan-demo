@@ -15,6 +15,9 @@
                 :initial-filters="t.filter"
                 :icon="t.icon"
                 :empty-text="t.emptyText"
+                :preference="{
+                    sort: '__modificationTimestamp-desc'
+                }"
             />
         </a-tab-pane>
     </a-tabs>

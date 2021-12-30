@@ -26,7 +26,7 @@
         </AddGtcModal>
     </div>
     <a-tree
-        :class="$style.glossaryTree"
+        class="glossary-tree"
         :tree-data="treeData"
         :draggable="false"
         :block-node="true"
@@ -279,31 +279,3 @@
         },
     })
 </script>
-<style lang="less" module>
-    .glossaryTree {
-        :global(.ant-tree-switcher) {
-            margin-right: -1px !important;
-        }
-        :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg);
-        }
-        :global(.ant-tree-treenode) {
-            padding-bottom: 0px !important;
-            @apply hover:bg-primary-light rounded mt-1 !important;
-        }
-        :global(.ant-tree-title) {
-            @apply flex;
-        }
-        :global(.ant-tree-node-content-wrapper) {
-            @apply hover:bg-primary-light !important;
-            transition: none !important;
-        }
-
-        :global(.ant-tree-list-holder-inner) {
-            @apply px-3 !important;
-        }
-        :global(.ant-tree-treenode-selected) {
-            @apply bg-primary-light !important;
-        }
-    }
-</style>

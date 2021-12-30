@@ -336,7 +336,7 @@
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                TermsWidget
+                Terms
             </p>
             <TermsWidget
                 v-model="localMeanings"

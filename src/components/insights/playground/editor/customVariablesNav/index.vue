@@ -66,7 +66,7 @@
                         >
                             <a-button
                                 @click="() => openSelectDropdown(variable)"
-                                class="flex items-center justify-between bg-white border-none shadow-none"
+                                class="flex items-center justify-between bg-white border-none shadow-none outline-none"
                                 style="width: 138px; height: 32px"
                                 ><span class="text-gray-500 truncate">{{
                                     variable.value.length
@@ -84,20 +84,32 @@
                                         v-if="variable.allowMultiple"
                                         class="gap-y-2"
                                     >
-                                        <a-checkbox
-                                            v-model:checked="checkAll"
+                                        <div
+                                            class="flex flex-col w-full"
                                             @change="
                                                 () =>
                                                     onCheckAllOptions(variable)
                                             "
-                                            class="px-4 pt-2 pb-2"
                                         >
-                                            Select all
-                                        </a-checkbox>
+                                            <a-checkbox
+                                                v-model:checked="checkAll"
+                                                class="w-full px-4 py-2"
+                                            >
+                                                Select all
+                                            </a-checkbox>
+                                        </div>
+
                                         <div class="checkbox-border"></div>
 
                                         <a-checkbox-group
                                             v-model:value="variable.value"
+                                            @change="
+                                                (checked) =>
+                                                    checkedGroup(
+                                                        checked,
+                                                        variable
+                                                    )
+                                            "
                                         >
                                             <div
                                                 v-for="item in variable.options"
@@ -105,7 +117,9 @@
                                                 class="flex items-center justify-between px-4 pt-2 pb-2"
                                             >
                                                 <a-checkbox :value="item.value"
-                                                    ><span class="mb-0 ml-1">
+                                                    ><span
+                                                        class="w-full h-8 mb-0 ml-1"
+                                                    >
                                                         {{ item.label }}
                                                     </span>
                                                 </a-checkbox>
@@ -123,14 +137,7 @@
                                                 :key="item.label"
                                             >
                                                 <a-menu-item
-                                                    class="px-4"
-                                                    :class="
-                                                        variable.value.length &&
-                                                        variable.value[0] ===
-                                                            item.value
-                                                            ? 'bg-primary-light'
-                                                            : ''
-                                                    "
+                                                    class="px-4 hover:bg-gray-100"
                                                     :key="item.value"
                                                 >
                                                     <div
@@ -320,13 +327,6 @@
                                                 class="text-gray-700 tex-sm"
                                                 name="value"
                                             >
-                                                <!-- <a-input
-                                                        v-model:value="
-                                                            variable.value
-                                                        "
-                                                        placeholder
-                                                    /> -->
-
                                                 <a-date-picker
                                                     v-if="
                                                         variable.type === 'date'
@@ -359,6 +359,9 @@
                                                         )
                                                     "
                                                     :options="variable.options"
+                                                    :dropdownStyle="{
+                                                        visibility: 'hidden',
+                                                    }"
                                                 >
                                                     <!-- <template
                                                         #dropdownRender
@@ -570,7 +573,7 @@
                 // )
                 // console.log('new data: ', variable)
                 // console.log('old data: ', currVariable.value)
-                console.log('select saved: ', variable)
+                // console.log('select saved: ', variable)
                 if (varTest.test(variable.name)) {
                     if (
                         saveVariable(
@@ -581,6 +584,7 @@
                         )
                     ) {
                         /* If successfully variable saved then close the dropdown */
+                        checkAll.value = false
                         inputError.value = false
                         closeDropdown()
                     }
@@ -612,23 +616,20 @@
             const handleSelectInputChange = (
                 variable: CustomVaribaleInterface
             ) => {
+                // console.log('multivar: ', variable)
                 // if (variable.allowMultiple) {
-                //     variable.value = variable.options
-                // } else {
-                //     if (variable.options.length) {
-                //         variable.value =
-                //             variable.options[variable.options.length - 1]
+                //     // variable.value = variable.dummy
+                //     // select only 1 by default
+                //     if (variable.dummy.length) {
+                //         variable.value = [
+                //             variable.dummy[variable.dummy.length - 1],
+                //         ]
                 //     }
-                // }
-                if (variable.allowMultiple) {
-                    variable.value = variable.dummy
-                } else {
-                    if (variable.dummy.length) {
-                        variable.value = [
-                            variable.dummy[variable.dummy.length - 1],
-                        ]
-                    }
+                // } else {
+                if (variable.dummy.length) {
+                    variable.value = [variable.dummy[variable.dummy.length - 1]]
                 }
+                // }
 
                 variable.options = variable.dummy.map((v) => {
                     return {
@@ -645,12 +646,11 @@
             const handleVariableTypeChange = (
                 variable: CustomVaribaleInterface
             ) => {
-                console.log(`selected type: `, variable)
+                console.log(`selected type: `, variable.type)
                 if (variable.type === 'dropdown') {
                     variable.value = []
                     variable.dummy = []
-                }
-                if (variable.type === 'date') {
+                } else if (variable.type === 'date') {
                     variable.value = dayjs()
                 } else {
                     variable.value = ''
@@ -680,6 +680,13 @@
                 }
             }
 
+            // const allChecked = computed(() => {})
+            const checkedGroup = (checked, variable) => {
+                if (variable.value.length !== variable.options.length) {
+                    checkAll.value = false
+                }
+            }
+
             return {
                 onChange,
                 onCopyVariable,
@@ -706,6 +713,7 @@
                 closeSelectDropdown,
                 onCheckAllOptions,
                 checkAll,
+                checkedGroup,
             }
         },
     })

@@ -573,7 +573,7 @@
                 // )
                 // console.log('new data: ', variable)
                 // console.log('old data: ', currVariable.value)
-                console.log('select saved: ', variable)
+                // console.log('select saved: ', variable)
                 if (varTest.test(variable.name)) {
                     if (
                         saveVariable(
@@ -584,6 +584,7 @@
                         )
                     ) {
                         /* If successfully variable saved then close the dropdown */
+                        checkAll.value = false
                         inputError.value = false
                         closeDropdown()
                     }

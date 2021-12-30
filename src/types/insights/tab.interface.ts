@@ -4,4 +4,5 @@ export interface TabInterface {
     component: string
     icon: string | undefined
     isVisible: boolean
+    title: string
 }

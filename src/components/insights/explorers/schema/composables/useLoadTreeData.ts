@@ -78,6 +78,26 @@ const useLoadTreeData = (
             attributes,
         }
     }
+
+    const getFacetCount = (facets) => {
+        let count = 0
+        Object.keys(facets.value).forEach((key) => {
+            if (Array.isArray(facets.value[key])) {
+                if (facets.value[key].length > 0) {
+                    count += 1
+                }
+            } else if (
+                typeof facets.value[key] === 'object' &&
+                facets.value[key] !== null
+            ) {
+                if (Object.keys(facets.value[key]).length > 0) {
+                    count += 1
+                }
+            }
+        })
+
+        return count
+    }
     const getDatabaseForConnection = async (
         connectionQualifiedName: string,
         offset?: number
@@ -87,7 +107,7 @@ const useLoadTreeData = (
         if (searchResultType.value === 'table') {
             if (
                 queryText.value.length == 0 &&
-                Object.keys(facets.value).length === 0
+                getFacetCount(facets) === 0
             ) {
                 typeName.value = 'Database'
             } else {
@@ -120,7 +140,7 @@ const useLoadTreeData = (
         if (searchResultType.value === 'table') {
             if (
                 queryText.value.length == 0 &&
-                Object.keys(facets.value).length === 0
+                getFacetCount(facets) === 0
             ) {
                 typeName.value = 'Schema'
             } else {

@@ -101,6 +101,7 @@
             })
 
             return {
+                list,
                 fetchKey,
                 isLoading,
                 localSelected,

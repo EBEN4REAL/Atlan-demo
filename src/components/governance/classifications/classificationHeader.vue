@@ -7,7 +7,7 @@
                         :color="selectedClassification?.options?.color"
                         class="h-6 mr-2"
                     />
-                    <div class="flex flex-col" style="margin-top: -5px">
+                    <div class="flex flex-col" style="margin-top: -3px">
                         <span class="text-xl truncate text-gray">
                             {{ selectedClassification?.displayName }}
                         </span>

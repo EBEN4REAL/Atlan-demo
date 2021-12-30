@@ -21,12 +21,25 @@
                     :glossaryName="selectedGlosaryName"
                 >
                     <template #trigger>
-                        <a-button class="ml-3" size="small">
-                            <AtlanIcon
-                                icon="Add"
-                                class="transition duration-300 text-primary"
-                            />
-                        </a-button>
+                        <a-tooltip>
+                            <template #title
+                                >Add new
+                                {{
+                                    `${
+                                        defaultEntityType === 'AtlasGlossary'
+                                            ? 'Glossary'
+                                            : 'Term/Category'
+                                    }`
+                                }}</template
+                            >
+
+                            <a-button class="ml-3" size="small">
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="transition duration-300 text-primary"
+                                />
+                            </a-button>
+                        </a-tooltip>
                     </template>
                 </AddGTCModal>
 
@@ -280,7 +293,7 @@
             facets.value = {
                 ...facets.value,
                 ...initialFilters.value,
-                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                typeNames: props.checkable ? ['AtlasGlossaryTerm'] : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 

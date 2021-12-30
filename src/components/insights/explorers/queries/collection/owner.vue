@@ -1,13 +1,13 @@
 <template>
-    <div class="w-full">
-        <a-popover
-            trigger="click"
-            placement="bottom"
-            v-model:visible="popoverVisible"
+    <div class="w-full bg-white">
+        <a-dropdown
+            :trigger="['click']"
+            placement="bottomCenter"
+            :visible="popoverVisible"
         >
             <div
-                class="flex items-center justify-between"
-                @click="showPopover(true)"
+                class="flex items-center justify-between bg-white"
+                @click="() => showPopover(true)"
             >
                 <SearchAdvanced
                     v-model="queryText"
@@ -68,8 +68,12 @@
                 </SearchAdvanced>
             </div>
 
-            <template #content>
-                <div style="width: 330px" class="pb-2">
+            <template #overlay>
+                <div
+                    style="width: 330px"
+                    class="pb-2 -mt-1 bg-white rounded-b shadow-2xl"
+                    @mouseleave="() => showPopover(false)"
+                >
                     <div>
                         <Users
                             v-if="componentType == 'users'"
@@ -116,7 +120,7 @@
                     </div>
                 </div>
             </template>
-        </a-popover>
+        </a-dropdown>
     </div>
 </template>
 
@@ -130,20 +134,13 @@
         toRefs,
         watch,
     } from 'vue'
-    // import Groups from '@common/selector/groups/index.vue'
-    // import Users from '@common/selector/users/index.vue'
+
     import { useVModels, toRef, useTimeoutFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
-
-    // import { Collapse } from '~/types'
-
-    // import { userInterface } from '~/types/users/user.interface'
-    // import { groupInterface } from '~/types/groups/group.interface'
-    // import useUserData from '~/services2/service/composable/useUserData'
-    // import emptyScreen from '~/assets/images/empty_search.png'
+    import { onClickOutside } from '@vueuse/core'
 
     export default defineComponent({
         name: 'OwnersFilter',
@@ -219,13 +216,13 @@
             const handleGroupClick = () => {
                 componentType.value = 'groups'
                 // queryText.value = ''
-                showPopover(true)
+                // showPopover(true)
             }
 
             const handleUserClick = () => {
                 componentType.value = 'users'
                 // queryText.value = ''
-                showPopover(true)
+                // showPopover(true)
             }
 
             const placeholder = computed(() => {
@@ -254,6 +251,9 @@
                 }
             })
 
+            const target = ref(null)
+            onClickOutside(target, (event) => showPopover(false))
+
             return {
                 groupRef,
                 usersRef,
@@ -273,6 +273,7 @@
                 handleChange,
                 showPopover,
                 popoverVisible,
+                target,
                 // handleUserChange,
             }
         },

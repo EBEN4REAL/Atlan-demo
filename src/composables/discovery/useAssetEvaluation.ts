@@ -46,7 +46,6 @@ export default function useAssetEvaluate() {
                     entityIdEnd2: '*',
                     entityTypeEnd2: 'Readme',
                 },
-                { action: 'ENTITY_CREATE', typeName: 'Readme', entityId: '*' },
                 {
                     action: 'RELATIONSHIP_ADD',
                     relationShipTypeName: 'asset_links',
@@ -55,7 +54,6 @@ export default function useAssetEvaluate() {
                     entityIdEnd2: '*',
                     entityTypeEnd2: 'Link',
                 },
-                { action: 'ENTITY_CREATE', typeName: 'Link', entityId: '*' },
             ]
         }
         return [
@@ -100,7 +98,6 @@ export default function useAssetEvaluate() {
                 entityIdEnd2: '*',
                 entityTypeEnd2: 'Readme',
             },
-            { action: 'ENTITY_CREATE', typeName: 'Readme', entityId: '*' },
             {
                 action: 'RELATIONSHIP_ADD',
                 relationShipTypeName: 'asset_links',
@@ -109,7 +106,6 @@ export default function useAssetEvaluate() {
                 entityIdEnd2: '*',
                 entityTypeEnd2: 'Link',
             },
-            { action: 'ENTITY_CREATE', typeName: 'Link', entityId: '*' },
             {
                 typeName: asset?.typeName,
                 entityGuid: asset?.guid,

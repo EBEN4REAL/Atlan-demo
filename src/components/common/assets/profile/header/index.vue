@@ -7,7 +7,7 @@
             />
         </a-button>
         <div class="flex items-center justify-between w-full ml-3">
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full">
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
@@ -18,11 +18,10 @@
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
-                    <div
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
-                    >
-                        {{ title(item) }}
-                    </div>
+                    <Tooltip
+                        :tooltip-text="`${title(item)}`"
+                        classes="text-base font-bold text-gray-700  mb-0"
+                    />
 
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -324,6 +323,7 @@
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -332,6 +332,7 @@
             AtlanIcon,
             ShareMenu,
             AssetMenu,
+            Tooltip,
         },
         props: {
             item: {

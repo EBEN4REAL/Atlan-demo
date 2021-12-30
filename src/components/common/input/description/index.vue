@@ -27,7 +27,8 @@
                 v-model:value="localValue"
                 tabindex="0"
                 :rows="4"
-                @blur="handleBlur"
+                @blur="handleBlur($event)"
+                @press-enter="handleBlur($event)"
             ></a-textarea>
         </div>
     </div>
@@ -54,6 +55,7 @@
     } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { Modal } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -88,19 +90,79 @@
 
             const { description } = useAssetInfo()
 
-            const handleChange = () => {
+            /**
+             * A utility function to update the model value, and emit a `change`
+             * event.
+             */
+            const updateValue = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
+
+            // Do we need to show the confirmation modal
+            const needToConfirm = ref(true)
+
+            /**
+             * A utility function to handle a change in the value, and show a
+             * confirmation modal if necessary.
+             */
+            const handleChange = () => {
+                if (needToConfirm.value && localValue.value !== modelValue.value) {
+                    // Show a modal, if required.
+                    Modal.confirm({
+                        title: "Do you want to save your changes?",
+                        content: "You made changes to the description, but didn't save them. Click on 'Yes' if you want to.",
+                        keyboard: false,
+                        okText: "Yes",
+                        cancelText: "No",
+                        onOk() {
+                            updateValue()
+                        },
+                        onCancel() {
+                            localValue.value = modelValue.value
+                            isEdit.value = false
+                        }
+                    })
+                }
+                else {
+                    updateValue()
+                }
+            }
+
+            const { d, enter, shift } = useMagicKeys()
+
+            /**
+             * Here, the enter key, acts as a reset switch. If it is pressed,
+             * we reset the modal show indicator to true.
+             */
+            watchEffect(() => {
+                if (enter.value && !shift.value) {
+                    needToConfirm.value = true
+                }
+            })
 
             const { start } = useTimeoutFn(() => {
                 descriptionRef.value?.focus()
             }, 100)
 
-            const handleBlur = () => {
+            /**
+             * A utility function to handle both blur and keyboard events
+             * @param event
+             */
+            const handleBlur = (event: FocusEvent | KeyboardEvent) => {
+                if (
+                    event instanceof KeyboardEvent
+                    && event.key === 'Enter'
+                ) {
+                    if (event.getModifierState('Shift')) {
+                        return
+                    }
+                    needToConfirm.value = false
+                }
                 isEdit.value = false
                 handleChange()
             }
+
             const handleEdit = () => {
                 if (editPermission?.value) {
                     isEdit.value = true
@@ -117,8 +179,6 @@
                         'true'
             )
 
-            const { d, enter, shift } = useMagicKeys()
-
             whenever(
                 and(d, notUsingInput, !inProfile.value, editPermission.value),
                 () => {
@@ -126,9 +186,6 @@
                 }
             )
 
-            watchEffect(() => {
-                if (enter.value && !shift.value && isEdit.value) handleBlur()
-            })
             watch(
                 selectedAsset,
                 () => (localValue.value = description(selectedAsset.value))
@@ -143,6 +200,7 @@
                 start,
                 handleBlur,
                 description,
+                updateValue,
             }
         },
     })

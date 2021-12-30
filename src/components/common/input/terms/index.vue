@@ -26,11 +26,15 @@
         </a-popover>
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
-                <TermPill
-                    :term="term"
-                    :allow-delete="allowDelete"
-                    @delete="handleDeleteTerm"
-                />
+                <TermPopover :term="term" trigger="click">
+                    <teamplate>
+                        <TermPill
+                            :term="term"
+                            :allow-delete="allowDelete"
+                            @delete="handleDeleteTerm"
+                        />
+                    </teamplate>
+                </TermPopover>
             </template>
             <span
                 v-if="!editPermission && list?.length < 1"
@@ -55,10 +59,11 @@
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
+    import TermPopover from '@/common/popover/term.vue'
 
     export default defineComponent({
         name: 'TermsWidget',
-        components: { GlossaryTree, TermPill },
+        components: { GlossaryTree, TermPill, TermPopover },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

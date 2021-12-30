@@ -1,50 +1,115 @@
 <template>
-    <a-popover :placement="placement" :trigger="trigger">
+    <a-popover
+        :placement="placement"
+        :trigger="trigger"
+        @visibleChange="handleVisibleChange"
+    >
         <template #content>
-            <div class="p-1">
-                <div class="flex text-xs leading-4">
-                    <div class="flex mr-3 space-x-2 text-gray-700">
-                        <AtlanIcon icon="Term" />
-                        <span>TERM</span>
+            <div class="p-4" style="width: 374px">
+                <AtlanIcon
+                    v-if="isLoading"
+                    icon="Loader"
+                    class="animate-spin"
+                />
+                <div v-else-if="fetchedTerm" class="space-y-2">
+                    <div class="flex text-xs gap-x-2">
+                        <div class="flex space-x-2 text-gray-700">
+                            <AtlanIcon icon="Term" />
+                            <span>TERM</span>
+                        </div>
+                        <span class="text-gray-200">&bull;</span>
+                        <div
+                            v-if="anchorAttributes(fetchedTerm)?.name"
+                            class="flex mr-2 space-x-2 text-gray-500"
+                        >
+                            <AtlanIcon icon="Glossary" />
+                            <span>
+                                {{ anchorAttributes(fetchedTerm).name }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div v-if="anchorAttributes(term)?.name" class="flex space-x-2 mr-2 text-gray-500">
-                        <AtlanIcon icon="Glossary" />
-                        <span>{{ anchorAttributes(term)?.name }}</span>
+                    <div class="flex">
+                        <div class="flex space-x-2 font-bold text-gray-700">
+                            <span class="max-w-xs truncate">
+                                {{ attributes.localName }}
+                            </span>
+                            <CertificateBadge
+                                v-if="certificateStatus(fetchedTerm)"
+                                :status="certificateStatus(fetchedTerm)"
+                                :username="certificateUpdatedBy(fetchedTerm)"
+                                :timestamp="certificateUpdatedAt(fetchedTerm)"
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <div class="flex mt-4">
-                    <div class="flex space-x-2 text-xl text-gray-700">
-                        <span>{{ title(term) }}</span>
+                    <div
+                        v-if="attributes.localDescription"
+                        style="font-size: 12px"
+                        class=""
+                    >
+                        <div class="text-gray-500">Description</div>
+                        <div class="text-gray-700">
+                            {{ attributes.localDescription }}
+                        </div>
                     </div>
-                </div>
+                    <div
+                        v-if="attributes.localCategories"
+                        style="font-size: 12px"
+                        class=""
+                    >
+                        <div class="text-gray-500">Categories</div>
+                        <div
+                            class="leading-5 text-gray-700 truncate overflow-ellipsis"
+                        >
+                            <!-- <Category
+                                v-modal="attributes.localCategories"
+                                :selected-asset="fetchedTerm"
+                                :edit-permission="false"
+                            /> -->
+                        </div>
+                    </div>
 
-                <div class="text-sm leading-5 text-gray-500 truncate overflow-ellipsis"> 
-                    {{ description(term) }} 
-                </div>
-                
-                <div class="flex mt-2">
-                    <Owners
-                        :selected-asset="term"
-                    />
+                    <div
+                        v-if="
+                            attributes.localOwners?.ownerGroups?.length ||
+                            attributes.localOwners?.ownerUsers?.length
+                        "
+                        style="font-size: 12px"
+                        class=""
+                    >
+                        <div class="text-gray-500">Owned by</div>
+                        <div
+                            class="leading-5 text-gray-700 truncate overflow-ellipsis"
+                        >
+                            <Owners
+                                v-model="attributes.localOwners"
+                                :editPermission="false"
+                                :selected-asset="fetchedTerm"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
-
-        <div class="flex w-32">
-            <AtlanIcon icon="Term" />
-            <span>{{ title(term) }}</span>
-        </div>
-
+        <slot />
     </a-popover>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        onMounted,
+        PropType,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
 
     // components
     import Owners from '@/common/input/owner/index.vue'
+    import Category from '@/common/input/categories/categories.vue'
 
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -52,48 +117,112 @@
     //types
     import { Term } from '~/types/glossary/glossary.interface'
 
+    import {
+        AssetAttributes,
+        InternalAttributes,
+        SQLAttributes,
+        AssetRelationAttributes,
+        GlossaryAttributes,
+    } from '~/constant/projection'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+
     export default defineComponent({
         name: 'TermPopover',
         components: {
             Owners,
+            Category,
+            CertificateBadge,
         },
         props: {
             term: {
-                type: Object as PropType<Term>,
-                required: false,
-                default: true,
+                type: Object,
+                required: true,
             },
             placement: {
                 type: String,
                 required: false,
-                default: 'left'
+                default: 'left',
             },
             trigger: {
                 type: String,
                 required: false,
-                default: 'hover'
-            }
+                default: 'hover',
+            },
         },
         setup(props, { emit }) {
-           const { term } = toRefs(props)
+            const { term } = toRefs(props)
 
             const {
-                title,
-                description,
-                anchorAttributes
+                isScrubbed,
+                certificateStatus,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                anchorAttributes,
             } = useAssetInfo()
 
+            const limit = ref(1)
+            const offset = ref(0)
+            const facets = ref({
+                guid: term.value.termGuid,
+            })
+
+            const dependentKey = ref(facets.value.guid)
+
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...GlossaryAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            const { list, isLoading, fetch } = useDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
+            const fetchedTerm = computed(() => {
+                if (list.value.length) return list.value[0]
+                return null
+            })
+
+            const attributes = ref()
+
+            watch([isLoading, list], () => {
+                if (fetchedTerm.value) {
+                    attributes.value = updateAssetAttributes(fetchedTerm)
+                }
+            })
+
+            const handleVisibleChange = (v) => {
+                console.log({ v })
+                if (!list.value?.length && v) fetch()
+            }
+
+            onMounted(() => {
+                console.log('fetching')
+            })
+
             return {
-                term,
-                title,
-                description,
-                anchorAttributes
+                anchorAttributes,
+                attributes,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                isScrubbed,
+                certificateStatus,
+                fetchedTerm,
+                handleVisibleChange,
+                isLoading,
+                list,
             }
         },
     })
 </script>
 
-
-<style lang="less" module>
-
-</style>
+<style lang="less" module></style>

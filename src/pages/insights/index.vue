@@ -36,8 +36,9 @@
             })
             const route = useRoute()
             const router = useRouter()
-            const savedQueryGuidFromURL = ref(route.query?.id)
+            const savedQueryGuidFromURL = computed(() => route.query?.id)
             const runQuery = ref(route.query?.runQuery)
+            const isVisualQuery = computed(() => route.query?.vqb === 'true')
 
             let refetchQueryCollection = ref() as Ref<Function>
             const isSavedQueryInfoLoaded = ref(true)
@@ -142,14 +143,24 @@
                 })
             }
 
+            const sendPageTrack = () => {
+                const name = savedQueryGuidFromURL.value
+                    ? 'saved_query'
+                    : 'home'
+                useTrackPage('insights', name, {
+                    is_visual_query: isVisualQuery.value,
+                })
+            }
+
+            watch([savedQueryGuidFromURL, isVisualQuery], () => {
+                sendPageTrack()
+            })
+
             onMounted(() => {
                 if (savedQueryGuidFromURL.value) {
                     fetchAndPassSavedQueryInfo()
                 }
-                const name = savedQueryGuidFromURL.value
-                    ? 'saved_query'
-                    : 'home'
-                useTrackPage('insights', name)
+                sendPageTrack()
             })
         },
     })

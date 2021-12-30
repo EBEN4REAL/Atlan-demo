@@ -18,7 +18,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, onMounted, provide, ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        onMounted,
+        provide,
+        ref,
+        watch,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'
@@ -56,9 +63,19 @@
             provide('updateList', updateList)
             provide('preview', handlePreview)
 
+            const sendPageEvent = () => {
+                useTrackPage('assets', 'discovery')
+            }
+
+            watch(isItem, (isAssetProfile) => {
+                if (!isAssetProfile) {
+                    sendPageEvent()
+                }
+            })
+
             onMounted(() => {
                 if (!isItem.value) {
-                    useTrackPage('discovery')
+                    sendPageEvent()
                 }
                 console.log('onMounted assets')
             })

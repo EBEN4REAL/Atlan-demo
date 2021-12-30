@@ -46,6 +46,7 @@
             const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
+            const profileActiveTab = computed(() => route?.params?.tab)
             const handlePreview = inject('preview')
 
             if (selectedAsset.value?.guid === id.value) {
@@ -94,6 +95,13 @@
                 relationAttributes,
             })
 
+            const sendPageTrack = () => {
+                useTrackPage('assets', 'asset_profile', {
+                    type: localSelected?.value?.typeName,
+                    tab: profileActiveTab.value,
+                })
+            }
+
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
@@ -109,9 +117,15 @@
                 await nextTick()
                 console.log(
                     'asset profile loaded',
-                    localSelected.value.typeName
+                    localSelected.value.typeName,
+                    { profileActiveTab: profileActiveTab.value }
                 )
-                useTrackPage('asset_profile')
+                sendPageTrack()
+            })
+
+            watch(profileActiveTab, () => {
+                console.log('profileActiveTab', profileActiveTab.value)
+                sendPageTrack()
             })
 
             return {

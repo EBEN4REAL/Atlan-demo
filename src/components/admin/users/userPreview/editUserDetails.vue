@@ -7,7 +7,7 @@
             layout="vertical"
             class="mb-6"
         >
-            <div class="pb-3 border-solid border-b border-gray-200">
+            <div class="pb-3 border-b border-gray-200 border-solid">
                 <div class="flex justify-center">
                     <div class="relative flex items-center">
                         <Avatar
@@ -22,10 +22,10 @@
                 </div>
                 <a-form-item label="First Name" prop="firstName">
                     <a-input
+                        ref="firstNameRef"
                         v-model:value="formData.firstName"
                         placeholder="Please enter a first name"
                         :loading="isRequestLoading"
-                        ref="firstNameRef"
                     />
                 </a-form-item>
                 <a-form-item label="Last Name" prop="lastName">
@@ -60,11 +60,9 @@
                 </a-form-item>
             </div>
             <div class="pt-6">
-                <p class="uppercase text-gray-500 text-sm">Contact Details</p>
+                <p class="text-sm text-gray-500 uppercase">Contact Details</p>
                 <div class="mt-2">
-                    <a-form-item
-                        prop="slack"
-                    >
+                    <a-form-item prop="slack">
                         <template #label>
                             Slack
                             <a-popover>
@@ -75,7 +73,7 @@
                                         />
                                     </div>
                                 </template>
-                                <AtlanIcon icon="Info" class="h-3 w-3 ml-1" />
+                                <AtlanIcon icon="Info" class="w-3 h-3 ml-1" />
                             </a-popover>
                         </template>
                         <a-input
@@ -85,7 +83,9 @@
                             placeholder="https://app.slack.com/client/abc/xyz"
                         >
                             <template #prefix>
-                                <span class="border-solid border-gray-300 pr-2 border-r">
+                                <span
+                                    class="pr-2 border-r border-gray-300 border-solid"
+                                >
                                     <AtlanIcon icon="Slack" />
                                 </span>
                             </template>
@@ -94,11 +94,22 @@
                 </div>
             </div>
         </a-form>
-        <div class="flex w-full absolute bottom-0 bg-white py-4" >
-            <a-button class="border-0 shadow-none" type="minimal" :disabled="isRequestLoading" @click="onCancel">
+        <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
+            <a-button
+                class="mr-2 border-0 shadow-none"
+                type="minimal"
+                :disabled="isRequestLoading"
+                @click="onCancel"
+            >
                 Cancel
             </a-button>
-            <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
+            <a-button
+                block
+                class="w-1/3"
+                type="primary"
+                :loading="isRequestLoading"
+                @click="onSubmit"
+            >
                 Save
             </a-button>
         </div>
@@ -107,10 +118,10 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
-    import { Users } from '~/services/service/users'
     import Avatar from '@common/avatar/avatar.vue'
     import { message } from 'ant-design-vue'
+    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
+    import { Users } from '~/services/service/users'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
@@ -119,7 +130,7 @@
         components: {
             Avatar,
             UpdateSkills,
-            PopOverContent
+            PopOverContent,
         },
         props: {
             selectedUser: {
@@ -131,19 +142,27 @@
                 default: false,
             },
         },
-        emits: ['updatedUser', 'toggleEdit', 'success', 'changedLoading', 'imageUpdated'],
+        emits: [
+            'updatedUser',
+            'toggleEdit',
+            'success',
+            'changedLoading',
+            'imageUpdated',
+        ],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
-            const updateError = ref("")
+            const updateError = ref('')
             const formRef = ref(null)
             const firstNameRef = ref(null)
 
             watch(isRequestLoading, (n) => {
                 emit('changedLoading', n)
             })
-            
+
             const { selectedUser } = toRefs(props)
-            const userProfiles = computed(() => selectedUser.value?.attributes?.profiles)
+            const userProfiles = computed(
+                () => selectedUser.value?.attributes?.profiles
+            )
             const slackProfile = computed(() => {
                 if (userProfiles.value?.length > 0) {
                     const firstProfile = JSON.parse(userProfiles.value[0])
@@ -159,31 +178,47 @@
             })
 
             const slackEnabled = computed(() => slackProfile.value)
-            const slackUrl = computed(() => slackEnabled.value ? slackEnabled.value : '')
+            const slackUrl = computed(() =>
+                slackEnabled.value ? slackEnabled.value : ''
+            )
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
-                designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
+                designation:
+                    selectedUser.value?.attributes?.designation?.length > 0
+                        ? selectedUser.value?.attributes?.designation[0]
+                        : '',
                 slack: slackUrl.value,
-                skills: selectedUser.value.attributes?.skills?.length > 0 ? selectedUser.value.attributes.skills : []
+                skills:
+                    selectedUser.value.attributes?.skills?.length > 0
+                        ? selectedUser.value.attributes.skills
+                        : [],
             })
 
             const rules = {
-                firstName: [{
-                    required: true,
-                    message: "Please enter a first name."
-                }],
-                lastName: [{
-                    required: true,
-                    message: "Please enter a last name."
-                }],
-                designation: [{
-                    message: "Please enter a designation."
-                }],
-                slack: [{
-                    message: "Please enter your Slack User ID.",
-                    pattern: /^.+(slack.com).+/g
-                }]
+                firstName: [
+                    {
+                        required: true,
+                        message: 'Please enter a first name.',
+                    },
+                ],
+                lastName: [
+                    {
+                        required: true,
+                        message: 'Please enter a last name.',
+                    },
+                ],
+                designation: [
+                    {
+                        message: 'Please enter a designation.',
+                    },
+                ],
+                slack: [
+                    {
+                        message: 'Please enter your Slack User ID.',
+                        pattern: /^.+(slack.com).+/g,
+                    },
+                ],
             }
 
             const updateSuccess = ref(false)
@@ -192,9 +227,12 @@
                 await formRef.value?.validate()
                 const attributes = {
                     designation: [formData.value.designation],
-                    skills: formData.value.skills
+                    skills: formData.value.skills,
                 }
-                attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
+                attributes.profiles =
+                    formData.value.slack.length > 0
+                        ? [`[{"slack": "${formData.value.slack}"}]`]
+                        : []
                 requestPayload.value = {
                     firstName: formData.value.firstName,
                     lastName: formData.value.lastName,
@@ -202,7 +240,7 @@
                 if (Object.keys(attributes).length > 0) {
                     requestPayload.value = {
                         ...requestPayload.value,
-                        attributes
+                        attributes,
                     }
                 }
                 const { data, isReady, error, isLoading } = Users.UpdateUser(
@@ -221,15 +259,36 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
-                            selectedUser.value.firstName = formData.value.firstName
-                            selectedUser.value.lastName = formData.value.lastName
-                            selectedUser.value.attributes.designation = [formData.value.designation]
-                            if (formData.value.slack.length > 0) {
-                                selectedUser.value.attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
+                            selectedUser.value.firstName =
+                                formData.value.firstName
+                            selectedUser.value.lastName =
+                                formData.value.lastName
+                            if (selectedUser.value.attributes) {
+                                selectedUser.value.attributes.designation = [
+                                    formData.value.designation,
+                                ]
+                                if (formData.value.slack.length > 0) {
+                                    selectedUser.value.attributes.profiles = [
+                                        `[{"slack": "${formData.value.slack}"}]`,
+                                    ]
+                                } else {
+                                    selectedUser.value.attributes.profiles = []
+                                }
+                            } else {
+                                selectedUser.value.attributes = {
+                                    designation: formData?.value?.designation
+                                        ? [formData?.value?.designation]
+                                        : [],
+                                    profiles:
+                                        formData.value.slack &&
+                                        formData.value.slack.length > 0
+                                            ? [
+                                                  `[{"slack": "${formData.value.slack}"}]`,
+                                              ]
+                                            : [],
+                                }
                             }
-                            else {
-                                selectedUser.value.attributes.profiles = []
-                            }
+
                             message.success('The details have been updated')
                             emit('updatedUser')
                             emit('toggleEdit')
@@ -252,7 +311,10 @@
                 emit('imageUpdated', updatedImageUrl)
             }
 
-            const avatarUrl = computed(() => `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`)
+            const avatarUrl = computed(
+                () =>
+                    `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`
+            )
             return {
                 updateSuccess,
                 onSubmit,
@@ -264,13 +326,13 @@
                 isRequestLoading,
                 updateError,
                 handleImageUpdate,
-                firstNameRef
+                firstNameRef,
             }
         },
         mounted() {
             this.$nextTick(function () {
                 this.$refs.firstNameRef.focus()
             })
-        }
+        },
     }
 </script>

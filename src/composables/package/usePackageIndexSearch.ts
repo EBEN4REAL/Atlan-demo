@@ -47,7 +47,7 @@ export default function usePackageIndexSearch(
     }
 
     const { data, mutate, error, isLoading, isValidating, isReady } =
-        Workflows.worfklowPackageIndex({}, body, options)
+        Workflows.worfklowPackageIndex(body, options)
 
     const cancelRequest = () => {
         if (cancel) {

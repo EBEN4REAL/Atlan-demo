@@ -24,6 +24,7 @@ export const GET_ARTIFACTS = 'GET_ARTIFACTS'
 
 export const WORKFLOW_TEMPLATE_INDEX = 'WORKFLOW_TEMPLATE_INDEX'
 export const WORKFLOW_RUN_INDEX = 'WORKFLOW_RUN_INDEX'
+export const WORKFLOW_INDEX = 'WORKFLOW_INDEX'
 
 export const map = {
     [SCHEDULES]: () => getAPIPath(BASE_PATH, '/workflows/schedules'),
@@ -66,4 +67,5 @@ export const map = {
     [WORKFLOW_TEMPLATE_INDEX]: () =>
         getAPIPath(BASE_PATH, `/workflowtemplates/indexsearch`),
     [WORKFLOW_RUN_INDEX]: () => getAPIPath(BASE_PATH, `/runs/indexsearch`),
+    [WORKFLOW_INDEX]: () => getAPIPath(BASE_PATH, `/workflows/indexsearch`),
 }

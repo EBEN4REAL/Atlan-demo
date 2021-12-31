@@ -15,9 +15,9 @@
                             <OwnerFacets
                                 v-model:modelValue="selectedGroupIds"
                                 :show-none="false"
-                                :enableTabs="['groups']"
-                                :hideDisabledTabs="true"
-                                selectGroupKey="id"
+                                :enable-tabs="['groups']"
+                                :hide-disabled-tabs="true"
+                                select-group-key="id"
                                 :user-id="selectedUser.id"
                             ></OwnerFacets>
                         </div>
@@ -40,7 +40,7 @@
                     <AtlanButton
                         size="sm"
                         padding="compact"
-                        class="text-gray-500 bg-transparent border-gray-300  hover:bg-transparent hover:text-primary hover:border-primary"
+                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
@@ -80,9 +80,7 @@
                 <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search ${
-                            groupList?.length ?? 0
-                        } groups`"
+                        :placeholder="`Search ${groupList?.length ?? 0} groups`"
                         class="mr-1"
                         size="minimal"
                         @change="handleSearch"
@@ -144,14 +142,14 @@
                     />
                 </div>
             </div>
-            <div v-else class="mt-4 mb-2 overflow-y-auto group-list">
+            <div v-else class="mt-2 mb-2 overflow-y-auto group-list">
                 <div v-for="group in groupList" :key="group.id">
                     <div
-                        class="flex items-center justify-between px-3 py-2 group hover:bg-gray-100"
+                        class="flex items-center justify-between px-3 py-2 mt-2 transition-all duration-300 rounded group hover:bg-primary-light"
                     >
                         <div class="flex items-center">
                             <div class="">
-                                <div class="mb-1 text-primary">
+                                <div class="mb-1 font-bold text-primary">
                                     <span class="mr-2">{{ group.name }}</span>
                                 </div>
                                 <div class="text-sm text-gray-500">
@@ -159,7 +157,10 @@
                                     }}<span
                                         v-if="group.memberCountString"
                                         class="text-gray-500"
-                                        ><span class="mx-1">|</span
+                                        ><span
+                                            class="mx-1 text-xs text-gray-400"
+                                        >
+                                            •</span
                                         >{{ group.memberCountString }}</span
                                     >
                                 </div>
@@ -181,6 +182,7 @@
                             <div>Removing...</div>
                         </div>
                     </div>
+                    <hr class="mx-4" />
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
                     <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
@@ -195,7 +197,15 @@
 
 <script lang="ts">
     import { message, Modal } from 'ant-design-vue'
-    import { defineComponent, computed, reactive, ref, watch, h, toRefs } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        reactive,
+        ref,
+        watch,
+        h,
+        toRefs,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import ErrorView from '@common/error/index.vue'
 
@@ -220,7 +230,7 @@
             EmptyState,
             SearchAndFilter,
             AtlanButton,
-            OwnerFacets
+            OwnerFacets,
         },
         props: {
             selectedUser: {
@@ -237,17 +247,19 @@
             const addToGroupLoading = ref(false)
             const removeFromGroupLoading = ref({})
             const selectedGroupIds = ref({ ownerGroups: [] })
-            const filter = computed(() => searchText.value
-                ? {
-                    $or: [
-                        { name: { $ilike: `%${searchText.value}%` } },
-                        { alias: { $ilike: `%${searchText.value}%` } },
-                    ],
-                }
-                : {})
+            const filter = computed(() =>
+                searchText.value
+                    ? {
+                          $or: [
+                              { name: { $ilike: `%${searchText.value}%` } },
+                              { alias: { $ilike: `%${searchText.value}%` } },
+                          ],
+                      }
+                    : {}
+            )
             const offset = ref(0)
             const limit = ref(10)
-            const groupListAPIParams = computed(() =>({
+            const groupListAPIParams = computed(() => ({
                 userId: selectedUser.value.id,
                 params: {
                     limit: limit.value,
@@ -255,7 +267,7 @@
                     sort: 'name',
                     filter: filter.value,
                 },
-                immediate: true
+                immediate: true,
             }))
             const {
                 groupList,
@@ -273,9 +285,13 @@
                 offset.value += limit.value
                 getUserGroupList()
             }
-            watch(selectedUser, () => {
-                getUserGroupList()
-            },{immediate:true})
+            watch(
+                selectedUser,
+                () => {
+                    getUserGroupList()
+                },
+                { immediate: true }
+            )
             const showLoadMore = computed(() =>
                 getIsLoadMore(
                     // TODO: check if there's a better way access memberList and not use ref in a ref
@@ -329,8 +345,8 @@
                 Modal.confirm({
                     title: `Remove from group`,
                     class: 'remove-from-group-modal',
-                    content: () => {
-                        return h('div', [
+                    content: () =>
+                        h('div', [
                             'Are you sure you want to remove',
                             h('span', [' ']),
                             h(
@@ -349,8 +365,7 @@
                                 [`${group.name}`]
                             ),
                             h('span', '?'),
-                        ])
-                    },
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
@@ -440,7 +455,7 @@
                 showUserGroups,
                 handleShowUserGroups,
                 selectedGroupIds,
-                showGroupsPopover
+                showGroupsPopover,
             }
         },
     })
@@ -455,10 +470,10 @@
     }
 </style>
 <style lang="less" module>
-.ownerPopover {
-    :global(.ant-popover-inner-content) {
-        @apply px-0 py-3 !important;
-        width: 250px !important;
+    .ownerPopover {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 250px !important;
+        }
     }
-}
 </style>

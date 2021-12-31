@@ -30,7 +30,7 @@
         <div
             class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
-            <WorkflowFilters
+            <!-- <WorkflowFilters
                 :ref="
                     (el) => {
                         workflowFilterRef = el
@@ -40,14 +40,14 @@
                 :filters-list="defaultfiltersList"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
-            />
+            /> -->
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3 py-2 bg-white">
                     <div class="flex-auto">
-                        <SearchAndFilter
+                        <!-- <SearchAndFilter
                             v-model:value="queryText"
                             :placeholder="dynamicSearchPlaceholder"
                             :autofocus="true"
@@ -56,7 +56,7 @@
                             <template #filter>
                                 <Preferences @sort="handleChangeSort" />
                             </template>
-                        </SearchAndFilter>
+                        </SearchAndFilter> -->
                     </div>
 
                     <AtlanButton
@@ -95,10 +95,10 @@
                 />
             </div>
         </div>
-
+        <!-- 
         <div class="border-l border-gray-300 preview-container">
             <DiscoveryPreview v-if="selected" :selected-workflow="selected" />
-        </div>
+        </div> -->
     </div>
 </template>
 

@@ -2,7 +2,7 @@ import { ref, Ref, watch } from 'vue'
 
 import { usePackageBody } from './usePackageBody'
 
-import usePackageIndexSearch from './usePackageIndexSearch'
+import useWorkflowIndexSearch from './useWorkflowIndexSearch'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -19,7 +19,7 @@ interface DiscoverListParams {
     relationAttributes?: Ref<string[]>
 }
 
-export function usePackageDiscoverList({
+export function useWorkflowDiscoverList({
     isCache,
     dependentKey,
     queryText,
@@ -39,8 +39,6 @@ export function usePackageDiscoverList({
             offset?.value,
             limit?.value,
             facets?.value,
-            postFacets?.value,
-            aggregations?.value,
             preference?.value
         )
         defaultBody.value = {
@@ -53,7 +51,7 @@ export function usePackageDiscoverList({
     generateBody()
 
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
-        usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
+        useWorkflowIndexSearch(defaultBody, localKey, isCache, false, 1)
 
     const list = ref([])
 
@@ -75,13 +73,12 @@ export function usePackageDiscoverList({
 
     const quickChange = () => {
         generateBody()
-        refresh()
-        // cancelRequest()
-        // if (localKey.value) {
-        //     localKey.value = `dirty_${Date.now().toString()}`
-        // } else {
-        //     refresh()
-        // }
+        cancelRequest()
+        if (localKey.value) {
+            localKey.value = `dirty_${Date.now().toString()}`
+        } else {
+            refresh()
+        }
     }
 
     return {
@@ -97,6 +94,5 @@ export function usePackageDiscoverList({
         cancelRequest,
         error,
         quickChange,
-        refresh,
     }
 }

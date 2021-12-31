@@ -1,26 +1,25 @@
-import { Ref, ref, computed } from 'vue'
+import { Ref, ref, computed, watch } from 'vue'
 
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import axios from 'axios'
 
-import { Search } from '~/services/meta/search'
 import { useOptions } from '~/services/api/common'
+import { Workflows } from '~/services/service/workflows'
 
-export default function useIndexSearch<T>(
+export default function useWorkflowIndexSearch(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
     isCache?: boolean,
     isLocal?: boolean | true,
-    ttl?: Number | 0
+    ttl?: Number | 0,
+    refreshInterval?: Number | 0
 ) {
     const options: useOptions = {}
-
     let cancel = axios.CancelToken.source()
     options.options = ref({
         cancelToken: cancel.token,
     })
-
     if (!isCache) {
         if (dependentKey) {
             if (!dependentKey.value) {
@@ -38,6 +37,7 @@ export default function useIndexSearch<T>(
             dedupingInterval: 0,
             shouldRetryOnError: false,
             revalidateOnFocus: false,
+            refreshInterval,
             ttl,
             revalidateDebounce: 0,
         })
@@ -48,34 +48,7 @@ export default function useIndexSearch<T>(
     }
 
     const { data, mutate, error, isLoading, isValidating, isReady } =
-        Search.IndexSearch<T>(body, options)
-
-    const approximateCount = computed(() => {
-        if (data?.value?.approximateCount) {
-            return data.value?.approximateCount
-        }
-        return 0
-    })
-
-    const aggregationMap = (key, isNested?) => {
-        if (data?.value?.aggregations) {
-            if (data?.value?.aggregations[key]) {
-                if (isNested) {
-                    return data?.value?.aggregations[key]?.nested_group?.buckets
-                } else {
-                    return data?.value?.aggregations[key].buckets
-                }
-            }
-        }
-        return []
-    }
-    const getMap = (buckets) => {
-        const map = {}
-        buckets.forEach((bucket) => {
-            map[bucket.key] = bucket.doc_count
-        })
-        return map
-    }
+        Workflows.worfklowIndex({}, body, options)
 
     const cancelRequest = () => {
         if (cancel) {
@@ -96,15 +69,13 @@ export default function useIndexSearch<T>(
         data,
         options,
         cancel,
-        approximateCount,
-        aggregationMap,
         mutate,
         refresh,
         isReady,
         error,
         isLoading,
         isValidating,
-        getMap,
+
         cancelRequest,
     }
 }

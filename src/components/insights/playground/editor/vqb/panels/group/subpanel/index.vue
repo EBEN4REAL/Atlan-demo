@@ -7,6 +7,7 @@
             >
                 <div class="flex items-center w-full mb-3 pr-9">
                     <ColumnSelector
+                        v-if="selectedTables.length < 2"
                         class="flex-1 h-9"
                         v-model:selectedItems="subpanel.columns"
                         :showSelectAll="false"
@@ -37,6 +38,14 @@
                             </div>
                         </template>
                     </ColumnSelector>
+                    <TreeColumnSelector
+                        v-else
+                        class="flex-1"
+                        :showColumnWithTable="false"
+                        style="max-width: 30%"
+                        v-model:selectedColumn="subpanel.columnsDataLeft"
+                        :selectedTablesQualifiedNames="selectedTables"
+                    />
 
                     <div
                         v-if="subpanel.tableQualfiedName"
@@ -76,6 +85,8 @@
     import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -83,6 +94,7 @@
             Pill,
             TablesTree,
             ColumnSelector,
+            TreeColumnSelector,
         },
         props: {
             expand: {
@@ -113,6 +125,9 @@
             ) as ComputedRef<activeInlineTabInterface>
             const { getDataTypeImage } = useColumn()
             const tableQualfiedName = ref(undefined)
+            const selectedTables = computed(
+                () => activeInlineTab.value.playground.vqb.selectedTables
+            )
 
             const cols = ref([])
             watch(tableQualfiedName, () => {
@@ -162,6 +177,7 @@
             let hoverPill = ref(null)
 
             return {
+                selectedTables,
                 filteredTablesValues,
                 activeInlineTab,
                 handleDelete,

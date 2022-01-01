@@ -156,7 +156,8 @@
                         copySelectedTables.shift()
 
                     copySelectedTables.unshift({
-                        tableQualfiedName: subpanels.value[0].tableQualfiedName,
+                        tableQualifiedName:
+                            subpanels.value[0].tableQualfiedName,
                         addedBy: 'column',
                     })
 

@@ -218,6 +218,7 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     import useBody from './useBody'
 
@@ -233,10 +234,17 @@
                 required: true,
             },
             selectedTablesQualifiedNames: {
-                type: Object as PropType<string[]>,
+                type: Object as PropType<selectedTables[]>,
+            },
+            showColumnWithTable: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         setup(props, { emit }) {
+            const { showColumnWithTable, selectedTablesQualifiedNames } =
+                toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -244,8 +252,7 @@
             const tableText = ref('')
             const columnText = ref('')
 
-            const { selectedColumn, selectedTablesQualifiedNames } =
-                useVModels(props)
+            const { selectedColumn } = useVModels(props)
 
             const {
                 isPrimary,
@@ -257,6 +264,8 @@
             } = useAssetInfo()
 
             const getTableInitialBody = () => {
+                console.log(selectedTablesQualifiedNames)
+                debugger
                 return {
                     dsl: useBody({
                         schemaQualifiedName:
@@ -264,7 +273,9 @@
                                 .attributeValue,
 
                         searchText: tableText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames.value
+                            ?.filter((x) => x !== null || undefined)
+                            .map((t) => t.tableQualifiedName),
                     }),
                     attributes: [
                         'name',
@@ -293,7 +304,7 @@
             })
 
             watch(selectedTablesQualifiedNames, () => {
-                getTableInitialBody()
+                replaceBody(getTableInitialBody())
             })
 
             let tableSelected = ref(null)
@@ -403,7 +414,12 @@
                 if (selectedColumn?.value?.label) {
                     let data =
                         selectedColumn.value.columnQualifiedName.split('/')
-                    return `${data[data.length - 2]}.${data[data.length - 1]}`
+
+                    if (showColumnWithTable)
+                        return `${data[data.length - 2]}.${
+                            data[data.length - 1]
+                        }`
+                    else return `${data[data.length - 1]}`
                 }
 
                 let data = !tableSelected?.qualifiedName

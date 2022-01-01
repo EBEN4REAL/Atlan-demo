@@ -23,7 +23,7 @@
                             (qualifiedName) =>
                                 handleColumnChange(
                                     qualifiedName,
-                                    subpanel?.id + index
+                                    subpanel?.id + index + 1
                                 )
                         "
                     />
@@ -39,6 +39,7 @@
                             />
                         </a-tooltip>
                     </div>
+                    <!-- subpanel?.id + index + 2 works as a unique string -->
                     <TreeColumnSelector
                         class="flex-1"
                         style="max-width: 30%"
@@ -47,7 +48,7 @@
                             (qualifiedName) =>
                                 handleColumnChange(
                                     qualifiedName,
-                                    subpanel?.id + index
+                                    subpanel?.id + index + 2
                                 )
                         "
                     />
@@ -154,13 +155,19 @@
                         t.tableQualifiedName = tableQualifiedName
                         copySelectedTables.splice(_index, 1, t)
                     } else {
-                        copySelectedTables.push({
-                            tableQualifiedName,
-                            addedBy,
-                        })
+                        const _found = copySelectedTables.find(
+                            (table) =>
+                                table.tableQualifiedName === tableQualifiedName
+                        )
+                        if (_found == undefined) {
+                            copySelectedTables.push({
+                                tableQualifiedName,
+                                addedBy,
+                            })
+                        }
                     }
 
-                    selectedTables.value = copySelectedTables
+                    selectedTables.value = [...copySelectedTables]
                 }
 
                 // console.log(subpanels.value)

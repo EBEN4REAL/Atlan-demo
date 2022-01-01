@@ -40,7 +40,8 @@ export default function useBody({
         base.filter('term', 'tableQualifiedName', tableQualifiedName)
         base.filter('term', '__typeName.keyword', 'Column')
     }
-    if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 0) {
+    if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 1) {
+        // debugger
         base.filter('terms', 'qualifiedName', tableQualifiedNames)
     }
     if (viewQualifiedName) {

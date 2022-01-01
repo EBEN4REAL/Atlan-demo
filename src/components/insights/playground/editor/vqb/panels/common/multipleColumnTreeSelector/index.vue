@@ -33,7 +33,7 @@
                     v-model:value="tableText"
                     placeholder="Enter table name"
                     class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
+                    style="height: 36px"
                 >
                     <template #suffix>
                         <AtlanIcon
@@ -97,11 +97,10 @@
                     </div>
                 </div>
             </div>
-
-            <div v-else>
+            <!-- For columns -->
+            <div v-else style="max-width: 400px">
                 <div
                     class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5"
-                    style="width: 400px"
                 >
                     <div class="flex items-center truncate">
                         <AtlanIcon
@@ -135,14 +134,84 @@
                         ></AtlanIcon>
                     </template>
                 </a-input>
-                <div style="height: 278px !important" class="overflow-y-scroll">
+                <div
+                    style="height: 278px !important"
+                    class="pl-2 pr-2 overflow-y-scroll"
+                >
                     <AtlanIcon
                         v-if="isLoading"
                         icon="Loader"
                         class="w-auto h-10 animate-spin"
                         style="margin-left: 175px; margin-top: 100px"
                     ></AtlanIcon>
+
                     <template
+                        v-if="columnDropdownOption.length !== 0 && !isLoading"
+                        v-for="(item, index) in columnDropdownOption"
+                        :key="item?.label + index"
+                    >
+                        <a-checkbox
+                            :checked="map[item.value]"
+                            @change="
+                                (checked) =>
+                                    onCheckboxChange(checked, item.value)
+                            "
+                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        >
+                            <div
+                                class="justify-between parent-ellipsis-container"
+                            >
+                                <div class="parent-ellipsis-container">
+                                    <component
+                                        :is="dataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    v-if="item.isPrimary || item.isForeign"
+                                >
+                                    <div
+                                        class="absolute right-0 flex items-center -top-2.5"
+                                    >
+                                        <AtlanIcon
+                                            icon="PrimaryKey"
+                                            style="color: #3ca5bc"
+                                            class="w-4 h-4 mr-1"
+                                        ></AtlanIcon>
+                                        <span
+                                            style="color: #3ca5bc"
+                                            class="text-sm"
+                                            >Pkey</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="absolute flex items-center -top-2.5"
+                                        :class="
+                                            item.isPrimary
+                                                ? 'right-14'
+                                                : 'right-0'
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="ForeignKey"
+                                            class="w-4 h-4 mr-1 text-purple-700"
+                                        ></AtlanIcon>
+                                        <span class="text-sm text-purple-700"
+                                            >Fkey</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </a-checkbox>
+                    </template>
+
+                    <!-- <template
                         v-if="columnDropdownOption.length !== 0 && !isLoading"
                         v-for="(item, index) in columnDropdownOption"
                         :key="item?.label + index"
@@ -187,7 +256,7 @@
                                 </div>
                             </div>
                         </div>
-                    </template>
+                    </template> -->
                     <div
                         v-if="columnDropdownOption.length === 0 && !isLoading"
                         class="flex items-center justify-center h-full"
@@ -241,10 +310,33 @@
                 required: false,
                 default: true,
             },
+            selectedItems: {
+                type: Object as PropType<any[]>,
+                required: true,
+            },
+            selectedColumnsData: {
+                type: Object as PropType<
+                    Array<{
+                        columnsQualifiedName: string
+                        label: string
+                        type: Number
+                    }>
+                >,
+                required: true,
+            },
+            showSelectAll: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
         setup(props, { emit }) {
-            const { showColumnWithTable, selectedTablesQualifiedNames } =
-                toRefs(props)
+            const {
+                showColumnWithTable,
+                selectedTablesQualifiedNames,
+                showSelectAll,
+            } = toRefs(props)
+            const { selectedItems, selectedColumnsData } = useVModels(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -339,6 +431,9 @@
                     type: ls.attributes.dataType,
                     attributes: ls.attributes,
                     order: ls.attributes.order,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    value: ls.attributes?.displayName || ls.attributes?.name,
                 }))
 
                 // console.log('list: ', list)
@@ -427,7 +522,18 @@
                 return data
             })
 
+            ////////////////////////////////////////
+
+            const onCheckboxChange = () => {}
+
+            const map = ref({})
+            selectedItems.value?.forEach((selectedItem) => {
+                map.value[selectedItem] = true
+            })
+
             return {
+                map,
+                showSelectAll,
                 totalCount,
                 data,
                 isLoading,
@@ -448,6 +554,7 @@
                 certificateStatus,
                 selectedColumn,
                 placeholder,
+                onCheckboxChange,
             }
         },
     })

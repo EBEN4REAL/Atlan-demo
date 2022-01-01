@@ -44,6 +44,8 @@
                         :showColumnWithTable="false"
                         style="max-width: 30%"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
+                        v-model:selectedItems="subpanel.columns"
+                        v-model:selectedColumnsData="subpanel.columnsData"
                         :selectedTablesQualifiedNames="selectedTables"
                     />
 
@@ -86,7 +88,7 @@
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { selectedTables } from '~/types/insights/VQB.interface'
-    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
+    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',

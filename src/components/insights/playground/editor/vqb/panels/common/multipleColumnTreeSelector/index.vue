@@ -368,7 +368,9 @@
                 certificateStatus,
             } = useAssetInfo()
 
-            const getTableInitialBody = () => {
+            const getTableInitialBody = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
                 return {
                     dsl: useBody({
                         schemaQualifiedName:
@@ -376,7 +378,7 @@
                                 .attributeValue,
 
                         searchText: queryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
+                        tableQualifiedNames: selectedTablesQualifiedNames
                             ?.filter((x) => x !== null || undefined)
                             .map((t) => t.tableQualifiedName),
                     }),
@@ -396,7 +398,11 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 () => {
-                    replaceBody(getTableInitialBody())
+                    replaceBody(
+                        getTableInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                 },
                 {
                     immediate: true,
@@ -490,7 +496,11 @@
             const onUnselectTable = () => {
                 tableSelected.value = null
                 columnDropdownOption.value = []
-                replaceBody(getTableInitialBody())
+                replaceBody(
+                    getTableInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables
+                    )
+                )
             }
 
             const onSelectColumn = (item) => {
@@ -721,7 +731,11 @@
             }
 
             watch(queryText, () => {
-                replaceBody(getTableInitialBody())
+                replaceBody(
+                    getTableInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables
+                    )
+                )
             })
             watch(tableSelected, () => {
                 nextTick(() => {
@@ -732,7 +746,12 @@
             watch(isAreaFocused, () => {
                 if (!isAreaFocused.value) {
                     if (tableSelected.value !== null) {
-                        replaceBody(getTableInitialBody())
+                        replaceBody(
+                            getTableInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
                         tableSelected.value = null
                     }
                 }
@@ -740,7 +759,11 @@
             watch(
                 () => activeInlineTab.value.playground.vqb.selectedTables,
                 () => {
-                    replaceBody(getTableInitialBody())
+                    replaceBody(
+                        getTableInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                     reComputeSelectedColumns(
                         activeInlineTab.value.playground.vqb.selectedTables
                     )

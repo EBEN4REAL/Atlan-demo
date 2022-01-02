@@ -155,14 +155,17 @@
                         t.tableQualifiedName = tableQualifiedName
                         copySelectedTables.splice(_index, 1, t)
                     } else {
-                        // const _found = copySelectedTables.find(
-                        //     (table) =>
-                        //         table.tableQualifiedName === tableQualifiedName
-                        // )
-                        copySelectedTables.push({
-                            tableQualifiedName,
-                            addedBy,
-                        })
+                        const _foundIndex = copySelectedTables.findIndex(
+                            (table) =>
+                                table.tableQualifiedName === tableQualifiedName
+                        )
+                        /* exception: Prevent inserting the 1st table again, if it is selected in join */
+                        if (_foundIndex !== 0) {
+                            copySelectedTables.push({
+                                tableQualifiedName,
+                                addedBy,
+                            })
+                        }
                     }
 
                     selectedTables.value = [...copySelectedTables]

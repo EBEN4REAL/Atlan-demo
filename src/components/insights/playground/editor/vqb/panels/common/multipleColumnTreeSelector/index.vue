@@ -102,7 +102,15 @@
             ]"
         >
             <!--  -->
-            <div v-if="!tableSelected?.qualifiedName" style="height: 250px">
+            <div
+                v-if="!tableSelected?.qualifiedName"
+                style="height: 250px"
+                :class="[
+                    tableDropdownOption.length === 0
+                        ? 'flex justify-center items-center'
+                        : '',
+                ]"
+            >
                 <Loader
                     v-if="isLoading"
                     style="min-height: 100px !important"
@@ -178,7 +186,15 @@
                         {{ tableSelected?.columnCount }}
                     </div>
                 </div>
-                <div class="pl-2 pr-2 overflow-y-auto" style="height: 250px">
+                <div
+                    class="pl-2 pr-2 overflow-y-auto"
+                    style="height: 250px"
+                    :class="[
+                        columnDropdownOption.length === 0
+                            ? 'flex justify-center items-center'
+                            : '',
+                    ]"
+                >
                     <Loader
                         v-if="isLoading"
                         style="min-height: 100px !important"
@@ -637,7 +653,6 @@
                         })
                     }
                 })
-                debugger
 
                 selectedItems.value = copySelectedItems
                 selectedColumnsData.value = copyColumnsData
@@ -715,7 +730,10 @@
             })
             watch(isAreaFocused, () => {
                 if (!isAreaFocused.value) {
-                    // tableSelected.value = null
+                    if (tableSelected.value !== null) {
+                        replaceBody(getTableInitialBody())
+                        tableSelected.value = null
+                    }
                 }
             })
             watch(selectedTablesQualifiedNames, () => {
@@ -809,7 +827,7 @@
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     }
     .selector-height {
-        min-height: 32px;
+        min-height: 34px;
     }
     .position {
         @apply right-0;

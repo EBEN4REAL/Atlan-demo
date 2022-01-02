@@ -477,6 +477,12 @@ const useGlossaryTree = ({
             // if the target node is reached
             if (node.key === guid || !currentPath || node.guid === guid) {
                 const updatedChildren: TreeDataItem[] = []
+                console.log(
+                    action,
+                    ' from ',
+                    node?.displayText,
+                    asset?.displayText
+                )
                 if (action === 'add') {
                     let loadMoreNode
                     node?.children?.forEach((element) => {
@@ -638,124 +644,7 @@ const useGlossaryTree = ({
     const collapseAll = () => {
         expandedKeys.value = []
     }
-    const reOrderNodes = (
-        nodeToReorder,
-        fromGuid?: string,
-        toGuid?: string
-    ) => {
-        let parentStack: string[]
-        const nodeGuid = nodeToReorder?.guid
-        let from_guid = fromGuid
-        if (!from_guid && nodeToParentKeyMap[nodeGuid]) {
-            from_guid = nodeToParentKeyMap[nodeGuid][0]
-        }
 
-        const removeNode = (node: TreeDataItem): TreeDataItem => {
-            const currentPath = parentStack.pop()
-            if (node.guid === from_guid && !currentPath) {
-                if (fromGuid)
-                    return {
-                        ...node,
-                        children: node.children?.filter(
-                            (childNode) => childNode.guid !== nodeGuid
-                        ),
-                    }
-                return node
-            }
-            return {
-                ...node,
-                children: node.children?.map((childNode: TreeDataItem) => {
-                    if (childNode.guid === currentPath) {
-                        return removeNode(childNode) ?? childNode
-                    }
-                    return childNode
-                }),
-            }
-        }
-        const pushNode = (node: TreeDataItem): TreeDataItem => {
-            console.log('pushing to node -> ', node?.displayText)
-            const currentPath = parentStack.pop()
-            const newChildren: TreeDataItem[] = []
-
-            node.children?.forEach((childNode: TreeDataItem) => {
-                if (childNode.guid === currentPath) {
-                    newChildren.push(pushNode(childNode) ?? childNode)
-                } else {
-                    newChildren.push(childNode)
-                }
-            })
-            if (node.guid === toGuid && !currentPath && nodeToReorder) {
-                console.log(
-                    'adding ',
-                    nodeToReorder?.displayText,
-                    ' to ',
-                    node?.displayText
-                )
-                nodeToReorder.id = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
-                nodeToReorder.key = `${node.attributes?.qualifiedName}_${nodeToReorder.attributes?.qualifiedName}`
-                nodeToReorder.isLeaf = false
-                newChildren.push(nodeToReorder)
-            }
-            console.log(newChildren)
-            if (loadedKeys.value.find((key) => node.key === key)) {
-                return {
-                    ...node,
-                    children: newChildren,
-                }
-            }
-            return node
-        }
-
-        // remove
-        if (from_guid) {
-            parentStack = recursivelyFindPath(from_guid)[0]
-            const parent = parentStack?.pop()
-
-            treeData.value = treeData.value.map((node: TreeDataItem) => {
-                if (node.guid === parent) return removeNode(node)
-                return node
-            })
-        }
-        console.log(toGuid, nodeToReorder)
-        // add
-        if (toGuid) {
-            if (toGuid === 'root') {
-                treeData.value.push(nodeToReorder)
-            } else {
-                parentStack = recursivelyFindPath(toGuid)[0]
-                const toParent = parentStack?.pop()
-                const updatedTreeData: TreeDataItem[] = []
-                // eslint-disable-next-line no-restricted-syntax
-                // for (const node of treeData.value) {
-                //     if (node.key === toParent || node.guid === toParent) {
-                //         const updatedNode = await pushNode(node)
-                //         updatedTreeData.push(updatedNode)
-                //     } else {
-                //         updatedTreeData.push(node)
-                //     }
-                // }
-
-                // treeData.value = updatedTreeData
-
-                treeData.value = treeData.value.map((node: TreeDataItem) => {
-                    if (node.guid === toParent) return pushNode(node)
-                    return node
-                })
-                console.log(treeData.value)
-            }
-        }
-
-        let currentParent = nodeToParentKeyMap[nodeGuid]
-        if (currentParent && typeof currentParent !== 'string') {
-            currentParent = currentParent.filter((guid) => guid !== fromGuid)
-            if (!currentParent.includes(toGuid)) {
-                currentParent.push(toGuid)
-            }
-        } else {
-            currentParent = [toGuid]
-        }
-        nodeToParentKeyMap[nodeGuid] = currentParent
-    }
     const handleCategoriesChange = (
         existingCategories,
         newCategories,
@@ -869,7 +758,49 @@ const useGlossaryTree = ({
             }
         }
     }
-
+    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+        console.log(event, node, dragNode, dragNodesKeys)
+        const assetToDrop = { ...dragNode.dataRef }
+        if (assetToDrop?.typeName === 'AtlasGlossary') {
+            message.error(
+                `Cannot reorder a Glossary. Try reordering a term/category instead.`,
+                2
+            )
+        } else if (node?.typeName === 'AtlasGlossaryTerm') {
+            message.error(
+                `Cannot drop ${
+                    assetToDrop?.displayText ?? ''
+                } in a Term. Try dropping in a category instead.`,
+                3
+            )
+        } else {
+            let nodeParentGlossaryGuid
+            if (node?.typeName === 'AtlasGlossary')
+                nodeParentGlossaryGuid = node?.guid
+            else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid
+            console.log(nodeParentGlossaryGuid)
+            console.log(assetToDrop?.attributes?.anchor?.guid)
+            if (
+                nodeParentGlossaryGuid !== assetToDrop?.attributes?.anchor?.guid
+            ) {
+                message.error(`Cannot change parent Glossary`)
+            } else {
+                console.log(assetToDrop)
+                setTimeout(() => {
+                    deleteNode(
+                        assetToDrop,
+                        dragNode?.parent?.node?.guid ?? 'root'
+                    )
+                }, 0)
+                setTimeout(() => {
+                    addNode(assetToDrop, node)
+                    message.success(
+                        `${assetToDrop?.displayText} added to ${node?.displayText}`
+                    )
+                }, 0)
+            }
+        }
+    }
     interface checkAndAddLoadMoreParams {
         response: IndexSearchResponse<Term | Category>
         parentGuid: string
@@ -1127,6 +1058,7 @@ const useGlossaryTree = ({
         collapseAll,
         deleteNode,
         updateNode,
+        dragAndDropNode,
     }
 }
 

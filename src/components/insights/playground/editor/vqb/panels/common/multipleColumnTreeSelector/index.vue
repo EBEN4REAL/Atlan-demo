@@ -387,10 +387,6 @@
                 }
             )
 
-            watch(selectedTablesQualifiedNames, () => {
-                replaceBody(getTableInitialBody())
-            })
-
             let tableSelected = ref(null)
 
             watch(queryText, () => {
@@ -606,6 +602,47 @@
                     }
                 })
             }
+            const reComputeSelectedColumns = () => {
+                //selectedTablesQualifiedNames
+                const copySelectedItems: string[] = []
+
+                // JSON.parse(
+                //     JSON.stringify(selectedItems.value)
+                // )
+                selectedItems.value.forEach((columnQualifiedName: string) => {
+                    selectedTablesQualifiedNames.value?.forEach((x) => {
+                        if (
+                            columnQualifiedName?.includes(x.tableQualifiedName)
+                        ) {
+                            copySelectedItems.push(columnQualifiedName)
+                        }
+                    })
+                })
+
+                const copyColumnsData: any = []
+
+                selectedColumnsData.value.forEach((columnData) => {
+                    let _t: any = undefined
+                    copySelectedItems.forEach((columnQualifiedName) => {
+                        if (
+                            columnQualifiedName ===
+                            columnData.columnsQualifiedName
+                        ) {
+                            _t = { ...columnData }
+                        }
+                    })
+                    if (_t) {
+                        copyColumnsData.push({
+                            ..._t,
+                        })
+                    }
+                })
+                debugger
+
+                selectedItems.value = copySelectedItems
+                selectedColumnsData.value = copyColumnsData
+            }
+
             const findVisibility = (
                 key: string,
                 isAreaFocused,
@@ -680,6 +717,10 @@
                 if (!isAreaFocused.value) {
                     // tableSelected.value = null
                 }
+            })
+            watch(selectedTablesQualifiedNames, () => {
+                replaceBody(getTableInitialBody())
+                reComputeSelectedColumns()
             })
 
             return {

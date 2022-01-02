@@ -38,7 +38,6 @@
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
                 'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
             ]"
         />
         <a-input
@@ -49,7 +48,6 @@
             :placeholder="placeholder"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -193,8 +191,7 @@
                         <a-checkbox
                             :checked="map[item.value]"
                             @change="
-                                (checked) =>
-                                    onCheckboxChange(checked, item.value)
+                                (checked) => onCheckboxChange(checked, item)
                             "
                             class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
                         >
@@ -431,7 +428,7 @@
                     order: ls.attributes.order,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
-                    value: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes.qualifiedName,
                 }))
 
                 // console.log('list: ', list)
@@ -485,12 +482,6 @@
             }
 
             const onSelectColumn = (item) => {
-                let qualifiedName = item?.qualifiedName.split('/')
-                let size = qualifiedName?.length
-                console.log(
-                    'name: ',
-                    `${qualifiedName[size - 2]}.${qualifiedName[size - 1]}`
-                )
                 selectedColumn.value = {
                     label: item.label,
                     type: item.type,
@@ -498,11 +489,9 @@
                     columnQualifiedName: item.qualifiedName,
                 }
                 emit('change', item.qualifiedName)
-                console.log()
             }
 
             const placeholder = computed(() => {
-                console.log(tableSelected, 'tableSelected')
                 if (isLoading.value) return 'Loading...'
                 if (!tableSelected.value)
                     return `Search from ${totalCount.value} tables`
@@ -511,7 +500,28 @@
 
             ////////////////////////////////////////
 
-            const onCheckboxChange = () => {}
+            const onCheckboxChange = (checked, item) => {
+                const selectedColumnsDataCopy = JSON.parse(
+                    JSON.stringify(selectedColumnsData.value)
+                )
+                if (checked.target.checked) {
+                    map.value[item.value] = true
+                    selectedColumnsDataCopy.push({
+                        label: item.label,
+                        type: item.type,
+                        columnsQualifiedName: item.value,
+                    })
+                } else {
+                    delete map.value[item.value]
+                    const _index = selectedColumnsDataCopy.findIndex(
+                        (t) => t.columnsQualifiedName === item.value
+                    )
+                    selectedColumnsDataCopy.splice(_index, 1)
+                }
+                selectedItems.value = [...Object.keys(map.value)]
+                selectedColumnsData.value = selectedColumnsDataCopy
+                setFocusedCusror()
+            }
 
             const map = ref({})
             selectedItems.value?.forEach((selectedItem) => {
@@ -650,6 +660,12 @@
                     }
                 })
             })
+            const clearAllSelected = () => {
+                selectedItems.value = []
+                map.value = {}
+                selectedColumnsData.value = []
+                console.log(map.value, 'destroy')
+            }
 
             watch(queryText, () => {
                 replaceBody(getTableInitialBody())
@@ -659,6 +675,11 @@
                     // if (tableQualfiedName.value)
                     inputRef?.value?.focus()
                 })
+            })
+            watch(isAreaFocused, () => {
+                if (!isAreaFocused.value) {
+                    // tableSelected.value = null
+                }
             })
 
             return {
@@ -707,6 +728,7 @@
                 input1Change,
                 input2Change,
                 getDataTypeImage,
+                clearAllSelected,
             }
         },
     })

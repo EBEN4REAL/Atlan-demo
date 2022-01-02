@@ -514,7 +514,7 @@
 
             const onCheckboxChange = (checked, item) => {
                 const selectedColumnsDataCopy = JSON.parse(
-                    JSON.stringify(selectedColumnsData.value)
+                    JSON.stringify(selectedColumnsData.value ?? [])
                 )
                 if (checked.target.checked) {
                     map.value[item.value] = true
@@ -618,22 +618,24 @@
                     }
                 })
             }
-            const reComputeSelectedColumns = () => {
-                //selectedTablesQualifiedNames
+            const reComputeSelectedColumns = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
                 const copySelectedItems: string[] = []
-
-                // JSON.parse(
-                //     JSON.stringify(selectedItems.value)
-                // )
-                selectedItems.value.forEach((columnQualifiedName: string) => {
-                    selectedTablesQualifiedNames.value?.forEach((x) => {
-                        if (
-                            columnQualifiedName?.includes(x.tableQualifiedName)
-                        ) {
-                            copySelectedItems.push(columnQualifiedName)
-                        }
-                    })
-                })
+                const uniqueSelectedItems = new Set(selectedItems.value)
+                Array.from(uniqueSelectedItems).forEach(
+                    (columnQualifiedName: string) => {
+                        selectedTablesQualifiedNames?.forEach((x) => {
+                            if (
+                                columnQualifiedName?.includes(
+                                    x.tableQualifiedName
+                                )
+                            ) {
+                                copySelectedItems.push(columnQualifiedName)
+                            }
+                        })
+                    }
+                )
 
                 const copyColumnsData: any = []
 
@@ -653,9 +655,8 @@
                         })
                     }
                 })
-
-                selectedItems.value = copySelectedItems
-                selectedColumnsData.value = copyColumnsData
+                selectedItems.value = Array.from(new Set(copySelectedItems))
+                selectedColumnsData.value = Array.from(new Set(copyColumnsData))
             }
 
             const findVisibility = (
@@ -736,10 +737,16 @@
                     }
                 }
             })
-            watch(selectedTablesQualifiedNames, () => {
-                replaceBody(getTableInitialBody())
-                reComputeSelectedColumns()
-            })
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    replaceBody(getTableInitialBody())
+                    reComputeSelectedColumns(
+                        activeInlineTab.value.playground.vqb.selectedTables
+                    )
+                },
+                { deep: true }
+            )
 
             return {
                 map,

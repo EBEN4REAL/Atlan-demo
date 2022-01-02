@@ -46,7 +46,9 @@
                         v-model:selectedColumn="subpanel.columnsDataLeft"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
-                        :selectedTablesQualifiedNames="selectedTables"
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
                     >
                         <template #chip="{ item }">
                             <div
@@ -149,9 +151,9 @@
             ) as ComputedRef<activeInlineTabInterface>
             const { getDataTypeImage } = useColumn()
             const tableQualfiedName = ref(undefined)
-            const selectedTables = computed(
-                () => activeInlineTab.value.playground.vqb.selectedTables
-            )
+            const selectedTables = computed(() => {
+                return activeInlineTab.value.playground.vqb.selectedTables
+            })
 
             const cols = ref([])
             watch(tableQualfiedName, () => {

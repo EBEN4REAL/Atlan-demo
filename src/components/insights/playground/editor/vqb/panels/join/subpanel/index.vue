@@ -155,16 +155,14 @@
                         t.tableQualifiedName = tableQualifiedName
                         copySelectedTables.splice(_index, 1, t)
                     } else {
-                        const _found = copySelectedTables.find(
-                            (table) =>
-                                table.tableQualifiedName === tableQualifiedName
-                        )
-                        if (_found == undefined) {
-                            copySelectedTables.push({
-                                tableQualifiedName,
-                                addedBy,
-                            })
-                        }
+                        // const _found = copySelectedTables.find(
+                        //     (table) =>
+                        //         table.tableQualifiedName === tableQualifiedName
+                        // )
+                        copySelectedTables.push({
+                            tableQualifiedName,
+                            addedBy,
+                        })
                     }
 
                     selectedTables.value = [...copySelectedTables]

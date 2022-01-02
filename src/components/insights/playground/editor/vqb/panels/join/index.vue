@@ -281,9 +281,10 @@
                     )
                 )
                 /* Remove all the  selected table from joins*/
-                copySelectedTables.length = 1
-                activeInlineTab.value.playground.vqb.selectedTables =
-                    copySelectedTables
+
+                activeInlineTab.value.playground.vqb.selectedTables = [
+                    copySelectedTables[0],
+                ]
             }
             const toggleExpand = () => {
                 expand.value = !expand.value

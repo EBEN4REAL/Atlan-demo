@@ -69,7 +69,7 @@
     import { packageFilters } from '~/constant/filters/packageFilters'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import { useDebounceFn } from '@vueuse/core'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -146,12 +146,15 @@
                 })
 
             const dependentKeyPackage = ref('')
-            const { refresh } = usePackageDiscoverList({
+            const facetRun = ref({})
+            const aggregationRun = ref(['status'])
+            const { quickChange: quickChangeRun } = useRunDiscoverList({
                 isCache: false,
                 dependentKey: dependentKeyPackage,
-                facets,
+                facets: facetRun,
                 limit,
                 offset,
+                aggregations: aggregationRun,
                 queryText,
                 source: ref({
                     excludes: ['spec'],
@@ -161,7 +164,12 @@
 
             watch(list, () => {
                 console.log('changed list')
-                refresh()
+                facetRun.value = {
+                    workflowTemplates: list.value.map(
+                        (item) => item.metadata.name
+                    ),
+                }
+                quickChangeRun()
             })
 
             const handleFilterChange = () => {
@@ -213,7 +221,7 @@
                 activeKey,
                 handleResetEvent,
                 preference,
-                refresh,
+                quickChangeRun,
                 dependentKeyPackage,
             }
         },

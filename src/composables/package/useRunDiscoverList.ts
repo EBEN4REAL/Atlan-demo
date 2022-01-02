@@ -85,8 +85,11 @@ export function useRunDiscoverList({
     const quickChange = () => {
         generateBody()
 
+        console.log(facets?.value)
+
         if (!localKey.value) {
             localKey.value = `dirty_${Date.now().toString()}`
+            refresh()
         } else {
             refresh()
         }

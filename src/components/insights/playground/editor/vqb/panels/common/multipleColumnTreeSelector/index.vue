@@ -1,55 +1,118 @@
 <template>
-    <a-popover placement="bottomLeft" :trigger="['click']">
-        <div
-            class="flex items-center px-2 mx-3 border border-gray-300 rounded box-shadow focus:border-primary-focus"
-            style="height: 32px"
+    <div
+        ref="container"
+        @click="setFoucs"
+        @focusout="handleContainerBlur"
+        @mouseover="handleMouseOver"
+        @mouseout="handleMouseOut"
+        tabindex="0"
+        class="relative flex items-center w-full z-1"
+        :class="[
+            isAreaFocused
+                ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
+                : 'border-gray-300 border  px-3 py-1 box-shadow',
+            ,
+            'flex flex-wrap items-center    rounded  selector-height chip-container ',
+        ]"
+        @click.stop="() => {}"
+    >
+        <template
+            v-if="enrichedSelectedItems.length !== 0"
+            v-for="(item, index) in enrichedSelectedItems"
+            :key="item + index"
         >
-            <div
-                v-if="selectedColumn?.label"
-                style="max-width: 450px"
-                class="flex items-center truncate"
-            >
-                <component
-                    :is="
-                        dataTypeImage({
-                            attributes: { dataType: selectedColumn?.type },
-                        })
-                    "
-                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                ></component>
-                <span
-                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                >
-                    {{ placeholder }}
-                </span>
-            </div>
-            <span v-else>
-                {{ placeholder }}
-            </span>
-        </div>
-        <template #content>
-            <div v-if="!tableSelected?.qualifiedName">
-                <a-input
-                    v-model:value="tableText"
-                    placeholder="Enter table name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px"
-                >
-                    <template #suffix>
-                        <AtlanIcon
-                            icon="Search"
-                            class="text-gray-500"
-                        ></AtlanIcon>
-                    </template>
-                </a-input>
-                <div style="height: 300px !important" class="overflow-y-scroll">
-                    <AtlanIcon
-                        v-if="isLoading"
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                        style="margin-left: 175px; margin-top: 100px"
-                    ></AtlanIcon>
+            <slot name="chip" :item="item"> </slot>
+        </template>
 
+        <a-input
+            v-if="selectedItems.length > 0 && isAreaFocused"
+            ref="inputRef"
+            v-model:value="inputValue1"
+            @focus="
+                () => {
+                    isAreaFocused = true
+                }
+            "
+            @change="input1Change"
+            :placeholder="placeholder"
+            :style="`width:${placeholder.length + 2}ch;`"
+            :class="[
+                'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
+                !tableQualfiedName ? $style.custom_input : '',
+            ]"
+        />
+        <a-input
+            v-if="selectedItems.length == 0"
+            ref="initialRef"
+            v-model:value="inputValue2"
+            @change="input2Change"
+            :placeholder="placeholder"
+            :class="[
+                'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
+                !tableQualfiedName ? $style.custom_input : '',
+            ]"
+        />
+        <div class="absolute right-2">
+            <AtlanIcon
+                v-if="
+                    findVisibility(
+                        'search',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+                icon="Search"
+                class="w-4 h-4"
+            />
+            <AtlanIcon
+                icon="ChevronDown"
+                class="w-4 h-4"
+                v-if="
+                    findVisibility(
+                        'chevronDown',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+            />
+            <AtlanIcon
+                icon="Cross"
+                class="w-4 h-4 cursor-pointer"
+                @click.stop="clearAllSelected"
+                v-if="
+                    findVisibility(
+                        'cross',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+            />
+        </div>
+
+        <div
+            v-if="isAreaFocused"
+            @click.stop="() => {}"
+            :style="`width: 100%;top:${topPosShift}px;`"
+            :class="[
+                'absolute z-10  pb-2  bg-white rounded custom-shadow position ',
+            ]"
+        >
+            <!--  -->
+            <div v-if="!tableSelected?.qualifiedName" style="height: 250px">
+                <Loader
+                    v-if="isLoading"
+                    style="min-height: 100px !important"
+                ></Loader>
+                <div
+                    class="overflow-auto"
+                    v-if="tableDropdownOption.length !== 0"
+                >
                     <template
                         v-if="tableDropdownOption.length !== 0 && !isLoading"
                         v-for="(item, index) in tableDropdownOption"
@@ -57,7 +120,6 @@
                     >
                         <div
                             class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                            style="width: 400px"
                             @click="onSelectTable(item)"
                         >
                             <div class="flex items-center truncate">
@@ -73,7 +135,6 @@
 
                                 <span
                                     class="ml-2 parent-ellipsis-container-base"
-                                    style="width: 300px"
                                     >{{ item?.label }}
                                 </span>
                             </div>
@@ -89,18 +150,18 @@
                             </div>
                         </div>
                     </template>
-                    <div
-                        v-if="tableDropdownOption.length === 0 && !isLoading"
-                        class="flex items-center justify-center h-full"
-                    >
-                        No tables found
-                    </div>
+                </div>
+                <div
+                    v-if="tableDropdownOption.length === 0 && !isLoading"
+                    class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                >
+                    No tables found
                 </div>
             </div>
             <!-- For columns -->
-            <div v-else style="max-width: 400px">
+            <div v-else>
                 <div
-                    class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5"
+                    class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
                 >
                     <div class="flex items-center truncate">
                         <AtlanIcon
@@ -109,9 +170,7 @@
                             @click="onUnselectTable"
                         />
 
-                        <span
-                            class="ml-2 parent-ellipsis-container-base"
-                            style="width: 300px"
+                        <span class="ml-2 parent-ellipsis-container-base"
                             >{{ tableSelected?.label }}
                         </span>
                     </div>
@@ -121,30 +180,11 @@
                         {{ tableSelected?.columnCount }}
                     </div>
                 </div>
-                <a-input
-                    v-model:value="columnText"
-                    placeholder="Enter column name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
-                >
-                    <template #suffix>
-                        <AtlanIcon
-                            icon="Search"
-                            class="text-gray-500"
-                        ></AtlanIcon>
-                    </template>
-                </a-input>
-                <div
-                    style="height: 278px !important"
-                    class="pl-2 pr-2 overflow-y-scroll"
-                >
-                    <AtlanIcon
+                <div class="pl-2 pr-2 overflow-y-auto" style="height: 250px">
+                    <Loader
                         v-if="isLoading"
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                        style="margin-left: 175px; margin-top: 100px"
-                    ></AtlanIcon>
-
+                        style="min-height: 100px !important"
+                    ></Loader>
                     <template
                         v-if="columnDropdownOption.length !== 0 && !isLoading"
                         v-for="(item, index) in columnDropdownOption"
@@ -156,14 +196,14 @@
                                 (checked) =>
                                     onCheckboxChange(checked, item.value)
                             "
-                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                            class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
                         >
                             <div
                                 class="justify-between parent-ellipsis-container"
                             >
                                 <div class="parent-ellipsis-container">
                                     <component
-                                        :is="dataTypeImage(item.type)"
+                                        :is="getDataTypeImage(item.type)"
                                         class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
                                     ></component>
                                     <span
@@ -211,66 +251,22 @@
                         </a-checkbox>
                     </template>
 
-                    <!-- <template
-                        v-if="columnDropdownOption.length !== 0 && !isLoading"
-                        v-for="(item, index) in columnDropdownOption"
-                        :key="item?.label + index"
-                    >
-                        <div
-                            class="flex items-center justify-between pl-4 pr-4 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                            style="width: 400px"
-                            @click="onSelectColumn(item)"
-                            :class="
-                                selectedColumn?.columnQualifiedName ===
-                                item?.qualifiedName
-                                    ? 'bg-primary-light'
-                                    : ''
-                            "
-                        >
-                            <div class="flex items-center truncate">
-                                <component
-                                    :is="dataTypeImage(item)"
-                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                ></component>
-                                <span
-                                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >
-                                    {{ item.label }}
-                                </span>
-                            </div>
-                            <div
-                                class="relative h-full w-14 parent-ellipsis-container-extension"
-                                v-if="item?.attributes?.isPrimary"
-                            >
-                                <div
-                                    class="absolute right-0 flex items-center mt-1.5"
-                                >
-                                    <AtlanIcon
-                                        icon="PrimaryKey"
-                                        style="color: #3ca5bc"
-                                        class="w-4 h-4 mr-1"
-                                    ></AtlanIcon>
-                                    <span style="color: #3ca5bc" class="text-sm"
-                                        >Pkey</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
-                    </template> -->
                     <div
                         v-if="columnDropdownOption.length === 0 && !isLoading"
-                        class="flex items-center justify-center h-full"
+                        class="flex items-center justify-center h-full text-sm text-center text-gray-400"
                     >
                         No columns found
                     </div>
                 </div>
             </div>
-        </template>
-    </a-popover>
+            <!--  -->
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
     import {
+        nextTick,
         defineComponent,
         watch,
         toRefs,
@@ -280,6 +276,7 @@
         inject,
         ComputedRef,
         onMounted,
+        onUpdated,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -288,6 +285,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
 
     import useBody from './useBody'
 
@@ -311,7 +309,7 @@
                 default: true,
             },
             selectedItems: {
-                type: Object as PropType<any[]>,
+                type: Object as PropType<string[]>,
                 required: true,
             },
             selectedColumnsData: {
@@ -336,6 +334,7 @@
                 selectedTablesQualifiedNames,
                 showSelectAll,
             } = toRefs(props)
+            const { getDataTypeImage } = useColumn()
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -343,6 +342,7 @@
 
             const tableText = ref('')
             const columnText = ref('')
+            const queryText = ref('')
 
             const { selectedColumn } = useVModels(props)
 
@@ -362,7 +362,7 @@
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
 
-                        searchText: tableText.value,
+                        searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames.value
                             ?.filter((x) => x !== null || undefined)
                             .map((t) => t.tableQualifiedName),
@@ -389,9 +389,6 @@
                     immediate: true,
                 }
             )
-            watch(tableText, () => {
-                replaceBody(getTableInitialBody())
-            })
 
             watch(selectedTablesQualifiedNames, () => {
                 replaceBody(getTableInitialBody())
@@ -399,8 +396,9 @@
 
             let tableSelected = ref(null)
 
-            watch(columnText, () => {
-                replaceBody(getColumnInitialBody(tableSelected?.value))
+            watch(queryText, () => {
+                if (tableSelected?.value)
+                    replaceBody(getColumnInitialBody(tableSelected?.value))
             })
 
             const totalCount = computed(() => data.value?.approximateCount || 0)
@@ -504,22 +502,11 @@
             }
 
             const placeholder = computed(() => {
-                if (selectedColumn?.value?.label) {
-                    let data =
-                        selectedColumn.value.columnQualifiedName.split('/')
-
-                    if (showColumnWithTable)
-                        return `${data[data.length - 2]}.${
-                            data[data.length - 1]
-                        }`
-                    else return `${data[data.length - 1]}`
-                }
-
-                let data = !tableSelected?.qualifiedName
-                    ? `select from ${totalCount.value} tables`
-                    : `select from ${totalCount.value} columns`
-
-                return data
+                console.log(tableSelected, 'tableSelected')
+                if (isLoading.value) return 'Loading...'
+                if (!tableSelected.value)
+                    return `Search from ${totalCount.value} tables`
+                else return `Search from ${totalCount.value} columns`
             })
 
             ////////////////////////////////////////
@@ -529,6 +516,149 @@
             const map = ref({})
             selectedItems.value?.forEach((selectedItem) => {
                 map.value[selectedItem] = true
+            })
+
+            const enrichedSelectedItems = computed(() => {
+                const data: any[] = []
+                selectedItems.value.forEach((val) => {
+                    if (val === 'all') {
+                        data.push({
+                            type: 'Columns',
+                            label: 'All columns',
+                        })
+                    } else {
+                        const t = selectedColumnsData.value.find(
+                            (e) => e.columnsQualifiedName === val
+                        )
+                        data.push({
+                            type: t?.type ?? 'Columns',
+                            label: t?.label,
+                        })
+                    }
+                })
+                return data
+            })
+
+            const inputRef = ref()
+
+            const initialRef = ref()
+            const selectAll = ref(false)
+            const mouseOver = ref(false)
+            const topPosShift = ref(0)
+            const inputValue1 = ref('')
+            const inputValue2 = ref('')
+            const isAreaFocused = ref(false)
+            const container = ref()
+            const clickPos = ref({ left: 0, top: 0 })
+
+            const setFoucs = () => {
+                // if (!tableQualfiedName.value) return
+                isAreaFocused.value = true
+                nextTick(() => {
+                    console.log(inputRef?.value, 'he')
+                    // if (tableQualfiedName.value)
+                    inputRef?.value?.focus()
+                })
+            }
+            const setFocusedCusror = () => {
+                // if (!tableQualfiedName.value) return
+                nextTick(() => {
+                    // if (tableQualfiedName.value)
+                    inputRef?.value?.focus()
+                })
+            }
+            const input1Change = () => {
+                setFoucs()
+                queryText.value = inputValue1.value
+                // emit('queryTextChange')
+            }
+            const input2Change = () => {
+                setFoucs()
+                queryText.value = inputValue2.value
+                // emit('queryTextChange')
+            }
+
+            const handleContainerBlur = (event) => {
+                // if the blur was because of outside focus
+                // currentTarget is the parent element, relatedTarget is the clicked element
+                if (!container.value.contains(event.relatedTarget)) {
+                    isAreaFocused.value = false
+                    inputValue1.value = ''
+                    inputValue2.value = ''
+                    queryText.value = ''
+                }
+            }
+
+            const inputChange = () => {
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
+            }
+            const findVisibility = (
+                key: string,
+                isAreaFocused,
+                mouseHover,
+                tableQualifiedName,
+                selectedItems
+            ) => {
+                switch (key) {
+                    case 'chevronDown': {
+                        if (!isAreaFocused) {
+                            if (selectedItems.length === 0 && mouseHover)
+                                return true
+                            if (selectedItems.length === 0 && !mouseHover)
+                                return true
+                            if (selectedItems.length !== 0 && !mouseHover)
+                                return true
+                        }
+                        break
+                    }
+                    case 'cross': {
+                        if (isAreaFocused) return false
+                        if (
+                            !isAreaFocused &&
+                            selectedItems.length > 0 &&
+                            mouseHover
+                        )
+                            return true
+                        else return false
+                        break
+                    }
+                    case 'search': {
+                        if (!isAreaFocused) return false
+                        if (tableQualifiedName) return true
+                        break
+                    }
+                }
+            }
+
+            const handleMouseOver = () => {
+                if (!mouseOver.value) mouseOver.value = true
+            }
+            const handleMouseOut = () => {
+                if (mouseOver.value) mouseOver.value = false
+            }
+            onMounted(() => {
+                topPosShift.value = container.value?.offsetHeight
+            })
+            onUpdated(() => {
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
+            })
+
+            watch(queryText, () => {
+                replaceBody(getTableInitialBody())
+            })
+            watch(tableSelected, () => {
+                nextTick(() => {
+                    // if (tableQualfiedName.value)
+                    inputRef?.value?.focus()
+                })
             })
 
             return {
@@ -555,6 +685,28 @@
                 selectedColumn,
                 placeholder,
                 onCheckboxChange,
+                enrichedSelectedItems,
+                inputRef,
+                initialRef,
+                selectAll,
+                mouseOver,
+                topPosShift,
+                inputValue1,
+                inputValue2,
+                isAreaFocused,
+                container,
+                clickPos,
+                setFoucs,
+                setFocusedCusror,
+                handleContainerBlur,
+                inputChange,
+                findVisibility,
+                handleMouseOver,
+                handleMouseOut,
+                queryText,
+                input1Change,
+                input2Change,
+                getDataTypeImage,
             }
         },
     })
@@ -581,5 +733,61 @@
     }
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+</style>
+<style lang="less" scoped>
+    .border-plus {
+        padding: 1px;
+    }
+    .border-minus {
+        padding: 0px;
+    }
+    .custom-shadow {
+        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+    .selector-height {
+        min-height: 32px;
+    }
+    .position {
+        @apply right-0;
+    }
+    .box-shadow {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .box-shadow-focus {
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
+    .disable-bg {
+        background-color: #fbfbfb;
+    }
+    .px-3-1 {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+    .py-1-1 {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+    .chip-container {
+        gap: 4px;
+        max-width: 100% !important;
+    }
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
+    }
+</style>
+<style lang="less" module>
+    .custom_input {
+        background-color: #fbfbfb !important;
     }
 </style>

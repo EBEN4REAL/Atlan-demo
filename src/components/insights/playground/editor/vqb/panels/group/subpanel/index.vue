@@ -47,7 +47,29 @@
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
                         :selectedTablesQualifiedNames="selectedTables"
-                    />
+                    >
+                        <template #chip="{ item }">
+                            <div
+                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                            >
+                                <component
+                                    v-if="item.type !== 'Columns'"
+                                    :is="getDataTypeImage(item.type)"
+                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
+                                ></component>
+                                <AtlanIcon
+                                    v-else
+                                    icon="Columns"
+                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
+                                />
+                                <div
+                                    class="truncate ... overflow-ellipsis overflow-hidden"
+                                >
+                                    {{ item.label }}
+                                </div>
+                            </div>
+                        </template>
+                    </TreeColumnSelector>
 
                     <div
                         v-if="subpanel.tableQualfiedName"

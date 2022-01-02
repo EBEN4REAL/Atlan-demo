@@ -369,7 +369,7 @@
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
-                    value: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes?.qualifiedName,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -411,12 +411,12 @@
                             label: 'All columns',
                         })
                     } else {
+                        const t = selectedColumnsData.value.find(
+                            (e) => e.columnsQualifiedName === val
+                        )
                         data.push({
-                            type:
-                                selectedColumnsData.value.find(
-                                    (e) => e.label === val
-                                )?.type ?? 'Columns',
-                            label: val,
+                            type: t?.type ?? 'Columns',
+                            label: t?.label,
                         })
                     }
                 })
@@ -436,15 +436,14 @@
                 let columns = []
                 Object.keys(map.value).forEach((col) => {
                     let x = list.value.find((el) => {
-                        let label =
-                            el.attributes?.displayName || el.attributes?.name
+                        let label = el.attributes?.qualifiedName
                         return label === col
                     })
                     columns.push({
                         label:
                             x?.attributes?.displayName || x?.attributes?.name,
                         type: x?.attributes?.dataType,
-                        columnQualifiedName: x?.attributes.qualifiedName,
+                        columnsQualifiedName: x?.attributes.qualifiedName,
                     })
                 })
 

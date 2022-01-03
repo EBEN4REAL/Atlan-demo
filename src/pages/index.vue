@@ -19,8 +19,9 @@
                 <div class="mt-6">
                     <Purpose></Purpose>
                 </div>
-
-                <Relevant class="mt-6" />
+                <div class="mt-6">
+                    <Relevant />
+                </div>
 
                 <!--section>
                 <YourOrgs />

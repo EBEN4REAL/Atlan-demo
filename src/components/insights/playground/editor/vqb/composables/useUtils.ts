@@ -255,6 +255,7 @@ export function useUtils() {
     }
 
     return {
+        getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
         getDistinctTableQualifiedNamesFromJoinPanel,
         getSummarisedInfoOfJoinPanel,

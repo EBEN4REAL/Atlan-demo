@@ -52,7 +52,7 @@
                     >
                         <template #chip="{ item }">
                             <div
-                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                                class="flex cursor-pointer items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
                             >
                                 <component
                                     v-if="item.type !== 'Columns'"
@@ -64,11 +64,24 @@
                                     icon="Columns"
                                     class="w-4 h-4 mr-1 text-xs text-gray-500"
                                 />
-                                <div
-                                    class="truncate ... overflow-ellipsis overflow-hidden"
-                                >
-                                    {{ item.label }}
-                                </div>
+
+                                <a-tooltip>
+                                    <template #title>
+                                        <div>
+                                            {{
+                                                `TABLE: ${getTableName(
+                                                    item.columnsQualifiedName
+                                                )}`
+                                            }}
+                                        </div>
+                                    </template>
+
+                                    <div
+                                        class="truncate ... overflow-ellipsis overflow-hidden"
+                                    >
+                                        {{ item.label }}
+                                    </div>
+                                </a-tooltip>
                             </div>
                         </template>
                     </TreeColumnSelector>
@@ -112,6 +125,8 @@
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/index.vue'
 
     export default defineComponent({
@@ -142,6 +157,7 @@
 
         setup(props, { emit }) {
             const { subpanels, columnSubpanels } = useVModels(props)
+            const { getTableName } = useUtils()
             const { expand } = toRefs(props)
             const filteredTablesValues = computed(() =>
                 subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
@@ -203,6 +219,7 @@
             let hoverPill = ref(null)
 
             return {
+                getTableName,
                 selectedTables,
                 filteredTablesValues,
                 activeInlineTab,

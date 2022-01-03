@@ -563,6 +563,7 @@
                             (e) => e.columnsQualifiedName === val
                         )
                         data.push({
+                            ...t,
                             type: t?.type ?? 'Columns',
                             label: t?.label,
                         })

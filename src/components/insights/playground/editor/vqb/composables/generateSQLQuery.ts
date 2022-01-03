@@ -1,3 +1,4 @@
+import { columns } from './../../../../../../constant/groups'
 import { format } from 'sql-formatter'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import squel from 'squel'
@@ -92,10 +93,13 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                         select.from(`"${tableName}"`)
                     }
                 }
-                subpanel.columns.forEach((columnName) => {
-                    if (columnName === 'all') select.field('*')
-                    else select.field(columnName)
-                })
+                if (!subpanel.columns.includes('all')) {
+                    subpanel.columnsData.forEach((column) => {
+                        select.field(column.label)
+                    })
+                } else {
+                    select.field('*')
+                }
             }
         })
     }

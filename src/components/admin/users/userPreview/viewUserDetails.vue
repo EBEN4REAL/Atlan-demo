@@ -89,6 +89,12 @@
                     </div>
                 </div>
             </div>
+            <div v-else class="pb-6 border-b border-gray-200 border-solid">
+                <p class="mt-6 text-sm tracking-wider text-gray-500 uppercase">
+                    Ownership
+                </p>
+                <span> {{ selectedUser }} doesn’t own any assets </span>
+            </div>
             <div class="pb-6 border-gray-200 border-solid">
                 <p class="pt-6 text-sm tracking-wider text-gray-500 uppercase">
                     More Details

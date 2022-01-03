@@ -154,7 +154,7 @@
                                 :item="item"
                                 :item-index="itemIndex"
                                 :selected-guid="
-                                    page === 'admin' ? null : selectedAsset.guid
+                                    page === 'admin' || page === 'glossary' ? null : selectedAsset.guid
                                 "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"

@@ -6,18 +6,21 @@
         class="px-6 py-1.5 border border-gray-200 rounded-lg"
         @change="selectRelevantTab($event)"
     >
-        <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name">
+        <a-tab-pane
+            v-for="tab in relevantTabList"
+            :key="tab.id"
+            :tab="tab.name"
+        >
             <component
-                :is="t.component"
+                :is="tab.component"
                 height="150px"
                 :username="myUsername"
-                :type-names="t.typeName"
-                :initial-filters="t.filter"
-                :icon="t.icon"
-                :empty-text="t.emptyText"
-                :preference="{
-                    sort: '__modificationTimestamp-desc'
-                }"
+                :type-names="tab.typeName"
+                :initial-filters="tab.filter"
+                :icon="tab.icon"
+                :empty-text="tab.emptyText"
+                :preference="tab.preference"
+                :dependent-key="tab.dependentKey"
             />
         </a-tab-pane>
     </a-tabs>
@@ -26,20 +29,20 @@
 <script lang="ts">
     import { defineComponent, ref, defineAsyncComponent } from 'vue'
     import whoami from '~/composables/user/whoami'
+    import AssetList from '~/components/home/assets/index.vue'
+
     //    import { allTypeNames } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         name: 'Relevant',
         components: {
-            AssetList: defineAsyncComponent(
-                () => import('~/components/home/assets/index.vue')
-            ),
+            AssetList,
             recentlyViewedAssets: defineAsyncComponent(
                 () => import('~/components/home/recentlyViewedAssets.vue')
             ),
         },
         setup() {
-            const relevantTab = ref(2)
+            const relevantTab = ref('2')
             const { username: myUsername } = whoami()
 
             const relevantTabList = [
@@ -62,7 +65,7 @@
                 //     emptyText: 'All your assets will appear here.',
                 // },
                 {
-                    id: 2,
+                    id: '2',
                     name: 'My Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
@@ -73,9 +76,11 @@
                         },
                     },
                     emptyText: 'All your assets will appear here.',
+                    preference: undefined,
+                    dependentKey: 'DEFAULT_ASSET_LIST_HOME'
                 },
                 {
-                    id: 3,
+                    id: '3',
                     name: 'Recently Verified Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
@@ -84,6 +89,10 @@
                         certificateStatus: ['VERIFIED']
                     },
                     emptyText: 'The most recently verified assets will show up here.',
+                    preference: {
+                        sort: 'certificateUpdatedAt-desc'
+                    },
+                    dependentKey: 'DEFAULT_ASSET_LIST_RECENTLY_VERIFIED'
                 },
                 /* {
                     id: 2,
@@ -108,7 +117,7 @@
                 }, */
             ]
 
-            const selectRelevantTab = (val: number) => {
+            const selectRelevantTab = (val: string) => {
                 relevantTab.value = val
             }
             return {

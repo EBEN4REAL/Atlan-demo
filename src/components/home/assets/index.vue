@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col">
-                <div v-if="showAggrs" class="w-full">
+                <div v-if="showAggrs && !isLoading && list.length > 0" class="w-full">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -176,11 +176,16 @@
                 type: String,
                 default: '',
             },
+            dependentKey: {
+                type: String,
+                required: false,
+                default: 'DEFAULT_ASSET_LIST_HOME'
+            }
         },
         setup(props, { emit }) {
             const showDrawer = ref(false)
 
-            const { preference: preferenceProp, checkedCriteria } =
+            const { preference: preferenceProp, checkedCriteria, dependentKey } =
                 toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
@@ -193,7 +198,6 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST_HOME')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([

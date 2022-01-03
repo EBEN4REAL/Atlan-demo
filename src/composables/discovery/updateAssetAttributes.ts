@@ -565,11 +565,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const updateDrawerList = inject('updateDrawerList')
 
     whenever(isUpdateReady, () => {
-        if (!isDrawer) {
+        if (!isDrawer && updateList) {
             updateList(asset.value)
         } else {
             shouldDrawerUpdate.value = true
-            if (typeof updateDrawerList === 'function') {
+            if (typeof updateDrawerList === 'function' && updateDrawerList) {
                 updateDrawerList(asset.value)
             }
         }
@@ -670,5 +670,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localAssignedEntities,
         handleAssignedEntitiesUpdate,
         localAdmins,
+        error,
     }
 }

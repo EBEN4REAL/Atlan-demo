@@ -1,12 +1,16 @@
-import { watch, ref, Ref, onMounted, computed } from 'vue'
+import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
+import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
+import updateAsset from '~/composables/discovery/updateAsset'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 // composables
 import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
+import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
 // types
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
@@ -24,7 +28,6 @@ import {
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface UseTreeParams {
     emit?: any
@@ -80,7 +83,6 @@ const useGlossaryTree = ({
     const checkedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
-
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
     const defaultBody = ref({})
     const generateBody = () => {
@@ -785,7 +787,7 @@ const useGlossaryTree = ({
             ) {
                 message.error(`Cannot change parent Glossary`)
             } else {
-                console.log(assetToDrop)
+                // delete from parent and add to node
                 setTimeout(() => {
                     deleteNode(
                         assetToDrop,
@@ -794,10 +796,36 @@ const useGlossaryTree = ({
                 }, 0)
                 setTimeout(() => {
                     addNode(assetToDrop, node)
-                    message.success(
-                        `${assetToDrop?.displayText} added to ${node?.displayText}`
-                    )
                 }, 0)
+                const updateTermCategories = () => {
+                    const selectedAsset = ref(assetToDrop)
+                    const {
+                        localCategories,
+                        handleCategoriesUpdate,
+                        error: updateError,
+                        asset,
+                    } = updateAssetAttributes(selectedAsset)
+                    console.log(asset)
+                    const newCategories = localCategories.value?.filter(
+                        (el) => el.guid !== dragNode?.parent?.node?.guid
+                    )
+                    if (node?.typeName !== 'AtlasGlossary')
+                        newCategories.push(node?.dataRef)
+                    localCategories.value = newCategories
+                    handleCategoriesUpdate()
+
+                    whenever(updateError, () => {
+                        setTimeout(() => {
+                            deleteNode(assetToDrop, node?.guid ?? 'root')
+                        }, 0)
+                        setTimeout(() => {
+                            addNode(assetToDrop, dragNode?.parent?.node)
+                        }, 0)
+                    })
+                }
+                if (dragNode?.typeName === 'AtlasGlossaryTerm') {
+                    updateTermCategories()
+                }
             }
         }
     }

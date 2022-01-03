@@ -26,9 +26,7 @@
                 >
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
-                <span class="text-sm font-normal text-gray-700"
-                    >Collection Name</span
-                >
+                <span class="text-sm font-normal text-gray-700">Name</span>
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
@@ -36,20 +34,23 @@
                     placeholder="Name"
                 >
                     <template #prefix>
-                        <div class="relative flex w-4 h-4 mr-1">
+                        <div
+                            class="relative flex w-6 h-6 mr-1 -ml-2 duration-200 ease-in-out rounded-sm cursor-pointer hover:bg-gray-light"
+                        >
                             <div
+                                class="flex items-center ml-0.5"
                                 @click="toggleEmojiPicker"
-                                class="flex items-center"
                             >
                                 <span
                                     v-if="selectedEmoji"
-                                    class="mt-1 cursor-pointer"
+                                    class="w-4 h-4 -mt-2"
+                                    style="font-size: 18px; margin-left: 0.5px"
                                 >
                                     {{ selectedEmoji }}
                                 </span>
                                 <AtlanIcon
                                     v-else
-                                    class="w-4 h-4 cursor-pointer"
+                                    class="w-4 h-4 ml-0.5"
                                     :icon="'NoAvatar'"
                                 ></AtlanIcon>
                             </div>
@@ -79,7 +80,7 @@
                 </a-input>
                 <div class="mt-4">
                     <span class="text-sm font-normal text-gray-700"
-                        >Collection Description</span
+                        >Description</span
                     >
                     <a-textarea
                         v-model:value="description"
@@ -91,9 +92,8 @@
             </div>
             <div class="px-4 mt-4">
                 <span class="text-sm font-normal text-gray-700"
-                    >Collection Type</span
+                    >Visibility</span
                 >
-                <!-- {{ isShareable }} -->
                 <div class="mt-2">
                     <a-radio-group
                         v-model:value="isShareable"
@@ -102,17 +102,17 @@
                         <a-radio value="false">
                             <span class="text-sm text-gray-700">Private</span>
                         </a-radio>
-                        <a-radio value="true" class="ml-3">
+                        <a-radio value="true" class="">
                             <span class="text-sm text-gray-700">Shared</span>
                         </a-radio>
                     </a-radio-group>
                 </div>
             </div>
             <div
-                class="p-3 pb-0 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
+                class="p-3 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
                 v-if="isShareable === 'true'"
             >
-                <span class="text-sm text-gray-700">Add users and groups</span>
+                <span class="text-sm text-gray-700">Users and groups</span>
 
                 <div class="flex items-center mb-1.5">
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
@@ -163,19 +163,75 @@
                     }}
                 </span> -->
 
-                <div
-                    style="max-height: 172px"
-                    class="mt-2 overflow-auto"
-                    v-if="
-                        userData['edit']['ownerUsers'].length ||
-                        userData['edit']['ownerGroups'].length ||
-                        userData['view']['ownerUsers'].length ||
-                        userData['view']['ownerGroups'].length
-                    "
-                >
+                <div style="max-height: 172px" class="mt-2 overflow-auto">
+                    <div
+                        class="flex items-center justify-between h-7"
+                        style="margin-top: 3px; margin-bottom: 3px"
+                    >
+                        <div class="flex items-center">
+                            <Avatar
+                                avatar-shape="circle"
+                                :image-url="imageUrl(username)"
+                                :allow-upload="false"
+                                :avatar-name="username"
+                                :avatar-size="20"
+                            />
+                            <div class="ml-2">
+                                <div class="text-gray-700">
+                                    <div class="mr-2 text-sm text-gray-700">
+                                        {{ username }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-end text-gray-700 cursor-pointer"
+                            style="width: 104px"
+                        >
+                            <span class="mr-1.5 pl-1 text-sm text-gray-500">
+                                Owner
+                            </span>
+                        </div>
+                    </div>
                     <UserItem v-model:userData="userData" />
                 </div>
             </div>
+            <!-- <div
+                class="px-3 py-1 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
+                v-else
+            >
+                <div
+                    class="flex items-center justify-between h-7"
+                    style="margin-top: 3px; margin-bottom: 3px"
+                >
+                    <div class="flex items-center">
+                        <Avatar
+                            avatar-shape="circle"
+                            :image-url="imageUrl(username)"
+                            :allow-upload="false"
+                            :avatar-name="username"
+                            :avatar-size="20"
+                        />
+                        <div class="ml-2">
+                            <div class="text-gray-700">
+                                <div class="mr-2 text-sm text-gray-700">
+                                    {{ username }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex items-center justify-end text-gray-700 cursor-pointer"
+                        style="width: 104px"
+                    >
+                        <span class="mr-1.5 pl-1 text-sm text-gray-500">
+                            Owner
+                        </span>
+                    </div>
+                </div>
+            </div> -->
             <div
                 class="flex items-center justify-end flex-1 w-full px-4 mt-4 text-gray-700"
             >
@@ -242,6 +298,7 @@
     import UserItem from './userItem.vue'
     import Owners from './owner.vue'
     import whoami from '~/composables/user/whoami'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
@@ -257,6 +314,7 @@
             PermissionType,
             UserItem,
             Owners,
+            Avatar,
         },
         props: {
             showCollectionModal: {
@@ -330,61 +388,32 @@
 
             const popOverVisible = ref(false)
 
-            // const editors = ref({
-            //     ownerGroups: isCreate.value
-            //         ? []
-            //         : item?.value?.attributes?.ownerGroups,
-            //     ownerUsers: isCreate.value
-            //         ? []
-            //         : item?.value?.attributes?.ownerUsers,
-            // })
-
-            // const viewers = ref({
-            //     ownerGroups: isCreate.value
-            //         ? []
-            //         : item?.value?.attributes?.viewerGroups,
-            //     ownerUsers: isCreate.value
-            //         ? []
-            //         : item?.value?.attributes?.viewerUsers,
-            // })
-
             const userData = ref({
                 edit: {
                     ownerGroups: isCreate.value
                         ? []
-                        : item?.value?.attributes?.adminGroups,
+                        : item?.value?.attributes?.adminGroups
+                        ? item?.value?.attributes?.adminGroups
+                        : [],
                     ownerUsers: isCreate.value
-                        ? [username.value]
-                        : item?.value?.attributes?.adminUsers,
+                        ? []
+                        : item?.value?.attributes?.adminUsers
+                        ? item?.value?.attributes?.adminUsers
+                        : [],
                 },
                 view: {
                     ownerGroups: isCreate.value
                         ? []
-                        : item?.value?.attributes?.viewerGroups,
+                        : item?.value?.attributes?.viewerGroups
+                        ? item?.value?.attributes?.viewerGroups
+                        : [],
                     ownerUsers: isCreate.value
                         ? []
-                        : item?.value?.attributes?.viewerUsers,
+                        : item?.value?.attributes?.viewerUsers
+                        ? item?.value?.attributes?.viewerUsers
+                        : [],
                 },
             })
-
-            // watch(
-            //     userData,
-            //     () => {
-            //         console.log('userdata: ', userData.value)
-            //     },
-            //     { immediate: true }
-            // )
-
-            // const userDataDetail = ref({
-            //     edit: {
-            //         ownerGroups: [],
-            //         ownerUsers: [],
-            //     },
-            //     view: {
-            //         ownerGroups: [],
-            //         ownerUsers: [],
-            //     },
-            // })
 
             const closeModal = () => {
                 emit('update:showCollectionModal', false)
@@ -447,6 +476,7 @@
                         ...ownersData,
                         icon: selectedEmoji.value,
                         iconType: selectedEmojiType.value,
+                        createdBy: username.value,
                     })
 
                 watch(
@@ -464,7 +494,7 @@
                                 /* IMP: Don't remove it, otherwise update collections will appear buggy */
                                 setTimeout(() => {
                                     refetchQueryCollection.value()
-                                }, 750)
+                                }, 1000)
                             }
                         }
                     },
@@ -622,7 +652,11 @@
                 // console.log('model value: ', userData.value)
             }
 
+            const imageUrl = (user: any) =>
+                `${window.location.origin}/api/service/avatars/${user}`
+
             return {
+                imageUrl,
                 closeModal,
                 titleBarRef,
                 title,
@@ -650,6 +684,7 @@
                 hideUserDropdown,
                 otherType,
                 handleOwnerChange,
+                username,
             }
         },
     })

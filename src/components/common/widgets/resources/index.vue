@@ -6,7 +6,7 @@
             <AddResources
                 v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"
-                :edit-permission="editPermission"
+                :edit-permission="linkEditPermission"
                 ><template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none hover:border-gray-400"
@@ -23,7 +23,7 @@
                 <div v-for="(item, index) in links(selectedAsset)" :key="index">
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
-                        :edit-permission="editPermission"
+                        :edit-permission="linkEditPermission"
                         :item="item"
                         :selected-asset="selectedAsset"
                         class=""
@@ -52,7 +52,7 @@
                 </p>
                 <AddResources
                     :asset="selectedAsset"
-                    :edit-permission="editPermission"
+                    :edit-permission="linkEditPermission"
                     ><template #trigger>
                         <AtlanButton
                             size="lg"
@@ -114,15 +114,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
         },
         setup(props) {
             const timeAgo = (time: string) => dayjs().from(time, true)
-            const { links } = useAssetInfo()
+            const { links, selectedAssetUpdatePermission, assetPermission } =
+                useAssetInfo()
             const hasUserLevelSlackIntegration = true
             const hasTenantLevelSlackIntegration = true
 
@@ -147,8 +143,18 @@
                 return slackLink
             })
 
+            const linkEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        'RELATIONSHIP_ADD',
+                        'Link'
+                    ) && assetPermission('CREATE_LINK')
+            )
+
             return {
                 links,
+                linkEditPermission,
                 hasAtleastOneSlackLink,
                 hasUserLevelSlackIntegration,
                 isSlackLink,

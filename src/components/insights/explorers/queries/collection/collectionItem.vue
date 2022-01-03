@@ -8,12 +8,12 @@
         @click="handleChange(item.guid)"
     >
         <div class="flex items-center overflow-x-hidden">
-            <span class="w-5 h-5 -mt-1 mr-2.5 text-lg">{{
+            <span class="w-5 h-5 mr-2 -mt-1 text-lg">{{
                 item?.attributes?.icon ? item?.attributes?.icon : '🗃'
             }}</span>
 
             <div class="truncate group-hover:text-primary" style="width: 90%">
-                <span class="text-sm text-gray-700 truncate mr-2.5">{{
+                <span class="mr-1 text-sm text-gray-700 truncate">{{
                     item.attributes.name
                 }}</span>
                 <AtlanIcon
@@ -50,7 +50,7 @@
                         <a-menu-item
                             key="delete"
                             class="text-red-600"
-                            @click="showDeletePopover = true"
+                            @click="toggleDeleteCollectionModal"
                             v-if="username === item?.createdBy"
                             >Delete collection</a-menu-item
                         >
@@ -107,6 +107,7 @@
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import { Insights } from '~/services/meta/insights/index'
     import { message } from 'ant-design-vue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {
@@ -135,19 +136,33 @@
                 type: Function,
                 required: true,
             },
+            collectionModalVisible: {
+                type: Boolean,
+                required: true,
+            },
         },
-        setup(props) {
+        setup(props, { emit }) {
             const { item, handleChange } = toRefs(props)
+            const { collectionModalVisible } = useVModels(props, emit)
 
             const showShareQueryModal = ref(false)
             const toggleShareQueryModal = () => {
-                console.log('collection item: ', item.value)
+                // console.log('collection item: ', item.value)
+                collectionModalVisible.value = false
                 showShareQueryModal.value = !showShareQueryModal.value
             }
 
             const showCollectionModal = ref(false)
             const toggleShowCollectionModal = () => {
+                collectionModalVisible.value = false
                 showCollectionModal.value = !showCollectionModal.value
+            }
+
+            const showDeletePopover = ref(false)
+
+            const toggleDeleteCollectionModal = () => {
+                // collectionModalVisible.value = false
+                showDeletePopover.value = true
             }
 
             const { username } = whoami()
@@ -166,7 +181,6 @@
                 'refetchQueryCollection'
             ) as Ref<Function>
 
-            const showDeletePopover = ref(false)
             let isDeleteLoading = ref(false)
 
             const delteItem = () => {
@@ -212,6 +226,7 @@
                 showDeletePopover,
                 isDeleteLoading,
                 delteItem,
+                toggleDeleteCollectionModal,
             }
         },
     })

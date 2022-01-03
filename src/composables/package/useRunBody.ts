@@ -44,11 +44,27 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'workflowTemplates': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'spec',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'spec.workflowTemplateRef.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {
         console.log(e)
     }
+
     // Object.keys(facets ?? {}).forEach((mkey) => {
 
     // Only showing ACTIVE assets for a connection
@@ -428,45 +444,58 @@ export function useRunBody(
 
     // //aggregations
 
-    // if (aggregations) {
-    //     aggregations?.forEach((mkey) => {
-    //         switch (mkey) {
-    //             case 'typeName': {
-    //                 if (mkey) {
-    //                     base.aggregation(
-    //                         'terms',
-    //                         '__typeName.keyword',
-    //                         { size: 50 },
-    //                         `${agg_prefix}_${mkey}`
-    //                     )
-    //                 }
-    //                 break
-    //             }
-    //             case 'dataType': {
-    //                 if (mkey) {
-    //                     base.aggregation(
-    //                         'terms',
-    //                         'dataType',
-    //                         { size: 50 },
-    //                         `${agg_prefix}_${mkey}`
-    //                     )
-    //                 }
-    //                 break
-    //             }
-    //             case 'glossary': {
-    //                 if (mkey) {
-    //                     base.aggregation(
-    //                         'terms',
-    //                         '__glossary',
-    //                         { size: 50 },
-    //                         `${agg_prefix}_${mkey}`
-    //                     )
-    //                 }
-    //                 break
-    //             }
-    //         }
-    //     })
-    // }
+    if (aggregations) {
+        aggregations?.forEach((mkey) => {
+            switch (mkey) {
+                case 'status': {
+                    base.rawOption('aggs', {
+                        name: {
+                            nested: {
+                                path: 'spec',
+                            },
+                            aggs: {
+                                name: {
+                                    terms: {
+                                        field: 'spec.workflowTemplateRef.name.keyword',
+                                    },
+                                    aggs: {
+                                        agg_by_phase: {
+                                            reverse_nested: {},
+                                            aggs: {
+                                                top_sales_hits: {
+                                                    top_hits: {
+                                                        size: 5,
+                                                        sort: [
+                                                            {
+                                                                'status.startedAt':
+                                                                    {
+                                                                        order: 'desc',
+                                                                    },
+                                                            },
+                                                        ],
+                                                        _source: {
+                                                            includes: [
+                                                                'status.phase',
+                                                                'status.startedAt',
+                                                                'status.finishedAt',
+                                                                'status.progress',
+                                                            ],
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })
+
+                    break
+                }
+            }
+        })
+    }
 
     // //preferences
     // Object.keys(preference ?? {}).forEach((mkey) => {

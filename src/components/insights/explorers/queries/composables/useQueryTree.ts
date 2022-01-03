@@ -84,7 +84,7 @@ const useQueryTree = ({
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
-    let currentSelectedNode = ref(queryFolderNamespace.value)
+    let currentSelectedNode = ref(collection.value)
     const queryCollectionsLoading: Ref<boolean> = inject(
         'queryCollectionsLoading'
     )
@@ -127,7 +127,7 @@ const useQueryTree = ({
             if (
                 nodeToParentKeyMap[currGuid] &&
                 nodeToParentKeyMap[currGuid] !==
-                    queryFolderNamespace.value?.guid
+                collection.value?.guid
             ) {
                 parentStack.push(nodeToParentKeyMap[currGuid])
                 findPath(nodeToParentKeyMap[currGuid])
@@ -175,7 +175,7 @@ const useQueryTree = ({
                         parentTitle: 'root',
                     })
                     nodeToParentKeyMap[folder.guid] =
-                        queryFolderNamespace.value?.guid
+                    collection.value?.guid
                     nodeToParentNameMap[folder.guid] = 'root'
                 }
             })
@@ -189,7 +189,7 @@ const useQueryTree = ({
                         parentTitle: 'root',
                     })
                     nodeToParentKeyMap[query.guid] =
-                        queryFolderNamespace.value?.guid
+                    collection.value?.guid
                     nodeToParentNameMap[query.guid] = 'root'
                 }
             })
@@ -411,10 +411,10 @@ const useQueryTree = ({
         }
         if (!selectedKeys.value.length) {
             immediateParentFolderQF.value =
-                queryFolderNamespace.value?.attributes?.qualifiedName
-            immediateParentGuid.value = queryFolderNamespace.value?.guid
+            collection.value?.attributes?.qualifiedName
+            immediateParentGuid.value = collection.value?.guid
 
-            currentSelectedNode.value = queryFolderNamespace.value
+            currentSelectedNode.value = collection.value
         }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
@@ -584,23 +584,27 @@ const useQueryTree = ({
      * @param entity - The entire updated entity
      */
     const updateNode = ({
-        qualifiedName,
+        guid,
         entity,
     }: {
-        qualifiedName: string
-        entity: Database | Schema | Table | Column | View
+        guid: string
+        entity: SavedQuery
     }) => {
-        const currentParents = nodeToParentKeyMap[qualifiedName]
+        const currentParents = nodeToParentNameMap[guid]
+
+        console.log('updated entity: ', entity)
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
-                if (treeNode.key === qualifiedName)
+                if (treeNode.key === guid)
                     return {
                         ...treeNode,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 return treeNode
             })
+
+            // console.log('update query node tree: ', treeData)
         } else {
             let parentStack: string[]
 
@@ -611,10 +615,10 @@ const useQueryTree = ({
                 const currentPath = path.pop()
 
                 // if the target node is reached
-                if (node.key === qualifiedName || !currentPath) {
+                if (node.key === guid || !currentPath) {
                     return {
                         ...node,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 }
                 return {
@@ -632,7 +636,7 @@ const useQueryTree = ({
             }
 
             // find the path to the node
-            parentStack = recursivelyFindPath(qualifiedName)
+            parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
             treeData.value = treeData?.value?.map(
@@ -665,10 +669,10 @@ const useQueryTree = ({
                 } else {
                     // if a new folder is found at the root level, append it
                     nodeToParentKeyMap[entity.guid] = isRoot
-                        ? queryFolderNamespace.value?.guid
+                        ? collection.value?.guid
                         : node?.key
                     nodeToParentNameMap[entity.guid] = isRoot
-                        ? queryFolderNamespace.value?.guid
+                        ? collection.value?.guid
                         : node?.title
                     updatedTreeData.push(returnTreeDataItemAttributes(entity))
                 }
@@ -760,6 +764,10 @@ const useQueryTree = ({
         }
         // if (queryFolderNamespace.value?.guid) initTreeData()
     })
+
+    // watch(treeData, ()=> {
+    //     console.log('updated Tree Data: ', treeData.value)
+    // })
 
     return {
         errorReq,

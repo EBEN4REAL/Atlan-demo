@@ -1,5 +1,9 @@
 <template>
+    <div v-if="isLoading">
+        <a-spin size="small" />
+    </div>
     <div
+        v-else
         class="flex flex-wrap items-center gap-1 text-sm"
         data-test-id="classification-popover"
     >
@@ -45,8 +49,8 @@
             </Popover>
         </template>
         <span
-            class="-ml-1 text-gray-500"
             v-if="!editPermission && list?.length < 1"
+            class="-ml-1 text-gray-500"
             >No linked classifications</span
         >
     </div>
@@ -68,6 +72,7 @@
     import Popover from '@/common/popover/classification.vue'
 
     export default defineComponent({
+        name: 'ClassificationWidget',
         components: {
             ClassificationFacet,
             ClassificationPill,
@@ -108,12 +113,17 @@
                 required: false,
                 default: null,
             },
+            isLoading: {
+                type: Boolean,
+                required: false,
+                default: false
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, editPermission } = toRefs(props)
+            const { guid, editPermission, isLoading } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -229,7 +239,7 @@
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,
-                handleDeleteClassification,
+                handleDeleteClassification
             }
         },
     })

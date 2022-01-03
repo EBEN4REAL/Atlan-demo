@@ -2,6 +2,9 @@
 import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
 import { ref } from 'vue'
+import { useConnectionStore } from '~/store/connection'
+import { usePersonaStore } from '~/store/persona'
+import { usePurposeStore } from '~/store/purpose'
 
 const agg_prefix = 'group_by'
 
@@ -14,7 +17,8 @@ export function useBody(
     facets?: Record<string, any>,
     postFacets?: Record<string, any>,
     aggregations?: string[],
-    preference?: Record<string, any>
+    preference?: Record<string, any>,
+    globalState?: string[]
 ) {
     const base = bodybuilder()
 
@@ -62,6 +66,80 @@ export function useBody(
 
     base.from(offset || 0)
     base.size(limit || 0)
+
+    const personaStore = usePersonaStore()
+    const purposeStore = usePurposeStore()
+    const connectionStore = useConnectionStore()
+
+    if (globalState?.length > 0) {
+        if (globalState?.length == 2) {
+            if (globalState[0] === 'persona') {
+                const connectionIdList = personaStore.getConnectionList(
+                    globalState[1]
+                )
+
+                const getAssetList = personaStore.getAssetList(globalState[1])
+
+                base.filter('bool', (q) => {
+                    connectionStore.list
+                        .filter((i) => connectionIdList.includes(i.guid))
+                        .map((i) => i.attributes.qualifiedName)
+                        .forEach((i) => {
+                            q.orFilter('term', 'qualifiedName', i)
+                        })
+                    getAssetList.forEach((i) => {
+                        if (i.includes('*')) {
+                            q.orFilter('wildcard', 'qualifiedName', i)
+                        } else {
+                            q.orFilter('wildcard', 'qualifiedName', `${i}/*`)
+                            q.orFilter('term', 'qualifiedName', `${i}`)
+                        }
+                    })
+
+                    return q
+                })
+            }
+            if (globalState[0] === 'purpose') {
+                console.log(globalState[1])
+
+                const found = purposeStore.list.find(
+                    (i) => i.id === globalState[1]
+                )
+
+                console.log(found)
+
+                if (found) {
+                    if (found.tags.length > 0) {
+                        base.filter('terms', '__traitNames', found.tags)
+                        // base.filter('bool', (q) => {
+                        //     q.orFilter('terms', '__traitNames', found.tags)
+                        // })
+                    }
+                }
+                // const connectionIdList = personaStore.getConnectionList(
+                //     globalState[1]
+                // )
+                // const getAssetList = personaStore.getAssetList(globalState[1])
+                // base.filter('bool', (q) => {
+                //     connectionStore.list
+                //         .filter((i) => connectionIdList.includes(i.guid))
+                //         .map((i) => i.attributes.qualifiedName)
+                //         .forEach((i) => {
+                //             q.orFilter('term', 'qualifiedName', i)
+                //         })
+                //     getAssetList.forEach((i) => {
+                //         if (i.includes('*')) {
+                //             q.orFilter('wildcard', 'qualifiedName', i)
+                //         } else {
+                //             q.orFilter('wildcard', 'qualifiedName', `${i}/*`)
+                //             q.orFilter('term', 'qualifiedName', `${i}`)
+                //         }
+                //     })
+                //     return q
+                // })
+            }
+        }
+    }
 
     // Only showing ACTIVE assets for a connection
 

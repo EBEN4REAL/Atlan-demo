@@ -52,6 +52,7 @@
                             <CollectionItem
                                 :item="collection"
                                 :handle-change="handleChange"
+                                v-model:collectionModalVisible="isVisible"
                             />
                         </div>
                         <div
@@ -71,7 +72,7 @@
 
                 <div
                     class="flex flex-row-reverse items-center pr-4 mt-auto border-t border-gray-300 cursor-pointer h-9"
-                    @click="emit('toggleCollectionModal')"
+                    @click="createCollectionToggle"
                     v-auth="[map.CREATE_COLLECTION]"
                 >
                     <AtlanIcon
@@ -97,7 +98,7 @@
                     style="width: 90%"
                 >
                     <span
-                        class="text-base font-bold text-gray-700 truncate mr-2.5"
+                        class="mr-1 text-base font-bold text-gray-700 truncate"
                         >{{ selectedCollection?.attributes?.name }}</span
                     >
                     <AtlanIcon
@@ -247,6 +248,11 @@
                 handleChange(selectedValue.value)
             }
 
+            const createCollectionToggle = () => {
+                isVisible.value = false
+                emit('toggleCollectionModal')
+            }
+
             watch(queryCollectionsLoading, (newLoading) => {
                 if (!newLoading) {
                     selectDefaultValue()
@@ -277,6 +283,7 @@
                 privateCollections,
                 emit,
                 map,
+                createCollectionToggle,
             }
         },
     })

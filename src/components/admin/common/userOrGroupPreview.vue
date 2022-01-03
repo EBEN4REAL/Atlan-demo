@@ -1,5 +1,8 @@
 <template>
-    <div class="h-full pb-6">
+    <div class="relative h-full pb-6">
+        <div class="close-btn-add-policy" @click="$emit('close')">
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
         <div v-if="isLoading" class="flex items-center justify-center h-full">
             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
@@ -24,7 +27,7 @@
             </ErrorView>
         </div>
         <template v-else-if="isValidEntity">
-            <div class="relative flex mx-4 my-5">
+            <div class="relative flex items-center py-3">
                 <Avatar
                     v-if="isValidUser"
                     :image-url="updatedImageUrl || imageUrl"
@@ -34,11 +37,12 @@
                         selectedUser.username ||
                         selectedUser.email
                     "
-                    :avatar-size="46"
+                    :avatar-size="40"
                     :avatar-shape="'square'"
+                    class="px-3"
                 />
-                <div class="w-full ml-4">
-                    <div class="flex items-center content-center text-gray-500">
+                <div class="w-full">
+                    <div class="flex content-center text-gray-500">
                         <div class="w-4/5">
                             <div
                                 class="flex text-base content-center items-center capitalize text-gray-700 mb-0.5"
@@ -46,33 +50,33 @@
                                 <span class="mr-1 font-bold">{{ title }}</span>
                                 <SlackMessageCta
                                     v-if="slackEnabled"
-                                    :link="slackUrl"
+                                    :slack-link="slackUrl"
                                 />
                                 <span
-                                    v-if="isValidGroup && selectedGroup.isDefault === 'true'"
+                                    v-if="
+                                        isValidGroup &&
+                                        selectedGroup.isDefault === 'true'
+                                    "
                                     class="px-2 py-1 ml-1 text-xs rounded-full bg-blue-50 text-gray"
                                 >
                                     Default
                                 </span>
                             </div>
-                            <span class="text-sm truncate w-28 mr-1">
+                            <span class="mr-1 text-sm truncate w-28">
                                 @{{ name }}
                             </span>
-                            <span
-                                v-if="details"
-                                class="text-sm"
-                            >
+                            <span v-if="details" class="text-sm">
                                 &bull; <span class="ml-1">{{ details }}</span>
                             </span>
                         </div>
-                        <div class="ml-auto">
+                        <!-- <div class="ml-auto">
                             <a-button
                                 class="border-0 shadow-none"
                                 @click="$emit('close')"
                             >
                                 <AtlanIcon icon="Cross" />
                             </a-button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -80,6 +84,7 @@
                 v-model:activeKey="activeKey"
                 tab-position="left"
                 class="h-full border-t preview-tab"
+                :destroy-inactive-tab-pane="true"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -98,12 +103,15 @@
                         :is-loading="isLoading"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
-                        @updated-user="() => {
-                            userUpdated = true
-                        }"
+                        @updated-user="
+                            () => {
+                                userUpdated = true
+                            }
+                        "
                         @refreshTable="reload"
                         @success="reload"
                         @image-updated="handleImageUpdate"
+                        @changeTab="handleChangeTab"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -116,15 +124,15 @@
         defineAsyncComponent,
         computed,
         toRefs,
-        ref
+        ref,
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import Avatar from '@common/avatar/avatar.vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
+    import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
-    import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -183,7 +191,7 @@
                 tabs,
                 imageUrl,
                 activeKey,
-                userUpdated
+                userUpdated,
             } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() =>
                 Boolean(
@@ -273,6 +281,9 @@
                     ? getDeepLinkFromUserDmLink(slackEnabled.value)
                     : '#'
             )
+            const handleChangeTab = (tabKey) => {
+                activeKey.value = tabKey
+            }
             return {
                 tabs,
                 isValidEntity,
@@ -294,8 +305,25 @@
                 slackUrl,
                 handleImageUpdate,
                 updatedImageUrl,
-                userUpdated
+                userUpdated,
+                handleChangeTab,
             }
         },
     })
 </script>
+<style lang="less" scoped>
+    .close-btn-add-policy {
+        // padding: 10px;
+        height: 32px;
+        width: 32px;
+        background: #3e4359cc;
+        position: fixed;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        transform: rotate(45deg);
+        left: -40px;
+        top: 20px;
+        cursor: pointer;
+    }
+</style>

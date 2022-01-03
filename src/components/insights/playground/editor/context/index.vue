@@ -31,7 +31,7 @@
                     />
                 </div>
             </a-tooltip> -->
-            <div class="flex items-center w-64">
+            <div class="flex items-center" style="max-width: 16rem">
                 <div class="mt-1">
                     <AtlanIcon
                         :icon="
@@ -105,8 +105,10 @@
                         class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                     >
                         <template #title>
-                            {{ useTimeAgo(activeInlineTab?.updateTime) }}
-                            by {{ activeInlineTab.updatedBy }}
+                            updated
+                            {{ useTimeAgo(activeInlineTab?.updateTime)?.value }}
+                            by
+                            {{ activeInlineTab.updatedBy }}
                         </template>
                         <AtlanIcon class="mr-1" icon="Check" />Saved
                     </a-tooltip>

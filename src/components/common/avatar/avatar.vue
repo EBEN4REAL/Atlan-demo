@@ -50,7 +50,7 @@
                                 text-gray-500
                             "
                         >
-                            <AtlanIcon icon="Camera" />
+                            <AtlanIcon icon="Pencil" />
                         </div>
                     </div>
                 </div>

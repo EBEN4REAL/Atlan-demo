@@ -102,6 +102,7 @@ export default function useGlossary(immediate = true) {
     )
     const glossaryStore = useGlossaryStore()
     watch(data, () => {
+        console.log('this being called')
         glossaryStore.setList(data?.value.entities || [])
         glossaryStore.setTermsCount(
             aggregationMap(GROUP_TERM_AGGREATION, true) || []

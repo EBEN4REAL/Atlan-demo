@@ -15,3 +15,36 @@
         // width: 14px !important;
     }
 }
+
+.glossary-tree {
+    .ant-tree-switcher {
+        margin-right: -1px !important;
+    }
+    .ant-tree-switcher_open {
+        transform: rotate(90deg);
+    }
+    .ant-tree-treenode {
+        @apply pb-0 !important;
+        @apply hover:bg-primary-light rounded mt-1 !important;
+    }
+    .ant-tree-title {
+        @apply flex;
+    }
+    .ant-tree-node-content-wrapper {
+        @apply hover:bg-primary-light !important;
+        transition: none !important;
+    }
+    .ant-tree-list-holder-inner {
+        @apply px-3 !important;
+    }
+    .ant-tree-treenode-selected {
+        @apply bg-primary-light !important;
+    }
+    .ant-tree-title {
+        @apply select-none;
+    }
+    .ant-tree-indent-unit {
+        width: 18px !important;
+    }
+ 
+}

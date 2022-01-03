@@ -1,11 +1,14 @@
 <template>
     <div class="px-4 py-2 mb-3 component-height">
-        <div class="mb-3 text-sm font-semibold text-gray-500">Owned Assets</div>
+        <div class="py-1 mb-3 text-base font-semibold text-gray-500">
+            Owned Assets
+        </div>
         <div v-auth="map.LIST_USERS" class="flex flex-col rounded-lg">
             <AssetsWrapper
+                :key="'user-asset-list'"
                 :initial-filters="ownerFilter"
                 :show-filters="false"
-                :static-use="false"
+                :static-use="true"
                 :show-aggrs="true"
                 class="asset-list"
                 page="admin"

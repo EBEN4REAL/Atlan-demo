@@ -86,7 +86,7 @@ function generateMarkdown(
     let typeHTML=`<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
     let ownerString = entity.attributes.ownerUsers.join(', ')
     let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
-    console.log('asset here: ', entity)
+    // console.log('asset here: ', entity)
 
     let rowCount, columnCount,rowCountHTML, isPrimaryHTML
 
@@ -141,12 +141,15 @@ export function entitiesToEditorKeyword(
             const entities = res.entities ?? []
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
-            console.log('suggestion: ', {
-                entities
-            })
+            // console.log('suggestion: ', {
+            //     entities
+            // })
+            let sortString='a'
             for (let i = 0; i < len; i++) {
                 // console.log('su counter: ', i)
                 let keyword
+                sortString="a".repeat(i+1)
+                
                 switch (type) {
                     case 'TABLE': {
                         // console.log('su type: ', 'table')
@@ -205,6 +208,7 @@ export function entitiesToEditorKeyword(
                                 ),
                             },
                             insertText: insertText,
+                            sortText: sortString
                         }
                         // console.log('su push cn: ', words.length )
                         words.push(keyword)
@@ -227,6 +231,7 @@ export function entitiesToEditorKeyword(
                                     `${type}`
                                 ),
                             },
+                            sortText: sortString,
                             insertText: `${entities[i].attributes.name}`,
                         }
                         words.push(keyword)

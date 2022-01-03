@@ -44,7 +44,7 @@
                             :data-index="index"
                             class="bg-white"
                         >
-                            <div class="flex items-center">
+                            <div class="flex items-center justify-between">
                                 <div class="truncate">
                                     {{ rowData }}
                                 </div>
@@ -74,14 +74,12 @@
         watch,
         ref,
         onMounted,
-        createApp,
     } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import VariantModal from './variantModal.vue'
-    import ExpandIcon from '../../../../assets/images/icons/expand.svg'
 
     export default defineComponent({
         name: 'AtlanTable',

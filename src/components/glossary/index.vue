@@ -21,12 +21,25 @@
                     :glossaryName="selectedGlosaryName"
                 >
                     <template #trigger>
-                        <a-button class="ml-3" size="small">
-                            <AtlanIcon
-                                icon="Add"
-                                class="transition duration-300 text-primary"
-                            />
-                        </a-button>
+                        <a-tooltip>
+                            <template #title
+                                >Add new
+                                {{
+                                    `${
+                                        defaultEntityType === 'AtlasGlossary'
+                                            ? 'Glossary'
+                                            : 'Term/Category'
+                                    }`
+                                }}</template
+                            >
+
+                            <a-button class="ml-3" size="small">
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="transition duration-300 text-primary"
+                                />
+                            </a-button>
+                        </a-tooltip>
                     </template>
                 </AddGTCModal>
 
@@ -75,11 +88,11 @@
         </div>
         <div
             v-if="!queryText"
-            class="flex flex-col items-stretch flex-1 h-full mt-2 glossaryTreeWrapper"
+            class="flex flex-col items-stretch flex-1 h-full mt-2 overflow-x-hidden overflow-y-auto glossaryTreeWrapper scrollable-container"
+            :class="$style.treeStyles"
         >
             <GlossaryTree
                 ref="glossaryTree"
-                :height="height"
                 @select="handlePreview"
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
@@ -153,6 +166,7 @@
         provide,
         PropType,
         watch,
+        onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -280,7 +294,9 @@
             facets.value = {
                 ...facets.value,
                 ...initialFilters.value,
-                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                typeNames: props.checkable
+                    ? ['AtlasGlossaryTerm']
+                    : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 
@@ -310,6 +326,7 @@
                 fetch,
                 quickChange,
                 handleSelectedGlossary,
+                cancelRequest,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -469,6 +486,10 @@
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
+            // dont fetch flat list on mount
+            onMounted(() => {
+                cancelRequest()
+            })
             return {
                 handleFilterChange,
                 isLoading,
@@ -513,7 +534,7 @@
                 searchBar,
                 onSearchItemCheck,
                 showCollapseAll,
-                map
+                map,
             }
         },
     })
@@ -543,5 +564,8 @@
             right: 0.75rem;
             z-index: 99;
         }
+    }
+    .treeStyles {
+        max-height: calc(100vh - 11rem) !important;
     }
 </style>

@@ -30,9 +30,7 @@
                             :class="$style.filterButton"
                             v-auth="[map.CREATE_COLLECTION]"
                         >
-                            <span class="text-xs font-bold text-gray-700"
-                                >New</span
-                            >
+                            <span class="text-sm text-gray-700">New</span>
                         </div>
                         <template #overlay>
                             <a-menu>
@@ -75,8 +73,7 @@
                                 >
                                     <div class="flex items-center">
                                         <AtlanIcon
-                                            color="#5277D7"
-                                            icon="Platform"
+                                            icon="CollectionIconSmall"
                                             class="h-4 mr-2 outline-none hover:text-primary"
                                         />
                                         <span>New Collection</span>
@@ -86,7 +83,7 @@
                         </template>
                     </a-dropdown>
                 </div>
-                <div class="flex flex-row space-x-2">
+                <div class="flex flex-row space-x-2" v-if="treeData?.length">
                     <a-input
                         v-model:value="searchQuery"
                         class="h-8 mt-2 rounded"
@@ -102,7 +99,18 @@
                             class="flex items-center w-8 h-8 p-2 mt-2"
                             :class="$style.filterButton"
                         >
-                            <AtlanIcon icon="Filter" />
+                            <template #icon>
+                                <AtlanIcon
+                                    v-if="totalFilteredCount === 0"
+                                    icon="Filter"
+                                    class="-ml-0.5"
+                                />
+                                <AtlanIcon
+                                    v-else
+                                    icon="FilterDot"
+                                    class="-ml-0.5"
+                                />
+                            </template>
                         </a-button>
                         <template #content>
                             <QueryFilter @change="onFilterChange" />
@@ -148,7 +156,7 @@
                 </div>
                 <div
                     v-else
-                    class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
+                    class="relative w-full px-4 pt-0 pb-6 mt-2 overflow-y-auto"
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh- 140px )'
@@ -438,6 +446,10 @@
                     hasCollectionWritePermission.value ||
                     isCollectionCreatedByCurrentUser.value
             )
+
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
 
             // console.log('collection permission: ', {
             //     isCollectionCreatedByCurrentUser,
@@ -955,32 +967,47 @@
             provide('refetchNode', refetchNode)
 
             /* Watcher for updating the node in tree */
-            watch(selectedAsset, () => {
+            watch(assetSidebarUpdatedData, () => {
                 /* For classificationNames len ==1 for public */
-                const inlineTab = inlineTabs.value.find(
-                    (tab) => tab?.queryId === selectedAsset.value?.guid
-                )
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                if (selectedAsset.value?.guid) {
-                    updateNode({
-                        qualifiedName: qualifiedName(
-                            selectedAsset as unknown as assetInterface
-                        ),
-                        entity: selectedAsset.value as any,
-                    })
-                    // }
-                    activeInlineTabCopy.status = selectedAsset.value.attributes
-                        .certificateStatus as string
-                    activeInlineTabCopy.attributes =
-                        selectedAsset.value.attributes
+                // const inlineTab = inlineTabs.value.find(
+                //     (tab) => tab?.queryId === selectedAsset.value?.guid
+                // )
 
-                    modifyActiveInlineTab(
-                        activeInlineTabCopy,
-                        inlineTabs,
-                        activeInlineTabCopy.isSaved
+                // console.log('query tree update:', assetSidebarUpdatedData.value)
+
+                if (assetSidebarUpdatedData?.value?.typeName === 'Query') {
+                    console.log(
+                        'query tree update:',
+                        assetSidebarUpdatedData.value
                     )
+                    if (assetSidebarUpdatedData?.value?.guid) {
+                        updateNode({
+                            guid: assetSidebarUpdatedData?.value?.guid,
+                            entity: toRaw(assetSidebarUpdatedData.value) as any,
+                        })
+                    }
                 }
+                // const activeInlineTabCopy: activeInlineTabInterface =
+                //     Object.assign({}, activeInlineTab.value)
+                // if (selectedAsset.value?.guid) {
+                //     updateNode({
+                //         qualifiedName: qualifiedName(
+                //             selectedAsset as unknown as assetInterface
+                //         ),
+                //         entity: selectedAsset.value as any,
+                //     })
+                //     // }
+                //     // activeInlineTabCopy.status = selectedAsset.value.attributes
+                //     //     .certificateStatus as string
+                //     // activeInlineTabCopy.attributes =
+                //     //     selectedAsset.value.attributes
+
+                //     // modifyActiveInlineTab(
+                //     //     activeInlineTabCopy,
+                //     //     inlineTabs,
+                //     //     activeInlineTabCopy.isSaved
+                //     // )
+                // }
             })
 
             let searchTreeData = ref([])

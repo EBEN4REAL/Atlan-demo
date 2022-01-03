@@ -26,9 +26,9 @@
         </AddGtcModal>
     </div>
     <a-tree
-        :class="$style.glossaryTree"
+        class="glossary-tree"
         :tree-data="treeData"
-        :draggable="false"
+        :draggable="true"
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
@@ -44,6 +44,17 @@
         :checkStrictly="false"
         @check="onCheck"
         :blockNode="true"
+        @drop="dragAndDropNode"
+        @dragstart="
+            () => {
+                isTreeNodeAnimating = true
+            }
+        "
+        @dragend="
+            () => {
+                isTreeNodeAnimating = false
+            }
+        "
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -54,6 +65,7 @@
                 :item="entity"
                 :checkable="checkable"
                 :class="treeItemClass"
+                :is-animating="isTreeNodeAnimating"
                 @addSelectedKey="handleAddSelectedKey"
             />
         </template>
@@ -131,6 +143,7 @@
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
             const { checkedGuids } = useVModels(props, emit)
             const { selectedGlossary } = useAssetInfo()
+            const isTreeNodeAnimating = ref(false)
             const glossaryStore = useGlossaryStore()
             const localCheckedNodes = ref([])
             const parentGlossaryGuid = computed(() => {
@@ -157,13 +170,14 @@
                 collapseAll,
                 updateNode,
                 checkedKeys,
+                dragAndDropNode,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
                 checkable: props.checkable,
                 checkedGuids: checkedGuids.value,
-                localCheckedNodes
+                localCheckedNodes,
             })
 
             const addGlossary = (asset) => {
@@ -215,7 +229,6 @@
                 reInitTree()
             })
             const handleSelect = (selected: any, event: any) => {
-                console.log(selected, event, localCheckedNodes.value)
                 if (
                     props.checkable &&
                     event?.node?.typeName === 'AtlasGlossaryTerm'
@@ -223,11 +236,17 @@
                     const found = checkedKeys.value.find(
                         (el) => el === event?.node?.key
                     )
-                    let newCheckedNodes;
-                    if(found) {
-                        newCheckedNodes = localCheckedNodes.value.filter((localNode: any) => localNode.guid !== event.node.guid)
+                    let newCheckedNodes
+                    if (found) {
+                        newCheckedNodes = localCheckedNodes.value.filter(
+                            (localNode: any) =>
+                                localNode.guid !== event.node.guid
+                        )
                     } else {
-                        newCheckedNodes = [ ...localCheckedNodes.value, event.node ]
+                        newCheckedNodes = [
+                            ...localCheckedNodes.value,
+                            event.node,
+                        ]
                     }
                     onCheck(event, {
                         checkedNodes: newCheckedNodes,
@@ -269,36 +288,9 @@
                 profileId,
                 selectedGlossary,
                 handleAddSelectedKey,
+                dragAndDropNode,
+                isTreeNodeAnimating,
             }
-            // data
         },
     })
 </script>
-<style lang="less" module>
-    .glossaryTree {
-        :global(.ant-tree-switcher) {
-            margin-right: -1px !important;
-        }
-        :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg);
-        }
-        :global(.ant-tree-treenode) {
-            padding-bottom: 0px !important;
-            @apply hover:bg-primary-light rounded mt-1 !important;
-        }
-        :global(.ant-tree-title) {
-            @apply flex;
-        }
-        :global(.ant-tree-node-content-wrapper) {
-            @apply hover:bg-primary-light !important;
-            transition: none !important;
-        }
-
-        :global(.ant-tree-list-holder-inner) {
-            @apply px-3 !important;
-        }
-        :global(.ant-tree-treenode-selected) {
-            @apply bg-primary-light !important;
-        }
-    }
-</style>

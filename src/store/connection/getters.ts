@@ -6,6 +6,7 @@ import { SourceList } from '~/constant/source'
 export interface Getters {
     getList(state: State): ConnectionType[]
     getSourceList(): any[]
+    getFilteredSourceList(): (list: string[]) => any
     getConnectorImageMapping(): any
     getImage(): (id: string) => any
     getList(): any
@@ -14,6 +15,29 @@ export interface Getters {
 export const getters: GettersTree<State> & Getters = {
     getList(state: State) {
         return state.list
+    },
+    getFilteredSourceList() {
+        return (list) => {
+            const duplicateList = this.list
+                ?.filter((i) => list?.includes(i.guid))
+                .map((i) => i.attributes?.connectorName?.toLowerCase())
+
+            let countMap = (duplicateList || []).reduce((prev, cur) => {
+                prev[cur] = (prev[cur] || 0) + 1
+                return prev
+            }, {})
+
+            const sourceList = SourceList.map((i) => ({
+                ...i,
+                count: countMap[i.id.toLowerCase()],
+            }))
+
+            return sourceList
+                .filter((item) => item.count > 0)
+                .sort((a, b) =>
+                    a.count < b.count ? 1 : b.count < a.count ? -1 : 0
+                )
+        }
     },
     getSourceList() {
         const duplicateList = this.list?.map((i) =>
@@ -25,14 +49,10 @@ export const getters: GettersTree<State> & Getters = {
             return prev
         }, {})
 
-        console.log(countMap)
-
         const sourceList = SourceList.map((i) => ({
             ...i,
             count: countMap[i.id.toLowerCase()],
         }))
-
-        console.log(sourceList)
 
         return sourceList
             .filter((item) => item.count > 0)

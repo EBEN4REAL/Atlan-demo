@@ -20,11 +20,14 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
-        GlossaryAttributes
+        GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
+        name: 'GlossaryIdPage',
         components: {
             GlossaryProfile,
             Loader,
@@ -49,7 +52,7 @@
             const facets = ref({
                 guid: id.value,
             })
-            if (selectedAsset.value?.guid === id.value) {
+            if (selectedAsset.value?.guid === id?.value) {
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
@@ -60,12 +63,15 @@
                 }
                 return id.value
             })
+            const { customMetadataProjections } = useTypedefData()
+
             const dependentKey = ref(fetchKey.value)
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                ...GlossaryAttributes
+                ...GlossaryAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 
@@ -78,6 +84,17 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
+
+            const sendPageEvent = () => {
+                let name = 'glossary'
+                const type = localSelected?.value?.typeName
+                if (type === 'AtlasGlossaryCategory') {
+                    name = 'category'
+                } else if (type === 'AtlasGlossaryTerm') {
+                    name = 'term'
+                }
+                useTrackPage('gtc', name)
+            }
 
             watch(list, () => {
                 if (list.value.length > 0) {
@@ -94,9 +111,11 @@
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
+                sendPageEvent()
             })
 
             return {
+                list,
                 fetchKey,
                 isLoading,
                 localSelected,

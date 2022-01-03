@@ -21,6 +21,7 @@
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
             <AssetPreview
+                v-if="visible"
                 :selected-asset="data"
                 :is-drawer="true"
                 @closeDrawer="$emit('closeDrawer')"
@@ -31,8 +32,6 @@
 <script lang="ts">
     import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
-    import useEvaluate from '~/composables/auth/useEvaluate'
-    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         components: {
@@ -60,13 +59,9 @@
         emits: ['closeDrawer', 'update'],
 
         setup(props, { emit }) {
-            const { showDrawer, data } = toRefs(props)
+            const { showDrawer } = toRefs(props)
 
             const visible = ref(false)
-
-            const body = ref({})
-            const { refresh } = useEvaluate(body, false)
-            const { getAssetEvaluationsBody } = useAssetEvaluate()
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -76,15 +71,6 @@
 
             watch(showDrawer, () => {
                 visible.value = showDrawer.value
-            })
-
-            watch(visible, () => {
-                if (visible.value) {
-                    body.value = {
-                        entities: getAssetEvaluationsBody(data.value),
-                    }
-                    refresh()
-                }
             })
 
             return { visible }

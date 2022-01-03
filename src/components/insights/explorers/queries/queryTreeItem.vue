@@ -247,6 +247,55 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
+                                            <div
+                                                v-if="activeInlineTab?.queryId"
+                                                class="text-gray-700"
+                                            >
+                                                <a-sub-menu
+                                                    key="shareQuery"
+                                                    style="min-width: 200px"
+                                                >
+                                                    <template #title>
+                                                        <div
+                                                            class="flex items-center justify-between w-full mr-2"
+                                                        >
+                                                            <div
+                                                                class="flex items-center justify-between w-full text-gray-500"
+                                                            >
+                                                                <span
+                                                                    class="text-gray-700"
+                                                                    >Share
+                                                                    query</span
+                                                                >
+                                                            </div>
+                                                            <AtlanIcon
+                                                                icon="ChevronRight"
+                                                                class="ml-2 text-gray-500 -mt-0.5"
+                                                            />
+                                                        </div>
+                                                    </template>
+                                                    <template #expandIcon />
+                                                    <div
+                                                        class="text-gray-700"
+                                                        style="min-width: 200px"
+                                                    >
+                                                        <a-menu-item
+                                                            key="copyLink"
+                                                            class="px-4 py-2 text-sm"
+                                                            @click="copyURL"
+                                                        >
+                                                            <div
+                                                                class="flex items-center justify-between"
+                                                            >
+                                                                <span
+                                                                    >Copy
+                                                                    Link</span
+                                                                >
+                                                            </div>
+                                                        </a-menu-item>
+                                                    </div>
+                                                </a-sub-menu>
+                                            </div>
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -374,6 +423,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import AtlanBtn from '@/UI/button.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     const {
         inlineTabRemove,
@@ -1084,10 +1134,16 @@
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
 
-            // console.log('error node: ', {
-            //     errorNode: errorNode.value,
-            //     item: item.value,
-            // })
+            const copyURL = () => {
+                const URL =
+                    window.location.host +
+                    window.location.pathname +
+                    `?id=` +
+                    item?.value?.guid
+                copyToClipboard(URL)
+                message.success('Link Copied!')
+                useAddEvent('insights', 'query', 'link_copied', undefined)
+            }
 
             return {
                 evaluatePermisson,
@@ -1124,6 +1180,7 @@
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 hasWritePermission,
+                copyURL,
                 // input,
                 // newFolderName,
             }

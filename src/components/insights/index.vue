@@ -3,31 +3,29 @@
         <!--Sidebar navigation pane start -->
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
-                <div
-                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
-                    @click="() => changeTab(tab)"
-                >
-                    <AtlanIcon
-                        v-if="tab?.icon"
-                        :icon="
-                            activeTabId === tab.id
-                                ? `${tab.icon}Active`
-                                : `${tab.icon}`
-                        "
-                        class="w-6 h-6"
-                    />
-                    <!-- <p
-                        class="mt-1 mb-0 text-xs text-gray"
-                        :class="activeTabId === tab.id ? 'text-primary' : ''"
-                    >
-                        {{ tab.name }}
-                    </p> -->
+                <a-tooltip placement="right" color="#363636">
+                    <template #title> {{ tab.title }} </template>
+
                     <div
-                        class="absolute top-0 right-0 h-full"
-                        style="width: 3px"
-                        :class="activeTabId === tab.id ? 'bg-primary' : ''"
-                    ></div>
-                </div>
+                        class="relative flex flex-col items-center text-xs sidebar-nav-icon"
+                        @click="() => changeTab(tab)"
+                    >
+                        <AtlanIcon
+                            v-if="tab?.icon"
+                            :icon="
+                                activeTabId === tab.id
+                                    ? `${tab.icon}Active`
+                                    : `${tab.icon}`
+                            "
+                            class="w-6 h-6"
+                        />
+                        <div
+                            class="absolute top-0 right-0 h-full"
+                            style="width: 3px"
+                            :class="activeTabId === tab.id ? 'bg-primary' : ''"
+                        ></div>
+                    </div>
+                </a-tooltip>
             </template>
         </div>
         <!--Sidebar navigation pane end -->
@@ -297,9 +295,28 @@
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
 
+            const resetTree = ref(false)
+            const resetParentGuid = ref(null)
+            const resetType = ref(null)
+            const refreshQueryTree = (guid, type) => {
+                resetTree.value = true
+                resetParentGuid.value = guid
+                resetType.value = type
+                // console.log('QueryTree refresh: ', resetTree.value)
+            }
+            const resetQueryTree = () => {
+                resetTree.value = false
+                resetParentGuid.value = null
+                resetType.value = null
+                // console.log('QueryTree reset: ', resetTree.value)
+            }
+
+            const assetSidebarUpdatedData = ref({})
+
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
+
             const provideData: provideDataInterface = {
                 activeInlineTab,
                 queryCollections,
@@ -322,6 +339,8 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 editorContentSelectionState,
+                refreshQueryTree,
+                assetSidebarUpdatedData,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -683,22 +702,6 @@
                 window.removeEventListener('keydown', _keyListener)
                 observer?.value?.unobserve(splitpaneRef?.value)
             })
-
-            const resetTree = ref(false)
-            const resetParentGuid = ref(null)
-            const resetType = ref(null)
-            const refreshQueryTree = (guid, type) => {
-                resetTree.value = true
-                resetParentGuid.value = guid
-                resetType.value = type
-                // console.log('QueryTree refresh: ', resetTree.value)
-            }
-            const resetQueryTree = () => {
-                resetTree.value = false
-                resetParentGuid.value = null
-                resetType.value = null
-                // console.log('QueryTree reset: ', resetTree.value)
-            }
 
             // provide('refreshQueryTree', refreshQueryTree)
             // provide('resetQueryTree', resetQueryTree)

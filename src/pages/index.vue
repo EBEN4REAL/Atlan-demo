@@ -1,20 +1,28 @@
 <template>
     <div class="grid h-full grid-cols-6 mx-auto" style="max-width: 1100px">
-        <div class="flex flex-col col-span-4">
+        <div class="flex flex-col col-span-4 pb-6">
             <div class="flex items-center h-24 col-span-6 gap-4 pl-9">
                 <AtlanIcon class="h-8" :icon="getIcon()" />
                 <span class="text-lg"
                     >{{ getGreet() }}, {{ getNameInTitleCase(name) }}!</span
                 >
             </div>
-            <div class="flex flex-col col-span-4 px-9 gap-y-3">
+            <div class="flex flex-col col-span-4 px-9">
                 <div class="">
                     <SearchAndStats />
+                    <Announcements class="mt-6" />
                 </div>
-                <div class="">
-                    <Announcements />
+
+                <div class="mt-6">
+                    <Persona></Persona>
                 </div>
-                <Relevant />
+                <div class="mt-6">
+                    <Purpose></Purpose>
+                </div>
+                <div class="mt-6">
+                    <Relevant />
+                </div>
+
                 <!--section>
                 <YourOrgs />
             </section-->
@@ -72,6 +80,8 @@
     import SearchAndStats from '@/home/main/searchAndStats.vue'
     import Announcements from '@/home/main/annoucement.vue'
     import Relevant from '@/home/main/relevant.vue'
+    import Persona from '@/home/main/persona.vue'
+    import Purpose from '@/home/main/purpose.vue'
     import YourOrgs from '@/home/main/YourOrgs.vue'
     import YourWorkspace from '@/home/aside/YourWorkspace.vue'
 
@@ -83,6 +93,8 @@
             Announcements,
             Relevant,
             YourOrgs,
+            Persona,
+            Purpose,
         },
         props: {},
         setup() {

@@ -5,7 +5,7 @@
         :visible="isVisible"
         :get-container="false"
         :closable="false"
-        :mask="false"
+        :mask="true"
         :class="$style.drawerStyle"
         :width="460"
     >
@@ -22,7 +22,6 @@
                         :preference="preference"
                         :allCheckboxAreaClick="true"
                         :disableHandlePreview="true"
-                        :isCache="false"
                         class="asset-list-height"
                         key="all-assets"
                         page="glossary"

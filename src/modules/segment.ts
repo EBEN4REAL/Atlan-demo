@@ -1,4 +1,4 @@
-//WARNING: We sue our own CDN not the default one from Segment. Mindful when you change
+//WARNING: We use our own CDN not the default one from Segment. Mindful when you change
 
 import { UserModule } from '~/types/vitessg'
 
@@ -66,7 +66,6 @@ export const install: UserModule = ({ app }) => {
                     analytics.load(segmentKey)
                     app.config.globalProperties.$analytics = window.analytics
                     app.provide('$analytics', window.analytics)
-                    //analytics.page();
                 }
         })()
     }

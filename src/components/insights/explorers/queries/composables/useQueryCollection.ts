@@ -80,6 +80,7 @@ const useQueryCollection = () => {
         viewerGroups,
         icon,
         iconType,
+        createdBy
     }) => {
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const tenantId = tenantStore.tenantRaw.realm
@@ -98,6 +99,7 @@ const useQueryCollection = () => {
                     tenantId,
                     icon,
                     iconType,
+                    createdBy
                 },
             },
         })
@@ -218,7 +220,7 @@ export const isCollectionPrivate = (
     // owner/viewer are empty
     // eslint-disable-next-line no-underscore-dangle
 
-    console.log('isCollectionPrivate: ', {collection, username})
+    // console.log('isCollectionPrivate: ', {collection, username})
     const isCreatedByCurrentUser =
         collection?.attributes?.__createdBy === username
     const hasNoViewers =

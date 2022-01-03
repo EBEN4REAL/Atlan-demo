@@ -13,6 +13,8 @@
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from './store/auth'
     import useGlossary from './composables/glossary2/useGlossary'
+    import usePersona from './composables/persona/usePersona'
+    import usePurpose from './composables/purpose/usePurpose'
 
     export default defineComponent({
         setup(props, context) {
@@ -20,8 +22,8 @@
             // const isTypedefReady = ref(false)
 
             const { locale, t } = useI18n({
-                inheritLocale: true
-             })
+                inheritLocale: true,
+            })
 
             const authStore = useAuthStore()
             authStore.setUserDetails()
@@ -42,6 +44,10 @@
             useGlossary()
 
             useIntegration()
+
+            usePersona()
+
+            usePurpose()
 
             // watch([data], () => {
             //     isPermissionsReady.value = true

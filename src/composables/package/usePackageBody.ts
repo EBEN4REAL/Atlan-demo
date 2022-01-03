@@ -11,7 +11,8 @@ export function usePackageBody(
     queryText?: string,
     offset?: any,
     limit?: any,
-    facets?: Record<string, any>
+    facets?: Record<string, any>,
+    preference?: Record<string, any>
 ) {
     const base = bodybuilder()
 
@@ -154,14 +155,49 @@ export function usePackageBody(
                     }
                     break
                 }
+                case 'ui': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.labels.orchestration.atlan.com/atlan-ui.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {}
 
+    console.log('preference', preference)
+
     // base.filterMinimumShouldMatch(1)
 
+    Object.keys(preference ?? {}).forEach((mkey) => {
+        const filterObject = preference[mkey]
+        switch (mkey) {
+            case 'sort': {
+                if (filterObject !== 'default') {
+                    const split = filterObject.split('-')
+                    if (split.length > 1) {
+                        base.sort(split[0], {
+                            order: split[1],
+                            nested_path: 'metadata',
+                        })
+                    }
+                }
+                break
+            }
+        }
+    })
+
     const tempQuery = base.build()
-    console.log(tempQuery)
+
     const query = {
         ...tempQuery,
     }

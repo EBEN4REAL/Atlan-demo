@@ -63,10 +63,10 @@
 
         <template #footerLeft>
             <div class="flex items-center gap-x-1">
-                <AddClassification
+                <!-- <AddClassification
                     @save-classifications="saveClassifications"
                     :selectedClassifications="selectedClassifications"
-                />
+                /> -->
                 <AddTerms
                     @save-terms="saveTerms"
                     :selectedTerms="selectedTerms"

@@ -41,6 +41,7 @@
                     >
                         <template #filter>
                             <a-popover
+                                v-if="showFilters"
                                 class="sm:block md:hidden"
                                 placement="bottom"
                                 :trigger="['click']"
@@ -78,7 +79,11 @@
                     <slot name="searchAction"></slot>
                 </div>
 
-                <div v-if="showAggrs" class="w-full px-4">
+                <div
+                    v-if="showAggrs"
+                    class="w-full"
+                    :class="page === 'admin' ? '' : 'px-4'"
+                >
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -111,7 +116,7 @@
                     <EmptyView
                         empty-screen="EmptyDiscover"
                         :desc="
-                            staticUse
+                            staticUse && !queryText
                                 ? emptyViewText || 'No assets found'
                                 : queryText
                                 ? 'We didn\'t find anything that matches your search criteria'
@@ -132,7 +137,7 @@
                     v-else
                     :list="list"
                     :start-index="selectedAssetIndex"
-                    :blocked="isCmndKVisible"
+                    :blocked="isCmndKVisible || isAssetProfile"
                     :html-id-getter="getAssetId"
                     @change="onKeyboardNavigate"
                 >
@@ -148,7 +153,9 @@
                             <AssetItem
                                 :item="item"
                                 :item-index="itemIndex"
-                                :selected-guid="selectedAsset.guid"
+                                :selected-guid="
+                                    page === 'admin' || page === 'glossary' ? null : selectedAsset.guid
+                                "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
                                 :id="getAssetId(item)"
@@ -159,7 +166,7 @@
                                         : false
                                 "
                                 :enable-sidebar-drawer="enableSidebarDrawer"
-                                :is-checked="checkSelectedCriteriaFxn(item)"
+                                :is-checked="checkableItems ? checkSelectedCriteriaFxn(item) : false"
                                 :class="page !== 'admin' ? 'mx-3' : ''"
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
@@ -222,6 +229,8 @@
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useShortcuts from '~/composables/shortcuts/useShortcuts'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -295,6 +304,11 @@
                 type: Boolean,
                 default: false,
             },
+            checkableItems: {
+                type: Boolean,
+                required: false,
+                default: true
+            },
             disableHandlePreview: {
                 type: Boolean,
                 default: false,
@@ -302,8 +316,12 @@
             isCache: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
+            cacheKey: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -314,13 +332,15 @@
                 projection,
                 allCheckboxAreaClick,
                 disableHandlePreview,
-                isCache
+                isCache,
+                cacheKey,
             } = toRefs(props)
 
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
+            const globalState = ref([])
             const selectedAssetId = ref('')
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
@@ -328,7 +348,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const dependentKey = ref(cacheKey.value || 'DEFAULT_ASSET_LIST')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -367,6 +387,11 @@
             } else {
                 activeKey.value = ['hierarchy']
             }
+
+            if (discoveryStore.globalState?.length > 0) {
+                globalState.value = discoveryStore.globalState
+            }
+
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
@@ -381,6 +406,17 @@
                 }
                 quickChange()
             })
+
+            watch(
+                () => discoveryStore.globalState,
+                () => {
+                    globalState.value = discoveryStore.globalState
+                    handleResetEvent()
+                },
+                {
+                    deep: true,
+                }
+            )
 
             const {
                 list,
@@ -407,6 +443,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                globalState,
             })
 
             const selectedAssetIndex = computed(() => {
@@ -467,7 +504,8 @@
             const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
-                discoveryStore.setActivePostFacet(postFacets.value)
+                if (page.value !== 'admin')
+                    discoveryStore.setActivePostFacet(postFacets.value)
                 useAddEvent('discovery', 'aggregate_tab', 'changed', {
                     name: tabName,
                 })
@@ -501,9 +539,12 @@
                 discoveryStore.setActivePanel(activeKey.value)
             }
 
+            const route = useRoute()
+            const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
                 handleClickAssetItem(asset, index)
                 console.log('onKeyboardNavigate', {
+                    isAssetProfile: isAssetProfile.value,
                     index,
                     asset: asset.attributes.name,
                     selectedAssetIndex: selectedAssetIndex.value,
@@ -532,8 +573,15 @@
                 searchBox?.value?.focusInput()
             }
 
+            const { allowedTabShortcut } = useShortcuts()
+
             whenever(tab, () => {
-                if (shift_tab.value || isCmndKVisible.value) {
+                console.log('tab allowedTabShortcut', allowedTabShortcut.value)
+                if (
+                    shift_tab.value ||
+                    isCmndKVisible.value ||
+                    !allowedTabShortcut.value
+                ) {
                     // don't run if cmd k is on
                     return
                 }
@@ -541,7 +589,7 @@
             })
 
             whenever(shift_tab, () => {
-                if (isCmndKVisible.value) {
+                if (isCmndKVisible.value || !allowedTabShortcut.value) {
                     // don't run if cmd k is on
                     return
                 }
@@ -625,12 +673,12 @@
             }
 
             onMounted(() => {
-                console.log('onMounted')
                 watchOnce(isLoading, (v) => {
-                    if (!v && list.value?.length && page.value === 'assets') {
+                    if (!v && list.value?.length) {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
-                            Object.keys(selectedAsset.value).length === 0
+                            Object.keys(selectedAsset.value).length === 0 &&
+                            page.value === 'assets'
                         if (isNone) handleClickAssetItem(list.value[0])
                     }
                 })
@@ -677,6 +725,7 @@
                 isCmndKVisible,
                 getAssetId,
                 quickChange,
+                isAssetProfile,
             }
         },
     })

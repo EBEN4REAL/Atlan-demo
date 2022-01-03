@@ -1,31 +1,41 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div class="flex items-center justify-between px-5 pt-4">
-            <a-radio-group
-                v-model:value="direction"
-                button-style="solid"
-                size="small"
-                @change="handleChangeDirection"
-            >
-                <a-radio-button value="BOTH" size="small">All</a-radio-button>
-                <a-radio-button value="UPSTREAM" size="small"
-                    >Upstream
-                    <span :class="$style.chip">{{
-                        upstreamGuids?.length
-                    }}</span>
-                </a-radio-button>
-                <a-radio-button value="DOWNSTREAM" size="small"
-                    >Downstream
-                    <span :class="$style.chip">{{
-                        downstreamGuids?.length
-                    }}</span></a-radio-button
+        <div v-if="selectedGuids.length > 0">
+            <div class="flex items-center justify-between px-5 pt-4">
+                <a-radio-group
+                    v-model:value="direction"
+                    button-style="solid"
+                    size="small"
+                    @change="handleChangeDirection"
                 >
-            </a-radio-group>
-            <router-link :to="link" class="underline text-primary"
-                >View Graph</router-link
-            >
+                    <a-radio-button value="BOTH" size="small"
+                        >All</a-radio-button
+                    >
+                    <a-radio-button value="UPSTREAM" size="small"
+                        >Upstream
+                        <span :class="$style.chip">{{
+                            upstreamGuids?.length
+                        }}</span>
+                    </a-radio-button>
+                    <a-radio-button value="DOWNSTREAM" size="small"
+                        >Downstream
+                        <span :class="$style.chip">{{
+                            downstreamGuids?.length
+                        }}</span></a-radio-button
+                    >
+                </a-radio-group>
+                <router-link :to="link" class="underline text-primary"
+                    >View Graph</router-link
+                >
+            </div>
+            <Assets :selectedGuids="selectedGuids" ref="assetList"></Assets>
         </div>
-        <Assets :selectedGuids="selectedGuids" ref="assetList"></Assets>
+        <div v-else class="flex items-center justify-center h-full">
+            <EmptyView
+                empty-screen="EmptyLineageTab"
+                desc="Lineage hasn't been generated yet for this asset!"
+            ></EmptyView>
+        </div>
     </div>
 </template>
 
@@ -63,11 +73,13 @@
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import useLineage from '~/composables/discovery/useLineage'
     import { useRoute } from 'vue-router'
+    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: {
             Assets,
+            EmptyView,
         },
         props: {
             selectedAsset: {

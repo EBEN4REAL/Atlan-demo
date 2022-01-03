@@ -56,8 +56,8 @@
                 </p>
 
                 <div
-                    class="relative flex items-center h-8 pr-1 bg-white rounded group border-container"
-                    style="width: 162px"
+                    class="relative flex items-center pr-1 bg-white rounded group border-container"
+                    style="width: 162px; height: 34px !important"
                 >
                     <div v-if="variable.type === 'dropdown'">
                         <a-dropdown
@@ -66,8 +66,8 @@
                         >
                             <a-button
                                 @click="() => openSelectDropdown(variable)"
-                                class="flex items-center justify-between bg-white border-none shadow-none"
-                                style="width: 138px; height: 30px"
+                                class="flex items-center justify-between bg-white border-none shadow-none outline-none"
+                                style="width: 138px; height: 32px"
                                 ><span class="text-gray-500 truncate">{{
                                     variable.value.length
                                         ? variable.value.join(', ')
@@ -84,20 +84,32 @@
                                         v-if="variable.allowMultiple"
                                         class="gap-y-2"
                                     >
-                                        <a-checkbox
-                                            v-model:checked="checkAll"
+                                        <div
+                                            class="flex flex-col w-full"
                                             @change="
                                                 () =>
                                                     onCheckAllOptions(variable)
                                             "
-                                            class="px-4 pt-2 pb-2"
                                         >
-                                            Check all
-                                        </a-checkbox>
+                                            <a-checkbox
+                                                v-model:checked="checkAll"
+                                                class="w-full px-4 py-2"
+                                            >
+                                                Select all
+                                            </a-checkbox>
+                                        </div>
+
                                         <div class="checkbox-border"></div>
 
                                         <a-checkbox-group
                                             v-model:value="variable.value"
+                                            @change="
+                                                (checked) =>
+                                                    checkedGroup(
+                                                        checked,
+                                                        variable
+                                                    )
+                                            "
                                         >
                                             <div
                                                 v-for="item in variable.options"
@@ -105,7 +117,9 @@
                                                 class="flex items-center justify-between px-4 pt-2 pb-2"
                                             >
                                                 <a-checkbox :value="item.value"
-                                                    ><span class="mb-0 ml-1">
+                                                    ><span
+                                                        class="w-full h-8 mb-0 ml-1"
+                                                    >
                                                         {{ item.label }}
                                                     </span>
                                                 </a-checkbox>
@@ -123,14 +137,7 @@
                                                 :key="item.label"
                                             >
                                                 <a-menu-item
-                                                    class="px-4"
-                                                    :class="
-                                                        variable.value.length &&
-                                                        variable.value[0] ===
-                                                            item.value
-                                                            ? 'bg-primary-light'
-                                                            : ''
-                                                    "
+                                                    class="px-4 hover:bg-gray-100"
                                                     :key="item.value"
                                                 >
                                                     <div
@@ -170,12 +177,15 @@
                         :show-time="{ format: 'HH:mm' }"
                         v-model:value="variable.value"
                         :bordered="false"
-                        style="paddingright: 0 !important"
-                        class="border-0 focus:border-0 focus:outline-none"
-                    />
+                        style="padding-right: 0 !important; max-width: 127px"
+                        class="truncate border-0 focus:border-0 focus:outline-none"
+                        :allowClear="false"
+                    >
+                        <template #suffixIcon></template>
+                    </a-date-picker>
                     <a-input
-                        class="border-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
-                        style="width: 138px; height: 30px"
+                        class="border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
+                        style="width: 138px; height: 32px"
                         v-model:value="variable.value"
                         @change="onChange(variable)"
                         :placeholder="`Enter a ${variable.type}`"
@@ -188,17 +198,21 @@
                         :trigger="['click']"
                     >
                         <div
-                            class="absolute right-0 z-10 p-1 rounded opacity-0 group-hover:opacity-100 group-hover:bg-gray-100"
+                            class="absolute right-0 z-10 p-1 px-1.5 rounded opacity-0 group-hover:opacity-100"
                         >
-                            <AtlanIcon
+                            <span
                                 @click="() => openDropdown(variable)"
-                                class="w-4 h-4 text-gray-500 cursor-pointer"
-                                icon="Settings"
-                            />
+                                class="p-1 rounded cursor-pointer hover:bg-gray-light"
+                            >
+                                <AtlanIcon
+                                    class="w-4 h-4 text-gray-500 mb-0.5"
+                                    icon="Settings"
+                                />
+                            </span>
                         </div>
                         <template #overlay>
                             <a-menu>
-                                <div class="p-4" style="width: 215px">
+                                <div class="p-4" style="width: 240px">
                                     <div
                                         class="flex items-center justify-between mb-3"
                                     >
@@ -206,24 +220,41 @@
                                             variable.name
                                         }}</span>
                                         <div class="flex items-center">
-                                            <AtlanIcon
-                                                @click="
-                                                    () =>
-                                                        onCopyVariable(variable)
-                                                "
-                                                class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
-                                                icon="CopyOutlined"
-                                            />
-                                            <AtlanIcon
-                                                @click="
-                                                    () =>
-                                                        onDeleteVariable(
-                                                            variable
-                                                        )
-                                                "
-                                                class="w-4 h-4 text-gray-500 cursor-pointer"
-                                                icon="Delete"
-                                            />
+                                            <a-tooltip
+                                                placement="bottom"
+                                                color="#363636"
+                                            >
+                                                <template #title>Copy</template>
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onCopyVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
+                                                    icon="CopyOutlined"
+                                                />
+                                            </a-tooltip>
+
+                                            <a-tooltip
+                                                placement="bottom"
+                                                color="#363636"
+                                            >
+                                                <template #title
+                                                    >Delete</template
+                                                >
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onDeleteVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 text-gray-500 cursor-pointer"
+                                                    icon="Delete"
+                                                />
+                                            </a-tooltip>
                                         </div>
                                     </div>
                                     <div class>
@@ -233,7 +264,7 @@
                                             ref="formRef"
                                         >
                                             <a-form-item
-                                                label="Variable name"
+                                                label="Name"
                                                 class="mb-4 text-gray-700 tex-sm"
                                                 name="name"
                                             >
@@ -241,7 +272,7 @@
                                                     v-model:value="
                                                         variable.name
                                                     "
-                                                    placeholder="new_variable"
+                                                    placeholder="Name"
                                                     :class="
                                                         inputError
                                                             ? `border-red-300`
@@ -250,7 +281,7 @@
                                                 />
                                             </a-form-item>
                                             <a-form-item
-                                                label="Variable type"
+                                                label="Type"
                                                 class="mb-4 text-gray-700 tex-sm"
                                                 name="type"
                                             >
@@ -296,13 +327,6 @@
                                                 class="text-gray-700 tex-sm"
                                                 name="value"
                                             >
-                                                <!-- <a-input
-                                                        v-model:value="
-                                                            variable.value
-                                                        "
-                                                        placeholder
-                                                    /> -->
-
                                                 <a-date-picker
                                                     v-if="
                                                         variable.type === 'date'
@@ -335,14 +359,21 @@
                                                         )
                                                     "
                                                     :options="variable.options"
-                                                ></a-select>
+                                                    :dropdownStyle="{
+                                                        visibility: 'hidden',
+                                                    }"
+                                                >
+                                                    <!-- <template
+                                                        #dropdownRender
+                                                    ></template> -->
+                                                </a-select>
 
                                                 <a-input
                                                     v-else
                                                     v-model:value="
                                                         variable.value
                                                     "
-                                                    :placeholder="`Enter a ${variable.type}`"
+                                                    :placeholder="`Enter a value`"
                                                     :type="
                                                         variable.type ===
                                                         'number'
@@ -367,6 +398,7 @@
                                                 v-if="
                                                     variable.type === `dropdown`
                                                 "
+                                                class="mb-2 -mt-4"
                                             >
                                                 <a-checkbox
                                                     :class="
@@ -384,7 +416,7 @@
                                                 </a-checkbox>
                                             </a-form-item>
                                         </a-form>
-                                        <div class="flex justify-between mt-6">
+                                        <div class="flex justify-between">
                                             <AtlanBtn
                                                 size="sm"
                                                 color="secondary"
@@ -541,7 +573,7 @@
                 // )
                 // console.log('new data: ', variable)
                 // console.log('old data: ', currVariable.value)
-                console.log('select saved: ', variable)
+                // console.log('select saved: ', variable)
                 if (varTest.test(variable.name)) {
                     if (
                         saveVariable(
@@ -552,6 +584,7 @@
                         )
                     ) {
                         /* If successfully variable saved then close the dropdown */
+                        checkAll.value = false
                         inputError.value = false
                         closeDropdown()
                     }
@@ -583,23 +616,20 @@
             const handleSelectInputChange = (
                 variable: CustomVaribaleInterface
             ) => {
+                // console.log('multivar: ', variable)
                 // if (variable.allowMultiple) {
-                //     variable.value = variable.options
-                // } else {
-                //     if (variable.options.length) {
-                //         variable.value =
-                //             variable.options[variable.options.length - 1]
+                //     // variable.value = variable.dummy
+                //     // select only 1 by default
+                //     if (variable.dummy.length) {
+                //         variable.value = [
+                //             variable.dummy[variable.dummy.length - 1],
+                //         ]
                 //     }
-                // }
-                if (variable.allowMultiple) {
-                    variable.value = variable.dummy
-                } else {
-                    if (variable.dummy.length) {
-                        variable.value = [
-                            variable.dummy[variable.dummy.length - 1],
-                        ]
-                    }
+                // } else {
+                if (variable.dummy.length) {
+                    variable.value = [variable.dummy[variable.dummy.length - 1]]
                 }
+                // }
 
                 variable.options = variable.dummy.map((v) => {
                     return {
@@ -616,12 +646,11 @@
             const handleVariableTypeChange = (
                 variable: CustomVaribaleInterface
             ) => {
-                console.log(`selected type: `, variable)
+                console.log(`selected type: `, variable.type)
                 if (variable.type === 'dropdown') {
                     variable.value = []
                     variable.dummy = []
-                }
-                if (variable.type === 'date') {
+                } else if (variable.type === 'date') {
                     variable.value = dayjs()
                 } else {
                     variable.value = ''
@@ -651,6 +680,13 @@
                 }
             }
 
+            // const allChecked = computed(() => {})
+            const checkedGroup = (checked, variable) => {
+                if (variable.value.length !== variable.options.length) {
+                    checkAll.value = false
+                }
+            }
+
             return {
                 onChange,
                 onCopyVariable,
@@ -677,6 +713,7 @@
                 closeSelectDropdown,
                 onCheckAllOptions,
                 checkAll,
+                checkedGroup,
             }
         },
     })
@@ -723,6 +760,12 @@
             @apply px-1 !important;
         }
     }
+
+    // .item_style {
+    //     :global(.ant-form-item) {
+    //         margin-bottom: 0px !important;
+    //     }
+    // }
 
     .input_style {
         @apply relative !important;

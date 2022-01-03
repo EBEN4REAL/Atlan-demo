@@ -149,49 +149,63 @@
 
         <div
             v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
-            class="flex flex-col px-5 text-sm"
+            class="flex flex-col px-5 text-sm gap-y-4"
         >
-            <span class="mb-2 text-sm text-gray-500">Data Type</span>
+            <div class="flex flex-col">
+                <span class="mb-2 text-sm text-gray-500">Data Type</span>
 
-            <div class="flex items-center text-gray-700 gap-x-1">
-                <div class="flex">
-                    <component
-                        :is="dataTypeCategoryImage(selectedAsset)"
-                        class="h-4 text-gray-500 mr-0.5 mb-0.5"
-                    />
-                    <span class="text-sm tracking-wider text-gray-700">{{
-                        dataType(selectedAsset)
-                    }}</span>
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex">
+                        <component
+                            :is="dataTypeCategoryImage(selectedAsset)"
+                            class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                        />
+                        <span class="text-sm tracking-wider text-gray-700">{{
+                            dataType(selectedAsset)
+                        }}</span>
+                    </div>
+
+                    <div
+                        v-if="
+                            isPrimary(selectedAsset) ||
+                            isDist(selectedAsset) ||
+                            isPartition(selectedAsset)
+                        "
+                        class="flex"
+                    >
+                        <AtlanIcon
+                            icon="PrimaryKey"
+                            class="mb-0.5 text-yellow-500"
+                        ></AtlanIcon>
+
+                        <span
+                            v-if="isPrimary(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Primary Key</span
+                        >
+                        <span
+                            v-if="isDist(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Dist Key</span
+                        >
+                        <span
+                            v-if="isPartition(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Partition Key</span
+                        >
+                    </div>
                 </div>
-
-                <div
-                    v-if="
-                        isPrimary(selectedAsset) ||
-                        isDist(selectedAsset) ||
-                        isPartition(selectedAsset)
-                    "
-                    class="flex"
-                >
-                    <AtlanIcon
-                        icon="PrimaryKey"
-                        class="mb-0.5 text-yellow-500"
-                    ></AtlanIcon>
-
-                    <span
-                        v-if="isPrimary(selectedAsset)"
-                        class="ml-1 text-sm text-gray-700"
-                        >Primary Key</span
-                    >
-                    <span
-                        v-if="isDist(selectedAsset)"
-                        class="ml-1 text-sm text-gray-700"
-                        >Dist Key</span
-                    >
-                    <span
-                        v-if="isPartition(selectedAsset)"
-                        class="ml-1 text-sm text-gray-700"
-                        >Partition Key</span
-                    >
+            </div>
+            <div v-if="tableName(selectedAsset)">
+                <div class="mb-2 text-sm text-gray-500">Table</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ tableName(selectedAsset) }}
+                </div>
+            </div>
+            <div v-if="viewName(selectedAsset)">
+                <div class="mb-2 text-sm text-gray-500">Table</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ viewName(selectedAsset) }}
                 </div>
             </div>
         </div>
@@ -315,6 +329,7 @@
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
+                :is-loading="isLoadingClassification"
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -337,25 +352,27 @@
             >
                 Terms
             </p>
-            <Terms
+            <TermsWidget
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_ADD'
+                        'RELATIONSHIP_ADD',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
-                        'RELATIONSHIP_REMOVE'
+                        'RELATIONSHIP_REMOVE',
+                        'AtlasGlossaryTerm'
                     )
                 "
                 @change="handleMeaningsUpdate"
             >
-            </Terms>
+            </TermsWidget>
         </div>
 
         <div ref="animationPoint" class="flex flex-col">
@@ -431,7 +448,7 @@
     import Admins from '@/common/input/admin/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
-    import Terms from '@/common/input/terms/index.vue'
+    import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
@@ -451,7 +468,7 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
-            Terms,
+            TermsWidget,
             Shortcut,
             Categories,
             Admins,
@@ -511,6 +528,8 @@
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
+                tableName,
+                viewName,
             } = useAssetInfo()
 
             const {
@@ -606,6 +625,8 @@
                 selectedAssetUpdatePermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
+                tableName,
+                viewName,
             }
         },
     })

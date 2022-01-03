@@ -780,8 +780,6 @@ const useGlossaryTree = ({
             if (node?.typeName === 'AtlasGlossary')
                 nodeParentGlossaryGuid = node?.guid
             else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid
-            console.log(nodeParentGlossaryGuid)
-            console.log(assetToDrop?.attributes?.anchor?.guid)
             if (
                 nodeParentGlossaryGuid !== assetToDrop?.attributes?.anchor?.guid
             ) {
@@ -805,7 +803,8 @@ const useGlossaryTree = ({
                         error: updateError,
                         asset,
                     } = updateAssetAttributes(selectedAsset)
-                    console.log(asset)
+                    console.log(selectedAsset)
+                    console.log(localCategories)
                     const newCategories = localCategories.value?.filter(
                         (el) => el.guid !== dragNode?.parent?.node?.guid
                     )
@@ -823,9 +822,9 @@ const useGlossaryTree = ({
                         }, 0)
                     })
                 }
-                if (dragNode?.typeName === 'AtlasGlossaryTerm') {
-                    updateTermCategories()
-                }
+                // if (dragNode?.typeName === 'AtlasGlossaryTerm') {
+                updateTermCategories()
+                // }
             }
         }
     }

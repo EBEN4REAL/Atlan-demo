@@ -166,6 +166,7 @@
         provide,
         PropType,
         watch,
+        onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -293,7 +294,9 @@
             facets.value = {
                 ...facets.value,
                 ...initialFilters.value,
-                typeNames: props.checkable ? ['AtlasGlossaryTerm'] : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                typeNames: props.checkable
+                    ? ['AtlasGlossaryTerm']
+                    : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 
@@ -323,6 +326,7 @@
                 fetch,
                 quickChange,
                 handleSelectedGlossary,
+                cancelRequest,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -482,6 +486,10 @@
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
+            // dont fetch flat list on mount
+            onMounted(() => {
+                cancelRequest()
+            })
             return {
                 handleFilterChange,
                 isLoading,

@@ -1,36 +1,44 @@
 <template>
-    <div
-        class="flex flex-col px-1 rounded"
-        :class="{
-            'bg-primary-light': isEdit,
-            'hover:bg-primary-light': editPermission,
-        }"
-    >
+    <div>
         <div
-            class="text-sm text-gray-700"
-            :class="$style.editable"
-            @click="handleEdit"
+            class="flex flex-col px-1 rounded"
+            :class="{
+                'bg-primary-light': isEdit,
+                'hover:bg-primary-light': editPermission,
+            }"
         >
-            <span
-                v-if="!isEdit && description(selectedAsset)"
-                class="whitespace-pre-wrap"
-                >{{ description(selectedAsset) }}</span
+            <div
+                class="text-sm text-gray-700"
+                :class="$style.editable"
+                @click="handleEdit"
             >
-            <span
-                v-else-if="!isEdit && description(selectedAsset) === ''"
-                class="text-gray-500"
-                >No description available</span
-            >
-            <a-textarea
-                v-else
-                ref="descriptionRef"
-                v-model:value="localValue"
-                tabindex="0"
-                :rows="4"
-                @blur="handleBlur($event)"
-                @press-enter="handleBlur($event)"
-            ></a-textarea>
+                <span
+                    v-if="!isEdit && description(selectedAsset)"
+                    class="whitespace-pre-wrap"
+                    >{{ description(selectedAsset) }}</span
+                >
+                <span
+                    v-else-if="!isEdit && description(selectedAsset) === ''"
+                    class="text-gray-500"
+                    >No description available</span
+                >
+                <a-textarea
+                    v-else
+                    ref="descriptionRef"
+                    v-model:value="localValue"
+                    tabindex="0"
+                    :rows="4"
+                    @blur="handleBlur($event)"
+                    @press-enter="handleBlur($event)"
+                ></a-textarea>
+            </div>
         </div>
+        <p v-if="descriptionRef !== null" class="text-xs text-right mt-1 text-gray-500">
+            <span class="font-bold">{{ isMac ? "Return" : "Enter" }}</span> to save
+            <span class="ml-2">
+                <span class="font-bold">Shift + {{ isMac ? "Return" : "Enter" }}</span> to add a new line
+            </span>
+        </p>
     </div>
 </template>
 
@@ -107,7 +115,8 @@
              * confirmation modal if necessary.
              */
             const handleChange = () => {
-                if (needToConfirm.value && localValue.value !== modelValue.value) {
+                // if (needToConfirm.value && localValue.value !== modelValue.value) {
+                if (false) {
                     // Show a modal, if required.
                     Modal.confirm({
                         title: "Do you want to save your changes?",
@@ -170,6 +179,9 @@
                 }
             }
 
+            // The shortcut keys will change in accordance with this property.
+            const isMac = (window.navigator.userAgent.indexOf("Mac") !== -1)
+
             const activeElement = useActiveElement()
             const notUsingInput = computed(
                 () =>
@@ -188,7 +200,9 @@
 
             watch(
                 selectedAsset,
-                () => (localValue.value = description(selectedAsset.value))
+                () => {
+                    localValue.value = description(selectedAsset.value)
+                }
             )
 
             return {
@@ -201,6 +215,7 @@
                 handleBlur,
                 description,
                 updateValue,
+                isMac
             }
         },
     })

@@ -1,8 +1,8 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full h-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col">
-                <div v-if="showAggrs" class="w-full">
+                <div v-if="showAggrs && !isLoading && list.length > 0" class="w-full">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -11,32 +11,31 @@
                     >
                     </AggregationTabs>
                 </div>
-
-                <div
-                    v-if="isLoading"
-                    class="flex items-center justify-center flex-grow"
-                >
-                    <AtlanIcon
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                    ></AtlanIcon>
-                </div>
-                <div
-                    v-if="!isLoading && error"
-                    class="flex items-center justify-center flex-grow"
-                >
-                    <ErrorView></ErrorView>
-                </div>
-                <div
-                    v-else-if="list.length === 0 && !isLoading"
-                    class="flex-grow"
-                >
-                    <EmptyView
-                        empty-screen="EmptyDiscover"
-                        desc="No assets found"
-                        class="mb-10"
-                    ></EmptyView>
-                </div>
+            </div>
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                />
+            </div>
+            <div
+                v-if="!isLoading && error"
+                class="flex items-center justify-center flex-grow"
+            >
+                <ErrorView/>
+            </div>
+            <div
+                v-else-if="list.length === 0 && !isLoading"
+                class="flex items-center justify-center flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No assets found"
+                />
+            </div>
 
                 <!--                             :show-check-box="
                                 preference?.display?.includes('enableCheckbox')
@@ -70,7 +69,6 @@
             @closeDrawer="handleCloseDrawer"
             @update="updateCurrentList"
         />
-    </div>
 </template>
 
 <script lang="ts">
@@ -176,11 +174,17 @@
                 type: String,
                 default: '',
             },
+            dependentKey: {
+                type: String,
+                required: false,
+                default: 'DEFAULT_ASSET_LIST_HOME'
+            }
         },
+        emits: ['listLoaded'],
         setup(props, { emit }) {
             const showDrawer = ref(false)
 
-            const { preference: preferenceProp, checkedCriteria } =
+            const { preference: preferenceProp, checkedCriteria, dependentKey } =
                 toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
@@ -193,7 +197,6 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST_HOME')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -340,6 +343,12 @@
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
+            })
+
+            watch(isLoading, () => {
+                if (!isLoading.value) {
+                    emit('listLoaded', list.value.length)
+                }
             })
 
             return {

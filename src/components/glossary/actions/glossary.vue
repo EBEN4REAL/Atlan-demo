@@ -159,27 +159,6 @@
             const sandbox = computed(() => route?.query?.sandbox || '')
             const showCategories = ref(false)
 
-            // injects
-            // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
-            // const handleFetchListInj: Function | undefined = inject(
-            //     'handleFetchList',
-            //     () => null
-            // )
-            // const updateTreeNode: Function | undefined =
-            //     inject<any>('updateTreeNode')
-            // const refetchGlossaryList = inject<() => void>(
-            //     'refetchGlossaryList',
-            //     () => {}
-            // )
-            // const refreshEntity = inject<() => void>('refreshEntity', () => {})
-            // const refetchGlossaryTree = inject<
-            //     (
-            //         guid: string | 'root',
-            //         categoryQualifiedName?: string,
-            //         refreshEntityType?: 'term' | 'category'
-            //     ) => void
-            // >('refetchGlossaryTree', () => {})
-
             const glossaryId = computed(() => {
                 if (props.entity?.typeName === 'AtlasGlossary')
                     return props.entity?.guid ?? ''
@@ -196,19 +175,6 @@
                 return ''
             })
 
-            // const {
-            //     deleteGlossary,
-            //     deleteCategory,
-            //     deleteTerm,
-            //     error,
-            //     isLoading,
-            // } = useDeleteGlossary()
-
-            // const serviceMap = {
-            //     AtlasGlossaryTerm: deleteTerm,
-            //     AtlasGlossaryCategory: deleteCategory,
-            //     AtlasGlossary: deleteGlossary,
-            // }
             const closeMenu = () => {
                 isVisible.value = false
             }
@@ -216,50 +182,6 @@
                 isModalVisible.value = true
                 isVisible.value = false
             }
-            // const handleDelete = () => {
-            //     const { data } = serviceMap[props.entity?.typeName](
-            //         props.entity?.guid,
-            //         !props.showLinks || currentProfile?.value?.guid === props.entity?.guid,
-            //         props.entity?.attributes?.anchor?.guid
-            //     )
-            //     if (handleFetchListInj) handleFetchListInj(props.entity)
-            //     watch(data, () => {
-            //         if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
-            //         setTimeout(() => {
-            //             if (refetchGlossaryTree) {
-            //                 if (
-            //                     props.entity?.typeName === 'AtlasGlossaryCategory'
-            //                 ) {
-            //                     refetchGlossaryTree(
-            //                         props.entity?.attributes?.parentCategory
-            //                             ?.guid ?? 'root',
-            //                         props.entity?.attributes?.qualifiedName,
-            //                         'category'
-            //                     )
-            //                 } else if (
-            //                     props.entity?.typeName === 'AtlasGlossaryTerm'
-            //                 ) {
-            //                     if (props.entity?.attributes?.categories?.length) {
-            //                         props.entity?.attributes?.categories?.forEach(
-            //                             (category) => {
-            //                                 refetchGlossaryTree(
-            //                                     category.guid,
-            //                                     category?.uniqueAttributes?.qualifiedName,
-            //                                     'term'
-            //                                 )
-            //                             }
-            //                         )
-            //                     } else {
-            //                         refetchGlossaryTree('root', '','term')
-            //                     }
-            //                 }
-            //             }
-            //         }, 500)
-            //         if(refetchGlossaryList && props.entity.typeName === 'AtlasGlossary') refetchGlossaryList()
-            //     })
-
-            //     isModalVisible.value = false
-            // }
 
             const handleCancel = () => {
                 isModalVisible.value = false
@@ -275,18 +197,6 @@
                 })
                 closeMenu()
             }
-
-            // const redirectToProfile = redirect(router)
-
-            // update tree on archive or create new entity
-            // const updateTree = (selectedAsset: Glossary | Category | Term) => {
-            //     if (updateTreeNode && !props.treeMode) {
-            //         updateTreeNode({
-            //             guid: selectedAsset.guid,
-            //             entity: selectedAsset,
-            //         })
-            //     }
-            // }
 
             return {
                 handleCopyProfileLink,

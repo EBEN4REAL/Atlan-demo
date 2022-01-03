@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-center justify-between w-full py-0 m-0 group">
+    <div
+        class="flex items-center justify-between w-full py-0 m-0 group"
+        :class="isAnimating ? $style.shake : ''"
+    >
         <div
             v-if="item?.typeName === 'cta'"
             class="flex flex-col"
@@ -179,6 +182,11 @@
                 required: false,
                 default: false,
             },
+            isAnimating: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['addSelectedKey'],
         setup(props, { emit }) {
@@ -277,4 +285,53 @@
         },
     })
 </script>
-<style lang="less" module></style>
+<style lang="less" module>
+    .shake {
+        animation: listItemShake 0.5s infinite;
+        @apply text-gray-500 !important;
+    }
+    @keyframes listItemShake {
+        15% {
+            transform: translate(0.3%, 0);
+        }
+        30% {
+            transform: translate(-0.3%, 0);
+        }
+        45% {
+            transform: translate(0.2%, 0);
+        }
+        60% {
+            transform: translate(-0.2%, 0);
+        }
+        75% {
+            transform: translate(0.1%, 0);
+        }
+        85% {
+            transform: translate(-0.1%, 0);
+        }
+    }
+
+    // @keyframes listItemShake {
+    //     15% {
+    //         transform: rotate(0.5deg);
+    //     }
+    //     30% {
+    //         transform: rotate(-0.5deg);
+    //     }
+    //     45% {
+    //         transform: rotate(0.3deg);
+    //     }
+    //     60% {
+    //         transform: rotate(-0.3deg);
+    //     }
+    //     75% {
+    //         transform: rotate(0.2deg);
+    //     }
+    //     85% {
+    //         transform: rotate(-0.2deg);
+    //     }
+    //     92% {
+    //         transform: rotate(0.1deg);
+    //     }
+    // }
+</style>

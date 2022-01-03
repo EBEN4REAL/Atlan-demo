@@ -77,7 +77,6 @@
                         ownerGroups: [selectedGroup.value.alias],
                     }),
                 {
-                    deep: true,
                     immediate: true,
                 }
             )

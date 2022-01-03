@@ -57,7 +57,6 @@
                 </div>
             </div>
             <div
-                v-if="categories.length"
                 class="pb-6 border-b border-gray-200 border-solid"
             >
                 <p class="mt-6 text-sm tracking-wider text-gray-500 uppercase">
@@ -73,7 +72,7 @@
                     >
                 </div>
                 <div
-                    v-else-if="aggData.state === 'success'"
+                    v-else-if="categories.length && aggData.state === 'success'"
                     class="flex flex-wrap mt-2 gap-x-9 gap-y-2"
                 >
                     <div v-for="(cat, key) in categories" :key="key">
@@ -87,6 +86,15 @@
                             <!-- </div> -->
                         </div>
                     </div>
+                </div>
+                 <div
+                    v-else-if="
+                        !categories.length && aggData.state === 'success'
+                    "
+                >
+                    <span class="mt-2"
+                        >{{ selectedUser.firstName }} doesn't own any assets.</span
+                    >
                 </div>
             </div>
             <div class="pb-6 border-gray-200 border-solid">
@@ -161,6 +169,7 @@
             watch(
                 aggData,
                 () => {
+                    categories.value = []
                     Object.keys(aggData.value.data).forEach((cat) => {
                         if (aggData.value?.data?.[cat]?.count)
                             categories.value.push(aggData.value.data[cat])

@@ -70,7 +70,7 @@
                         !categories.length && aggData.state === 'success'
                     "
                 >
-                    <span class="mt-1"
+                    <span class="mt-2"
                         >{{ selectedGroup.name }} doesn't own any assets.</span
                     >
                 </div>

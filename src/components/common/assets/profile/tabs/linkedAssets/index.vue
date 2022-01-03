@@ -31,6 +31,7 @@
                     cacheKey="LINKED_ASSET_LIST"
                     :preference="preference"
                     :enableSidebarDrawer="true"
+                    :checkableItems="false"
                     key="linked-assets"
                     class="asset-list-height"
                     page="glossary"

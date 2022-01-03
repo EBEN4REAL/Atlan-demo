@@ -799,20 +799,27 @@ const useGlossaryTree = ({
                     const selectedAsset = ref(assetToDrop)
                     const {
                         localCategories,
+                        localParentCategory,
+                        handleParentCategoryUpdate,
                         handleCategoriesUpdate,
                         error: updateError,
                         asset,
                     } = updateAssetAttributes(selectedAsset)
                     console.log(selectedAsset)
-                    console.log(localCategories)
-                    const newCategories = localCategories.value?.filter(
-                        (el) => el.guid !== dragNode?.parent?.node?.guid
-                    )
-                    if (node?.typeName !== 'AtlasGlossary')
-                        newCategories.push(node?.dataRef)
-                    localCategories.value = newCategories
-                    handleCategoriesUpdate()
-
+                    console.log(localParentCategory)
+                    if (dragNode?.typeName === 'AtlasGlossaryTerm') {
+                        const newCategories = localCategories.value?.filter(
+                            (el) => el.guid !== dragNode?.parent?.node?.guid
+                        )
+                        if (node?.typeName !== 'AtlasGlossary')
+                            newCategories.push(node?.dataRef)
+                        localCategories.value = newCategories
+                        handleCategoriesUpdate()
+                    }
+                    if (dragNode?.typeName === 'AtlasGlossaryCategory') {
+                        localParentCategory.value = node?.dataRef
+                        handleParentCategoryUpdate()
+                    }
                     whenever(updateError, () => {
                         setTimeout(() => {
                             deleteNode(assetToDrop, node?.guid ?? 'root')

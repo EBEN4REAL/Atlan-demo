@@ -117,6 +117,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localMeanings = ref(meaningRelationships(selectedAsset.value))
     const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
+    const localParentCategory = ref(
+        selectedAsset.value?.attributes?.parentCategory
+    )
 
     const localResource = ref({
         link: 'https://',
@@ -415,6 +418,18 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = 'Categories have been updated'
         mutate()
     }
+    const handleParentCategoryUpdate = () => {
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                parentCategory: localParentCategory.value,
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Categories have been updated'
+        mutate()
+    }
 
     // Resource Addition
     const handleAddResource = () => {
@@ -671,5 +686,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleAssignedEntitiesUpdate,
         localAdmins,
         error,
+        handleParentCategoryUpdate,
+        localParentCategory,
     }
 }

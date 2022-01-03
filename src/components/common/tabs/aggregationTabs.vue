@@ -246,6 +246,7 @@
 
         :global(.ant-tabs-tab:first-child) {
             border-top-left-radius: 4px !important;
+            @apply ml-0 !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

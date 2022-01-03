@@ -23,6 +23,9 @@
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
                         @change="
                             (val) => handleColumnChange(val, index, subpanel)
                         "
@@ -509,6 +512,7 @@
             let hoverItem = ref(null)
 
             return {
+                activeInlineTab,
                 handleFilterChange,
                 totalFiledsMapWithInput,
                 getCustomVariable,

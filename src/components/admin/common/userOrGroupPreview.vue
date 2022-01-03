@@ -26,7 +26,7 @@
                 </div>
             </ErrorView>
         </div>
-        <template v-else-if="isValidEntity">
+        <template v-else-if="!isLoading && isValidEntity">
             <div class="relative flex items-center py-3">
                 <Avatar
                     v-if="isValidUser"
@@ -41,6 +41,13 @@
                     :avatar-shape="'square'"
                     class="px-3"
                 />
+                <div
+                    v-else-if="isValidGroup"
+                    class="p-2 mx-3 rounded bg-primary-light"
+                >
+                    <AtlanIcon icon="GroupActive" class="h-6" />
+                </div>
+
                 <div class="w-full">
                     <div class="flex content-center text-gray-500">
                         <div class="w-4/5">

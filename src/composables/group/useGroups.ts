@@ -3,12 +3,12 @@
 import { ref, watch, computed, ComputedRef, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
+import axios from 'axios'
 import swrvState from '~/utils/swrvState'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
 
 import { Groups } from '~/services/service/groups'
 import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
-import axios from 'axios'
 import { useOptions } from '~/services/api/common'
 
 export const useGroup = (groupListAPIParams, immediate = true) => {
@@ -140,5 +140,6 @@ export default function useGroups(
         isLoading,
         error,
         groupListConcatenated,
+        isValidating
     }
 }

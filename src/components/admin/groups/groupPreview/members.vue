@@ -6,15 +6,21 @@
                 class="flex items-center justify-between mb-3"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
-                <MemberPopover :selected-group='selectedGroup' @members-added='addMembersToGroup'>
+                <MemberPopover
+                    :selected-group="selectedGroup"
+                    @members-added="addMembersToGroup"
+                >
                     <template #label>
                         <AtlanButton
-                            size='sm'
-                            padding='compact'
-                            class='text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary'
+                            size="sm"
+                            padding="compact"
+                            class="text-gray-700 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
                         >
-                            <div class='flex items-center'>
-                                <AtlanIcon icon='Add' class='h-3 mr-2'></AtlanIcon>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="h-3 mr-2"
+                                ></AtlanIcon>
                                 <div>Add Member</div>
                             </div>
                         </AtlanButton>
@@ -87,42 +93,47 @@
                     <div
                         v-for="user in memberList"
                         :key="user.id"
-                        class="relative py-2 border-gray-100 group hover:bg-gray-100"
+                        class="relative"
                     >
-                        <UserCard
-                            :user="{ user, name: getUserName(user) }"
-                            :minimal="true"
-                        />
-
                         <div
-                            class="absolute right-0 flex justify-between mr-2 cursor-pointer top-3"
+                            class="flex items-center justify-between px-3 py-2 mt-2 transition-all duration-300 rounded group hover:bg-primary-light"
                         >
-                            <div class="font-bold">
-                                <div
-                                    v-if="removeMemberLoading[user.id]"
-                                    class="flex cursor-default text-error-muted"
-                                >
-                                    <AtlanIcon
-                                        style="vertical-align: middle"
-                                        icon="CircleLoader"
-                                        class="mr-1 animate-spin"
-                                    />
-                                    <div>Removing...</div>
-                                </div>
-                                <div
-                                    v-else
-                                    v-auth="map.REMOVE_USER_GROUP"
-                                    class="hidden text-sm font-normal cursor-pointer text-error group-hover:block"
-                                    @click="() => removeUserFromGroup(user)"
-                                >
-                                    Remove
+                            <UserCard
+                                :user="{ ...user, name: getUserName(user) }"
+                                :minimal="true"
+                            />
+
+                            <div
+                                class="absolute right-0 flex justify-between mr-2 cursor-pointer top-3"
+                            >
+                                <div class="font-bold">
+                                    <div
+                                        v-if="removeMemberLoading[user.id]"
+                                        class="flex cursor-default text-error-muted"
+                                    >
+                                        <AtlanIcon
+                                            style="vertical-align: middle"
+                                            icon="CircleLoader"
+                                            class="mr-1 animate-spin"
+                                        />
+                                        <div>Removing...</div>
+                                    </div>
+                                    <div
+                                        v-else
+                                        v-auth="map.REMOVE_USER_GROUP"
+                                        class="hidden text-sm font-normal cursor-pointer text-error group-hover:block"
+                                        @click="() => removeUserFromGroup(user)"
+                                    >
+                                        Remove
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <hr class="mx-4" />
                     </div>
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin text-primary" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
@@ -146,8 +157,15 @@
 </template>
 
 <script lang="ts">
-    import { message } from 'ant-design-vue'
-    import { ref, reactive, defineComponent, computed, watch, h, toRefs } from 'vue'
+    import { message, Modal } from 'ant-design-vue'
+    import {
+        ref,
+        defineComponent,
+        computed,
+        watch,
+        h,
+        toRefs,
+    } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
@@ -164,7 +182,6 @@
     import map from '~/constant/accessControl/map'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import UserCard from '@/admin/groups/common/userCard.vue'
-    import { Modal } from 'ant-design-vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanButton from '@/UI/button.vue'
     import EmptyState from '@/common/empty/index.vue'
@@ -243,9 +260,7 @@
                 getGroupMembersList()
             }, 600)
             const handleLoadMore = () => {
-                offset.value =
-                    offset.value +
-                    limit.value
+                offset.value += limit.value
                 getGroupMembersList()
             }
 
@@ -277,8 +292,8 @@
                 Modal.confirm({
                     title: `Remove member`,
                     class: 'remove-member-modal',
-                    content: () => {
-                        return h('div', [
+                    content: () =>
+                        h('div', [
                             'Are you sure you want to remove',
                             h('span', [' ']),
                             h(
@@ -297,8 +312,7 @@
                                 [`${props.selectedGroup.name}`]
                             ),
                             h('span', '?'),
-                        ])
-                    },
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {

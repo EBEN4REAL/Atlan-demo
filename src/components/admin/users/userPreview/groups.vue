@@ -40,23 +40,13 @@
                     <AtlanButton
                         size="sm"
                         padding="compact"
-                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
+                        class="text-gray-700 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
                             <div>Add to groups</div>
                         </div></AtlanButton
                     >
-                    <!-- <AtlanButton
-                        size="sm"
-                        padding="compact"
-                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
-                            <div>Add to groups</div>
-                        </div></AtlanButton
-                    > -->
                 </a-popover>
             </div>
             <div v-else>
@@ -185,7 +175,7 @@
                     <hr class="mx-4" />
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin text-primary" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>

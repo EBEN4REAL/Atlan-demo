@@ -2,9 +2,9 @@
     <div class="h-full">
         <div class="flex">
             <div class="py-1 mb-3 text-base font-bold text-gray-500">
-                Profile
+                Group Info
             </div>
-            <div v-if="isCurrentUser" class="ml-auto">
+            <div v-auth="map.UPDATE_GROUP" class="ml-auto">
                 <a-button
                     class="flex items-center content-center px-2"
                     @click="$emit('toggleEdit')"
@@ -16,49 +16,28 @@
         <div class="profile-wrapper">
             <div class="pb-6 border-b border-gray-200 border-solid">
                 <div class="mb-6">
+                    <div class="mb-1 text-sm text-gray-500">Description</div>
+                    <div class="text-gray-700">
+                        {{ selectedGroup.description || '-' }}
+                    </div>
+                </div>
+                <!-- <div class="mb-6">
                     <ViewPersonas
                         :user="selectedUser"
                         :is-current-user="isCurrentUser"
                     />
-                </div>
-                <div class="pb-2 mb-6">
-                    <ViewGroups
-                        :is-current-user="isCurrentUser"
-                        :user="selectedUser"
-                        @changeTab="$emit('changeTab', 'groups')"
-                    />
-                </div>
-                <div
-                    v-if="
-                        selectedUser?.attributes?.designation?.length > 0 &&
-                        selectedUser?.attributes?.designation[0]
-                    "
-                    class="mb-6"
-                >
-                    <div class="flex-1 mr-4">
-                        <p class="mb-0 text-gray-500">Designation</p>
-                        <p class="text-gray">
-                            {{ selectedUser.attributes.designation[0] }}
-                        </p>
+                </div> -->
+                <div>
+                    <div class="mb-1 text-sm text-gray-500">Member Count</div>
+                    <div
+                        class="font-bold cursor-pointer text-primary hover:underline"
+                        @click="$emit('changeTab', 'members')"
+                    >
+                        {{ selectedGroup.memberCount }}
                     </div>
                 </div>
-                <div
-                    v-if="
-                        selectedUser?.attributes?.skills?.length > 0 &&
-                        selectedUser?.attributes?.skills[0]
-                    "
-                >
-                    <UpdateSkills
-                        :user="selectedUser"
-                        :allow-update="false"
-                        @updated-user="$emit('updatedUser')"
-                        @success="$emit('success')"
-                    />
-                </div>
             </div>
-            <div
-                class="pb-6 border-b border-gray-200 border-solid"
-            >
+            <div class="pb-6 border-b border-gray-200 border-solid">
                 <p class="mt-6 text-sm tracking-wider text-gray-500 uppercase">
                     Ownership
                 </p>
@@ -71,29 +50,28 @@
                         >Fetching ownership details...</span
                     >
                 </div>
+
                 <div
                     v-else-if="categories.length && aggData.state === 'success'"
                     class="flex flex-wrap mt-2 gap-x-9 gap-y-2"
                 >
                     <div v-for="(cat, key) in categories" :key="key">
-                        <!-- <div v-if="cat.count"> -->
                         <p class="mb-1 text-gray-500">{{ cat.label }}</p>
                         <div
                             class="font-bold cursor-pointer text-primary hover:underline"
                             @click="$emit('changeTab', 'assets')"
                         >
                             {{ cat.count }}
-                            <!-- </div> -->
                         </div>
                     </div>
                 </div>
-                 <div
+                <div
                     v-else-if="
                         !categories.length && aggData.state === 'success'
                     "
                 >
                     <span class="mt-2"
-                        >{{ selectedUser.firstName }} doesn't own any assets.</span
+                        >{{ selectedGroup.name }} doesn't own any assets.</span
                     >
                 </div>
             </div>
@@ -103,23 +81,22 @@
                 </p>
 
                 <div class="mt-2 mb-5">
-                    <div class="mb-1 text-sm text-gray-500">Email Address</div>
-                    <a
-                        :href="`mailto:${selectedUser.email}`"
-                        class="mt-2 text-sm font-bold text-primary hover:underline"
-                    >
-                        {{ selectedUser.email }}
-                    </a>
+                    <div class="mb-1 text-sm text-gray-500">Created By</div>
+                    <PopOverUser :item="selectedGroup.createdBy">
+                        <div class="text-gray-700">
+                            {{ selectedGroup.createdBy }}
+                        </div>
+                    </PopOverUser>
                 </div>
                 <div class="mb-5">
                     <div class="flex-1 mr-4">
-                        <p class="mb-1 text-gray-500">Joined</p>
+                        <p class="mb-1 text-gray-500">Creation date</p>
                         <a-tooltip placement="bottom">
                             <template #title>
                                 {{ createdAt }}
                             </template>
                             <span class="text-gray-700">{{
-                                selectedUser.created_at_time_ago
+                                selectedGroup.createdAtTimeAgo
                             }}</span>
                         </a-tooltip>
                     </div>
@@ -132,25 +109,20 @@
 <script>
     import { computed, defineComponent, toRefs, ref, watch } from 'vue'
     import dayjs from 'dayjs'
-    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
-    import ViewGroups from '@/admin/users/userPreview/about/viewGroups.vue'
-    import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    // import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    import map from '~/constant/accessControl/map'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default defineComponent({
         name: 'ViewUser',
         components: {
-            ViewPersonas,
-            ViewGroups,
-            UpdateSkills,
+            PopOverUser,
+            // ViewPersonas,
         },
         props: {
-            selectedUser: {
+            selectedGroup: {
                 type: Object,
                 default: () => {},
-            },
-            isCurrentUser: {
-                type: Boolean,
-                default: false,
             },
             aggData: {
                 type: Object,
@@ -159,10 +131,10 @@
         },
         emits: ['updatedUser', 'toggleEdit', 'success', 'changeTab'],
         setup(props) {
-            const { selectedUser, aggData } = toRefs(props)
+            const { selectedGroup, aggData } = toRefs(props)
             const createdAt = computed(() =>
                 dayjs
-                    .unix(selectedUser.value.createdTimestamp / 1000)
+                    .unix(selectedGroup.value.createdAt / 1000)
                     .format('MMMM D, YYYY h:mm A')
             )
             const categories = ref([])
@@ -180,6 +152,7 @@
             return {
                 createdAt,
                 categories,
+                map,
             }
         },
     })

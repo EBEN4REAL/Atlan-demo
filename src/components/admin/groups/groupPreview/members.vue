@@ -96,7 +96,7 @@
                         class="relative"
                     >
                         <div
-                            class="flex items-center justify-between px-3 py-2 mt-2 transition-all duration-300 rounded group hover:bg-primary-light"
+                            class="flex items-center justify-between  py-2 mt-2 transition-all duration-300 rounded group hover:bg-primary-light"
                         >
                             <UserCard
                                 :user="{ ...user, name: getUserName(user) }"

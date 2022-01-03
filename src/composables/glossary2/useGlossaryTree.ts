@@ -471,7 +471,12 @@ const useGlossaryTree = ({
 
     const { getAnchorQualifiedName } = useAssetInfo()
 
-    const recursivelyAddOrDeleteNode = async (asset, guid, action) => {
+    const recursivelyAddOrDeleteNode = async (
+        asset,
+        guid,
+        action,
+        updateChildrenOnDelete = true
+    ) => {
         let parentStack: string[]
 
         const updateNodeNested = async (node: TreeDataItem) => {
@@ -513,7 +518,8 @@ const useGlossaryTree = ({
                                 asset?.value?.typeName ===
                                     'AtlasGlossaryCategory') &&
                             (element?.guid === asset?.guid ||
-                                element?.guid === asset?.value?.guid)
+                                element?.guid === asset?.value?.guid) &&
+                            updateChildrenOnDelete
                         ) {
                             if (element?.children?.length)
                                 element?.children?.forEach((el) => {
@@ -581,7 +587,7 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
-    const deleteNode = (asset, guid) => {
+    const deleteNode = (asset, guid, updateChildrenOnDelete) => {
         if (guid === 'root') {
             const updatedTreeData: TreeDataItem[] = treeData.value.filter(
                 (el) => {
@@ -590,7 +596,12 @@ const useGlossaryTree = ({
             )
             treeData.value = updatedTreeData
         } else {
-            recursivelyAddOrDeleteNode(asset, guid, 'delete')
+            recursivelyAddOrDeleteNode(
+                asset,
+                guid,
+                'delete',
+                updateChildrenOnDelete
+            )
         }
     }
 
@@ -789,7 +800,8 @@ const useGlossaryTree = ({
                 setTimeout(() => {
                     deleteNode(
                         assetToDrop,
-                        dragNode?.parent?.node?.guid ?? 'root'
+                        dragNode?.parent?.node?.guid ?? 'root',
+                        false
                     )
                 }, 0)
                 setTimeout(() => {
@@ -817,21 +829,24 @@ const useGlossaryTree = ({
                         handleCategoriesUpdate()
                     }
                     if (dragNode?.typeName === 'AtlasGlossaryCategory') {
-                        localParentCategory.value = node?.dataRef
+                        const parentCategory = {
+                            guid: node?.dataRef?.guid,
+                            typeName: node?.dataRef?.typeName,
+                            attributes: node?.dataRef?.attributes,
+                        }
+                        localParentCategory.value = parentCategory
                         handleParentCategoryUpdate()
                     }
                     whenever(updateError, () => {
                         setTimeout(() => {
-                            deleteNode(assetToDrop, node?.guid ?? 'root')
+                            deleteNode(assetToDrop, node?.guid ?? 'root', false)
                         }, 0)
                         setTimeout(() => {
                             addNode(assetToDrop, dragNode?.parent?.node)
                         }, 0)
                     })
                 }
-                // if (dragNode?.typeName === 'AtlasGlossaryTerm') {
                 updateTermCategories()
-                // }
             }
         }
     }

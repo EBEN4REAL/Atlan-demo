@@ -97,6 +97,7 @@
                 "
             />
         </div>
+
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
@@ -105,7 +106,7 @@
                 'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
-            <div class="border-b border-gray-300">
+            <div class="border-b border-gray-300" v-if="showSelectAll">
                 <a-checkbox
                     v-model:checked="selectAll"
                     @change="onSelectAll"
@@ -259,10 +260,15 @@
                 type: String,
                 required: true,
             },
+            showSelectAll: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName } = toRefs(props)
+            const { tableQualfiedName, showSelectAll } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const map = ref({})
@@ -363,7 +369,7 @@
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
-                    value: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes?.qualifiedName,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -405,12 +411,12 @@
                             label: 'All columns',
                         })
                     } else {
+                        const t = selectedColumnsData.value.find(
+                            (e) => e.columnsQualifiedName === val
+                        )
                         data.push({
-                            type:
-                                selectedColumnsData.value.find(
-                                    (e) => e.label === val
-                                )?.type ?? 'Columns',
-                            label: val,
+                            type: t?.type ?? 'Columns',
+                            label: t?.label,
                         })
                     }
                 })
@@ -430,15 +436,14 @@
                 let columns = []
                 Object.keys(map.value).forEach((col) => {
                     let x = list.value.find((el) => {
-                        let label =
-                            el.attributes?.displayName || el.attributes?.name
+                        let label = el.attributes?.qualifiedName
                         return label === col
                     })
                     columns.push({
                         label:
                             x?.attributes?.displayName || x?.attributes?.name,
                         type: x?.attributes?.dataType,
-                        columnQualifiedName: x?.attributes.qualifiedName,
+                        columnsQualifiedName: x?.attributes.qualifiedName,
                     })
                 })
 
@@ -518,6 +523,7 @@
             })
 
             return {
+                showSelectAll,
                 initialRef,
                 queryText,
                 clearAllSelected,

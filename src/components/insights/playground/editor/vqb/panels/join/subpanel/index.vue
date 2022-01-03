@@ -193,6 +193,28 @@
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
+                const copySelectedTables = JSON.parse(
+                    JSON.stringify(toRaw(selectedTables.value))
+                )
+                const subpanel = subpanels.value[index]
+
+                const leftColumnQualifiedName =
+                    subpanel?.columnsDataLeft?.columnQualifiedName
+                const rightColumnQualifiedName =
+                    subpanel?.columnsDataRight?.columnQualifiedName
+                let addedBy: any = new Set()
+                if (leftColumnQualifiedName)
+                    addedBy.add(`joins-${subpanel.id}${index}1`)
+                if (rightColumnQualifiedName)
+                    addedBy.add(`joins-${subpanel.id}${index}2`)
+                addedBy = Array.from(addedBy)
+                let t: any = []
+                t = copySelectedTables.filter(
+                    (selectedTable) => !addedBy.includes(selectedTable.addedBy)
+                )
+
+                debugger
+                selectedTables.value = t
                 subpanels.value.splice(index, 1)
             }
 

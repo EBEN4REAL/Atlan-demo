@@ -115,7 +115,7 @@
             )
             const hasBeenEdited = ref(false)
 
-            const list = computed(() => localValue.value)
+            const list = computed(() => localValue.value.filter(term => term.attributes?.__state === 'ACTIVE'))
 
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
@@ -213,7 +213,7 @@
 
             const handleTermPopoverVisibility = (v, term) => {
                 if (v) {
-                    facets.value.guid = term.termGuid
+                    facets.value.guid = term.guid
                     quickChange()
                 }
             }

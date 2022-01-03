@@ -7,7 +7,10 @@
         :color="tooltipColor"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
             <template v-if="routeTo">
-                <router-link :to="routeTo">
+                <router-link
+                    :to="routeTo"
+                    :target="isOpenInNewTab ? '_blank' : 'self'"
+                >
                     <a-typography-paragraph
                         :class="classes"
                         :ellipsis="{
@@ -35,6 +38,7 @@
     import { defineComponent, ref, toRefs } from 'vue'
 
     export default defineComponent({
+        name: 'Tooltip',
         props: {
             tooltipText: {
                 type: String,
@@ -64,8 +68,12 @@
                 type: String,
                 required: false,
             },
+            isOpenInNewTab: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        name: 'Tooltip',
         setup(props) {
             const truncated = ref<boolean>(false)
             const { tooltipText } = toRefs(props)

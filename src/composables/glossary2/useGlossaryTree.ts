@@ -484,12 +484,6 @@ const useGlossaryTree = ({
             // if the target node is reached
             if (node.key === guid || !currentPath || node.guid === guid) {
                 const updatedChildren: TreeDataItem[] = []
-                console.log(
-                    action,
-                    ' from ',
-                    node?.displayText,
-                    asset?.displayText
-                )
                 if (action === 'add') {
                     let loadMoreNode
                     node?.children?.forEach((element) => {
@@ -513,6 +507,7 @@ const useGlossaryTree = ({
                 }
                 if (action === 'delete') {
                     node?.children?.forEach((element) => {
+                        // reOrder children to root if deleting a category
                         if (
                             (asset?.typeName === 'AtlasGlossaryCategory' ||
                                 asset?.value?.typeName ===
@@ -521,11 +516,28 @@ const useGlossaryTree = ({
                                 element?.guid === asset?.value?.guid) &&
                             updateChildrenOnDelete
                         ) {
-                            if (element?.children?.length)
+                            if (element?.children?.length) {
                                 element?.children?.forEach((el) => {
-                                    if (el?.typeName !== 'cta')
-                                        updatedChildren.push(el)
+                                    if (el?.typeName !== 'cta') {
+                                        if (
+                                            parentGlossaryQualifiedName?.value !==
+                                            ''
+                                        ) {
+                                            treeData.value.push(el)
+                                        } else {
+                                            treeData.value.forEach((i) => {
+                                                if (
+                                                    i.guid ===
+                                                    element?.attributes?.anchor
+                                                        ?.guid
+                                                ) {
+                                                    i.children?.push(el)
+                                                }
+                                            })
+                                        }
+                                    }
                                 })
+                            }
                         }
                         if (
                             element?.typeName !== 'cta' &&
@@ -589,11 +601,14 @@ const useGlossaryTree = ({
     }
     const deleteNode = (asset, guid, updateChildrenOnDelete) => {
         if (guid === 'root') {
-            const updatedTreeData: TreeDataItem[] = treeData.value.filter(
-                (el) => {
-                    return el?.guid !== asset?.guid
-                }
-            )
+            const updatedTreeData = []
+            treeData.value.forEach((el) => {
+                if (el?.guid === asset?.guid) {
+                    if (el?.typeName === 'AtlasGlossaryCategory')
+                        updatedTreeData.push(...el.children)
+                } else updatedTreeData.push(el)
+            })
+
             treeData.value = updatedTreeData
         } else {
             recursivelyAddOrDeleteNode(

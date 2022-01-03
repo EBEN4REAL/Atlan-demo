@@ -42,7 +42,7 @@ export function getValueStringFromType(subpanel, value) {
 // "TABLENAME"."COLUMNNAME"
 // "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
 function getJoinFormattedColumnName(columnQualifiedName: string) {
-    const spiltArray = columnQualifiedName.split('/')
+    const spiltArray = columnQualifiedName?.split('/')
     if (spiltArray.length > 6) {
         return `"${spiltArray[5]}"."${spiltArray[6]}"`
     }

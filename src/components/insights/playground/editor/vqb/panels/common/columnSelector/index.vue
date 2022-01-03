@@ -110,7 +110,7 @@
             ]"
         >
             <div
-                :class="['flex  justify-center overflow-auto']"
+                :class="['flex  justify-center overflow-auto w-full']"
                 style="height: 250px"
             >
                 <Loader
@@ -177,6 +177,7 @@
                     class="w-full"
                     v-if="
                         !tableSelected?.qualifiedName &&
+                        !isLoading &&
                         selectedTablesQualifiedNames.length >= 2
                     "
                     style="height: 250px"
@@ -242,6 +243,7 @@
                     class="w-full"
                     v-if="
                         tableSelected?.qualifiedName &&
+                        !isLoading &&
                         selectedTablesQualifiedNames.length >= 2
                     "
                 >
@@ -275,71 +277,35 @@
                         ]"
                     >
                         <template
-                            v-if="
-                                columnDropdownOption.length !== 0 && !isLoading
-                            "
                             v-for="(item, index) in columnDropdownOption"
-                            :key="item?.label + index"
+                            :key="item.value + index + item.qualifiedName"
                         >
-                            <a-checkbox
-                                :checked="map[item.value]"
-                                @change="
-                                    (checked) => onCheckboxChange(checked, item)
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(checked) => onSelectItem(item)"
+                                :class="
+                                    selectedItem?.label === item.label
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
                                 "
-                                class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
                             >
-                                <div
-                                    class="justify-between parent-ellipsis-container"
-                                >
-                                    <div class="parent-ellipsis-container">
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                        ></component>
-                                        <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >
-                                            {{ item.label }}
-                                        </span>
-                                    </div>
-                                    <div
-                                        class="relative h-full w-14 parent-ellipsis-container-extension"
-                                        v-if="item.isPrimary || item.isForeign"
+                                <div class="flex items-center">
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700"
                                     >
-                                        <div
-                                            class="absolute right-0 flex items-center -top-2.5"
-                                        >
-                                            <AtlanIcon
-                                                icon="PrimaryKey"
-                                                style="color: #3ca5bc"
-                                                class="w-4 h-4 mr-1"
-                                            ></AtlanIcon>
-                                            <span
-                                                style="color: #3ca5bc"
-                                                class="text-sm"
-                                                >Pkey</span
-                                            >
-                                        </div>
-                                        <div
-                                            class="absolute flex items-center -top-2.5"
-                                            :class="
-                                                item.isPrimary
-                                                    ? 'right-14'
-                                                    : 'right-0'
-                                            "
-                                        >
-                                            <AtlanIcon
-                                                icon="ForeignKey"
-                                                class="w-4 h-4 mr-1 text-purple-700"
-                                            ></AtlanIcon>
-                                            <span
-                                                class="text-sm text-purple-700"
-                                                >Fkey</span
-                                            >
-                                        </div>
-                                    </div>
+                                        {{ item.label }}
+                                    </span>
                                 </div>
-                            </a-checkbox>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="text-primary"
+                                    v-if="selectedItem?.label === item.label"
+                                />
+                            </div>
                         </template>
 
                         <div
@@ -606,7 +572,7 @@
                 let data = {}
                 if (item.typeName === 'Table') {
                     data = {
-                        tableQualifiedName: item?.qualifiedName,
+                        tableQualfiedName: item?.qualifiedName,
                         searchText: queryText.value,
                     }
                 } else if (item.typeName === 'View') {
@@ -672,7 +638,30 @@
                 return data
             })
 
+            const columnDropdownOption = computed(() => {
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    qualifiedName: ls.attributes.qualifiedName,
+                    type: ls.attributes.dataType,
+                    attributes: ls.attributes,
+                    order: ls.attributes.order,
+                }))
+
+                // console.log('list: ', list)
+
+                data.sort((x, y) => {
+                    if (x.order < y.order) return -1
+                    if (x.order > y.order) return 1
+                    return 0
+                })
+                console.log('col: ', data)
+                return data
+            })
+
             const placeholder = computed(() => {
+                if (isLoading.value) {
+                    return 'Loading...'
+                }
                 if (
                     tableQualfiedName.value &&
                     activeInlineTab.value.playground.vqb.selectedTables
@@ -697,6 +686,21 @@
                 return `Select a table first`
             })
 
+            const onSelectTable = (item) => {
+                // console.log('selected table: ', item)
+                tableSelected.value = item
+                replaceBody(getColumnInitialBody(item))
+            }
+            const onUnselectTable = () => {
+                tableSelected.value = null
+                columnDropdownOption.value = []
+                replaceBody(
+                    getTableInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables
+                    )
+                )
+            }
+
             watch(queryText, () => {
                 if (
                     activeInlineTab.value.playground.vqb.selectedTables
@@ -716,20 +720,9 @@
                     replaceBody(getInitialBody())
                 }
             })
+
             watch(
-                [tableQualfiedName],
-                () => {
-                    if (!tableSelected.value) replaceBody(getInitialBody())
-                },
-                {
-                    immediate: true,
-                }
-            )
-            watch(
-                () => [
-                    activeInlineTab.value.playground.vqb.selectedTables,
-                    isAreaFocused,
-                ],
+                () => [activeInlineTab.value.playground.vqb.selectedTables],
                 () => {
                     /* Fetch only columns */
                     if (
@@ -748,8 +741,25 @@
                             )
                         )
                     }
-                }
+                },
+                { immediate: true }
             )
+            watch(isAreaFocused, () => {
+                if (!isAreaFocused.value) {
+                    if (
+                        activeInlineTab.value.playground.vqb.selectedTables
+                            ?.length > 1
+                    ) {
+                        tableSelected.value = null
+                        replaceBody(
+                            getTableInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
+                    }
+                }
+            })
 
             return {
                 initialRef,
@@ -784,9 +794,12 @@
                 selectedTablesQualifiedNames,
                 tableSelected,
                 tableDropdownOption,
+                columnDropdownOption,
                 getEntityStatusIcon,
                 assetType,
                 certificateStatus,
+                onSelectTable,
+                onUnselectTable,
             }
         },
     })

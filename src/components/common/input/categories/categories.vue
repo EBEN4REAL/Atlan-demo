@@ -57,6 +57,13 @@
                     <div class="ml-1 group-hover:text-white">
                         {{ category.label }}
                     </div>
+
+                    <div class="flex" @click="() => handleDelete(category)">
+                        <AtlanIcon
+                            icon="Cross"
+                            class="h-3 ml-2 text-gray-500 group-hover:text-white"
+                        ></AtlanIcon>
+                    </div>
                 </div>
             </template>
             <span
@@ -98,6 +105,11 @@
                 required: false,
                 default: false,
             },
+            allowDelete: {
+                type: Boolean,
+                required: false,
+                default: null,
+            },
             disabled: {
                 type: Boolean,
                 default: false,
@@ -120,6 +132,7 @@
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
                     value: category.guid,
+                    attributes: category.attributes
                 }))
             )
             const SHOW_ALL = TreeSelect.SHOW_ALL
@@ -145,11 +158,26 @@
                         typeName: 'AtlasGlossaryCategory',
                         attributes: {
                             name: cat.label,
+                            ...cat.attributes
                         },
                     }))
                     emit('change', localValue.value)
                     hasBeenEdited.value = false
                 }
+            }
+
+            const handleDelete = (category : { label: string; value: string}) => {
+                checkedKeys.value = checkedKeys.value.filter((cat) => cat.value !== category.value)
+                modelValue.value = checkedKeys.value.map((cat) => ({
+                    guid: cat.value,
+                    typeName: 'AtlasGlossaryCategory',
+                    attributes: {
+                        name: cat.label,
+                        ...cat.attributes
+                    },
+                }))
+                emit('change', localValue.value)
+                hasBeenEdited.value = false
             }
 
             const icon = (category) => {
@@ -174,14 +202,6 @@
                 return 'Category'
             }
 
-            const onCheck = (checkedNodes) => {
-                localValue.value = []
-                checkedNodes.forEach((term) => {
-                    localValue.value.push(term)
-                })
-                hasBeenEdited.value = true
-            }
-
             onMounted(async () => {
                 await initCategories()
             })
@@ -191,12 +211,12 @@
                 checkedKeys.value = modelValue.value.map((category) => ({
                     label: category.attributes.name,
                     value: category.guid,
+                    attributes: category.attributes
                 }))
             })
 
             return {
                 icon,
-                onCheck,
                 onPopoverClose,
                 localValue,
                 checkedKeys,
@@ -206,6 +226,7 @@
                 SHOW_ALL,
                 getContainer,
                 treeSelectRef,
+                handleDelete
             }
         },
     })

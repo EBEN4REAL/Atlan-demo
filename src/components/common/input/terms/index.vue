@@ -156,7 +156,6 @@
             }
 
             const handleDeleteTerm = (term) => {
-                console.log(term, 'bruh')
                 localValue.value = localValue.value?.filter(
                     (localTerm) =>
                         (localTerm.guid ?? localTerm.termGuid) !==
@@ -164,6 +163,7 @@
                 )
 
                 modelValue.value = localValue.value
+                checkedGuids.value = checkedGuids.value.filter((guid) => guid !== term.guid)
                 emit('change', localValue.value)
             }
             /* Adding this when parent data change, sync it with local */

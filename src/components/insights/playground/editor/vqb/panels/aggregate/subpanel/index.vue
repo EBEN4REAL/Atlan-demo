@@ -15,10 +15,12 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        v-if="selectedTables.length < 2"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
+                        "
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
                         "
                         @change="(val) => handleColumnChange(val, index)"
                     />
@@ -164,6 +166,7 @@
             let hoverItem = ref(null)
 
             return {
+                activeInlineTab,
                 selectedTables,
                 selectedAggregates,
                 columnName,

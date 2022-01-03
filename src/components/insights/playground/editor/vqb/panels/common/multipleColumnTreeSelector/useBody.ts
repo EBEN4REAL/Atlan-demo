@@ -6,6 +6,7 @@ interface useBodyProps {
     schemaQualifiedName?: string | undefined
     tableQualifiedName?: string | undefined
     tableQualifiedNames?: string[] | undefined
+    viewQualifiedName?: string[] | undefined
     searchText?: string | undefined
 }
 export default function useBody({

@@ -465,12 +465,12 @@
                 if (item.typeName === 'Table') {
                     data = {
                         tableQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 }
                 return {

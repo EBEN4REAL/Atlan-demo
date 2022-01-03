@@ -154,7 +154,7 @@
                                 :item="item"
                                 :item-index="itemIndex"
                                 :selected-guid="
-                                    page === 'admin' ? null : selectedAsset.guid
+                                    page === 'admin' || page === 'glossary' ? null : selectedAsset.guid
                                 "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
@@ -166,7 +166,7 @@
                                         : false
                                 "
                                 :enable-sidebar-drawer="enableSidebarDrawer"
-                                :is-checked="checkSelectedCriteriaFxn(item)"
+                                :is-checked="checkableItems ? checkSelectedCriteriaFxn(item) : false"
                                 :class="page !== 'admin' ? 'mx-3' : ''"
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
@@ -303,6 +303,11 @@
             allCheckboxAreaClick: {
                 type: Boolean,
                 default: false,
+            },
+            checkableItems: {
+                type: Boolean,
+                required: false,
+                default: true
             },
             disableHandlePreview: {
                 type: Boolean,

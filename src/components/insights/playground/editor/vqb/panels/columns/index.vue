@@ -108,6 +108,9 @@
                 v-model:subpanels="
                     activeInlineTab.playground.vqb.panels[index].subpanels
                 "
+                v-model:selectedTables="
+                    activeInlineTab.playground.vqb.selectedTables
+                "
                 :expand="expand"
                 v-if="expand"
             />

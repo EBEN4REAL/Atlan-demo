@@ -307,6 +307,7 @@
                     playground: {
                         isVQB: isVQB,
                         vqb: {
+                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,

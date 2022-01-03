@@ -5,7 +5,7 @@
         :visible="isVisible"
         :get-container="false"
         :closable="false"
-        :mask="false"
+        :mask="true"
         :class="$style.drawerStyle"
         :width="460"
     >

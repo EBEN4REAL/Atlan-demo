@@ -420,7 +420,7 @@
                     else return `${data[data.length - 1]}`
                 }
 
-                let data = !tableSelected?.qualifiedName
+                let data = !tableSelected.value?.qualifiedName
                     ? `select from ${totalCount.value} tables`
                     : `select from ${totalCount.value} columns`
 

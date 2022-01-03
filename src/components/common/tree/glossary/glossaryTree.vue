@@ -45,16 +45,6 @@
         @check="onCheck"
         :blockNode="true"
         @drop="dragAndDropNode"
-        @dragstart="
-            () => {
-                isTreeNodeAnimating = true
-            }
-        "
-        @dragend="
-            () => {
-                isTreeNodeAnimating = false
-            }
-        "
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />

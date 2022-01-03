@@ -599,7 +599,7 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
-    const deleteNode = (asset, guid, updateChildrenOnDelete) => {
+    const deleteNode = (asset, guid, updateChildrenOnDelete = true) => {
         if (guid === 'root') {
             const updatedTreeData = []
             treeData.value.forEach((el) => {
@@ -702,6 +702,16 @@ const useGlossaryTree = ({
                     deleteNode(asset, cat?.guid)
                 }, 0)
             })
+
+        // handles root to some category
+        if (!existingCategories?.length && addedCategories?.length) {
+            setTimeout(() => {
+                if (parentGlossaryQualifiedName?.value !== '') {
+                    deleteNode(asset, 'root')
+                } else deleteNode(asset, asset?.attributes?.anchor)
+            }, 0)
+        }
+        //  handles removal of all categories
         if (!newCategories?.length && removedCategories?.length) {
             setTimeout(() => {
                 if (parentGlossaryQualifiedName?.value !== '') {

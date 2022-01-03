@@ -82,9 +82,11 @@
 
                 <div class="mt-2 mb-5">
                     <div class="mb-1 text-sm text-gray-500">Created By</div>
-                    <div class="text-gray-700">
-                        {{ selectedGroup.createdBy }}
-                    </div>
+                    <PopOverUser :item="selectedGroup.createdBy">
+                        <div class="text-gray-700">
+                            {{ selectedGroup.createdBy }}
+                        </div>
+                    </PopOverUser>
                 </div>
                 <div class="mb-5">
                     <div class="flex-1 mr-4">
@@ -109,10 +111,12 @@
     import dayjs from 'dayjs'
     // import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
     import map from '~/constant/accessControl/map'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default defineComponent({
         name: 'ViewUser',
         components: {
+            PopOverUser,
             // ViewPersonas,
         },
         props: {

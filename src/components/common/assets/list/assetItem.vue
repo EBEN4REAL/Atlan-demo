@@ -43,7 +43,7 @@
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
-                            :is-open-in-new-tab="isOpenInNewTab"
+                            :shouldOpenInNewTab="shouldOpenInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
 
@@ -576,8 +576,9 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
-            const shouldOpenInNewTab = inject('shouldOpenInNewTab')
-            const isOpenInNewTab = computed(() => shouldOpenInNewTab || false)
+            const shouldOpenInNewTab = computed(
+                () => inject('shouldOpenInNewTab') || false
+            )
 
             const {
                 title,
@@ -729,7 +730,6 @@
                 isUserDescription,
                 isScrubbed,
                 shouldOpenInNewTab,
-                isOpenInNewTab,
             }
         },
     })

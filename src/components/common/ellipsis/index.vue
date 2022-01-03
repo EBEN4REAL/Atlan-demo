@@ -9,7 +9,7 @@
             <template v-if="routeTo">
                 <router-link
                     :to="routeTo"
-                    :target="isOpenInNewTab ? '_blank' : 'self'"
+                    :target="shouldOpenInNewTab ? '_blank' : 'self'"
                 >
                     <a-typography-paragraph
                         :class="classes"
@@ -68,7 +68,7 @@
                 type: String,
                 required: false,
             },
-            isOpenInNewTab: {
+            shouldOpenInNewTab: {
                 type: Boolean,
                 required: false,
                 default: false,

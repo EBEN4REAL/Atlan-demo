@@ -473,7 +473,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        PropType,
+        inject,
+    } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -568,6 +575,9 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
+            const shouldOpenInNewTab = inject('shouldOpenInNewTab')
+
+            console.log('shouldOpenInNewTab', shouldOpenInNewTab)
 
             const {
                 title,
@@ -718,6 +728,7 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
+                shouldOpenInNewTab,
             }
         },
     })

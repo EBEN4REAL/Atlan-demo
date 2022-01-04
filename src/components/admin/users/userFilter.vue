@@ -1,20 +1,55 @@
 <template>
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
-    <div
-        class="rounded p-4 w-36 justify-center bg-white"
-    >
-        <a-form layout="vertical" class="p-0">
-            <a-form-item label="USER STATUS" class="mb-0">
-                <a-checkbox-group
-                    v-model:value="statusFilter"
-                    class="grid gap-y-2"
-                    :options="userStatusOptions"
-                    @change="handleStatusFilterChange"
-                ></a-checkbox-group>
-            </a-form-item>
-        </a-form>
-    </div>
+    <a-collapse class="border border-gray-50">
+        <div>Filter</div>
+        <a-collapse-panel class="group" :show-arrow="false">
+            <template #header>
+                <div class="flex justify-between w-36">
+                    <span>STATUS</span>
+                    <AtlanIcon
+                        icon="CaretDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
+                    />
+                </div>
+            </template>
+            <div class="justify-center p-4 bg-white rounded w-36">
+                <a-form layout="vertical" class="p-0">
+                    <a-form-item label="USER STATUS" class="mb-0">
+                        <a-checkbox-group
+                            v-model:value="statusFilter"
+                            class="grid gap-y-2"
+                            :options="userStatusOptions"
+                            @change="handleStatusFilterChange"
+                        ></a-checkbox-group>
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-collapse-panel>
+        <a-collapse-panel class="group" :show-arrow="false">
+            <template #header>
+                <div class="flex justify-between w-36">
+                    <span>ROLE</span>
+                    <AtlanIcon
+                        icon="CaretDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
+                    />
+                </div>
+            </template>
+            <div class="justify-center p-4 bg-white rounded w-36">
+                <a-form layout="vertical" class="p-0">
+                    <a-form-item label="USER STATUS" class="mb-0">
+                        <a-radio-group
+                            v-model:value="statusFilter"
+                            class="grid gap-y-2"
+                            :options="userStatusOptions"
+                            @change="handleStatusFilterChange"
+                        ></a-radio-group>
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-collapse-panel>
+    </a-collapse>
     <!-- </template> -->
     <!-- <a-button size="default" class="px-2 text-gray-500 rounded-md">
             <AtlanIcon icon="FilterFunnel" />

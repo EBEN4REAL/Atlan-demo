@@ -71,10 +71,10 @@ export default function useCreateGraph(
         rankdir: 'LR',
         controlPoints: true,
         nodesepFunc() {
-            return 10
+            return 20
         },
         ranksepFunc() {
-            return 120
+            return 125
         },
     })
 

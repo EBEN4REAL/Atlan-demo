@@ -44,14 +44,22 @@ export default async function useComputeGraph(
     )
 
     /* Edges */
-    relations.forEach((relation) => {
-        const { toEntityId } = relation
+    relations.forEach((x) => {
+        const { toEntityId } = x
         const process = relationsWithProcess.find(
-            (x) => x.toEntityId === toEntityId
+            (y) => y.toEntityId === toEntityId
         ).fromEntityId
 
         if (process) {
-            const { edgeData } = createEdgeData(relation, process)
+            const relation = {
+                id: `${process}/${x.fromEntityId}@${x.toEntityId}`,
+                sourceCell: x.fromEntityId,
+                sourcePort: `${x.fromEntityId}/index`,
+                targetCell: x.toEntityId,
+                targetPort: `${x.toEntityId}/index`,
+                stroke: '#C7C7C7',
+            }
+            const { edgeData } = createEdgeData(relation)
             edges.value.push(edgeData)
         }
     })

@@ -628,7 +628,7 @@
             }
             &:hover {
                 .unsaved-dot {
-                    visibility: hidden;
+                    visibility: hidden !important;
                 }
                 .ant-tabs-close-x {
                     visibility: visible !important;
@@ -688,6 +688,12 @@
     }
 </style>
 <style lang="less" module>
+    // :global(.unsaved-dot) {
+    //     visibility: hidden !important;
+    // }
+    :global(.ant-tabs-dropdown-menu-item-remove) {
+        visibility: hidden !important;
+    }
     .inline_tabs {
         height: 28px !important;
 
@@ -710,6 +716,20 @@
         :global(.ant-tabs-nav)::before {
             border-bottom: none !important;
         }
+        :global(.ant-tabs-dropdown) {
+            width: 117px !important;
+        }
+
+        :global(.unsaved-dot) {
+            visibility: visible !important;
+        }
+        // :global(.ant-tabs-dropdown-menu-item-remove) {
+        //     visibility: visible !important;
+        // }
+    }
+    :global(.ant-tabs-dropdown-menu-title-content) {
+        display: flex !important;
+        flex-direction: row !important;
     }
 </style>
 <route lang="yaml">

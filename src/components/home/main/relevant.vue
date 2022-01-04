@@ -1,13 +1,13 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <!--  <div
+    <div
         class="items-center justify-center border border-gray-200 rounded-lg"
         :class="isLoading ? `flex flex-grow` : `hidden`"
         style="height: 350px"
     >
         <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin" />
     </div>
-      <a-tabs
+    <a-tabs
         v-model:activeKey="relevantTab"
         :class="[$style.hometab, isLoading ? `hidden` : ``]"
         class="px-6 py-1.5 border border-gray-200 rounded-lg"
@@ -17,7 +17,7 @@
             v-for="tab in relevantTabList"
             :key="tab.id"
             :tab="tab.name"
-            style="height: 350px;"
+            style="height: 350px"
             force-render
         >
             <component
@@ -32,7 +32,7 @@
                 @list-loaded="listLoaded(tab.id, $event)"
             />
         </a-tab-pane>
-    </a-tabs> -->
+    </a-tabs>
 </template>
 
 <script lang="ts">

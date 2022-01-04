@@ -358,7 +358,7 @@
             })
             const placeholder = computed(() => {
                 if (tableQualfiedName.value) {
-                    return `Search from ${totalCount.value} columns`
+                    return `Select from ${totalCount.value} columns`
                 }
                 return `Select a table first`
             })

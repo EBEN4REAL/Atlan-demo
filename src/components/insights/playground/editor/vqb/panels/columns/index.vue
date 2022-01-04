@@ -49,7 +49,7 @@
                         </div>
                         <div class="">
                             <p class="text-sm font-bold capitalize text-gray">
-                                {{ panel.id }}
+                                Select from
                             </p>
                             <p class="text-xs text-gray-500" v-if="!expand">
                                 {{

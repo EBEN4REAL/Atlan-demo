@@ -115,18 +115,6 @@
             }
             const items = [
                 {
-                    id: 'filter',
-                    icon: 'Filter',
-                    label: 'Filter',
-                    class: 'mr-2',
-                },
-                {
-                    id: 'group',
-                    icon: 'BuilderGroup',
-                    label: 'Group',
-                    class: 'mr-2',
-                },
-                {
                     id: 'aggregate',
                     icon: 'Trigger',
                     label: 'Aggregate',
@@ -138,6 +126,19 @@
                     label: 'Join data',
                     class: 'mr-2',
                 },
+                {
+                    id: 'filter',
+                    icon: 'Filter',
+                    label: 'Filter',
+                    class: 'mr-2',
+                },
+                {
+                    id: 'group',
+                    icon: 'BuilderGroup',
+                    label: 'Group',
+                    class: 'mr-2',
+                },
+
                 {
                     id: 'sort',
                     icon: 'Sort',

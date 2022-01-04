@@ -10,7 +10,7 @@
             <template #content>
                 <div class="px-3 py-1 border-b">
                     <div
-                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
+                        class="flex items-center py-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('')"
                     >
                         <AtlanIcon
@@ -64,7 +64,7 @@
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="'w-full '"
+                    :classes="'w-full font-bold'"
                 />
 
                 <div class="w-4 mr-1">

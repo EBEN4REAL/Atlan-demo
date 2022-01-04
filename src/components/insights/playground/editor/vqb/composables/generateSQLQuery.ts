@@ -48,10 +48,11 @@ function getJoinFormattedColumnName(columnQualifiedName: string) {
     }
 }
 export function getTableName(columnQualifiedName: string) {
-    const spiltArray = columnQualifiedName.split('/')
-    if (spiltArray.length > 5) {
+    const spiltArray = columnQualifiedName?.split('/')
+    if (spiltArray?.length > 5) {
         return `"${spiltArray[5]}"`
     }
+    return ''
 }
 
 export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
@@ -113,13 +114,22 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.columnQualifiedName
+                )
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
-                select.field(
-                    `${aggregatorUpperCase} (${tableName}."${columnName}")`,
-                    aggregatedAliasMap[aggregatorUpperCase](columnName)
-                )
+                if (aggregatorUpperCase === 'UNIQUE') {
+                    select.field(
+                        `COUNT (DISTINCT ${tableName}."${columnName}")`,
+                        aggregatedAliasMap[aggregatorUpperCase](columnName)
+                    )
+                } else {
+                    select.field(
+                        `${aggregatorUpperCase} (${tableName}."${columnName}")`,
+                        aggregatedAliasMap[aggregatorUpperCase](columnName)
+                    )
+                }
             })
         })
         // console.log(select.toString(), 'select.toString()')
@@ -144,7 +154,9 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
             if (subpanel.column.label) {
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.columnQualifiedName
+                )
 
                 select.order(`${tableName}."${subpanel.column.label}"`, order)
             }
@@ -158,7 +170,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
             res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
-            const tableName = getTableName(subpanel.column.qualifiedName)
+            const tableName = getTableName(subpanel.column.columnQualifiedName)
             if (index == 0) res = ''
 
             res += `"${tableName}."${subpanel?.column?.label}"`

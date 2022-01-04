@@ -127,7 +127,7 @@
                         <Groups :user="user" />
                     </div>
                 </template>
-                <div>
+                <div class="pr-6 text-right text-primary">
                     {{ user?.groupCount || '-' }}
                 </div>
             </a-popover>
@@ -159,7 +159,7 @@
                         </div>
                     </div>
                 </template>
-                <div>
+                <div class="pr-6 text-right text-primary">
                     {{ user?.personas?.length || '-' }}
                 </div>
             </a-popover>

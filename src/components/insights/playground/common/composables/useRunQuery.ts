@@ -15,6 +15,7 @@ export default function useProject() {
     const {
         getParsedQuery,
         resetErrorDecorations,
+        resetLineDecorations,
         setErrorDecorations,
         getParsedQueryCursor,
     } = useEditor()
@@ -93,6 +94,9 @@ export default function useProject() {
         showVQB: Ref<Boolean> = ref(false)
     ) => {
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        if(editorInstance?.value) {
+            resetLineDecorations(editorInstance.value)
+        }
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'

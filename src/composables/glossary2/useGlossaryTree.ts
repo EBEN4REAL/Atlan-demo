@@ -1,3 +1,4 @@
+// TODO: make helper function to give node attributes and add cta nodes - it's causing redundancy
 import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
 import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
@@ -727,7 +728,7 @@ const useGlossaryTree = ({
         }
     }
 
-    const updateNode = (asset) => {
+    const updateNode = (asset, updateCategories = true) => {
         const currentParents = nodeToParentKeyMap[asset?.guid]
         if (currentParents) {
             if (
@@ -737,11 +738,12 @@ const useGlossaryTree = ({
             ) {
                 treeData.value = treeData.value.map((treeNode) => {
                     if (treeNode.guid === asset?.guid) {
-                        handleCategoriesChange(
-                            treeNode?.attributes?.categories,
-                            asset?.attributes?.categories,
-                            asset
-                        )
+                        if (updateCategories)
+                            handleCategoriesChange(
+                                treeNode?.attributes?.categories,
+                                asset?.attributes?.categories,
+                                asset
+                            )
 
                         treeNode.attributes = asset?.attributes
                     }
@@ -758,11 +760,12 @@ const useGlossaryTree = ({
 
                     // if the target node is reached
                     if (node.guid === asset?.guid || !currentPath) {
-                        handleCategoriesChange(
-                            node?.attributes?.categories,
-                            asset?.attributes?.categories,
-                            asset
-                        )
+                        if (updateCategories)
+                            handleCategoriesChange(
+                                node?.attributes?.categories,
+                                asset?.attributes?.categories,
+                                asset
+                            )
 
                         node.attributes = asset.attributes
                         return {
@@ -805,18 +808,79 @@ const useGlossaryTree = ({
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
         console.log(event, node, dragNode, dragNodesKeys)
         const assetToDrop = { ...dragNode.dataRef }
+        const updateDragNodeAttributes = (newParent) => {
+            console.log(newParent)
+            const selectedAsset = ref(assetToDrop)
+            const {
+                localCategories,
+                localParentCategory,
+                handleParentCategoryUpdate,
+                handleCategoriesUpdate,
+                error: updateError,
+                asset,
+            } = updateAssetAttributes(selectedAsset)
+            if (dragNode?.typeName === 'AtlasGlossaryTerm') {
+                const newCategories = localCategories.value?.filter(
+                    (el) => el.guid !== dragNode?.parent?.node?.guid
+                )
+                if (node?.typeName !== 'AtlasGlossary' && newParent?.guid)
+                    newCategories.push(newParent)
+                localCategories.value = newCategories
+                handleCategoriesUpdate()
+            }
+            if (dragNode?.typeName === 'AtlasGlossaryCategory') {
+                const parentCategory = {
+                    guid: newParent?.guid,
+                }
+                localParentCategory.value = parentCategory
+                handleParentCategoryUpdate()
+            }
+            whenever(updateError, () => {
+                setTimeout(() => {
+                    deleteNode(assetToDrop, newParent?.guid ?? 'root', false)
+                }, 0)
+                setTimeout(() => {
+                    addNode(assetToDrop, dragNode?.parent?.node)
+                }, 0)
+            })
+            whenever(asset, () => {
+                if (asset.value) {
+                    console.log(asset.value)
+                    updateNode(asset.value, false)
+                }
+            })
+        }
         if (assetToDrop?.typeName === 'AtlasGlossary') {
             message.error(
                 `Cannot reorder a Glossary. Try reordering a term/category instead.`,
                 2
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
-            message.error(
-                `Cannot drop ${
-                    assetToDrop?.displayText ?? ''
-                } in a Term. Try dropping in a category instead.`,
-                3
-            )
+            const parentStack = recursivelyFindPath(node?.guid)[0]
+            console.log(parentStack)
+            const parentOfTerm = {
+                guid: parentStack[1],
+            }
+            if (treeData.value?.find((el) => el.guid === parentOfTerm?.guid))
+                parentOfTerm.guid = ''
+            setTimeout(() => {
+                deleteNode(
+                    assetToDrop,
+                    dragNode?.parent?.node?.guid ?? 'root',
+                    false
+                )
+            }, 0)
+
+            if (parentStack[1])
+                setTimeout(() => {
+                    addNode(assetToDrop, { guid: parentStack[1] })
+                }, 0)
+            else
+                setTimeout(() => {
+                    addNode(assetToDrop)
+                }, 0)
+
+            updateDragNodeAttributes(parentOfTerm)
         } else {
             let nodeParentGlossaryGuid
             if (node?.typeName === 'AtlasGlossary')
@@ -838,46 +902,8 @@ const useGlossaryTree = ({
                 setTimeout(() => {
                     addNode(assetToDrop, node)
                 }, 0)
-                const updateTermCategories = () => {
-                    const selectedAsset = ref(assetToDrop)
-                    const {
-                        localCategories,
-                        localParentCategory,
-                        handleParentCategoryUpdate,
-                        handleCategoriesUpdate,
-                        error: updateError,
-                        asset,
-                    } = updateAssetAttributes(selectedAsset)
-                    console.log(selectedAsset)
-                    console.log(localParentCategory)
-                    if (dragNode?.typeName === 'AtlasGlossaryTerm') {
-                        const newCategories = localCategories.value?.filter(
-                            (el) => el.guid !== dragNode?.parent?.node?.guid
-                        )
-                        if (node?.typeName !== 'AtlasGlossary')
-                            newCategories.push(node?.dataRef)
-                        localCategories.value = newCategories
-                        handleCategoriesUpdate()
-                    }
-                    if (dragNode?.typeName === 'AtlasGlossaryCategory') {
-                        const parentCategory = {
-                            guid: node?.dataRef?.guid,
-                            typeName: node?.dataRef?.typeName,
-                            attributes: node?.dataRef?.attributes,
-                        }
-                        localParentCategory.value = parentCategory
-                        handleParentCategoryUpdate()
-                    }
-                    whenever(updateError, () => {
-                        setTimeout(() => {
-                            deleteNode(assetToDrop, node?.guid ?? 'root', false)
-                        }, 0)
-                        setTimeout(() => {
-                            addNode(assetToDrop, dragNode?.parent?.node)
-                        }, 0)
-                    })
-                }
-                updateTermCategories()
+
+                updateDragNodeAttributes(node?.dataRef)
             }
         }
     }

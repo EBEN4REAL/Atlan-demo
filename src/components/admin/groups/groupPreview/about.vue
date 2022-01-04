@@ -1,84 +1,96 @@
 <template>
-    <div v-auth="map.LIST_GROUPS" class="px-4 py-2 tab-content-wrapper">
-        <div class="mb-3 text-base font-bold text-gray-500">Group info</div>
-        <div class="mb-3">
-            <UpdateName
-                :group="selectedGroup"
-                class="flex-1 mr-4"
-                @refreshTable="$emit('refreshTable')"
-            />
-        </div>
-        <div class="mb-3">
-            <UpdateAlias
-                :group="selectedGroup"
-                class="flex-1"
-                @refreshTable="$emit('refreshTable')"
-            />
-        </div>
-        <div class="mb-3">
-            <UpdateDescription
-                :group="selectedGroup"
-                class="flex-1 mr-4"
-                @refreshTable="$emit('refreshTable')"
-            />
-        </div>
-        <div class="mb-3">
-            <div class="flex items-center">
-                <p class="mb-0 text-gray-500">Member count</p>
-            </div>
-            <div class="text-gray">
-                {{ selectedGroup.memberCount }}
-            </div>
+    <div class="px-4 py-2 overflow-hidden overflow-y-auto tab-content-wrapper">
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
 
-        <div class="mb-3">
-            <div class="flex-1 mr-4">
-                <div class="flex items-center">
-                    <p class="mb-0 text-gray-500">Created by</p>
-                </div>
-                <div class="text-gray">{{ selectedGroup.createdBy }}</div>
-            </div>
-        </div>
-        <div class="mb-3">
-            <div class="flex items-center">
-                <p class="mb-0 text-gray-500">Creation date</p>
-            </div>
-            <div class="capitalize text-gray">
-                {{ selectedGroup.createdAtTimeAgo }}
-            </div>
+        <div v-else class="h-full">
+            <EditGroup
+                v-if="isEditing"
+                :selected-group="selectedGroup"
+                @toggle-edit="toggleEdit"
+                @success="$emit('success')"
+                @updated-group="handleEdit"
+            />
+            <ViewGroup
+                v-else
+                :selected-group="selectedGroup"
+                :agg-data="aggData"
+                @toggle-edit="toggleEdit"
+                @success="$emit('success')"
+                @changeTab="(tab) => $emit('changeTab', tab)"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import UpdateName from '~/components/admin/groups/groupPreview/about/updateName.vue'
-import UpdateAlias from '~/components/admin/groups/groupPreview/about/updateAlias.vue'
-import UpdateDescription from '~/components/admin/groups/groupPreview/about/updateDescription.vue'
-import map from '~/constant/accessControl/map'
+    import {
+        defineAsyncComponent,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
+    import useOwnedAssetsAggregation from '@/composables/common/useOwnedAssetsAggregation'
 
-export default defineComponent({
-    name: 'AboutTab',
-    components: {
-        UpdateName,
-        UpdateAlias,
-        UpdateDescription,
-    },
-    props: {
-        selectedGroup: {
-            type: Object,
-            default: () => {},
+    export default defineComponent({
+        name: 'GroupPreviewAboutComponent',
+        components: {
+            EditGroup: defineAsyncComponent(
+                () => import('@/admin/groups/groupPreview/about/EditGroup.vue')
+            ),
+            ViewGroup: defineAsyncComponent(
+                () => import('@/admin/groups/groupPreview/about/ViewGroup.vue')
+            ),
         },
-    },
-    emits: ['refreshTable'],
-    setup() {
-        return { map }
-    },
-})
-</script>
+        props: {
+            selectedGroup: {
+                type: Object,
+                default: () => {},
+            },
 
+            isLoading: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        emits: ['updatedUser', 'success', 'imageUpdated', 'changeTab'],
+        setup(props, { emit }) {
+            const { selectedGroup, isLoading } = toRefs(props)
+            const isEditing = ref(false)
+            const toggleEdit = () => {
+                // emit('success')
+                isEditing.value = !isEditing.value
+            }
+            const handleEdit = () => {
+                emit('updatedUser')
+                emit('success')
+            }
+            const { aggData, populateAggregateData } =
+                useOwnedAssetsAggregation()
+
+            watch(
+                selectedGroup,
+                () =>
+                    populateAggregateData({
+                        ownerGroups: [selectedGroup.value.alias],
+                    }),
+                {
+                    immediate: true,
+                }
+            )
+            return {
+                isEditing,
+                toggleEdit,
+                aggData,
+                handleEdit,
+            }
+        },
+    })
+</script>
 <style lang="less" scoped>
-.tab-content-wrapper {
-    min-height: calc(100vh - 10rem) !important;
-}
+    .tab-content-wrapper {
+        height: calc(100vh - 5rem) !important;
+    }
 </style>

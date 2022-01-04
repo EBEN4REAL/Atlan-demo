@@ -93,7 +93,7 @@
                     </div>
                     <div class="w-full pt-4">
                         <router-link
-                            :to="`/glossary/${term.termGuid}/overview`"
+                            :to="`/glossary/${term.guid}/overview`"
                         >
                             <AtlanButton
                                 color="secondary"

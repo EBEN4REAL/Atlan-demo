@@ -1287,6 +1287,7 @@
                     },
                     playground: {
                         vqb: {
+                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,

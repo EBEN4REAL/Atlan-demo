@@ -2,7 +2,7 @@
     <a-select
         :placeholder="`Select from ${totalCount} ${typeName}s`"
         :value="modelValue"
-        :allowClear="true"
+        :allowClear="false"
         :autofocus="true"
         :showSearch="true"
         :class="$style.selector"

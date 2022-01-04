@@ -218,11 +218,13 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     import useBody from './useBody'
 
     export default defineComponent({
         name: 'Table Selector',
+        emits: ['change'],
         components: {
             Loader,
         },
@@ -231,8 +233,18 @@
                 type: Object,
                 required: true,
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
+            },
+            showColumnWithTable: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props, { emit }) {
+            const { showColumnWithTable, selectedTablesQualifiedNames } =
+                toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -259,6 +271,9 @@
                                 .attributeValue,
 
                         searchText: tableText.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames.value
+                            ?.filter((x) => x !== null || undefined)
+                            .map((t) => t.tableQualifiedName),
                     }),
                     attributes: [
                         'name',
@@ -283,6 +298,10 @@
                 }
             )
             watch(tableText, () => {
+                replaceBody(getTableInitialBody())
+            })
+
+            watch(selectedTablesQualifiedNames, () => {
                 replaceBody(getTableInitialBody())
             })
 
@@ -385,6 +404,7 @@
                     value: item.label,
                     columnQualifiedName: item.qualifiedName,
                 }
+                emit('change', item.qualifiedName)
                 console.log()
             }
 
@@ -392,10 +412,15 @@
                 if (selectedColumn?.value?.label) {
                     let data =
                         selectedColumn.value.columnQualifiedName.split('/')
-                    return `${data[data.length - 2]}.${data[data.length - 1]}`
+
+                    if (showColumnWithTable)
+                        return `${data[data.length - 2]}.${
+                            data[data.length - 1]
+                        }`
+                    else return `${data[data.length - 1]}`
                 }
 
-                let data = !tableSelected?.qualifiedName
+                let data = !tableSelected.value?.qualifiedName
                     ? `select from ${totalCount.value} tables`
                     : `select from ${totalCount.value} columns`
 

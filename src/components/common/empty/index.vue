@@ -21,7 +21,7 @@
             v-if="buttonText"
             class="w-36 mt-11"
             size="lg"
-            color="primary"
+            :color="buttonColor"
             padding="compact"
             @click="handleClick"
         >
@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import AtlanButton from '~/components/UI/button.vue'
 
     export default defineComponent({
@@ -73,6 +73,13 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            buttonColor: {
+                type: String as PropType<
+                    'primary' | 'secondary' | 'light' | 'minimal'
+                >,
+                required: false,
+                default: 'primary',
             },
             buttonIcon: {
                 type: String,

@@ -19,6 +19,9 @@
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
@@ -55,12 +58,22 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        inject,
+        ComputedRef,
+        computed,
+    } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import AggregateSelector from '../aggregateSelector/index.vue'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
@@ -95,8 +108,14 @@
             const selectedColumn = ref({})
 
             const { subpanels, columnSubpanels } = useVModels(props)
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
             const columnName = ref('Hello World')
             const columnType = ref('char')
+            const selectedTables = computed(() => {
+                return activeInlineTab.value.playground.vqb.selectedTables
+            })
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -147,6 +166,8 @@
             let hoverItem = ref(null)
 
             return {
+                activeInlineTab,
+                selectedTables,
                 selectedAggregates,
                 columnName,
                 columnType,

@@ -31,6 +31,16 @@ export function useUtils() {
             .join(',')
         return res
     }
+    function getTableQualifiedNameFromColumnQualifiedName(
+        qualifiedName: string | undefined
+    ) {
+        if (qualifiedName) {
+            const t = qualifiedName.split('/')
+            t.pop()
+            return t.join('/')
+        }
+        return ''
+    }
     function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
 
@@ -54,7 +64,7 @@ export function useUtils() {
         if (subpanels.length > 0 && subpanels[0].columns?.length == 0)
             res = 'No Columns Added for Group'
         subpanels.forEach((subpanel, i) => {
-            res += subpanel.columnsData.map((e) => e.label).join(', ')
+            res += subpanel.columnsData?.map((e) => e.label).join(', ')
         })
         return res
     }
@@ -66,12 +76,12 @@ export function useUtils() {
         subpanels.forEach((subpanel, i) => {
             if (i !== subpanels.length - 1 && subpanel.column.label)
                 res += `${subpanel.aggregators
-                    .map((e) => e?.toUpperCase())
-                    .join(', ')} of ${subpanel.column.label} and `
+                    ?.map((e) => e?.toUpperCase())
+                    ?.join(', ')} of ${subpanel.column.label} and `
             else if (i <= subpanels.length - 1 && subpanel.column.label)
                 res += `${subpanel.aggregators
-                    .map((e) => e?.toUpperCase())
-                    .join(', ')} of ${subpanel.column.label}`
+                    ?.map((e) => e?.toUpperCase())
+                    ?.join(', ')} of ${subpanel.column.label}`
             if (res === 'by ') res = 'No Columns Added for Aggregation'
         })
         return res
@@ -227,7 +237,27 @@ export function useUtils() {
         return res
     }
 
+    function getDistinctTableQualifiedNamesFromJoinPanel(
+        subpanels: SubpanelJoin[]
+    ) {
+        const distinctTableQualifiedNames = new Set()
+        subpanels.forEach((subpanel) => {
+            const q1 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataLeft.columnQualifiedName
+            )
+            const q2 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataRight.columnQualifiedName
+            )
+            distinctTableQualifiedNames.add(q1)
+            distinctTableQualifiedNames.add(q2)
+        })
+        return Array.from(distinctTableQualifiedNames)
+    }
+
     return {
+        getTableName,
+        getTableQualifiedNameFromColumnQualifiedName,
+        getDistinctTableQualifiedNamesFromJoinPanel,
         getSummarisedInfoOfJoinPanel,
         getSummarisedInfoOfFilterPanel,
         getSummarisedInfoOfGroupPanel,

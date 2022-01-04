@@ -110,16 +110,23 @@
             ]"
         >
             <div
-                :class="['flex  justify-center overflow-auto']"
+                :class="['flex  justify-center overflow-auto w-full']"
                 style="height: 250px"
             >
                 <Loader
                     v-if="isLoading"
                     style="min-height: 250px !important"
                 ></Loader>
+
+                <!-- For single table select -->
+
                 <div
                     class="w-full"
-                    v-if="dropdownOption.length !== 0 && !isLoading"
+                    v-if="
+                        dropdownOption.length !== 0 &&
+                        !isLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
                 >
                     <template
                         v-for="(item, index) in dropdownOption"
@@ -154,10 +161,164 @@
 
                 <span
                     class="w-full mt-4 text-sm text-center text-gray-400"
-                    v-if="dropdownOption.length == 0 && !isLoading"
+                    v-if="
+                        dropdownOption.length == 0 &&
+                        !isLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
                 >
                     No Columns found!
                 </span>
+
+                <!-- -------------------------- -->
+
+                <!--  Multiple table column selection-->
+                <div
+                    class="w-full"
+                    v-if="
+                        !tableSelected?.qualifiedName &&
+                        !isLoading &&
+                        selectedTablesQualifiedNames.length >= 2
+                    "
+                    style="height: 250px"
+                    :class="[
+                        tableDropdownOption.length === 0
+                            ? 'flex justify-center items-center'
+                            : '',
+                    ]"
+                >
+                    <div
+                        class="overflow-auto"
+                        v-if="tableDropdownOption.length !== 0"
+                    >
+                        <template
+                            v-if="
+                                tableDropdownOption.length !== 0 && !isLoading
+                            "
+                            v-for="(item, index) in tableDropdownOption"
+                            :key="item?.label + index"
+                        >
+                            <div
+                                class="flex items-center justify-between w-full pl-4 pr-2 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                @click="onSelectTable(item)"
+                            >
+                                <div class="flex items-center truncate">
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
+
+                                    <span
+                                        class="ml-2 parent-ellipsis-container-base"
+                                        >{{ item?.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between text-gray-500"
+                                >
+                                    {{ item?.columnCount }}
+
+                                    <AtlanIcon
+                                        icon="ChevronRight"
+                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div
+                        v-if="tableDropdownOption.length === 0 && !isLoading"
+                        class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                    >
+                        No tables found
+                    </div>
+                </div>
+                <!-- For columns -->
+                <div
+                    class="w-full"
+                    v-if="
+                        tableSelected?.qualifiedName &&
+                        !isLoading &&
+                        selectedTablesQualifiedNames.length >= 2
+                    "
+                >
+                    <div
+                        class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
+                    >
+                        <div class="flex items-center truncate">
+                            <AtlanIcon
+                                icon="ChevronLeft"
+                                class="w-4 h-4 -mt-0.5 text-gray-500"
+                                @click="onUnselectTable"
+                            />
+
+                            <span class="ml-2 parent-ellipsis-container-base"
+                                >{{ tableSelected?.label }}
+                            </span>
+                        </div>
+                        <div
+                            class="flex items-center justify-between text-gray-500"
+                        >
+                            {{ tableSelected?.columnCount }}
+                        </div>
+                    </div>
+                    <div
+                        class="pl-2 pr-2 overflow-y-auto"
+                        style="height: 250px"
+                        :class="[
+                            columnDropdownOption.length === 0
+                                ? 'flex justify-center items-center'
+                                : '',
+                        ]"
+                    >
+                        <template
+                            v-for="(item, index) in columnDropdownOption"
+                            :key="item.value + index + item.qualifiedName"
+                        >
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(checked) => onSelectItem(item)"
+                                :class="
+                                    selectedItem?.label === item.label
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="text-primary"
+                                    v-if="selectedItem?.label === item.label"
+                                />
+                            </div>
+                        </template>
+
+                        <div
+                            v-if="
+                                columnDropdownOption.length === 0 && !isLoading
+                            "
+                            class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                        >
+                            No columns found
+                        </div>
+                    </div>
+                </div>
+                <!--  -->
             </div>
         </div>
     </div>
@@ -184,6 +345,9 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import useBody from './useBody'
 
@@ -205,10 +369,22 @@
                 type: String,
                 required: true,
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName } = toRefs(props)
+            const { tableQualfiedName, selectedTablesQualifiedNames } =
+                toRefs(props)
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                certificateStatus,
+            } = useAssetInfo()
             const queryText = ref('')
             const { selectedItem } = useVModels(props)
 
@@ -261,6 +437,7 @@
             }
 
             const getInitialBody = () => {
+                // FIXME: it can be a viewQualifiedName,
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
@@ -278,22 +455,9 @@
                 '',
                 false
             )
-            watch(
-                [tableQualfiedName, queryText],
-                () => {
-                    replaceBody(getInitialBody())
-                },
-                {
-                    immediate: true,
-                }
-            )
-            const placeholder = computed(() => {
-                if (tableQualfiedName.value) {
-                    return `Search from ${totalCount.value} columns`
-                }
-                return `Select a table first`
-            })
+
             const totalCount = computed(() => data.value?.approximateCount || 0)
+
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
@@ -401,6 +565,202 @@
                 })
             })
 
+            //////////////////////////////////////
+            let tableSelected = ref(null)
+
+            const getColumnInitialBody = (item) => {
+                let data = {}
+                if (item.typeName === 'Table') {
+                    data = {
+                        tableQualfiedName: item?.qualifiedName,
+                        searchText: queryText.value,
+                    }
+                } else if (item.typeName === 'View') {
+                    data = {
+                        viewQualifiedName: item?.qualifiedName,
+                        searchText: queryText.value,
+                    }
+                }
+                return {
+                    dsl: useBody(data),
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'columnCount',
+                        'certificateStatus',
+                        'dataType',
+                        'order',
+                        'isPrimary',
+                        'isForeign',
+                    ],
+                }
+            }
+
+            const getTableInitialBody = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
+                return {
+                    dsl: useBody({
+                        schemaQualifiedName:
+                            activeInlineTab.value.playground.editor.context
+                                .attributeValue,
+
+                        searchText: queryText.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames
+                            ?.filter((x) => x !== null || undefined)
+                            .map((t) => t.tableQualifiedName),
+                    }),
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'columnCount',
+                        'certificateStatus',
+                    ],
+                }
+            }
+
+            const tableDropdownOption = computed(() => {
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    columnCount: ls.attributes?.columnCount,
+                    qualifiedName: ls.attributes.qualifiedName,
+                    attributes: ls.attributes,
+                    typeName: ls.typeName,
+                }))
+
+                // console.log('list: ', list)
+
+                data.sort((x, y) => {
+                    if (x.label < y.label) return -1
+                    if (x.label > y.label) return 1
+                    return 0
+                })
+                return data
+            })
+
+            const columnDropdownOption = computed(() => {
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    qualifiedName: ls.attributes.qualifiedName,
+                    type: ls.attributes.dataType,
+                    attributes: ls.attributes,
+                    order: ls.attributes.order,
+                }))
+
+                // console.log('list: ', list)
+
+                data.sort((x, y) => {
+                    if (x.order < y.order) return -1
+                    if (x.order > y.order) return 1
+                    return 0
+                })
+                console.log('col: ', data)
+                return data
+            })
+
+            const placeholder = computed(() => {
+                if (isLoading.value) {
+                    return 'Loading...'
+                }
+                if (
+                    tableQualfiedName.value &&
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        ?.length == 1
+                ) {
+                    return `Search from ${totalCount.value} columns`
+                }
+                if (
+                    !tableSelected.value &&
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        ?.length > 1
+                ) {
+                    return `Search from ${totalCount.value} tables`
+                }
+                if (
+                    tableSelected.value &&
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        ?.length > 1
+                ) {
+                    return `Search from ${totalCount.value} columns`
+                }
+                return `Select a table first`
+            })
+
+            const onSelectTable = (item) => {
+                // console.log('selected table: ', item)
+                tableSelected.value = item
+                replaceBody(getColumnInitialBody(item))
+            }
+            const onUnselectTable = () => {
+                tableSelected.value = null
+                columnDropdownOption.value = []
+                replaceBody(
+                    getTableInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables
+                    )
+                )
+            }
+
+            watch(queryText, () => {
+                if (
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        ?.length > 1
+                ) {
+                    if (tableSelected?.value)
+                        replaceBody(getColumnInitialBody(tableSelected?.value))
+                    else {
+                        replaceBody(
+                            getTableInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
+                    }
+                } else {
+                    replaceBody(getInitialBody())
+                }
+            })
+
+            watch(
+                () => [activeInlineTab.value.playground.vqb.selectedTables],
+                () => {
+                    /* Fetch only columns */
+                    if (
+                        activeInlineTab.value.playground.vqb.selectedTables
+                            ?.length == 1
+                    ) {
+                        replaceBody(getInitialBody())
+                    } else if (
+                        activeInlineTab.value.playground.vqb.selectedTables
+                            ?.length > 1
+                    ) {
+                        replaceBody(
+                            getTableInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
+                    }
+                },
+                { immediate: true }
+            )
+            watch(isAreaFocused, () => {
+                if (!isAreaFocused.value) {
+                    if (
+                        activeInlineTab.value.playground.vqb.selectedTables
+                            ?.length > 1
+                    ) {
+                        tableSelected.value = null
+                        replaceBody(
+                            getTableInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
+                    }
+                }
+            })
+
             return {
                 initialRef,
                 queryText,
@@ -431,6 +791,15 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
+                selectedTablesQualifiedNames,
+                tableSelected,
+                tableDropdownOption,
+                columnDropdownOption,
+                getEntityStatusIcon,
+                assetType,
+                certificateStatus,
+                onSelectTable,
+                onUnselectTable,
             }
         },
     })

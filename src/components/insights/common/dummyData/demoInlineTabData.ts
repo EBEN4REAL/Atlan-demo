@@ -25,12 +25,17 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 connectors: {
                     connector: undefined,
                 },
-                collection: { guid: '', qualifiedName: undefined, parentQualifiedName: undefined, },
+                collection: {
+                    guid: '',
+                    qualifiedName: undefined,
+                    parentQualifiedName: undefined,
+                },
             },
         },
         playground: {
             isVQB: false,
             vqb: {
+                selectedTables: [],
                 panels: [
                     {
                         order: 1,

@@ -315,6 +315,7 @@ import PublicCollection from '~/assets/images/icons/publicCollection.svg'
 import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
+import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
@@ -363,6 +364,7 @@ export default {
     WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
+    QueryDiscovery,
     QueryDraft,
     ChevronLeft,
     CheckCircled,

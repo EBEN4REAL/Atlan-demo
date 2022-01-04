@@ -1,3 +1,4 @@
+import { columns } from './../../../../../../constant/groups'
 import { format } from 'sql-formatter'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import squel from 'squel'
@@ -41,7 +42,7 @@ export function getValueStringFromType(subpanel, value) {
 // "TABLENAME"."COLUMNNAME"
 // "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
 function getJoinFormattedColumnName(columnQualifiedName: string) {
-    const spiltArray = columnQualifiedName.split('/')
+    const spiltArray = columnQualifiedName?.split('/')
     if (spiltArray.length > 6) {
         return `"${spiltArray[5]}"."${spiltArray[6]}"`
     }
@@ -92,10 +93,16 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                         select.from(`"${tableName}"`)
                     }
                 }
-                subpanel.columns.forEach((columnName) => {
-                    if (columnName === 'all') select.field('*')
-                    else select.field(columnName)
-                })
+                if (!subpanel.columns.includes('all')) {
+                    subpanel.columnsData.forEach((column) => {
+                        const tableName = getTableNameFromTableQualifiedName(
+                            subpanel.tableQualfiedName
+                        )
+                        select.field(`"${tableName}"."${column.label}"`)
+                    })
+                } else {
+                    select.field('*')
+                }
             }
         })
     }
@@ -106,10 +113,11 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
+                const tableName = getTableName(subpanel.column.qualifiedName)
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
                 select.field(
-                    `${aggregatorUpperCase} (${columnName})`,
+                    `${aggregatorUpperCase} (${tableName}."${columnName}")`,
                     aggregatedAliasMap[aggregatorUpperCase](columnName)
                 )
             })
@@ -123,7 +131,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
             subpanel.columnsData.forEach((columnData) => {
-                select.group(columnData.label)
+                const tableName = getTableName(columnData.columnsQualifiedName)
+                select.group(`${tableName}."${columnData.label}"`)
             })
         })
         // console.log(select.toString(), 'select.toString()')
@@ -134,8 +143,11 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
-            if (subpanel.column.label)
-                select.order(subpanel.column.label, order)
+            if (subpanel.column.label) {
+                const tableName = getTableName(subpanel.column.qualifiedName)
+
+                select.order(`${tableName}."${subpanel.column.label}"`, order)
+            }
         })
         // console.log(select.toString(), 'select.toString()')
     }
@@ -146,9 +158,10 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
             res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+            const tableName = getTableName(subpanel.column.qualifiedName)
             if (index == 0) res = ''
 
-            res += `"${subpanel?.column?.label}"`
+            res += `"${tableName}."${subpanel?.column?.label}"`
             res += `${nameMap[subpanel?.filter?.name]} `
 
             switch (subpanel?.filter?.type) {
@@ -260,54 +273,56 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         join?.subpanels.forEach((subpanel, i) => {
             // leftColumnName = "TABLENAME"."COLUMNNAME"
             const leftColumnName = getJoinFormattedColumnName(
-                subpanel.columnsDataLeft.columnQualifiedName
+                subpanel.columnsDataLeft?.columnQualifiedName ?? ''
             )
             const rightColumnName = getJoinFormattedColumnName(
-                subpanel.columnsDataRight.columnQualifiedName
+                subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
             // leftTableName = "TABLENAME"
             const rightTableName = getTableName(
-                subpanel.columnsDataRight.columnQualifiedName
+                subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
-            switch (subpanel.joinType.type) {
-                case 'inner_join': {
-                    select.join(
-                        rightTableName,
-                        null,
-                        `${leftColumnName} = ${rightColumnName}`
-                    )
-                    break
-                }
-                case 'outer_join': {
-                    select.outer_join(
-                        rightTableName,
-                        null,
-                        `${leftColumnName} = ${rightColumnName}`
-                    )
-                    break
-                }
-                case 'left_join': {
-                    select.left_join(
-                        rightTableName,
-                        null,
-                        `${leftColumnName} = ${rightColumnName}`
-                    )
-                    break
-                }
-                case 'right_join': {
-                    select.right_join(
-                        rightTableName,
-                        null,
-                        `${leftColumnName} = ${rightColumnName}`
-                    )
-                    break
-                }
-                default: {
-                    select.join(
-                        rightTableName,
-                        null,
-                        `${leftColumnName} = ${rightColumnName}`
-                    )
+            if (leftColumnName && rightTableName && rightColumnName) {
+                switch (subpanel.joinType.type) {
+                    case 'inner_join': {
+                        select.join(
+                            rightTableName,
+                            null,
+                            `${leftColumnName} = ${rightColumnName}`
+                        )
+                        break
+                    }
+                    case 'outer_join': {
+                        select.outer_join(
+                            rightTableName,
+                            null,
+                            `${leftColumnName} = ${rightColumnName}`
+                        )
+                        break
+                    }
+                    case 'left_join': {
+                        select.left_join(
+                            rightTableName,
+                            null,
+                            `${leftColumnName} = ${rightColumnName}`
+                        )
+                        break
+                    }
+                    case 'right_join': {
+                        select.right_join(
+                            rightTableName,
+                            null,
+                            `${leftColumnName} = ${rightColumnName}`
+                        )
+                        break
+                    }
+                    default: {
+                        select.join(
+                            rightTableName,
+                            null,
+                            `${leftColumnName} = ${rightColumnName}`
+                        )
+                    }
                 }
             }
         })

@@ -14,7 +14,7 @@
     </div>
     <div v-else class="mt-1">
         <span>{{
-            isCurrentUser ? `You don't` : `${user.firstName} does not`
+            isCurrentUser ? `You don't` : `${user.firstName} doesn't`
         }}</span>
         have any linked personas.
     </div>

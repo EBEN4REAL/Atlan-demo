@@ -59,7 +59,7 @@
                         : [],
                 },
             }))
-
+            // provide props for enabling open asset profile in new tab
             provide('shouldOpenInNewTab', true)
 
             return {

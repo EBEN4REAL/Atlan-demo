@@ -109,7 +109,7 @@
             </div>
         </template>
         <template #group="{ text: user }">
-            <a-popover placement="bottom" :destroy-tooltip-on-hide="true">
+            <a-popover placement="bottom">
                 <template #content>
                     <div class="p-3 content-popover-group-persona">
                         <div class="flex justify-between">
@@ -124,7 +124,7 @@
                                 />
                             </div>
                         </div>
-                        <div></div>
+                        <Groups :user="user" />
                     </div>
                 </template>
                 <div>
@@ -148,7 +148,7 @@
                                 />
                             </div> -->
                         </div>
-                        <div class="flex flex-wrap gap-2 mt-2">
+                        <div class="flex flex-wrap gap-2 mt-3">
                             <div
                                 v-for="persona in user?.personas"
                                 :key="persona.id"
@@ -374,10 +374,11 @@
     import ChangeRole from './changeRole.vue'
     import map from '~/constant/accessControl/map'
     import AtlanButton from '@/UI/button.vue'
+    import Groups from './groups.vue'
 
     export default defineComponent({
         name: 'UserListTable',
-        components: { Avatar, ChangeRole, AtlanButton },
+        components: { Avatar, ChangeRole, AtlanButton, Groups },
         props: {
             userList: { type: Array, required: true },
             loading: { type: Boolean, required: true },

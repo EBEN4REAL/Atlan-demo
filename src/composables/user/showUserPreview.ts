@@ -18,7 +18,6 @@ const userUpdated = ref(false)
 
 export function useUserPreview() {
     const showUserPreview = (config?: { allowed?: any; blacklisted?: any }, activeTab: String) => {
-        console.log(activeTab, 'sdsdsdsd')
         defaultTab.value = activeTab || 'about'
         blacklistedTabs.value = [...(config?.blacklisted || [])]
         allowedTabs.value = [...(config?.allowed || [])]

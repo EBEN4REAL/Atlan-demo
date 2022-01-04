@@ -52,8 +52,9 @@
                                 )
                         "
                     />
-
+                    <div style="width: 24px" v-if="index === 0"></div>
                     <AtlanIcon
+                        v-if="index !== 0"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         style="min-width: 24px"

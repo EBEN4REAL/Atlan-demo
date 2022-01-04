@@ -704,7 +704,7 @@
                                         {
                                             id: '1',
                                             tableQualifiedName: undefined,
-                                            columns: [],
+                                            columns: ['all'],
                                             columnsData: [],
                                         },
                                     ],

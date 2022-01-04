@@ -164,7 +164,9 @@
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
-                    copySubPanel.columns = []
+                    // pre populate all columns selection
+                    copySubPanel.columns = ['all']
+
                     copySubPanel.columnsData = []
                     subpanels.value[index] = copySubPanel
                     selectedTables.value = copySelectedTables

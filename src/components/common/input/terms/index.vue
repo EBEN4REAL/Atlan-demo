@@ -110,12 +110,14 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedGuids = ref(
-                modelValue.value.map((term) => term.guid)
-            )
+            const checkedGuids = ref(modelValue.value.map((term) => term.guid))
             const hasBeenEdited = ref(false)
 
-            const list = computed(() => localValue.value.filter(term => term.attributes?.__state === 'ACTIVE'))
+            const list = computed(() =>
+                localValue.value.filter(
+                    (term) => term.attributes?.__state === 'ACTIVE'
+                )
+            )
 
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
@@ -163,7 +165,9 @@
                 )
 
                 modelValue.value = localValue.value
-                checkedGuids.value = checkedGuids.value.filter((guid) => guid !== term.guid)
+                checkedGuids.value = checkedGuids.value.filter(
+                    (guid) => guid !== term.guid
+                )
                 emit('change', localValue.value)
             }
             /* Adding this when parent data change, sync it with local */
@@ -212,6 +216,7 @@
             })
 
             const handleTermPopoverVisibility = (v, term) => {
+                if (fetchedTerm.value?.guid === term.guid) return
                 if (v) {
                     facets.value.guid = term.guid
                     quickChange()

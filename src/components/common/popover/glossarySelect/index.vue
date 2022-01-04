@@ -64,7 +64,7 @@
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="'w-full '"
+                    :classes="'w-full font-bold'"
                 />
 
                 <div class="w-4 mr-1">

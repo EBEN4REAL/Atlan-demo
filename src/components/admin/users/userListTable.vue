@@ -14,7 +14,12 @@
         <template #name="{ text: user }">
             <div
                 class="flex items-center align-middle"
-                :style="{ maxWidth: userColumns.filter((column) => column?.key === 'user')[0].width + 'px' }"
+                :style="{
+                    maxWidth:
+                        userColumns.filter(
+                            (column) => column?.key === 'user'
+                        )[0].width + 'px',
+                }"
             >
                 <Avatar
                     :image-url="imageUrl(user.username)"
@@ -25,7 +30,7 @@
                     class="mr-2"
                 />
                 <div
-                    class="truncate max-w-full"
+                    class="max-w-full truncate"
                     :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {
@@ -47,53 +52,121 @@
             </div>
         </template>
         <template #role="{ text: user }">
-            {{ user || 'No role attached' }}
+            <a-tooltip
+                v-if="user.enabled && user.emailVerified"
+                placement="top"
+                class="mr-3.5"
+            >
+                <!-- <template #title>
+                    <span>Change Role</span>
+                </template> -->
+                <a-popover
+                    placement="leftTop"
+                    trigger="click"
+                    :destroy-tooltip-on-hide="true"
+                    :visible="
+                        selectedUserId === user.id && showChangeRolePopover
+                    "
+                >
+                    <template #content>
+                        <ChangeRole
+                            :user="selectedUser"
+                            :role-list="roleList"
+                            @close="emit('closeChangeRolePopover')"
+                            @updateRole="emit('handleUpdateRole')"
+                            @errorUpdateRole="emit('handleErrorUpdateRole')"
+                        />
+                    </template>
+                    <div
+                        v-if="user.enabled"
+                        v-auth="map.UPDATE_USERS"
+                        class="flex items-center h-8 mr-auto text-center cursor-pointer"
+                        @click="emit('handleChangeRole', user)"
+                    >
+                        {{ user.role_object.name }}
+                        <AtlanIcon
+                            :icon="
+                                selectedUserId === user.id &&
+                                showChangeRolePopover
+                                    ? 'ChevronUp'
+                                    : 'ChevronDown'
+                            "
+                            class="self-center h-3 ml-1 text-primary"
+                        />
+                    </div>
+                </a-popover>
+            </a-tooltip>
         </template>
         <template #status="{ text: user }">
             <div
                 class="inline-flex items-center px-2 py-0.5 rounded-xl text-gray-700"
-                :class="`bg-${statusColorClass[user.status_object.status]}`"
             >
+                <div
+                    class="dot"
+                    :class="`bg-${statusColorClass[user.status_object.status]}`"
+                />
                 <div>{{ user.status_object.status }}</div>
             </div>
         </template>
+        <template #group="{ text: user }">
+            <a-popover placement="bottom" :destroy-tooltip-on-hide="true">
+                <template #content>
+                    <div class="p-3 content-popover-group-persona">
+                        <div class="flex justify-between">
+                            Groups
+                            <div>
+                                <span class="ml-auto text-primary">
+                                    Manage
+                                </span>
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </template>
+                <div>
+                    {{ user?.groupCount || '-' }}
+                </div>
+            </a-popover>
+        </template>
+        <template #persona="{ text: user }">
+            <a-popover placement="bottom" :destroy-tooltip-on-hide="true">
+                <template #content>
+                    <div class="p-3 content-popover-group-persona">
+                        <div class="flex justify-between">
+                            Personas
+                            <!-- <div>
+                                <span class="ml-auto text-primary">
+                                    Manage
+                                </span>
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                            </div> -->
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <div
+                                v-for="persona in user?.personas"
+                                :key="persona.id"
+                                class="px-2 border rounded-xl"
+                            >
+                                {{ persona.name }}
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div>
+                    {{ user?.personas?.length || '-' }}
+                </div>
+            </a-popover>
+            <div></div>
+        </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">
-                <!-- change role -->
-                <a-tooltip
-                    v-if="user.enabled && user.emailVerified"
-                    placement="top"
-                    class="mr-3.5"
-                >
-                    <template #title>
-                        <span>Change Role</span>
-                    </template>
-                    <a-popover
-                        placement="leftTop"
-                        trigger="click"
-                        :destroy-tooltip-on-hide="true"
-                        :visible="
-                            selectedUserId === user.id && showChangeRolePopover
-                        "
-                    >
-                        <template #content>
-                            <ChangeRole
-                                :user="selectedUser"
-                                :role-list="roleList"
-                                @close="emit('closeChangeRolePopover')"
-                                @updateRole="emit('handleUpdateRole')"
-                                @errorUpdateRole="emit('handleErrorUpdateRole')"
-                            />
-                        </template>
-                        <div
-                            v-if="user.enabled"
-                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
-                            @click="emit('handleChangeRole', user)"
-                        >
-                            <AtlanIcon icon="StarCircled"></AtlanIcon>
-                        </div>
-                    </a-popover>
-                </a-tooltip>
                 <!-- enable/disable  -->
                 <a-tooltip v-if="user.emailVerified" placement="top">
                     <template #title>
@@ -395,5 +468,14 @@
 <style lang="less" scoped>
     .customShadow {
         box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+    }
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    .content-popover-group-persona {
+        width: 180px;
     }
 </style>

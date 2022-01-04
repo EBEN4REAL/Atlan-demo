@@ -66,7 +66,7 @@ export const userColumns = [
         sorter: false,
         width: 200,
         slots: { customRender: 'role' },
-        dataIndex: ['role_object', 'name'],
+        // dataIndex: ['role_object', 'name'],
     },
     {
         title: 'Status',
@@ -87,27 +87,27 @@ export const userColumns = [
         // sorter: true,
         width: 200,
         slots: { customRender: 'group' },
-        sortKey: 'groupCount',
-        dataIndex: 'group_count_string',
+        // sortKey: 'groupCount',
+        // dataIndex: 'group_count_string',
     },
       {
         title: 'Personas',
-        key: 'persona',
+        key: 'personas',
         // sorter: true,
         width: 200,
         slots: { customRender: 'persona' },
-        dataIndex: 'persona_count_string',
     },
     {
+        width: 150,
         title: 'Actions',
         slots: { customRender: 'actions' },
     },
 ]
 
 export const statusColorClass = {
-    Active: 'success-muted',
-    Disabled: 'error-muted',
-    Invited: 'alert-muted',
+    Active: 'success',
+    Disabled: 'error',
+    Invited: 'alert',
 }
 
 export const userStatusOptions = [

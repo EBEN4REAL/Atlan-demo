@@ -5,7 +5,7 @@
                 v-if="userList.length > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
             >
-                <div v-auth="map.LIST_USERS" class="flex w-96">
+                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
@@ -22,22 +22,20 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <div class="ml-4">
-                        <a-popover trigger="click" placement="bottomRight">
-                            <template #content>
-                                <UserFilter
-                                    v-model="statusFilter"
-                                    @change="updateFilters"
-                                />
-                            </template>
-                            <button
-                                class="flex w-auto p-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
-                            >
-                                <AtlanIcon icon="Filter" class="w-4 h-4" />
-                                <span> Filters </span>
-                            </button>
-                        </a-popover>
-                    </div>
+                    <a-popover trigger="click" placement="bottomRight">
+                        <template #content>
+                            <UserFilter
+                                v-model="statusFilter"
+                                @change="updateFilters"
+                            />
+                        </template>
+                        <button
+                            class="flex items-center justify-center py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                        >
+                            <AtlanIcon icon="Filter" class="w-5 h-5" />
+                            <span>Filters</span>
+                        </button>
+                    </a-popover>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton

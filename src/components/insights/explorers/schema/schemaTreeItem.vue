@@ -354,8 +354,8 @@
                         <div class="pl-2 ml-4">
                             <a-dropdown :trigger="['click']">
                                 <AtlanIcon
-                                    icon="SetContext"
-                                    class="w-4 h-4 my-auto outline-none"
+                                    icon="KebabMenu"
+                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'

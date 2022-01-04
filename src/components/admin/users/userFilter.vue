@@ -1,9 +1,12 @@
 <template>
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
-    <a-collapse class="border border-gray-50">
-        <div>Filter</div>
-        <a-collapse-panel class="group" :show-arrow="false">
+    <a-collapse>
+        <div class="p-3 bg-white w-36">FILTERS</div>
+        <a-collapse-panel
+            class="border-t border-gray-200 group"
+            :show-arrow="false"
+        >
             <template #header>
                 <div class="flex justify-between w-36">
                     <span>STATUS</span>
@@ -26,7 +29,10 @@
                 </a-form>
             </div>
         </a-collapse-panel>
-        <a-collapse-panel class="group" :show-arrow="false">
+        <a-collapse-panel
+            class="border-t border-gray-200 group"
+            :show-arrow="false"
+        >
             <template #header>
                 <div class="flex justify-between w-36">
                     <span>ROLE</span>

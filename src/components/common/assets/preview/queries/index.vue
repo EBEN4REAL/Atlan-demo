@@ -10,7 +10,7 @@
             ></AtlanIcon>
         </div>
         <div
-            v-if="!isLoading && error"
+            v-else-if="!isLoading && error"
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>

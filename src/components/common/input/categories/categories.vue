@@ -135,6 +135,7 @@
                     attributes: category.attributes
                 }))
             )
+            const checkedKeysSnapshot = ref(checkedKeys.value)
             const SHOW_ALL = TreeSelect.SHOW_ALL
 
             const hasBeenEdited = ref(false)
@@ -151,8 +152,7 @@
                 })
 
             const onPopoverClose = (visible) => {
-                console.log(visible, localValue.value, checkedKeys.value)
-                if (!visible) {
+                if (!visible && hasBeenEdited.value) {
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
@@ -162,8 +162,9 @@
                         },
                     }))
                     emit('change', localValue.value)
-                    hasBeenEdited.value = false
+                    checkedKeysSnapshot.value = checkedKeys.value
                 }
+                hasBeenEdited.value = false
             }
 
             const handleDelete = (category : { label: string; value: string}) => {
@@ -213,6 +214,20 @@
                     value: category.guid,
                     attributes: category.attributes
                 }))
+            })
+
+            watch(checkedKeys, (newCheckedKeys) => {
+                if(checkedKeysSnapshot.value.length !== newCheckedKeys.length) {
+                    hasBeenEdited.value = true
+                } else {
+                    if(newCheckedKeys.every((node) => checkedKeysSnapshot.value.some((oldNode) => oldNode.value === node.value)))
+                    {    
+                        hasBeenEdited.value = false
+                    }
+                    else {
+                        hasBeenEdited.value = true
+                    }
+                }
             })
 
             return {

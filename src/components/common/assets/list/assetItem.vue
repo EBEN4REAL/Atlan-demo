@@ -576,6 +576,7 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
+            // inject props for enabling open asset profile in new tab
             const shouldOpenInNewTab = computed(
                 () => inject('shouldOpenInNewTab') || false
             )

@@ -26,7 +26,7 @@
                 class="text-white bg-error"
                 :loading="isLoading"
                 @click="handleDelete"
-                >Delete</a-button
+                >Archive</a-button
             >
         </div>
     </a-modal>

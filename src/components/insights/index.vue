@@ -423,7 +423,7 @@
                 }
             }
 
-            const getData = (dataList, columnList) => {
+            const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && tabsArray?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))

@@ -214,7 +214,6 @@
             const saveModalRef = ref()
             const saveQueryData = ref()
 
-            const { queryRun } = useRunQuery()
             const { getFirstQueryConnection } = useUtils()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
@@ -573,7 +572,6 @@
                 handleAdd,
                 onEdit,
                 onTabClick,
-                queryRun,
                 setTabHover,
                 tabHover,
                 isSaving,

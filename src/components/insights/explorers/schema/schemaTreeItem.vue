@@ -723,7 +723,7 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-            const getData = (dataList, columnList) => {
+            const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))

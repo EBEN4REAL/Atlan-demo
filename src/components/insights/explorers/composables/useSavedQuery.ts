@@ -225,7 +225,7 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>

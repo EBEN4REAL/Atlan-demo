@@ -3,7 +3,7 @@
         v-if="type === 'text'"
         v-model:value="localeValue"
         placeholder="Enter Value"
-        class="flex-1 w-full ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
         @change="(event) => onChange(event, type)"
     />
@@ -11,7 +11,7 @@
         v-else-if="type === 'number'"
         v-model:value="localeValue"
         placeholder="Enter Numeric Value"
-        class="flex-1 ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        class="flex-1 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
         @change="(event) => onChange(event, type)"
     />
@@ -21,7 +21,7 @@
         placeholder="Select Date"
         :show-time="{ format: 'HH:mm' }"
         v-model:value="localeValue"
-        class="flex-1 ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        class="flex-1 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
         @change="(event) => onChange(event, type)"
     />

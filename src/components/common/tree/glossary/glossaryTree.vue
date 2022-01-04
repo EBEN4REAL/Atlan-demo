@@ -248,6 +248,12 @@
             const handleAddSelectedKey = (key) => {
                 selectedKeys.value = [key]
             }
+
+            watch(checkedGuids, (newCheckedGuids) => {
+                localCheckedNodes.value = localCheckedNodes.value.filter((localNode: any) => newCheckedGuids?.includes(localNode.guid))
+                checkedKeys.value = localCheckedNodes.value.map((localNode: any) => localNode.key)
+            })
+
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {

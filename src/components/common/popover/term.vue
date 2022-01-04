@@ -1,7 +1,7 @@
 <template>
     <a-popover
         :placement="placement"
-        :trigger="'click'"
+        :trigger="trigger"
         @visibleChange="handleVisibleChange"
     >
         <template #content>

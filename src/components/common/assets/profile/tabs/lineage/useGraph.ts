@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
 import { iconProcess, iconEllipse } from './icons'
+import { dataTypeCategoryList } from '~/constant/dataType'
 
 const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
@@ -201,17 +202,43 @@ export default function useGraph() {
         }
     }
 
-    const createEdgeData = (relation, process) => {
-        const stroke = '#C7C7C7'
+    const createPortData = (item) => {
+        const text =
+            item.displayText.charAt(0).toUpperCase() +
+            item.displayText.slice(1).toLowerCase()
+        const dataType = dataTypeCategoryList.find((d) =>
+            d.type.includes(item.attributes?.dataType?.toUpperCase())
+        )?.imageText
+        const portData = {
+            id: item.guid,
+            group: 'columnList',
+            attrs: {
+                portBody: {},
+                portNameLabel: {
+                    text,
+                },
+                portImage: {
+                    href: `/dataType/${dataType || 'empty'}.svg`,
+                    width: 16,
+                    height: 16,
+                },
+            },
+        }
+        return { portData }
+    }
+
+    const createEdgeData = (relation) => {
+        const stroke = relation.stroke
         const edgeData = {
-            id: `${process}/${relation.fromEntityId}@${relation.toEntityId}`,
+            zIndex: 0,
+            id: relation.id,
             source: {
-                cell: relation.fromEntityId,
-                port: `${relation.fromEntityId}/index`, // TODO: use dynamic relations
+                cell: relation.sourceCell,
+                port: relation.sourcePort,
             },
             target: {
-                cell: relation.toEntityId,
-                port: `${relation.toEntityId}/index`, // TODO: use dynamic relations
+                cell: relation.targetCell,
+                port: relation.targetPort,
             },
             router: {
                 name: 'metro',
@@ -224,8 +251,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 7,
-                        height: 7,
+                        width: 8,
+                        height: 8,
                     },
                 },
             },
@@ -256,12 +283,23 @@ export default function useGraph() {
         })
     }
 
+    const toggleNodesEdges = (graph, visible) => {
+        const graphEdges = graph.value.getEdges()
+        graphEdges.forEach((x) => {
+            if (x.id.includes('processIdGoesHere')) return
+            const cell = graph.value.getCellById(x.id)
+            cell.setVisible(visible)
+        })
+    }
+
     return {
         createNodeData,
         addNode,
         removeNode,
+        createPortData,
         createEdgeData,
         addEdge,
         removeEdge,
+        toggleNodesEdges,
     }
 }

@@ -22,8 +22,11 @@
 
         <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
             <a-button @click="handleCancel">Cancel</a-button>
-            <a-button type="danger" @click="handleDelete" :loading="isLoading"
-                >Delete</a-button
+            <a-button
+                class="text-white bg-error"
+                :loading="isLoading"
+                @click="handleDelete"
+                >Archive</a-button
             >
         </div>
     </a-modal>

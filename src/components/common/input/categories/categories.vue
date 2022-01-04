@@ -9,6 +9,7 @@
         >
             <template #content>
                 <a-tree-select
+                    v-if="popoverVisible"
                     v-model:value="checkedKeys"
                     :tree-data="treeData"
                     :loadData="onLoadData"
@@ -26,7 +27,7 @@
                     placeholder="Search categories"
                     ref="treeSelectRef"
                 >
-                    <template #suffixIcon><AtlanIcon icon="Search" /></template>
+                    <template #suffixIcon><AtlanIcon icon="Search"  class="h-8 text-gray"/></template>
                     <template #title="item"
                         ><AtlanIcon :icon="icon(item.node)" />
                         {{ item.title }}</template
@@ -135,8 +136,9 @@
                     attributes: category.attributes
                 }))
             )
+            const checkedKeysSnapshot = ref(checkedKeys.value)
             const SHOW_ALL = TreeSelect.SHOW_ALL
-
+            const popoverVisible = ref(false)
             const hasBeenEdited = ref(false)
             const treeSelectRef = ref(null)
             const getContainer = () => {
@@ -150,9 +152,13 @@
                             .qualifiedName ?? '',
                 })
 
-            const onPopoverClose = (visible) => {
-                console.log(visible, localValue.value, checkedKeys.value)
-                if (!visible) {
+            const onPopoverClose = async (visible) => {
+                popoverVisible.value = visible
+
+                if(visible) {
+                    await initCategories()
+                }
+                if (!visible && hasBeenEdited.value) {
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
@@ -162,8 +168,9 @@
                         },
                     }))
                     emit('change', localValue.value)
-                    hasBeenEdited.value = false
+                    checkedKeysSnapshot.value = checkedKeys.value
                 }
+                hasBeenEdited.value = false
             }
 
             const handleDelete = (category : { label: string; value: string}) => {
@@ -202,9 +209,6 @@
                 return 'Category'
             }
 
-            onMounted(async () => {
-                await initCategories()
-            })
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -213,6 +217,20 @@
                     value: category.guid,
                     attributes: category.attributes
                 }))
+            })
+
+            watch(checkedKeys, (newCheckedKeys) => {
+                if(checkedKeysSnapshot.value.length !== newCheckedKeys.length) {
+                    hasBeenEdited.value = true
+                } else {
+                    if(newCheckedKeys.every((node) => checkedKeysSnapshot.value.some((oldNode) => oldNode.value === node.value)))
+                    {    
+                        hasBeenEdited.value = false
+                    }
+                    else {
+                        hasBeenEdited.value = true
+                    }
+                }
             })
 
             return {
@@ -226,7 +244,8 @@
                 SHOW_ALL,
                 getContainer,
                 treeSelectRef,
-                handleDelete
+                handleDelete,
+                popoverVisible
             }
         },
     })
@@ -237,13 +256,23 @@
         -moz-transition: border 500ms ease-out;
         -o-transition: border 500ms ease-out;
         transition: border 500ms ease-out;
-
+        
+        :global(.ant-select-arrow) {
+            position: absolute;
+            left: 0;
+        }
+        :global(.ant-select-selection-overflow) {
+            @apply ml-4;
+        }
+        :global( .ant-select-selection-placeholder) {
+            @apply ml-4;
+        }
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;
             width: 350px !important;
         }
         :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-            @apply border-0 border-b border-gray-200 rounded-none;
+            @apply border-0 border-b border-t-0 border-l-0 border-r-0 border-gray-200 rounded-none;
         }
         :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector) {
             @apply border-primary border-b border-solid border-t-0 border-l-0 border-r-0  !important;

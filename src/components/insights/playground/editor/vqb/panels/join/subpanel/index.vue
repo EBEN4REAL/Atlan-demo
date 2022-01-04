@@ -71,21 +71,18 @@
             @click.stop="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-            <span>Add condition</span>
+            <span>Add Another</span>
         </span>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
-    // import Pill from '~/components/UI/pill/pill.vue'
-    // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import JoinSelector from '../joinSelector/index.vue'
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
-    // import ColumnSelector from '../columnSelector/index.vue'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 

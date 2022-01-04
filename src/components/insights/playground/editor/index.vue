@@ -124,6 +124,7 @@
 
                             <!-- format sql -->
                             <a-tooltip
+                                v-if="!showVQB"
                                 color="#363636"
                                 :mouseEnterDelay="
                                     lastTooltipPresence !== undefined

@@ -8,6 +8,7 @@ export const assetTypeList: {
     isDiscoverable?: boolean
     orderWeight?: number
     count?: number
+    relationships?: string[]
 }[] = [
     {
         id: 'Connection',
@@ -103,6 +104,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 70,
         count: 0,
+        relationships: ['tables', 'views', 'columns'],
     },
     /*   {
         id: 'Folder',
@@ -181,6 +183,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: [],
         children: ['PowerBIDashboard'],
+        relationships: ['reports', 'datasets', 'dashboards', 'dataflows'],
     },
     {
         id: 'PowerBIDashboard',
@@ -188,6 +191,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
         children: ['PowerBITile'],
+        relationships: ['tiles', 'workspace'],
     },
     {
         id: 'PowerBIReport',
@@ -195,6 +199,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIPage'],
+        relationships: ['workspace', 'pages'],
     },
     {
         id: 'PowerBIDataset',
@@ -202,29 +207,34 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIDatasource'],
+        relationships: ['workspace', 'datasources'],
     },
     {
         id: 'PowerBIDataflow',
         label: 'Power BI Dataflow',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
+        relationships: ['workspace'],
     },
     {
         id: 'PowerBITile',
         label: 'Power BI Tile',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
+        relationships: ['dashboard'],
     },
     {
         id: 'PowerBIPage',
         label: 'Power BI Page',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIReport'],
+        relationships: ['report'],
     },
     {
         id: 'PowerBIDatasource',
         label: 'Power BI Datasource',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
+        relationships: ['dataset', 'datasets'],
     },
 ]

@@ -25,6 +25,7 @@
                     <ViewGroups
                         :is-current-user="isCurrentUser"
                         :user="selectedUser"
+                        :immediate-fetch="false"
                         @changeTab="$emit('changeTab', 'groups')"
                     />
                 </div>

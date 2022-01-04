@@ -71,10 +71,14 @@
                 type: Boolean,
                 default: false,
             },
+            immediateFetch: {
+                type: Boolean,
+                default: true,
+            },
         },
         emits: ['changTab'],
         setup(props) {
-            const { user } = toRefs(props)
+            const { user, immediateFetch } = toRefs(props)
             const userId = computed(() => user.value.id)
             const groupListAPIParams = computed(() => ({
                 userId: userId.value,
@@ -84,7 +88,7 @@
                     sort: 'name',
                     filter: {},
                 },
-                immediate: true,
+                immediate: immediateFetch.value,
             }))
             const {
                 groupList,

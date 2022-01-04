@@ -154,7 +154,9 @@
                                 :item="item"
                                 :item-index="itemIndex"
                                 :selected-guid="
-                                    page === 'admin' || page === 'glossary' ? null : selectedAsset.guid
+                                    page === 'admin' || page === 'glossary'
+                                        ? null
+                                        : selectedAsset.guid
                                 "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
@@ -166,7 +168,11 @@
                                         : false
                                 "
                                 :enable-sidebar-drawer="enableSidebarDrawer"
-                                :is-checked="checkableItems ? checkSelectedCriteriaFxn(item) : false"
+                                :is-checked="
+                                    checkableItems
+                                        ? checkSelectedCriteriaFxn(item)
+                                        : false
+                                "
                                 :class="page !== 'admin' ? 'mx-3' : ''"
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
@@ -307,7 +313,7 @@
             checkableItems: {
                 type: Boolean,
                 required: false,
-                default: true
+                default: true,
             },
             disableHandlePreview: {
                 type: Boolean,
@@ -674,12 +680,14 @@
 
             onMounted(() => {
                 watchOnce(isLoading, (v) => {
-                    if (!v && list.value?.length) {
+                    if (!v && list.value?.length && page.value === 'assets') {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
-                            Object.keys(selectedAsset.value).length === 0 &&
-                            page.value === 'assets'
+                            Object.keys(selectedAsset.value).length === 0
                         if (isNone) handleClickAssetItem(list.value[0])
+                        else {
+                            handleClickAssetItem(selectedAsset.value)
+                        }
                     }
                 })
             })

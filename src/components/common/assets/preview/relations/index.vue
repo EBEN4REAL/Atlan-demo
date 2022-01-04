@@ -13,7 +13,6 @@
                         <PreferenceSelector
                             v-model="preference"
                             @change="handleChangePreference"
-                            @display="handleDisplayChange"
                         />
                     </div>
                 </template>
@@ -21,10 +20,10 @@
         </div>
 
         <AggregationTabs
-            v-model="postFacets.dataType"
+            v-model="postFacets.typeName"
             class="px-3 mb-1"
-            :list="columnDataTypeAggregationList"
-            @change="handleDataTypeChange"
+            :list="assetTypeAggregationList"
+            @change="handleAssetTypeChange"
         ></AggregationTabs>
 
         <div
@@ -45,24 +44,26 @@
         <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
             <EmptyView
                 empty-screen="EmptyDiscover"
-                desc="No assets found"
+                desc="No relations found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->
         <AssetList
             v-else
-            ref="assetlistRef"
             :list="list"
             :is-load-more="isLoadMore"
             :is-loading="isValidating"
             @loadMore="handleLoadMore"
         >
-            <template #default="{ item }">
+            <template #default="{ item, itemIndex }">
                 <AssetItem
                     :item="item"
-                    class="m-1"
-                    @update="handleListUpdate"
-                />
+                    :item-index="itemIndex"
+                    :preference="preference"
+                    :enable-sidebar-drawer="true"
+                    class="mx-3"
+                    @updateDrawer="updateCurrentList"
+                ></AssetItem>
             </template>
         </AssetList>
     </div>
@@ -98,9 +99,10 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
-        name: 'ColumnWidget',
+        name: 'RelationshipsTab',
         components: {
             SearchAdvanced,
             AggregationTabs,
@@ -120,24 +122,25 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const aggregationAttributeName = 'dataType'
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({
-                typeName: 'Column',
+            const facets = ref({})
+
+            const aggregations = ref(['typeName'])
+            const postFacets = ref({
+                typeName: '__all',
             })
-            const aggregations = ref([aggregationAttributeName])
-            const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_COLUMNS')
+            const dependentKey = ref('RELATED_ASSET_LIST')
+            const { customMetadataProjections } = useTypedefData()
+
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
-            const preference = ref({
-                sort: 'order-asc',
-            })
+            const preference = ref({})
             const relationAttributes = ref([...AssetRelationAttributes])
 
             const updateFacet = () => {
@@ -161,7 +164,7 @@
                 fetch,
                 quickChange,
                 totalCount,
-                getAggregationList,
+                assetTypeAggregationList,
                 error,
                 isValidating,
                 updateList,
@@ -179,17 +182,9 @@
                 relationAttributes,
             })
 
-            const handleListUpdate = (asset: any) => {
+            const updateCurrentList = (asset: any) => {
                 updateList(asset)
             }
-
-            const columnDataTypeAggregationList = computed(() =>
-                getAggregationList(
-                    `group_by_${aggregationAttributeName}`,
-                    [],
-                    true
-                )
-            )
 
             const body = ref({})
             const { refresh } = useEvaluate(body, false)
@@ -205,8 +200,7 @@
                 { debounce: 100 }
             )
 
-            const handleDataTypeChange = () => {
-                console.log('change data type', facets.value)
+            const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
             }
@@ -224,6 +218,10 @@
             }, 150)
 
             const handleChangeSort = () => {
+                quickChange()
+            }
+
+            const handleChangePreference = () => {
                 quickChange()
             }
 
@@ -246,19 +244,20 @@
                 facets,
                 isLoadMore,
                 postFacets,
-                columnDataTypeAggregationList,
+                assetTypeAggregationList,
                 fetch,
                 quickChange,
                 totalCount,
                 updateFacet,
-                handleDataTypeChange,
+                handleAssetTypeChange,
                 handleSearchChange,
                 preference,
                 handleChangeSort,
                 handleLoadMore,
+                handleChangePreference,
                 error,
                 isValidating,
-                handleListUpdate,
+                updateCurrentList,
             }
         },
     })

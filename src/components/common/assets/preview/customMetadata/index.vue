@@ -55,6 +55,7 @@
         </div>
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto transition-all scrollheight"
+            :class="isProfile ? 'profileHeight' : 'scrollheight'"
         >
             <template
                 v-for="(a, x) in showMore &&
@@ -111,6 +112,11 @@
                 <span
                     v-if="[...applicableList].filter((i) => hasValue(i)).length"
                     class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                    :class="
+                        !applicableList.filter((i) => !hasValue(i)).length
+                            ? 'hidden'
+                            : ''
+                    "
                     @click="showMore = !showMore"
                 >
                     <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
@@ -508,8 +514,8 @@
 
             const hasValue = (a) => {
                 const isMultivalued =
-                    a.options.multiValueSelect === 'true' ||
-                    a.options.multiValueSelect === true
+                    a?.options?.multiValueSelect === 'true' ||
+                    a?.options?.multiValueSelect === true
                 const dataType = getDatatypeOfAttribute(a)
 
                 if (
@@ -535,6 +541,7 @@
                     return !!a.value
                 return !!formatDisplayValue(a.value?.toString() || '', dataType)
             }
+            const isProfile = inject('isProfile')
 
             const readOnlySort = (a, b) =>
                 hasValue(a) && !hasValue(b) ? -1 : 1
@@ -546,6 +553,7 @@
             })
 
             return {
+                isProfile,
                 getDataTypeIcon,
                 showMore,
                 readOnlySort,
@@ -568,6 +576,9 @@
 </script>
 <style scoped>
     .scrollheight {
-        max-height: calc(100vh - 7rem);
+        max-height: calc(100vh - 13rem);
+    }
+    .profileHeight {
+        max-height: calc(100vh - 8rem);
     }
 </style>

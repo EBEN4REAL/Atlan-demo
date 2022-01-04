@@ -53,17 +53,20 @@ export function useAggregate() {
                 key: 'count',
                 label: 'Count',
                 excludes: [...array, ...object, ...geography],
+                sort: 1,
             },
             {
                 key: 'unique',
                 label: 'Unique Count',
                 excludes: [...array, ...object, ...geography],
+                sort: 2,
             },
 
             {
                 key: 'sum',
                 label: 'Sum',
                 excludes: [...text, ...date, ...array, ...object, ...geography],
+                sort: 3,
             },
             {
                 key: 'max',
@@ -76,6 +79,7 @@ export function useAggregate() {
                     ...object,
                     ...geography,
                 ],
+                sort: 4,
             },
             {
                 key: 'min',
@@ -88,11 +92,13 @@ export function useAggregate() {
                     ...object,
                     ...geography,
                 ],
+                sort: 5,
             },
             {
                 key: 'avg',
                 label: 'Average',
                 excludes: [...text, ...date, ...array, ...object, ...geography],
+                sort: 6,
             },
         ]
 

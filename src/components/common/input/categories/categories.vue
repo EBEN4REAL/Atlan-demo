@@ -9,6 +9,7 @@
         >
             <template #content>
                 <a-tree-select
+                    v-if="popoverVisible"
                     v-model:value="checkedKeys"
                     :tree-data="treeData"
                     :loadData="onLoadData"
@@ -135,8 +136,9 @@
                     attributes: category.attributes
                 }))
             )
+            const checkedKeysSnapshot = ref(checkedKeys.value)
             const SHOW_ALL = TreeSelect.SHOW_ALL
-
+            const popoverVisible = ref(false)
             const hasBeenEdited = ref(false)
             const treeSelectRef = ref(null)
             const getContainer = () => {
@@ -150,9 +152,13 @@
                             .qualifiedName ?? '',
                 })
 
-            const onPopoverClose = (visible) => {
-                console.log(visible, localValue.value, checkedKeys.value)
-                if (!visible) {
+            const onPopoverClose = async (visible) => {
+                popoverVisible.value = visible
+
+                if(visible) {
+                    await initCategories()
+                }
+                if (!visible && hasBeenEdited.value) {
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
@@ -162,8 +168,9 @@
                         },
                     }))
                     emit('change', localValue.value)
-                    hasBeenEdited.value = false
+                    checkedKeysSnapshot.value = checkedKeys.value
                 }
+                hasBeenEdited.value = false
             }
 
             const handleDelete = (category : { label: string; value: string}) => {
@@ -202,9 +209,6 @@
                 return 'Category'
             }
 
-            onMounted(async () => {
-                await initCategories()
-            })
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -213,6 +217,20 @@
                     value: category.guid,
                     attributes: category.attributes
                 }))
+            })
+
+            watch(checkedKeys, (newCheckedKeys) => {
+                if(checkedKeysSnapshot.value.length !== newCheckedKeys.length) {
+                    hasBeenEdited.value = true
+                } else {
+                    if(newCheckedKeys.every((node) => checkedKeysSnapshot.value.some((oldNode) => oldNode.value === node.value)))
+                    {    
+                        hasBeenEdited.value = false
+                    }
+                    else {
+                        hasBeenEdited.value = true
+                    }
+                }
             })
 
             return {
@@ -226,7 +244,8 @@
                 SHOW_ALL,
                 getContainer,
                 treeSelectRef,
-                handleDelete
+                handleDelete,
+                popoverVisible
             }
         },
     })

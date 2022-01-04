@@ -61,7 +61,7 @@
                     <span>Change Role</span>
                 </template> -->
                 <a-popover
-                    placement="leftTop"
+                    placement="bottomRight"
                     trigger="click"
                     :destroy-tooltip-on-hide="true"
                     :visible="
@@ -111,6 +111,7 @@
         <template #group="{ text: user }">
             <Groups
                 v-if="user?.groupCount"
+                class="cursor-default"
                 :user="user"
                 @handleManageGroups="handleManageGroups"
             />
@@ -147,7 +148,7 @@
                         </div>
                     </div>
                 </template>
-                <div class="pr-6 text-right text-primary">
+                <div class="pr-6 text-right cursor-default text-primary">
                     {{ user?.personas?.length || '-' }}
                 </div>
             </a-popover>

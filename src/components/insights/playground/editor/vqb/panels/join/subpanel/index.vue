@@ -6,28 +6,31 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="flex items-center w-full mb-3"
+                    class="w-full mb-3 grid-container"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
-                    <JoinSelector
-                        style="width: 30%; max-width: 300px"
-                        v-model:selectedJoinType="subpanel.joinType"
-                    />
+                    <div class="item-1">
+                        <JoinSelector
+                            class="w-full"
+                            v-model:selectedJoinType="subpanel.joinType"
+                        />
+                    </div>
+                    <div class="item-2">
+                        <TreeColumnSelector
+                            class="flex-1"
+                            v-model:selectedColumn="subpanel.columnsDataLeft"
+                            @change="
+                                (qualifiedName) =>
+                                    handleColumnChange(
+                                        qualifiedName,
+                                        subpanel?.id + index + 1
+                                    )
+                            "
+                        />
+                    </div>
 
-                    <TreeColumnSelector
-                        class="flex-1"
-                        style="max-width: 30%"
-                        v-model:selectedColumn="subpanel.columnsDataLeft"
-                        @change="
-                            (qualifiedName) =>
-                                handleColumnChange(
-                                    qualifiedName,
-                                    subpanel?.id + index + 1
-                                )
-                        "
-                    />
-                    <div>
+                    <div class="flex items-center item-3">
                         <a-tooltip placement="top" color="#363636">
                             <template #title>
                                 <span>Swap Tables</span>
@@ -35,34 +38,34 @@
                             <AtlanIcon
                                 @click.stop="() => swapTables(index)"
                                 icon="TableSwap"
-                                class="w-4 h-4 text-gray-300 mt-0.5 cursor-pointer outline-none"
+                                class="w-4 h-4 text-gray-300 mt-0.5 mr-3 cursor-pointer outline-none"
                             />
                         </a-tooltip>
+
+                        <!-- subpanel?.id + index + 2 works as a unique string -->
+                        <TreeColumnSelector
+                            class="flex-1"
+                            v-model:selectedColumn="subpanel.columnsDataRight"
+                            @change="
+                                (qualifiedName) =>
+                                    handleColumnChange(
+                                        qualifiedName,
+                                        subpanel?.id + index + 2
+                                    )
+                            "
+                        />
+                        <div style="width: 36px" v-if="index === 0"></div>
+                        <AtlanIcon
+                            v-if="index !== 0"
+                            @click.stop="() => handleDelete(index)"
+                            icon="Close"
+                            style="min-width: 26px"
+                            class="w-6 h-6 text-gray-500 ml-2.5 mt-0.5 cursor-pointer ml-auto"
+                            :class="`opacity-${
+                                hoverItem === subpanel.id ? 100 : 0
+                            }`"
+                        />
                     </div>
-                    <!-- subpanel?.id + index + 2 works as a unique string -->
-                    <TreeColumnSelector
-                        class="flex-1"
-                        style="max-width: 30%"
-                        v-model:selectedColumn="subpanel.columnsDataRight"
-                        @change="
-                            (qualifiedName) =>
-                                handleColumnChange(
-                                    qualifiedName,
-                                    subpanel?.id + index + 2
-                                )
-                        "
-                    />
-                    <div style="width: 24px" v-if="index === 0"></div>
-                    <AtlanIcon
-                        v-if="index !== 0"
-                        @click.stop="() => handleDelete(index)"
-                        icon="Close"
-                        style="min-width: 24px"
-                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
-                        :class="`opacity-${
-                            hoverItem === subpanel.id ? 100 : 0
-                        }`"
-                    />
                 </div>
             </template>
         </div>
@@ -251,5 +254,22 @@
     }
     .border-shift-minus {
         padding: 0px;
+    }
+    .grid-container {
+        display: grid;
+        grid-gap: 12px;
+        grid-template-columns: 0.5fr 1.133fr 1.3fr;
+    }
+    .item-1 {
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }
+    .item-2 {
+        grid-column-start: 2;
+        grid-column-end: 3;
+    }
+    .item-3 {
+        grid-column-start: 3;
+        grid-column-end: 4;
     }
 </style>

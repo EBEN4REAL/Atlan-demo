@@ -1,7 +1,7 @@
 <template>
     <a-popover
         :placement="placement"
-        :trigger="trigger"
+        :trigger="'click'"
         @visibleChange="handleVisibleChange"
     >
         <template #content>
@@ -34,12 +34,12 @@
                     <div class="flex">
                         <div class="flex space-x-2 font-bold text-gray-700">
                             <Ellipsis
-                                :tooltipText="attributes.localName"
+                                :tooltipText="attributes?.localName"
                                 :rows="2"
                                 :classes="'max-w-xs'"
                             />
                             <!-- <span class="max-w-xs truncate">
-                                {{ attributes.localName }}
+                                {{ attributes?.localName }}
                             </span> -->
                             <CertificateBadge
                                 v-if="certificateStatus(fetchedTerm)"
@@ -51,17 +51,17 @@
                     </div>
 
                     <div
-                        v-if="attributes.localDescription"
+                        v-if="attributes?.localDescription"
                         style="font-size: 12px"
                         class=""
                     >
                         <div class="text-gray-500">Description</div>
                         <div class="text-gray-700">
-                            {{ attributes.localDescription }}
+                            {{ attributes?.localDescription }}
                         </div>
                     </div>
                     <!-- <div
-                        v-if="attributes.localCategories?.length"
+                        v-if="attributes?.localCategories?.length"
                         style="font-size: 12px"
                         class=""
                     >
@@ -70,7 +70,7 @@
                             class="leading-5 text-gray-700 truncate overflow-ellipsis"
                         >
                             <Category
-                                v-modal="attributes.localCategories"
+                                v-modal="attributes?.localCategories"
                                 :selected-asset="fetchedTerm"
                                 :edit-permission="false"
                             />
@@ -79,8 +79,8 @@
 
                     <div
                         v-if="
-                            attributes.localOwners?.ownerGroups?.length ||
-                            attributes.localOwners?.ownerUsers?.length
+                            attributes?.localOwners?.ownerGroups?.length ||
+                            attributes?.localOwners?.ownerUsers?.length
                         "
                         style="font-size: 12px"
                         class=""
@@ -168,10 +168,6 @@
                 type: Error,
                 required: true,
             },
-            isReady: {
-                type: Boolean,
-                required: true,
-            },
             fetchedTerm: {
                 type: Object,
                 required: true,
@@ -213,13 +209,12 @@
 
             const handleVisibleChange = (v) => {
                 emit('visible', v, term.value)
-                // console.log({ v })
-                // if (!list.value?.length && v) quickChange()
-                // // fetch()
             }
 
             onMounted(() => {
-                console.log('fetching')
+                if (fetchedTerm.value) {
+                    attributes.value = updateAssetAttributes(fetchedTerm)
+                }
             })
 
             return {

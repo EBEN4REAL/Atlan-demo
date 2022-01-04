@@ -49,7 +49,7 @@ export const previewTabs = [
         name: 'Queries',
         component: 'queries',
         includes: ['Table', 'Column', 'View'],
-        icon: 'Relation',
+        icon: 'QueryDiscovery',
         tooltip: 'Queries',
         scrubbed: false,
         requiredInProfile: true,

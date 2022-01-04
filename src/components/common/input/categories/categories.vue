@@ -27,7 +27,7 @@
                     placeholder="Search categories"
                     ref="treeSelectRef"
                 >
-                    <template #suffixIcon><AtlanIcon icon="Search" /></template>
+                    <template #suffixIcon><AtlanIcon icon="Search"  class="h-8 text-gray"/></template>
                     <template #title="item"
                         ><AtlanIcon :icon="icon(item.node)" />
                         {{ item.title }}</template
@@ -256,13 +256,23 @@
         -moz-transition: border 500ms ease-out;
         -o-transition: border 500ms ease-out;
         transition: border 500ms ease-out;
-
+        
+        :global(.ant-select-arrow) {
+            position: absolute;
+            left: 0;
+        }
+        :global(.ant-select-selection-overflow) {
+            @apply ml-4;
+        }
+        :global( .ant-select-selection-placeholder) {
+            @apply ml-4;
+        }
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;
             width: 350px !important;
         }
         :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-            @apply border-0 border-b border-gray-200 rounded-none;
+            @apply border-0 border-b border-t-0 border-l-0 border-r-0 border-gray-200 rounded-none;
         }
         :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector) {
             @apply border-primary border-b border-solid border-t-0 border-l-0 border-r-0  !important;

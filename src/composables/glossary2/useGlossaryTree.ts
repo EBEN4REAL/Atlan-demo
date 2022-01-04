@@ -604,8 +604,14 @@ const useGlossaryTree = ({
             const updatedTreeData = []
             treeData.value.forEach((el) => {
                 if (el?.guid === asset?.guid) {
-                    if (el?.typeName === 'AtlasGlossaryCategory')
+                    if (
+                        el?.typeName === 'AtlasGlossaryCategory' &&
+                        updateChildrenOnDelete &&
+                        el?.children
+                    ) {
+                        console.log(el)
                         updatedTreeData.push(...el.children)
+                    }
                 } else updatedTreeData.push(el)
             })
 

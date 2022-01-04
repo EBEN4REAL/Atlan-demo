@@ -44,7 +44,6 @@
                 v-else
                 ref="assetlistRef"
                 :list="list"
-                :selected-asset="selectedAsset"
                 :is-load-more="isLoadMore"
                 :is-loading="isValidating"
                 style="height: 350px"
@@ -54,21 +53,13 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
-                        :show-check-box="showCheckBox"
-                        :enable-sidebar-drawer="enableSidebarDrawer"
-                        :class="page !== 'admin' ? '' : ''"
-                        @preview="handlePreview"
+                        :enable-sidebar-drawer="true"
+                        @updateDrawer="updateCurrentList"
                     ></AssetItem>
                 </template>
             </AssetList>
         </div>
     </div>
-    <!-- <AssetDrawer
-        :data="selectedAsset"
-        :show-drawer="showDrawer"
-        @closeDrawer="handleCloseDrawer"
-        @update="updateCurrentList"
-    /> -->
 </template>
 
 <script lang="ts">
@@ -108,7 +99,6 @@
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
 
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -118,7 +108,6 @@
 
             EmptyView,
             ErrorView,
-            AssetDrawer,
             AssetItem,
         },
         props: {
@@ -182,8 +171,6 @@
         },
         emits: ['listLoaded'],
         setup(props, { emit }) {
-            const showDrawer = ref(false)
-
             const {
                 preference: preferenceProp,
                 checkedCriteria,
@@ -255,9 +242,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
-
                 error,
-
                 quickChange,
                 updateList,
             } = useDiscoverList({
@@ -274,19 +259,7 @@
                 relationAttributes,
             })
 
-            const selectedAsset = ref(null)
-            const handlePreview = (item) => {
-                selectedAsset.value = item
-
-                showDrawer.value = true
-            }
-
-            const handleCloseDrawer = () => {
-                showDrawer.value = false
-            }
-
             const updateCurrentList = (asset) => {
-                selectedAsset.value = asset
                 updateList(asset)
             }
 
@@ -366,7 +339,6 @@
                 postFacets,
                 handleLoadMore,
                 handleAssetTypeChange,
-                handlePreview,
                 fetch,
                 placeholder,
                 handleSearchChange,
@@ -380,13 +352,9 @@
                 activeKey,
                 discoveryFilters,
                 error,
-                selectedAsset,
-                updateList,
+
                 updateCurrentList,
                 searchDirtyTimestamp,
-
-                showDrawer,
-                handleCloseDrawer,
             }
         },
     })

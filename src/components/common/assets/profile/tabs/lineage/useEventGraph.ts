@@ -336,7 +336,9 @@ export default function useEventGraph(
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
-        const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
+        const ele =
+            e.originalEvent?.originalTarget?.parentElement ||
+            e.originalEvent?.path.find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
         if (chp.value.portId === portId) {
             // if current port - deselect

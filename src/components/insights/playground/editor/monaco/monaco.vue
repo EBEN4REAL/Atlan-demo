@@ -352,7 +352,111 @@
                 if (matches && matches?.length > 0)
                     setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
-                console.log(lastLineLength)
+                // console.log(lastLineLength)
+
+                const modifyLine = (lineCode) => {
+                    let startCount = 0
+                    let endCount = 0
+
+                    console.log('line code: ', lineCode)
+
+                    while (lineCode.startsWith('\n')) {
+                        lineCode = lineCode.slice(1)
+                        startCount++
+                    }
+                    while (lineCode.endsWith('\n')) {
+                        lineCode = lineCode.slice(0, lineCode.length - 1)
+                        endCount++
+                    }
+
+                    let testValStart = /\/\*(.*?)/
+                    let testValEnd = /(.*?)\*\//
+
+                    // console.log(
+                    //     'line code check: ',
+                    //     testValStart.test(lineCode) && testValEnd.test(lineCode)
+                    // )
+
+                    if (
+                        testValStart.test(lineCode) &&
+                        testValEnd.test(lineCode)
+                    ) {
+                        lineCode = lineCode.slice(2)
+                        lineCode = lineCode.slice(0, lineCode.length - 2)
+                    } else {
+                        lineCode = `/*${lineCode}*/`
+                    }
+
+                    // console.log('line code update: ', lineCode)
+
+                    for (var i = 0; i < startCount; i++) {
+                        lineCode = '\n' + lineCode
+                    }
+
+                    for (var i = 0; i < endCount; i++) {
+                        lineCode = lineCode + '\n'
+                    }
+                    return lineCode
+                }
+
+                const singleLineComment = () => {
+                    let lineCode = editor
+                        .getModel()
+                        .getLineContent(editor.getPosition().lineNumber)
+
+                    let copyLineCode = lineCode
+                    lineCode = modifyLine(lineCode)
+
+                    var line = editor.getPosition()
+                    var op = {
+                        range: {
+                            startLineNumber: line?.lineNumber,
+                            endLineNumber: line?.lineNumber,
+                            startColumn: 1,
+                            endColumn: copyLineCode.length + 1,
+                        },
+                        text: lineCode,
+                        forceMoveMarkers: true,
+                    }
+                    editor.executeEdits('my-source', [op])
+                }
+
+                const multiLineComment = () => {
+                    let selection = toRaw(editor)?.getSelection()
+
+                    let selectedText = toRaw(editor)
+                        ?.getModel()
+                        ?.getValueInRange(selection)
+
+                    selectedText = modifyLine(selectedText)
+
+                    var op = {
+                        range: {
+                            startLineNumber: selection?.startLineNumber,
+                            endLineNumber: selection?.endLineNumber,
+                            startColumn: selection?.startColumn,
+                            endColumn: selection?.endColumn + 1,
+                        },
+                        text: selectedText,
+                        forceMoveMarkers: true,
+                    }
+                    editor.executeEdits('my-source', [op])
+                }
+
+                const commentCode = () => {
+                    let selection = toRaw(editor)?.getSelection()
+
+                    if (
+                        selection?.startLineNumber ===
+                            selection?.endLineNumber &&
+                        selection?.startColumn === selection?.endColumn
+                    ) {
+                        singleLineComment()
+                    } else {
+                        multiLineComment()
+                    }
+                }
+
                 // emit('editorInstance', editor)
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
@@ -368,14 +472,14 @@
                         }
                     }
                 )
-                // editor?.addCommand(monaco.KeyMod.CtrlCmd | 49, function () {
-                //     saveOrUpdate()
-                // })
-                // /* For command pallete keybinding */
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 85, function () {
+                    commentCode()
+                })
+
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | 46,
                     function () {
-                        // console.log('cmd+sft+p: ', 'presses')
                         editor?.trigger(
                             'editor',
                             'editor.action.quickCommand',
@@ -615,7 +719,7 @@
     .myLineDecoration {
         @apply bg-primary;
         // background: bg-primary;
-        width: 4px !important;
+        width: 2px !important;
         margin-left: 0px;
     }
     .ghostCursor {

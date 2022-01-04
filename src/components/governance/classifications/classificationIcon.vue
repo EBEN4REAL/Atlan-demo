@@ -1,7 +1,8 @@
 <template>
     <AtlanIcon
         :icon="icon"
-        :style="`color: ${getClassificationColorHex(color)}`"
+        :style="`color: ${getClassificationColorHex(color)};`"
+        :class="classNames"
     ></AtlanIcon>
 </template>
 
@@ -24,6 +25,11 @@
                 required: false,
                 default: 'Shield',
             },
+            classNames: {
+                type: String,
+                required: false,
+                default: ''
+            }
         },
         setup(props, { emit }) {
             // const { color, icon } = toRefs(props)

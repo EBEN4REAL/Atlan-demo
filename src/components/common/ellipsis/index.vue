@@ -4,9 +4,13 @@
         :placement="placement"
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
+        :color="tooltipColor"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
             <template v-if="routeTo">
-                <router-link :to="routeTo">
+                <router-link
+                    :to="routeTo"
+                    :target="shouldOpenInNewTab ? '_blank' : 'self'"
+                >
                     <a-typography-paragraph
                         :class="classes"
                         :ellipsis="{
@@ -34,6 +38,7 @@
     import { defineComponent, ref, toRefs } from 'vue'
 
     export default defineComponent({
+        name: 'Tooltip',
         props: {
             tooltipText: {
                 type: String,
@@ -59,8 +64,16 @@
                 type: String,
                 required: false,
             },
+            tooltipColor: {
+                type: String,
+                required: false,
+            },
+            shouldOpenInNewTab: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        name: 'Tooltip',
         setup(props) {
             const truncated = ref<boolean>(false)
             const { tooltipText } = toRefs(props)

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="max-profile-width">
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
             <SearchAdvanced
@@ -66,6 +66,9 @@
                     <template v-if="column.key === 'hash_index'">
                         <div
                             class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r border-gray-light"
+                            :class="{
+                                'selected-row': record.key === selectedRow,
+                            }"
                         >
                             {{ text }}
                         </div>
@@ -73,7 +76,6 @@
                     <template v-else-if="column.key === 'column_name'">
                         <div
                             :class="{
-                                'border-primary': record.key === selectedRow,
                                 'flex items-center justify-between':
                                     record.is_primary,
                             }"
@@ -541,5 +543,13 @@
     .data-type {
         font-family: Hack !important;
         @apply text-gray-500 text-xs !important;
+    }
+
+    .selected-row {
+        @apply border-r-2 border-primary !important;
+    }
+
+    .max-profile-width {
+        max-width: calc(100vw - 476px);
     }
 </style>

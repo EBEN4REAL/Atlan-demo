@@ -15,6 +15,7 @@ import { IndexSearchResponse } from '~/services/meta/search/index'
 import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
+import { message } from 'ant-design-vue'
 
 // composables
 import useLoadTreeData from './useLoadTreeData'
@@ -117,22 +118,22 @@ const useTree = ({
      * [ targetNode, ....., child2, child1, topParent ]
      */
     const recursivelyFindPath = (
-        targetGuid: string,
+        qualifiedName: string,
         initialStack?: string[]
     ) => {
-        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+        const parentStack = initialStack?.length ? initialStack : [qualifiedName]
 
-        const findPath = (currGuid: string) => {
+        const findPath = (currQualifiedName: string) => {
             if (
-                nodeToParentKeyMap[currGuid] &&
-                nodeToParentKeyMap[currGuid] !== 'root'
+                nodeToParentKeyMap[currQualifiedName] &&
+                nodeToParentKeyMap[currQualifiedName] !== 'root'
             ) {
-                parentStack.push(nodeToParentKeyMap[currGuid])
-                findPath(nodeToParentKeyMap[currGuid])
+                parentStack.push(nodeToParentKeyMap[currQualifiedName])
+                findPath(nodeToParentKeyMap[currQualifiedName])
             }
         }
 
-        findPath(targetGuid)
+        findPath(qualifiedName)
 
         return parentStack
     }
@@ -179,7 +180,7 @@ const useTree = ({
                 )
                 tableResponse.entities?.forEach((table) => {
                     treeData.value.push(returnTreeDataItemAttributes(table))
-                    nodeToParentKeyMap[table.attributes.qualifiedName] = 'root'
+                    nodeToParentKeyMap[table?.attributes?.qualifiedName] = 'root'
                 })
 
                 checkAndAddLoadMoreNode(
@@ -408,6 +409,14 @@ const useTree = ({
     /**
      * Asynchronously fetches children of a node and appends them
      */
+
+     const isNodeLoading = ref(false)
+     const nodeError = ref(undefined)
+     const errorNode = ref(undefined)
+
+     
+    
+    
     const onLoadData = async (treeNode: {
         [key: string]: any
         dataRef: CustomTreeDataItem
@@ -416,117 +425,119 @@ const useTree = ({
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'Database') {
-            const schemaResponse = await getSchemaForDatabase(
-                treeNode.dataRef.qualifiedName
-            )
+        isNodeLoading.value = true
+        nodeError.value = undefined
+        errorNode.value = undefined
 
-            schemaResponse.entities?.forEach((schema) => {
-                treeNode.dataRef.children?.push(
-                    returnTreeDataItemAttributes(schema)
-                )
-                nodeToParentKeyMap[schema.attributes.qualifiedName] =
+        try {
+            if (treeNode.dataRef.typeName === 'Database') {
+                const schemaResponse = await getSchemaForDatabase(
                     treeNode.dataRef.qualifiedName
-            })
-
-            if (!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true
-            checkAndAddLoadMoreNode(
-                schemaResponse,
-                'Database',
-                treeNode.dataRef.qualifiedName
-            )
-        } else if (treeNode.dataRef.typeName === 'Schema') {
-            const tableResponse = await getTablesAndViewsForSchema(
-                treeNode.dataRef.qualifiedName
-            )
-
-            tableResponse.entities?.forEach((table) => {
-                treeNode.dataRef.children?.push(
-                    returnTreeDataItemAttributes(table)
                 )
-                nodeToParentKeyMap[table.attributes.qualifiedName] =
+    
+                schemaResponse.entities?.forEach((schema) => {
+                    treeNode.dataRef.children?.push(
+                        returnTreeDataItemAttributes(schema)
+                    )
+                    nodeToParentKeyMap[schema.attributes.qualifiedName] =
+                        treeNode.dataRef.qualifiedName
+                })
+    
+                if (!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true
+                checkAndAddLoadMoreNode(
+                    schemaResponse,
+                    'Database',
                     treeNode.dataRef.qualifiedName
-            })
-
-            if (!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true
-            checkAndAddLoadMoreNode(
-                tableResponse,
-                'Schema',
-                treeNode.dataRef.qualifiedName
-            )
-        } else if (treeNode.dataRef.typeName === 'Table') {
-            const columnResponse = await getColumnsForTable(
-                treeNode.dataRef.qualifiedName
-            )
-
-            columnResponse.entities?.forEach((column) => {
-                treeNode.dataRef.children?.push(
-                    returnTreeDataItemAttributes(column)
                 )
-                nodeToParentKeyMap[column.attributes.qualifiedName] =
+            } else if (treeNode.dataRef.typeName === 'Schema') {
+                const tableResponse = await getTablesAndViewsForSchema(
                     treeNode.dataRef.qualifiedName
-            })
-            checkAndAddLoadMoreNode(
-                columnResponse,
-                'Table',
-                treeNode.dataRef.qualifiedName
-            )
-        } else if (treeNode.dataRef.typeName === 'View') {
-            const columnResponse = await getColumnsForView(
-                treeNode.dataRef.qualifiedName
-            )
-
-            columnResponse.entities?.forEach((column) => {
-                treeNode.dataRef.children?.push(
-                    returnTreeDataItemAttributes(column)
                 )
-                nodeToParentKeyMap[column.attributes.qualifiedName] =
+    
+                tableResponse.entities?.forEach((table) => {
+                    treeNode.dataRef.children?.push(
+                        returnTreeDataItemAttributes(table)
+                    )
+                    nodeToParentKeyMap[table.attributes.qualifiedName] =
+                        treeNode.dataRef.qualifiedName
+                })
+    
+                if (!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true
+                checkAndAddLoadMoreNode(
+                    tableResponse,
+                    'Schema',
                     treeNode.dataRef.qualifiedName
-            })
-            checkAndAddLoadMoreNode(
-                columnResponse,
-                'View',
-                treeNode.dataRef.qualifiedName
-            )
-        }
-        loadedKeys.value.push(treeNode.dataRef.key)
+                )
+            } else if (treeNode.dataRef.typeName === 'Table') {
+                const columnResponse = await getColumnsForTable(
+                    treeNode.dataRef.qualifiedName
+                )
+    
+                columnResponse.entities?.forEach((column) => {
+                    treeNode.dataRef.children?.push(
+                        returnTreeDataItemAttributes(column)
+                    )
+                    nodeToParentKeyMap[column.attributes.qualifiedName] =
+                        treeNode.dataRef.qualifiedName
+                })
+                checkAndAddLoadMoreNode(
+                    columnResponse,
+                    'Table',
+                    treeNode.dataRef.qualifiedName
+                )
+            } else if (treeNode.dataRef.typeName === 'View') {
+                const columnResponse = await getColumnsForView(
+                    treeNode.dataRef.qualifiedName
+                )
+    
+                columnResponse.entities?.forEach((column) => {
+                    treeNode.dataRef.children?.push(
+                        returnTreeDataItemAttributes(column)
+                    )
+                    nodeToParentKeyMap[column.attributes.qualifiedName] =
+                        treeNode.dataRef.qualifiedName
+                })
+                checkAndAddLoadMoreNode(
+                    columnResponse,
+                    'View',
+                    treeNode.dataRef.qualifiedName
+                )
+            }
+            loadedKeys.value.push(treeNode.dataRef.key)
+        } catch(error) {
+            const er = Object.getOwnPropertyDescriptor(error, 'message')
+                isNodeLoading.value = false
+                nodeError.value = er?.value
+                errorNode.value = treeNode
+                message.error(`Something went wrong while fetching the ${treeNode.dataRef.typeName} data`)
+
+                loadedKeys.value.push(treeNode.dataRef.key)
+                return
+        }   
+
     }
 
     const expandNode = (expanded: string[], event: any) => {
-        // triggered by select
-        // console.log('expanded', expanded)
-        // if (!event.node.isLeaf) {
-        //     const key: string = event.node.eventKey
-        //     const isExpanded = expandedKeys.value?.includes(key)
-        //     if (!isExpanded) {
-        //         if (isAccordion && event.node.dataRef.isRoot) {
-        //             expandedKeys.value = []
-        //         }
-        //         expandedKeys.value?.push(key)
-        //     } else if (isExpanded) {
-        //         const index = expandedKeys.value?.indexOf(key)
-        //         expandedKeys.value?.splice(index, 1)
-        //     }
-        //     expandedKeys.value = [...expandedKeys.value]
-        // }
-        // store.set(expandedCacheKey, expandedKeys.value)
+        console.log('expanded', expanded, expandedKeys.value)
+
+        if (!event.node.dataRef.isLeaf) {
+            const key: string = event.node.dataRef.key
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
     }
 
     const selectNode = (selected: any, event: any) => {
-        // if (!event.node.isLeaf) {
-        //     expandNode([], event)
-        //     // selectedKeys.value = []
-        // } else {
-        //     if (selectedKeys.value.includes(selected)) {
-        //         // selectedKeys.value = []
-        //     } else {
-        //         // selectedKeys.value = [...selected]
-        //     }
-        //     emit('select', event.node.eventKey)
-        // }
-        // store.set(selectedCacheKey, selectedKeys.value)
-        /* New Logic */
-        if (!event.node.isLeaf) {
+        if (!event.node.dataRef.isLeaf) {
             expandNode([], event)
         }
         if (selectedKeys.value.includes(selected)) {
@@ -552,13 +563,16 @@ const useTree = ({
         entity: Database | Schema | Table | Column | View
     }) => {
         const currentParents = nodeToParentKeyMap[qualifiedName]
+        // console.log('schema tree update: ', treeData)
+        
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
+            // console.log('schema tree update: ', treeData)
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === qualifiedName)
                     return {
                         ...treeNode,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 return treeNode
             })
@@ -575,7 +589,7 @@ const useTree = ({
                 if (node.key === qualifiedName || !currentPath) {
                     return {
                         ...node,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 }
                 return {
@@ -724,7 +738,11 @@ const useTree = ({
         ],
         ([c, d, s]) => {
             console.log('reinitialized')
-            console.log('tree filters: ', {facets, sortOrderColumn, sortOrderTable})
+            console.log('tree filters: ', {
+                facets,
+                sortOrderColumn,
+                sortOrderTable,
+            })
             isInitingTree.value = true
             initTreeData(c, d, s)
         }

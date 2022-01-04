@@ -9,8 +9,8 @@
                 v-model:value="regexes[idx]"
                 class="flex-grow"
                 :placeholder="connectionQfName.includes('tableau') ? 'database/schema/table/column' : ''"
-                @change="updateAssets"
                 data-test-id="custom-asset-input"
+                @change="updateAssets"
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
@@ -19,7 +19,7 @@
                         class="w-auto h-3 mr-2"
                     />
                     <span class="text-sm text-gray">
-                        {{ connectionQfName.split('/').slice(-1)[0] }}/
+                        {{ connName }}/
                     </span>
                 </template>
             </a-input>
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, computed } from 'vue'
     import { useConnectionStore } from '~/store/connection'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -60,7 +60,14 @@
         },
         emits: ['update:assets'],
         setup(props, { emit }) {
-            const { connectionQfName } = toRefs(props)
+             const { connectionQfName } = toRefs(props)
+            const connStore = useConnectionStore()
+             const connName = computed(() => {
+                const found = connStore.getList.find(
+                    (conn) => conn.attributes.qualifiedName === connectionQfName.value
+                )
+                return  found?.attributes?.name || ''
+            })
             const regexes = ref([''] as String[])
             function addExpr() {
                 regexes.value = regexes.value.filter((val) => val.trim().length)
@@ -79,11 +86,9 @@
                         .map((val) => `${connectionQfName.value}/${val}`)
                 )
             }
-
-            const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
 
-            return { regexes, addExpr, removeExpr, getImage, updateAssets }
+            return { regexes, addExpr, removeExpr, getImage, updateAssets, connName }
         },
     })
 </script>

@@ -10,8 +10,8 @@
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex items-center">
-                    <AtlanIcon icon="Settings" v-if="type === 'meta'" />
-                    <AtlanIcon icon="QueryGrey" v-if="type === 'data'" />
+                    <AtlanIcon v-if="type === 'meta'" icon="Settings" />
+                    <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
                     <span class="ml-1 font-semibold"
                         >{{
                             policyType === 'meta'
@@ -107,12 +107,12 @@
                         {{ rules.connection.text }}
                     </div>
                 </div>
-                <div class="mt-5" v-if="connectorData.attributeValue">
+                <div v-if="connectorData.attributeValue" class="mt-5">
                     <div class="flex items-center justify-between">
                         <div class="text-gray-500">
                             Select assets
 
-                            <span class="" v-if="policyType === 'data'"
+                            <span v-if="policyType === 'data'" class=""
                                 >to allow <b>Query</b>
                             </span>
                             <span class="text-red-500">*</span>
@@ -122,19 +122,19 @@
                             class="flex gap-x-1"
                         >
                             <a-button
-                                size="small"
                                 v-if="!isAddAll"
-                                @click="addConnectionAsset"
+                                size="small"
                                 :disabled="!connectorData.attributeValue"
+                                @click="addConnectionAsset"
                             >
                                 <span class="text-primary">
                                     Include all assets</span
                                 >
                             </a-button>
                             <a-button
-                                @click="handleAddAsset"
-                                size="small"
                                 v-if="!isAddAll && policy.assets.length > 0"
+                                size="small"
+                                @click="handleAddAsset"
                             >
                                 <span class="text-primary"> Add</span>
                                 <AtlanIcon
@@ -153,11 +153,9 @@
                             :key="asset"
                             class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded wrapper-asset"
                             :class="
-                                isEdit
-                                    ? canEdit
-                                    : true
-                                    ? 'hover:bg-primary-light cursor-pointer'
-                                    : ''
+                                disabledForm
+                                    ? ''
+                                    : 'hover:bg-primary-light cursor-pointer'
                             "
                         >
                             <span class="asset-name">
@@ -173,6 +171,7 @@
                                
                             > -->
                             <AtlanIcon
+                                v-if="!disabledForm"
                                 icon="Cross"
                                 class="h-3 ml-3 text-red-500 rotate-45"
                                 @click="handleDeleteAsset(asset)"
@@ -187,9 +186,9 @@
                             class="flex gap-x-1"
                         >
                             <a-button
-                                @click="handleAddAsset"
-                                size="small"
                                 v-if="!isAddAll && policy.assets.length === 0"
+                                size="small"
+                                @click="handleAddAsset"
                             >
                                 <span class="text-primary"> Add</span>
                                 <AtlanIcon
@@ -224,8 +223,8 @@
                             "
                             size="small"
                             class="text-primary"
-                            @click="handleToggleManage"
                             :disabled="!connectorData.attributeValue"
+                            @click="handleToggleManage"
                         >
                             Edit
                             <AtlanIcon
@@ -303,7 +302,7 @@
                     </div>
 
                     <DataMaskingSelector
-                        v-model:maskType="policy.maskType"
+                        v-model:maskType="policy.type"
                         class="mb-6 w-80"
                     />
                 </div>
@@ -368,6 +367,7 @@
                     class="drawerAddAsset"
                     :get-container="'body'"
                     @update:assets="handleChangeAssets"
+                    @close="assetSelectorVisible=false"
                 />
 
                 <a-drawer
@@ -396,7 +396,7 @@
                 class="btn-submit"
                 @click="handleClose"
             >
-                Cancel
+                Cancel 
             </AtlanBtn>
             <AtlanBtn
                 size="sm"
@@ -599,7 +599,7 @@
                 }
                 if (isEdit.value) {
                     policy.value = selectedPolicy.value
-                    policyType.value = selectedPolicy.value.type
+                    policyType.value = type.value
                 } else {
                     policyType.value = type.value
                     if (type.value === 'meta') {
@@ -619,7 +619,7 @@
                             assets: [],
                             connectionName: '',
                             connectionId: '',
-                            maskType: 'null',
+                            type: 'null',
                             allow: true,
                             name: '',
                             description: '',
@@ -645,7 +645,7 @@
                 }
             }
             const handleToggleManage = () => {
-                isShow.value = true
+                isShow.value = !isShow.value
             }
             const handleSavePermission = (prop) => {
                 policy.value.actions = prop
@@ -771,6 +771,9 @@
                     }
                 })
             })
+            const disabledForm = computed(
+                () => !!(isEdit.value && !canEdit.value)
+            )
             return {
                 selectedPersonaDirty,
                 rules,
@@ -796,6 +799,7 @@
                 splitName,
                 handleChangeAssets,
                 canEdit,
+                disabledForm,
             }
         },
     })

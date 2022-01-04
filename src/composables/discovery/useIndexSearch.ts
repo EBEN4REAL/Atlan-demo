@@ -44,8 +44,6 @@ export default function useIndexSearch<T>(
         if (isLocal) {
             options.cacheOptions.cache = new LocalStorageCache()
         }
-
-        console.log(dependentKey)
         options.cacheKey = dependentKey
     }
 

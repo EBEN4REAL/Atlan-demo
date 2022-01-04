@@ -14,7 +14,7 @@
                     size="16px"
                 />
                 <p
-                    class="pr-2 m-0 overflow-hidden text-sm leading-none truncate "
+                    class="pr-2 m-0 overflow-hidden text-sm leading-none truncate"
                     :class="isSelected ? 'text-primary' : 'text-gray'"
                 >
                     {{ item.displayName || item.name }}
@@ -34,10 +34,13 @@
             finalList: { type: Object, required: true },
             selectedBm: { type: [Object, null], required: true },
         },
-        emits: ['update:selected'],
+        emits: ['update:selected', 'clickMetaData'],
         setup(props, { emit }) {
             // * Methods
-            const selectBm = (id: string) => emit('update:selected', id)
+            const selectBm = (id: string) => {
+                emit('update:selected', id)
+                emit('clickMetaData', id)
+            }
 
             return {
                 selectBm,

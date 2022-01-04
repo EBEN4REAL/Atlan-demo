@@ -229,7 +229,7 @@
             padding: 3px 8px !important;
             box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
 
-            transition: all 0.8s ease-out;
+            transition: all 0.3s ease-out;
 
             &:hover {
                 @apply bg-primary-light !important;
@@ -246,6 +246,7 @@
 
         :global(.ant-tabs-tab:first-child) {
             border-top-left-radius: 4px !important;
+            @apply ml-0 !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

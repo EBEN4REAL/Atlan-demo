@@ -24,22 +24,28 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <div class="flex flex-wrap gap-1 text-sm">
-            <template v-for="term in list" :key="term.guid">
+        <template v-for="term in list" :key="term.guid">
+            <TermPopover
+                :term="term"
+                :loading="termLoading"
+                :fetched-term="getFetchedTerm(term.guid)"
+                :error="termError"
+                trigger="hover"
+                :ready="isReady"
+                @visible="handleTermPopoverVisibility"
+            >
                 <TermPill
                     :term="term"
-                    :allow-delete="
-                        allowDelete === null ? editPermission : allowDelete
-                    "
+                    :allow-delete="allowDelete"
                     @delete="handleDeleteTerm"
                 />
-            </template>
-            <span
-                v-if="!editPermission && list?.length < 1"
-                class="-ml-1 text-gray-500"
-                >No linked terms</span
-            >
-        </div>
+            </TermPopover>
+        </template>
+        <span
+            v-if="!editPermission && list?.length < 1"
+            class="-ml-1 text-gray-500"
+            >No linked terms</span
+        >
     </div>
 </template>
 
@@ -57,10 +63,20 @@
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
+    import TermPopover from '@/common/popover/term.vue'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import {
+        AssetAttributes,
+        InternalAttributes,
+        SQLAttributes,
+        AssetRelationAttributes,
+        GlossaryAttributes,
+    } from '~/constant/projection'
+    import { Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         name: 'TermsWidget',
-        components: { GlossaryTree, TermPill },
+        components: { GlossaryTree, TermPill, TermPopover },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -95,12 +111,14 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedGuids = ref(
-                modelValue.value.map((term) => term.termGuid)
-            )
+            const checkedGuids = ref(modelValue.value.map((term) => term.guid))
             const hasBeenEdited = ref(false)
 
-            const list = computed(() => localValue.value)
+            const list = computed(() =>
+                localValue.value.filter(
+                    (term) => term.attributes?.__state === 'ACTIVE'
+                )
+            )
 
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
@@ -148,6 +166,9 @@
                 )
 
                 modelValue.value = localValue.value
+                checkedGuids.value = checkedGuids.value.filter(
+                    (guid) => guid !== term.guid
+                )
                 emit('change', localValue.value)
             }
             /* Adding this when parent data change, sync it with local */
@@ -158,7 +179,76 @@
                 )
             })
 
+            const limit = ref(1)
+            const offset = ref(0)
+            const facets = ref({
+                guid: '',
+            })
+
+            const dependentKey = ref(facets.value.guid)
+
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...GlossaryAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            const {
+                list: fetchTermArr,
+                isLoading: termLoading,
+                fetch,
+                isReady,
+                error: termError,
+                quickChange,
+            } = useDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
+            /**
+             * * OPTMIZING THE TERMS POPOVER vvvvv
+             */
+
+            const fetchedTerms = ref<Term[]>([])
+
+            const getFetchedTerm = (guid) =>
+                fetchedTerms.value.find((t) => t.guid === guid)
+
+            watch([fetchTermArr, isReady], () => {
+                if (fetchTermArr.value.length && isReady?.value) {
+                    const term: Term = fetchTermArr.value[0]
+                    const index = fetchedTerms.value.findIndex(
+                        (t) => t.guid === term.guid
+                    )
+                    if (index > -1) fetchedTerms.value[index] = term
+                    else fetchedTerms.value.push(term)
+                }
+            })
+
+            const handleTermPopoverVisibility = (v, term) => {
+                if (getFetchedTerm(term.guid)) return
+                if (v) {
+                    facets.value.guid = term.guid
+                    quickChange()
+                }
+            }
+
+            /**
+             * * OPTMIZING THE TERMS POPOVER ^^^^^
+             */
+
             return {
+                getFetchedTerm,
+                isReady,
+                termError,
+                termLoading,
+                handleTermPopoverVisibility,
                 list,
                 onCheck,
                 onPopoverClose,
@@ -176,6 +266,6 @@
             @apply px-0 py-3 !important;
             width: 350px !important;
         }
-            max-height: 500px !important;
+        height: 300px !important;
     }
 </style>

@@ -7,7 +7,7 @@
             />
         </a-button>
         <div class="flex items-center justify-between w-full ml-3">
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full">
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
@@ -18,11 +18,10 @@
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
-                    <div
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
-                    >
-                        {{ title(item) }}
-                    </div>
+                    <Tooltip
+                        :tooltip-text="`${title(item)}`"
+                        classes="text-base font-bold text-gray-700  mb-0"
+                    />
 
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -274,7 +273,35 @@
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
                 >
-                    <a-button block class="flex items-center justify-center">
+                    <a-button
+                        v-if="
+                            isGTC(item) &&
+                            checkAccess(
+                                [
+                                    map.DELETE_TERM,
+                                    map.DELETE_GLOSSARY,
+                                    map.DELETE_CATEGORY,
+                                ],
+                                'or'
+                            )
+                        "
+                        block
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                    </a-button>
+                </AssetMenu>
+                <AssetMenu
+                    :asset="item"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
+                >
+                    <a-button
+                        v-if="
+                            !isGTC(item) && selectedAssetUpdatePermission(item)
+                        "
+                        block
+                        class="flex items-center justify-center"
+                    >
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
                 </AssetMenu>
@@ -294,6 +321,9 @@
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -302,6 +332,7 @@
             AtlanIcon,
             ShareMenu,
             AssetMenu,
+            Tooltip,
         },
         props: {
             item: {
@@ -370,6 +401,7 @@
             whenever(and(Escape, notUsingInput), (v) => {
                 if (v) back()
             })
+            const { checkAccess } = useAuth()
 
             return {
                 title,
@@ -400,6 +432,8 @@
                 selectedAssetUpdatePermission,
                 assetTypeLabel,
                 isGTC,
+                map,
+                checkAccess,
             }
         },
     })

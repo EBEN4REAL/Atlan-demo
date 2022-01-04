@@ -75,12 +75,13 @@ export function usePackageDiscoverList({
 
     const quickChange = () => {
         generateBody()
-        cancelRequest()
-        if (localKey.value) {
-            localKey.value = `dirty_${Date.now().toString()}`
-        } else {
-            refresh()
-        }
+        refresh()
+        // cancelRequest()
+        // if (localKey.value) {
+        //     localKey.value = `dirty_${Date.now().toString()}`
+        // } else {
+        //     refresh()
+        // }
     }
 
     return {
@@ -96,5 +97,6 @@ export function usePackageDiscoverList({
         cancelRequest,
         error,
         quickChange,
+        refresh,
     }
 }

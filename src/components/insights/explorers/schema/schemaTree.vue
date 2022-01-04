@@ -16,7 +16,6 @@
                     :auto-expand-parent="false"
                     :class="$style.tree"
                     @select="selectNode"
-                    @expand="expandNode"
                 >
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />
@@ -54,6 +53,20 @@
             <div v-else-if="!treeData.length" :data-test-id="'noData'">
                 <div
                     v-if="
+                        queryText?.length ||
+                        totalFilteredCount ||
+                        activeInlineTab?.explorer?.schema?.connectors
+                            ?.attributeName === 'schemaQualifiedName'
+                    "
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
+                >
+                    <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+                    <p class="mt-6 mb-0 text-base text-gray-700">
+                        No tables available
+                    </p>
+                </div>
+                <div
+                    v-else-if="
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'connectionQualifiedName'
                     "
@@ -153,6 +166,14 @@
             hoverActions: {
                 type: Boolean,
                 default: true,
+            },
+            totalFilteredCount: {
+                type: Number,
+                required: false,
+            },
+            queryText: {
+                type: String,
+                required: false,
             },
         },
         inheritAttrs: false,

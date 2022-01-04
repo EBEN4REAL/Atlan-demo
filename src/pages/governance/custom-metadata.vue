@@ -7,7 +7,9 @@
             <div v-else-if="error">
                 <a-empty :image="null">
                     <template #description>
-                        <p class="text-2xl font-bold">Error loading your request</p>
+                        <p class="text-2xl font-bold">
+                            Error loading your request
+                        </p>
                         <p>Try reloading page</p>
                     </template>
 
@@ -30,7 +32,10 @@
                         padding="compact"
                         @click="addMetaDataModal.open()"
                     >
-                        <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                        <AtlanIcon
+                            icon="Add"
+                            class="-mx-1 text-gray"
+                        ></AtlanIcon>
                     </AtlanBtn>
                 </template>
 
@@ -48,6 +53,7 @@
                         class="overflow-y-auto"
                         :final-list="sortedSearchedBM"
                         :selected-bm="selectedBm"
+                        @clickMetaData="handleClickMetaData"
                     />
                 </template>
 
@@ -68,16 +74,23 @@
                     }"
                 >
                     <template #description>
-                        <p v-if="checkAccess(map.CREATE_BUSINESS_METADATA)" class="text-2xl font-bold">
+                        <p
+                            v-if="checkAccess(map.CREATE_BUSINESS_METADATA)"
+                            class="text-2xl font-bold"
+                        >
                             Start adding custom metadata
                         </p>
-                         <p  class="text-2xl font-bold">
+                        <p class="text-2xl font-bold">
                             No custom metadata is present
                         </p>
                     </template>
 
-                    <a-button v-auth="map.CREATE_BUSINESS_METADATA" type="primary" @click="addMetaDataModal.open()"
-                        ><AtlanIcon icon="Add" class="inline" /> Create new metadata
+                    <a-button
+                        v-auth="map.CREATE_BUSINESS_METADATA"
+                        type="primary"
+                        @click="addMetaDataModal.open()"
+                        ><AtlanIcon icon="Add" class="inline" /> Create new
+                        metadata
                     </a-button>
                 </a-empty>
             </div>
@@ -88,8 +101,9 @@
 </template>
 <script lang="ts">
     // ? components
-    import { defineComponent, computed, onMounted, ref } from 'vue'
+    import { defineComponent, computed, onMounted, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
+    import { useRoute, useRouter } from 'vue-router'
     import BusinessMetadataList from '@/governance/custom-metadata/businessMetadataList.vue'
     import BusinessMetadataProfile from '@/governance/custom-metadata/businessMetadataProfile.vue'
     import MetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
@@ -97,7 +111,7 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NoAccess from '@/admin/common/noAccessPage.vue'
-
+    import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
 
     // ? Composables
@@ -120,10 +134,12 @@
         },
         setup() {
             const addMetaDataModal = ref(null)
+            const store = useTypedefStore()
+            const router = useRouter()
+            const route = useRoute()
             useHead({
                 title: computed(() => 'Custom Metadata'),
             })
-
             const {
                 selectedId,
                 selectedBm,
@@ -137,6 +153,33 @@
                 sortedSearchedBM,
             } = useBusinessMetadata()
             const { isAccess, checkAccess } = useAuth()
+            onMounted(() => {
+                const list = store.getCustomMetadataList
+                if (!route.params.id && list.length) {
+                    const id = list[0].guid!
+                    selectedId.value = id
+                    router.replace(`/governance/custom-metadata/${id}`)
+                }
+            })
+            const handleClickMetaData = (id) => {
+                router.replace(`/governance/custom-metadata/${id}`)
+            }
+            watch(store.getCustomMetadataList, () => {
+                const list = store.getCustomMetadataList
+                if (list.length) {
+                    let idMetaData = list[0].guid!
+                    if (route.params.id) {
+                        const find = list.find(
+                            (el) => el.guid === route.params.id
+                        )
+                        if (find) {
+                            idMetaData = route.params.id
+                        }
+                    }
+                    selectedId.value = idMetaData
+                    router.replace(`/governance/custom-metadata/${idMetaData}`)
+                }
+            })
             return {
                 selectedId,
                 error,
@@ -151,14 +194,14 @@
                 sortedSearchedBM,
                 map,
                 isAccess,
-                 checkAccess
+                checkAccess,
+                handleClickMetaData,
             }
         },
         data() {
             return {
                 noMetadataImage,
-                EmptyBusinessMetadata
-               
+                EmptyBusinessMetadata,
             }
         },
     })

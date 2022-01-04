@@ -32,7 +32,7 @@
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"
                     :class="$style.inputSearch"
-                    placeholder="Search"
+                    placeholder="Search tables"
                 >
                     <template #suffix>
                         <AtlanIcon icon="Search" color="#6F7590" />
@@ -43,7 +43,18 @@
                         class="flex items-center w-8 h-8 p-2 mt-1"
                         :class="$style.filterButton"
                     >
-                        <AtlanIcon icon="Filter" />
+                        <template #icon>
+                            <AtlanIcon
+                                v-if="totalFilteredCount === 0"
+                                icon="Filter"
+                                class="-ml-0.5"
+                            />
+                            <AtlanIcon
+                                v-else
+                                icon="FilterDot"
+                                class="-ml-0.5"
+                            />
+                        </template>
                     </a-button>
                     <template #content>
                         <SchemaFilter @change="onFilterChange" />
@@ -69,6 +80,8 @@
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
+                :totalFilteredCount="totalFilteredCount"
+                :queryText="queryText"
             />
         </div>
     </div>
@@ -83,6 +96,7 @@
         watch,
         computed,
         ComputedRef,
+        toRaw,
     } from 'vue'
     import { storeToRefs } from 'pinia'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
@@ -159,6 +173,10 @@
                     attributeValue: undefined,
                 }
             )
+
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
 
             const handleChange = () => {
                 /* Here we are making a change, so isSaved will be false */
@@ -242,13 +260,26 @@
                 if (type === 'facets') {
                     facets.value = { ...value }
                 }
-
-                // console.log('filters: ', {
-                //     facets: facets.value,
-                //     sortOrderTable: sortOrderTable.value,
-                //     sortOrderColumn: sortOrderColumn.value,
-                // })
             }
+
+            const totalFilteredCount = computed(() => {
+                let count = 0
+                Object.keys(facets.value).forEach((key) => {
+                    if (Array.isArray(facets.value[key])) {
+                        if (facets.value[key].length > 0) {
+                            count += 1
+                        }
+                    } else if (
+                        typeof facets.value[key] === 'object' &&
+                        facets.value[key] !== null
+                    ) {
+                        if (Object.keys(facets.value[key]).length > 0) {
+                            count += 1
+                        }
+                    }
+                })
+                return count
+            })
 
             const searchResultType = ref('table')
             const {
@@ -279,19 +310,28 @@
             })
 
             /* Watcher for updating the node in tree */
-            watch(selectedAsset, () =>
-                updateNode({
-                    qualifiedName: qualifiedName(
-                        selectedAsset as unknown as assetInterface
-                    ),
-                    entity: selectedAsset.value as unknown as
-                        | Database
-                        | Schema
-                        | Table
-                        | Column
-                        | View,
-                })
-            )
+            watch(assetSidebarUpdatedData, () => {
+                console.log(
+                    'table/ column update: ',
+                    assetSidebarUpdatedData.value
+                )
+
+                if (assetSidebarUpdatedData?.value?.typeName !== 'Query') {
+                    if (assetSidebarUpdatedData?.value?.guid) {
+                        updateNode({
+                            qualifiedName: qualifiedName(
+                                assetSidebarUpdatedData.value as unknown as assetInterface
+                            ),
+                            entity: assetSidebarUpdatedData.value as unknown as
+                                | Database
+                                | Schema
+                                | Table
+                                | Column
+                                | View,
+                        })
+                    }
+                }
+            })
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(
@@ -377,6 +417,7 @@
                 selectNode,
                 BItypes,
                 onFilterChange,
+                totalFilteredCount,
             }
         },
     })

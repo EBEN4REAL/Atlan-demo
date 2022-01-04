@@ -17,12 +17,13 @@
                     :defaultOpen="true"
                     :open="true"
                     :loading="true"
+                    treeNodeFilterProp="title"
                     style="width: 100%"
                     :dropdownStyle="{ position: 'static', overflow: 'hidden' }"
                     tree-checkable
                     allow-clear
                     :show-checked-strategy="SHOW_ALL"
-                    placeholder="Please select"
+                    placeholder="Search categories"
                     ref="treeSelectRef"
                 >
                     <template #suffixIcon><AtlanIcon icon="Search" /></template>
@@ -55,6 +56,13 @@
 
                     <div class="ml-1 group-hover:text-white">
                         {{ category.label }}
+                    </div>
+
+                    <div class="flex" @click="() => handleDelete(category)">
+                        <AtlanIcon
+                            icon="Cross"
+                            class="h-3 ml-2 text-gray-500 group-hover:text-white"
+                        ></AtlanIcon>
                     </div>
                 </div>
             </template>
@@ -97,6 +105,11 @@
                 required: false,
                 default: false,
             },
+            allowDelete: {
+                type: Boolean,
+                required: false,
+                default: null,
+            },
             disabled: {
                 type: Boolean,
                 default: false,
@@ -119,6 +132,7 @@
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
                     value: category.guid,
+                    attributes: category.attributes
                 }))
             )
             const SHOW_ALL = TreeSelect.SHOW_ALL
@@ -144,11 +158,26 @@
                         typeName: 'AtlasGlossaryCategory',
                         attributes: {
                             name: cat.label,
+                            ...cat.attributes
                         },
                     }))
                     emit('change', localValue.value)
                     hasBeenEdited.value = false
                 }
+            }
+
+            const handleDelete = (category : { label: string; value: string}) => {
+                checkedKeys.value = checkedKeys.value.filter((cat) => cat.value !== category.value)
+                modelValue.value = checkedKeys.value.map((cat) => ({
+                    guid: cat.value,
+                    typeName: 'AtlasGlossaryCategory',
+                    attributes: {
+                        name: cat.label,
+                        ...cat.attributes
+                    },
+                }))
+                emit('change', localValue.value)
+                hasBeenEdited.value = false
             }
 
             const icon = (category) => {
@@ -173,14 +202,6 @@
                 return 'Category'
             }
 
-            const onCheck = (checkedNodes) => {
-                localValue.value = []
-                checkedNodes.forEach((term) => {
-                    localValue.value.push(term)
-                })
-                hasBeenEdited.value = true
-            }
-
             onMounted(async () => {
                 await initCategories()
             })
@@ -190,12 +211,12 @@
                 checkedKeys.value = modelValue.value.map((category) => ({
                     label: category.attributes.name,
                     value: category.guid,
+                    attributes: category.attributes
                 }))
             })
 
             return {
                 icon,
-                onCheck,
                 onPopoverClose,
                 localValue,
                 checkedKeys,
@@ -205,16 +226,34 @@
                 SHOW_ALL,
                 getContainer,
                 treeSelectRef,
+                handleDelete
             }
         },
     })
 </script>
 <style lang="less" module>
     .categoryPopover {
+        -webkit-transition: border 500ms ease-out;
+        -moz-transition: border 500ms ease-out;
+        -o-transition: border 500ms ease-out;
+        transition: border 500ms ease-out;
+
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;
             width: 350px !important;
         }
+        :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+            @apply border-0 border-b border-gray-200 rounded-none;
+        }
+        :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+            @apply border-primary border-b border-solid border-t-0 border-l-0 border-r-0  !important;
+            outline: 0 !important;
+            box-shadow: none;
+        }
+        :global(.ant-select-tree) {
+            @apply -ml-2;
+        }
+
     }
 
     .categoryWidget {

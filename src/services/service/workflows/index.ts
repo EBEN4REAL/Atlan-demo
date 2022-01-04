@@ -11,12 +11,11 @@ export const URL = {
     ArchiveList: '/archived-workflows',
 }
 
-const worfklowPackageIndex = (pathVariables?, body?, options?: useOptions) =>
+const worfklowPackageIndex = (body?, options?: useOptions) =>
     useAPI(
         map.WORKFLOW_TEMPLATE_INDEX,
         'POST',
         {
-            pathVariables,
             body,
         },
         options || {}
@@ -25,6 +24,17 @@ const worfklowPackageIndex = (pathVariables?, body?, options?: useOptions) =>
 const worfklowRunIndex = (pathVariables?, body?, options?: useOptions) =>
     useAPI(
         map.WORKFLOW_RUN_INDEX,
+        'POST',
+        {
+            pathVariables,
+            body,
+        },
+        options || {}
+    )
+
+const worfklowIndex = (pathVariables?, body?, options?: useOptions) =>
+    useAPI(
+        map.WORKFLOW_INDEX,
         'POST',
         {
             pathVariables,
@@ -292,4 +302,5 @@ export const Workflows = {
     getWorkflowPackagesConfigMapByName,
     worfklowPackageIndex,
     worfklowRunIndex,
+    worfklowIndex,
 }

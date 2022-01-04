@@ -20,10 +20,14 @@
         InternalAttributes,
         SQLAttributes,
         AssetRelationAttributes,
+        GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
+        name: 'GlossaryIdPage',
         components: {
             GlossaryProfile,
             Loader,
@@ -38,7 +42,6 @@
             useHead({
                 title: 'Glossary',
             })
-            console.log('mounted-----------------------')
             const { selectedAsset } = toRefs(props)
             const localSelected = ref()
             const route = useRoute()
@@ -49,8 +52,7 @@
             const facets = ref({
                 guid: id.value,
             })
-            if (selectedAsset.value?.guid === id.value) {
-                console.log(selectedAsset.value)
+            if (selectedAsset.value?.guid === id?.value) {
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
@@ -61,12 +63,15 @@
                 }
                 return id.value
             })
+            const { customMetadataProjections } = useTypedefData()
+
             const dependentKey = ref(fetchKey.value)
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                'categories',
+                ...GlossaryAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 
@@ -80,8 +85,18 @@
                 relationAttributes,
             })
 
+            const sendPageEvent = () => {
+                let name = 'glossary'
+                const type = localSelected?.value?.typeName
+                if (type === 'AtlasGlossaryCategory') {
+                    name = 'category'
+                } else if (type === 'AtlasGlossaryTerm') {
+                    name = 'term'
+                }
+                useTrackPage('gtc', name)
+            }
+
             watch(list, () => {
-                console.log('list changed')
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
                     handlePreview(list.value[0])
@@ -92,14 +107,15 @@
                     dependentKey.value = id.value
                     facets.value.guid = id.value
                     fetch()
-                    console.log('fetch gtc again on route chage')
                 }
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
+                sendPageEvent()
             })
 
             return {
+                list,
                 fetchKey,
                 isLoading,
                 localSelected,

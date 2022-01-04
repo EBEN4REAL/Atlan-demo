@@ -1,66 +1,63 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
+    <div
+        class="items-center justify-center border border-gray-200 rounded-lg"
+        :class="isLoading ? `flex flex-grow` : `hidden`"
+        style="height: 350px;"
+    >
+        <AtlanIcon
+            icon="Loader"
+            class="w-auto h-10 animate-spin"
+        />
+    </div>
     <a-tabs
         v-model:activeKey="relevantTab"
-        :class="$style.hometab"
+        :class="[$style.hometab, isLoading ? `hidden` : ``]"
+        class="px-6 py-1.5 border border-gray-200 rounded-lg"
         @change="selectRelevantTab($event)"
-        class="px-6 py-3 border border-gray-200 rounded-lg"
     >
-        <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name"
-            ><component
-                height="150px"
-                :is="t.component"
+        <a-tab-pane
+            v-for="tab in relevantTabList"
+            :key="tab.id"
+            :tab="tab.name"
+            style="height: 350px;"
+            force-render
+        >
+            <component
+                :is="tab.component"
                 :username="myUsername"
-                :typeNames="t.typeName"
-                :initialFilters="t.filter"
-                :icon="t.icon"
-                :empty-text="t.emptyText"
-            >
-            </component
-        ></a-tab-pane>
+                :type-names="tab.typeName"
+                :initial-filters="tab.filter"
+                :icon="tab.icon"
+                :empty-text="tab.emptyText"
+                :preference="tab.preference"
+                :dependent-key="tab.dependentKey"
+                @list-loaded="listLoaded(tab.id, $event)"
+            />
+        </a-tab-pane>
     </a-tabs>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, defineAsyncComponent } from 'vue'
+    import { defineComponent, ref, defineAsyncComponent, computed, watch } from 'vue'
     import whoami from '~/composables/user/whoami'
-    //    import { allTypeNames } from '~/components/discovery/useTabMapped'
+    import AssetList from '~/components/home/assets/index.vue'
 
     export default defineComponent({
         name: 'Relevant',
         components: {
-            AssetList: defineAsyncComponent(
-                () => import('~/components/home/assets/index.vue')
-            ),
+            AssetList,
             recentlyViewedAssets: defineAsyncComponent(
                 () => import('~/components/home/recentlyViewedAssets.vue')
             ),
         },
         setup() {
-            const relevantTab = ref(1)
+            const relevantTab = ref('2')
             const { username: myUsername } = whoami()
-
-            const relevantTabList = [
-                /* {
-                    id: 1,
-                    name: 'Requests',
-                    component: 'RequestsTab',
-                },
+            const assetCounts = ref({})
+            const relevantTabList = ref([
                 {
-                    id: 2,
-                    name: 'Recent',
-                    component: 'Recent',
-                }, */
-                // {
-                //     id: 1,
-                //     name: 'Recently visited',
-                //     component: 'recentlyViewedAssets',
-                //     typeName: ['Table'],
-                //     icon: 'NoRelevantAsset',
-                //     emptyText: 'All your assets will appear here.',
-                // },
-                {
-                    id: 2,
+                    id: '2',
                     name: 'My Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
@@ -71,38 +68,73 @@
                         },
                     },
                     emptyText: 'All your assets will appear here.',
-                },
-                /*{
-                    id: 2,
-                    name: 'Your terms',
-                    component: 'AssetList',
-                    typeName: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-                    icon: 'NoRelevantAsset',
-                    emptyText: 'All your terms will appear here.',
+                    preference: undefined,
+                    dependentKey: 'DEFAULT_ASSET_LIST_HOME',
+                    assetCount: 0
                 },
                 {
-                    id: 3,
-                    name: 'Your queries',
+                    id: '3',
+                    name: 'Recently Verified Assets',
                     component: 'AssetList',
-                    typeName: ['Query'],
+                    typeName: ['Table'],
                     icon: 'NoRelevantAsset',
-                    emptyText: 'All your saved queries will appear here.',
-                },
-                {
-                    id: 4,
-                    name: 'Subscribed',
-                    component: 'Subscribed',
-                }, */
-            ]
+                    filter: {
+                        certificateStatus: ['VERIFIED']
+                    },
+                    emptyText: 'The most recently verified assets will show up here.',
+                    preference: {
+                        sort: 'certificateUpdatedAt-desc'
+                    },
+                    dependentKey: 'DEFAULT_ASSET_LIST_RECENTLY_VERIFIED',
+                    assetCount: 0
+                }
+            ])
 
-            const selectRelevantTab = (val: number) => {
+            /**
+             * ATTENTION, CODER: The part of code under this comment will
+             * need to be changed if additional tabs are added in the future.
+             */
+
+            // If we have been able to fetch the number of assets of each tab
+            const isLoading = computed(() => Object.keys(assetCounts.value).length !== relevantTabList.value.length)
+
+            /**
+             * A utility function to select the active tab.
+             * @param val
+             */
+            const selectRelevantTab = (val: string) => {
                 relevantTab.value = val
             }
+
+            /**
+             * If the list has been loaded, store the number of assets.
+             * @param tabId
+             * @param assetCount
+             */
+            const listLoaded = (tabId: string, assetCount: number) => {
+                const indexOfTab = relevantTabList.value.findIndex((tab) => tab.id === tabId)
+                relevantTabList.value[indexOfTab].assetCount = assetCount
+                assetCounts.value[tabId] = assetCount
+            }
+
+            // When we have fetched all asset counts, reverse the order of tabs
+            // if the user does not own any assets.
+            watch(isLoading, () => {
+                if (!isLoading.value) {
+                    if (relevantTabList.value[0].assetCount === 0) {
+                        relevantTabList.value.reverse()
+                        relevantTab.value = relevantTabList.value[0].id
+                    }
+                }
+            })
+
             return {
                 relevantTab,
                 relevantTabList,
                 selectRelevantTab,
                 myUsername,
+                isLoading,
+                listLoaded
             }
         },
     })

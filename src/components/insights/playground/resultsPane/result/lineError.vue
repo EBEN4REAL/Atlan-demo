@@ -1,6 +1,6 @@
 <template>
     <!-- Error on running a query -->
-    <div class="w-full h-full p-4">
+    <div class="w-full p-4 errorPanel">
         <div class="flex items-center mb-4 text-xs">
             <div
                 class="flex items-center justify-end px-3 py-1 light_creme dark_orange rounded-3xl"
@@ -9,9 +9,9 @@
             </div>
             <span class="ml-2 text-gray-500">Error found</span>
         </div>
-        <div class="flex items-center mb-2">
-            <AtlanIcon icon="IssuesFilled" class="w-4 h-4 mr-2" />
-            <span class="text-sm text-gray-700">{{
+        <div class="flex items-center w-full mb-2">
+            <AtlanIcon icon="IssuesFilled" class="w-4 h-4" />
+            <span class="flex flex-wrap w-11/12 ml-2 text-sm text-gray-700">{{
                 queryErrorObj.errorMessage
             }}</span>
         </div>
@@ -23,7 +23,7 @@
                     }}</span>
                     <!-- :style="`color:${getTokenColor(kt)}`" -->
                     <div
-                        class="flex"
+                        class="flex flex-wrap w-full"
                         v-html="
                             generateHTMLFromLine(item.index, item.description)
                         "
@@ -341,6 +341,11 @@
 
     .keep-spaces {
         white-space: pre-wrap;
+    }
+
+    .errorPanel {
+        // height: calc(100% - 4.5rem);
+        overflow-y: auto;
     }
 </style>
 <style lang="less">

@@ -36,24 +36,38 @@
             v-else
             class="flex flex-col items-center justify-center w-full h-full"
         >
-            <atlan-icon icon="GlossaryGettingStarted" class="mb-10 mr-2 h-36" />
-            <span class="mb-5 text-2xl font-bold">
-                Start building your Business Glossary!</span
-            >
-            <span class="w-1/2 mb-16 text-base text-center"
-                >Create a searchable source of truth for all your business terms
-                & metrics for your organization. Link these terms to all your
-                data assets.</span
-            >
-            <AddGTCModal entityType="AtlasGlossary" @add="handleAddGlossary">
-                <template #trigger>
-                    <a-button
-                        class="flex items-center px-8 py-2 space-x-2"
-                        type="primary"
-                        >Get Started <atlan-icon icon="ArrowRight"
-                    /></a-button>
-                </template>
-            </AddGTCModal>
+            <template v-if="!glossaryList?.length">
+                <atlan-icon
+                    icon="GlossaryGettingStarted"
+                    class="mb-10 mr-2 h-36"
+                />
+                <span class="mb-5 text-2xl font-bold">
+                    Start building your Business Glossary!</span
+                >
+                <span class="w-1/2 mb-16 text-base text-center"
+                    >Create a searchable source of truth for all your business
+                    terms & metrics for your organization. Link these terms to
+                    all your data assets.</span
+                >
+                <AddGTCModal
+                    entityType="AtlasGlossary"
+                    @add="handleAddGlossary"
+                >
+                    <template #trigger>
+                        <a-button
+                            class="flex items-center px-8 py-2 space-x-2"
+                            type="primary"
+                            >Get Started <atlan-icon icon="ArrowRight"
+                        /></a-button>
+                    </template>
+                </AddGTCModal>
+            </template>
+            <template v-else>
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-12 animate-spin"
+                ></AtlanIcon>
+            </template>
         </div>
     </div>
 </template>
@@ -119,7 +133,7 @@
             }
             const handleAddGlossary = (asset) => {
                 glossaryStore.addGlossary(asset)
-                glossaryStore.setSelectedGTC(asset?.attributes?.qualifiedName)
+                glossaryStore.setSelectedGTC(asset)
                 router.push(
                     `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
                 )
@@ -135,14 +149,20 @@
 
             // re-route on no id present in params
             const reRoute = () => {
-                if (selectedGlossaryQf.value?.length) {
+                if (
+                    selectedGlossaryQf.value?.length &&
+                    getGlossaryByQF(selectedGlossaryQf.value)
+                ) {
                     updateList(getGlossaryByQF(selectedGlossaryQf.value))
-                    router.push(
+                    router.replace(
                         `/glossary/${
                             getGlossaryByQF(selectedGlossaryQf.value)?.guid
                         }/overview`
                     )
-                } else if (getFirstGlossaryQF()) {
+                } else if (
+                    getFirstGlossaryQF() &&
+                    getGlossaryByQF(getFirstGlossaryQF())
+                ) {
                     updateList(getGlossaryByQF(getFirstGlossaryQF()))
                     router.replace(
                         `/glossary/${
@@ -172,6 +192,7 @@
                 selectedGlossaryQf,
                 getGlossaryByQF,
                 handleAddGlossary,
+                glossaryList: glossaryStore.list,
             }
         },
     })

@@ -10,7 +10,7 @@
         cancelText=""
         :footer="null"
     >
-        <template #title>
+        <!-- <template #title>
             <div class="flex justify-between">
                 <div
                     class="flex items-center justify-between w-full px-3 text-base leading-6"
@@ -23,16 +23,22 @@
                     v-model:selectedColor="classificationColor"
                 />
             </div>
-        </template>
+        </template> -->
 
-        <div class="p-3 pt-0">
-            <a-input
-                ref="titleBar"
-                v-model:value="name"
-                :placeholder="`Untitled Classification`"
-                class="pt-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
-                :class="$style.placeholder"
-            />
+        <div class="">
+            <div class="flex justify-between">
+                <a-input
+                    ref="titleBar"
+                    v-model:value="name"
+                    :placeholder="`Untitled Classification`"
+                    class="pt-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
+                    :class="$style.placeholder"
+                />
+                <ClassificationColorSelector
+                    v-model:selectedColor="classificationColor"
+                />
+            </div>
+
             <a-textarea
                 v-model:value="description"
                 placeholder="Add description..."
@@ -41,16 +47,18 @@
                 :rows="2"
             />
         </div>
-        <div class="flex items-center justify-end space-x-3 border-gray-200">
+        <div
+            class="flex items-center justify-end mt-4 space-x-3 border-gray-200"
+        >
             <a-button @click="closeModal" class="border-0 shadow-none"
-                >Cancel</a-button
-            >
+                >Cancel
+            </a-button>
             <a-button
                 type="primary"
                 @click="handleOk"
                 :loading="mode === 'create' ? createLoading : editLoading"
             >
-                {{ mode === 'create' ? 'Create' : 'Edit' }}
+                {{ mode === 'create' ? 'Create' : 'Update' }}
             </a-button>
         </div>
     </a-modal>
@@ -247,7 +255,7 @@
             @apply border-0 px-4  !important;
         }
         :global(.ant-modal-body) {
-            @apply p-4 pt-0 !important;
+            @apply p-4  !important;
         }
     }
     .placeholder {

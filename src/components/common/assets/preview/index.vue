@@ -2,9 +2,9 @@
     <div v-if="selectedAsset?.guid" class="flex flex-col h-full">
         <div
             v-if="!isProfile"
-            class="flex flex-col px-4 py-3 border-b border-gray-200"
+            class="flex flex-col px-4 py-4 border-b border-gray-200"
         >
-            <div class="flex items-center mb-2" style="padding-bottom: 1px">
+            <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <div
                     v-if="
                         ['column'].includes(
@@ -15,7 +15,7 @@
                 >
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"
-                        class="h-5 text-gray-500 mb-0.5"
+                        class="h-4 text-gray-500 mb-0.5"
                     />
                 </div>
 
@@ -29,7 +29,7 @@
                             ? 'pointer-events-none text-gray-500'
                             : 'text-primary'
                     "
-                    class="flex-shrink mb-0 overflow-hidden font-bold leading-none truncate cursor-pointer text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden font-bold truncate bg-transparent cursor-pointer hover:underline overflow-ellipsis whitespace-nowrap"
                     @click="() => $emit('closeDrawer')"
                 >
                     {{ title(selectedAsset) }}
@@ -40,7 +40,7 @@
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
-                    class="mb-0.5 ml-1"
+                    class="ml-1"
                 ></CertificateBadge>
                 <a-tooltip placement="bottomRight"
                     ><template #title>Limited Access</template>
@@ -128,7 +128,17 @@
             </div>
         </div>
 
+        <div
+            v-if="isEvaluating"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
+        </div>
         <a-tabs
+            v-else
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="
@@ -169,6 +179,11 @@
                         selectedAssetUpdatePermission(selectedAsset)
                     "
                     :data="tab.data"
+                    :ref="
+                        (el) => {
+                            if (el) tabChildRef[index] = el
+                        }
+                    "
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -221,6 +236,7 @@
             activity: defineAsyncComponent(
                 () => import('./activity/activityTab.vue')
             ),
+            queries: defineAsyncComponent(() => import('./queries/index.vue')),
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
@@ -258,16 +274,23 @@
                 required: false,
                 default: false,
             },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer } = toRefs(props)
-            const { getAllowedActions } = useAssetEvaluate()
+            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { getAllowedActions, getAssetEvaluationsBody } =
+                useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
+            provide('sidebarPage', page)
 
             const {
                 title,
@@ -319,41 +342,23 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false)
+            const { refresh, isLoading: isEvaluating } = useEvaluate(
+                body,
+                false
+            )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
                     if (prev) {
                         body.value = {
-                            entities: [
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_UPDATE',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_ADD_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                /*  {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'RELATIONSHIP_ADD',
-                                }, */
-                            ],
+                            entities: getAssetEvaluationsBody(
+                                selectedAsset.value
+                            ),
                         }
                         refresh()
                     }
                 },
-                { debounce: 100 }
+                { debounce: 100, immediate: true }
             )
 
             provide('switchTab', (asset, tabName: string) => {
@@ -389,7 +394,22 @@
                     : true
             }
 
+            const tabChildRef = ref([])
+
+            const handleTabChange = (k) => {
+                // ! disabling this temporarily
+                // if (
+                //     k !== activeKey.value &&
+                //     tabChildRef.value[activeKey.value]?.isEdit
+                // )
+                //     tabChildRef.value[activeKey.value]?.handleCancel()
+                // else activeKey.value = k
+            }
+
             return {
+                tabChildRef,
+                activeKey,
+                handleTabChange,
                 title,
                 getConnectorImage,
                 assetType,
@@ -406,7 +426,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
-                activeKey,
+                isEvaluating,
                 getPreviewTabs,
                 refresh,
                 certificateStatus,

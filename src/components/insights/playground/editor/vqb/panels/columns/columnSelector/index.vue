@@ -97,6 +97,7 @@
                 "
             />
         </div>
+
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
@@ -105,11 +106,11 @@
                 'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
-            <div class="border-b border-gray-300">
+            <div class="border-b border-gray-300" v-if="showSelectAll">
                 <a-checkbox
                     v-model:checked="selectAll"
                     @change="onSelectAll"
-                    class="atlanReverse inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
+                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light"
                 >
                     <div class="flex items-center">
                         <span class="mb-0 ml-1 text-sm text-gray-700">
@@ -141,7 +142,7 @@
                                 (checked) =>
                                     onCheckboxChange(checked, item.value)
                             "
-                            class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         >
                             <div
                                 class="justify-between parent-ellipsis-container"
@@ -159,7 +160,7 @@
                                 </div>
                                 <div
                                     class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary"
+                                    v-if="item.isPrimary || item.isForeign"
                                 >
                                     <div
                                         class="absolute right-0 flex items-center -top-2.5"
@@ -173,6 +174,22 @@
                                             style="color: #3ca5bc"
                                             class="text-sm"
                                             >Pkey</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="absolute flex items-center -top-2.5"
+                                        :class="
+                                            item.isPrimary
+                                                ? 'right-14'
+                                                : 'right-0'
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="ForeignKey"
+                                            class="w-4 h-4 mr-1 text-purple-700"
+                                        ></AtlanIcon>
+                                        <span class="text-sm text-purple-700"
+                                            >Fkey</span
                                         >
                                     </div>
                                 </div>
@@ -243,10 +260,15 @@
                 type: String,
                 required: true,
             },
+            showSelectAll: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName } = toRefs(props)
+            const { tableQualfiedName, showSelectAll } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const map = ref({})
@@ -314,6 +336,7 @@
                         'displayName',
                         'dataType',
                         'isPrimary',
+                        'isForeign',
                     ],
                 }
             }
@@ -345,7 +368,8 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
-                    value: ls.attributes?.displayName || ls.attributes?.name,
+                    isForeign: ls.attributes?.isForeign,
+                    value: ls.attributes?.qualifiedName,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -387,12 +411,12 @@
                             label: 'All columns',
                         })
                     } else {
+                        const t = selectedColumnsData.value.find(
+                            (e) => e.columnsQualifiedName === val
+                        )
                         data.push({
-                            type:
-                                selectedColumnsData.value.find(
-                                    (e) => e.label === val
-                                )?.type ?? 'Columns',
-                            label: val,
+                            type: t?.type ?? 'Columns',
+                            label: t?.label,
                         })
                     }
                 })
@@ -412,15 +436,14 @@
                 let columns = []
                 Object.keys(map.value).forEach((col) => {
                     let x = list.value.find((el) => {
-                        let label =
-                            el.attributes?.displayName || el.attributes?.name
+                        let label = el.attributes?.qualifiedName
                         return label === col
                     })
                     columns.push({
                         label:
                             x?.attributes?.displayName || x?.attributes?.name,
                         type: x?.attributes?.dataType,
-                        columnQualifiedName: x?.attributes.qualifiedName,
+                        columnsQualifiedName: x?.attributes.qualifiedName,
                     })
                 })
 
@@ -500,6 +523,7 @@
             })
 
             return {
+                showSelectAll,
                 initialRef,
                 queryText,
                 clearAllSelected,

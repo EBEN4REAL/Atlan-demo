@@ -66,6 +66,7 @@
                 v-model="localValue.ownerUsers"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
+                :group-id="groupId"
                 @change="handleChange"
             ></Users>
             <Groups
@@ -74,6 +75,7 @@
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                :user-id="userId"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -151,12 +153,22 @@
                 type: Boolean,
                 default: false,
             },
+            groupId: {
+                type: String,
+                required: false,
+                default: ""
+            },
+            userId: {
+                type: String,
+                required: false,
+                default: ""
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNone, enableTabs, selectUserKey, selectGroupKey } =
+            const { showNone, enableTabs, selectUserKey, selectGroupKey, groupId } =
                 toRefs(props)
             const componentType = ref('users')
 
@@ -244,6 +256,7 @@
                 ownerSearchRef,
                 forceFocus,
                 handleChange,
+                groupId
             }
         },
     })

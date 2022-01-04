@@ -83,7 +83,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
 
         // If the user ID or the username changes, refresh the list.
         watch([userId, username], () => {
-            activeKey.value = defaultTab.value
+            // activeKey.value = defaultTab.value
             getUserList()
         })
 
@@ -113,12 +113,12 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             // sort: "alias",
             filter:
                 uniqueAttribute.value === 'groupAlias'
-                    ? [{ name: groupAlias.value }]
+                    ? { $and: [{ name: groupAlias.value }] }
                     : { $and: [{ id: groupId.value }] },
         }))
 
         // Obtaining that one group.
-        const { groupList, getGroupList, isLoading, error } = useGroups(
+        const { groupList, getGroupList, isValidating, error } = useGroups(
             params,
             'USE_GROUPS_PREVIEW'
         )
@@ -132,14 +132,16 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         watch([groupAlias, groupId], () => {
             getGroupList()
         })
+        const activeKey = ref(unref(defaultTab))
 
         return {
-            isLoading,
+            isLoading: isValidating,
             error,
             reload: getGroupList,
             selectedGroup,
             defaultTab,
             tabs: finalTabs,
+            activeKey
         }
     }
     return {

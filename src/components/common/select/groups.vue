@@ -1,7 +1,8 @@
 <template>
     <a-select
+        ref="inputRef"
         v-model:value="localValue"
-        placeholder="Users"
+        placeholder="Groups"
         class="w-full center-arrow"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
@@ -123,7 +124,15 @@
                 emit('change')
             }
 
+            const inputRef = ref()
+
+            const focus = () => {
+                inputRef.value.focus()
+            }
+
             return {
+                focus,
+                inputRef,
                 loadMore,
                 filterTotal,
                 isLoading,

@@ -8,45 +8,48 @@
         :class="$style.input"
         width="40%"
         :destroy-on-close="true"
-        :closable="true"
-        okText="Save"
-        cancelText=""
+        :closable="false"
         :footer="null"
     >
         <div class="px-5 py-3">
-            <div class="flex items-center mb-1">
-                <div
-                    v-if="!glossaryQualifiedName"
-                    class="flex items-center uppercase"
-                >
-                    <AtlanIcon
-                        icon="Glossary"
-                        class="self-center pr-1"
-                    ></AtlanIcon>
-                    New Glossary
-                </div>
-                <GTCSelect
-                    v-else
-                    class="p-1 mr-3 bg-gray-100 rounded"
-                    v-model="localEntityType"
-                ></GTCSelect>
+            <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center">
+                    <div
+                        v-if="!glossaryQualifiedName"
+                        class="flex items-center uppercase"
+                    >
+                        <AtlanIcon
+                            icon="Glossary"
+                            class="self-center pr-1"
+                        ></AtlanIcon>
+                        New Glossary
+                    </div>
+                    <GTCSelect
+                        v-else
+                        class="p-1 mr-3 bg-gray-100 rounded"
+                        v-model="localEntityType"
+                    ></GTCSelect>
 
-                <div v-if="glossaryName" class="flex items-center mr-2">
-                    <AtlanIcon
-                        icon="Glossary"
-                        class="self-center pr-1"
-                    ></AtlanIcon>
-                    {{ glossaryName }}
+                    <div v-if="glossaryName" class="flex items-center mr-2">
+                        <AtlanIcon
+                            icon="Glossary"
+                            class="self-center pr-1"
+                        ></AtlanIcon>
+                        {{ glossaryName }}
+                    </div>
+                    <div
+                        v-if="glossaryName && categoryName && categoryGuid"
+                        class="flex items-center"
+                    >
+                        <AtlanIcon
+                            icon="Category"
+                            class="self-center pr-1"
+                        ></AtlanIcon>
+                        {{ categoryName }}
+                    </div>
                 </div>
-                <div
-                    v-if="glossaryName && categoryName && categoryGuid"
-                    class="flex items-center"
-                >
-                    <AtlanIcon
-                        icon="Category"
-                        class="self-center pr-1"
-                    ></AtlanIcon>
-                    {{ categoryName }}
+                <div class="cursor-pointer" @click="handleCancel">
+                    <atlan-icon icon="Cross" class="h-5 text-gray-500" />
                 </div>
             </div>
             <a-input
@@ -57,7 +60,7 @@
                 :class="$style.titleInput"
             />
             <a-textarea
-                v-model:value="entity.attributes.description"
+                v-model:value="entity.attributes.userDescription"
                 placeholder="Add description..."
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :maxlength="140"
@@ -66,7 +69,7 @@
         </div>
 
         <div
-            class="flex w-full p-3 border-t border-gray-200"
+            class="flex w-full px-5 py-3 border-t border-gray-200"
             :class="
                 entityType !== 'AtlasGlossary'
                     ? 'justify-between'
@@ -237,6 +240,9 @@
             const resetInput = () => {
                 entity.attributes.name = ''
                 entity.attributes.userDescription = ''
+            }
+            const handleCancel = () => {
+                visible.value = false
             }
 
             const typeNameTitle = computed(() => {
@@ -409,6 +415,7 @@
                 glossaryName,
                 categoryName,
                 localEntityType,
+                handleCancel,
             }
         },
     })

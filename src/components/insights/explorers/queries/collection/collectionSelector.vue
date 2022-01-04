@@ -1,16 +1,20 @@
 <template>
+    <!-- :get-popup-container="(target) => target.parentNode" -->
+
     <a-popover
         v-model:visible="isVisible"
-        :get-popup-container="(target) => target.parentNode"
         placement="bottomLeft"
         trigger="['click']"
-        overlayClassName="collectionSelectPopover"
         :overlay-class-name="$style.classificationPopover"
     >
         <template #content>
             <div
                 class="flex flex-col pt-4 mt-0"
-                style="width: 315px !important; height: 338px"
+                style="
+                    width: 315px !important;
+                    height: 338px;
+                    /* z-index: 100 !important; */
+                "
             >
                 <div class="px-3">
                     <a-input
@@ -48,6 +52,7 @@
                             <CollectionItem
                                 :item="collection"
                                 :handle-change="handleChange"
+                                v-model:collectionModalVisible="isVisible"
                             />
                         </div>
                         <div
@@ -67,7 +72,7 @@
 
                 <div
                     class="flex flex-row-reverse items-center pr-4 mt-auto border-t border-gray-300 cursor-pointer h-9"
-                    @click="emit('toggleCollectionModal')"
+                    @click="createCollectionToggle"
                     v-auth="[map.CREATE_COLLECTION]"
                 >
                     <AtlanIcon
@@ -93,7 +98,7 @@
                     style="width: 90%"
                 >
                     <span
-                        class="text-base font-bold text-gray-700 truncate mr-2.5"
+                        class="mr-1 text-base font-bold text-gray-700 truncate"
                         >{{ selectedCollection?.attributes?.name }}</span
                     >
                     <AtlanIcon
@@ -152,7 +157,6 @@
             // store
             const authStore = useAuthStore()
             const inputRef = ref()
-            // variables
 
             const isVisible = ref(false)
             const queryText = ref('')
@@ -244,6 +248,11 @@
                 handleChange(selectedValue.value)
             }
 
+            const createCollectionToggle = () => {
+                isVisible.value = false
+                emit('toggleCollectionModal')
+            }
+
             watch(queryCollectionsLoading, (newLoading) => {
                 if (!newLoading) {
                     selectDefaultValue()
@@ -274,6 +283,7 @@
                 privateCollections,
                 emit,
                 map,
+                createCollectionToggle,
             }
         },
     })

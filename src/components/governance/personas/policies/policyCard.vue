@@ -9,13 +9,13 @@
         >
             <div class="flex items-center mb-1">
                 <AtlanIcon
-                    icon="Settings"
                     v-if="type === 'meta'"
+                    icon="Settings"
                     class="-mt-0.5"
                 />
                 <AtlanIcon
-                    icon="QueryGrey"
                     v-if="type === 'data'"
+                    icon="QueryGrey"
                     class="-mt-1"
                 />
                 <span
@@ -38,11 +38,11 @@
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
-                        <span class="flex-none text-sm" v-if="!isAddAll">
+                        <span v-if="!isAddAll" class="flex-none text-sm">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
                         </span>
-                        <span class="flex-none text-sm" v-if="isAddAll">
+                        <span v-if="isAddAll" class="flex-none text-sm">
                             All assets
                         </span>
                     </div>
@@ -69,6 +69,7 @@
         </div>
 
         <a-popover
+            v-if="canDelete"
             v-model:visible="visibleDelete"
             trigger="click"
             placement="topRight"
@@ -220,7 +221,7 @@
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
-                emit('clickCard', { ...policy.value, type: type.value })
+                emit('clickCard', { ...policy.value }, type.value)
             }
             const canDelete = computed(() =>
                 props.whitelistedConnectionIds.includes(

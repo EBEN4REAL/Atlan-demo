@@ -2,7 +2,7 @@
     <a-popover
         @visibleChange="handleVisibleChange"
         placement="left"
-        :mouseEnterDelay="0.4"
+        :mouseEnterDelay="0.5"
     >
         <template #content>
             <div class="relative p-4 user-popover">
@@ -186,6 +186,7 @@
 <style lang="less" scoped>
     .user-popover {
         width: 370px;
+        min-height: 8.5rem;
     }
     .user-cover {
         opacity: 0.6;

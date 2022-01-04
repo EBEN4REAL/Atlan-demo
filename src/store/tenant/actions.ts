@@ -7,11 +7,11 @@ export interface Actions extends State {
 
 export const actions: Actions = {
     setTenant(value) {
-        console.log('value', value)
+        console.log('tenant value', value)
         this.displayName = value?.displayName
         this.displayNameHtml = value?.displayNameHtml
         this.smtpServer = value?.smtpServer
-        this.identityProviderMappers = value?.identityProviders
+        this.identityProviderMappers = value?.identityProviderMappers
         this.identityProviders = value?.identityProviders
         this.loginWithEmailAllowed = value?.loginWithEmailAllowed
         this.announcementTitle = value?.attributes?.announcementTitle
@@ -25,5 +25,4 @@ export const actions: Actions = {
     setSMTPConfig(payload) {
         this.smtpServer = payload
     },
-
 }

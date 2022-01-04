@@ -1,19 +1,60 @@
 <template>
-    <div class="flex items-center justify-between w-full px-3 mt-2">
+    <div class="flex flex-wrap items-center justify-between w-full px-3 mt-2">
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <div class="mt-1">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon('query', activeInlineTab?.status)
-                    "
-                    class="w-4 h-4 my-auto mr-1 -mt-0.5"
-                ></AtlanIcon>
+            <!-- <a-tooltip
+                color="#363636"
+                class="flex items-center h-6 border-none"
+                v-if="activeInlineTab?.description?.length"
+            >
+                <template #title>
+                    {{ activeInlineTab?.description }}
+                </template>
+                <div class="flex items-center">
+                    <div class="mt-1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    'query',
+                                    activeInlineTab?.status
+                                )
+                            "
+                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                        ></AtlanIcon>
+                    </div>
+ 
+
+                    <Tooltip
+                        :tooltip-text="`${activeInlineTab.label}`"
+                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                    />
+                </div>
+            </a-tooltip> -->
+            <div class="flex items-center" style="max-width: 16rem">
+                <div class="mt-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                'query',
+                                activeInlineTab?.status
+                            )
+                        "
+                        class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                    ></AtlanIcon>
+                </div>
+                <!-- <span
+                    class="mt-1 mr-1 text-base text-gray-700 truncate overflow-ellipsis"
+                    >{{ activeInlineTab.label }}</span
+                > -->
+
+                <Tooltip
+                    :tooltip-text="`${activeInlineTab.label}`"
+                    :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                    tooltipColor="#363636"
+                />
             </div>
-            <span class="mt-1 mr-1 text-base text-gray-700">{{
-                activeInlineTab.label
-            }}</span>
+
             <span
                 v-if="readOnly"
                 class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"
@@ -64,8 +105,10 @@
                         class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                     >
                         <template #title>
-                            {{ useTimeAgo(activeInlineTab?.updateTime) }}
-                            by {{ activeInlineTab.updatedBy }}
+                            updated
+                            {{ useTimeAgo(activeInlineTab?.updateTime)?.value }}
+                            by
+                            {{ activeInlineTab.updatedBy }}
                         </template>
                         <AtlanIcon class="mr-1" icon="Check" />Saved
                     </a-tooltip>
@@ -152,74 +195,96 @@
                             :src="connectorAsset?.image"
                             class="w-4 h-4 mx-1 connector_icon"
                         />
-                        <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-
-                        <div v-if="connectionName">
-                            <div
-                                class="flex items-center"
-                                v-if="
-                                    activeInlineTab?.explorer?.schema
-                                        ?.connectors?.attributeValue !==
-                                    activeInlineTab?.playground?.editor?.context
-                                        ?.attributeValue
-                                "
-                            >
-                                <div class="text-gray-700">
-                                    {{ connectionName }}
-                                </div>
-                                <div
-                                    :class="
-                                        schemaName
-                                            ? `text-gray-700`
-                                            : `text-gray-500`
-                                    "
-                                    class="text-base font-bold"
-                                >
-                                    .
-                                </div>
-                            </div>
-                        </div>
-
-                        <span v-else class="text-gray-500"
-                            >Select Connector</span
-                        >
-                    </div>
-                    <div class="flex items-center" v-if="connectionName">
-                        <!-- <div class="mx-1">/</div> -->
-                        <!-- <AtlanIcon
-                            class="w-4 h-4 mr-1 -mt-0.5"
-                            icon="DatabaseGrayscale"
-                        /> -->
-                        <div v-if="databaseName" class="text-gray-700">
-                            {{ databaseName }}
-                        </div>
-                        <div
-                            v-if="databaseName"
-                            :class="
-                                schemaName ? `text-gray-700` : `text-gray-500`
-                            "
-                            class="text-base font-bold"
-                        >
-                            .
-                        </div>
-                        <span v-else class="text-gray-500"
-                            >Select database</span
-                        >
-                        <!-- <div class="mx-1">/</div> -->
                     </div>
                     <div
                         class="flex items-center"
-                        v-if="connectionName && databaseName"
+                        v-if="!activeInlineTab?.assetSidebar?.isVisible"
                     >
-                        <!-- <AtlanIcon
+                        <div class="flex items-center">
+                            <!-- <AtlanIcon
+                            icon="Lock"
+                            class="w-4 h-4 mr-1"
+                            v-if="readOnly"
+                        />
+                        <img
+                            v-if="connectionName"
+                            :src="connectorAsset?.image"
+                            class="w-4 h-4 mx-1 connector_icon"
+                        /> -->
+                            <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
+
+                            <div v-if="connectionName">
+                                <div
+                                    class="flex items-center"
+                                    v-if="
+                                        activeInlineTab?.explorer?.schema
+                                            ?.connectors?.attributeValue !==
+                                        activeInlineTab?.playground?.editor
+                                            ?.context?.attributeValue
+                                    "
+                                >
+                                    <div class="text-gray-700">
+                                        {{ connectionName }}
+                                    </div>
+                                    <div
+                                        :class="
+                                            schemaName
+                                                ? `text-gray-700`
+                                                : `text-gray-500`
+                                        "
+                                        class="text-base font-bold"
+                                    >
+                                        .
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span v-else class="text-gray-500"
+                                >Select Connector</span
+                            >
+                        </div>
+                        <div class="flex items-center" v-if="connectionName">
+                            <!-- <div class="mx-1">/</div> -->
+                            <!-- <AtlanIcon
+                            class="w-4 h-4 mr-1 -mt-0.5"
+                            icon="DatabaseGrayscale"
+                        /> -->
+                            <div v-if="databaseName" class="text-gray-700">
+                                {{ databaseName }}
+                            </div>
+                            <div
+                                v-if="databaseName"
+                                :class="
+                                    schemaName
+                                        ? `text-gray-700`
+                                        : `text-gray-500`
+                                "
+                                class="text-base font-bold"
+                            >
+                                .
+                            </div>
+                            <span v-else class="text-gray-500"
+                                >Select database</span
+                            >
+                            <!-- <div class="mx-1">/</div> -->
+                        </div>
+                        <div
+                            class="flex items-center"
+                            v-if="connectionName && databaseName"
+                        >
+                            <!-- <AtlanIcon
                             class="w-4 h-4 mr-1 -mt-0.5"
                             icon="SchemaGrayscale"
                         /> -->
-                        <span v-if="schemaName" class="text-gray-700">{{
-                            schemaName
-                        }}</span>
-                        <span v-else class="text-gray-500">select schema</span>
+                            <span v-if="schemaName" class="text-gray-700">{{
+                                schemaName
+                            }}</span>
+                            <span v-else class="text-gray-500"
+                                >select schema</span
+                            >
+                        </div>
                     </div>
+
                     <div class="flex items-center">
                         <AtlanIcon
                             class="w-4 h-4 ml-1 -mt-0.5"
@@ -228,70 +293,83 @@
                     </div>
                 </div>
             </a-popover>
+
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
-                    <div class="flex">
-                        <AtlanBtn
-                            class="flex items-center h-6 px-3 button-shadow"
-                            size="sm"
-                            color="primary"
-                            padding="compact"
-                            :disabled="
-                                activeInlineTab?.playground?.resultsPane?.result
-                                    ?.buttonDisable
-                            "
-                            @click="$emit('onClickRunQuery')"
+                    <div class="flex mr-1">
+                        <a-tooltip
+                            placement="bottom"
+                            color="#363636"
+                            class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer"
                         >
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    v-if="
-                                        isQueryRunning === 'loading'
-                                            ? false
-                                            : true
-                                    "
-                                    style="margin-right: 2.5px"
-                                    icon="Play"
-                                    class="text-white rounded"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    v-else
-                                    icon="CircleLoader"
-                                    style="margin-right: 2.5px"
-                                    class="w-4 h-4 text-white animate-spin"
-                                ></AtlanIcon>
-                                <div>
-                                    <span
+                            <template #title>
+                                {{
+                                    editorContentSelectionState
+                                        ? 'Run selected'
+                                        : 'Run query'
+                                }}
+                            </template>
+                            <AtlanBtn
+                                class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                :disabled="
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                "
+                                @click="$emit('onClickRunQuery')"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
                                         v-if="
-                                            !activeInlineTab?.playground
-                                                .resultsPane?.result?.runQueryId
+                                            isQueryRunning === 'loading'
+                                                ? false
+                                                : true
                                         "
-                                        class="text-white"
-                                        >Run</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                .resultsPane?.result
-                                                ?.runQueryId &&
-                                            !activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Abort</span
-                                    >
-                                    <span
-                                        v-else-if="
-                                            activeInlineTab?.playground
-                                                ?.resultsPane?.result
-                                                ?.buttonDisable
-                                        "
-                                        class="text-white"
-                                        >Aborting</span
-                                    >
+                                        icon="Play"
+                                        class="mr-1 text-white rounded"
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        v-else
+                                        icon="CircleLoader"
+                                        class="w-4 h-4 mr-1 text-white animate-spin"
+                                    ></AtlanIcon>
+                                    <div>
+                                        <span
+                                            v-if="
+                                                !activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId
+                                            "
+                                            class="text-white"
+                                            >Run</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    .resultsPane?.result
+                                                    ?.runQueryId &&
+                                                !activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Abort</span
+                                        >
+                                        <span
+                                            v-else-if="
+                                                activeInlineTab?.playground
+                                                    ?.resultsPane?.result
+                                                    ?.buttonDisable
+                                            "
+                                            class="text-white"
+                                            >Aborting</span
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                        </AtlanBtn>
+                            </AtlanBtn>
+                        </a-tooltip>
                     </div>
                     <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
                 </div>
@@ -327,6 +405,7 @@
     import { storeToRefs } from 'pinia'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
@@ -339,6 +418,7 @@
             AtlanBtn,
             ThreeDotMenu,
             AtlanIcon,
+            Tooltip,
         },
         props: {
             isUpdating: {
@@ -378,6 +458,13 @@
                 }
             )
 
+            const editorContentSelectionState = inject(
+                'editorContentSelectionState'
+            ) as Ref<boolean>
+
+            // watch(editorContentSelectionState, () => {
+            //     console.log('context select')
+            // })
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
 
@@ -493,6 +580,7 @@
                 readOnly,
                 map,
                 userHasPermission,
+                editorContentSelectionState,
             }
         },
     })

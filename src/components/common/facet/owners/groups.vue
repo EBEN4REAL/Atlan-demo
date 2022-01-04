@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-44">
+    <div class="w-full" :class="listClass ? listClass : 'h-44'">
         <div
             v-if="list.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -8,8 +8,12 @@
                 <span class="text-gray-500">No groups found</span>
             </div>
         </div>
-        <div class="flex flex-col w-full h-40 overflow-y-auto">
-            <div class="w-full px-4">
+        <div
+            v-else
+            class="flex flex-col w-full overflow-y-auto"
+            :class="checkboxListClass ? checkboxListClass : 'h-40'"
+        >
+            <div class="w-full px-3">
                 <template v-for="item in list" :key="item[selectGroupKey]">
                     <a-checkbox
                         :checked="
@@ -25,11 +29,20 @@
                                 handleChange(checked, item[selectGroupKey])
                         "
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        :class="listItemClass"
                     >
                         <div class="flex items-center">
+                            <a-avatar
+                                v-if="showAvatar"
+                                shape="circle"
+                                :size="20"
+                                class="mr-2 text-primary bg-primary-light"
+                            >
+                                <AtlanIcon icon="GroupStatic" class="w-3 h-3" />
+                            </a-avatar>
                             <div class="flex flex-col">
                                 <div
-                                    class="mb-1 text-sm leading-none capitalize text-gray"
+                                    class="text-sm leading-none capitalize text-gray"
                                 >
                                     {{ item.alias || item.name }}
                                 </div>
@@ -37,26 +50,30 @@
                         </div>
                     </a-checkbox>
                 </template>
+            </div>
+            <div class="flex items-center justify-between px-4">
+                <!-- <p class="text-xs text-gray-500">
+                    {{ list.length }} of {{ total }} groups
+                </p> -->
                 <template v-if="list?.length < filterTotal">
-                    <div class="flex justify-center">
-                        <AtlanIcon
-                            icon="Loader"
-                            v-if="isLoading"
-                            class="animate-spin"
-                        />
+                    <div class="flex justify-center ml-auto" v-if="isLoading || isEnriching">
+                        <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"></AtlanIcon>
                     </div>
                     <div
-                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        v-else
                     >
                         load more...
                     </div>
                 </template>
             </div>
         </div>
-        <p class="px-4 mt-1 text-xs text-gray-500">
-            showing {{ list.length }} of {{ total }} groups
-        </p>
+        <div>
+            <p class="pl-4 text-xs text-gray-500">
+                {{ list.length }} of {{ total }} groups
+            </p>
+        </div>
     </div>
 </template>
 
@@ -71,12 +88,12 @@
         watch,
     } from 'vue'
 
-    import { useVModels } from '@vueuse/core'
+    import { useVModels, onKeyStroke } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'OwnersFilter',
-
         props: {
             queryText: {
                 type: String,
@@ -102,14 +119,34 @@
                 type: Array,
                 required: false,
             },
+            showAvatar: {
+                type: Boolean,
+                required: false,
+            },
+            listClass: {
+                type: String,
+                required: false,
+            },
+            checkboxListClass: {
+                type: String,
+                required: false,
+            },
+            listItemClass: {
+                type: String,
+                required: false,
+            },
+            userId: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys } = useVModels(props, emit)
-            const { selectGroupKey } = toRefs(props)
+            const { selectGroupKey, userId } = toRefs(props)
             const localValue = ref(modelValue.value)
             // const map = ref({})
-
             // const updateMap = (localValue: Ref<any>) => {
             //     map.value = {}
             //     localValue.value.map((id) => {
@@ -118,7 +155,6 @@
             //     console.log(map)
             // }
             // updateMap(localValue)
-
             const map = computed(() => {
                 let data = {}
                 modelValue?.value?.forEach((key) => {
@@ -126,7 +162,6 @@
                 })
                 return data
             })
-
             const {
                 list,
                 handleSearch,
@@ -134,24 +169,27 @@
                 filterTotal,
                 isLoading,
                 loadMore,
-            } = useFacetGroups()
-
+                isEnriching,
+            } = useFacetGroups('name', [], true, userId)
             watch(
                 () => props.queryText,
                 () => {
                     handleSearch(props.queryText)
                 }
             )
-
             const disabledKeyMap = computed(() => {
                 let data = {}
                 disabledKeys?.value?.forEach((key) => {
                     data[key] = true
                 })
+                list.value.forEach((group) => {
+                    if (group.hasUserAsMember) {
+                        data[group[selectGroupKey.value]] = true
+                    }
+                })
                 // console.log('disabled keys grp: ', data)
                 return data
             })
-
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -161,6 +199,27 @@
                 modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
+
+            onKeyStroke(['Enter'], (e) => {
+                const { key } = e
+                e.preventDefault()
+
+                if (key === 'Enter') {
+                    if (list.value.length === 1) {
+                        // console.log('enter pressed')
+
+                        let id = list.value[0][selectGroupKey.value]
+                        if (!disabledKeyMap.value[id]) {
+                            if (map.value[id]) {
+                                delete map.value[id]
+                            } else {
+                                map.value[id] = true
+                            }
+                            modelValue.value = [...Object.keys(map.value)]
+                        }
+                    }
+                }
+            })
 
             return {
                 map,
@@ -172,7 +231,9 @@
                 isLoading,
                 loadMore,
                 disabledKeyMap,
+                isEnriching,
             }
         },
+        components: { AtlanIcon },
     })
 </script>

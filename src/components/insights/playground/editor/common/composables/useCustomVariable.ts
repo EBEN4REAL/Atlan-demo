@@ -3,6 +3,8 @@ import { CustomVaribaleInterface } from '~/types/insights/customVariable.interfa
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { generateUUID } from '~/utils/helper/generator'
+import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
 
 export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
@@ -15,11 +17,29 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         currVariable: Ref<CustomVaribaleInterface | undefined>
         // sqlVariables: Ref<CustomVaribaleInterface[]>
     ) {
+        /* Logic for if variable name already exists */
+        const Varindex =
+            activeInlineTab.value.playground.editor.variables.findIndex(
+                (vx) => currVariable.value?.key === vx.key
+            )
+        const _index =
+            activeInlineTab.value.playground.editor.variables.findIndex(
+                (vx, index) => vx.name === variable.name && Varindex !== index
+            )
+
+        if (_index > 0) {
+            message.error({
+                content: `Custom variable with same name already exits!`,
+            })
+            return false
+        }
+        /* ------------------------------------------ */
+
         if (!editorInstance && !monacoInstance) {
             console.error(
                 'Pass editorInstance & monaco Instance to the useCustomVariable'
             )
-            return
+            return false
         }
         const oldVariableName = currVariable.value?.name
         let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
@@ -61,6 +81,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             dummy: variable.dummy,
         }
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+        return true
     }
 
     function editVariable(
@@ -192,8 +213,16 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     function deleteVariable(
         activeInlineTab: ComputedRef<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
-        currVariable: CustomVaribaleInterface
+        currVariable: CustomVaribaleInterface,
+        forceDelete: boolean = false
     ) {
+        /* Prevent the deletion of custom variable which are associated with VQB */
+        if (!forceDelete && currVariable?.vqbPanelId) {
+            message.error({
+                content: `Unable to delete! this variable is associated with VQB!`,
+            })
+            return
+        }
         if (!editorInstance && !monacoInstance) {
             console.error(
                 'Pass editorInstance & monaco Instance to the useCustomVariable'
@@ -298,12 +327,47 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         return sqlVariables.value
     }
 
+    function getValueFromType(type, value) {
+        switch (type) {
+            case 'text': {
+                return value
+            }
+            case 'string': {
+                return value
+            }
+            case 'number': {
+                return value
+            }
+            case 'date': {
+                return dayjs()
+            }
+            default: {
+                return value
+            }
+        }
+    }
+
+    function getCustomVariableTypeFromSubpanelType(type: string) {
+        switch (type) {
+            case 'number': {
+                return 'number'
+            }
+            case 'date': {
+                return 'date'
+            }
+            default: {
+                return 'string'
+            }
+        }
+    }
+
     function addVariableFromVQB(
         activeInlineTab: ComputedRef<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
         subpanelInfo: {
             vqbPanelId: string
             subpanelId: string
+            type: string
         }
     ) {
         if (!editorInstance && !monacoInstance) {
@@ -318,79 +382,55 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         const new_variable: CustomVaribaleInterface = {
             name: `variable${len}`,
             key,
-            type: 'string',
-            value: '',
             options: [],
             allowMultiple: false,
             dummy: '',
             isVQBtype: true,
             ...subpanelInfo,
+            type: getCustomVariableTypeFromSubpanelType(subpanelInfo?.type),
+            value: getValueFromType(subpanelInfo?.type, ''),
         }
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
         )
-        //check if variable is present in cache
-        let index = null
-        index =
-            activeInlineTab.value.playground.editor.savedVariables.findIndex(
-                (variable) => variable.name === new_variable.name
-            )
-        console.log('index: ', index)
-        if (index !== -1) {
-            let currIndex =
-                activeInlineTab.value.playground.editor.variables.findIndex(
-                    (variable) => variable.name === new_variable.name
-                )
-            if (currIndex !== -1) {
-                let variable: CustomVaribaleInterface = {
-                    name: `variable${Math.ceil(Math.random() * 100) + len}`,
-                    key,
-                    type: 'string',
-                    value: '',
-                    options: [],
-                    allowMultiple: false,
-                    dummy: '',
-                    isVQBtype: false,
-                    ...subpanelInfo,
-                }
-                activeInlineTabCopy.playground.editor.variables = [
-                    ...activeInlineTabCopy.playground.editor.variables,
-                    variable,
-                ]
-                activeInlineTabCopy.playground.editor.savedVariables = [
-                    ...activeInlineTabCopy.playground.editor.savedVariables,
-                    variable,
-                ]
+        activeInlineTabCopy.playground.editor.variables = [
+            ...activeInlineTabCopy.playground.editor.variables,
+            new_variable,
+        ]
+        editorInstance.trigger('keyboard', 'type', {
+            text: `{{variable${len}}}`,
+        })
 
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${variable.name}}}`,
-                })
-            } else {
-                activeInlineTabCopy.playground.editor.variables = [
-                    ...activeInlineTabCopy.playground.editor.variables,
-                    activeInlineTab.value.playground.editor.savedVariables[
-                        index
-                    ],
-                ]
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${activeInlineTab.value.playground.editor.savedVariables[index].name}}}`,
-                })
-            }
-        } else {
-            activeInlineTabCopy.playground.editor.variables = [
-                ...activeInlineTabCopy.playground.editor.variables,
-                new_variable,
-            ]
-            activeInlineTabCopy.playground.editor.savedVariables = [
-                ...activeInlineTabCopy.playground.editor.savedVariables,
-                new_variable,
-            ]
-            editorInstance.trigger('keyboard', 'type', {
-                text: `{{variable${len}}}`,
-            })
+        modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+    }
+
+    function changeVariableTypeFromVQB(
+        activeInlineTab: ComputedRef<activeInlineTabInterface>,
+        tabs: Ref<activeInlineTabInterface[]>,
+        curr_variable: CustomVaribaleInterface,
+        subpaneltype: string
+    ) {
+        if (!editorInstance && !monacoInstance) {
+            console.error(
+                'Pass editorInstance & monaco Instance to the useCustomVariable'
+            )
+            return
         }
 
+        let index = activeInlineTab.value.playground.editor.variables.findIndex(
+            (variable) => variable.name === curr_variable.name
+        )
+
+        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            {},
+            activeInlineTab.value
+        )
+        activeInlineTabCopy.playground.editor.variables[index] = {
+            ...activeInlineTabCopy.playground.editor.variables[index],
+            type: getCustomVariableTypeFromSubpanelType(subpaneltype),
+            value: getValueFromType(subpaneltype, ''),
+        }
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
 
@@ -467,6 +507,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     }
 
     return {
+        changeVariableTypeFromVQB,
         getCustomVaribleByVQBFilterSubpanelId,
         addVariableFromVQB,
         deleteVariable,

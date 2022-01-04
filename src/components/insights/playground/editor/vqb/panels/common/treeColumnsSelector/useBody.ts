@@ -4,7 +4,8 @@ interface useBodyProps {
     from?: number
     limit?: number
     schemaQualifiedName?: string | undefined
-    tableQualifiedName? : string | undefined
+    tableQualifiedName?: string | undefined
+    tableQualifiedNames?: string[] | undefined
     searchText?: string | undefined
 }
 export default function useBody({
@@ -12,6 +13,7 @@ export default function useBody({
     limit = 100,
     schemaQualifiedName,
     tableQualifiedName,
+    tableQualifiedNames,
     viewQualifiedName,
     searchText,
 }: useBodyProps) {
@@ -37,6 +39,10 @@ export default function useBody({
     if (tableQualifiedName) {
         base.filter('term', 'tableQualifiedName', tableQualifiedName)
         base.filter('term', '__typeName.keyword', 'Column')
+    }
+    if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 1) {
+        // debugger
+        base.filter('terms', 'qualifiedName', tableQualifiedNames)
     }
     if (viewQualifiedName) {
         base.filter('term', 'viewQualifiedName', tableQualifiedName)

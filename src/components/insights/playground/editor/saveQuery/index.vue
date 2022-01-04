@@ -61,6 +61,19 @@
             </div>
         </template>
 
+        <template #footerLeft>
+            <div class="flex items-center gap-x-1">
+                <!-- <AddClassification
+                    @save-classifications="saveClassifications"
+                    :selectedClassifications="selectedClassifications"
+                /> -->
+                <AddTerms
+                    @save-terms="saveTerms"
+                    :selectedTerms="selectedTerms"
+                />
+            </div>
+        </template>
+
         <template #actionButtons>
             <AtlanBtn
                 size="sm"
@@ -111,22 +124,24 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import {
-        Folder,
-        // QueryCollection,
-    } from '~/types/insights/savedQuery.interface'
+    import { Folder } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
-
-    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { message } from 'ant-design-vue'
     import AtlanModal from '~/components/common/modal/modal.vue'
-    // import AddTerms from './addTerms.vue'
+    import AddTerms from './addTerms.vue'
+    import AddClassification from './addClassification.vue'
 
     export default defineComponent({
         name: 'SavedQueryModal',
-        components: { StatusBadge, QueryFolderSelector, AtlanBtn, AtlanModal },
+        components: {
+            AddTerms,
+            AddClassification,
+            StatusBadge,
+            QueryFolderSelector,
+            AtlanBtn,
+            AtlanModal,
+        },
         props: {
             showSaveQueryModal: {
                 type: Boolean as PropType<boolean>,
@@ -160,10 +175,7 @@
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
-            // const queryFolderNamespace = inject<Ref<Folder>>(
-            //     'queryFolderNamespace',
-            //     ref({}) as Ref<Folder>
-            // )
+
             const selectedParentFolder = ref<Folder | null>(null)
 
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
@@ -204,18 +216,32 @@
             }
 
             let assetTerms = []
+            let selectedTerms = ref([])
+            let selectedClassifications = ref([])
+            let assetClassification = []
 
             const saveTerms = (terms: any) => {
-                assetTerms = terms.value.map((el) => el?.props?.guid)
+                selectedTerms.value = terms.value
+                assetTerms = terms.value.map((el) => el?.guid)
 
-                console.log('assetTerms save query: ', assetTerms)
+                console.log('assetTerms save query: ', { terms, assetTerms })
+            }
+
+            const saveClassifications = (classifications: any) => {
+                selectedClassifications.value = classifications.value
+
+                assetClassification = classifications.value.classifications
+
+                console.log('asset classifications save query: ', {
+                    classifications,
+                    assetClassification,
+                })
             }
 
             const createSaveQuery = () => {
-                // console.log(
-                //     'selectedParentFolder: ',
-                //     Object.keys(toRaw(selectedParentFolder.value)).length
-                // )
+                // let terms = assetTerms
+                // let classifications = assetClassification
+
                 if (Object.keys(toRaw(selectedParentFolder.value)).length) {
                     const saveQueryData = {
                         title:
@@ -230,7 +256,17 @@
                                 ?.qualifiedName,
                         parentGuid: selectedParentFolder.value?.guid,
                     }
-                    emit('onSaveQuery', saveQueryData, assetTerms)
+                    emit(
+                        'onSaveQuery',
+                        saveQueryData,
+                        assetTerms,
+                        assetClassification
+                    )
+
+                    assetClassification = []
+                    assetTerms = []
+                    selectedClassifications.value = {}
+                    selectedTerms.value = []
                 } else {
                     message.error('No collection selected')
                 }
@@ -260,6 +296,9 @@
                 selectedParentFolder,
                 setSelectedFolder,
 
+                selectedTerms,
+                saveClassifications,
+                selectedClassifications,
                 saveTerms,
             }
         },

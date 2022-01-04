@@ -61,11 +61,17 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const toggleCMDK: Function = inject('togglecmdK')
+
             const editorConfig = inject(
                 'editorConfig'
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorFocused = inject('editorFocused') as Ref<boolean>
+            const editorContentSelectionState = inject(
+                'editorContentSelectionState'
+            ) as Ref<boolean>
+
             const toggleRun = inject('toggleRun') as Function
             const runQuery = inject('runQuery') as Function
             const saveOrUpdate = inject('saveOrUpdate') as Function
@@ -165,7 +171,7 @@
                         setMoustacheTemplateColor(editor, monaco, matches)
                         return
                     }
-
+                    /* FIXME: THIS LOGIC SHOULD MOVE IN SEPRATE FXN */
                     if (matches && matches?.length >= 0) {
                         createDebounce()(() => {
                             const resultsLeft = matches.filter(
@@ -194,6 +200,7 @@
                                 resultsLeft
                             )
                         }, 500)
+                        /* --------------------------------------------------- */
                         // console.log('variables: ', matches)
                         setMoustacheTemplateColor(editor, monaco, matches)
                     } else {
@@ -313,6 +320,20 @@
                         strings: true,
                     },
                 })
+
+                editor.onDidChangeCursorSelection((e) => {
+                    if (
+                        e.selection.startLineNumber ===
+                            e.selection.endLineNumber &&
+                        e.selection.startColumn === e.selection.endColumn
+                    ) {
+                        editorContentSelectionState.value = false
+                        console.log('selection false')
+                    } else {
+                        console.log('selection true')
+                        editorContentSelectionState.value = true
+                    }
+                })
                 // monaco.editor.remeasureFonts()
                 // monaco.editor.EditorLayoutInfo
                 emit('editorInstance', editor, monaco)
@@ -359,6 +380,11 @@
                         )
                     }
                 )
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
+                    // console.log('cmd+k: ', 'presses')
+                    toggleCMDK()
+                })
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
@@ -584,9 +610,10 @@
         background-color: #faf1ef !important;
     }
     .myLineDecoration {
-        background: green;
-        width: 2px !important;
-        margin-left: 1px;
+        @apply bg-primary;
+        // background: bg-primary;
+        width: 4px !important;
+        margin-left: 0px;
     }
     .ghostCursor {
         position: relative;

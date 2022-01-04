@@ -76,20 +76,20 @@
             <UserPersonalAvatar placement="topLeft" class="py-2">
             </UserPersonalAvatar>
         </div> -->
-        <div class="flex items-center justify-between px-3 my-2">
-            <div class="flex items-center text-xs text-gray-500">
-                with
-                <span class="ml-1">💙</span>
-                <span class="ml-1">by</span>
-                <!-- FIXME: What is this URL??? -->
-                <img
-                    src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                    class="w-auto h-3 ml-1 mb-0.5"
-                />
+        <div class="w-full px-3 my-3">
+            <div class="mx-3 flex">
+                <div class="flex items-center text-xs text-gray-500">
+                    <span>with 💙 by</span>
+                    <!-- FIXME: What is this URL??? -->
+                    <img
+                        src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+                        class="w-auto h-3 ml-1 mb-0.5"
+                    />
+                </div>
+                <span class="flex items-center text-xs text-gray-500 ml-auto">
+                    v{{ getVersion }}
+                </span>
             </div>
-            <p class="flex items-center text-xs text-gray-500">
-                v{{ getVersion }}
-            </p>
         </div>
     </div>
 </template>

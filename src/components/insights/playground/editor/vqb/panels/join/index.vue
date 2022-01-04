@@ -68,14 +68,13 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                <!-- {{
-                                    getSummarisedInfoOfGroupPanel(
+                                {{
+                                    getSummarisedInfoOfJoinPanel(
                                         activeInlineTab.playground.vqb.panels[
                                             index
                                         ].subpanels
                                     )
-                                }} -->
-                                summarised info
+                                }}
                             </p>
                         </div>
                     </div>
@@ -151,6 +150,9 @@
                 v-model:subpanels="
                     activeInlineTab.playground.vqb.panels[index].subpanels
                 "
+                v-model:selectedTables="
+                    activeInlineTab.playground.vqb.selectedTables
+                "
                 :expand="expand"
                 v-if="expand"
             />
@@ -219,7 +221,7 @@
             },
         },
         setup(props, { emit }) {
-            const { getSummarisedInfoOfGroupPanel } = useUtils()
+            const { getSummarisedInfoOfJoinPanel } = useUtils()
 
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
@@ -271,6 +273,18 @@
             }
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
+                const copySelectedTables = JSON.parse(
+                    JSON.stringify(
+                        toRaw(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
+                )
+                /* Remove all the  selected table from joins*/
+
+                activeInlineTab.value.playground.vqb.selectedTables = [
+                    copySelectedTables[0],
+                ]
             }
             const toggleExpand = () => {
                 expand.value = !expand.value
@@ -313,7 +327,7 @@
                 handleDelete,
                 handleAddPanel,
                 findTimeLineHeight,
-                getSummarisedInfoOfGroupPanel,
+                getSummarisedInfoOfJoinPanel,
             }
         },
     })

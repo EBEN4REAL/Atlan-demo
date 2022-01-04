@@ -3,99 +3,112 @@
         <!--Sidebar navigation pane start -->
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
-                <div
-                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
-                    @click="() => changeTab(tab)"
-                >
-                    <AtlanIcon
-                        v-if="tab?.icon"
-                        :icon="
-                            activeTabId === tab.id
-                                ? `${tab.icon}Active`
-                                : `${tab.icon}`
-                        "
-                        class="w-6 h-6"
-                    />
-                    <!-- <p
-                        class="mt-1 mb-0 text-xs text-gray"
-                        :class="activeTabId === tab.id ? 'text-primary' : ''"
-                    >
-                        {{ tab.name }}
-                    </p> -->
+                <a-tooltip placement="right" color="#363636">
+                    <template #title> {{ tab.title }} </template>
+
                     <div
-                        class="absolute top-0 right-0 h-full"
-                        style="width: 3px"
-                        :class="activeTabId === tab.id ? 'bg-primary' : ''"
-                    ></div>
-                </div>
+                        class="relative flex flex-col items-center text-xs sidebar-nav-icon"
+                        @click="() => changeTab(tab)"
+                    >
+                        <AtlanIcon
+                            v-if="tab?.icon"
+                            :icon="
+                                activeTabId === tab.id
+                                    ? `${tab.icon}Active`
+                                    : `${tab.icon}`
+                            "
+                            class="w-6 h-6"
+                        />
+                        <div
+                            class="absolute top-0 right-0 h-full"
+                            style="width: 3px"
+                            :class="activeTabId === tab.id ? 'bg-primary' : ''"
+                        ></div>
+                    </div>
+                </a-tooltip>
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <splitpanes
-            :class="$style.splitpane__styles"
-            class="parent_splitpanes"
-            @resize="paneResize"
-        >
-            <pane
-                :max-size="24.5"
-                :size="explorerPaneSize"
-                :min-size="0"
-                class="relative explorer_splitpane"
+        <div ref="splitpaneRef">
+            <splitpanes
+                :class="[
+                    $style.splitpane__styles,
+                    activeInlineTab.assetSidebar.isVisible
+                        ? 'show-assetsidebar'
+                        : 'hide-assetsidebar',
+                ]"
+                class="parent_splitpanes"
+                @resize="paneResize"
             >
-                <!--explorer pane start -->
-                <div
-                    :class="activeTab.component === 'schema' ? 'z-30' : 'z-10'"
-                    class="absolute h-full full-width"
+                <pane
+                    :max-size="maxExplorerSize"
+                    :size="explorerPaneSize"
+                    :min-size="minExplorerSize"
+                    class="relative explorer_splitpane"
                 >
-                    <Schema />
-                </div>
-                <div
-                    :class="activeTab.component === 'queries' ? 'z-30' : 'z-10'"
-                    class="absolute h-full full-width"
+                    <!--explorer pane start -->
+                    <div
+                        :class="
+                            activeTab.component === 'schema' ? 'z-30' : 'z-10'
+                        "
+                        class="absolute h-full full-width"
+                    >
+                        <Schema />
+                    </div>
+                    <div
+                        :class="
+                            activeTab.component === 'queries' ? 'z-30' : 'z-10'
+                        "
+                        class="absolute h-full full-width"
+                    >
+                        <Queries
+                            :reset="resetTree"
+                            :reset-query-tree="resetQueryTree"
+                            :reset-parent-guid="resetParentGuid"
+                            :reset-type="resetType"
+                            :refresh-query-tree="refreshQueryTree"
+                        />
+                    </div>
+                    <div
+                        :class="
+                            activeTab.component === 'variables'
+                                ? 'z-30'
+                                : 'z-10'
+                        "
+                        class="absolute h-full full-width"
+                    >
+                        <Variables />
+                    </div>
+                    <!--explorer pane end -->
+                </pane>
+                <pane
+                    :size="
+                        activeInlineTab?.assetSidebar?.isVisible
+                            ? 100 - explorerPaneSize - assetSidebarPaneSize
+                            : 100 - explorerPaneSize
+                    "
+                    :style="{
+                        marginLeft: explorerPaneSize === 0 ? '-1px' : '0px',
+                    }"
                 >
-                    <Queries
-                        :reset="resetTree"
-                        :reset-query-tree="resetQueryTree"
-                        :reset-parent-guid="resetParentGuid"
-                        :reset-type="resetType"
+                    <Playground
+                        :active-inline-tab-key="activeInlineTabKey"
                         :refresh-query-tree="refreshQueryTree"
                     />
-                </div>
-                <div
-                    :class="
-                        activeTab.component === 'variables' ? 'z-30' : 'z-10'
+                </pane>
+                <pane
+                    :max-size="
+                        activeInlineTab?.assetSidebar?.isVisible
+                            ? sidebarPaneSize
+                            : 0
                     "
-                    class="absolute h-full full-width"
+                    :min-size="sidebarPaneSize"
+                    :size="sidebarPaneSize"
                 >
-                    <Variables />
-                </div>
-                <!--explorer pane end -->
-            </pane>
-            <pane
-                :max-size="100"
-                :size="
-                    activeInlineTab?.assetSidebar?.isVisible
-                        ? 100 - (explorerPaneSize + assetSidebarPaneSize)
-                        : 100 - explorerPaneSize
-                "
-                :min-size="
-                    activeInlineTab?.assetSidebar?.isVisible ? 50.5 : 75.5
-                "
-                :style="{ marginLeft: explorerPaneSize === 0 ? '-1px' : '0px' }"
-            >
-                <Playground
-                    :active-inline-tab-key="activeInlineTabKey"
-                    :refresh-query-tree="refreshQueryTree"
-                />
-            </pane>
-            <pane
-                :max-size="activeInlineTab?.assetSidebar?.isVisible ? 25 : 0"
-                :min-size="0"
-                :size="sidebarPaneSize"
-            >
-                <AssetSidebar />
-            </pane>
-        </splitpanes>
+                    <AssetSidebar />
+                </pane>
+            </splitpanes>
+        </div>
     </div>
 </template>
 
@@ -106,6 +119,8 @@
         computed,
         watch,
         inject,
+        nextTick,
+        onUpdated,
         Ref,
         toRaw,
         onUnmounted,
@@ -156,6 +171,9 @@
         },
         props: {},
         setup(props) {
+            const observer = ref()
+            const splitpaneRef = ref()
+
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
@@ -165,11 +183,17 @@
             ) as Ref<Function>
 
             const {
+                MIN_EXPLORER_WIDTH,
+                MAX_EXPLORER_WIDTH,
+                ASSET_SIDEBAR_WIDTH,
+                EXPLORER_WIDTH,
                 explorerPaneSize,
                 assetSidebarPaneSize,
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const minExplorerSize = ref(0)
+            const maxExplorerSize = ref(24.5)
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -254,6 +278,8 @@
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
 
+            const editorContentSelectionState: Ref<boolean> = ref(false)
+
             const setEditorInstance = (
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
@@ -269,9 +295,28 @@
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
 
+            const resetTree = ref(false)
+            const resetParentGuid = ref(null)
+            const resetType = ref(null)
+            const refreshQueryTree = (guid, type) => {
+                resetTree.value = true
+                resetParentGuid.value = guid
+                resetType.value = type
+                // console.log('QueryTree refresh: ', resetTree.value)
+            }
+            const resetQueryTree = () => {
+                resetTree.value = false
+                resetParentGuid.value = null
+                resetType.value = null
+                // console.log('QueryTree reset: ', resetTree.value)
+            }
+
+            const assetSidebarUpdatedData = ref({})
+
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
+
             const provideData: provideDataInterface = {
                 activeInlineTab,
                 queryCollections,
@@ -293,6 +338,9 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                editorContentSelectionState,
+                refreshQueryTree,
+                assetSidebarUpdatedData,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -302,6 +350,16 @@
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
+
+            /* Watcher for all the things changes in activeInline tab */
+            watch(
+                () => activeInlineTab.value?.playground.vqb,
+                () => {
+                    syncInlineTabsInLocalStorage(tabsArray.value)
+                },
+                { deep: true }
+            )
+
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
                     // const savedQueryInlineTab =
@@ -430,6 +488,7 @@
                     playground: {
                         isVQB: false,
                         vqb: {
+                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,
@@ -541,6 +600,10 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
+                            console.log(
+                                'queryCollections: ',
+                                data.value.entities
+                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
@@ -588,30 +651,65 @@
                     detectQuery()
                 }
             })
+            const onResize = () => {
+                console.log('resize')
+                const offsetWidth = splitpaneRef?.value?.offsetWidth
+                if (offsetWidth > EXPLORER_WIDTH) {
+                    explorerPaneSize.value =
+                        (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
+                }
+                if (offsetWidth > ASSET_SIDEBAR_WIDTH + EXPLORER_WIDTH) {
+                    assetSidebarPaneSize.value =
+                        (ASSET_SIDEBAR_WIDTH / offsetWidth) * 100 // calculating in percent for ASSET_SIDEBAR_WIDTH
+                }
+            }
+            onMounted(() => {
+                const offsetWidth = splitpaneRef?.value?.offsetWidth
+                observer.value = new ResizeObserver(onResize).observe(
+                    splitpaneRef.value
+                )
+                if (offsetWidth > EXPLORER_WIDTH) {
+                    explorerPaneSize.value =
+                        (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
+                }
+                if (offsetWidth > ASSET_SIDEBAR_WIDTH + EXPLORER_WIDTH) {
+                    assetSidebarPaneSize.value =
+                        (ASSET_SIDEBAR_WIDTH / offsetWidth) * 100 // calculating in percent for ASSET_SIDEBAR_WIDTH
+                }
+            })
+            onUpdated(() => {
+                nextTick(() => {
+                    const offsetWidth = splitpaneRef?.value?.offsetWidth
+                    explorerPaneSize.value =
+                        (EXPLORER_WIDTH / offsetWidth) * 100
+                    minExplorerSize.value =
+                        (MIN_EXPLORER_WIDTH / offsetWidth) * 100
+                    maxExplorerSize.value =
+                        (MAX_EXPLORER_WIDTH / offsetWidth) * 100
+                    assetSidebarPaneSize.value =
+                        (ASSET_SIDEBAR_WIDTH / offsetWidth) * 100
+                })
+            })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
+                observer?.value?.unobserve(splitpaneRef?.value)
             })
-
-            const resetTree = ref(false)
-            const resetParentGuid = ref(null)
-            const resetType = ref(null)
-            const refreshQueryTree = (guid, type) => {
-                resetTree.value = true
-                resetParentGuid.value = guid
-                resetType.value = type
-                // console.log('QueryTree refresh: ', resetTree.value)
-            }
-            const resetQueryTree = () => {
-                resetTree.value = false
-                resetParentGuid.value = null
-                resetType.value = null
-                // console.log('QueryTree reset: ', resetTree.value)
-            }
 
             // provide('refreshQueryTree', refreshQueryTree)
             // provide('resetQueryTree', resetQueryTree)
 
             return {
+                minExplorerSize,
+                maxExplorerSize,
+                splitpaneRef,
                 editorConfig,
                 activeTab,
                 activeTabId,
@@ -751,7 +849,6 @@
         width: calc(100vw - 3.75rem);
     }
     .explorer_splitpane {
-        width: 20.75rem;
         background-color: white;
     }
     .sidebar-nav-icon {
@@ -761,6 +858,12 @@
     .sidebar-nav {
         /* 60px */
         width: 3.75rem;
+    }
+    .show-assetsidebar {
+        // width: calc(100vw - 3.75rem - 420px);
+    }
+    .hide-assetsidebar {
+        // width: calc(100vw - 3.75rem);
     }
     .full-width {
         width: 99.9%;

@@ -55,7 +55,7 @@ export const SourceList = [
             'TablePartition',
             'MaterialisedView',
             'Query',
-            'QueryFolder',
+            'Folder',
         ],
     },
     {
@@ -96,7 +96,7 @@ export const SourceList = [
             'TablePartition',
             'MaterialisedView',
             'Query',
-            'QueryFolder',
+            'Folder',
         ],
     },
     {
@@ -145,7 +145,7 @@ export const SourceList = [
             'TablePartition',
             'MaterialisedView',
             'Query',
-            'QueryFolder',
+            'Folder',
         ],
     },
     {

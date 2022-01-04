@@ -6,48 +6,66 @@
         <template #action>
             <AtlanBtn
                 v-auth="map.CREATE_CLASSIFICATION"
-                class="flex-none"
+                class="flex-none px-2 ml-4"
                 size="sm"
-                color="primary"
+                color="secondary"
                 padding="compact"
                 @click="createClassificationModalVisible = true"
             >
-                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
-                New
+                <AtlanIcon icon="Add" />
             </AtlanBtn>
         </template>
-        <template #sidebar v-auth="map.LIST_CLASSIFICATION">
-            <div class="px-4">
-                <SearchAdvanced
-                    v-model:value="searchQuery"
-                    placeholder="Search classifications"
-                    :autofocus="true"
-                    size="minimal"
-                    class="px-2 my-3"
-                />
+        <template #sidebar>
+            <div v-auth="map.LIST_CLASSIFICATION" class="">
+                <div class="flex items-center px-4">
+                    <SearchAdvanced
+                        v-model:value="searchQuery"
+                        :placeholder="`Search from ${filteredClassificationList?.length} classification(s)`"
+                        :autofocus="true"
+                        size="minimal"
+                        class="px-2 my-3"
+                    />
+                </div>
+                <ExplorerList
+                    :list="filteredClassificationList"
+                    :selected="selectedClassificationName"
+                    data-key="name"
+                    @select="selectClassification"
+                >
+                    <template #default="{ item, isSelected }">
+                        <div class="flex items-center justify-between gap-x-1">
+                            <div class="flex items-center">
+                                <ClassificationIcon
+                                    :color="item.options?.color"
+                                />
+                                <span
+                                    class="ml-2 text-sm truncate"
+                                    :class="
+                                        isSelected
+                                            ? 'text-primary font-bold'
+                                            : 'text-gray'
+                                    "
+                                >
+                                    {{ item.displayName }}
+                                </span>
+                            </div>
+                            <a-tooltip
+                                v-if="item.description"
+                                tabindex="-1"
+                                :title="item.description"
+                                placement="right"
+                            >
+                                <span
+                                    ><AtlanIcon
+                                        icon="Info"
+                                        class="ml-1"
+                                    ></AtlanIcon
+                                ></span>
+                            </a-tooltip>
+                        </div>
+                    </template>
+                </ExplorerList>
             </div>
-            <ExplorerList
-                :list="filteredClassificationList"
-                :selected="selectedClassificationName"
-                dataKey="name"
-                @select="selectClassification"
-            >
-                <template #default="{ item, isSelected }">
-                    <div class="flex items-center gap-x-1">
-                        <ClassificationIcon :color="item.options?.color" />
-                        <span
-                            class="text-sm truncate"
-                            :class="
-                                isSelected
-                                    ? 'text-primary font-bold'
-                                    : 'text-gray'
-                            "
-                        >
-                            {{ item.displayName }}
-                        </span>
-                    </div>
-                </template>
-            </ExplorerList>
         </template>
 
         <router-view />

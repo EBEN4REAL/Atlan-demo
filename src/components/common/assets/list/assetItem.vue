@@ -39,13 +39,14 @@
                             />
                         </div>
 
-                        <router-link
-                            :to="getProfilePath(item)"
-                            class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        <Tooltip
+                            :tooltip-text="`${title(item)}`"
+                            :route-to="getProfilePath(item)"
+                            classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
+                            :shouldOpenInNewTab="shouldOpenInNewTab"
                             @click="(e) => e.stopPropagation()"
-                        >
-                            {{ title(item) }}
-                        </router-link>
+                        />
+
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -273,7 +274,7 @@
                                     isDist(item) ||
                                     isPartition(item)
                                 "
-                                class="flex"
+                                class="flex ml-1 text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="PrimaryKey"
@@ -282,17 +283,17 @@
 
                                 <span
                                     v-if="isPrimary(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Primary</span
                                 >
                                 <span
                                     v-if="isDist(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Dist</span
                                 >
                                 <span
                                     v-if="isPartition(item)"
-                                    class="ml-1 text-sm text-gray-700"
+                                    class="ml-1 text-sm text-gray-500"
                                     >Partition</span
                                 >
                             </div>
@@ -435,14 +436,14 @@
                                 meaningRelationships(item).length > 0 &&
                                 preference?.display?.includes('terms')
                             "
-                            class="flex flex-wrap mt-1 gap-x-1"
+                            class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
                                 v-for="term in meaningRelationships(item)"
                                 :key="term.guid"
                             >
                                 <div
-                                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                                 >
                                     <AtlanIcon
                                         :icon="termIcon(term)"
@@ -473,7 +474,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        PropType,
+        inject,
+    } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -568,6 +576,10 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
+            // inject props for enabling open asset profile in new tab
+            const shouldOpenInNewTab = computed(
+                () => inject('shouldOpenInNewTab') || false
+            )
 
             const {
                 title,
@@ -718,6 +730,7 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
+                shouldOpenInNewTab,
             }
         },
     })

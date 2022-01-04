@@ -19,6 +19,7 @@ import store from '~/utils/storage'
 
 // composables
 import useLoadQueryData from './useLoadQueryData'
+import { message } from 'ant-design-vue'
 
 type CustomTreeDataItem =
     | (Omit<TreeDataItem, 'children'> &
@@ -76,10 +77,14 @@ const useQueryTree = ({
     const isInitingTree = ref(false)
     const errorReq = ref(undefined)
 
+    const isNodeLoading = ref(false)
+    const nodeError = ref(undefined)
+    const errorNode = ref(undefined)
+
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
-    let currentSelectedNode = ref(queryFolderNamespace.value)
+    let currentSelectedNode = ref(collection.value)
     const queryCollectionsLoading: Ref<boolean> = inject(
         'queryCollectionsLoading'
     )
@@ -122,7 +127,7 @@ const useQueryTree = ({
             if (
                 nodeToParentKeyMap[currGuid] &&
                 nodeToParentKeyMap[currGuid] !==
-                    queryFolderNamespace.value?.guid
+                collection.value?.guid
             ) {
                 parentStack.push(nodeToParentKeyMap[currGuid])
                 findPath(nodeToParentKeyMap[currGuid])
@@ -156,10 +161,10 @@ const useQueryTree = ({
             isLoading.value = false
         }
 
-        console.log('permission_tree: ', permissions)
+        // console.log('permission_tree: ', permissions)
 
-        console.log('tree data query: ', queries)
-        console.log('tree data folder: ', folders)
+        // console.log('tree data query: ', queries)
+        // console.log('tree data folder: ', folders)
 
         if (permissions?.readFolders) {
             folders.entities?.forEach((folder) => {
@@ -170,7 +175,7 @@ const useQueryTree = ({
                         parentTitle: 'root',
                     })
                     nodeToParentKeyMap[folder.guid] =
-                        queryFolderNamespace.value?.guid
+                    collection.value?.guid
                     nodeToParentNameMap[folder.guid] = 'root'
                 }
             })
@@ -184,13 +189,13 @@ const useQueryTree = ({
                         parentTitle: 'root',
                     })
                     nodeToParentKeyMap[query.guid] =
-                        queryFolderNamespace.value?.guid
+                    collection.value?.guid
                     nodeToParentNameMap[query.guid] = 'root'
                 }
             })
         }
 
-        console.log('tree data init:', treeData.value)
+        // console.log('tree data init:', treeData.value)
         isInitingTree.value = false
         isLoading.value = false
     }
@@ -202,48 +207,104 @@ const useQueryTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
+        // console.log('expand node: ', treeNode)
+        
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'QueryFolder') {
-            const subFoldersResponse = await getSubFolders(
-                treeNode.dataRef.qualifiedName
-            )
-            const subQueriesResponse = await getFolderQueries(
-                treeNode.dataRef.qualifiedName
-            )
+        isNodeLoading.value = true
+        nodeError.value = undefined
+        errorNode.value = undefined
+
+
+        if (treeNode.dataRef.typeName === 'Folder') {
+            let subFoldersResponse, subQueriesResponse
+
+            // let count = 0;
+            // let maxTries = 3;
+            // let loop=true
+            // while(loop) {
+                
+            //     try {
+            //         subFoldersResponse = await getSubFolders(
+            //             treeNode.dataRef.qualifiedName
+            //         )
+            //         subQueriesResponse = await getFolderQueries(
+            //             treeNode.dataRef.qualifiedName
+            //         )
+
+            //         loop=false
+            //     } catch (error) {
+            //         const er = Object.getOwnPropertyDescriptor(error, 'message')
+            //         isNodeLoading.value = false
+            //         nodeError.value = er?.value
+            //         errorNode.value = treeNode
+                    
+            //         if(++count == maxTries) {
+            //             message.error('folder/query fetch went wrong')
+            //             loadedKeys.value.push(treeNode.dataRef.key)
+            //             loop=false
+            //             throw error
+            //         }
+                    
+            //     }
+            // }
+
+            try {
+                subFoldersResponse = await getSubFolders(
+                    treeNode.dataRef.qualifiedName
+                )
+                subQueriesResponse = await getFolderQueries(
+                    treeNode.dataRef.qualifiedName
+                )
+            } catch (error) {
+                const er = Object.getOwnPropertyDescriptor(error, 'message')
+                isNodeLoading.value = false
+                nodeError.value = er?.value
+                errorNode.value = treeNode
+                message.error('folder/query fetch went wrong')
+
+                loadedKeys.value.push(treeNode.dataRef.key)
+                return
+            }
+
             if (permissions?.readFolders) {
-                subFoldersResponse.entities?.forEach((folder) => {
-                    if (!loadedKeys.value.find((key) => folder.guid === key)) {
+                if(subFoldersResponse?.entities?.length) {
+                    subFoldersResponse.entities?.forEach((folder) => {
+                        if (!loadedKeys.value.find((key) => folder.guid === key)) {
+                            treeNode.dataRef.children?.push({
+                                ...returnTreeDataItemAttributes(folder),
+                                parentTitle: treeNode.dataRef.title
+                                    ? treeNode.dataRef.title
+                                    : 'root',
+                            })
+                            nodeToParentKeyMap[folder.guid] = treeNode.dataRef.guid
+                            nodeToParentNameMap[folder.guid] =
+                                treeNode.dataRef.title
+                        }
+                    })
+                }
+                
+            }
+            if (permissions?.readQueries) {
+                if(subQueriesResponse?.entities?.length) { 
+                    subQueriesResponse.entities?.forEach((query) => {
                         treeNode.dataRef.children?.push({
-                            ...returnTreeDataItemAttributes(folder),
+                            ...returnTreeDataItemAttributes(query),
                             parentTitle: treeNode.dataRef.title
                                 ? treeNode.dataRef.title
                                 : 'root',
                         })
-                        nodeToParentKeyMap[folder.guid] = treeNode.dataRef.guid
-                        nodeToParentNameMap[folder.guid] =
-                            treeNode.dataRef.title
-                    }
-                })
-            }
-            if (permissions?.readQueries) {
-                subQueriesResponse.entities?.forEach((query) => {
-                    treeNode.dataRef.children?.push({
-                        ...returnTreeDataItemAttributes(query),
-                        parentTitle: treeNode.dataRef.title
-                            ? treeNode.dataRef.title
-                            : 'root',
+                        nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
+                        nodeToParentNameMap[query.guid] = treeNode.dataRef.title
                     })
-                    nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
-                    nodeToParentNameMap[query.guid] = treeNode.dataRef.title
-                })
+                }
             }
 
             if (
-                !subQueriesResponse.entities?.length &&
-                !subFoldersResponse.entities?.length
+                !subQueriesResponse?.entities?.length &&
+                !subFoldersResponse?.entities?.length
             ) {
                 // TODO: not push anything in array to avoid the empty expansion and title
                 // treeNode.dataRef.children.push({
@@ -273,7 +334,7 @@ const useQueryTree = ({
         //     immediateParentFolderQF.value = item.attributes.parentQualifiedName;
         //     immediateParentGuid.value = nodeToParentKeyMap[item.guid];
 
-        // } else if(item.typeName === 'QueryFolder') {
+        // } else if(item.typeName === 'Folder') {
         //     immediateParentFolderQF.value = item.attributes.qualifiedName;
         //     immediateParentGuid.value = item.guid;
         // }
@@ -294,27 +355,6 @@ const useQueryTree = ({
         }
         store.set(expandedCacheKey, expandedKeys.value)
     }
-
-    // let selectedNodeForFolder = ref(null)
-
-    // const addInputBox = () => {
-    //     if(selectedNodeForFolder.value) {
-    //         selectedNodeForFolder.value.children.unshift(
-    //             {
-    //                 class: 'addInput',
-    //                 key: String(new Date().getTime()),
-    //                 typeName: 'QueryFolder',
-    //             }
-    //         )
-    //     }
-    // }
-    // const removeInputBox = () => {
-    //     if(selectedNodeForFolder.value) {
-    //         if(selectedNodeForFolder.value.children.length && selectedNodeForFolder.value.children[0].class==='addInput') {
-    //             selectedNodeForFolder.value.children.shift()
-    //         }
-    //     }
-    // }
 
     const selectNode = (selected: any, event: any) => {
         console.log('select input: ', selected)
@@ -340,7 +380,7 @@ const useQueryTree = ({
             if (pushGuidToURL) {
                 pushGuidToURL(item)
             }
-        } else if (item.typeName === 'QueryFolder') {
+        } else if (item.typeName === 'Folder') {
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
 
@@ -371,10 +411,10 @@ const useQueryTree = ({
         }
         if (!selectedKeys.value.length) {
             immediateParentFolderQF.value =
-                queryFolderNamespace.value?.attributes?.qualifiedName
-            immediateParentGuid.value = queryFolderNamespace.value?.guid
+            collection.value?.attributes?.qualifiedName
+            immediateParentGuid.value = collection.value?.guid
 
-            currentSelectedNode.value = queryFolderNamespace.value
+            currentSelectedNode.value = collection.value
         }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
@@ -387,7 +427,7 @@ const useQueryTree = ({
      */
     const refetchNode = async (
         guid: string,
-        refetchEntityType?: 'query' | 'queryFolder'
+        refetchEntityType?: 'query' | 'Folder'
     ) => {
         // if the root level of the tree needs a refetch
         console.log('new refetch: ', {
@@ -398,7 +438,7 @@ const useQueryTree = ({
             let folderResponse: IndexSearchResponse<Folder> | null = null
             let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 
-            if (refetchEntityType === 'queryFolder' || !refetchEntityType) {
+            if (refetchEntityType === 'Folder' || !refetchEntityType) {
                 folderResponse = await getQueryFolders()
             }
 
@@ -414,7 +454,7 @@ const useQueryTree = ({
 
             const updatedFolders = checkAndAppendNewNodes(
                 folderResponse,
-                'QueryFolder',
+                'Folder',
                 true
             )
             const updatedQueries = checkAndAppendNewNodes(
@@ -449,7 +489,7 @@ const useQueryTree = ({
                         null
 
                     if (
-                        refetchEntityType === 'queryFolder' ||
+                        refetchEntityType === 'Folder' ||
                         !refetchEntityType
                     ) {
                         folderResponse = await getSubFolders(node.qualifiedName)
@@ -470,7 +510,7 @@ const useQueryTree = ({
 
                     const updatedFolders = checkAndAppendNewNodes(
                         folderResponse,
-                        'QueryFolder',
+                        'Folder',
                         false,
                         node
                     )
@@ -544,23 +584,27 @@ const useQueryTree = ({
      * @param entity - The entire updated entity
      */
     const updateNode = ({
-        qualifiedName,
+        guid,
         entity,
     }: {
-        qualifiedName: string
-        entity: Database | Schema | Table | Column | View
+        guid: string
+        entity: SavedQuery
     }) => {
-        const currentParents = nodeToParentKeyMap[qualifiedName]
+        const currentParents = nodeToParentNameMap[guid]
+
+        console.log('updated entity: ', entity)
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
-                if (treeNode.key === qualifiedName)
+                if (treeNode.key === guid)
                     return {
                         ...treeNode,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 return treeNode
             })
+
+            // console.log('update query node tree: ', treeData)
         } else {
             let parentStack: string[]
 
@@ -571,10 +615,10 @@ const useQueryTree = ({
                 const currentPath = path.pop()
 
                 // if the target node is reached
-                if (node.key === qualifiedName || !currentPath) {
+                if (node.key === guid || !currentPath) {
                     return {
                         ...node,
-                        ...entity.attributes,
+                        attributes: entity.attributes,
                     }
                 }
                 return {
@@ -592,7 +636,7 @@ const useQueryTree = ({
             }
 
             // find the path to the node
-            parentStack = recursivelyFindPath(qualifiedName)
+            parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
             treeData.value = treeData?.value?.map(
@@ -607,7 +651,7 @@ const useQueryTree = ({
 
     const checkAndAppendNewNodes = (
         response: IndexSearchResponse<SavedQuery | Folder> | null,
-        typeName: 'Query' | 'QueryFolder',
+        typeName: 'Query' | 'Folder',
         isRoot: boolean,
         node?: CustomTreeDataItem
     ) => {
@@ -625,10 +669,10 @@ const useQueryTree = ({
                 } else {
                     // if a new folder is found at the root level, append it
                     nodeToParentKeyMap[entity.guid] = isRoot
-                        ? queryFolderNamespace.value?.guid
+                        ? collection.value?.guid
                         : node?.key
                     nodeToParentNameMap[entity.guid] = isRoot
-                        ? queryFolderNamespace.value?.guid
+                        ? collection.value?.guid
                         : node?.title
                     updatedTreeData.push(returnTreeDataItemAttributes(entity))
                 }
@@ -666,7 +710,7 @@ const useQueryTree = ({
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'QueryFolder') {
+        if (treeNode.dataRef.typeName === 'Folder') {
             const subFoldersResponse = await getSubFolders(
                 treeNode.dataRef.qualifiedName
             )
@@ -685,6 +729,10 @@ const useQueryTree = ({
 
             if (!subFoldersResponse.entities?.length) {
                 // TODO: not push anything in array to avoid the empty expansion and title
+                // treeNode.dataRef.children?.push({
+                //     title: 'emptyNode',
+                //     isLeaf: true
+                // })
             }
         }
         loadedKeys.value.push(treeNode.dataRef.key)
@@ -717,6 +765,10 @@ const useQueryTree = ({
         // if (queryFolderNamespace.value?.guid) initTreeData()
     })
 
+    // watch(treeData, ()=> {
+    //     console.log('updated Tree Data: ', treeData.value)
+    // })
+
     return {
         errorReq,
         treeData,
@@ -739,6 +791,9 @@ const useQueryTree = ({
         refetchNode,
         initTreeData,
         currentSelectedNode,
+        isNodeLoading,
+        nodeError,
+        errorNode
         // addInputBox,
         // removeInputBox
     }

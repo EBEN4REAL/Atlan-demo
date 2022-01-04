@@ -1,41 +1,31 @@
 <template>
-    <div class="bg-white">
-        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+    <div class="overflow-y-scroll wrapper-height">
+        <PurposesWidget
+            v-auth="map.LIST_PURPOSE"
+            class="m-5"
+            style="height: 384px"
+            :classification="selectedClassification"
+        />
+        <AssetWidget
+            class="m-5"
+            style="height: 366px"
+            :classification="selectedClassification"
+        />
     </div>
-    <KeepAlive>
-        <div class="overflow-y-scroll wrapper-height">
-            <ClassificationOverview
-                class="px-5"
-                v-if="activeTabKey === '1'"
-                :classification="selectedClassification"
-                @openAssetsTab="activeTabKey = '2'"
-            />
-            <AssetsWrapper
-                v-if="activeTabKey === '2'"
-                :initialFilters="filterConfig"
-                :showFilters="false"
-                :staticUse="true"
-                page="classifications"
-                class="bg-white"
-            />
-        </div>
-    </KeepAlive>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
-    import AssetsWrapper from '@/assets/index.vue'
-    import MinimalTab from '@/UI/minimalTab.vue'
-    import ClassificationOverview from '@/governance/classifications/overview.vue'
-
+    import AssetWidget from '@/governance/classifications/classificationAssetWidget.vue'
+    import PurposesWidget from '@/governance/classifications/classificationPurposeWidget.vue'
+    import map from '~/constant/accessControl/map'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationBody',
         components: {
-            AssetsWrapper,
-            MinimalTab,
-            ClassificationOverview,
+            AssetWidget,
+            PurposesWidget,
         },
         props: {
             classification: {
@@ -46,59 +36,15 @@
         setup(props) {
             const { classification: selectedClassification } = toRefs(props)
 
-            const activeTabKey = ref('1')
-            const tabConfig = [
-                { key: '1', label: 'Overview' },
-                { key: '2', label: 'Assets' },
-            ]
-
-            const filterConfig = computed(() => ({
-                __traitNames: {
-                    classifications: [selectedClassification.value.name],
-                },
-            }))
-
             return {
+                map,
                 selectedClassification,
-                filterConfig,
-                activeTabKey,
-                tabConfig,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
-    .typeTabs {
-        .ant-tabs-tab {
-            padding-left: 2px !important;
-            padding-right: 2px !important;
-            padding-top: 8px !important;
-            padding-bottom: 16px !important;
-            @apply mr-4 !important;
-            @apply text-gray-500;
-            @apply text-sm !important;
-            @apply tracking-wide;
-        }
-        .ant-tabs-tab:first-child {
-            margin-left: 18px !important;
-        }
-        .ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child {
-            @apply ml-0;
-        }
-        .ant-tabs-tab-active {
-            @apply text-gray !important;
-            @apply font-bold !important;
-            @apply tracking-normal;
-        }
-        .ant-tabs-content {
-            padding-right: 0px;
-        }
-        .ant-tabs-ink-bar {
-            @apply rounded-t-sm;
-            margin-bottom: 1px;
-        }
-    }
     .wrapper-height {
         height: calc(100vh - 4rem);
         overflow: auto;

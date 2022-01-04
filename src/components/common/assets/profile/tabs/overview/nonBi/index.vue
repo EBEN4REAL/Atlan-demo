@@ -1,10 +1,14 @@
 <template>
-    <div class="flex flex-col p-6 gap-y-4 max-profile-width">
-        <AnnouncementWidget
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
-        <Summary :asset="selectedAsset" :editPermission="editPermission">
-            <div class="flex flex-col w-full">
+    <div class="flex flex-col px-8 py-8 gap-y-4">
+        <Summary :asset="selectedAsset">
+            <template #announcement>
+                <AnnouncementWidget
+                    :selected-asset="selectedAsset"
+                    class="mb-3"
+                ></AnnouncementWidget>
+            </template>
+
+            <div class="flex flex-col w-full mt-4">
                 <!-- Preview Selector-->
                 <a-tooltip
                     placement="right"
@@ -29,9 +33,9 @@
             </div>
         </Summary>
         <Readme
-            v-if="readmeContent(selectedAsset) || editPermission"
+            v-if="readmeContent(selectedAsset) || readmeEditPermission"
             :asset="selectedAsset"
-            :isEdit="editPermission"
+            :isEdit="readmeEditPermission"
         />
     </div>
 </template>
@@ -73,7 +77,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
+            readmeEditPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

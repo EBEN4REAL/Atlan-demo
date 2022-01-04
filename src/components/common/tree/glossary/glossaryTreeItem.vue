@@ -1,6 +1,13 @@
 <template>
-    <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div v-if="item?.typeName === 'cta'" class="flex flex-col space-y-2">
+    <div
+        class="flex items-center justify-between w-full py-0 m-0 group"
+        :class="isAnimating ? $style.shake : ''"
+    >
+        <div
+            v-if="item?.typeName === 'cta'"
+            class="flex flex-col"
+            :class="!hasCreateAccess ? '' : 'space-y-2'"
+        >
             <AddGtcModal
                 v-if="!checkable"
                 entityType="AtlasGlossaryTerm"
@@ -11,12 +18,16 @@
                 @add="handleAdd"
             >
                 <template #trigger>
-                    <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon
-                            icon="Term"
-                            class="m-0 mr-1 align-text-bottom"
-                        />
-                        <p class="p-0 m-0">+ Term</p>
+                    <div v-auth="map.CREATE_TERM">
+                        <div
+                            class="flex items-center hover:underline text-primary"
+                        >
+                            <AtlanIcon
+                                icon="Term"
+                                class="m-0 mr-1 align-text-bottom"
+                            />
+                            <p class="p-0 m-0">+ Term</p>
+                        </div>
                     </div>
                 </template>
             </AddGtcModal>
@@ -30,25 +41,36 @@
                 @add="handleAdd"
             >
                 <template #trigger>
-                    <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon
-                            icon="Category"
-                            class="m-0 mr-1 align-text-bottom"
-                        />
-                        <p class="p-0 m-0">+ Category</p>
+                    <div v-auth="map.CREATE_CATEGORY">
+                        <div
+                            class="flex items-center hover:underline text-primary"
+                        >
+                            <AtlanIcon
+                                icon="Category"
+                                class="m-0 mr-1 align-text-bottom"
+                            />
+                            <p class="p-0 m-0">+ Category</p>
+                        </div>
                     </div>
                 </template>
             </AddGtcModal>
-            <div v-if="checkable" >
-                This 
-                <span v-if="item.categoryName" >category</span>
+            <div v-if="checkable || !hasCreateAccess">
+                This
+                <span v-if="item.categoryName">category</span>
                 <span v-else-if="item.glossaryName">glossary</span>
                 <span v-else>node</span>
-                is empty!  
-                <br>
-                Go to the <span class="hover:underline text-primary" @click="ctaToProfile">profile</span> to add some terms.
+                is empty!
+                <br />
+                <span v-auth="map.CREATE_TERM"
+                    >Go to the
+                    <span
+                        class="hover:underline text-primary"
+                        @click="ctaToProfile"
+                        >profile</span
+                    >
+                    to add some terms.</span
+                >
             </div>
-
         </div>
 
         <div
@@ -72,7 +94,10 @@
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center w-11/12 py-0 pr-2">
+            <div
+                class="flex items-center py-0 pr-2"
+                :class="[checkable ? 'w-8/12' : 'w-11/12']"
+            >
                 <div class="w-4 mr-1">
                     <AtlanIcon
                         :icon="
@@ -91,17 +116,20 @@
                 />
             </div>
 
-            <div v-if="item.dataRef.isLoading">
-                <a-spin
-                    size="small"
-                    icon="Loader"
-                    class="w-auto h-4 mr-1 animate-spin"
-                ></a-spin>
-            </div>
-            <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
+            <div v-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
-            <div v-else-if="!checkable" class="hidden group-hover:flex">
+            <div
+                v-else-if="!checkable"
+                v-auth.or="[
+                    map.CREATE_CATEGORY,
+                    map.CREATE_TERM,
+                    map.DELETE_CATEGORY,
+                    map.DELETE_TERM,
+                    map.DELETE_GLOSSARY,
+                ]"
+                class="hidden group-hover:flex"
+            >
                 <Actions
                     :treeMode="true"
                     :glossaryName="getAnchorName(item) || title(item)"
@@ -138,6 +166,8 @@
         Category,
     } from '~/types/glossary/glossary.interface'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: { Actions, AtlanIcon, AddGtcModal, Tooltip },
@@ -152,6 +182,11 @@
                 required: false,
                 default: false,
             },
+            isAnimating: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['addSelectedKey'],
         setup(props, { emit }) {
@@ -160,6 +195,7 @@
             const route = useRoute()
             const router = useRouter()
             const profileId = computed(() => route?.params?.id || null)
+            const { checkAccess } = useAuth()
 
             const { getEntityStatusIcon } = useGlossaryData()
             const {
@@ -218,7 +254,8 @@
             }
             const ctaToProfile = () => {
                 console.log(item.value)
-                if(item.value.categoryGuid) router.push(`/glossary/${item.value.categoryGuid}`)
+                if (item.value.categoryGuid)
+                    router.push(`/glossary/${item.value.categoryGuid}`)
                 else router.push(`/glossary/${item.value.glossaryGuid}`)
             }
             onMounted(addSelectedKey)
@@ -226,6 +263,9 @@
                 addSelectedKey()
             })
 
+            const hasCreateAccess = computed(() =>
+                checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
+            )
             return {
                 getEntityStatusIcon,
                 certificateStatus,
@@ -238,9 +278,60 @@
                 glossaryQualifiedName,
                 categoryId,
                 profileId,
-                ctaToProfile
+                ctaToProfile,
+                map,
+                hasCreateAccess,
             }
         },
     })
 </script>
-<style lang="less" module></style>
+<style lang="less" module>
+    .shake {
+        animation: listItemShake 0.5s infinite;
+        @apply text-gray-500 !important;
+    }
+    @keyframes listItemShake {
+        15% {
+            transform: translate(0.3%, 0);
+        }
+        30% {
+            transform: translate(-0.3%, 0);
+        }
+        45% {
+            transform: translate(0.2%, 0);
+        }
+        60% {
+            transform: translate(-0.2%, 0);
+        }
+        75% {
+            transform: translate(0.1%, 0);
+        }
+        85% {
+            transform: translate(-0.1%, 0);
+        }
+    }
+
+    // @keyframes listItemShake {
+    //     15% {
+    //         transform: rotate(0.5deg);
+    //     }
+    //     30% {
+    //         transform: rotate(-0.5deg);
+    //     }
+    //     45% {
+    //         transform: rotate(0.3deg);
+    //     }
+    //     60% {
+    //         transform: rotate(-0.3deg);
+    //     }
+    //     75% {
+    //         transform: rotate(0.2deg);
+    //     }
+    //     85% {
+    //         transform: rotate(-0.2deg);
+    //     }
+    //     92% {
+    //         transform: rotate(0.1deg);
+    //     }
+    // }
+</style>

@@ -1,12 +1,11 @@
 <template>
     <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
         <AssetPreview
-            :mutate-tooltip="true"
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
-            page="discovery"
-            @asset-mutation="() => {}"
+            page="insights"
+            class="w-full"
         ></AssetPreview>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
@@ -35,6 +34,7 @@
     import useAssetStore from '~/store/asset'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { AssetPreview, AtlanIcon },
@@ -91,12 +91,31 @@
                 fetchAsset()
             })
 
-            const updateList = (asset) => {
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+            const assetSidebarUpdatedData = inject(
+                'assetSidebarUpdatedData'
+            ) as Ref<Object>
 
-                activeInlineTabCopy.assetSidebar.assetInfo = asset
-                modifyActiveInlineTab(activeInlineTabCopy, tabs, false, true)
+            const updateList = (asset) => {
+                let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
+
+                assetSidebarUpdatedData.value = asset
+
+                activeInlineTabCopy = {
+                    ...activeInlineTabCopy,
+                    updateTime:
+                        asset?.updateTime ??
+                        asset?.attributes.__modificationTimestamp,
+                    updatedBy:
+                        asset?.updatedBy ?? asset?.attributes.__modifiedBy,
+                    description: asset?.attributes.description,
+                    status: asset?.attributes.certificateStatus,
+                    attributes: asset?.attribute,
+                }
+
+                // console.log('old data update: ', asset)
+                modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
             }
 
             provide('updateList', updateList)
@@ -114,6 +133,17 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+    .show-sidebar {
+        width: 420px;
+        min-width: 420px;
+    }
+    .hide-sidebar {
+        width: 0px;
+        min-width: 0px;
+    }
+    .sidebar {
+        // transition: all 0.22s;
     }
 </style>
 

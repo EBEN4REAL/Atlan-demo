@@ -31,6 +31,7 @@ const attributes = [
     'tableCount',
     'viewCount',
     'columnCount',
+    'connectorName',
     ...InternalAttributes,
     ...BasicSearchAttributes,
 ]
@@ -77,6 +78,26 @@ const useLoadTreeData = (
             attributes,
         }
     }
+
+    const getFacetCount = (facets) => {
+        let count = 0
+        Object.keys(facets.value).forEach((key) => {
+            if (Array.isArray(facets.value[key])) {
+                if (facets.value[key].length > 0) {
+                    count += 1
+                }
+            } else if (
+                typeof facets.value[key] === 'object' &&
+                facets.value[key] !== null
+            ) {
+                if (Object.keys(facets.value[key]).length > 0) {
+                    count += 1
+                }
+            }
+        })
+
+        return count
+    }
     const getDatabaseForConnection = async (
         connectionQualifiedName: string,
         offset?: number
@@ -84,7 +105,10 @@ const useLoadTreeData = (
         console.log('query con: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
+            if (
+                queryText.value.length == 0 &&
+                getFacetCount(facets) === 0
+            ) {
                 typeName.value = 'Database'
             } else {
                 typeName.value = ['Table', 'View']
@@ -114,7 +138,10 @@ const useLoadTreeData = (
         // console.log('query sch: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
+            if (
+                queryText.value.length == 0 &&
+                getFacetCount(facets) === 0
+            ) {
                 typeName.value = 'Schema'
             } else {
                 typeName.value = ['Table', 'View']

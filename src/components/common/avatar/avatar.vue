@@ -36,6 +36,23 @@
                     >
                         <span class="font-bold text-white">Change avatar</span>
                     </div>
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full left-20"
+                    >
+                        <div
+                            class="
+                                p-1
+                                bg-gray-100
+                                border border-gray-300
+                                rounded-full
+                                px-1
+                                py-0.5
+                                text-gray-500
+                            "
+                        >
+                            <AtlanIcon icon="Pencil" />
+                        </div>
+                    </div>
                 </div>
             </a-upload>
         </div>

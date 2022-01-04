@@ -1,12 +1,16 @@
-import { watch, ref, Ref, onMounted, computed } from 'vue'
+import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
+import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
+import updateAsset from '~/composables/discovery/updateAsset'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 // composables
 import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
+import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
 // types
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
@@ -24,7 +28,6 @@ import {
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface UseTreeParams {
     emit?: any
@@ -37,6 +40,7 @@ interface UseTreeParams {
     nodesKey?: 'qualifiedName' | 'guid'
     checkable: Boolean
     checkedGuids?: string[]
+    localCheckedNodes?: Ref<Array<any>>
 }
 
 const useGlossaryTree = ({
@@ -50,6 +54,7 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
     checkedGuids = [],
+    localCheckedNodes,
 }: UseTreeParams) => {
     const limit = ref(100)
     const offset = ref(0)
@@ -78,7 +83,6 @@ const useGlossaryTree = ({
     const checkedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
-
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
     const defaultBody = ref({})
     const generateBody = () => {
@@ -161,6 +165,7 @@ const useGlossaryTree = ({
                                 ) {
                                     console.log(el.guid)
                                     const key = `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                    localCheckedNodes?.value?.push(el)
                                     if (!checkedKeys.value.includes(key)) {
                                         checkedKeys.value.push(key)
                                     }
@@ -267,6 +272,7 @@ const useGlossaryTree = ({
                                     ) {
                                         console.log(el.guid)
                                         const key = `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                        localCheckedNodes?.value?.push(el)
                                         if (!checkedKeys.value.includes(key)) {
                                             checkedKeys.value.push(key)
                                         }
@@ -464,7 +470,13 @@ const useGlossaryTree = ({
     }
 
     const { getAnchorQualifiedName } = useAssetInfo()
-    const recursivelyAddOrDeleteNode = async (asset, guid, action) => {
+
+    const recursivelyAddOrDeleteNode = async (
+        asset,
+        guid,
+        action,
+        updateChildrenOnDelete = true
+    ) => {
         let parentStack: string[]
 
         const updateNodeNested = async (node: TreeDataItem) => {
@@ -495,18 +507,37 @@ const useGlossaryTree = ({
                 }
                 if (action === 'delete') {
                     node?.children?.forEach((element) => {
+                        // reOrder children to root if deleting a category
                         if (
                             (asset?.typeName === 'AtlasGlossaryCategory' ||
                                 asset?.value?.typeName ===
                                     'AtlasGlossaryCategory') &&
                             (element?.guid === asset?.guid ||
-                                element?.guid === asset?.value?.guid)
+                                element?.guid === asset?.value?.guid) &&
+                            updateChildrenOnDelete
                         ) {
-                            if (element?.children?.length)
+                            if (element?.children?.length) {
                                 element?.children?.forEach((el) => {
-                                    if (el?.typeName !== 'cta')
-                                        updatedChildren.push(el)
+                                    if (el?.typeName !== 'cta') {
+                                        if (
+                                            parentGlossaryQualifiedName?.value !==
+                                            ''
+                                        ) {
+                                            treeData.value.push(el)
+                                        } else {
+                                            treeData.value.forEach((i) => {
+                                                if (
+                                                    i.guid ===
+                                                    element?.attributes?.anchor
+                                                        ?.guid
+                                                ) {
+                                                    i.children?.push(el)
+                                                }
+                                            })
+                                        }
+                                    }
                                 })
+                            }
                         }
                         if (
                             element?.typeName !== 'cta' &&
@@ -518,11 +549,18 @@ const useGlossaryTree = ({
                 }
                 nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] =
                     node.guid as string
-
-                return {
-                    ...node,
-                    children: updatedChildren,
+                if (
+                    loadedKeys.value.find(
+                        (key) => node?.key === key || node?.value?.key === key
+                    ) ||
+                    action === 'delete'
+                ) {
+                    return {
+                        ...node,
+                        children: updatedChildren,
+                    }
                 }
+                return node
             }
             const updatedChildren: TreeDataItem[] = []
 
@@ -561,16 +599,24 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
-    const deleteNode = (asset, guid) => {
+    const deleteNode = (asset, guid, updateChildrenOnDelete = true) => {
         if (guid === 'root') {
-            const updatedTreeData: TreeDataItem[] = treeData.value.filter(
-                (el) => {
-                    return el?.guid !== asset?.guid
-                }
-            )
+            const updatedTreeData = []
+            treeData.value.forEach((el) => {
+                if (el?.guid === asset?.guid) {
+                    if (el?.typeName === 'AtlasGlossaryCategory')
+                        updatedTreeData.push(...el.children)
+                } else updatedTreeData.push(el)
+            })
+
             treeData.value = updatedTreeData
         } else {
-            recursivelyAddOrDeleteNode(asset, guid, 'delete')
+            recursivelyAddOrDeleteNode(
+                asset,
+                guid,
+                'delete',
+                updateChildrenOnDelete
+            )
         }
     }
 
@@ -583,46 +629,96 @@ const useGlossaryTree = ({
             )
         } else {
             nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] = 'root'
+            const found = treeData.value?.find((el) => el?.guid === asset?.guid)
+            if (!found) {
+                if (asset.typeName === 'AtlasGlossary') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: asset.attributes?.qualifiedName,
+                        key: asset.attributes?.qualifiedName,
+                        isLeaf: false,
+                    })
+                }
 
-            if (asset.typeName === 'AtlasGlossary') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: asset.attributes?.qualifiedName,
-                    key: asset.attributes?.qualifiedName,
-                    isLeaf: false,
-                })
-            }
+                if (asset.typeName === 'AtlasGlossaryTerm') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        key: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        isLeaf: true,
+                    })
+                }
 
-            if (asset.typeName === 'AtlasGlossaryTerm') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: true,
-                })
-            }
-
-            if (asset.typeName === 'AtlasGlossaryCategory') {
-                treeData.value.unshift({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: false,
-                })
+                if (asset.typeName === 'AtlasGlossaryCategory') {
+                    treeData.value.unshift({
+                        ...asset,
+                        id: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        key: `${getAnchorQualifiedName(asset)}_${
+                            asset.attributes?.qualifiedName
+                        }`,
+                        isLeaf: false,
+                    })
+                }
             }
         }
     }
 
     const collapseAll = () => {
         expandedKeys.value = []
+    }
+
+    const handleCategoriesChange = (
+        existingCategories,
+        newCategories,
+        asset
+    ) => {
+        const addedCategories = newCategories?.filter(
+            (category) =>
+                !existingCategories.find(
+                    (existing) => existing.guid === category.guid
+                )
+        )
+        const removedCategories = existingCategories?.filter(
+            (category) =>
+                !newCategories?.find((newCat) => newCat.guid === category.guid)
+        )
+
+        if (addedCategories?.length) {
+            addedCategories.forEach((cat) => {
+                setTimeout(() => {
+                    addNode(asset, cat)
+                }, 0)
+            })
+        }
+        if (removedCategories?.length)
+            removedCategories.forEach((cat) => {
+                setTimeout(() => {
+                    deleteNode(asset, cat?.guid)
+                }, 0)
+            })
+
+        // handles root to some category
+        if (!existingCategories?.length && addedCategories?.length) {
+            setTimeout(() => {
+                if (parentGlossaryQualifiedName?.value !== '') {
+                    deleteNode(asset, 'root')
+                } else deleteNode(asset, asset?.attributes?.anchor)
+            }, 0)
+        }
+        //  handles removal of all categories
+        if (!newCategories?.length && removedCategories?.length) {
+            setTimeout(() => {
+                if (parentGlossaryQualifiedName?.value !== '') {
+                    addNode(asset)
+                } else addNode(asset, asset?.attributes?.anchor)
+            }, 0)
+        }
     }
 
     const updateNode = (asset) => {
@@ -635,6 +731,12 @@ const useGlossaryTree = ({
             ) {
                 treeData.value = treeData.value.map((treeNode) => {
                     if (treeNode.guid === asset?.guid) {
+                        handleCategoriesChange(
+                            treeNode?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         treeNode.attributes = asset?.attributes
                     }
                     return treeNode
@@ -650,6 +752,12 @@ const useGlossaryTree = ({
 
                     // if the target node is reached
                     if (node.guid === asset?.guid || !currentPath) {
+                        handleCategoriesChange(
+                            node?.attributes?.categories,
+                            asset?.attributes?.categories,
+                            asset
+                        )
+
                         node.attributes = asset.attributes
                         return {
                             ...node,
@@ -688,7 +796,85 @@ const useGlossaryTree = ({
             }
         }
     }
-
+    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+        console.log(event, node, dragNode, dragNodesKeys)
+        const assetToDrop = { ...dragNode.dataRef }
+        if (assetToDrop?.typeName === 'AtlasGlossary') {
+            message.error(
+                `Cannot reorder a Glossary. Try reordering a term/category instead.`,
+                2
+            )
+        } else if (node?.typeName === 'AtlasGlossaryTerm') {
+            message.error(
+                `Cannot drop ${
+                    assetToDrop?.displayText ?? ''
+                } in a Term. Try dropping in a category instead.`,
+                3
+            )
+        } else {
+            let nodeParentGlossaryGuid
+            if (node?.typeName === 'AtlasGlossary')
+                nodeParentGlossaryGuid = node?.guid
+            else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid
+            if (
+                nodeParentGlossaryGuid !== assetToDrop?.attributes?.anchor?.guid
+            ) {
+                message.error(`Cannot change parent Glossary`)
+            } else {
+                // delete from parent and add to node
+                setTimeout(() => {
+                    deleteNode(
+                        assetToDrop,
+                        dragNode?.parent?.node?.guid ?? 'root',
+                        false
+                    )
+                }, 0)
+                setTimeout(() => {
+                    addNode(assetToDrop, node)
+                }, 0)
+                const updateTermCategories = () => {
+                    const selectedAsset = ref(assetToDrop)
+                    const {
+                        localCategories,
+                        localParentCategory,
+                        handleParentCategoryUpdate,
+                        handleCategoriesUpdate,
+                        error: updateError,
+                        asset,
+                    } = updateAssetAttributes(selectedAsset)
+                    console.log(selectedAsset)
+                    console.log(localParentCategory)
+                    if (dragNode?.typeName === 'AtlasGlossaryTerm') {
+                        const newCategories = localCategories.value?.filter(
+                            (el) => el.guid !== dragNode?.parent?.node?.guid
+                        )
+                        if (node?.typeName !== 'AtlasGlossary')
+                            newCategories.push(node?.dataRef)
+                        localCategories.value = newCategories
+                        handleCategoriesUpdate()
+                    }
+                    if (dragNode?.typeName === 'AtlasGlossaryCategory') {
+                        const parentCategory = {
+                            guid: node?.dataRef?.guid,
+                            typeName: node?.dataRef?.typeName,
+                            attributes: node?.dataRef?.attributes,
+                        }
+                        localParentCategory.value = parentCategory
+                        handleParentCategoryUpdate()
+                    }
+                    whenever(updateError, () => {
+                        setTimeout(() => {
+                            deleteNode(assetToDrop, node?.guid ?? 'root', false)
+                        }, 0)
+                        setTimeout(() => {
+                            addNode(assetToDrop, dragNode?.parent?.node)
+                        }, 0)
+                    })
+                }
+                updateTermCategories()
+            }
+        }
+    }
     interface checkAndAddLoadMoreParams {
         response: IndexSearchResponse<Term | Category>
         parentGuid: string
@@ -836,7 +1022,9 @@ const useGlossaryTree = ({
                         }
                         if (checkable && checkedGuids?.includes(el.guid)) {
                             console.log(el.guid)
+
                             const key = `${parentGlossaryQf}_${parentCategoryQf}_${el.attributes?.qualifiedName}`
+                            localCheckedNodes?.value?.push(el)
                             if (!checkedKeys.value.includes(key)) {
                                 checkedKeys.value.push(key)
                             }
@@ -944,6 +1132,7 @@ const useGlossaryTree = ({
         collapseAll,
         deleteNode,
         updateNode,
+        dragAndDropNode,
     }
 }
 

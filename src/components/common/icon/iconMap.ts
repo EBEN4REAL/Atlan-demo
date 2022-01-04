@@ -165,6 +165,7 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
+import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
@@ -197,9 +198,11 @@ import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
 import TableDraft from '~/assets/images/icons/table_draft.svg'
 import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
+import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
+import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
@@ -312,10 +315,27 @@ import PublicCollection from '~/assets/images/icons/publicCollection.svg'
 import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
+import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
+import CollectionHeader from '~/assets/images/insights/collection/header.svg'
+import CollectionBody from '~/assets/images/insights/collection/body.svg'
+import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
+import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
+import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
+import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
+import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
+import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
+import EnumType from '~/assets/images/dataType/enum.svg'
+import Float from '~/assets/images/dataType/float.svg'
+import Array from '~/assets/images/dataType/array.svg'
 
 export default {
+    Array,
+    Float,
+    EnumType,
+    EmptyCM,
+    PolicyAlt,
     FlashColor,
     BuilderGroup,
     Trigger,
@@ -344,6 +364,7 @@ export default {
     WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
+    QueryDiscovery,
     QueryDraft,
     ChevronLeft,
     CheckCircled,
@@ -351,6 +372,7 @@ export default {
     ResendInvite,
     StarCircled,
     EmptyLineage,
+    EmptyLineageTab,
     EmptyResource,
     IssuesFilled,
     ExplorerTrigger,
@@ -360,6 +382,7 @@ export default {
     NoDataInsights,
     SomethingWrong,
     NoSavedQueriesPersonal,
+    EmptyQueriesTab,
     EmptyCollections,
     AddQuery,
     RunHistory,
@@ -620,5 +643,12 @@ export default {
     NoSelectedAsset,
     QueryGrey,
     NoResultIllustration,
-    SetContext
+    SetContext,
+    CollectionHeader,
+    CollectionBody,
+    CollectionFooter,
+    CollectionIconSmall,
+    CollectionIconLarge,
+    CollectionIconSmallGray,
+    CollectionIconLargeActive,
 }

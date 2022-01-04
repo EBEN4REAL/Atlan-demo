@@ -39,62 +39,103 @@
                         <!-- <WarehouseConnector /> -->
                         <div class="flex items-center">
                             <!-- explorer toggle -->
-                            <a-tooltip color="#363636">
+                            <a-tooltip
+                                color="#363636"
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                            >
                                 <template #title>Toggle sidebar</template>
                                 <div
                                     class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @click="toggleExplorerPane"
+                                    @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        @click="toggleExplorerPane"
                                         icon="ExplorerTrigger"
                                         class="w-4 h-4"
                                     />
                                 </div>
                             </a-tooltip>
                             <!-- full screen button -->
-                            <div
-                                class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                :class="fullSreenState ? 'bg-gray-300' : ''"
+
+                            <a-tooltip
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                                color="#363636"
+                                v-if="fullSreenState"
                             >
-                                <div class="items-center justify-center group">
+                                <template #title> Exit full screen</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                    :class="fullSreenState ? 'bg-gray-300' : ''"
+                                    @click="tFullScreen"
+                                    @mouseout="recordTooltipPresence"
+                                >
                                     <div
-                                        class="items-center justify-center"
-                                        @click="tFullScreen"
+                                        class="items-center justify-center group"
                                     >
-                                        <a-tooltip
-                                            color="#363636"
-                                            v-if="fullSreenState"
+                                        <div
+                                            class="items-center justify-center"
                                         >
-                                            <template #title
-                                                >Exit full screen</template
-                                            >
                                             <AtlanIcon
                                                 class="w-4 h-4 border-gray-500"
                                                 icon="ExitFullScreen"
                                             />
-                                        </a-tooltip>
-                                        <a-tooltip
-                                            color="#363636"
-                                            v-else
-                                            :overlayClassName="$style.tooltip"
+                                        </div>
+                                    </div>
+                                </div>
+                            </a-tooltip>
+                            <a-tooltip
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                                color="#363636"
+                                v-else
+                            >
+                                <template #title> Go full screen</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                    :class="fullSreenState ? 'bg-gray-300' : ''"
+                                    @click="tFullScreen"
+                                    @mouseout="recordTooltipPresence"
+                                >
+                                    <div
+                                        class="items-center justify-center group"
+                                    >
+                                        <div
+                                            class="items-center justify-center"
                                         >
-                                            <template #title
-                                                >Go full screen</template
-                                            >
                                             <AtlanIcon
                                                 class="w-4 h-4 border-gray-500"
                                                 icon="FullScreen"
                                             />
-                                        </a-tooltip>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a-tooltip>
+
                             <!-- format sql -->
-                            <a-tooltip color="#363636">
+                            <a-tooltip
+                                color="#363636"
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                            >
                                 <template #title>Format SQL</template>
                                 <div
                                     class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
                                     @click="formatDocument"
+                                    @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
                                         icon="FormatText"
@@ -135,7 +176,14 @@
                                 </div>
                             </a-popover>
                             <!-- Custom variables -->
-                            <a-tooltip color="#363636">
+                            <a-tooltip
+                                color="#363636"
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                            >
                                 <template #title>Custom variables</template>
                                 <div
                                     class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
@@ -143,6 +191,7 @@
                                         showcustomToolBar ? 'bg-gray-300' : ''
                                     "
                                     @click="toggleCustomToolbar"
+                                    @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
                                         icon="CustomVariable"
@@ -179,27 +228,62 @@
                             >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
                         > -->
                         <div class="flex items-center justify-center">
-                            <div class @click="togglePane">
-                                <a-tooltip color="#363636">
+                            <div
+                                class
+                                @click="togglePane"
+                                @mouseout="recordTooltipPresence"
+                            >
+                                <a-tooltip
+                                    color="#363636"
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? 0.1
+                                            : 0.5
+                                    "
+                                    placement="topRight"
+                                >
                                     <template #title
                                         >Toggle output pane ( ctrl + j
                                         )</template
                                     >
-                                    <AtlanIcon
-                                        icon="OutputpaneTrigger"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
+
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="OutputpaneTrigger"
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
-                            <div class="ml-2" @click="toggleAssetPreview">
-                                <a-tooltip color="#363636">
+                            <div
+                                class="ml-2"
+                                @click="toggleAssetPreview"
+                                @mouseout="recordTooltipPresence"
+                            >
+                                <a-tooltip
+                                    placement="topRight"
+                                    color="#363636"
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? 0.1
+                                            : 0.5
+                                    "
+                                >
                                     <template #title
                                         >Toggle asset preview</template
                                     >
-                                    <AtlanIcon
-                                        icon="SidebarTrigger"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="SidebarTrigger"
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
                         </div>
@@ -260,6 +344,7 @@
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+    import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
@@ -285,6 +370,14 @@
             const router = useRouter()
             const route = useRoute()
             const vqbQueryRoute = ref(route.query?.vqb)
+            const {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                MOUSE_TRACK_MAXIMUM_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
+            } = useTooltipDelay()
+
             // const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
@@ -558,18 +651,21 @@
             const saveQuery = (
                 saveQueryData: any,
                 assetTerms: any,
-                selectedParentType
+                assetClassification: any
             ) => {
-                console.log('assetTerms from editor: ', assetTerms)
+                console.log('assetTerms from editor: ', {
+                    assetTerms,
+                    assetClassification,
+                })
                 saveQueryToDatabaseWithTerms(
                     assetTerms,
+                    assetClassification,
                     saveQueryData,
                     saveQueryLoading,
                     showSaveQueryModal,
                     saveModalRef,
                     router,
                     route,
-                    selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
                     activeInlineTab.value,
@@ -696,26 +792,29 @@
                     }
                     //prevent the default action
                 }
-                if (e.key === 'Q' || e.key === 'q') {
-                    if (e.ctrlKey) {
-                        e.preventDefault()
-                        if (vqbQueryRoute.value) {
-                            // showVQB.value = !showVQB.value
-                            const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
 
-                            activeInlineTabCopy.playground.isVQB =
-                                !activeInlineTabCopy?.playground?.isVQB
+                /* Toggle VQB CODE */
+                // if (e.key === 'Q' || e.key === 'q') {
+                //     if (e.ctrlKey) {
+                //         e.preventDefault()
+                //         if (vqbQueryRoute.value) {
+                //             // showVQB.value = !showVQB.value
+                //             const activeInlineTabCopy: activeInlineTabInterface =
+                //                 Object.assign({}, activeInlineTab.value)
 
-                            setVQBInInlineTab(
-                                activeInlineTabCopy,
-                                inlineTabs,
-                                true
-                            )
-                        }
-                    }
-                    //prevent the default action
-                }
+                //             activeInlineTabCopy.playground.isVQB =
+                //                 !activeInlineTabCopy?.playground?.isVQB
+
+                //             setVQBInInlineTab(
+                //                 activeInlineTabCopy,
+                //                 inlineTabs,
+                //                 true
+                //             )
+                //         }
+                //     }
+                //     //prevent the default action
+                // }
+                /* ----------------------------- */
             }
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)
@@ -741,6 +840,7 @@
 
             /* ------------------------------------------ */
             return {
+                lastTooltipPresence,
                 toggleQueryPreviewPopover,
                 showQueryPreview,
                 showVQB,
@@ -775,6 +875,10 @@
                 toggleRun,
                 queryFolderNamespace,
                 defaultClassification,
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                MOUSE_TRACK_MAXIMUM_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
                 // toggleVQB,
             }
         },

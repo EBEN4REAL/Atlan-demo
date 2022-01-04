@@ -1,14 +1,22 @@
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
 import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
 import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
         const vals = tableQualifiedName?.split('/')
         if (vals?.length > 0) return vals[vals?.length - 1]
         else return ''
+    }
+    function getTableName(columnQualifiedName: string) {
+        const spiltArray = columnQualifiedName.split('/')
+        if (spiltArray.length > 5) {
+            return `"${spiltArray[5]}"`
+        }
     }
     function getTableNamesStringFromQualfieidNames(
         tableQualfieidNames: string[]
@@ -22,6 +30,16 @@ export function useUtils() {
             .map((e) => getTableNameFromTableQualifiedName(e))
             .join(',')
         return res
+    }
+    function getTableQualifiedNameFromColumnQualifiedName(
+        qualifiedName: string | undefined
+    ) {
+        if (qualifiedName) {
+            const t = qualifiedName.split('/')
+            t.pop()
+            return t.join('/')
+        }
+        return ''
     }
     function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
@@ -46,7 +64,7 @@ export function useUtils() {
         if (subpanels.length > 0 && subpanels[0].columns?.length == 0)
             res = 'No Columns Added for Group'
         subpanels.forEach((subpanel, i) => {
-            res += subpanel.columnsData.map((e) => e.label).join(', ')
+            res += subpanel.columnsData?.map((e) => e.label).join(', ')
         })
         return res
     }
@@ -58,17 +76,20 @@ export function useUtils() {
         subpanels.forEach((subpanel, i) => {
             if (i !== subpanels.length - 1 && subpanel.column.label)
                 res += `${subpanel.aggregators
-                    .map((e) => e?.toUpperCase())
-                    .join(', ')} of ${subpanel.column.label} and `
+                    ?.map((e) => e?.toUpperCase())
+                    ?.join(', ')} of ${subpanel.column.label} and `
             else if (i <= subpanels.length - 1 && subpanel.column.label)
                 res += `${subpanel.aggregators
-                    .map((e) => e?.toUpperCase())
-                    .join(', ')} of ${subpanel.column.label}`
+                    ?.map((e) => e?.toUpperCase())
+                    ?.join(', ')} of ${subpanel.column.label}`
             if (res === 'by ') res = 'No Columns Added for Aggregation'
         })
         return res
     }
-    function getSummarisedInfoOfFilterPanel(subpanels: SubpanelFilter[]) {
+    function getSummarisedInfoOfFilterPanel(
+        subpanels: SubpanelFilter[],
+        activeInlineTab: activeInlineTabInterface
+    ) {
         if (subpanels.length == 0) return 'No Columns Added for filter'
         let res = ' '
         subpanels.forEach((subpanel, i) => {
@@ -78,25 +99,96 @@ export function useUtils() {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value?.length > 0) {
-                            const firstVal = getValueStringFromType(
+                        if (subpanel.filter?.isVariable) {
+                            let firstVal = ''
+                            let secondVal = ''
+                            const variable1 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId === subpanel.id
+                                )
+                            // inputNumField
+                            const variable2 =
+                                activeInlineTab.playground.editor.variables.find(
+                                    (variable) =>
+                                        variable?.subpanelId ===
+                                        `${subpanel.id}2`
+                                )
+
+                            firstVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[0] ?? ''
+                                variable1?.value ?? ''
                             )
-                            const secondVal = getValueStringFromType(
+                            secondVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[1] ?? ''
+                                variable2?.value ?? ''
                             )
+
+                            /* Check if the type is date */
+                            if (
+                                subpanel?.column?.type?.toLowerCase() === 'date'
+                            ) {
+                                firstVal = getValueStringFromType(
+                                    subpanel,
+                                    variable1?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                                secondVal = getValueStringFromType(
+                                    subpanel,
+                                    variable2?.value?.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )
+                            }
+
                             res += ` ${firstVal} AND ${secondVal}`
+                        } else {
+                            if (subpanel?.filter?.value?.length > 0) {
+                                let firstVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[0] ?? ''
+                                )
+                                let secondVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[1] ?? ''
+                                )
+                                res += ` ${firstVal} AND ${secondVal}`
+                            }
                         }
                     }
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    if (subpanel.filter?.isVariable) {
+                        const variable =
+                            activeInlineTab.playground.editor.variables.find(
+                                (variable) =>
+                                    variable?.subpanelId === subpanel.id
+                            )
+
+                        /* Check if the type is date */
+                        if (subpanel?.column?.type?.toLowerCase() === 'date') {
+                            res += `
+                                ${getValueStringFromType(
+                                    subpanel,
+                                    variable?.value.format(
+                                        'YYYY-MM-DD HH:mm:ss'
+                                    )
+                                )}`
+                        } else {
+                            res += `
+                                  ${getValueStringFromType(
+                                      subpanel,
+                                      variable?.value ?? ''
+                                  )}`
+                        }
+                    } else {
+                        res += ` ${getValueStringFromType(
+                            subpanel,
+                            subpanel?.filter?.value ?? ''
+                        )}`
+                    }
                     break
                 }
                 case 'multi_input': {
@@ -114,7 +206,59 @@ export function useUtils() {
         return res
     }
 
+    function getSummarisedInfoOfJoinPanel(subpanels: SubpanelJoin[]) {
+        if (subpanels.length == 0) return 'No Table Added for Join'
+        let res = 'by '
+        subpanels.forEach((subpanel, i) => {
+            if (i == 0) {
+                if (subpanel.columnsDataLeft.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataLeft.columnQualifiedName
+                    )} and `
+                }
+            }
+            if (i < subpanels.length - 1) {
+                if (subpanel.columnsDataRight.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataRight.columnQualifiedName
+                    )} using ${subpanel.joinType.name}, and `
+                }
+            }
+            if (i == subpanels.length - 1) {
+                if (subpanel.columnsDataRight.columnQualifiedName) {
+                    res += `${getTableName(
+                        subpanel.columnsDataRight.columnQualifiedName
+                    )} using ${subpanel.joinType.name}`
+                }
+            }
+
+            if (res === 'by ') res = 'No Columns Added for Aggregation'
+        })
+        return res
+    }
+
+    function getDistinctTableQualifiedNamesFromJoinPanel(
+        subpanels: SubpanelJoin[]
+    ) {
+        const distinctTableQualifiedNames = new Set()
+        subpanels.forEach((subpanel) => {
+            const q1 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataLeft.columnQualifiedName
+            )
+            const q2 = getTableQualifiedNameFromColumnQualifiedName(
+                subpanel.columnsDataRight.columnQualifiedName
+            )
+            distinctTableQualifiedNames.add(q1)
+            distinctTableQualifiedNames.add(q2)
+        })
+        return Array.from(distinctTableQualifiedNames)
+    }
+
     return {
+        getTableName,
+        getTableQualifiedNameFromColumnQualifiedName,
+        getDistinctTableQualifiedNamesFromJoinPanel,
+        getSummarisedInfoOfJoinPanel,
         getSummarisedInfoOfFilterPanel,
         getSummarisedInfoOfGroupPanel,
         getSummarisedInfoOfAggregationPanel,

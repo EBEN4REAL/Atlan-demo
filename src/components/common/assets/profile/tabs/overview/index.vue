@@ -2,20 +2,27 @@
     <GlossaryOverview
         v-if="isGTC(selectedAsset)"
         :selected-asset="selectedAsset"
+        :readmeEditPermission="readmeEditPermission"
     />
     <BiOverview
         v-else-if="isBiAsset(selectedAsset)"
         :selected-asset="selectedAsset"
+        :readmeEditPermission="readmeEditPermission"
     />
     <NonBiOverview
         v-else-if="isNonBiAsset(selectedAsset)"
         :selected-asset="selectedAsset"
+        :readmeEditPermission="readmeEditPermission"
     />
-    <GeneralOverview v-else :selected-asset="selectedAsset" />
+    <GeneralOverview
+        v-else
+        :selected-asset="selectedAsset"
+        :readmeEditPermission="readmeEditPermission"
+    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import NonBiOverview from './nonBi/index.vue'
@@ -38,10 +45,27 @@
                 required: true,
             },
         },
-        setup() {
-            const { isBiAsset, isGTC, isNonBiAsset } = useAssetInfo()
+        setup(props) {
+            const {
+                isBiAsset,
+                isGTC,
+                isNonBiAsset,
+                selectedAssetUpdatePermission,
+                assetPermission,
+            } = useAssetInfo()
 
-            return { isBiAsset, isGTC, isNonBiAsset }
+            const { selectedAsset } = toRefs(props)
+
+            const readmeEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        'RELATIONSHIP_ADD',
+                        'Readme'
+                    ) && assetPermission('CREATE_README')
+            )
+
+            return { isBiAsset, isGTC, isNonBiAsset, readmeEditPermission }
         },
     })
 </script>

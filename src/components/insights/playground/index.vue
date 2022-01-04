@@ -66,7 +66,7 @@
                                         class="flex items-center text-gray-700"
                                     >
                                         <span
-                                            class="text-sm inline_tab_label"
+                                            class="text-sm truncate inline_tab_label"
                                             :class="[
                                                 tab.key !== activeInlineTabKey
                                                     ? tabHover === tab.key
@@ -307,6 +307,7 @@
                     playground: {
                         isVQB: isVQB,
                         vqb: {
+                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,
@@ -463,7 +464,11 @@
                 }
             }
 
-            const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
+            const saveQueryOnCloseTab = (
+                saveQueryDataParam: any,
+                assetTerms: any,
+                assetClassification: any
+            ) => {
                 saveQueryData.value = saveQueryDataParam
                 const key = saveCloseTabKey.value
                 let tabData: activeInlineTabInterface | undefined
@@ -485,7 +490,11 @@
                 }
                 if (saveQueryData.value) {
                     saveQueryToDatabase(
-                        saveQueryData.value,
+                        {
+                            ...saveQueryData.value,
+                            assetTerms,
+                            assetClassification,
+                        },
                         saveQueryLoading,
                         showSaveQueryModal,
                         saveModalRef,
@@ -672,7 +681,7 @@
         // border-radius: 2px;
     }
     .inline_tab_label {
-        max-width: 53px;
+        max-width: 78px;
         // overflow: hidden;
     }
     .playground-height {

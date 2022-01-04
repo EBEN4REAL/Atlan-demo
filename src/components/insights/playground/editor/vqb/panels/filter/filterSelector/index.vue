@@ -108,7 +108,7 @@
     export default defineComponent({
         name: 'Sub panel',
         components: {},
-        // emits: ['checkChange', 'filterChange'],
+        emits: ['change'],
         props: {
             selectedFilter: {
                 type: Object,
@@ -217,6 +217,7 @@
                     value: undefined,
                     title: checked.name,
                 }
+                emit('change')
                 // filterName.value = checked.name
             }
 

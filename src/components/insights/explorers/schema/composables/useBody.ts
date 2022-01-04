@@ -58,23 +58,17 @@ export function useBody(
         }
         if (i == 1) {
             if (Array.isArray(typeName)) {
-                // base.filter('terms', '__typeName.keyword', [
-                //     'Database',
-                //     'Schema',
-                //     'Table',
-                //     'Column',
-                // ])
                 base.filter('terms', '__typeName.keyword', typeName)
                 addQueryTextFilter(base, queryText)
-                // }
             }
             else {
-                /* Only use queryText when searching for database/ topmost parent, children won't be filtered using query text */
                 if (queryText && typeName==='Database')
                     addQueryTextFilter(base, queryText)
                 base.filter('term', '__typeName.keyword', typeName)
             }
         }
+
+        console.log('filters: ', appliedFilters)
     })
 
     base.from(offset || 0)
@@ -91,10 +85,19 @@ export function useBody(
         }
     } else {
         if((typeName==='Table' || Array.isArray(typeName)) && sortOrderTable && sortOrderTable.length) {
-            let sortData = sortOrderTable.split('-')
-            base.sort(`${sortData[0]}`, { order: sortData[1] })
+            
+            if(queryText?.length) {
+
+            } else {
+                let sortData = sortOrderTable.split('-')
+                base.sort(`${sortData[0]}`, { order: sortData[1] })
+            }
         } else {
-            base.sort('name.keyword', { order: sort })
+            if(queryText?.length) {
+
+            } else {
+                base.sort('name.keyword', { order: sort })
+            }
         }
     }
 
@@ -102,7 +105,7 @@ export function useBody(
       //facet filters
     if((typeName==='Table' || Array.isArray(typeName))) {
         Object.keys(facets ?? {}).forEach((mkey) => {
-            const filterObject = facets[mkey]
+            let filterObject = facets[mkey]
             switch (mkey) {
                 case 'hierarchy': {
                     if (filterObject.connectorName) {
@@ -136,10 +139,20 @@ export function useBody(
                 case 'certificateStatus': {
                     if (filterObject) {
                         if (filterObject.length > 0) {
-                            const index = filterObject.indexOf(existsValue)
+
+                            // replace null
+                            let filter = [...filterObject]
+
+                            for(var i=0;i<filter.length;i++) {
+                                if (filter[i] == null) {
+                                    filter[i] = "NONE";
+                                  }
+                            }
+
+                            const index = filter.indexOf(existsValue)
                             if (index > -1) {
                                 const temp = []
-                                filterObject.forEach((element) => {
+                                filter.forEach((element) => {
                                     if (element !== existsValue) {
                                         temp.push(element)
                                     }
@@ -165,7 +178,7 @@ export function useBody(
                                 base.filter(
                                     'terms',
                                     'certificateStatus',
-                                    filterObject
+                                    filter
                                 )
                             }
                         }
@@ -387,5 +400,68 @@ export function useBody(
 
     base.filterMinimumShouldMatch(1)
 
-    return base.build()
+    const tempQuery = base.build()
+
+    const query = {
+        ...tempQuery,
+        query: {
+            function_score: {
+                query: tempQuery.query,
+                functions: [
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'VERIFIED',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'DRAFT',
+                            },
+                        },
+                        weight: 4,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Table',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'View',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Column',
+                            },
+                        },
+                        weight: 3,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'AtlasGlossaryTerm',
+                            },
+                        },
+                        weight: 4,
+                    },
+                ],
+                boost_mode: 'sum',
+                score_mode: 'sum',
+            },
+        },
+    }
+
+    return query
 }

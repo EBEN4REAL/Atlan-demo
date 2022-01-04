@@ -29,7 +29,9 @@
             <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
         </div>
         <template v-else>
-            <div class="mb-3 text-base font-bold text-gray-500">Sessions</div>
+            <div class="py-1 mb-3 text-base font-bold text-gray-500">
+                Sessions
+            </div>
             <!-- <div class="">
                 <SearchAndFilter
                     v-model:value="searchText"
@@ -47,7 +49,7 @@
                     >
                         <template #dot>
                             <div
-                                class="border  ant-timeline-item-dot border-primary"
+                                class="border ant-timeline-item-dot border-primary"
                             ></div>
                         </template>
                         <div class="mt-2">
@@ -85,123 +87,125 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, ref, watch } from 'vue'
-import { useTimeAgo } from '@vueuse/core'
-import ErrorView from '@common/error/index.vue'
-import { Users } from '~/services/service/users/index'
-import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-import EmptyState from '@/common/empty/index.vue'
+    import { defineComponent, computed, reactive, ref, watch } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import ErrorView from '@common/error/index.vue'
+    import { Users } from '~/services/service/users/index'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
 
-export default defineComponent({
-    name: 'UserPreviewSessions',
-    components: {
-        ErrorView,
-        SearchAndFilter,
-        EmptyState,
-    },
-    props: {
-        selectedUser: {
-            type: Object,
-            default: () => {},
+    export default defineComponent({
+        name: 'UserPreviewSessions',
+        components: {
+            ErrorView,
+            SearchAndFilter,
+            EmptyState,
         },
-    },
-    setup(props, context) {
-        const searchText = ref('')
-
-        const sessionParams = reactive({ max: 100, first: 0 })
-        const pV = computed(() => ({ id: props.selectedUser.id }))
-        const {
-            data,
-            error,
-            mutate: fetchUserSessions,
-            isLoading,
-        } = Users.GetUserSessions(pV, sessionParams, {
-            asyncOptions: { immediate: false },
-        })
-
-        watch(
-            pV,
-            () => {
-                fetchUserSessions()
+        props: {
+            selectedUser: {
+                type: Object,
+                default: () => {},
             },
-            { deep: true, immediate: true }
-        )
-        // const signOutAllSessionsLoading = ref(false)
-        // const signOutSessionByIdLoading = ref(false)
+        },
+        setup(props, context) {
+            const searchText = ref('')
 
-        const sessionList = computed(() => {
-            if (data.value && data.value.length) {
-                return data.value.map((session: any) => ({
-                    ...session,
-                    started_at_string: new Date(session.start).toLocaleString(),
-                    last_accessed_string: new Date(
-                        session.lastAccess
-                    ).toLocaleString(),
-                    started_time_ago: useTimeAgo(session.start).value,
-                    last_accessed_time_ago: useTimeAgo(session.lastAccess)
-                        .value,
-                }))
+            const sessionParams = reactive({ max: 100, first: 0 })
+            const pV = computed(() => ({ id: props.selectedUser.id }))
+            const {
+                data,
+                error,
+                mutate: fetchUserSessions,
+                isLoading,
+            } = Users.GetUserSessions(pV, sessionParams, {
+                asyncOptions: { immediate: false },
+            })
+
+            watch(
+                pV,
+                () => {
+                    fetchUserSessions()
+                },
+                { deep: true, immediate: true }
+            )
+            // const signOutAllSessionsLoading = ref(false)
+            // const signOutSessionByIdLoading = ref(false)
+
+            const sessionList = computed(() => {
+                if (data.value && data.value.length) {
+                    return data.value.map((session: any) => ({
+                        ...session,
+                        started_at_string: new Date(
+                            session.start
+                        ).toLocaleString(),
+                        last_accessed_string: new Date(
+                            session.lastAccess
+                        ).toLocaleString(),
+                        started_time_ago: useTimeAgo(session.start).value,
+                        last_accessed_time_ago: useTimeAgo(session.lastAccess)
+                            .value,
+                    }))
+                }
+                return []
+            })
+            // const signOutAllSessions = () => {
+            //     const { data, isReady, error, isLoading } =
+            //         Users.SignOutAllSessions(props.selectedUser.id)
+            //     watch(
+            //         [data, isReady, error, isLoading],
+            //         () => {
+            //             signOutAllSessionsLoading.value = isLoading.value
+            //             if (isReady && !error.value && !isLoading.value) {
+            //                 fetchUserSessions()
+            //                 message.success('All sessions deleted')
+            //             } else if (error && error.value) {
+            //                 message.error(
+            //                     'Unable to end all sessions, please try again'
+            //                 )
+            //             }
+            //         },
+            //         { immediate: true }
+            //     )
+            // }
+            // const signOutUserSession = (sessionId: string) => {
+            //     const { data, isReady, error, isLoading } =
+            //         Users.SignOutSessionById(sessionId)
+            //     watch(
+            //         [data, isReady, error, isLoading],
+            //         () => {
+            //             signOutSessionByIdLoading.value = isLoading.value
+            //             if (
+            //                 isReady &&
+            //                 !error.value &&
+            //                 !signOutSessionByIdLoading.value
+            //             ) {
+            //                 fetchUserSessions()
+            //                 message.success('User session ended')
+            //             } else if (error && error.value) {
+            //                 message.error(
+            //                     'Unable to sign user out, please try again'
+            //                 )
+            //             }
+            //         },
+            //         { immediate: true }
+            //     )
+            // }
+
+            return {
+                searchText,
+                isLoading,
+                error,
+                sessionList,
+                fetchUserSessions,
             }
-            return []
-        })
-        // const signOutAllSessions = () => {
-        //     const { data, isReady, error, isLoading } =
-        //         Users.SignOutAllSessions(props.selectedUser.id)
-        //     watch(
-        //         [data, isReady, error, isLoading],
-        //         () => {
-        //             signOutAllSessionsLoading.value = isLoading.value
-        //             if (isReady && !error.value && !isLoading.value) {
-        //                 fetchUserSessions()
-        //                 message.success('All sessions deleted')
-        //             } else if (error && error.value) {
-        //                 message.error(
-        //                     'Unable to end all sessions, please try again'
-        //                 )
-        //             }
-        //         },
-        //         { immediate: true }
-        //     )
-        // }
-        // const signOutUserSession = (sessionId: string) => {
-        //     const { data, isReady, error, isLoading } =
-        //         Users.SignOutSessionById(sessionId)
-        //     watch(
-        //         [data, isReady, error, isLoading],
-        //         () => {
-        //             signOutSessionByIdLoading.value = isLoading.value
-        //             if (
-        //                 isReady &&
-        //                 !error.value &&
-        //                 !signOutSessionByIdLoading.value
-        //             ) {
-        //                 fetchUserSessions()
-        //                 message.success('User session ended')
-        //             } else if (error && error.value) {
-        //                 message.error(
-        //                     'Unable to sign user out, please try again'
-        //                 )
-        //             }
-        //         },
-        //         { immediate: true }
-        //     )
-        // }
-
-        return {
-            searchText,
-            isLoading,
-            error,
-            sessionList,
-            fetchUserSessions,
-        }
-    },
-})
+        },
+    })
 </script>
 <style lang="less" scoped>
-.session-list {
-    height: calc(100vh - 8rem) !important;
-}
-.component-height {
-    height: calc(100vh - 5rem) !important;
-}
+    .session-list {
+        height: calc(100vh - 8rem) !important;
+    }
+    .component-height {
+        height: calc(100vh - 5rem) !important;
+    }
 </style>

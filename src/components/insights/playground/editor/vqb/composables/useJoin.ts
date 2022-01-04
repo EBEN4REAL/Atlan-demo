@@ -1,24 +1,22 @@
 export function useJoin() {
-
     let list = [
         {
             type: 'inner_join',
-            name: 'Inner Join'
+            name: 'Inner Join',
         },
         {
             type: 'outer_join',
-            name: 'Outer Join'
+            name: 'Outer Join',
         },
         {
             type: 'left_join',
-            name: 'Left Join'
-        }, 
+            name: 'Left Join',
+        },
         {
             type: 'right_join',
-            name: 'Right Join'
-        }
+            name: 'Right Join',
+        },
     ]
 
-    return {list};
-    
+    return { list }
 }

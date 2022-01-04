@@ -71,7 +71,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        PropType,
+    } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
@@ -92,6 +99,7 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -106,21 +114,9 @@
         },
         props: {
             selectedAsset: {
-                type: Object,
-                required: true,
-            },
-            page: {
-                type: String,
-                required: true,
-            },
-            showCrossIcon: {
-                type: Boolean,
+                type: Object as PropType<assetInterface>,
                 required: false,
-            },
-            mutateTooltip: {
-                type: Boolean,
-                default: false,
-                required: false,
+                default: () => {},
             },
         },
         setup(props) {

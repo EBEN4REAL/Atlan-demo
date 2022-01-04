@@ -19,6 +19,13 @@
                         class="flex-1"
                         style="max-width: 30%"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index + 1
+                                )
+                        "
                     />
                     <div>
                         <a-tooltip placement="top" color="#363636">
@@ -32,15 +39,24 @@
                             />
                         </a-tooltip>
                     </div>
+                    <!-- subpanel?.id + index + 2 works as a unique string -->
                     <TreeColumnSelector
                         class="flex-1"
                         style="max-width: 30%"
                         v-model:selectedColumn="subpanel.columnsDataRight"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index + 2
+                                )
+                        "
                     />
 
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
+                        style="min-width: 24px"
                         class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
@@ -50,14 +66,12 @@
             </template>
         </div>
 
-        <span>
-            <div
-                class="items-center mt-3 cursor-pointer text-primary"
-                @click.stop="handleAddPanel"
-            >
-                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-                <span>Add condition</span>
-            </div>
+        <span
+            class="items-center mt-3 cursor-pointer text-primary"
+            @click.stop="handleAddPanel"
+        >
+            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+            <span>Add condition</span>
         </span>
     </div>
 </template>
@@ -72,6 +86,8 @@
     import { useVModels } from '@vueuse/core'
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
     // import ColumnSelector from '../columnSelector/index.vue'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -90,13 +106,19 @@
                 required: true,
                 default: [],
             },
+            selectedTables: {
+                type: Object as PropType<selectedTables>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
+            const { getTableQualifiedNameFromColumnQualifiedName } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
 
-            const { subpanels } = useVModels(props)
+            const { subpanels, selectedTables } = useVModels(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
@@ -110,16 +132,45 @@
                 console.log('checked array: ', checkedArr)
             }
 
-            const handleColumnChange = (val, index) => {
-                console.log('col change: ', val)
+            const handleColumnChange = (
+                columnQualifiedName: string,
+                uniqueSubpanelString: string
+            ) => {
+                if (columnQualifiedName) {
+                    const tableQualifiedName =
+                        getTableQualifiedNameFromColumnQualifiedName(
+                            columnQualifiedName
+                        )
+                    const addedBy = `joins-${uniqueSubpanelString}`
+                    const copySelectedTables = JSON.parse(
+                        JSON.stringify(toRaw(selectedTables.value))
+                    )
+                    const _index = copySelectedTables?.findIndex(
+                        (table) =>
+                            table.addedBy === `joins-${uniqueSubpanelString}`
+                    )
+                    const t = { ...copySelectedTables[_index] }
+                    /* Already a tableName there for this subpanel field */
+                    if (_index > -1) {
+                        t.tableQualifiedName = tableQualifiedName
+                        copySelectedTables.splice(_index, 1, t)
+                    } else {
+                        const _foundIndex = copySelectedTables.findIndex(
+                            (table) =>
+                                table.tableQualifiedName === tableQualifiedName
+                        )
+                        /* exception: Prevent inserting the 1st table again, if it is selected in join */
+                        if (_foundIndex !== 0) {
+                            copySelectedTables.push({
+                                tableQualifiedName,
+                                addedBy,
+                            })
+                        }
+                    }
 
-                const copySubPanel = JSON.parse(
-                    JSON.stringify(toRaw(subpanels.value[index]))
-                )
-                copySubPanel.column = val
-                // copySubPanel.filter = {}
+                    selectedTables.value = [...copySelectedTables]
+                }
 
-                subpanels.value[index] = copySubPanel
                 // console.log(subpanels.value)
             }
 
@@ -142,6 +193,26 @@
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
+                const copySelectedTables = JSON.parse(
+                    JSON.stringify(toRaw(selectedTables.value))
+                )
+                const subpanel = subpanels.value[index]
+
+                const leftColumnQualifiedName =
+                    subpanel?.columnsDataLeft?.columnQualifiedName
+                const rightColumnQualifiedName =
+                    subpanel?.columnsDataRight?.columnQualifiedName
+                let addedBy: any = new Set()
+                if (leftColumnQualifiedName)
+                    addedBy.add(`joins-${subpanel.id}${index}1`)
+                if (rightColumnQualifiedName)
+                    addedBy.add(`joins-${subpanel.id}${index}2`)
+                addedBy = Array.from(addedBy)
+                let t: any = []
+                t = copySelectedTables.filter(
+                    (selectedTable) => !addedBy.includes(selectedTable.addedBy)
+                )
+                selectedTables.value = t
                 subpanels.value.splice(index, 1)
             }
 

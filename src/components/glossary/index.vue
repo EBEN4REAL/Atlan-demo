@@ -12,7 +12,7 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <div class="flex">
+            <div class="flex" v-auth="map.CREATE_GLOSSARY">
                 <AddGTCModal
                     :key="selectedGlossaryQf"
                     :entityType="defaultEntityType"
@@ -21,12 +21,25 @@
                     :glossaryName="selectedGlosaryName"
                 >
                     <template #trigger>
-                        <a-button class="ml-3" size="small">
-                            <AtlanIcon
-                                icon="Add"
-                                class="transition duration-300 text-primary"
-                            />
-                        </a-button>
+                        <a-tooltip>
+                            <template #title
+                                >Add new
+                                {{
+                                    `${
+                                        defaultEntityType === 'AtlasGlossary'
+                                            ? 'Glossary'
+                                            : 'Term/Category'
+                                    }`
+                                }}</template
+                            >
+
+                            <a-button class="ml-3" size="small">
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="transition duration-300 text-primary"
+                                />
+                            </a-button>
+                        </a-tooltip>
                     </template>
                 </AddGTCModal>
 
@@ -49,13 +62,12 @@
                 placeholder="Search terms & categories..."
             >
                 <template v-if="showCollapseAll" #filter>
-                    <a-tooltip>
+                    <a-tooltip v-if="!queryText">
                         <template #title>Collapse all </template>
 
                         <atlan-icon
-                            v-if="!queryText"
                             icon="TreeCollapseAll"
-                            class="h-4 mt-2 ml-0 outline-none cursor-pointer"
+                            class="h-4 ml-0 outline-none cursor-pointer"
                             @click="handleCollapse"
                         >
                         </atlan-icon>
@@ -76,11 +88,11 @@
         </div>
         <div
             v-if="!queryText"
-            class="flex flex-col items-stretch flex-1 h-full mt-2 glossaryTreeWrapper"
+            class="flex flex-col items-stretch flex-1 h-full mt-2 overflow-x-hidden overflow-y-auto glossaryTreeWrapper scrollable-container"
+            :class="$style.treeStyles"
         >
             <GlossaryTree
                 ref="glossaryTree"
-                :height="height"
                 @select="handlePreview"
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
@@ -154,6 +166,7 @@
         provide,
         PropType,
         watch,
+        onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -190,6 +203,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GlossaryExplorer',
@@ -280,7 +294,9 @@
             facets.value = {
                 ...facets.value,
                 ...initialFilters.value,
-                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                typeNames: props.checkable
+                    ? ['AtlasGlossaryTerm']
+                    : ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 
@@ -310,6 +326,7 @@
                 fetch,
                 quickChange,
                 handleSelectedGlossary,
+                cancelRequest,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -456,8 +473,8 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
-                emit('check', checkedNodes, { checkedKeys, checked })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
             }
             const onSearchItemCheck = (checkedNode, checked) => {
                 if (checkedNode.typeName === 'AtlasGlossaryTerm') {
@@ -469,6 +486,10 @@
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
+            // dont fetch flat list on mount
+            onMounted(() => {
+                cancelRequest()
+            })
             return {
                 handleFilterChange,
                 isLoading,
@@ -513,6 +534,7 @@
                 searchBar,
                 onSearchItemCheck,
                 showCollapseAll,
+                map,
             }
         },
     })
@@ -528,9 +550,8 @@
     }
 
     .checkableTree {
-        .searchResults {
-            max-height: 500px;
-        }
+        max-height: 300px;
+        min-height: 300px;
 
         :global(.glossaryTreeWrapper) {
             @apply overflow-y-auto;
@@ -543,5 +564,8 @@
             right: 0.75rem;
             z-index: 99;
         }
+    }
+    .treeStyles {
+        max-height: calc(100vh - 11rem) !important;
     }
 </style>

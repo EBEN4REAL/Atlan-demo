@@ -10,14 +10,14 @@ import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 // import useBusinessMetadataStore from '~/store/businessMetadata'
 
 interface parameters {
-type:
+    type:
     | 'glossary'
     | 'category'
     | 'term'
     | Ref<'glossary' | 'category' | 'term'>,
-entityGuid: Ref<string>,
-cache?: boolean,
-watchForGuidChange: boolean
+    entityGuid: Ref<string>,
+    cache?: boolean,
+    watchForGuidChange: boolean
 }
 
 /*
@@ -25,10 +25,10 @@ watchForGuidChange: boolean
  * the type
  */
 const useGTCEntity = <T extends Glossary | Category | Term>({
-type,
-entityGuid,
-cache,
-watchForGuidChange,
+    type,
+    entityGuid,
+    cache,
+    watchForGuidChange,
 }: parameters) => {
     const body = ref({})
 
@@ -140,9 +140,9 @@ watchForGuidChange,
         entity.value = newData?.entities ? (newData.entities[0] as T) : undefined
     })
     watch(entity, (newEntity) => {
-        if(newEntity) {
-            if(newEntity.typeName === 'AtlasGlossary') {
-                parentGlossaryGuid.value =  newEntity.guid
+        if (newEntity) {
+            if (newEntity.typeName === 'AtlasGlossary') {
+                parentGlossaryGuid.value = newEntity.guid
                 parentGlossaryQualifiedName.value = newEntity.attributes?.qualifiedName
                 parentGlossaryTitle.value = newEntity.attributes?.name
             }

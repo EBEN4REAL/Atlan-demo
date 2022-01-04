@@ -23,8 +23,11 @@ const useCollectionAccess = (
         'description',
         'userDescription',
         'certificateStatus',
+        
         'ownerUsers',
         'ownerGroups',
+        'adminUsers',
+        'adminGroups',
         '__createdBy',
         '__state',
         '__guid',
@@ -65,13 +68,13 @@ const useCollectionAccess = (
             attributes,
         }
 
-        console.log('coll body: ', body.value)
+        // console.log('coll body: ', body.value)
     }
 
     const getSelectedCollectionData = () => {
         // refreshBody()
 
-        console.log('coll body2: ', body.value)
+        // console.log('coll body2: ', body.value)
         return useAPI(
             map.INDEX_SEARCH,
             'POST',
@@ -147,23 +150,23 @@ const useCollectionAccess = (
     })
 
     const hasCollectionWritePermission = computed(() => {
-        let ownerUsers = selectedCollectionData?.value?.entities[0].attributes
-            ?.ownerUsers
-            ? selectedCollectionData?.value?.entities[0].attributes?.ownerUsers
+        let adminUsers = selectedCollectionData?.value?.entities[0].attributes
+            ?.adminUsers
+            ? selectedCollectionData?.value?.entities[0].attributes?.adminUsers
             : []
-        let ownerGroups = selectedCollectionData.value?.entities[0].attributes
-            ?.ownerGroups
-            ? selectedCollectionData.value?.entities[0].attributes?.ownerGroups
+        let adminGroups = selectedCollectionData.value?.entities[0].attributes
+            ?.adminGroups
+            ? selectedCollectionData.value?.entities[0].attributes?.adminGroups
             : []
 
-        if (ownerUsers?.length) {
-            let v1 = ownerUsers.find((el) => el === currentUser.value)
+        if (adminUsers?.length) {
+            let v1 = adminUsers.find((el) => el === currentUser.value)
             if (v1) {
                 return true
             }
         }
-        if (ownerGroups?.length) {
-            let filteredArray = ownerGroups.filter((value) =>
+        if (adminGroups?.length) {
+            let filteredArray = adminGroups.filter((value) =>
                 userGroups.value.includes(value)
             )
             return filteredArray.length > 0
@@ -173,10 +176,10 @@ const useCollectionAccess = (
 
     const isCollectionCreatedByCurrentUser = computed(() => {
         if (selectedCollectionData?.value) {
-            console.log('curr: ', {
-                currentUser: currentUser.value,
-                curr: selectedCollectionData?.value?.entities[0].attributes,
-            })
+            // console.log('curr: ', {
+            //     currentUser: currentUser.value,
+            //     curr: selectedCollectionData?.value?.entities[0].attributes,
+            // })
             return (
                 currentUser.value ===
                 selectedCollectionData?.value?.entities[0].attributes
@@ -190,7 +193,7 @@ const useCollectionAccess = (
     watch(
         activeInlineTab,
         async () => {
-            console.log('activeInlineTab: ', activeInlineTab.value)
+            // console.log('activeInlineTab: ', activeInlineTab.value)
 
             await fetchSelectedCollectionData()
         },

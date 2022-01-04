@@ -12,7 +12,7 @@ import { IPersona } from '~/types/accessPolicies/purposes'
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PURPOSE, 'GET', { params }, options || {})
 
-const listPurposes = () =>
+const listPurposes = (body, options) =>
     useAPI(
         map.LIST_PURPOSE,
         'GET',
@@ -76,7 +76,7 @@ const enableDisablePurpose = (id: string, body: IEnableDisablePayload) =>
     useAPIPromise(map.ENABLE_DISABLE_PURPOSE({ id }), 'POST', {
         body,
     })
-export const Persona = {
+export const Purpose = {
     List,
     Create,
     Update,

@@ -91,6 +91,7 @@
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -111,10 +112,15 @@
                 required: true,
                 default: [],
             },
+            selectedTables: {
+                type: Object as PropType<selectedTables>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
-            const { subpanels } = useVModels(props)
+            const { subpanels, selectedTables } = useVModels(props)
             const { expand } = toRefs(props)
             const filteredTablesValues = computed(() =>
                 subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
@@ -142,12 +148,26 @@
                     subpanels.value[index] = copySubPanel
                     console.log(subpanels.value)
                 } else {
+                    const copySelectedTables: selectedTables[] = JSON.parse(
+                        JSON.stringify(toRaw(selectedTables.value))
+                    )
+                    // removed the very first tableQualfiedName
+                    if (copySelectedTables.length > 0)
+                        copySelectedTables.shift()
+
+                    copySelectedTables.unshift({
+                        tableQualifiedName:
+                            subpanels.value[0].tableQualfiedName,
+                        addedBy: 'column',
+                    })
+
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
                     copySubPanel.columns = []
                     copySubPanel.columnsData = []
                     subpanels.value[index] = copySubPanel
+                    selectedTables.value = copySelectedTables
                     console.log(subpanels.value)
                 }
             }

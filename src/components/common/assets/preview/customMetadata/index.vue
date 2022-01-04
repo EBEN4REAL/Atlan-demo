@@ -2,30 +2,50 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
-    <div v-else class="flex flex-col pl-5 mb-3">
+    <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
-            <div class="font-semibold text-gray-500">{{ data.label }}</div>
-            <div>
-                <div
+            <div class="font-semibold text-gray-500">
+                <div class="flex items-center gap-x-1">
+                    <span>{{ data.label }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ data?.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="data?.description"
+                            class="h-3 text-gray-400 hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
+                </div>
+            </div>
+            <div
+                v-if="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                    )
+                "
+            >
+                <a-button
                     v-if="readOnly"
-                    class="text-sm font-bold cursor-pointer text-primary"
+                    v-show="applicableList.filter((i) => hasValue(i)).length"
                     @click="() => (readOnly = false)"
                 >
-                    Edit
-                </div>
-                <div v-else class="flex gap-x-2">
-                    <div
+                    <AtlanIcon icon="Edit" />
+                    <span class="ml-1 text-gray-700">Edit</span>
+                </a-button>
+                <div v-else class="flex items-center gap-x-2">
+                    <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
                         @click="handleCancel"
                     >
                         Cancel
-                    </div>
+                    </span>
                     <AtlanButton
                         :disabled="!isEdit"
                         size="sm"
-                        color="minimal"
-                        paddi="compact"
-                        class="w-5 h-5 pl-5 pr-0 mr-2 text-sm font-bold cursor-pointer text-primary"
+                        padding="compact"
                         @click="handleUpdate"
                     >
                         Update
@@ -34,12 +54,36 @@
             </div>
         </div>
         <div
-            class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
+            class="flex flex-col flex-grow pr-5 overflow-auto transition-all scrollheight"
         >
-            <template v-for="(a, x) in applicableList" :key="x">
-                <div class="">
+            <template
+                v-for="(a, x) in showMore &&
+                applicableList.filter((i) => hasValue(i)).length
+                    ? readOnly
+                        ? [...applicableList].sort(readOnlySort)
+                        : applicableList
+                    : readOnly
+                    ? applicableList.filter((i) => hasValue(i))
+                    : applicableList"
+                :key="x"
+            >
+                <div
+                    :class="{
+                        'border-b pb-6 mb-6':
+                            readOnly &&
+                            showMore &&
+                            applicableList.filter((i) => hasValue(i)).length &&
+                            hasValue(
+                                [...applicableList].sort(readOnlySort)[x]
+                            ) &&
+                            !hasValue(
+                                [...applicableList].sort(readOnlySort)[x + 1]
+                            ),
+                        'mb-5': !readOnly || (readOnly && hasValue(a)),
+                    }"
+                >
                     <div class="mb-2 font-normal text-gray-500">
-                        <span>{{ a.displayName }}</span>
+                        <span class="">{{ a.displayName }}</span>
                         <a-tooltip>
                             <template #title>
                                 <span>{{ a.options.description }}</span>
@@ -52,16 +96,145 @@
                         </a-tooltip>
                     </div>
 
-                    <ReadOnly v-if="readOnly" :attribute="a" />
+                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
 
                     <EditState
-                        v-else
+                        v-else-if="!readOnly"
                         v-model="a.value"
+                        :index="x"
                         :attribute="a"
                         @change="handleChange(x, a.value)"
                     />
                 </div>
             </template>
+            <div v-if="readOnly" :class="showMore ? 'mt-4' : ''">
+                <span
+                    v-if="[...applicableList].filter((i) => hasValue(i)).length"
+                    class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                    @click="showMore = !showMore"
+                >
+                    <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
+                    {{
+                        showMore
+                            ? 'Hide empty properties'
+                            : `Show ${
+                                  applicableList.filter((i) => !hasValue(i))
+                                      .length
+                              } empty properties`
+                    }}
+                </span>
+                <template v-else>
+                    <EmptyView empty-screen="EmptyCM" class="h-24 mb-6" />
+                    <div
+                        class="flex flex-col items-center text-gray-500 gap-y-7"
+                    >
+                        <div class="">
+                            <a-popover
+                                placement="bottom"
+                                :destroy-tooltip-on-hide="true"
+                            >
+                                <template #content>
+                                    <div
+                                        class="p-4 space-y-4 overflow-x-auto max-h-60 w-44"
+                                    >
+                                        <h1 class="font-bold">Properties</h1>
+                                        <template
+                                            v-for="p in applicableList"
+                                            :key="p.name"
+                                        >
+                                            <div class="flex flex-col">
+                                                <div
+                                                    class="flex items-center gap-x-1"
+                                                >
+                                                    <span class="text-gray-700">
+                                                        {{ p.displayName }}
+                                                    </span>
+                                                    <a-tooltip>
+                                                        <template #title>
+                                                            <span>{{
+                                                                p.options
+                                                                    .description
+                                                            }}</span>
+                                                        </template>
+                                                        <AtlanIcon
+                                                            v-if="
+                                                                p.options
+                                                                    .description
+                                                            "
+                                                            class="h-3 text-gray-400 hover:text-gray-500"
+                                                            icon="Info"
+                                                        />
+                                                    </a-tooltip>
+                                                </div>
+                                                <span
+                                                    class="flex items-center text-gray-500 capitalize gap-x-1"
+                                                >
+                                                    <div class="flex">
+                                                        <AtlanIcon
+                                                            v-if="
+                                                                p.options
+                                                                    .multiValueSelect ===
+                                                                'true'
+                                                            "
+                                                            icon="Array"
+                                                            class="h-3.5"
+                                                        />
+                                                        <AtlanIcon
+                                                            :icon="
+                                                                getDataTypeIcon(
+                                                                    p?.options
+                                                                        ?.primitiveType
+                                                                )
+                                                            "
+                                                            class="h-3.5"
+                                                        />
+                                                    </div>
+                                                    {{
+                                                        getDatatypeOfAttribute(
+                                                            p
+                                                        )
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                                <span
+                                    class="underline cursor-pointer text-primary"
+                                    >{{
+                                        applicableList.length
+                                    }}
+                                    properties</span
+                                >
+                            </a-popover>
+                            <span
+                                v-if="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
+                                "
+                            >
+                                are available to be populated.</span
+                            >
+                            <span v-else> haven’t been populated yet. </span>
+                        </div>
+                        <AtlanButton
+                            v-if="
+                                selectedAssetUpdatePermission(
+                                    selectedAsset,
+                                    'ENTITY_UPDATE_BUSINESS_METADATA'
+                                )
+                            "
+                            color="primary"
+                            padding="compact"
+                            @click="() => (readOnly = false)"
+                        >
+                            <AtlanIcon icon="Edit" /> Start Editing
+                        </AtlanButton>
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -76,9 +249,17 @@
         inject,
         defineAsyncComponent,
         Ref,
+        h,
+        resolveComponent,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
+    import {
+        whenever,
+        useMagicKeys,
+        onKeyStroke,
+        watchOnce,
+        onClickOutside,
+    } from '@vueuse/core'
+    import { message, Modal } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -87,6 +268,9 @@
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import AtlanButton from '@/UI/button.vue'
+    import Confirm from '@/common/modal/confirm.vue'
+    import EmptyView from '@/common/empty/index.vue'
+    import { getDataTypeIcon } from '~/utils/dataType'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -94,6 +278,7 @@
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
             AtlanButton,
+            EmptyView,
         },
         props: {
             selectedAsset: {
@@ -110,9 +295,10 @@
 
             const readOnly = ref(true)
             const loading = ref(false)
+            const showMore = ref(false)
             const guid = ref()
 
-            const { title } = useAssetInfo()
+            const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
                 isLink,
@@ -153,7 +339,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                let value = selectedAsset.value.attributes[ab]
+                                const value = selectedAsset.value.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -208,18 +394,6 @@
 
                 return mappedPayload
             }
-            const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers()
-
-            const userSearch = (val) => {
-                handleUserSearch(val)
-            }
-
-            const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups()
-            const groupSearch = (val) => {
-                handleGroupSearch(val)
-            }
 
             const {
                 asset,
@@ -228,6 +402,8 @@
             } = useCurrentUpdate({
                 id: guid,
             })
+
+            const isEdit = ref(false)
 
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
@@ -246,7 +422,7 @@
                             'Some error occured...Please try again later.'
                         )
                         setAttributesList()
-                    } else if (isReady.value) {
+                    } else if (isReady?.value) {
                         loading.value = false
                         message.success(
                             `${data.value?.label} attributes for ${title(
@@ -257,22 +433,53 @@
 
                         mutateUpdate()
                     }
+                    isEdit.value = false
                 })
 
                 readOnly.value = true
             }
 
-            const handleCancel = () => {
+            const cancel = () => {
                 applicableList.value.forEach((att) => {
+                    // eslint-disable-next-line no-param-reassign
                     att.value = ''
                 })
                 setAttributesList()
-
                 readOnly.value = true
+                isEdit.value = false
             }
-            const isEdit = ref(false)
+
+            const handleCancel = () => {
+                cancel()
+                return
+                //! disabling unsaved changes confirmation temporarily
+                if (isEdit.value) {
+                    Modal.confirm({
+                        title: () =>
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                'Discard'
+                            ),
+                        content: () =>
+                            h(Confirm, {
+                                title: data.value.label,
+                            }),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Discard',
+                        onOk: cancel,
+                    })
+                } else cancel()
+            }
+
             const handleChange = (index, value) => {
-                isEdit.value = true
+                if (!isEdit.value) isEdit.value = true
                 applicableList.value[index].value = value
             }
 
@@ -299,7 +506,50 @@
 
             setAttributesList()
 
+            const hasValue = (a) => {
+                const isMultivalued =
+                    a.options.multiValueSelect === 'true' ||
+                    a.options.multiValueSelect === true
+                const dataType = getDatatypeOfAttribute(a)
+
+                if (
+                    [
+                        'url',
+                        'text',
+                        'int',
+                        'float',
+                        'number',
+                        'decimal',
+                        'users',
+                        'groups',
+                        'enum',
+                    ].includes(dataType) &&
+                    isMultivalued
+                )
+                    return !!a.value?.length
+                if (
+                    ['url', 'text', 'users', 'groups', 'enum'].includes(
+                        dataType
+                    )
+                )
+                    return !!a.value
+                return !!formatDisplayValue(a.value?.toString() || '', dataType)
+            }
+
+            const readOnlySort = (a, b) =>
+                hasValue(a) && !hasValue(b) ? -1 : 1
+
+            onKeyStroke(['Enter'], (e) => {
+                e.stopPropagation()
+                if ((e.ctrlKey || e.metaKey) && isEdit.value && !readOnly.value)
+                    handleUpdate()
+            })
+
             return {
+                getDataTypeIcon,
+                showMore,
+                readOnlySort,
+                hasValue,
                 isEdit,
                 getDatatypeOfAttribute,
                 isLink,
@@ -311,16 +561,13 @@
                 getEnumOptions,
                 handleChange,
                 loading,
-                userSearch,
-                userList,
-                groupSearch,
-                groupList,
+                selectedAssetUpdatePermission,
             }
         },
     })
 </script>
 <style scoped>
     .scrollheight {
-        max-height: calc(100vh - 12rem);
+        max-height: calc(100vh - 7rem);
     }
 </style>

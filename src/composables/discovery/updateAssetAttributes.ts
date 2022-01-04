@@ -8,6 +8,7 @@ import useSetClassifications from '~/composables/discovery/useSetClassifications
 import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
 import { Entity } from '~/services/meta/entity/index'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -15,6 +16,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         description,
         ownerGroups,
         ownerUsers,
+        adminGroups,
+        adminUsers,
         classifications,
         certificateStatus,
         certificateUpdatedAt,
@@ -24,11 +27,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementMessage,
         announcementType,
         attributes,
-        assetType,
         announcementTitle,
         readmeContent,
-        meaningRelationships,
+        meanings,
         categories,
+        assignedEntities,
+        allowQuery,
+        allowQueryPreview,
+        connectionRowLimit,
     } = useAssetInfo()
 
     const entity = ref({
@@ -66,12 +72,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    if(['Query'].includes(entity.value.typeName)) {
+    if (['Query'].includes(entity.value.typeName)) {
         entity.value.attributes = {
             ...entity.value.attributes,
-            parentQualifiedName: attributes(selectedAsset?.value)?.parentQualifiedName,
+            parentQualifiedName: attributes(selectedAsset?.value)
+                ?.parentQualifiedName,
             parent: attributes(selectedAsset?.value)?.parent,
-            collectionQualifiedName: attributes(selectedAsset?.value)?.collectionQualifiedName
+            collectionQualifiedName: attributes(selectedAsset?.value)
+                ?.collectionQualifiedName,
         }
     }
 
@@ -94,6 +102,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ownerGroups: ownerGroups(selectedAsset.value),
     })
 
+    const localAdmins = ref({
+        adminUsers: adminUsers(selectedAsset.value),
+        adminGroups: adminGroups(selectedAsset.value),
+    })
+
     const localAnnouncement = ref({
         announcementMessage: announcementMessage(selectedAsset.value) || '',
         announcementType:
@@ -101,8 +114,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
-    const localMeanings = ref(meaningRelationships(selectedAsset.value))
+    const localMeanings = ref(meanings(selectedAsset.value))
+    const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
+    const localParentCategory = ref(
+        selectedAsset.value?.attributes?.parentCategory
+    )
 
     const localResource = ref({
         link: 'https://',
@@ -111,6 +128,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localReadmeContent = ref(readmeContent(selectedAsset.value))
 
     const localClassifications = ref(classifications(selectedAsset.value))
+
+    const localSQLQuery = ref({
+        allowQuery: allowQuery(selectedAsset.value),
+        allowQueryPreview: allowQueryPreview(selectedAsset.value),
+        connectionRowLimit: connectionRowLimit(selectedAsset.value),
+    })
 
     const currentMessage = ref('')
 
@@ -158,12 +181,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     // Description Change
     const handleChangeDescription = () => {
-        console.log('entity: ', selectedAsset.value)
         if (description(selectedAsset?.value) !== localDescription.value) {
             entity.value.attributes.userDescription = localDescription.value
             body.value.entities = [entity.value]
 
-            console.log('new entity: ', entity.value)
             currentMessage.value = 'Description has been updated'
             mutate()
         }
@@ -174,28 +195,75 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         let isChanged = false
 
         if (
-            !entity.value.attributes.ownerUsers &&
+            ownerUsers(selectedAsset.value).length === 0 &&
             Object.keys(localOwners.value?.ownerUsers).length === 0
         ) {
             isChanged = false
-        } else if (
-            entity.value.attributes.ownerUsers?.sort().toString() !==
-            localOwners.value?.ownerUsers?.sort().toString()
-        ) {
-            entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
-            isChanged = true
-        } else if (
-            entity.value.attributes.ownerGroups?.sort().toString() !==
-            localOwners.value?.ownerGroups?.sort().toString()
-        ) {
-            entity.value.attributes.ownerGroups = localOwners.value?.ownerGroups
-            isChanged = true
+        } else {
+            // Users
+            if (
+                entity.value.attributes.ownerUsers?.sort().toString() !==
+                localOwners.value?.ownerUsers?.sort().toString()
+            ) {
+                entity.value.attributes.ownerUsers =
+                    localOwners.value?.ownerUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.ownerGroups?.sort().toString() !==
+                localOwners.value?.ownerGroups?.sort().toString()
+            ) {
+                entity.value.attributes.ownerGroups =
+                    localOwners.value?.ownerGroups
+                isChanged = true
+            }
         }
 
         if (isChanged) {
             body.value.entities = [entity.value]
 
-            currentMessage.value = 'Owners has been updated'
+            currentMessage.value = 'Owners have been updated'
+            mutate()
+        }
+    }
+
+    // Admins Change
+    const handleChangeAdmins = () => {
+        let isChanged = false
+
+        if (
+            adminUsers(selectedAsset.value).length === 0 &&
+            Object.keys(localAdmins.value?.adminUsers).length === 0
+        ) {
+            isChanged = false
+        } else {
+            // Users
+            if (
+                entity.value.attributes.adminUsers?.sort().toString() !==
+                localAdmins.value?.adminUsers?.sort().toString()
+            ) {
+                entity.value.attributes.adminUsers =
+                    localAdmins.value?.adminUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.adminGroups?.sort().toString() !==
+                localAdmins.value?.adminGroups?.sort().toString()
+            ) {
+                entity.value.attributes.adminGroups =
+                    localAdmins.value?.adminGroups
+                isChanged = true
+            }
+        }
+
+        if (isChanged) {
+            body.value.entities = [entity.value]
+
+            currentMessage.value = 'Admins have been updated'
             mutate()
         }
     }
@@ -240,6 +308,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
 
+    // SQL Query Config Update
+    const handleSQLQueryUpdate = () => {
+        entity.value.attributes.allowQuery = localSQLQuery.value.allowQuery
+        entity.value.attributes.allowQueryPreview =
+            localSQLQuery.value.allowQueryPreview
+        entity.value.attributes.rowLimit =
+            localSQLQuery.value.connectionRowLimit
+        body.value.entities = [entity.value]
+
+        currentMessage.value = 'SQL Query Config has been updated'
+        mutate()
+    }
+
     const handleAnnouncementDelete = () => {
         entity.value.attributes.announcementTitle = null
         entity.value.attributes.announcementMessage = null
@@ -266,6 +347,62 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
 
+    const handleAssignedEntitiesUpdate = ({
+        linkedAssets,
+        unlinkedAssets,
+        term,
+    }: {
+        linkedAssets: assetInterface[]
+        unlinkedAssets: assetInterface[]
+        term: assetInterface
+    }) => {
+        const linked = linkedAssets.map((assignedEntitiy) => {
+            const meanings = assignedEntitiy.attributes.meanings ?? []
+            if (!meanings.find((meaning) => meaning.guid === term.guid)) {
+                meanings.push({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })
+            }
+            return {
+                guid: assignedEntitiy.guid,
+                typeName: assignedEntitiy.typeName,
+                attributes: {
+                    ...assignedEntitiy.attributes,
+                    ...assignedEntitiy.uniqueAttributes,
+                },
+                relationshipAttributes: {
+                    meanings,
+                },
+            }
+        })
+
+        const unlinked = unlinkedAssets.map((unassignedEntity) => {
+            return {
+                guid: unassignedEntity.guid,
+                typeName: unassignedEntity.typeName,
+                attributes: {
+                    ...unassignedEntity.attributes,
+                    ...unassignedEntity.uniqueAttributes,
+                },
+                relationshipAttributes: {
+                    meanings:
+                        unassignedEntity.attributes.meanings?.filter(
+                            (meaning) => meaning.guid !== term.guid
+                        ) ?? [],
+                },
+            }
+        })
+
+        body.value.entities = [...linked, ...unlinked]
+        currentMessage.value = 'Linked assets updated'
+        mutate()
+
+        whenever(isUpdateReady, () => {
+            localAssignedEntities.value = assignedEntities(asset.value)
+        })
+    }
+
     const handleCategoriesUpdate = () => {
         entity.value = {
             ...entity.value,
@@ -274,6 +411,18 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     typeName: 'AtlasGlossaryCategory',
                     guid: category.guid,
                 })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Categories have been updated'
+        mutate()
+    }
+    const handleParentCategoryUpdate = () => {
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                parentCategory: localParentCategory.value,
                 anchor: selectedAsset?.value?.attributes?.anchor,
             },
         }
@@ -408,9 +557,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
         if (
-            meaningRelationships(selectedAsset?.value) !== localMeanings.value
+            meanings(selectedAsset?.value) !== localMeanings.value
         ) {
-            localMeanings.value = meaningRelationships(selectedAsset.value)
+            localMeanings.value = meanings(selectedAsset.value)
         }
 
         message.error(
@@ -431,14 +580,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const updateDrawerList = inject('updateDrawerList')
 
     whenever(isUpdateReady, () => {
-        if (!isDrawer) {
+        if (!isDrawer && updateList) {
             updateList(asset.value)
         } else {
             shouldDrawerUpdate.value = true
-            if (typeof updateDrawerList === 'function') {
+            if (typeof updateDrawerList === 'function' && updateDrawerList) {
                 updateDrawerList(asset.value)
             }
         }
+        isConfetti.value = false
     })
 
     const classificationBody = ref({
@@ -511,10 +661,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
+        handleChangeAdmins,
         handleChangeCertificate,
         handleClassificationChange,
         handleAnnouncementUpdate,
         isLoadingClassification,
+        localSQLQuery,
+        handleSQLQueryUpdate,
         nameRef,
         descriptionRef,
         animationPoint,
@@ -529,5 +682,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleCategoriesUpdate,
         shouldDrawerUpdate,
         asset,
+        localAssignedEntities,
+        handleAssignedEntitiesUpdate,
+        localAdmins,
+        error,
+        handleParentCategoryUpdate,
+        localParentCategory,
     }
 }

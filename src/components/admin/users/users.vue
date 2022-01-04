@@ -12,7 +12,6 @@
                             totalUserCount || ''
                         } users`"
                         class="mr-1"
-                        size="minimal"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >

@@ -1,5 +1,7 @@
 <template>
-    <RaisedTab v-model:active="filterType" class="mr-auto" :data="tabConfig" />
+    <div style="width: min-content !important">
+        <RaisedTab v-model:active="filterType" :data="tabConfig" />
+    </div>
 </template>
 
 <script lang="ts">

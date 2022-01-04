@@ -18,6 +18,7 @@ export const assetTypeList: {
         parents: [],
         children: ['Column'],
         count: 0,
+        relationships: [],
     },
     {
         id: 'Database',
@@ -28,6 +29,7 @@ export const assetTypeList: {
         children: ['Column'],
         isDiscoverable: false,
         count: 0,
+        relationships: [],
     },
     {
         id: 'Schema',
@@ -38,6 +40,7 @@ export const assetTypeList: {
         children: ['Column'],
         isDiscoverable: false,
         count: 0,
+        relationships: [],
     },
     {
         id: 'View',
@@ -49,6 +52,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 90,
         count: 0,
+        relationships: [],
     },
     {
         id: 'Table',
@@ -60,6 +64,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,
+        relationships: [],
     },
     {
         id: 'TablePartition',
@@ -71,6 +76,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,
+        relationships: [],
     },
     {
         id: 'MaterialisedView',
@@ -82,6 +88,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,
+        relationships: [],
     },
     {
         id: 'Column',
@@ -93,6 +100,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 80,
         count: 0,
+        relationships: [],
     },
     {
         id: 'Query',
@@ -120,11 +128,13 @@ export const assetTypeList: {
         id: 'AtlasGlossaryTerm',
         label: 'Term',
         isDiscoverable: true,
+        relationships: [],
     },
     {
         id: 'AtlasGlossaryCategory',
         label: 'Categories',
         isDiscoverable: true,
+        relationships: [],
     },
     {
         id: 'TableauSite',
@@ -132,6 +142,7 @@ export const assetTypeList: {
         nameAttribute: 'siteName',
         isDiscoverable: true,
         parents: [],
+        relationships: [],
     },
     {
         id: 'TableauProject',
@@ -140,6 +151,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         // in order of hierarchy
         parents: ['TableauProject', 'TableauSite'],
+        relationships: [],
     },
     {
         id: 'TableauWorkbook',
@@ -147,18 +159,21 @@ export const assetTypeList: {
         nameAttribute: 'workbookName',
         isDiscoverable: true,
         parents: ['TableauProject'],
+        relationships: [],
     },
     {
         id: 'TableauWorksheet',
         label: 'Tableau Worksheet',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
+        relationships: [],
     },
     {
         id: 'TableauDashboard',
         label: 'Tableau Dashboard',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
+        relationships: [],
     },
     {
         id: 'TableauDatasource',
@@ -166,16 +181,19 @@ export const assetTypeList: {
         nameAttribute: 'datasourceName',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
+        relationships: [],
     },
     {
         id: 'TableauDatasourceField',
         label: 'Tableau Datasource Field',
         parents: ['TableauWorkbook'],
+        relationships: [],
     },
     {
         id: 'TableauCalculatedField',
         label: 'Tableau Calculated Field',
         parents: ['TableauWorkbook'],
+        relationships: [],
     },
     {
         id: 'PowerBIWorkspace',
@@ -235,6 +253,6 @@ export const assetTypeList: {
         label: 'Power BI Datasource',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
-        relationships: ['dataset', 'datasets'],
+        relationships: ['dataset'],
     },
 ]

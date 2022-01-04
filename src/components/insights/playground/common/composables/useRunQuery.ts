@@ -15,6 +15,7 @@ export default function useProject() {
     const {
         getParsedQuery,
         resetErrorDecorations,
+        resetLineDecorations,
         setErrorDecorations,
         getParsedQueryCursor,
     } = useEditor()
@@ -83,7 +84,7 @@ export default function useProject() {
 
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
-        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
         onQueryIdGeneration?: Function,
@@ -93,6 +94,9 @@ export default function useProject() {
         showVQB: Ref<Boolean> = ref(false)
     ) => {
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        if(editorInstance?.value) {
+            resetLineDecorations(editorInstance.value)
+        }
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -255,6 +259,7 @@ export default function useProject() {
                                 message?.queryId
                             if (onQueryIdGeneration)
                                 onQueryIdGeneration(
+                                    activeInlineTab,
                                     message?.queryId,
                                     eventSource
                                 )
@@ -267,6 +272,7 @@ export default function useProject() {
                             setRows(dataList, columnList, message.rows)
                         if (message?.details.status === 'completed') {
                             getData(
+                                activeInlineTab,
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
                                 message?.details.executionTime
@@ -291,7 +297,7 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion('success')
+                            if (onCompletion) onCompletion(activeInlineTab, 'success')
 
                             /* ------------------- */
                         }
@@ -316,7 +322,7 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion('error')
+                            if (onCompletion) onCompletion(activeInlineTab, 'error')
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -367,7 +373,7 @@ export default function useProject() {
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined
                     /* Callback will be called when request completed */
-                    if (onCompletion) onCompletion('error')
+                    if (onCompletion) onCompletion(activeInlineTab, 'error')
                 }
             } catch (e) {
                 console.error(e)

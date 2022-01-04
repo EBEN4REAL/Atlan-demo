@@ -291,34 +291,37 @@
                 loadThemes(monaco)
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     glyphMargin: false,
-                    folding: false,
+                    folding: true,
                     lineDecorationsWidth: 8,
                     lineNumbersMinChars: 2,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
-                    renderLineHighlight: 'none',
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    // fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,
                     letterSpacing: 0.1,
-                    // cursorSmoothCaretAnimation: true,
-                    // cursorBlinking: 'smooth',
                     minimap: {
                         enabled: false,
                     },
                     automaticLayout: true,
-                    overviewRulerLanes: 0,
-                    scrollbar: {
-                        horizontal: 'hidden',
-                    },
+                    // scrollbar: {
+                    //     horizontal: 'hidden',
+                    // },
+
                     wordWrap: 'on',
                     quickSuggestions: {
                         other: true,
                         comments: false,
                         strings: true,
                     },
+                    // scrollbar: {
+                    //     useShadows: true,
+                    //     verticalHasArrows: false,
+                    //     vertical: 'visible',
+                    //     horizontal: 'hidden',
+                    //     verticalScrollbarSize: 25,
+                    // },
                 })
 
                 editor.onDidChangeCursorSelection((e) => {
@@ -632,20 +635,22 @@
 <style lang="less" module>
     // .monaco-global {
     :global(.line-numbers) {
-        margin-left: 15px !important;
+        margin-left: 5px !important;
+        margin-right: 10px !important;
     }
     :global(.monaco-scrollable-element.editor-scrollable) {
-        left: 53px !important;
+        left: 63px !important;
+        width: calc(100% - 63px) !important;
     }
     :global(.margin) {
-        width: 53px !important;
+        width: 63px !important;
     }
     :global(.line-numbers) {
-        width: 37px !important;
-        padding-left: 8px !important;
+        width: 47px !important;
+        // padding-left: 8px !important;
         padding-right: 12px !important;
-        margin-left: 16px !important;
-        text-align: left !important;
+        // margin-left: 16px !important;
+        text-align: right !important;
     }
     :global(.monaco-editor) {
         padding-top: 8px !important;
@@ -656,6 +661,12 @@
         &::selection {
             background: transparent !important;
         }
+    }
+    :global(.cldr.codicon.codicon-folding-expanded) {
+        left: 35px !important;
+    }
+    :global(.cldr.codicon.codicon-folding-collapsed) {
+        left: 35px !important;
     }
     // }
 </style>

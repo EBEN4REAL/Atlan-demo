@@ -39,11 +39,12 @@
         },
         {
             "token": "comment",
-            "foreground": "008000"
+            "foreground": "878CA0",
+            "fontStyle":"italic"
         },
         {
             "token": "number",
-            "foreground": "#D75292"
+            "foreground": "#DE3285"
         },
         {
             "token": "number.hex",
@@ -199,9 +200,15 @@
         {
             "token": "predefined.sql",
             "foreground": "5277D7"
-        }
+        },        
+        {
+            "token": "quotedString.sql",
+            "foreground": "8832de"
+        }       
     ],
     "colors": {
-        "editorLineNumber.foreground": "#A5A5A5"
+        "editorLineNumber.foreground": "#A5A5A5",
+        "editor.lineHighlightBackground": "#F3F3F3"
     }
 }
+

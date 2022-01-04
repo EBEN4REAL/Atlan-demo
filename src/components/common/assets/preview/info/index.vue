@@ -210,6 +210,18 @@
             </div>
         </div>
 
+        <div
+            v-if="selectedAsset?.guid && selectedAsset?.typeName === 'Query'"
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">
+                {{ attributes(selectedAsset)?.parent?.typeName }}
+            </div>
+            <div class="text-sm tracking-wider text-gray-700">
+                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+            </div>
+        </div>
+
         <div class="flex flex-col">
             <Shortcut
                 shortcut-key="d"
@@ -530,6 +542,7 @@
                 selectedAssetUpdatePermission,
                 tableName,
                 viewName,
+                attributes,
             } = useAssetInfo()
 
             const {
@@ -627,6 +640,7 @@
                 handleSQLQueryUpdate,
                 tableName,
                 viewName,
+                attributes,
             }
         },
     })

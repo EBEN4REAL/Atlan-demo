@@ -109,28 +109,11 @@
             </div>
         </template>
         <template #group="{ text: user }">
-            <a-popover v-if="user?.groupCount" placement="bottom">
-                <template #content>
-                    <div class="p-3 content-popover-group-persona">
-                        <div class="flex justify-between">
-                            Groups
-                            <div>
-                                <span class="ml-auto text-primary">
-                                    Manage
-                                </span>
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
-                                />
-                            </div>
-                        </div>
-                        <Groups :user="user" />
-                    </div>
-                </template>
-                <div class="pr-6 text-right text-primary">
-                    {{ user?.groupCount || '-' }}
-                </div>
-            </a-popover>
+            <Groups
+                v-if="user?.groupCount"
+                :user="user"
+                @handleManageGroups="handleManageGroups"
+            />
             <div v-else class="pr-6 text-right text-primary">-</div>
         </template>
         <template #persona="{ text: user }">
@@ -454,7 +437,9 @@
 
             // fetch roles- need this to find role id when changing user/invite role
             const { roleList } = useRoles()
-
+            const handleManageGroups = (user) => {
+                emit('showUserPreviewDrawer', user, 'groups')
+            }
             return {
                 roleList,
                 userColumns,
@@ -466,6 +451,7 @@
                 isCurrentUser,
                 statusColorClass,
                 map,
+                handleManageGroups,
             }
         },
     })

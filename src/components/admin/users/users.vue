@@ -275,12 +275,12 @@
                 userId,
                 userUpdated,
             } = useUserPreview()
-            const showUserPreviewDrawer = (user: any) => {
+            const showUserPreviewDrawer = (user: any, activeTab: String) => {
                 if (userId.value === user.id && showPreview.value) {
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    openPreview()
+                    openPreview(null, activeTab)
                     selectedUserId.value = user.id
                 }
             }

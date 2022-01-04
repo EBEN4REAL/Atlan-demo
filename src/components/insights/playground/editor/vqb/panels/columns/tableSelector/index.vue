@@ -22,8 +22,13 @@
                 <div class="flex items-center justify-between truncate">
                     <div class="flex items-center truncate">
                         <AtlanIcon
-                            :icon="typeName + `Gray`"
-                            class="w-auto h-4 mr-2"
+                            :icon="
+                                getEntityStatusIcon(
+                                    assetType(item),
+                                    certificateStatus(item)
+                                )
+                            "
+                            class="w-4 h-4 mr-2"
                         />
                         <span class="parent-ellipsis-container-base"
                             >{{ item?.label }}
@@ -58,6 +63,8 @@
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import useBody from './useBody'
 
@@ -84,6 +91,7 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { typeName, filterValues } = toRefs(props)
+            const { assetType, certificateStatus } = useAssetInfo()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -95,7 +103,12 @@
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
                     }),
-                    attributes: ['name', 'displayName', 'columnCount'],
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'columnCount',
+                        'certificateStatus',
+                    ],
                 }
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -120,8 +133,10 @@
             }
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
+                    ...ls,
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     columnCount: ls.attributes?.columnCount,
+                    certificateStatus: ls.attributes.certificateStatus,
                     value: ls.attributes.qualifiedName,
                 }))
 
@@ -163,6 +178,9 @@
                 data,
                 isLoading,
                 dropdownOption,
+                getEntityStatusIcon,
+                assetType,
+                certificateStatus,
             }
         },
     })

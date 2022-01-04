@@ -6,7 +6,7 @@
         >
             <div
                 v-if="selectedColumn?.label"
-                style="max-width: 450px"
+                style="max-width: 98%"
                 class="flex items-center truncate"
             >
                 <component

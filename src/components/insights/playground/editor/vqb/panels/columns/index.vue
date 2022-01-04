@@ -104,16 +104,18 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <ColumnSubPanel
-                v-model:subpanels="
-                    activeInlineTab.playground.vqb.panels[index].subpanels
-                "
-                v-model:selectedTables="
-                    activeInlineTab.playground.vqb.selectedTables
-                "
-                :expand="expand"
-                v-if="expand"
-            />
+            <keep-alive>
+                <ColumnSubPanel
+                    v-model:subpanels="
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    "
+                    v-model:selectedTables="
+                        activeInlineTab.playground.vqb.selectedTables
+                    "
+                    :expand="expand"
+                    v-if="expand"
+                />
+            </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="

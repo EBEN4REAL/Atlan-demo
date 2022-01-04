@@ -15,6 +15,7 @@
                             (val) => hanldeTableQualifiedNameChange(val, index)
                         "
                     />
+
                     <ColumnSelector
                         class="flex-1 ml-6"
                         style="min-height: 34px"

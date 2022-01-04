@@ -448,6 +448,7 @@
                         'displayName',
                         'dataType',
                         'isPrimary',
+                        'certificateStatus',
                     ],
                 }
             }

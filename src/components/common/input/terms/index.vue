@@ -28,7 +28,7 @@
             <TermPopover
                 :term="term"
                 :loading="termLoading"
-                :fetchedTerm="fetchedTerm"
+                :fetched-term="getFetchedTerm(term.guid)"
                 :error="termError"
                 trigger="hover"
                 :ready="isReady"
@@ -72,6 +72,7 @@
         AssetRelationAttributes,
         GlossaryAttributes,
     } from '~/constant/projection'
+    import { Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         name: 'TermsWidget',
@@ -210,24 +211,43 @@
                 relationAttributes,
             })
 
-            const fetchedTerm = computed(() => {
-                if (fetchTermArr.value.length) return fetchTermArr.value[0]
-                return null
+            /**
+             * * OPTMIZING THE TERMS POPOVER vvvvv
+             */
+
+            const fetchedTerms = ref<Term[]>([])
+
+            const getFetchedTerm = (guid) =>
+                fetchedTerms.value.find((t) => t.guid === guid)
+
+            watch([fetchTermArr, isReady], () => {
+                if (fetchTermArr.value.length && isReady?.value) {
+                    const term: Term = fetchTermArr.value[0]
+                    const index = fetchedTerms.value.findIndex(
+                        (t) => t.guid === term.guid
+                    )
+                    if (index > -1) fetchedTerms.value[index] = term
+                    else fetchedTerms.value.push(term)
+                }
             })
 
             const handleTermPopoverVisibility = (v, term) => {
-                if (fetchedTerm.value?.guid === term.guid) return
+                if (getFetchedTerm(term.guid)) return
                 if (v) {
                     facets.value.guid = term.guid
                     quickChange()
                 }
             }
 
+            /**
+             * * OPTMIZING THE TERMS POPOVER ^^^^^
+             */
+
             return {
+                getFetchedTerm,
                 isReady,
                 termError,
                 termLoading,
-                fetchedTerm,
                 handleTermPopoverVisibility,
                 list,
                 onCheck,

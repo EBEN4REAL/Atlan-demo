@@ -621,7 +621,7 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
 
-            const getData = (dataList, columnList) => {
+            const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))

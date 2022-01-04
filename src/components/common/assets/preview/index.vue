@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             v-if="isEvaluating"
             class="flex items-center justify-center flex-grow"
         >
@@ -136,9 +136,8 @@
                 icon="Loader"
                 class="w-auto h-10 animate-spin"
             ></AtlanIcon>
-        </div>
+        </div> -->
         <a-tabs
-            v-else
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="

@@ -3,6 +3,8 @@
         <div class="flex flex-col h-full rounded">
             <Loading v-if="isQueryRunning === 'loading'" />
 
+            <!-- {{ activeInlineTab.playground.editor.columnList }} -->
+
             <AtlanTable
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
@@ -13,6 +15,7 @@
                 "
                 :dataList="activeInlineTab.playground.editor.dataList"
                 :columns="activeInlineTab.playground.editor.columnList"
+                :key="activeInlineTab.key"
             />
 
             <div

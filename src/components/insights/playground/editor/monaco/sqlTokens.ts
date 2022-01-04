@@ -404,6 +404,8 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
             [/'/, { token: 'string', next: '@pop' }],
         ],
         complexIdentifiers: [
+            [/"(.*?)"/, {token: 'quotedString'}]
+,
             [/\[/, { token: 'identifier.quote', next: '@bracketedIdentifier' }],
             [/"/, { token: 'identifier.quote', next: '@quotedIdentifier' }],
         ],

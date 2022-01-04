@@ -99,6 +99,7 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
+        
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
@@ -139,6 +140,15 @@ export function useEditor(
 
     //     return query
     // }
+
+    const resetLineDecorations = (
+        editorInstance
+    ) => {
+        decorations = toRaw(editorInstance).deltaDecorations(
+            decorations ?? [],
+            []
+        )
+    }
 
     function getParsedQueryCursor(
         variables: CustomVaribaleInterface[],
@@ -340,10 +350,11 @@ export function useEditor(
                 //     endColumnNumber: queryEndColumn
                 // })
                 let monaco = toRaw(monacoInstance)
-                decorations = toRaw(editorInstance).deltaDecorations(
-                    decorations ?? [],
-                    []
-                )
+                // decorations = toRaw(editorInstance).deltaDecorations(
+                //     decorations ?? [],
+                //     []
+                // )
+                resetLineDecorations(editorInstance)
                 decorations = toRaw(editorInstance).deltaDecorations(
                     [],
                     [
@@ -581,5 +592,6 @@ export function useEditor(
         onEditorContentChange,
         getParsedQuery,
         getParsedQueryCursor,
+        resetLineDecorations
     }
 }

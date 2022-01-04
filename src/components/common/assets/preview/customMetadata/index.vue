@@ -111,6 +111,11 @@
                 <span
                     v-if="[...applicableList].filter((i) => hasValue(i)).length"
                     class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                    :class="
+                        !applicableList.filter((i) => !hasValue(i)).length
+                            ? 'hidden'
+                            : ''
+                    "
                     @click="showMore = !showMore"
                 >
                     <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
@@ -508,8 +513,8 @@
 
             const hasValue = (a) => {
                 const isMultivalued =
-                    a.options.multiValueSelect === 'true' ||
-                    a.options.multiValueSelect === true
+                    a?.options?.multiValueSelect === 'true' ||
+                    a?.options?.multiValueSelect === true
                 const dataType = getDatatypeOfAttribute(a)
 
                 if (

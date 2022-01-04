@@ -90,8 +90,9 @@
             <a-tabs
                 v-model:activeKey="activeKey"
                 tab-position="left"
-                class="h-full border-t preview-tab"
+                class="h-full border-t"
                 :destroy-inactive-tab-pane="true"
+                :class="$style.previewtab"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -332,5 +333,41 @@
         left: -40px;
         top: 20px;
         cursor: pointer;
+    }
+</style>
+
+<style lang="less" module>
+    .previewtab {
+        &:global(.ant-tabs-left) {
+            :global(.ant-tabs-nav-container) {
+                width: 48px !important;
+                @apply ml-0 !important;
+            }
+            :global(.ant-tabs-tab) {
+                padding: 3px 8px !important;
+                @apply justify-center;
+            }
+
+            :global(.ant-tabs-nav-wrap) {
+                @apply pt-3;
+            }
+
+            :global(.ant-tabs-content) {
+                @apply px-0 h-full !important;
+            }
+            :global(.ant-tabs-ink-bar) {
+                @apply rounded-t-sm;
+                margin-bottom: 1px;
+            }
+            :global(.ant-tabs-tabpane) {
+                @apply px-0 !important;
+                @apply pb-0 !important;
+                @apply h-full !important;
+            }
+
+            :global(.ant-tabs-content-holder) {
+                @apply h-full !important;
+            }
+        }
     }
 </style>

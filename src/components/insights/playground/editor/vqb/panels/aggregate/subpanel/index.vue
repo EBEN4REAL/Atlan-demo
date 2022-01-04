@@ -25,7 +25,9 @@
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
-                    <span class="px-3 text-sm text-gray-500">aggregate by</span>
+                    <span class="px-3 text-sm text-gray-500"
+                        >Calculate the</span
+                    >
 
                     <AggregateSelector
                         class="flex-1"

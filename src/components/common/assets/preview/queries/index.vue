@@ -10,7 +10,7 @@
             ></AtlanIcon>
         </div>
         <div
-            v-if="!isLoading && error"
+            v-else-if="!isLoading && error"
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>
@@ -24,6 +24,7 @@
                 empty-screen="EmptyQueriesTab"
                 desc="This asset doesn't have any saved queries"
                 buttonText="Create a new query"
+                buttonColor="secondary"
                 @event="handleCreateQuery"
             ></EmptyView>
         </div>
@@ -142,7 +143,7 @@
             const updateFacet = () => {
                 facets.value = {}
 
-                facets.value.queryGuid = queries(selectedAsset.value)?.map(
+                facets.value.guidList = queries(selectedAsset.value)?.map(
                     (query) => query.guid
                 )
             }

@@ -41,8 +41,9 @@
 
                         <Tooltip
                             :tooltip-text="`${title(item)}`"
-                            :routeTo="getProfilePath(item)"
+                            :route-to="getProfilePath(item)"
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
+                            :shouldOpenInNewTab="shouldOpenInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
 
@@ -473,7 +474,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        PropType,
+        inject,
+    } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -568,6 +576,10 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
+            // inject props for enabling open asset profile in new tab
+            const shouldOpenInNewTab = computed(
+                () => inject('shouldOpenInNewTab') || false
+            )
 
             const {
                 title,
@@ -718,6 +730,7 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
+                shouldOpenInNewTab,
             }
         },
     })

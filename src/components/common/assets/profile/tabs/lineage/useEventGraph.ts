@@ -1,5 +1,5 @@
-import { watch, ref } from 'vue'
-import { dataTypeCategoryList } from '~/constant/dataType'
+import { watch, ref, computed } from 'vue'
+import useLineageService from '~/services/meta/lineage/lineage_service'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import {
     AssetAttributes,
@@ -9,8 +9,11 @@ import {
 } from '~/constant/projection'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
+import useGraph from './useGraph'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
+const { useFetchLineage } = useLineageService()
+const { createPortData, toggleNodesEdges, addEdge } = useGraph()
 
 export default function useEventGraph(
     graph,
@@ -24,8 +27,32 @@ export default function useEventGraph(
     resetSelections,
     onCloseDrawer
 ) {
+    /** DATA */
+    const isNodeClicked = ref(false)
+    const nodesColumns = ref({})
+    const nodesPorts = ref({})
     const edgesHighlighted = ref([])
+    const nodesTranslated = ref([])
+    const che = ref('') // che -> currentHilightedEdge
+    const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
 
+    /** WATCHERS */
+    watch(assetGuidToHighlight, (newVal) => {
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            highlight(null)
+            resetSelections.value = false
+        }
+    })
+
+    /** METHODS */
+    // getHighlights
     const getHighlights = (guid) => {
         let nodesToHighlight = []
         if (guid.value) {
@@ -38,6 +65,7 @@ export default function useEventGraph(
         }
     }
 
+    // highlight
     const highlight = (guid, styleHighlightedNode = true) => {
         if (guid === highlightedNode.value) onCloseDrawer()
 
@@ -54,90 +82,155 @@ export default function useEventGraph(
         loaderCords.value = {}
     }
 
-    watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) highlight(null)
-        else highlight(newVal)
-    })
+    // translateSubsequentNodes
+    const translateSubsequentNodes = (node) => {
+        const { x } = node.position()
 
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            highlight(null)
-            resetSelections.value = false
-        }
-    })
+        const nodesToTranslate = graph.value.getNodes().filter((n) => {
+            const { x: x2 } = n.position()
+            if (
+                x === x2 &&
+                n.store.data._order > node.store.data._order &&
+                n.id !== node.id
+            )
+                return n
+            return false
+        })
 
-    const columns = ref({})
-    const nodesWithPorts = ref({})
-    const nodesTranslated = ref([])
+        nodesToTranslate.sort(
+            (a, b) => Number(a.store.data._order) - Number(b.store.data._order)
+        )
 
+        nodesToTranslate.forEach((nodeToTranslate) => {
+            const { x: x3 } = nodeToTranslate.position()
+            const justBefore = graph.value.getNodes().find((n) => {
+                const { x: xq } = n.position()
+                const orderDiff =
+                    nodeToTranslate.store.data._order - n.store.data._order
+                if (xq === x3 && orderDiff === 1) return n
+                return false
+            })
+
+            const { y: y2 } = justBefore.position()
+            const justBeforePortsLength = justBefore.getPorts().length - 1
+            const portsLengthTotal = justBeforePortsLength * 40
+            const newY = y2 + 130.5 + portsLengthTotal
+
+            nodeToTranslate.position(x3, newY)
+
+            if (nodesTranslated.value[node.id]) {
+                const itExists = nodesTranslated.value[node.id].some(
+                    (x) => x.id === nodeToTranslate.id
+                )
+                if (!itExists) {
+                    nodesTranslated.value[node.id].push(nodeToTranslate)
+                }
+            } else nodesTranslated.value[node.id] = [nodeToTranslate]
+        })
+    }
+
+    // translateExpandedNodesToDefault
+    const translateExpandedNodesToDefault = (x) => {
+        const nodesToTranslate = nodesTranslated.value?.[x.id] || []
+        nodesToTranslate.forEach((nodeToTranslate) => {
+            const { x: x1 } = nodeToTranslate.position()
+            const justBefore = graph.value.getNodes().find((n) => {
+                const { x: xq } = n.position()
+                const orderDiff =
+                    nodeToTranslate.store.data._order - n.store.data._order
+                if (xq === x1 && orderDiff === 1) return n
+                return false
+            })
+
+            const { y: y2 } = justBefore.position()
+            const justBeforePortsLength = justBefore.getPorts().length - 1
+            const portsLengthTotal = justBeforePortsLength * 40
+            const newY = y2 + 130.5 + portsLengthTotal
+
+            nodeToTranslate.position(x1, newY)
+        })
+        nodesTranslated.value[x.id] = []
+    }
+
+    // portExist
+    const portExist = (id) => graph.value.getNodes().some((x) => x.hasPort(id))
+
+    // getPortNode
+    const getPortNode = (id) =>
+        graph.value.getNodes().find((x) => x.hasPort(id))
+
+    // isNodeExpanded
+    const isNodeExpanded = (id) =>
+        chp.value.expandedNodes.some((x) => x.id === id)
+
+    // controlPorts
     const controlPorts = (node) => {
-        if (!nodesWithPorts.value[node.id]) {
-            const ports = columns.value[node.id].map((x) => {
-                const text =
-                    x.displayText.charAt(0).toUpperCase() +
-                    x.displayText.slice(1).toLowerCase()
-                const dataType = dataTypeCategoryList.find((d) =>
-                    d.type.includes(x.attributes.dataType.toUpperCase())
-                )?.imageText
-
-                return {
-                    id: x.guid,
-                    group: 'columnList',
-                    attrs: {
-                        portBody: {},
-                        portNameLabel: {
-                            text,
-                        },
-                        portImage: {
-                            href: `/dataType/${dataType}.svg`,
-                            width: 16,
-                            height: 16,
-                        },
-                    },
+        if (!nodesPorts.value?.[node.id]?.length) {
+            const ports = nodesColumns.value[node.id].map((x) => {
+                const { portData } = createPortData(x)
+                return portData
+            })
+            ports.forEach((x) => {
+                if (portExist(x.id)) {
+                    const parentNode = getPortNode(x.id)
+                    parentNode.removePort(x.id)
                 }
             })
             node.addPorts(ports)
 
-            const { x, y } = node.position()
-            const nodesToTranslate = graph.value.getNodes().filter((n) => {
-                const { x: x2 } = n.position()
-                if (x === x2 && n.id !== node.id) return n
-                return false
-            })
+            translateSubsequentNodes(node)
 
-            nodesToTranslate.forEach((nodeToTranslate) => {
-                const { x: x2, y: y2 } = nodeToTranslate.position()
-                if (y2 > y) {
-                    const cell = graph.value.getCellById(nodeToTranslate.id)
-                    cell.setData({ prevY: y2 })
-                    const newY = y2 + ports.length * 40
-                    nodeToTranslate.position(x2, newY)
-                    if (nodesTranslated.value[node.id])
-                        nodesTranslated.value[node.id].push(nodeToTranslate)
-                    else nodesTranslated.value[node.id] = [nodeToTranslate]
-                }
-            })
-            nodesWithPorts.value[node.id] = true
+            nodesPorts.value[node.id] = ports
         } else {
             const ports = node.getPorts()
             ports.shift()
             node.removePorts(ports)
-            const nodesToTranslate = nodesTranslated.value?.[node.id] || []
-            nodesToTranslate.forEach((nodeToTranslate) => {
-                const { x: x1 } = nodeToTranslate.position()
-                const data = nodeToTranslate.getData()
-                nodeToTranslate.position(x1, data.prevY)
-                nodesTranslated.value[node.id] = []
-            })
-            nodesWithPorts.value[node.id] = false
+            translateExpandedNodesToDefault(node)
+            nodesPorts.value[node.id] = []
         }
     }
 
-    const getColumnsList = (node, asset) => {
-        if (columns.value[asset.guid]) {
+    // createRelations
+    const createRelations = (relations) => {
+        const graphNodes = graph.value.getNodes()
+        relations.forEach((x) => {
+            const sourceCell = graphNodes.find((y) =>
+                y.hasPort(x.fromEntityId)
+            ).id
+            const targetCell = graphNodes.find((y) =>
+                y.hasPort(x.toEntityId)
+            ).id
+            const relation = {
+                id: `processIdGoesHere/${x.fromEntityId}@${x.toEntityId}`,
+                sourceCell,
+                sourcePort: x.fromEntityId,
+                targetCell,
+                targetPort: x.toEntityId,
+                stroke: '#5277d7',
+            }
+            addEdge(graph, relation)
+        })
+    }
+
+    const getValidPortRelations = (allRelations) => {
+        let rel = []
+        if (chp.value.portId) {
+            rel = allRelations.filter((x) => {
+                if (portExist(x.fromEntityId) && portExist(x.toEntityId)) {
+                    return true
+                }
+                return false
+            })
+        }
+        return rel
+    }
+
+    // getNodeColumnList
+    const getNodeColumnList = (node, asset, allRelations = []) => {
+        if (nodesColumns.value[asset.guid]) {
             controlPorts(node)
+            const rel = getValidPortRelations(allRelations)
+            createRelations(rel)
             loaderCords.value = {}
             return
         }
@@ -171,36 +264,66 @@ export default function useEventGraph(
             relationAttributes,
         })
 
-        watch(list, () => {
-            columns.value[asset.guid] = list.value
-            controlPorts(node)
-            loaderCords.value = {}
+        watch(
+            list,
+            () => {
+                nodesColumns.value[asset.guid] = list.value
+                controlPorts(node)
+                const rel = getValidPortRelations(allRelations)
+                createRelations(rel)
+                loaderCords.value = {}
+            },
+            { deep: true }
+        )
+    }
+
+    // getColumnLineage
+    const getColumnLineage = (portId) => {
+        const config = computed(() => ({
+            depth: 3,
+            guid: portId,
+            direction: 'BOTH',
+            hideProcess: true,
+        }))
+        const { data } = useFetchLineage(config, true)
+        watch(data, () => {
+            const translateCandidatesSet = new Set()
+            Object.entries(data.value.guidEntityMap).forEach(([k, v]) => {
+                if (k !== portId) {
+                    toggleNodesEdges(graph, false)
+                    const qn = v.attributes.qualifiedName.split('/')
+                    const parentName = qn[qn.length - 2]
+                    const graphNodes = graph.value.getNodes()
+                    const parentNode = graphNodes.find(
+                        (x) => x.store.data.entity.displayText === parentName
+                    )
+                    if (parentNode) translateCandidatesSet.add(parentNode)
+                }
+            })
+
+            const translateCandidates = Array.from(translateCandidatesSet)
+            translateCandidates.sort(
+                (a, b) =>
+                    Number(a.store.data._order) - Number(b.store.data._order)
+            )
+
+            translateCandidates.forEach((x) => {
+                if (nodesPorts.value?.[x.id]) nodesPorts.value[x.id] = []
+                getNodeColumnList(x, x.store.data.entity, data.value.relations)
+            })
+
+            chp.value.expandedNodes = translateCandidates
+            translateCandidates.forEach((candidate) => {
+                translateSubsequentNodes(candidate)
+            })
         })
     }
 
-    const chp = ref({}) // chp -> currentHilightedPort
-    graph.value.on('port:click', ({ e, node }) => {
-        e.stopPropagation()
-        const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
-        const portId = ele.getAttribute('port')
-        if (chp.value[node.id] && node.getPort(chp.value[node.id]))
-            node.setPortProp(chp.value[node.id], 'attrs/portBody', {
-                fill: '#ffffff',
-            })
-        if (chp.value[node.id] !== portId)
-            node.setPortProp(portId, 'attrs/portBody', {
-                fill: '#e5ecff',
-            })
-        if (chp.value[node.id])
-            chp.value[node.id] = chp.value[node.id] !== portId ? portId : ''
-        else chp.value = { ...chp.value, ...{ [node.id]: portId } }
-    })
-
-    const che = ref('') // che -> currentHilightedEdge
+    // controlEdgeHighlight
     const controlEdgeHighlight = (cell, reset, animate = false) => {
         if (!cell) return
         cell.attr('line/stroke', reset ? '#c7c7c7' : '#5277d7')
-        cell.attr('line/strokeWidth', reset ? 1.6 : 2)
+        cell.attr('line/strokeWidth', reset ? 1.6 : 3)
         cell.attr('line/strokeDasharray', reset ? 0 : 5)
         cell.attr('line/targetMarker/stroke', reset ? '#c7c7c7' : '#5277d7')
         cell.toFront()
@@ -208,8 +331,63 @@ export default function useEventGraph(
             cell.attr('line/style/animation', 'ant-line 30s infinite linear')
         else cell.attr('line/style/animation', 'unset')
     }
+
+    /** EVENTS */
+    // PORT - CLICK
+    graph.value.on('port:click', ({ e, node }) => {
+        e.stopPropagation()
+        const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
+        const portId = ele.getAttribute('port')
+        if (chp.value.portId === portId) {
+            // if current port - deselect
+            node.setPortProp(chp.value.portId, 'attrs/portBody', {
+                fill: '#ffffff',
+            })
+            chp.value.expandedNodes.forEach((x) => {
+                // remove ports of all interlinked nodes
+                nodesPorts.value[x.id] = []
+                const portsToRemove = x.getPorts()
+                portsToRemove.shift()
+                x.removePorts(portsToRemove)
+                translateExpandedNodesToDefault(x)
+            })
+            chp.value.portId = ''
+            chp.value.expandedNodes = []
+            toggleNodesEdges(graph, true)
+        } else {
+            // if new port
+            const chpNode = graph.value
+                .getNodes()
+                .find((x) => x.hasPort(chp.value.portId))
+            if (chpNode) {
+                chp.value.expandedNodes.push(chpNode)
+                chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
+                    fill: '#ffffff',
+                })
+            }
+            chp.value.expandedNodes.forEach((x) => {
+                if (x.id === node.id) return
+                nodesPorts.value[x.id] = []
+                const ports = x.getPorts()
+                ports.shift()
+                const portsToRemove = ports.filter((x) => x.id !== portId)
+                x.removePorts(portsToRemove)
+                translateExpandedNodesToDefault(x)
+            })
+            chp.value.portId = portId
+            chp.value.expandedNodes = []
+            node.setPortProp(portId, 'attrs/portBody', {
+                fill: '#e5ecff',
+            })
+            loaderCords.value = { x: e.clientX, y: e.clientY }
+            getColumnLineage(portId)
+        }
+    })
+
+    // EDGE - CLICK
     const cheCell = graph.value.getCellById(che.value)
     graph.value.on('edge:click', ({ edge, cell }) => {
+        if (edge.id.includes('processIdGoesHere')) return
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
@@ -229,7 +407,11 @@ export default function useEventGraph(
         const target = edge.id.split('/')[1].split('@')[1]
         highlight(target, false)
     })
+
+    // EDGE - MOUSEENTER
     graph.value.on('edge:mouseenter', ({ cell, edge }) => {
+        if (chp.value.portId) return
+        if (edge.id.includes('processIdGoesHere')) return
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
             controlEdgeHighlight(cell, false, true)
@@ -238,7 +420,11 @@ export default function useEventGraph(
             edgeCell.toFront()
         })
     })
+
+    // EDGE - MOUSELEAVE
     graph.value.on('edge:mouseleave', ({ cell, edge }) => {
+        if (chp.value.portId) return
+        if (edge.id.includes('processIdGoesHere')) return
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
             controlEdgeHighlight(cell, true)
@@ -248,32 +434,54 @@ export default function useEventGraph(
         })
     })
 
-    const isNodeClicked = ref(false)
+    // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         loaderCords.value = { x: e.clientX, y: e.clientY }
+        const chpNode = getPortNode(chp.value.portId)
+        if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
+            loaderCords.value = {}
+            return
+        }
         isNodeClicked.value = true
         const nodeClickAction = () => {
             if (!isNodeClicked.value) return
+            if (chp.value.portId) {
+                loaderCords.value = {}
+                return
+            }
             onSelectAsset(node.store.data.entity)
             highlight(node?.id)
             che.value = ''
         }
         setTimeout(nodeClickAction, 300)
     })
+
+    // NODE - DBLCLICK
     graph.value.on('node:dblclick', ({ node }) => {
+        const chpNode = getPortNode(chp.value.portId)
+        if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
+            loaderCords.value = {}
+            return
+        }
         isNodeClicked.value = false
-        getColumnsList(node, node.store.data.entity)
+        getNodeColumnList(node, node.store.data.entity)
     })
+
+    // BLANK - CLICK
     graph.value.on('blank:click', () => {
+        if (chp.value.portId) return
         onSelectAsset(baseEntity.value)
         onCloseDrawer()
         che.value = ''
         highlight(null)
     })
 
+    // BLANK - MOUSEWHEEL
     graph.value.on('blank:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
+
+    // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })

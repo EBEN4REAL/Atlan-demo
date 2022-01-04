@@ -33,9 +33,14 @@
 
                     <div class="flex">
                         <div class="flex space-x-2 font-bold text-gray-700">
-                            <span class="max-w-xs truncate">
-                                {{ attributes.localName }}
-                            </span>
+                            <Ellipsis
+                                :tooltipText="attributes?.localName"
+                                :rows="2"
+                                :classes="'max-w-xs'"
+                            />
+                            <!-- <span class="max-w-xs truncate">
+                                {{ attributes?.localName }}
+                            </span> -->
                             <CertificateBadge
                                 v-if="certificateStatus(fetchedTerm)"
                                 :status="certificateStatus(fetchedTerm)"
@@ -46,17 +51,17 @@
                     </div>
 
                     <div
-                        v-if="attributes.localDescription"
+                        v-if="attributes?.localDescription"
                         style="font-size: 12px"
                         class=""
                     >
                         <div class="text-gray-500">Description</div>
                         <div class="text-gray-700">
-                            {{ attributes.localDescription }}
+                            {{ attributes?.localDescription }}
                         </div>
                     </div>
                     <!-- <div
-                        v-if="attributes.localCategories?.length"
+                        v-if="attributes?.localCategories?.length"
                         style="font-size: 12px"
                         class=""
                     >
@@ -65,7 +70,7 @@
                             class="leading-5 text-gray-700 truncate overflow-ellipsis"
                         >
                             <Category
-                                v-modal="attributes.localCategories"
+                                v-modal="attributes?.localCategories"
                                 :selected-asset="fetchedTerm"
                                 :edit-permission="false"
                             />
@@ -74,8 +79,8 @@
 
                     <div
                         v-if="
-                            attributes.localOwners?.ownerGroups?.length ||
-                            attributes.localOwners?.ownerUsers?.length
+                            attributes?.localOwners?.ownerGroups?.length ||
+                            attributes?.localOwners?.ownerUsers?.length
                         "
                         style="font-size: 12px"
                         class=""
@@ -92,9 +97,7 @@
                         </div>
                     </div>
                     <div class="w-full pt-4">
-                        <router-link
-                            :to="`/glossary/${term.guid}/overview`"
-                        >
+                        <router-link :to="`/glossary/${term.guid}/overview`">
                             <AtlanButton
                                 color="secondary"
                                 class="w-full p-0 h-7"
@@ -140,6 +143,7 @@
     // import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'TermPopover',
@@ -147,6 +151,7 @@
             Owners,
             ErrorView,
             Category,
+            Ellipsis,
             AtlanButton,
             CertificateBadge,
         },
@@ -161,10 +166,6 @@
             },
             error: {
                 type: Error,
-                required: true,
-            },
-            isReady: {
-                type: Boolean,
                 required: true,
             },
             fetchedTerm: {
@@ -208,13 +209,12 @@
 
             const handleVisibleChange = (v) => {
                 emit('visible', v, term.value)
-                // console.log({ v })
-                // if (!list.value?.length && v) quickChange()
-                // // fetch()
             }
 
             onMounted(() => {
-                console.log('fetching')
+                if (fetchedTerm.value) {
+                    attributes.value = updateAssetAttributes(fetchedTerm)
+                }
             })
 
             return {

@@ -29,6 +29,7 @@
             type="number"
             placeholder="Enter an integer..."
             @change="handleChange"
+            @keydown.e="(e) => e.preventDefault()"
         />
         <a-input
             v-else-if="typeName === 'float'"
@@ -42,6 +43,7 @@
             max="10"
             placeholder="Enter decimal value..."
             @change="handleChange"
+            @keydown.e="(e) => e.preventDefault()"
         />
         <a-input
             v-else-if="typeName === 'url'"

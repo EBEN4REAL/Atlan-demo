@@ -152,7 +152,6 @@
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
                 :key="index"
-                class="overflow-y-auto"
                 :destroy-inactive-tab-pane="true"
                 :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
             >
@@ -405,6 +404,8 @@
                 //     tabChildRef.value[activeKey.value]?.handleCancel()
                 // else activeKey.value = k
             }
+
+            provide('isProfile', isProfile.value)
 
             return {
                 tabChildRef,

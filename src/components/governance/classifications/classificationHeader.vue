@@ -81,6 +81,7 @@
                         </a-button>
                         <template #content>
                             <ClassificationColorSelector
+                                class="py-1"
                                 v-model:selectedColor="classificationColor"
                                 menu-mode
                             />

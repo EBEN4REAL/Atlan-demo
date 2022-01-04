@@ -1,22 +1,40 @@
 <template>
     <a-dropdown v-if="!menuMode" trigger="click">
+        <!-- Improve this, DRY  -->
         <template #overlay>
-            <a-menu>
-                <a-menu-item
-                    v-for="option in options"
-                    :key="option.color"
-                    @click="selectedColor = option.color"
-                >
-                    <div>
-                        <AtlanIcon
-                            icon="Shield"
-                            class="self-center"
-                            :class="option.text"
-                        />
-                        {{ option.color }}
+            <div class="bg-white rounded" style="max-width: 271px">
+                <template v-for="option in options" :key="option.color">
+                    <div
+                        class="flex px-4 py-2 rounded cursor-pointer hover:bg-gray-light"
+                        :class="
+                            option.color === selectedColor
+                                ? 'bg-primary-light'
+                                : ''
+                        "
+                        @click="selectedColor = option.color"
+                    >
+                        <div class="">
+                            <AtlanIcon
+                                icon="Shield"
+                                class="self-center mr-1"
+                                :class="option.text"
+                            />
+                        </div>
+                        <div class="flex flex-col">
+                            <span>{{ option.color }}</span>
+                            <span class="text-xs text-gray-500">{{
+                                option.desc
+                            }}</span>
+                        </div>
+                        <div
+                            v-if="selectedColor === option.color"
+                            class="flex items-center"
+                        >
+                            <AtlanIcon icon="Check" class="text-primary" />
+                        </div>
                     </div>
-                </a-menu-item>
-            </a-menu>
+                </template>
+            </div>
         </template>
         <div
             class="flex items-center py-1 pl-2 pr-1 space-x-1 rounded cursor-pointer"
@@ -32,12 +50,12 @@
     </a-dropdown>
     <template v-else>
         <div
-            class="flex flex-col bg-white cursor-pointer"
+            class="flex flex-col bg-white rounded cursor-pointer"
             style="max-width: 271px"
         >
             <template v-for="option in options" :key="option.color">
                 <div
-                    class="flex px-4 py-2 hover:bg-gray-light"
+                    class="flex px-4 py-2 rounded hover:bg-gray-light"
                     :class="
                         option.color === selectedColor ? 'bg-primary-light' : ''
                     "

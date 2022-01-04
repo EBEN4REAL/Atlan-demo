@@ -33,9 +33,14 @@
 
                     <div class="flex">
                         <div class="flex space-x-2 font-bold text-gray-700">
-                            <span class="max-w-xs truncate">
+                            <Ellipsis
+                                :tooltipText="attributes.localName"
+                                :rows="2"
+                                :classes="'max-w-xs'"
+                            />
+                            <!-- <span class="max-w-xs truncate">
                                 {{ attributes.localName }}
-                            </span>
+                            </span> -->
                             <CertificateBadge
                                 v-if="certificateStatus(fetchedTerm)"
                                 :status="certificateStatus(fetchedTerm)"
@@ -92,9 +97,7 @@
                         </div>
                     </div>
                     <div class="w-full pt-4">
-                        <router-link
-                            :to="`/glossary/${term.guid}/overview`"
-                        >
+                        <router-link :to="`/glossary/${term.guid}/overview`">
                             <AtlanButton
                                 color="secondary"
                                 class="w-full p-0 h-7"
@@ -140,6 +143,7 @@
     // import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'TermPopover',
@@ -147,6 +151,7 @@
             Owners,
             ErrorView,
             Category,
+            Ellipsis,
             AtlanButton,
             CertificateBadge,
         },

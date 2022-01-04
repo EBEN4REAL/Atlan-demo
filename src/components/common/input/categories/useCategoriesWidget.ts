@@ -1,4 +1,4 @@
-import { watch, ref, Ref, onMounted, computed } from 'vue'
+import { ref } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 import { useBody } from '~/composables/discovery/useBody'
@@ -97,7 +97,6 @@ const useCategoriesWidget = ({
     }
 
     const onLoadData = async (treeNode) => {
-        console.log(treeNode)
         facets.value = {
             typeNames: ['AtlasGlossaryCategory'],
             glossary: parentGlossaryQf,
@@ -137,13 +136,12 @@ const useCategoriesWidget = ({
             treeNode.dataRef.isLoading = false
             treeNode.dataRef.isError = e
         }
-
     }
 
     return {
         treeData,
         initCategories,
-        onLoadData
+        onLoadData,
     }
 }
 

@@ -2,9 +2,9 @@
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
     <a-collapse>
-        <div class="p-3 bg-white w-36">FILTERS</div>
+        <div class="w-full p-3 bg-white">FILTERS</div>
         <a-collapse-panel
-            class="border-t border-gray-200 group"
+            class="border-t border-gray-50 group"
             :show-arrow="false"
         >
             <template #header>
@@ -18,7 +18,7 @@
             </template>
             <div class="justify-center p-4 bg-white rounded w-36">
                 <a-form layout="vertical" class="p-0">
-                    <a-form-item label="USER STATUS" class="mb-0">
+                    <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
                             class="grid gap-y-2"
@@ -30,7 +30,7 @@
             </div>
         </a-collapse-panel>
         <a-collapse-panel
-            class="border-t border-gray-200 group"
+            class="border-t border-gray-50 group"
             :show-arrow="false"
         >
             <template #header>
@@ -44,7 +44,7 @@
             </template>
             <div class="justify-center p-4 bg-white rounded w-36">
                 <a-form layout="vertical" class="p-0">
-                    <a-form-item label="USER STATUS" class="mb-0">
+                    <a-form-item class="mb-0">
                         <a-radio-group
                             v-model:value="statusFilter"
                             class="grid gap-y-2"

@@ -109,7 +109,7 @@
             </div>
         </template>
         <template #group="{ text: user }">
-            <a-popover placement="bottom">
+            <a-popover v-if="user?.groupCount" placement="bottom">
                 <template #content>
                     <div class="p-3 content-popover-group-persona">
                         <div class="flex justify-between">
@@ -131,9 +131,14 @@
                     {{ user?.groupCount || '-' }}
                 </div>
             </a-popover>
+            <div v-else class="pr-6 text-right text-primary">-</div>
         </template>
         <template #persona="{ text: user }">
-            <a-popover placement="bottom" :destroy-tooltip-on-hide="true">
+            <a-popover
+                v-if="user?.personas?.length"
+                placement="bottom"
+                :destroy-tooltip-on-hide="true"
+            >
                 <template #content>
                     <div class="p-3 content-popover-group-persona">
                         <div class="flex justify-between">
@@ -163,7 +168,7 @@
                     {{ user?.personas?.length || '-' }}
                 </div>
             </a-popover>
-            <div></div>
+            <div v-else class="pr-6 text-right text-primary">-</div>
         </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">

@@ -54,8 +54,8 @@ export const userColumns = [
     {
         title: 'User',
         key: 'user',
-        sorter: true,
-        width: 400,
+        // sorter: true,
+        width: 350,
         slots: { customRender: 'name' },
         sortKey: 'firstName',
         align: 'left',

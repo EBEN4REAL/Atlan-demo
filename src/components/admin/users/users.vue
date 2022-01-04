@@ -2,7 +2,7 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div
-                v-if="!error && userList.length > 0"
+                v-if="userList.length > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
             >
                 <div v-auth="map.LIST_USERS" class="flex items-baseline w-1/4">

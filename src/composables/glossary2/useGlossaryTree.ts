@@ -1,3 +1,4 @@
+// TODO: make helper function to give node attributes and add cta nodes - it's causing redundancy
 import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
 import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
@@ -727,7 +728,7 @@ const useGlossaryTree = ({
         }
     }
 
-    const updateNode = (asset) => {
+    const updateNode = (asset, updateCategories = true) => {
         const currentParents = nodeToParentKeyMap[asset?.guid]
         if (currentParents) {
             if (
@@ -737,11 +738,12 @@ const useGlossaryTree = ({
             ) {
                 treeData.value = treeData.value.map((treeNode) => {
                     if (treeNode.guid === asset?.guid) {
-                        handleCategoriesChange(
-                            treeNode?.attributes?.categories,
-                            asset?.attributes?.categories,
-                            asset
-                        )
+                        if (updateCategories)
+                            handleCategoriesChange(
+                                treeNode?.attributes?.categories,
+                                asset?.attributes?.categories,
+                                asset
+                            )
 
                         treeNode.attributes = asset?.attributes
                     }
@@ -758,11 +760,12 @@ const useGlossaryTree = ({
 
                     // if the target node is reached
                     if (node.guid === asset?.guid || !currentPath) {
-                        handleCategoriesChange(
-                            node?.attributes?.categories,
-                            asset?.attributes?.categories,
-                            asset
-                        )
+                        if (updateCategories)
+                            handleCategoriesChange(
+                                node?.attributes?.categories,
+                                asset?.attributes?.categories,
+                                asset
+                            )
 
                         node.attributes = asset.attributes
                         return {
@@ -806,6 +809,7 @@ const useGlossaryTree = ({
         console.log(event, node, dragNode, dragNodesKeys)
         const assetToDrop = { ...dragNode.dataRef }
         const updateDragNodeAttributes = (newParent) => {
+            console.log(newParent)
             const selectedAsset = ref(assetToDrop)
             const {
                 localCategories,
@@ -819,7 +823,7 @@ const useGlossaryTree = ({
                 const newCategories = localCategories.value?.filter(
                     (el) => el.guid !== dragNode?.parent?.node?.guid
                 )
-                if (node?.typeName !== 'AtlasGlossary')
+                if (node?.typeName !== 'AtlasGlossary' && newParent?.guid)
                     newCategories.push(newParent)
                 localCategories.value = newCategories
                 handleCategoriesUpdate()
@@ -839,6 +843,12 @@ const useGlossaryTree = ({
                     addNode(assetToDrop, dragNode?.parent?.node)
                 }, 0)
             })
+            whenever(asset, () => {
+                if (asset.value) {
+                    console.log(asset.value)
+                    updateNode(asset.value, false)
+                }
+            })
         }
         if (assetToDrop?.typeName === 'AtlasGlossary') {
             message.error(
@@ -847,9 +857,12 @@ const useGlossaryTree = ({
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
             const parentStack = recursivelyFindPath(node?.guid)[0]
+            console.log(parentStack)
             const parentOfTerm = {
                 guid: parentStack[1],
             }
+            if (treeData.value?.find((el) => el.guid === parentOfTerm?.guid))
+                parentOfTerm.guid = ''
             setTimeout(() => {
                 deleteNode(
                     assetToDrop,
@@ -857,9 +870,15 @@ const useGlossaryTree = ({
                     false
                 )
             }, 0)
-            setTimeout(() => {
-                addNode(assetToDrop, parentOfTerm)
-            }, 0)
+
+            if (parentStack[1])
+                setTimeout(() => {
+                    addNode(assetToDrop, { guid: parentStack[1] })
+                }, 0)
+            else
+                setTimeout(() => {
+                    addNode(assetToDrop)
+                }, 0)
 
             updateDragNodeAttributes(parentOfTerm)
         } else {

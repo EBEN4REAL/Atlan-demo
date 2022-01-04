@@ -97,7 +97,6 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -186,9 +185,6 @@
                 updateList(asset)
             }
 
-            const body = ref({})
-            const { refresh } = useEvaluate(body, false)
-
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
                 (prev) => {
@@ -224,18 +220,6 @@
             const handleChangePreference = () => {
                 quickChange()
             }
-
-            watch(list, () => {
-                // For evaluations
-                body.value = {
-                    entities: list.value.map((item) => ({
-                        typeName: item.typeName,
-                        entityGuid: item.guid,
-                        action: 'ENTITY_UPDATE',
-                    })),
-                }
-                refresh()
-            })
 
             return {
                 isLoading,

@@ -143,7 +143,7 @@
             const updateFacet = () => {
                 facets.value = {}
 
-                facets.value.queryGuid = queries(selectedAsset.value)?.map(
+                facets.value.guidList = queries(selectedAsset.value)?.map(
                     (query) => query.guid
                 )
             }

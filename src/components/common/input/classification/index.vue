@@ -8,6 +8,7 @@
         data-test-id="classification-popover"
     >
         <a-popover
+            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.classificationPopover"
@@ -26,14 +27,13 @@
                 </div>
             </template>
             <a-button
-                v-if="editPermission"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
                 class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
+                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span>
+            </a-button>
         </a-popover>
 
         <template v-for="classification in list" :key="classification.guid">
@@ -116,8 +116,8 @@
             isLoading: {
                 type: Boolean,
                 required: false,
-                default: false
-            }
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -239,7 +239,7 @@
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,
-                handleDeleteClassification
+                handleDeleteClassification,
             }
         },
     })

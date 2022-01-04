@@ -77,13 +77,13 @@
                 if (!isItem.value) {
                     sendPageEvent()
                 }
-                console.log('onMounted assets')
             })
 
             return {
                 isItem,
                 assetdiscovery,
                 localSelected,
+                sendPageEvent,
             }
         },
     })

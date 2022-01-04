@@ -297,7 +297,7 @@ export default function useEventGraph(
                     const parentNode = graphNodes.find(
                         (x) => x.store.data.entity.displayText === parentName
                     )
-                    translateCandidatesSet.add(parentNode)
+                    if (parentNode) translateCandidatesSet.add(parentNode)
                 }
             })
 

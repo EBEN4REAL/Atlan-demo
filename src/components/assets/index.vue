@@ -19,10 +19,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div
-                    class="flex"
-                    :class="page === 'classifications' ? 'max-w-sm' : ''"
-                >
+                <div class="flex">
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
                         ref="searchBox"

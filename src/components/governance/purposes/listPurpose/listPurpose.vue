@@ -16,7 +16,7 @@
         />
     </template>
     <template v-else>
-        <div class="max-w-sm mb-5">
+        <div class="mb-5">
             <Search
                 v-model="searchText"
                 :placeholder="`Search from ${personaList.length} purpose(s)`"
@@ -35,9 +35,13 @@
                 empty-screen="EmptyDiscover"
             />
         </template>
-        <div v-else class="flex-grow px-2 overflow-y-auto divide-y">
+        <div v-else class="flex-grow px-2 overflow-y-auto">
             <template v-for="p in personaList" :key="p.guid">
-                <PurposeCard :p="p" :classification-list="classificationList" />
+                <PurposeCard
+                    :p="p"
+                    :classification-list="classificationList"
+                    class="border-b"
+                />
             </template>
         </div>
     </template>

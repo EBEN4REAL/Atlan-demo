@@ -21,7 +21,7 @@
                         :is-current-user="isCurrentUser"
                     />
                 </div>
-                <div class="pb-2 mb-6">
+                <div class="pb-2">
                     <ViewGroups
                         :is-current-user="isCurrentUser"
                         :user="selectedUser"
@@ -33,7 +33,7 @@
                         selectedUser?.attributes?.designation?.length > 0 &&
                         selectedUser?.attributes?.designation[0]
                     "
-                    class="mb-6"
+                    class="mt-6"
                 >
                     <div class="flex-1 mr-4">
                         <p class="mb-0 text-gray-500">Designation</p>
@@ -47,6 +47,7 @@
                         selectedUser?.attributes?.skills?.length > 0 &&
                         selectedUser?.attributes?.skills[0]
                     "
+                    class="mt-6"
                 >
                     <UpdateSkills
                         :user="selectedUser"
@@ -96,6 +97,12 @@
                         >{{ selectedUser.firstName }} doesn't own any assets.</span
                     >
                 </div>
+            </div>
+            <div v-else class="pb-6 border-b border-gray-200 border-solid">
+                <p class="mt-6 text-sm tracking-wider text-gray-500 uppercase">
+                    Ownership
+                </p>
+                <span> {{ selectedUser }} doesn’t own any assets </span>
             </div>
             <div class="pb-6 border-gray-200 border-solid">
                 <p class="pt-6 text-sm tracking-wider text-gray-500 uppercase">

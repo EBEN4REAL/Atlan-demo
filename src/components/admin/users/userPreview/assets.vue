@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, toRefs, provide } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
     import map from '~/constant/accessControl/map'
 
@@ -59,6 +59,8 @@
                         : [],
                 },
             }))
+
+            provide('shouldOpenInNewTab', true)
 
             return {
                 ownerFilter,

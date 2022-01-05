@@ -281,7 +281,7 @@
                             :key="item.value + index + item.qualifiedName"
                         >
                             <div
-                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
                                 @click="(checked) => onSelectItem(item)"
                                 :class="
                                     selectedItem?.label === item.label
@@ -289,22 +289,40 @@
                                         : 'bg-white'
                                 "
                             >
-                                <div class="flex items-center">
+                                <div
+                                    class="flex items-center parent-ellipsis-container"
+                                >
                                     <component
                                         :is="getDataTypeImage(item.type)"
                                         class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
                                     ></component>
                                     <span
-                                        class="mb-0 ml-1 text-sm text-gray-700"
+                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >
                                         {{ item.label }}
                                     </span>
                                 </div>
-                                <AtlanIcon
-                                    icon="Check"
-                                    class="text-primary"
-                                    v-if="selectedItem?.label === item.label"
-                                />
+                                <div
+                                    class="flex items-center parent-ellipsis-container-extension"
+                                >
+                                    <div
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
+                                    </div>
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary parent-ellipsis-container-base"
+                                        v-if="
+                                            selectedItem?.label === item.label
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
                             </div>
                         </template>
 
@@ -348,6 +366,7 @@
     import { selectedTables } from '~/types/insights/VQB.interface'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
 
     import useBody from './useBody'
 
@@ -357,6 +376,7 @@
             Pill,
             Loader,
             TablesTree,
+            ColumnKeys,
         },
         emits: ['change'],
 
@@ -448,6 +468,8 @@
                         'displayName',
                         'dataType',
                         'isPrimary',
+                        'isForeign',
+                        'isPartition',
                         'certificateStatus',
                     ],
                 }
@@ -462,6 +484,9 @@
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     type: ls.attributes?.dataType,
                     value: ls.attributes?.displayName || ls.attributes?.name,
                     columnQualifiedName: ls.attributes?.qualifiedName,
@@ -593,6 +618,7 @@
                         'order',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
                     ],
                 }
             }
@@ -644,6 +670,9 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     qualifiedName: ls.attributes.qualifiedName,
                     type: ls.attributes.dataType,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     attributes: ls.attributes,
                     order: ls.attributes.order,
                 }))

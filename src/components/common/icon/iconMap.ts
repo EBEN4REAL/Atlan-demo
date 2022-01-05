@@ -20,7 +20,6 @@ import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
-import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
@@ -328,8 +327,10 @@ import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
+import primaryKey from '~/assets/images/icons/primaryKey.svg'
 
 export default {
+    primaryKey,
     Array,
     Float,
     EnumType,
@@ -419,7 +420,6 @@ export default {
     WorkflowsIcon,
     GlossaryIcon,
     ForeignKey,
-    PrimaryKey,
     Share,
     NoAccess,
     Cancel,

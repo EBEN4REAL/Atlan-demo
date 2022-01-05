@@ -50,6 +50,7 @@ export interface activeInlineTabInterface {
                 key: any
             }>
             variables: CustomVaribaleInterface[]
+            savedVariables: CustomVaribaleInterface[]
             limitRows: {
                 checked: boolean
                 rowsCount: number

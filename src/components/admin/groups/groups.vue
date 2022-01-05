@@ -8,14 +8,17 @@
     />
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
-            <div class="flex justify-between">
+            <div
+                v-if="groupList.length > 0"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+            >
                 <div class="flex w-1/4">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search ${totalGroupsCount} group${
                             totalGroupsCount > 1 ? 's' : ''
                         }`"
-                        class="mr-1"
+                        class="h-8 mr-1"
                         @change="onSearch"
                     />
                 </div>
@@ -70,7 +73,7 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg users-groups-table"
+                class="overflow-hidden border rounded-b-lg users-groups-table"
                 :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
                 :pagination="false"
                 :data-source="groupList"
@@ -84,13 +87,6 @@
                     <a-tooltip
                         v-if="column.sortKey"
                         placement="top"
-                        :class="
-                            column.align === 'center'
-                                ? 'justify-center'
-                                : column.align === 'right'
-                                ? 'justify-end'
-                                : 'justify-start'
-                        "
                         class="px-4 py-2"
                     >
                         <template #title>{{
@@ -101,7 +97,12 @@
                             )
                         }}</template>
                         <div
-                            class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                            class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                            :class="
+                                column.align === 'right'
+                                    ? 'flex-row-reverse'
+                                    : ''
+                            "
                         >
                             <div class="pt-0.5">
                                 {{ title }}
@@ -180,7 +181,7 @@
                             </div>
                         </div>
                         <p class="mb-0 text-gray-500 truncate">
-                            {{ group.description || '-' }}
+                            {{ group.description }}
                         </p>
                     </div>
                     <div
@@ -188,7 +189,7 @@
                         @click="handleAddMembers(group)"
                     >
                         <div
-                            class="mr-5 cursor-pointer text-primary hover:underline"
+                            class="cursor-pointer text-primary hover:underline"
                         >
                             {{ value }}
                         </div>
@@ -292,11 +293,20 @@
             })
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
-            const { showUserPreview: openUserPreview, setUserUniqueAttribute } =
-                useUserPreview()
+            const {
+                showUserPreview: openUserPreview,
+                setUserUniqueAttribute,
+                closePreview: closeUserPreview,
+                username: activeUsername,
+            } = useUserPreview()
             const handleUserPreview = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                openUserPreview()
+                if (activeUsername.value === username) {
+                    setUserUniqueAttribute('', 'username')
+                    closeUserPreview()
+                } else {
+                    setUserUniqueAttribute(username, 'username')
+                    openUserPreview()
+                }
             }
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({

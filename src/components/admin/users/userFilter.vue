@@ -36,7 +36,7 @@
                     >
                     <AtlanIcon
                         icon="CaretDown"
-                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary bg-red"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
                         :class="`${
                             activeKey.includes('1') ? 'text-primary' : ''
                         }`"

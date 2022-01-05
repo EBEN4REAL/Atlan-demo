@@ -27,7 +27,7 @@
         ></AggregationTabs>
 
         <div
-            v-if="isLoading"
+            v-if="isLoading || isFetchingGuids"
             class="flex items-center justify-center flex-grow"
         >
             <AtlanIcon
@@ -36,12 +36,19 @@
             ></AtlanIcon>
         </div>
         <div
-            v-if="!isLoading && error"
+            v-if="!isLoading && !isFetchingGuids && error"
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>
         </div>
-        <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
+        <div
+            v-else-if="
+                (list.length === 0 || guidList.length === 0) &&
+                !isLoading &&
+                !isFetchingGuids
+            "
+            class="flex-grow"
+        >
             <EmptyView
                 empty-screen="EmptyDiscover"
                 desc="No relations found"
@@ -122,6 +129,9 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
+            const { guidList, isLoading: isFetchingGuids } =
+                useRelations(selectedAsset)
+
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -145,19 +155,8 @@
 
             const updateFacet = () => {
                 facets.value = {}
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
-                    facets.value.tableQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
-                }
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
-                    facets.value.viewQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
-                }
+                facets.value.guidList = guidList.value
             }
-
-            updateFacet()
-
-            const { asset } = useRelations(selectedAsset)
 
             const {
                 list,
@@ -226,6 +225,7 @@
 
             return {
                 isLoading,
+                isFetchingGuids,
                 queryText,
                 list,
                 facets,
@@ -245,6 +245,7 @@
                 error,
                 isValidating,
                 updateCurrentList,
+                guidList,
             }
         },
     })

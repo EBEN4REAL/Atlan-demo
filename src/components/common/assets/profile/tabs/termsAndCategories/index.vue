@@ -36,7 +36,7 @@
                 if (
                     assetType(selectedAsset.value) === 'AtlasGlossaryCategory'
                 ) {
-                    return { category: qualifiedName(selectedAsset.value) }
+                    return { parentCategory: qualifiedName(selectedAsset.value) }
                 }
                 return { glossary: qualifiedName(selectedAsset.value) }
             })

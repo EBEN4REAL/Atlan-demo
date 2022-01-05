@@ -359,8 +359,12 @@ export function useBody(
 
             case 'parentCategory': {
                 if (filterObject) {
-                    base.orFilter('term', '__categories', filterObject)
-                    base.orFilter('term', '__parentCategory', filterObject)
+                    base.filter('bool', (q) => {
+                        q.orFilter('term', '__categories', filterObject)
+                        q.orFilter('term', '__parentCategory', filterObject)
+                        return q
+                    })
+
                 }
                 break
             }

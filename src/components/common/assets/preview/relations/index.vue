@@ -107,6 +107,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useRelations } from '~/composables/discovery/useRelations'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'RelationshipsTab',
@@ -129,8 +130,11 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const { guidList, isLoading: isFetchingGuids } =
-                useRelations(selectedAsset)
+            const {
+                guidList,
+                isLoading: isFetchingGuids,
+                isReady: isGuidArrayReady,
+            } = useRelations(selectedAsset)
 
             const limit = ref(20)
             const offset = ref(0)
@@ -141,7 +145,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('RELATED_ASSET_LIST')
+            const dependentKey = ref(null)
             const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
@@ -170,7 +174,7 @@
                 isValidating,
                 updateList,
             } = useDiscoverList({
-                isCache: true,
+                isCache: false,
                 dependentKey,
                 queryText,
                 facets,
@@ -222,6 +226,12 @@
             const handleChangePreference = () => {
                 quickChange()
             }
+
+            whenever(isGuidArrayReady, () => {
+                dependentKey.value = 'RELATED_ASSET_LIST'
+                updateFacet()
+                quickChange()
+            })
 
             return {
                 isLoading,

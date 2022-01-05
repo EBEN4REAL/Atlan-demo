@@ -33,8 +33,13 @@ export function useRelations(selectedAsset) {
     const localKey = ref(selectedAsset.value.guid)
 
     generateBody()
-    const { data, isLoading, mutate, cancelRequest, error, isReady } =
-        useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
+    const { data, isLoading, error, isReady } = useIndexSearch<assetInterface>(
+        defaultBody,
+        localKey,
+        false,
+        false,
+        1
+    )
 
     const guidList = ref<assetInterface[]>([])
 

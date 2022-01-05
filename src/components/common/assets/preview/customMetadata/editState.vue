@@ -15,7 +15,9 @@
             ref="inputRef"
             v-model="localValue"
             class="flex-grow shadow-none"
-            :placeholder="getMultiInputPlaceholder(typeName.toLowerCase())"
+            :placeholder="`Press Enter to add multiple ${getHumanTypeName(
+                typeName
+            )}s`"
             :data-type="typeName"
             @change="handleChange"
         />
@@ -169,6 +171,7 @@
                 isLink,
                 formatDisplayValue,
                 getEnumOptions,
+                getHumanTypeName,
             } = useCustomMetadataHelpers()
             const typeName = computed(() =>
                 getDatatypeOfAttribute(props.attribute as CMA)
@@ -199,17 +202,18 @@
                     })
             })
 
-            const getMultiInputPlaceholder = (t: string) => {
-                if (t === 'url') return 'Press Enter to add a new URL'
-                if (['number', 'int', 'long'].includes(t))
-                    return 'Press Enter to add a new number'
-                if (['float'].includes(t))
-                    return 'Press Enter to add a new decimal'
-                return 'Press Enter to add multiple values'
-            }
+            // const getMultiInputPlaceholder = (t: string) => {
+            //     if (t === 'url') return 'Press Enter to add a new URL'
+            //     if (['number', 'int', 'long'].includes(t))
+            //         return 'Press Enter to add a new number'
+            //     if (['float'].includes(t))
+            //         return 'Press Enter to add a new decimal'
+            //     return 'Press Enter to add multiple values'
+            // }
 
             return {
-                getMultiInputPlaceholder,
+                getHumanTypeName,
+                // getMultiInputPlaceholder,
                 inputRef,
                 typeName,
                 isMultivalued,

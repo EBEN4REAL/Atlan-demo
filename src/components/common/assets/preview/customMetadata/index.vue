@@ -100,7 +100,7 @@
                     v-if="applicableList.filter((i) => !hasValue(i)).length"
                 >
                     <transition name="slide-fade">
-                        <div v-if="showMore">
+                        <div v-if="showMore" class="">
                             <template
                                 v-for="(a, x) in applicableList.filter(
                                     (i) => !hasValue(i)
@@ -108,7 +108,22 @@
                                 :key="x"
                             >
                                 <div class="mb-2 font-normal text-gray-500">
-                                    <span class="">{{ a.displayName }}</span>
+                                    <span class="">
+                                        {{ a.displayName }}
+                                        <template
+                                            v-if="
+                                                getHumanTypeName(
+                                                    getDatatypeOfAttribute(a)
+                                                ) !== 'Text'
+                                            "
+                                        >
+                                            ({{
+                                                getHumanTypeName(
+                                                    getDatatypeOfAttribute(a)
+                                                ).toLowerCase()
+                                            }})
+                                        </template>
+                                    </span>
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
@@ -156,6 +171,7 @@
                         </span>
                     </div>
                 </template>
+
                 <template
                     v-if="
                         applicableList.length ===
@@ -402,6 +418,7 @@
                 formatDisplayValue,
                 getApplicableAttributes,
                 getEnumOptions,
+                getHumanTypeName,
             } = useCustomMetadataHelpers()
 
             const applicableList = ref(
@@ -644,6 +661,7 @@
             })
 
             return {
+                getHumanTypeName,
                 isProfile,
                 getDataTypeIcon,
                 showMore,
@@ -670,12 +688,12 @@
     /* durations and timing functions.              */
     .slide-fade-enter-active {
         transition: all 0.3s ease-out;
-        max-height: 300px;
+        max-height: 500px;
     }
 
     .slide-fade-leave-active {
         transition: all 0.3s ease-out;
-        max-height: 300px;
+        max-height: 500px;
     }
 
     .slide-fade-enter-from,

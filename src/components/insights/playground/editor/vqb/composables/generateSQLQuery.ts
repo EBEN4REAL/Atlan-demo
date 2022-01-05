@@ -78,7 +78,6 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const join = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'join'
     )
-    // console.log('joins: ', joins)
 
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
@@ -104,9 +103,13 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                 } else {
                     if (
                         aggregatePanel?.subpanels?.length > 0 &&
-                        aggregatePanel?.subpanels[0]?.column?.label
-                    )
+                        aggregatePanel?.subpanels[0]?.column?.label &&
+                        aggregatePanel?.subpanels[0]?.aggregators?.length > 0 &&
+                        aggregatePanel?.subpanels[0]?.aggregators[0]
+                    ) {
+                    } else {
                         select.field('*')
+                    }
                 }
             }
         })

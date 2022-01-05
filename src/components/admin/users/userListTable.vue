@@ -9,7 +9,8 @@
         :row-key="(user) => user.id"
         :pagination="false"
         :loading="loading"
-        @change="(p, f, s) => emit('change', p, f, s)"
+        :show-sorter-tooltip="false"
+        @change="handleTableChange"
     >
         <template #headerCell="{ title, column }">
             <a-tooltip
@@ -23,13 +24,13 @@
                         : 'justify-start'
                 "
             >
-                <!-- <template #title>{{
+                <template #title>{{
                     getSortTooltipText(
                         column.sortKey,
                         column.ascOrderString || '',
                         column.descOrderString || ''
                     )
-                }}</template> -->
+                }}</template>
                 <div
                     class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
                 >
@@ -561,7 +562,7 @@
             const { userList, selectedUserId } = toRefs(props)
 
             const { username: currentUserUsername } = whoami()
-            const activeSortObject = ref({ key: 'firstName', order: 'asc' })
+            const activeSortObject = ref({ key: '', order: '' })
 
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -611,6 +612,51 @@
             const handleGroupUpdated = () => {
                 emit('refetch')
             }
+            const getSortTooltipText = (
+                sortKey: string,
+                ascText: string = '',
+                descText: string = ''
+            ) => {
+                if (sortKey === activeSortObject.value.key)
+                    switch (activeSortObject.value.order) {
+                        case 'asc':
+                            return descText || `Sort by descending`
+                        case 'desc':
+                            return 'Back to default'
+                        default:
+                            return ascText || `Sort by ascending`
+                    }
+
+                return ascText || `Sort by ascending`
+            }
+            const getNextOrder = () => {
+                switch (activeSortObject.value.order) {
+                    case 'asc':
+                        return 'desc'
+                    case 'desc':
+                        return ''
+                    default:
+                        return 'asc'
+                }
+            }
+            const handleTableChange = (pagination: any, filters: any, sort) => {
+                const sortKey = sort?.column?.sortKey
+                if (sortKey !== activeSortObject.value.key) {
+                    activeSortObject.value.key = sortKey
+                    activeSortObject.value.order = 'asc'
+                } else {
+                    const nextSortOrder = getNextOrder()
+                    activeSortObject.value.order = getNextOrder()
+                    if (!nextSortOrder) activeSortObject.value.key = ''
+                }
+                let sortValue = 'firstName'
+                if (activeSortObject.value.key) {
+                    sortValue = `${
+                        activeSortObject.value.order === 'desc' ? '-' : ''
+                    }${activeSortObject.value.key}`
+                }
+                emit('change', sortValue)
+            }
             return {
                 roleList,
                 userColumns,
@@ -625,6 +671,8 @@
                 handleManageGroups,
                 handleGroupUpdated,
                 activeSortObject,
+                getSortTooltipText,
+                handleTableChange,
             }
         },
     })

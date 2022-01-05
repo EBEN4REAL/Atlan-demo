@@ -154,16 +154,18 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <SortSubPanel
-                v-model:subpanels="
-                    activeInlineTab.playground.vqb.panels[index].subpanels
-                "
-                v-model:columnSubpanels="
-                    activeInlineTab.playground.vqb.panels[0].subpanels
-                "
-                :expand="expand"
-                v-if="expand"
-            />
+            <keep-alive>
+                <SortSubPanel
+                    v-model:subpanels="
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    "
+                    v-model:columnSubpanels="
+                        activeInlineTab.playground.vqb.panels[0].subpanels
+                    "
+                    :expand="expand"
+                    v-if="expand"
+                />
+            </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="

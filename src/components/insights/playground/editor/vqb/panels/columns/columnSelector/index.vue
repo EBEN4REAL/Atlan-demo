@@ -283,7 +283,7 @@
 
             const inputRef = ref()
             const initialRef = ref()
-            const selectAll = ref(false)
+            const selectAll = ref(selectedItems.value.includes('all'))
             const mouseOver = ref(false)
             const topPosShift = ref(0)
             const inputValue1 = ref('')

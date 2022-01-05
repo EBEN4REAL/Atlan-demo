@@ -1287,7 +1287,6 @@
                     },
                     playground: {
                         vqb: {
-                            selectedTables: [],
                             panels: [
                                 {
                                     order: 1,
@@ -1297,7 +1296,7 @@
                                         {
                                             id: '1',
                                             tableQualifiedName: undefined,
-                                            columns: [],
+                                            columns: ['all'],
                                             columnsData: [],
                                         },
                                     ],

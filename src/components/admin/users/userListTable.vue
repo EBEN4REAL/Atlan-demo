@@ -172,18 +172,7 @@
                                 />
                             </a-menu-item>
                             <a-menu-item key="verified-user-2">
-                                <div
-                                    class="flex items-center px-1.5 py-1 cursor-pointer justify-between"
-                                >
-                                    <span>
-                                        <AtlanIcon class="mr-2" icon="Add" />
-                                        Add to persona
-                                    </span>
-                                    <AtlanIcon
-                                        icon="ChevronRight"
-                                        class="ml-3"
-                                    />
-                                </div>
+                                <AddPersonas :user="user" />
                             </a-menu-item>
                             <a-menu-item
                                 key="verified-user-3"
@@ -420,10 +409,18 @@
     import AtlanButton from '@/UI/button.vue'
     import Groups from './groups.vue'
     import AddGroups from './addGroups.vue'
+    import AddPersonas from './addPersona.vue'
 
     export default defineComponent({
         name: 'UserListTable',
-        components: { Avatar, ChangeRole, AtlanButton, Groups, AddGroups },
+        components: {
+            Avatar,
+            ChangeRole,
+            AtlanButton,
+            Groups,
+            AddGroups,
+            AddPersonas,
+        },
         props: {
             userList: { type: Array, required: true },
             loading: { type: Boolean, required: true },

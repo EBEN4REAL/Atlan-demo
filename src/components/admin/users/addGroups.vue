@@ -38,7 +38,7 @@
                 >
                     <div class="flex items-center">
                         <div v-if="!addToGroupLoading">Add</div>
-                        <div v-else>Saving</div>
+                        <div v-else>Adding</div>
                     </div>
                 </AtlanButton>
             </div>

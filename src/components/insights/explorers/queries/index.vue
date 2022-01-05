@@ -35,7 +35,7 @@
                             >
                         </div>
                         <template #overlay>
-                            <a-menu>
+                            <a-menu class="pb-1">
                                 <a-menu-item
                                     key="0"
                                     v-if="hasWritePermission"
@@ -47,11 +47,11 @@
                                     "
                                 >
                                     <div class="flex items-center">
-                                        <AtlanIcon
+                                        <!-- <AtlanIcon
                                             icon="NewQuery"
                                             color="#5277D7"
                                             class="h-4 mr-2 outline-none hover:text-primary"
-                                        />
+                                        /> -->
                                         <span>New Query</span>
                                     </div>
                                 </a-menu-item>
@@ -61,11 +61,11 @@
                                     v-if="hasWritePermission"
                                 >
                                     <div class="flex items-center">
-                                        <AtlanIcon
+                                        <!-- <AtlanIcon
                                             color="#5277D7"
                                             icon="NewFolder"
                                             class="h-4 mr-2 outline-none hover:text-primary"
-                                        />
+                                        /> -->
                                         <span>New Folder</span>
                                     </div>
                                 </a-menu-item>
@@ -74,21 +74,41 @@
                                     @click="toggleCollectionModal"
                                 >
                                     <div class="flex items-center">
-                                        <AtlanIcon
+                                        <!-- <AtlanIcon
                                             icon="CollectionIconSmall"
                                             class="h-4 mr-2 outline-none hover:text-primary"
-                                        />
+                                        /> -->
                                         <span>New Collection</span>
                                     </div>
                                 </a-menu-item>
+
+                                <div
+                                    class="flex items-center m-1 mx-2 noAccess"
+                                    v-if="!hasWritePermission"
+                                >
+                                    <span>
+                                        <AtlanIcon
+                                            icon="WarningIcon"
+                                            class="h-4 mr-2 outline-none"
+                                        />
+                                    </span>
+
+                                    <span class="text-xs text-gray-500"
+                                        >You have view only access, cannot
+                                        create queries and folders.</span
+                                    >
+                                </div>
                             </a-menu>
                         </template>
                     </a-dropdown>
                 </div>
-                <div class="flex flex-row space-x-2" v-if="treeData?.length">
+                <div
+                    class="flex flex-row mt-4 space-x-2"
+                    v-if="treeData?.length"
+                >
                     <a-input
                         v-model:value="searchQuery"
-                        class="h-8 mt-2 rounded"
+                        class="h-8 rounded"
                         :class="$style.inputSearch"
                         placeholder="Search Queries"
                     >
@@ -98,7 +118,7 @@
                     </a-input>
                     <a-popover trigger="click" placement="bottomLeft">
                         <a-button
-                            class="flex items-center w-8 h-8 p-2 mt-2"
+                            class="flex items-center w-8 h-8 p-2"
                             :class="$style.filterButton"
                         >
                             <template #icon>
@@ -1169,6 +1189,15 @@
     }
     .z-2 {
         z-index: 2;
+    }
+    .noAccess {
+        padding: 8px;
+
+        width: 226px;
+        height: 48px;
+
+        background: #fafafa;
+        border-radius: 4px;
     }
 </style>
 

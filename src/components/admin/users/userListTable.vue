@@ -175,7 +175,13 @@
             >
                 <div
                     class="dot"
-                    :class="`bg-${statusColorClass[user.status_object.status]}`"
+                    :class="`${
+                        user.status_object.status === 'Active'
+                            ? 'bg-success'
+                            : user.status_object.status === 'Disabled'
+                            ? 'bg-error'
+                            : 'bg-alert'
+                    }`"
                 />
                 <div>{{ user.status_object.status }}</div>
             </div>

@@ -5,6 +5,7 @@
         :trigger="['click']"
         :destroy-tooltip-on-hide="true"
         :overlay-class-name="$style.personaPopover"
+        :align="{ offset: [-40, -85] }"
     >
         <template #content>
             <div class="">

@@ -4,43 +4,46 @@
         placement="bottom"
         :trigger="['click']"
         :destroy-tooltip-on-hide="true"
-        :overlay-class-name="$style.ownerPopover"
+        :overlay-class-name="$style.addGroupPopover"
+        :align="{ offset: [-40, -40] }"
     >
         <template #content>
-            <div class="">
-                <OwnerFacets
-                    v-model:modelValue="selectedGroupIds"
-                    :show-none="false"
-                    :enable-tabs="['groups']"
-                    :hide-disabled-tabs="true"
-                    select-group-key="id"
-                    :user-id="selectedUser.id"
-                />
-            </div>
-            <div class="flex justify-end mr-3">
-                <a-button
-                    :is-loading="addToGroupLoading"
-                    type="text"
-                    size="sm"
-                    padding="compact"
-                    :disabled="addToGroupLoading"
-                    @click="handleCancel"
-                >
-                    Cancel
-                </a-button>
-                <AtlanButton
-                    :is-loading="addToGroupLoading"
-                    type="primary"
-                    size="sm"
-                    padding="compact"
-                    :disabled="addToGroupLoading"
-                    @click="addUserToGroups"
-                >
-                    <div class="flex items-center">
-                        <div v-if="!addToGroupLoading">Add</div>
-                        <div v-else>Adding</div>
-                    </div>
-                </AtlanButton>
+            <div class="popover-add-groups-user">
+                <div>
+                    <OwnerFacets
+                        v-model:modelValue="selectedGroupIds"
+                        :show-none="false"
+                        :enable-tabs="['groups']"
+                        :hide-disabled-tabs="true"
+                        select-group-key="id"
+                        :user-id="selectedUser.id"
+                    />
+                </div>
+                <div class="flex justify-end mr-3">
+                    <a-button
+                        :is-loading="addToGroupLoading"
+                        type="text"
+                        size="sm"
+                        padding="compact"
+                        :disabled="addToGroupLoading"
+                        @click="handleCancel"
+                    >
+                        Cancel
+                    </a-button>
+                    <AtlanButton
+                        :is-loading="addToGroupLoading"
+                        type="primary"
+                        size="sm"
+                        padding="compact"
+                        :disabled="addToGroupLoading"
+                        @click="addUserToGroups"
+                    >
+                        <div class="flex items-center">
+                            <div v-if="!addToGroupLoading">Add</div>
+                            <div v-else>Adding</div>
+                        </div>
+                    </AtlanButton>
+                </div>
             </div>
         </template>
         <div
@@ -131,7 +134,7 @@
 </script>
 
 <style lang="less" module>
-    .ownerPopover {
+    .addGroupPopover {
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 250px !important;

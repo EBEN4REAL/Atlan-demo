@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs } from 'vue'
+    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
     import getUserGroups from '~/composables/user/getUserGroups'
 
     export default defineComponent({
@@ -65,13 +65,19 @@
                     sort: 'name',
                     filter: {},
                 },
-                immediate: true,
+                immediate: false,
             }))
-            const { groupList, isLoading } = getUserGroups(groupListAPIParams)
+            const { groupList, isLoading, getUserGroupList } =
+                getUserGroups(groupListAPIParams)
             const handleManageGroups = (userData: any) => {
                 visiblePopover.value = false
                 emit('handleManageGroups', userData)
             }
+            watch(visiblePopover, () => {
+                if (visiblePopover.value && groupList.value.length === 0) {
+                    getUserGroupList()
+                }
+            })
             return {
                 groupList,
                 isLoading,

@@ -7,8 +7,11 @@
         </div>
         <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
-                <div class="flex justify-between w-36">
-                    <span class="text-sm text-gray-500 uppercase">status</span>
+                <div class="flex justify-between w-36 hover:text-primary">
+                    <span
+                        class="text-sm text-gray-500 uppercase hover:text-primary"
+                        >status</span
+                    >
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
@@ -55,10 +58,14 @@
                 </a-form>
             </div>
         </a-collapse-panel>
-        <a-collapse-panel class="group" :show-arrow="false">
+        <a-collapse-panel class="border-t-0 group" :show-arrow="false">
             <template #header>
-                <div class="flex justify-between w-36">
-                    <span class="text-sm text-gray-500 uppercase">role</span>
+                <div
+                    class="flex justify-between border-t-0 hover:text-primary w-36"
+                >
+                    <span class="text-sm text-gray-500 uppercase border-t-0"
+                        >role</span
+                    >
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"

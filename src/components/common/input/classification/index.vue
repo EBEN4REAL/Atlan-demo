@@ -52,9 +52,7 @@
                     />
                 </Popover>
             </template>
-            <span
-                v-if="!editPermission && list?.length < 1"
-                class="text-gray-500"
+            <span v-if="list?.length < 1" class="text-gray-500"
                 >No linked classifications</span
             >
         </div>

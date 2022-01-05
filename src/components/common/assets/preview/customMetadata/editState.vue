@@ -15,7 +15,7 @@
             ref="inputRef"
             v-model="localValue"
             class="flex-grow shadow-none"
-            placeholder="Press Enter to add"
+            :placeholder="getMultiInputPlaceholder(typeName.toLowerCase())"
             :data-type="typeName"
             @change="handleChange"
         />
@@ -199,7 +199,17 @@
                     })
             })
 
+            const getMultiInputPlaceholder = (t: string) => {
+                if (t === 'url') return 'Press Enter to add a new URL'
+                if (['number', 'int', 'long'].includes(t))
+                    return 'Press Enter to add a new number'
+                if (['float'].includes(t))
+                    return 'Press Enter to add a new decimal'
+                return 'Press Enter to add multiple values'
+            }
+
             return {
+                getMultiInputPlaceholder,
                 inputRef,
                 typeName,
                 isMultivalued,

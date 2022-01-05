@@ -73,7 +73,7 @@
             }
             const initialRoute = route.path.split('/').slice(-1)
             const current = ref(
-                initialRoute[0] === 'governance' ? ['persona'] : initialRoute
+                initialRoute[0] === 'governance' ? ['personas'] : initialRoute
             )
             return {
                 handleClick,

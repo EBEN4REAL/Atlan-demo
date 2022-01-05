@@ -1,5 +1,7 @@
 <template>
-    <div class="flex items-center self-start flex-grow break-all">
+    <div
+        class="flex items-center self-start flex-grow break-all whitespace-pre-line"
+    >
         <div
             v-if="getDatatypeOfAttribute(attribute) === 'url' && isMultivalued"
             class="flex flex-wrap gap-2"

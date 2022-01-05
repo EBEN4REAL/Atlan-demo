@@ -13,18 +13,7 @@
         @change="handleTableChange"
     >
         <template #headerCell="{ title, column }">
-            <a-tooltip
-                v-if="column.sortKey"
-                placement="top"
-                :class="
-                    column.align === 'center'
-                        ? 'justify-center'
-                        : column.align === 'right'
-                        ? 'justify-end'
-                        : 'justify-start'
-                "
-                class="p-4"
-            >
+            <a-tooltip v-if="column.sortKey" placement="top" class="p-4">
                 <template #title>{{
                     getSortTooltipText(
                         column.sortKey,
@@ -33,7 +22,8 @@
                     )
                 }}</template>
                 <div
-                    class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    :class="column.align === 'right' ? 'flex-row-reverse' : ''"
                 >
                     <div>
                         {{ title }}
@@ -260,9 +250,9 @@
                                     @groupAdded="handleGroupUpdated"
                                 />
                             </a-menu-item>
-                            <a-menu-item key="verified-user-2">
+                            <!-- <a-menu-item key="verified-user-2">
                                 <AddPersonas :user="user" />
-                            </a-menu-item>
+                            </a-menu-item> -->
                             <a-menu-item
                                 key="verified-user-3"
                                 @click="

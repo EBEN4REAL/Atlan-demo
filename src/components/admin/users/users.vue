@@ -28,6 +28,9 @@
                                 v-model="statusFilter"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
+                                :numberOfActiveUser="numberOfActiveUser"
+                                :numberOfDisableUser="numberOfDisableUser"
+                                :numberOfInvitedUser="numberOfInvitedUser"
                             />
                         </template>
                         <button
@@ -203,6 +206,18 @@
                 isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
+
+            const numberOfActiveUser = ref(0)
+            const numberOfDisableUser = ref(0)
+            const numberOfInvitedUser = ref(0)
+            watch(userList, (v) => {
+                v.reduce((counter, user) => {
+                    if (user.enabled) numberOfActiveUser.value += 1
+                    if (!user.enabled) numberOfDisableUser.value += 1
+                    if (!user.emailVerified) numberOfInvitedUser.value += 1
+                    return counter
+                }, 0)
+            })
 
             const clearFilter = () => {
                 userListAPIParams.filter = {}
@@ -529,6 +544,9 @@
                 clearFilter,
                 refetchData,
                 changeFilterRole,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })

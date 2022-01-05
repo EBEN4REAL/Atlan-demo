@@ -3,7 +3,7 @@
     <!-- <template #overlay> -->
     <a-collapse>
         <div
-            class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 border border-gray-200 border-b-0 border-l-0 border-r-0 uppercase bg-white rounded-md flex justify-between"
+            class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
         >
             {{
                 statusFilter.length > 0 && role
@@ -23,6 +23,7 @@
                 Clear All
             </span>
         </div>
+
         <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
                 <div class="flex justify-between w-48 hover:text-primary">
@@ -66,6 +67,17 @@
                                         ></div>
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
+                                            <span class="text-sm text-gray-500"
+                                                >({{
+                                                    item.label.toLocaleLowerCase() ===
+                                                    'active'
+                                                        ? numberOfActiveUser
+                                                        : item.label.toLocaleLowerCase() ===
+                                                          'disabled'
+                                                        ? numberOfDisableUser
+                                                        : numberOfInvitedUser
+                                                }})</span
+                                            >
                                         </span>
                                     </a-checkbox>
                                 </template>
@@ -96,13 +108,16 @@
                     @change="handleChangeRoleFilter"
                 >
                     <div class="flex flex-col w-full">
-                        <template v-for="item in roleOptions" :key="item.id">
+                        <template v-for="item in rolesWithCount" :key="item.id">
                             <a-radio
                                 class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                 :value="item.value"
                             >
                                 <span class="mb-0 ml-1 text-gray">
                                     {{ item.label }}
+                                    <span class="text-sm text-gray-500"
+                                        >({{ item?.memberCount }})</span
+                                    >
                                 </span>
                             </a-radio>
                         </template>
@@ -123,8 +138,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, computed, toRefs } from 'vue'
     import { userStatusOptions, roleOptions } from '~/constant/users'
+
+    import useUserStore from '~/store/users'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -132,6 +150,21 @@
             modelValue: {
                 type: Array,
                 default: () => null,
+            },
+            numberOfActiveUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfDisableUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfInvitedUser: {
+                type: Number,
+                required: false,
+                default: 0,
             },
         },
         emits: ['update:modelValue', 'change', 'changeRole'],
@@ -164,16 +197,33 @@
                 emit('update:modelValue', [])
                 emit('changeRole', role.value)
             }
+            const storeUser = useUserStore()
+            const { roles } = storeToRefs(storeUser)
+            const rolesWithCount = computed(() =>
+                roleOptions.map((item, i) =>
+                    Object.assign({}, item, roles?.value[i])
+                )
+            )
+            const {
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
+            } = toRefs(props)
+
             return {
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
                 activeCollapse,
                 filterOpened,
-                roleOptions,
                 role,
                 handleChangeRoleFilter,
                 handleClearFilter,
+                roles,
+                rolesWithCount,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })

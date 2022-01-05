@@ -515,6 +515,8 @@
     import AddGroups from './addGroups.vue'
     import AddPersonas from './addPersona.vue'
 
+    import useUserStore from '~/store/users'
+
     export default defineComponent({
         name: 'UserListTable',
         components: {
@@ -597,6 +599,8 @@
 
             // fetch roles- need this to find role id when changing user/invite role
             const { roleList } = useRoles()
+            const storeUser = useUserStore()
+            storeUser.setRoles(roleList.value)
 
             const handleManageGroups = (user) => {
                 emit('showUserPreviewDrawer', user, 'groups')

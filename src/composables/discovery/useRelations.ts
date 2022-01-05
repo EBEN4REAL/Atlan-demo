@@ -1,70 +1,72 @@
-import { Ref, ref, watch } from 'vue'
 import { Entity } from '~/services/meta/entity/index'
+import { ref, Ref, watch, computed } from 'vue'
+import useIndexSearch from './useIndexSearch'
+import { assetInterface } from '~/types/assets/asset.interface'
+import { useBody } from './useBody'
 
-import { BasicSearchAttributes, AssetAttributes, SavedQueryAttributes, SQLAttributes } from '~/constant/projection'
+import { AssetRelationAttributes } from '~/constant/projection'
+import useAssetInfo from './useAssetInfo'
 
-function constructRequest(guid: string, assetType: string) {
-    const finalParams = new URLSearchParams()
+export function useRelations(selectedAsset) {
+    const defaultBody = ref({})
 
-    const attributes =
-        [...BasicSearchAttributes, ...AssetAttributes, ...SavedQueryAttributes, ...SQLAttributes]
+    const { assetTypeRelations } = useAssetInfo()
+    const defaultAttributes = ref(assetTypeRelations(selectedAsset.value))
+    const relationAttributes = ref([...AssetRelationAttributes])
 
-
-    const paramsObj: any = {
-        limit: 1000,
-        offset: 0,
-        relation: assetType,
-        includeClassificationAttributes: true,
-        guid,
-        excludeDeletedEntities: true,
-        includeSubClassifications: true,
-        includeSubTypes: true
+    const generateBody = () => {
+        const dsl = useBody(
+            '',
+            0,
+            1,
+            { guid: selectedAsset.value.guid },
+            {},
+            [],
+            {}
+        )
+        defaultBody.value = {
+            dsl,
+            attributes: defaultAttributes?.value,
+            relationAttributes: relationAttributes?.value,
+        }
     }
 
-    attributes.forEach((val: string) => {
-        finalParams.append('attributes', val)
-    })
+    const localKey = ref(selectedAsset.value.guid)
 
-    Object.keys(paramsObj).forEach((key) => {
-        finalParams.append(key, paramsObj[key])
-    })
-
-    return finalParams
-}
-
-function fetchRelationAssets(id: string, assetType: string) {
-
-    const list = ref([])
-
-    const params = constructRequest(id, assetType)
-
-    const { data,
+    generateBody()
+    const {
+        data,
+        isLoading,
+        isValidating,
+        aggregationMap,
         mutate,
+        cancelRequest,
         error,
         isReady,
-        isLoading } = Entity.fetchRelatedAssets(params, {})
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
 
-    watch(id, (newId, oldId) => {
-        if (newId !== oldId) mutate()
-    })
-
+    const asset = ref<assetInterface[]>([])
     watch(data, () => {
-        if (data.value?.entities) {
-            list.value = data.value?.entities
-        } else {
-            list.value = []
+        if (data.value?.entities?.length > 0) {
+            asset.value = data?.value?.entities[0]
         }
     })
 
     return {
-        list,
-        isReady,
-        error,
+        aggregationMap,
+        isValidating,
         isLoading,
+        data,
+        fetch,
+        cancelRequest,
+        mutate,
+        error,
+        asset,
+        isReady,
     }
 }
 
-function useEntityRelationships(id: string) {
+/* function useEntityRelationships(id: string) {
     const relationshipAssets = ref([])
 
     const { data, error, isLoading } = Entity.GetEntity(id)
@@ -75,7 +77,11 @@ function useEntityRelationships(id: string) {
                 (el) => {
                     const element =
                         data.value?.entity?.relationshipAttributes[el]
-                    if (element && element?.length !== 0 && element.typeName !== "Schema")
+                    if (
+                        element &&
+                        element?.length !== 0 &&
+                        element.typeName !== 'Schema'
+                    )
                         relationshipAssets.value.push({
                             displayText: el,
                             length: element?.length || 1,
@@ -94,3 +100,4 @@ function useEntityRelationships(id: string) {
 }
 
 export const useRelations = { fetchRelationAssets, useEntityRelationships }
+ */

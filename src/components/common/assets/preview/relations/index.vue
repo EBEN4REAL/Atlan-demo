@@ -99,6 +99,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useRelations } from '~/composables/discovery/useRelations'
 
     export default defineComponent({
         name: 'RelationshipsTab',
@@ -155,6 +156,8 @@
             }
 
             updateFacet()
+
+            const { asset } = useRelations(selectedAsset)
 
             const {
                 list,

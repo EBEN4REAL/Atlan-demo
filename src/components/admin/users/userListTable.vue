@@ -11,6 +11,47 @@
         :loading="loading"
         @change="(p, f, s) => emit('change', p, f, s)"
     >
+        <template #headerCell="{ title, column }">
+            <a-tooltip
+                v-if="column.sortKey"
+                placement="top"
+                :class="
+                    column.align === 'center'
+                        ? 'justify-center'
+                        : column.align === 'right'
+                        ? 'justify-end'
+                        : 'justify-start'
+                "
+            >
+                <!-- <template #title>{{
+                    getSortTooltipText(
+                        column.sortKey,
+                        column.ascOrderString || '',
+                        column.descOrderString || ''
+                    )
+                }}</template> -->
+                <div
+                    class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                >
+                    <div>
+                        {{ title }}
+                    </div>
+                </div>
+            </a-tooltip>
+            <div
+                v-else
+                :class="
+                    column.align === 'center'
+                        ? 'justify-center'
+                        : column.align === 'right'
+                        ? 'justify-end'
+                        : 'justify-start'
+                "
+                class="flex font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+            >
+                {{ title }}
+            </div>
+        </template>
         <template #name="{ text: user }">
             <div
                 class="flex items-center align-middle"

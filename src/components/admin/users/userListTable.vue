@@ -50,6 +50,23 @@
                             <AtlanIcon icon="ArrowDown" class="mb-0.5 -ml-2" />
                         </div>
                     </div>
+                    <div
+                        v-else
+                        class="flex opacity-100 group-hover:opacity-100"
+                    >
+                        <div v-if="activeSortObject.order === 'asc'">
+                            <AtlanIcon
+                                icon="ArrowDown"
+                                class="mb-1 transform rotate-180"
+                            />
+                        </div>
+                        <div v-if="activeSortObject.order === 'desc'">
+                            <AtlanIcon
+                                icon="ArrowDown"
+                                class="mb-0.5"
+                            ></AtlanIcon>
+                        </div>
+                    </div>
                 </div>
             </a-tooltip>
             <div
@@ -211,7 +228,10 @@
         </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">
-                <a-dropdown v-if="user.emailVerified" :trigger="['click']">
+                <a-dropdown
+                    v-if="user.emailVerified && user.enabled"
+                    :trigger="['click']"
+                >
                     <div
                         class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
                         @click="(e) => e.preventDefault()"
@@ -243,6 +263,37 @@
                                         icon="DisableUser"
                                     />
                                     Disable user
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+                <a-dropdown
+                    v-if="user.emailVerified && !user.enabled"
+                    :trigger="['click']"
+                >
+                    <div
+                        class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
+                        @click="(e) => e.preventDefault()"
+                    >
+                        <AtlanIcon icon="KebabMenu"></AtlanIcon>
+                    </div>
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                key="verified-user-3"
+                                @click="
+                                    emit('toggleDisableEnablePopover', user)
+                                "
+                            >
+                                <div
+                                    class="flex items-center justify-center h-8 p-2 py-3 cursor-pointer"
+                                >
+                                    <AtlanIcon
+                                        class="mr-2"
+                                        icon="CheckCircled"
+                                    />
+                                    Enable user
                                 </div>
                             </a-menu-item>
                         </a-menu>
@@ -498,7 +549,7 @@
             const { userList, selectedUserId } = toRefs(props)
 
             const { username: currentUserUsername } = whoami()
-            const activeSortObject = ref({ key: 'firstName' })
+            const activeSortObject = ref({ key: 'firstName', order: 'asc' })
 
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`

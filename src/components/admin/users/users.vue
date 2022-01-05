@@ -22,7 +22,7 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <a-popover trigger="click" placement="bottomRight">
+                    <a-popover trigger="click" placement="bottomLeft">
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"

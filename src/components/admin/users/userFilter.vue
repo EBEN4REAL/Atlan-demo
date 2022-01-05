@@ -2,12 +2,14 @@
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
     <a-collapse>
-        <div class="w-full p-2 text-sm text-gray-500 uppercase bg-white">
+        <div
+            class="relative w-full p-2 -mt-3.5 text-sm text-gray-500 uppercase bg-white rounded-lg"
+        >
             filters
         </div>
         <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
-                <div class="flex justify-between w-36 hover:text-primary">
+                <div class="flex justify-between w-48 hover:text-primary">
                     <span
                         class="text-sm text-gray-500 uppercase hover:text-primary"
                         >status</span
@@ -18,7 +20,7 @@
                     />
                 </div>
             </template>
-            <div class="justify-center p-2 bg-white rounded w-36">
+            <div class="justify-center w-48 p-2 bg-white rounded">
                 <a-form layout="vertical" class="p-0">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
@@ -32,7 +34,7 @@
                                     :key="item.id"
                                 >
                                     <a-checkbox
-                                        class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
+                                        class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                         :value="item.value"
                                     >
                                         <div
@@ -61,7 +63,7 @@
         <a-collapse-panel class="border-t-0 group" :show-arrow="false">
             <template #header>
                 <div
-                    class="flex justify-between border-t-0 hover:text-primary w-36"
+                    class="flex justify-between w-48 border-t-0 hover:text-primary"
                 >
                     <span class="text-sm text-gray-500 uppercase border-t-0"
                         >role</span
@@ -72,7 +74,7 @@
                     />
                 </div>
             </template>
-            <div class="p-2 text-left bg-white rounded w-36">
+            <div class="w-48 p-2 text-left bg-white rounded">
                 <a-radio-group
                     v-model:value="role"
                     class="grid w-full text-left gap-y-2"
@@ -81,7 +83,7 @@
                     <div class="flex flex-col w-full">
                         <template v-for="item in roleOptions" :key="item.id">
                             <a-radio
-                                class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
+                                class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                 :value="item.value"
                             >
                                 <span class="mb-0 ml-1 text-gray">

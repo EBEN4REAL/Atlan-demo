@@ -15,8 +15,7 @@
                 <span
                     v-if="!isEdit && description(selectedAsset)"
                     class="whitespace-pre-wrap"
-                    >{{ description(selectedAsset) }}</span
-                >
+                >{{ description(selectedAsset) }}</span>
                 <span
                     v-else-if="!isEdit && description(selectedAsset) === ''"
                     class="text-gray-500"
@@ -30,6 +29,7 @@
                     :rows="4"
                     @blur="handleBlur($event)"
                     @press-enter="handleBlur($event)"
+                    @keydown.esc="handleBlur($event)"
                 ></a-textarea>
             </div>
         </div>

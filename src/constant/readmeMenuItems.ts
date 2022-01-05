@@ -5,7 +5,7 @@ export interface CommandItem {
     icon?: string
     level?: number
     border?: boolean
-    command: (editor: Editor) => void
+    command?: any
 }
 
 export const blockMenu: CommandItem[] = [
@@ -15,8 +15,13 @@ export const blockMenu: CommandItem[] = [
         level: 1,
         helpText: '',
         icon: 'HOne',
-        command: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .toggleHeading({ level: 1 })
+                .run(),
     },
     {
         title: 'H2',
@@ -24,8 +29,13 @@ export const blockMenu: CommandItem[] = [
         level: 2,
         helpText: '',
         icon: 'HTwo',
-        command: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .toggleHeading({ level: 2 })
+                .run(),
     },
     {
         title: 'H3',
@@ -34,8 +44,13 @@ export const blockMenu: CommandItem[] = [
         icon: 'HThree',
         border: true,
         helpText: '',
-        command: (editor) =>
-            editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .toggleHeading({ level: 3 })
+                .run(),
     },
 
     {
@@ -43,7 +58,8 @@ export const blockMenu: CommandItem[] = [
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',
-        command: (editor) => editor.chain().focus().toggleBulletList().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleBulletList().run(),
     },
     {
         title: 'Ordered List',
@@ -51,7 +67,8 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'NumberedList',
         border: true,
-        command: (editor) => editor.chain().focus().toggleOrderedList().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
     },
 
     {
@@ -59,14 +76,16 @@ export const blockMenu: CommandItem[] = [
         key: 'taskList',
         helpText: '',
         icon: 'fa square',
-        command: (editor) => editor.chain().focus().toggleTaskList().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleTaskList().run(),
     },
     {
         title: 'Blockquote',
         key: 'blockquote',
         helpText: '',
         icon: 'Quotes',
-        command: (editor) => editor.chain().focus().toggleBlockquote().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
     },
     {
         title: 'Code Block',
@@ -74,8 +93,13 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'Code',
         border: true,
-        command: (editor) =>
-            editor.chain().focus().toggleCodeBlock({ language: 'json' }).run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .toggleCodeBlock({ language: 'json' })
+                .run(),
     },
     {
         title: 'Image Block',
@@ -83,7 +107,8 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'ReadmeImage',
         border: true,
-        command: (editor) => editor.chain().focus().toggleImageBlock().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleImageBlock().run(),
     },
     /*   {
         title: 'Google doc',
@@ -91,7 +116,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'Gdoc',
         border: true,
-        command: (editor) => editor.chain().focus().toggleImageBlock().run(),
+        command: ({ editor, range }) => editor.chain().focus().toggleImageBlock().run(),
     }, */
 ]
 
@@ -101,8 +126,8 @@ export const menuData: CommandItem[] = [
         key: 'bold',
         helpText: '',
         icon: 'Bold',
-        command: (editor) => {
-            editor.chain().focus().toggleBold().run()
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleBold().run()
         },
     },
     {
@@ -110,29 +135,37 @@ export const menuData: CommandItem[] = [
         key: 'italic',
         helpText: '',
         icon: 'Italic',
-        command: (editor) => editor.chain().focus().toggleItalic().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleItalic().run(),
     },
     {
         title: 'Underline',
         key: 'underline',
         helpText: '',
         icon: 'Underline',
-        command: (editor) => editor.chain().focus().toggleUnderline().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleUnderline().run(),
     },
     {
         title: 'Strikethrough',
         key: 'strike',
         helpText: '',
         icon: 'Strike',
-        command: (editor) => editor.chain().focus().toggleStrike().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).toggleStrike().run(),
     },
     {
         title: 'Align Center',
         key: 'align-center',
         helpText: '',
         icon: 'TextCenter',
-        command: (editor) =>
-            editor.chain().focus().setTextAlign('center').run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .setTextAlign('center')
+                .run(),
     },
 
     {
@@ -140,36 +173,55 @@ export const menuData: CommandItem[] = [
         key: 'align-left',
         helpText: '',
         icon: 'TextLeft',
-        command: (editor) => editor.chain().focus().setTextAlign('left').run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .setTextAlign('left')
+                .run(),
     },
     {
         title: 'Align Right',
         key: 'align-right',
         helpText: '',
         icon: 'TextRight',
-        command: (editor) => editor.chain().focus().setTextAlign('right').run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .setTextAlign('right')
+                .run(),
     },
     {
         title: 'Justify Text',
         key: 'align-justify',
         helpText: '',
         icon: 'JustifyText',
-        command: (editor) =>
-            editor.chain().focus().setTextAlign('justify').run(),
+        command: ({ editor, range }) =>
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .setTextAlign('justify')
+                .run(),
     },
     {
         title: 'Undo',
         key: 'undo',
         helpText: '',
         icon: 'Undo',
-        command: (editor) => editor.chain().focus().undo().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).undo().run(),
     },
     {
         title: 'Redo',
         key: 'redo',
         helpText: '',
         icon: 'Redo',
-        command: (editor) => editor.chain().focus().redo().run(),
+        command: ({ editor, range }) =>
+            editor.chain().focus().deleteRange(range).redo().run(),
     },
     // table
 ]

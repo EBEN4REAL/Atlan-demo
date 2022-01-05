@@ -329,6 +329,7 @@ import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
+import Revoke from '~/assets/images/icons/Revoke.svg'
 
 export default {
     Array,
@@ -651,4 +652,5 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
+    Revoke
 }

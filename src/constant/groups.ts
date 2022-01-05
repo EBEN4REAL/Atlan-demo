@@ -37,7 +37,7 @@ export const columns = [
         title: 'Group',
         key: 'name',
         ellipsis: true,
-        width: 400,
+        width: 250,
         sortKey: 'alias',
         dataIndex: 'name',
         align: 'left',

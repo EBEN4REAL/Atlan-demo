@@ -153,17 +153,20 @@
                     )}`"
                 ></div>
             </div>
+
             <!-- Show on expand -->
-            <GroupSubPanel
-                v-model:subpanels="
-                    activeInlineTab.playground.vqb.panels[index].subpanels
-                "
-                v-model:columnSubpanels="
-                    activeInlineTab.playground.vqb.panels[0].subpanels
-                "
-                :expand="expand"
-                v-if="expand"
-            />
+            <keep-alive>
+                <GroupSubPanel
+                    v-model:subpanels="
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    "
+                    v-model:columnSubpanels="
+                        activeInlineTab.playground.vqb.panels[0].subpanels
+                    "
+                    :expand="expand"
+                    v-if="expand"
+                />
+            </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="

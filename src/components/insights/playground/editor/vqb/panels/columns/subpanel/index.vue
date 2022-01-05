@@ -9,12 +9,14 @@
                     <TableSelector
                         typeName="Table"
                         class="flex-1"
+                        :class="[subpanel.tableQualfiedName ? 'width-50' : '']"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         @change="
                             (val) => hanldeTableQualifiedNameChange(val, index)
                         "
                     />
+
                     <ColumnSelector
                         class="flex-1 ml-6"
                         style="min-height: 34px"
@@ -164,7 +166,9 @@
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
-                    copySubPanel.columns = []
+                    // pre populate all columns selection
+                    copySubPanel.columns = ['all']
+
                     copySubPanel.columnsData = []
                     subpanels.value[index] = copySubPanel
                     selectedTables.value = copySelectedTables
@@ -221,5 +225,8 @@
     }
     .custom-shadow {
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+    .width-50 {
+        max-width: 50%;
     }
 </style>

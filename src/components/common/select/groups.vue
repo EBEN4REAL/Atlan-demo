@@ -2,9 +2,10 @@
     <a-select
         ref="inputRef"
         v-model:value="localValue"
-        placeholder="Groups"
+        :placeholder="`Select group${multiple ? 's' : ''}`"
         class="w-full center-arrow"
         :show-search="true"
+        :allowClear="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
         :filter-option="() => true"

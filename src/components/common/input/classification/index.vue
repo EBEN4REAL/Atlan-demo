@@ -26,6 +26,7 @@
 
         <div class="flex flex-wrap items-center gap-1 text-sm">
             <a-button
+                v-if="editPermission"
                 shape="circle"
                 :disabled="!editPermission"
                 size="small"

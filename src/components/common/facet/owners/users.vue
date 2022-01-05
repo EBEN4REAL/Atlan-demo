@@ -62,8 +62,14 @@
                     {{ userList.length }} of {{ filterTotal }} users
                 </p> -->
                 <template v-if="userList?.length < filterTotal">
-                    <div class="flex justify-center ml-auto" v-if="isLoading || isEnriching">
-                        <AtlanIcon icon="CircleLoader" class="text-primary animate-spin"/>
+                    <div
+                        class="flex justify-center ml-auto"
+                        v-if="isLoading || isEnriching"
+                    >
+                        <AtlanIcon
+                            icon="CircleLoader"
+                            class="text-primary animate-spin"
+                        />
                     </div>
                     <div
                         class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
@@ -235,7 +241,6 @@
 
             onKeyStroke(['Enter'], (e) => {
                 const { key } = e
-                e.preventDefault()
 
                 if (key === 'Enter') {
                     if (userList.value.length === 1) {

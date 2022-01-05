@@ -26,7 +26,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             defaultTab,
             userUpdated,
         } = useUserPreview()
-        const userNameUser = userNameProp || username.value
+        const userNameUser = computed(() => userNameProp || username.value)
 
         // Params for obtaining that one user.
         const params = computed(() => ({
@@ -38,14 +38,13 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                     ? {
                           $and: [
                               { emailVerified: true },
-                              { username: userNameUser },
+                              { username: userNameUser.value },
                           ],
                       }
                     : {
                           $and: [{ emailVerified: true }, { id: userId.value }],
                       },
         }))
-
         const { userList, getUserList, isLoading, error } = useUsers(
             params,
             'USE_USERS_PREVIEW'
@@ -141,7 +140,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             selectedGroup,
             defaultTab,
             tabs: finalTabs,
-            activeKey
+            activeKey,
         }
     }
     return {

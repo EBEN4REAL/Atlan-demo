@@ -1,8 +1,8 @@
 <template>
     <a-popover placement="bottomLeft" :trigger="['click']">
         <div
-            class="flex items-center px-2 border border-gray-300 rounded box-shadow focus:border-primary-focus"
-            style="height: 32px"
+            class="flex items-center px-2 overflow-hidden border border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px; width: 100%"
         >
             <div
                 v-if="selectedColumn?.label"
@@ -32,8 +32,8 @@
                 <a-input
                     v-model:value="tableText"
                     placeholder="Enter table name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
+                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
+                    style="height: 36px"
                 >
                     <template #suffix>
                         <AtlanIcon
@@ -125,8 +125,8 @@
                 <a-input
                     v-model:value="columnText"
                     placeholder="Enter column name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
+                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
+                    style="height: 36px"
                 >
                     <template #suffix>
                         <AtlanIcon
@@ -473,5 +473,15 @@
     }
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .input_styles {
+        width: 100% !important;
+        // padding: 5px;
+        // margin: 0;
+        -webkit-box-sizing: border-box !important;
+        -moz-box-sizing: border-box !important;
+        -o-box-sizing: border-box !important;
+        -ms-box-sizing: border-box !important;
+        box-sizing: border-box !important;
     }
 </style>

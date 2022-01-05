@@ -6,6 +6,13 @@
             class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 border border-gray-200 border-b-0 border-l-0 border-r-0 uppercase bg-white rounded-md"
         >
             filters
+            <span
+                v-if="role || statusFilter.length > 0"
+                class="capitalize cursor-pointer text-primary"
+                @click="handleClearFilter"
+            >
+                Clear All
+            </span>
         </div>
         <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
@@ -142,6 +149,12 @@
             const handleChangeRoleFilter = () => {
                 emit('changeRole', role.value)
             }
+            const handleClearFilter = () => {
+                role.value = ''
+                statusFilter.value = []
+                emit('update:modelValue', [])
+                emit('changeRole', role.value)
+            }
             return {
                 userStatusOptions,
                 statusFilter,
@@ -151,6 +164,7 @@
                 roleOptions,
                 role,
                 handleChangeRoleFilter,
+                handleClearFilter,
             }
         },
     })

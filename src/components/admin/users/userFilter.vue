@@ -2,21 +2,20 @@
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
     <a-collapse>
-        <div class="w-full p-3 bg-white">FILTERS</div>
-        <a-collapse-panel
-            class="border-t border-gray-50 group"
-            :show-arrow="false"
-        >
+        <div class="w-full p-2 text-sm text-gray-500 uppercase bg-white">
+            filters
+        </div>
+        <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
                 <div class="flex justify-between w-36">
-                    <span>STATUS</span>
+                    <span class="text-sm text-gray-500 uppercase">status</span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
                     />
                 </div>
             </template>
-            <div class="justify-center p-4 bg-white rounded w-36">
+            <div class="justify-center p-2 bg-white rounded w-36">
                 <a-form layout="vertical" class="p-0">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
@@ -29,20 +28,17 @@
                 </a-form>
             </div>
         </a-collapse-panel>
-        <a-collapse-panel
-            class="border-t border-gray-50 group"
-            :show-arrow="false"
-        >
+        <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
                 <div class="flex justify-between w-36">
-                    <span>ROLE</span>
+                    <span class="text-sm text-gray-500 uppercase">role</span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
                     />
                 </div>
             </template>
-            <div class="justify-center p-4 bg-white rounded w-36">
+            <div class="justify-center p-2 bg-white rounded w-36">
                 <a-form layout="vertical" class="p-0">
                     <a-form-item class="mb-0">
                         <a-radio-group

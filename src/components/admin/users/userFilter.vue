@@ -21,9 +21,36 @@
                         <a-checkbox-group
                             v-model:value="statusFilter"
                             class="grid gap-y-2"
-                            :options="userStatusOptions"
                             @change="handleStatusFilterChange"
-                        ></a-checkbox-group>
+                        >
+                            <div class="flex flex-col w-full">
+                                <template
+                                    v-for="item in userStatusOptions"
+                                    :key="item.id"
+                                >
+                                    <a-checkbox
+                                        class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
+                                        :value="item.value"
+                                    >
+                                        <div
+                                            class="inline-flex -mt-1 align-middle dot"
+                                            :class="`${
+                                                item.label.toLocaleLowerCase() ===
+                                                'active'
+                                                    ? 'bg-success'
+                                                    : item.label.toLocaleLowerCase() ===
+                                                      'disabled'
+                                                    ? 'bg-error'
+                                                    : 'bg-alert'
+                                            }`"
+                                        ></div>
+                                        <span class="mb-0 text-gray">
+                                            {{ item.label }}
+                                        </span>
+                                    </a-checkbox>
+                                </template>
+                            </div>
+                        </a-checkbox-group>
                     </a-form-item>
                 </a-form>
             </div>
@@ -47,7 +74,7 @@
                     <div class="flex flex-col w-full">
                         <template v-for="item in roleOptions" :key="item.id">
                             <a-radio
-                                class="flex flex-row-reverse justify-between mb-1 atlan-reverse"
+                                class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
                                 :value="item.value"
                             >
                                 <span class="mb-0 ml-1 text-gray">
@@ -119,5 +146,11 @@
 <style lang="less" scoped>
     :global(.atlan-reverse > span:nth-child(2)) {
         @apply w-full pl-0;
+    }
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+        margin-right: 8px;
     }
 </style>

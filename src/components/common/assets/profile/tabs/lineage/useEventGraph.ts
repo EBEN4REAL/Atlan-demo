@@ -1,4 +1,5 @@
 import { watch, ref, computed } from 'vue'
+import { message } from 'ant-design-vue'
 import useLineageService from '~/services/meta/lineage/lineage_service'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import {
@@ -288,7 +289,13 @@ export default function useEventGraph(
             hideProcess,
         }))
         const { data } = useFetchLineage(portConfig, true)
+
         watch(data, () => {
+            if (!data.value?.relations.length) {
+                loaderCords.value = {}
+                message.info('No lineage data available for selected column')
+                return
+            }
             const translateCandidatesSet = new Set()
             Object.entries(data.value.guidEntityMap).forEach(([k, v]) => {
                 if (k !== portId) {

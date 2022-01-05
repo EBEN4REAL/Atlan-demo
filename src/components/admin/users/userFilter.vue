@@ -74,9 +74,9 @@
             </template>
             <div class="p-2 text-left bg-white rounded w-36">
                 <a-radio-group
-                    v-model:value="statusFilter"
+                    v-model:value="role"
                     class="grid w-full text-left gap-y-2"
-                    @change="handleStatusFilterChange"
+                    @change="handleChangeRoleFilter"
                 >
                     <div class="flex flex-col w-full">
                         <template v-for="item in roleOptions" :key="item.id">
@@ -117,10 +117,11 @@
                 default: () => null,
             },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:modelValue', 'change', 'changeRole'],
         setup(props, { emit }) {
             const activeCollapse = ref<Array<String>>(['1'])
             const statusFilter = ref<Array<any>>(props.modelValue)
+            const role = ref('')
             const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
@@ -137,7 +138,9 @@
                     if (!props.modelValue?.length) statusFilter.value = []
                 }
             )
-
+            const handleChangeRoleFilter = () => {
+                emit('changeRole', role.value)
+            }
             return {
                 userStatusOptions,
                 statusFilter,
@@ -145,6 +148,8 @@
                 activeCollapse,
                 filterOpened,
                 roleOptions,
+                role,
+                handleChangeRoleFilter,
             }
         },
     })

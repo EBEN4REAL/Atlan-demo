@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center z-1"
+        class="relative flex items-center"
         :class="[
             isAreaFocused
                 ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
@@ -136,39 +136,68 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <a-checkbox
-                            :checked="map[item.value]"
-                            @change="
-                                (checked) =>
-                                    onCheckboxChange(checked, item.value)
-                            "
-                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="left"
+                            style="z-index: 12"
                         >
-                            <div
-                                class="justify-between parent-ellipsis-container"
-                            >
-                                <div class="parent-ellipsis-container">
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
                                 >
-                                    <ColumnKeys
-                                        :isPrimary="item.isPrimary"
-                                        :isForeign="item.isForeign"
-                                        :isPartition="item.isPartition"
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
                                     />
+                                </AtlanBtn>
+                            </template>
+
+                            <a-checkbox
+                                :checked="map[item.value]"
+                                @change="
+                                    (checked) =>
+                                        onCheckboxChange(checked, item.value)
+                                "
+                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                            >
+                                <div
+                                    class="justify-between parent-ellipsis-container"
+                                >
+                                    <div class="parent-ellipsis-container">
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                        ></component>
+                                        <span
+                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >
+                                            {{ item.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </a-checkbox>
+                            </a-checkbox>
+                        </PopoverAsset>
                     </template>
                 </div>
 
@@ -191,6 +220,7 @@
         defineComponent,
         ref,
         nextTick,
+        Ref,
         onMounted,
         inject,
         PropType,
@@ -205,6 +235,15 @@
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
     import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
 
     import useBody from './useBody'
 
@@ -215,6 +254,7 @@
             Loader,
             TablesTree,
             ColumnKeys,
+            PopoverAsset,
         },
         // emits: ['queryTextChange', 'checkboxChange'],
         props: {
@@ -247,15 +287,33 @@
             const { tableQualfiedName, showSelectAll } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
+
             const map = ref({})
             selectedItems.value.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
 
             const { getDataTypeImage } = useColumn()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const inputRef = ref()
             const initialRef = ref()
@@ -283,13 +341,15 @@
             }
 
             const handleContainerBlur = (event) => {
+                console.log(event, 'event')
+                debugger
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
-                    isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
+                    isAreaFocused.value = false
                 }
             }
 
@@ -314,6 +374,22 @@
                         'isPrimary',
                         'isForeign',
                         'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -349,6 +425,7 @@
                     isForeign: ls.attributes?.isForeign,
                     isPartition: ls.attributes?.isPartition,
                     value: ls.attributes?.qualifiedName,
+                    item: ls,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -501,7 +578,29 @@
                 })
             })
 
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
             return {
+                actionClick,
                 showSelectAll,
                 initialRef,
                 queryText,
@@ -534,6 +633,13 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
             }
         },
     })

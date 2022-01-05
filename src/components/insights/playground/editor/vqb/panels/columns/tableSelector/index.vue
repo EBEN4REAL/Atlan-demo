@@ -28,7 +28,7 @@
                                     certificateStatus(item)
                                 )
                             "
-                            class="w-4 h-4 mr-2"
+                            class="w-4 h-4 mr-2 -mt-0.5"
                         />
                         <span class="parent-ellipsis-container-base"
                             >{{ item?.label }}

@@ -9,6 +9,7 @@
                     <TableSelector
                         typeName="Table"
                         class="flex-1"
+                        :class="[subpanel.tableQualfiedName ? 'width-50' : '']"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         @change="
@@ -224,5 +225,8 @@
     }
     .custom-shadow {
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+    .width-50 {
+        max-width: 50%;
     }
 </style>

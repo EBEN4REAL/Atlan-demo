@@ -355,6 +355,7 @@
             )
             watch(tableQualfiedName, () => {
                 map.value = {}
+                selectAll.value = true
             })
             const placeholder = computed(() => {
                 if (tableQualfiedName.value) {

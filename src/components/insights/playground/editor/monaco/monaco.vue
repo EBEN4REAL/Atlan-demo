@@ -251,6 +251,17 @@
 
                 // editor autosuggestion icons
 
+                let data1 = computed(() =>
+                    document.getElementsByClassName(
+                        'suggest-icon codicon codicon-symbol-field'
+                    )
+                )
+                let data2 = computed(() =>
+                    document.getElementsByClassName(
+                        'suggest-icon codicon codicon-symbol-keyword'
+                    )
+                )
+
                 promise.then((item) => {
                     let items = item.suggestions
 
@@ -263,29 +274,37 @@
                             (item && assetType(item) === 'Table') ||
                             assetType(item) === 'View'
                         ) {
-                            let data = document.getElementsByClassName(
-                                'suggest-icon codicon codicon-symbol-field'
-                            )
-                            data[
-                                i
-                            ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/${getEntityStatusIcon(
-                                assetType(item),
-                                certificateStatus(item)
-                            )}.png")`
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-field'
+                            // )
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/${getEntityStatusIcon(
+                                    assetType(item),
+                                    certificateStatus(item)
+                                )}.png")`
+                            }
                         } else if (item && assetType(item) === 'Column') {
-                            let data = document.getElementsByClassName(
-                                'suggest-icon codicon codicon-symbol-field'
-                            )
-                            data[
-                                i
-                            ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-field'
+                            // )
+
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
+                            }
                         } else {
-                            let data = document.getElementsByClassName(
-                                'suggest-icon codicon codicon-symbol-keyword'
-                            )
-                            data[
-                                i
-                            ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/default.png")`
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-keyword'
+                            // )
+                            // console.log('suggestion other: ', data[i])
+                            if (data2.value[i] && data2.value[i].style) {
+                                data2.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/default.png")`
+                            }
                         }
                     }
                 })
@@ -339,6 +358,7 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
+            let suggestionsList = ref(null)
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -600,6 +620,7 @@
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
                     }>
+                    suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
@@ -653,6 +674,28 @@
             //     // { immediate: true }
             // )
 
+            // let s1 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+            // let s2 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+
+            // watch(
+            //     [s1, s2],
+            //     () => {
+            //         console.log('reset auto')
+            //         if (suggestionsList.value) {
+            //             triggerAutoCompletion(suggestionsList.value)
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
+
             watch(activeInlineTab, () => {
                 // console.log('editor permisisons: ', {
                 //     isQueryCreatedByCurrentUser,
@@ -698,6 +741,7 @@
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
                         }>
+                        suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()
@@ -861,7 +905,7 @@
         // left: 207px;
         margin-top: 10px !important;
         margin-left: 10px !important;
-        border-radius: 6px;
+        border-radius: 4px;
         background-color: #fefefe;
         border: 1px solid #e2e2e2;
         // padding-left: 4px !important;
@@ -889,6 +933,7 @@
     :global(.monaco-list-row.show-file-icons.string-label.focused) {
         @apply bg-gray-light !important;
         @apply text-gray-500 !important;
+        border-radius: 3px !important;
     }
     :global(.main) {
         padding-left: 8px !important;

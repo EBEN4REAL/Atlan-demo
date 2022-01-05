@@ -1,15 +1,18 @@
 <template>
     <a-button-group>
-        <MemberPopover :selected-group='group' @members-added='$emit("membersAdded")'>
+        <MemberPopover
+            :selected-group="group"
+            @members-added="$emit('membersAdded')"
+        >
             <template #label>
-                <a-button
+                <AtlanBtn
                     v-auth="map.ADD_USER_GROUP"
-                    size="small"
-                    type="secondary"
-                    class="flex mr-3.5 items-center justify-center w-8 h-8 border rounded customShadow cursor-pointer"
+                    color="secondary"
+                    padding="compact"
+                    class="flex mr-3.5 p-0 w-7 h-7 items-center justify-center border-transparent cursor-pointer rounded hover:border-primary-focus"
                 >
                     <AtlanIcon icon="AddUser" class="text-gray-500" />
-                </a-button>
+                </AtlanBtn>
             </template>
         </MemberPopover>
         <!-- <a-tooltip placement="topLeft">
@@ -38,16 +41,19 @@
             </div>
         </a-tooltip> -->
         <a-dropdown
+            v-if="!showPersonaList"
             v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
         >
-            <a-button
-                class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow p-2"
+            <AtlanBtn
+                class="flex items-center justify-center p-0 border-transparent rounded cursor-pointer w-7 h-7 hover:border-primary-focus"
+                color="secondary"
+                padding="compact"
             >
                 <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
-            </a-button>
+            </AtlanBtn>
             <template #overlay>
                 <a-menu>
                     <a-menu-item
@@ -59,7 +65,7 @@
                             <template v-if="markAsDefaultLoading">
                                 <AtlanIcon
                                     icon="CircleLoader"
-                                    class="animate-spin"
+                                    class="mr-2 animate-spin"
                                 />
                             </template>
                             <a-checkbox
@@ -93,6 +99,7 @@
                             </a-tooltip>
                         </div>
                     </a-menu-item>
+                    <a-menu-divider class="m-0" />
                     <a-menu-item
                         key="2"
                         :disabled="deleteGroupLoading || markAsDefaultLoading"
@@ -120,11 +127,13 @@
     import { ref, defineComponent, watch, toRefs } from 'vue'
     import map from '~/constant/accessControl/map'
     import MemberPopover from '~/components/admin/groups/groupPreview/memberPopover.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'GroupsActionButton',
         components: {
-            MemberPopover
+            MemberPopover,
+            AtlanBtn,
         },
         props: {
             group: {
@@ -143,7 +152,7 @@
                 required: true,
             },
         },
-        emits: ['addMembers', 'deleteGroup', 'toggleDefault', 'membersAdded'],
+        emits: ['deleteGroup', 'toggleDefault', 'membersAdded'],
         setup(props) {
             const { markAsDefaultLoading, deleteGroupLoading } = toRefs(props)
             const dropDownOpened = ref(false)
@@ -156,8 +165,9 @@
                     if (
                         !markAsDefaultLoading.value &&
                         !deleteGroupLoading.value
-                    )
+                    ) {
                         dropDownOpened.value = false
+                    }
                 }
             }
 
@@ -189,5 +199,11 @@
 <style lang="less">
     .customShadow {
         box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+    }
+</style>
+<style lang="less" scoped>
+    .persona-list {
+        width: 200px;
+        height: 150px;
     }
 </style>

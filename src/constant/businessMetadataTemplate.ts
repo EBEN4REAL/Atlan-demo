@@ -168,7 +168,7 @@ export const ATTRIBUTE_TYPES = [
         icon: 'Number',
     },
     {
-        label: 'Url',
+        label: 'URL',
         id: 'url',
         icon: 'Link',
     },

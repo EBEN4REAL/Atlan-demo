@@ -145,8 +145,7 @@ export function useSavedQuery(
                                   subpanels: [
                                       {
                                           id: '1',
-                                          tableQualifiedName: undefined,
-                                          columns: [],
+                                          columns: ['all'],
                                           columnsData: [],
                                       },
                                   ],

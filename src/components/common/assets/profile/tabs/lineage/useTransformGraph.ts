@@ -7,10 +7,23 @@ export default function useTransformGraph(graph, emit) {
 
     const fit = (id) => {
         graph.value.scale(0.7)
-        const cell = graph.value.getCellById(id)
 
-        graph.value.positionCell(cell, 'center', {
-            padding: { left: 200 },
+        const cell = graph.value.getCellById(id)
+        const pre = graph.value.getPredecessors(cell)
+        const suc = graph.value.getSuccessors(cell)
+        let position = 'center'
+        let padding = { left: 10 }
+
+        if (!pre.length) {
+            position = 'left'
+            padding = { left: 125 }
+        } else if (!suc.length) {
+            position = 'right'
+            padding = { right: 125 }
+        }
+
+        graph.value.positionCell(cell, position, {
+            padding,
         })
     }
 

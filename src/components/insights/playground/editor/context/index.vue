@@ -114,25 +114,32 @@
                     </a-tooltip>
                 </div>
 
-                <AtlanBtn
+                <Shortcut
                     v-else
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
-                    @click="$emit('onClickSaveQuery')"
+                    shortcut-key="cmd+s"
+                    action="Save Query"
+                    placement="right"
+                    :edit-permission="true"
                 >
-                    <div
-                        class="flex items-center transition duration-150 group-hover:text-primary"
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
+                        @click="$emit('onClickSaveQuery')"
                     >
-                        <AtlanIcon
-                            style="margin-right: 2.5px"
-                            icon="Save"
-                        ></AtlanIcon>
+                        <div
+                            class="flex items-center transition duration-150 group-hover:text-primary"
+                        >
+                            <AtlanIcon
+                                style="margin-right: 2.5px"
+                                icon="Save"
+                            ></AtlanIcon>
 
-                        <span>Save</span>
-                    </div>
-                </AtlanBtn>
+                            <span>Save</span>
+                        </div>
+                    </AtlanBtn>
+                </Shortcut>
             </span>
         </div>
 
@@ -408,7 +415,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
 
     import { useAuthStore } from '~/store/auth'
-    import { storeToRefs } from 'pinia'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'EditorContext',
@@ -419,6 +426,7 @@
             ThreeDotMenu,
             AtlanIcon,
             Tooltip,
+            Shortcut,
         },
         props: {
             isUpdating: {

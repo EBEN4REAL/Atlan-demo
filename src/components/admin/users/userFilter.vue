@@ -5,6 +5,15 @@
         <div
             class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 border border-gray-200 border-b-0 border-l-0 border-r-0 uppercase bg-white rounded-md flex justify-between"
         >
+            {{
+                statusFilter.length > 0 && role
+                    ? statusFilter.length + 1
+                    : statusFilter.length > 0
+                    ? statusFilter.length
+                    : role
+                    ? 1
+                    : ''
+            }}
             filters
             <span
                 v-if="role || statusFilter.length > 0"

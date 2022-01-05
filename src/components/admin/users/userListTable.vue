@@ -166,18 +166,10 @@
                     <template #overlay>
                         <a-menu>
                             <a-menu-item key="verified-user-1">
-                                <div
-                                    class="flex items-center px-1.5 py-1 cursor-pointer justify-between"
-                                >
-                                    <span>
-                                        <AtlanIcon class="mr-2" icon="Group" />
-                                        Add to group
-                                    </span>
-                                    <AtlanIcon
-                                        class="ml-3"
-                                        icon="ChevronRight"
-                                    />
-                                </div>
+                                <AddGroups
+                                    :user="user"
+                                    @groupAdded="handleGroupUpdated"
+                                />
                             </a-menu-item>
                             <a-menu-item key="verified-user-2">
                                 <div
@@ -427,10 +419,11 @@
     import map from '~/constant/accessControl/map'
     import AtlanButton from '@/UI/button.vue'
     import Groups from './groups.vue'
+    import AddGroups from './addGroups.vue'
 
     export default defineComponent({
         name: 'UserListTable',
-        components: { Avatar, ChangeRole, AtlanButton, Groups },
+        components: { Avatar, ChangeRole, AtlanButton, Groups, AddGroups },
         props: {
             userList: { type: Array, required: true },
             loading: { type: Boolean, required: true },
@@ -453,6 +446,7 @@
             'revokeInvite',
             'handleRevokeInvite',
             'handleErrorUpdateRole',
+            'refetch',
         ],
         setup(props, { emit }) {
             const { userList, selectedUserId } = toRefs(props)
@@ -504,6 +498,9 @@
             const handleManageGroups = (user) => {
                 emit('showUserPreviewDrawer', user, 'groups')
             }
+            const handleGroupUpdated = () => {
+                emit('refetch')
+            }
             return {
                 roleList,
                 userColumns,
@@ -516,6 +513,7 @@
                 statusColorClass,
                 map,
                 handleManageGroups,
+                handleGroupUpdated,
             }
         },
     })

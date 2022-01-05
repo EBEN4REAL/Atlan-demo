@@ -100,6 +100,7 @@
                     @confirmEnableDisablePopover="confirmEnableDisablePopover"
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
+                    @refetch="refetchData"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -278,6 +279,9 @@
                         }`
                     userListAPIParams.sort = sortValue
                 }
+                getUserList()
+            }
+            const refetchData = () => {
                 getUserList()
             }
             // BEGIN: USER PREVIEW
@@ -520,6 +524,7 @@
                 offset: userListAPIParams.offset,
                 updateFilters,
                 clearFilter,
+                refetchData,
             }
         },
     })

@@ -38,17 +38,25 @@
                     />
                 </div>
             </template>
-            <div class="justify-center p-2 bg-white rounded w-36">
-                <a-form layout="vertical" class="p-0">
-                    <a-form-item class="mb-0">
-                        <a-radio-group
-                            v-model:value="statusFilter"
-                            class="grid gap-y-2"
-                            :options="userStatusOptions"
-                            @change="handleStatusFilterChange"
-                        ></a-radio-group>
-                    </a-form-item>
-                </a-form>
+            <div class="p-2 text-left bg-white rounded w-36">
+                <a-radio-group
+                    v-model:value="statusFilter"
+                    class="grid w-full text-left gap-y-2"
+                    @change="handleStatusFilterChange"
+                >
+                    <div class="flex flex-col w-full">
+                        <template v-for="item in roleOptions" :key="item.id">
+                            <a-radio
+                                class="flex flex-row-reverse justify-between mb-1 atlan-reverse"
+                                :value="item.value"
+                            >
+                                <span class="mb-0 ml-1 text-gray">
+                                    {{ item.label }}
+                                </span>
+                            </a-radio>
+                        </template>
+                    </div>
+                </a-radio-group>
             </div>
         </a-collapse-panel>
     </a-collapse>
@@ -65,7 +73,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
-    import { userStatusOptions } from '~/constant/users'
+    import { userStatusOptions, roleOptions } from '~/constant/users'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -102,7 +110,14 @@
                 handleStatusFilterChange,
                 activeCollapse,
                 filterOpened,
+                roleOptions,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    :global(.atlan-reverse > span:nth-child(2)) {
+        @apply w-full pl-0;
+    }
+</style>

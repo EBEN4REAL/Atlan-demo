@@ -90,7 +90,7 @@ export const userColumns = [
         // sortKey: 'groupCount',
         // dataIndex: 'group_count_string',
     },
-      {
+    {
         title: 'Personas',
         key: 'personas',
         // sorter: true,
@@ -119,6 +119,18 @@ export const userStatusOptions = [
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
+    },
+]
+
+export const roleOptions = [
+    {
+        label: 'Members',
+        value: JSON.stringify({ role: 'member' }),
+    },
+    { label: 'Admin', value: JSON.stringify({ role: 'admin' }) },
+    {
+        label: 'Guest',
+        value: JSON.stringify({ role: 'guest' }),
     },
 ]
 

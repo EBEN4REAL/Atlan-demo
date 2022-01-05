@@ -238,6 +238,53 @@
                         </div>
                     </template>
                 </a-popover>
+                <a-popover
+                    placement="leftTop"
+                    trigger="click"
+                    :destroy-tooltip-on-hide="true"
+                    :visible="
+                        selectedUserId === user.id && showRevokeInvitePopover
+                    "
+                >
+                    <template #content>
+                        <div class="p-4 w-60">
+                            <h3>
+                                Revoke invitation for
+                                <b>{{
+                                    user.name ||
+                                    user.username ||
+                                    user.email ||
+                                    ''
+                                }}</b>
+                                ?
+                            </h3>
+                            <div
+                                class="flex items-center justify-between mt-3 gap-x-3"
+                            >
+                                <div class="flex-grow"></div>
+                                <AtlanButton
+                                    color="minimal"
+                                    size="sm"
+                                    padding="compact"
+                                    @click="$emit('handleRevokeInvite', false)"
+                                    >Cancel
+                                </AtlanButton>
+                                <AtlanButton
+                                    :color="'danger'"
+                                    size="sm"
+                                    padding="compact"
+                                    @click="
+                                        $emit('revokeInvite', {
+                                            email: user.email,
+                                            id: user.id,
+                                        })
+                                    "
+                                    >Revoke
+                                </AtlanButton>
+                            </div>
+                        </div>
+                    </template>
+                </a-popover>
                 <!-- enable/disable  -->
                 <!-- <a-tooltip v-if="user.emailVerified" placement="top">
                     <template #title>
@@ -271,7 +318,7 @@
                 </a-tooltip> -->
                 <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu" />
@@ -295,73 +342,20 @@
                                     Resend invitation
                                 </div>
                             </a-menu-item>
-                            <a-popover
-                                placement="leftTop"
-                                trigger="click"
-                                :destroy-tooltip-on-hide="true"
-                                :visible="
-                                    selectedUserId === user.id &&
-                                    showRevokeInvitePopover
-                                "
+                            <a-menu-item
+                                key="revoke inviation"
+                                @click="emit('handleRevokeInvite', user.id)"
                             >
-                                <template #content>
-                                    <div class="p-4 w-60">
-                                        <h3>
-                                            Revoke invitation for
-                                            <b>{{
-                                                user.name ||
-                                                user.username ||
-                                                user.email ||
-                                                ''
-                                            }}</b>
-                                            ?
-                                        </h3>
-                                        <div
-                                            class="flex items-center justify-between mt-3 gap-x-3"
-                                        >
-                                            <div class="flex-grow"></div>
-                                            <AtlanButton
-                                                color="minimal"
-                                                size="sm"
-                                                padding="compact"
-                                                @click="
-                                                    $emit(
-                                                        'handleRevokeInvite',
-                                                        false
-                                                    )
-                                                "
-                                                >Cancel
-                                            </AtlanButton>
-                                            <AtlanButton
-                                                :color="'danger'"
-                                                size="sm"
-                                                padding="compact"
-                                                @click="
-                                                    $emit('revokeInvite', {
-                                                        email: user.email,
-                                                        id: user.id,
-                                                    })
-                                                "
-                                                >Revoke
-                                            </AtlanButton>
-                                        </div>
-                                    </div>
-                                </template>
-                                <a-menu-item
-                                    key="1"
-                                    @click="emit('handleRevokeInvite', user.id)"
+                                <div
+                                    class="flex items-center justify-center h-8 p-2 py-3 text-red-600 cursor-pointer"
                                 >
-                                    <div
-                                        class="flex items-center justify-center h-8 p-2 py-3 text-red-600 cursor-pointer"
-                                    >
-                                        <AtlanIcon
-                                            class="mr-2 text-red-600"
-                                            icon="Revoke"
-                                        />
-                                        Revoke Invitation
-                                    </div>
-                                </a-menu-item>
-                            </a-popover>
+                                    <AtlanIcon
+                                        class="mr-2 text-red-600"
+                                        icon="Revoke"
+                                    />
+                                    Revoke Invitation
+                                </div>
+                            </a-menu-item>
 
                             <!-- <a-popover
                                 placement="leftTop"

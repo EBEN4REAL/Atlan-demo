@@ -121,9 +121,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(
-                    subpanel.column.columnQualifiedName
-                )
+                const tableName = getTableName(subpanel.column.qualifiedName)
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
                 if (aggregatorUpperCase === 'UNIQUE') {

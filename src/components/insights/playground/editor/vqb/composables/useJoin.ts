@@ -5,16 +5,16 @@ export function useJoin() {
             name: 'Inner Join',
         },
         {
-            type: 'outer_join',
-            name: 'Outer Join',
-        },
-        {
             type: 'left_join',
             name: 'Left Join',
         },
         {
             type: 'right_join',
             name: 'Right Join',
+        },
+        {
+            type: 'outer_join',
+            name: 'Outer Join',
         },
     ]
 

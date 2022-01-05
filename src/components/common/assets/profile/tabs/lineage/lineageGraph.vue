@@ -127,6 +127,7 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -200,8 +201,9 @@
                     highlightedNode,
                     loaderCords,
                     currZoom,
-                    onSelectAsset,
                     resetSelections,
+                    config,
+                    onSelectAsset,
                     onCloseDrawer
                 )
             }

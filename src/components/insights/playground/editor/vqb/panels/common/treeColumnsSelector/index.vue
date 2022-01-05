@@ -1,12 +1,12 @@
 <template>
     <a-popover placement="bottomLeft" :trigger="['click']">
         <div
-            class="flex items-center px-2 mx-3 border border-gray-300 rounded box-shadow focus:border-primary-focus"
+            class="flex items-center px-2 border border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px"
         >
             <div
                 v-if="selectedColumn?.label"
-                style="max-width: 450px"
+                style="max-width: 98%"
                 class="flex items-center truncate"
             >
                 <component

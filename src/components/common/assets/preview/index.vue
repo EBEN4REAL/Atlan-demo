@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             v-if="isEvaluating"
             class="flex items-center justify-center flex-grow"
         >
@@ -136,9 +136,8 @@
                 icon="Loader"
                 class="w-auto h-10 animate-spin"
             ></AtlanIcon>
-        </div>
+        </div> -->
         <a-tabs
-            v-else
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             :style="
@@ -152,7 +151,6 @@
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
                 :key="index"
-                class="overflow-y-auto"
                 :destroy-inactive-tab-pane="true"
                 :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
             >
@@ -405,6 +403,8 @@
                 //     tabChildRef.value[activeKey.value]?.handleCancel()
                 // else activeKey.value = k
             }
+
+            provide('isProfile', isProfile.value)
 
             return {
                 tabChildRef,

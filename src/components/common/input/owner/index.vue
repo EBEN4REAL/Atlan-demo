@@ -1,9 +1,7 @@
 <template>
-    <div
-        class="flex flex-wrap items-center gap-1 text-sm"
-        data-test-id="owners-popover"
-    >
+    <div data-test-id="owners-popover">
         <a-popover
+            v-if="editPermission"
             v-model:visible="isEdit"
             :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
@@ -20,48 +18,58 @@
                     ></OwnerFacets>
                 </div>
             </template>
+        </a-popover>
+        <div class="flex flex-wrap items-center gap-1 text-sm">
             <a-button
-                v-if="editPermission"
+                :disabled="!editPermission"
                 shape="circle"
                 size="small"
-                class="text-center shadow hover:bg-primary-light hover:border-primary"
+                class="text-center shadow"
+                :class="{
+                    editPermission:
+                        'hover:bg-primary-light hover:border-primary',
+                }"
+                @click="() => (isEdit = true)"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
-        </a-popover>
 
-        <template v-for="username in localValue?.ownerUsers" :key="username">
-            <PopOverUser :item="username">
-                <UserPill
-                    :username="username"
-                    :allow-delete="editPermission"
-                    :enable-hover="enableHover"
-                    @delete="handleDeleteUser"
-                    @click="handleClickUser(username)"
-                ></UserPill>
-            </PopOverUser>
-        </template>
+            <template
+                v-for="username in localValue?.ownerUsers"
+                :key="username"
+            >
+                <PopOverUser :item="username">
+                    <UserPill
+                        :username="username"
+                        :allow-delete="editPermission"
+                        :enable-hover="enableHover"
+                        @delete="handleDeleteUser"
+                        @click="handleClickUser(username)"
+                    ></UserPill>
+                </PopOverUser>
+            </template>
 
-        <template v-for="name in localValue?.ownerGroups" :key="name">
-            <PopOverGroup :item="name">
-                <GroupPill
-                    :name="name"
-                    :allow-delete="editPermission"
-                    :enable-hover="enableHover"
-                    @delete="handleDeleteGroup"
-                    @click="handleClickGroup(name)"
-                ></GroupPill>
-            </PopOverGroup>
-        </template>
-        <span
-            v-if="
-                !editPermission &&
-                localValue?.ownerGroups?.length < 1 &&
-                localValue?.ownerUsers?.length < 1
-            "
-            class="-ml-1 text-gray-500"
-            >No owners assigned</span
-        >
+            <template v-for="name in localValue?.ownerGroups" :key="name">
+                <PopOverGroup :item="name">
+                    <GroupPill
+                        :name="name"
+                        :allow-delete="editPermission"
+                        :enable-hover="enableHover"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                    ></GroupPill>
+                </PopOverGroup>
+            </template>
+            <span
+                v-if="
+                    !editPermission &&
+                    localValue?.ownerGroups?.length < 1 &&
+                    localValue?.ownerUsers?.length < 1
+                "
+                class="text-gray-500"
+                >No owners assigned</span
+            >
+        </div>
     </div>
 </template>
 

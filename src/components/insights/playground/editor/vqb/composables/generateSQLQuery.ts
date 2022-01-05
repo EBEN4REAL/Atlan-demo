@@ -78,7 +78,6 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const join = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'join'
     )
-    // console.log('joins: ', joins)
 
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
@@ -102,7 +101,15 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                         select.field(`"${tableName}"."${column.label}"`)
                     })
                 } else {
-                    select.field('*')
+                    if (
+                        aggregatePanel?.subpanels?.length > 0 &&
+                        aggregatePanel?.subpanels[0]?.column?.label &&
+                        aggregatePanel?.subpanels[0]?.aggregators?.length > 0 &&
+                        aggregatePanel?.subpanels[0]?.aggregators[0]
+                    ) {
+                    } else {
+                        select.field('*')
+                    }
                 }
             }
         })
@@ -114,9 +121,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(
-                    subpanel.column.columnQualifiedName
-                )
+                const tableName = getTableName(subpanel.column.qualifiedName)
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
                 if (aggregatorUpperCase === 'UNIQUE') {
@@ -154,9 +159,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
             if (subpanel.column.label) {
-                const tableName = getTableName(
-                    subpanel.column.columnQualifiedName
-                )
+                const tableName = getTableName(subpanel.column.qualifiedName)
 
                 select.order(`${tableName}."${subpanel.column.label}"`, order)
             }
@@ -166,15 +169,19 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
     if (filter?.hide) {
-        console.log(filter)
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
             res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
-            const tableName = getTableName(subpanel.column.columnQualifiedName)
+            const tableName = getTableName(subpanel.column.qualifiedName)
             if (index == 0) res = ''
-
-            res += `"${tableName}."${subpanel?.column?.label}"`
-            res += `${nameMap[subpanel?.filter?.name]} `
+            if (
+                tableName &&
+                subpanel?.column?.label &&
+                nameMap[subpanel?.filter?.name]
+            ) {
+                res += `${tableName}."${subpanel?.column?.label}"`
+                res += `${nameMap[subpanel?.filter?.name]} `
+            }
 
             switch (subpanel?.filter?.type) {
                 case 'range_input': {

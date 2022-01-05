@@ -23,8 +23,9 @@ export default function useEventGraph(
     highlightedNode,
     loaderCords,
     currZoom,
-    onSelectAsset,
     resetSelections,
+    config,
+    onSelectAsset,
     onCloseDrawer
 ) {
     /** DATA */
@@ -279,13 +280,14 @@ export default function useEventGraph(
 
     // getColumnLineage
     const getColumnLineage = (portId) => {
-        const config = computed(() => ({
-            depth: 3,
+        const { depth, direction, hideProcess } = config.value
+        const portConfig = computed(() => ({
+            depth,
             guid: portId,
-            direction: 'BOTH',
-            hideProcess: true,
+            direction,
+            hideProcess,
         }))
-        const { data } = useFetchLineage(config, true)
+        const { data } = useFetchLineage(portConfig, true)
         watch(data, () => {
             const translateCandidatesSet = new Set()
             Object.entries(data.value.guidEntityMap).forEach(([k, v]) => {
@@ -297,7 +299,7 @@ export default function useEventGraph(
                     const parentNode = graphNodes.find(
                         (x) => x.store.data.entity.displayText === parentName
                     )
-                    translateCandidatesSet.add(parentNode)
+                    if (parentNode) translateCandidatesSet.add(parentNode)
                 }
             })
 
@@ -332,11 +334,31 @@ export default function useEventGraph(
         else cell.attr('line/style/animation', 'unset')
     }
 
+    // getEventPath
+    const getEventPath = (e) => {
+        let path = (e.composedPath && e.composedPath()) || e.path
+        let target = e.target
+
+        if (path != null)
+            return path.indexOf(window) < 0 ? path.concat(window) : path
+        if (target === window) return [window]
+
+        function getParents(node, memo) {
+            memo = memo || []
+            let parentNode = node.parentNode
+            if (!parentNode) return memo
+            else return getParents(parentNode, memo.concat(parentNode))
+        }
+
+        return [target].concat(getParents(target), window)
+    }
+
     /** EVENTS */
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
-        const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
+
+        const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
         if (chp.value.portId === portId) {
             // if current port - deselect

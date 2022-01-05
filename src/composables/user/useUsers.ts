@@ -118,6 +118,7 @@ export const getFormattedUser = (user: any) => {
         ...user,
         name: getUserName(user),
         group_count_string: pluralizeString('group', user.groupCount || 0),
+        persona_count_string: pluralizeString('persona', user?.personas?.length || 0),
         status_object: getUserStatus(user),
         role_object: getUserRole(user),
         workspaceRole: getWorkspaceRole(user),

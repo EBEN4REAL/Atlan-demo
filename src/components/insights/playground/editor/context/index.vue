@@ -430,7 +430,7 @@
                 default: '',
             },
         },
-        emits: ['onClickSaveQuery', 'onClickRun', 'toggleVQB'],
+        emits: ['onClickSaveQuery', 'onClickRunQuery', 'toggleVQB'],
         setup(props) {
             const {
                 getConnectionName,

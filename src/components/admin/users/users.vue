@@ -1,25 +1,41 @@
 <template>
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
-            <div class="flex justify-between">
-                <div v-auth="map.LIST_USERS" class="flex items-baseline w-1/4">
+            <div
+                v-if="userList.length > 0"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+            >
+                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
                         class="mr-1"
-                        size="minimal"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
-                        <template #filter>
+                        <!-- <template #filter>
+                            <UserFilter
+                                v-model="statusFilter"
+                                @change="updateFilters"
+                            />
+                        </template> -->
+                    </SearchAndFilter>
+                    <a-popover trigger="click" placement="bottomRight">
+                        <template #content>
                             <UserFilter
                                 v-model="statusFilter"
                                 @change="updateFilters"
                             />
                         </template>
-                    </SearchAndFilter>
+                        <button
+                            class="flex items-center justify-center py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                        >
+                            <AtlanIcon icon="Filter" class="w-5 h-5" />
+                            <span>Filters</span>
+                        </button>
+                    </a-popover>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
@@ -84,6 +100,7 @@
                     @confirmEnableDisablePopover="confirmEnableDisablePopover"
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
+                    @refetch="refetchData"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -264,6 +281,9 @@
                 }
                 getUserList()
             }
+            const refetchData = () => {
+                getUserList()
+            }
             // BEGIN: USER PREVIEW
             const {
                 showPreview,
@@ -273,12 +293,12 @@
                 userId,
                 userUpdated,
             } = useUserPreview()
-            const showUserPreviewDrawer = (user: any) => {
+            const showUserPreviewDrawer = (user: any, activeTab: String) => {
                 if (userId.value === user.id && showPreview.value) {
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    openPreview()
+                    openPreview(null, activeTab)
                     selectedUserId.value = user.id
                 }
             }
@@ -504,6 +524,7 @@
                 offset: userListAPIParams.offset,
                 updateFilters,
                 clearFilter,
+                refetchData,
             }
         },
     })

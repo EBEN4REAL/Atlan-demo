@@ -5,8 +5,11 @@
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div class="w-full mb-3 grid-container group">
-                    <div class="flex items-center justify-end item-1">
+                <div class="flex items-center mb-3">
+                    <div
+                        class="flex items-center justify-end mr-3 item-1"
+                        style="min-width: 91px"
+                    >
                         <FilterType
                             class=""
                             v-if="index !== 0"
@@ -16,190 +19,201 @@
                             >Where</span
                         >
                     </div>
-                    <div class="item-2">
-                        <ColumnSelector
-                            class="flex-1"
-                            v-model:selectedItem="subpanel.column"
-                            :tableQualfiedName="
-                                columnSubpanels[0]?.tableQualfiedName
-                            "
-                            :selectedTablesQualifiedNames="
-                                activeInlineTab.playground.vqb.selectedTables
-                            "
-                            @change="
-                                (val) =>
-                                    handleColumnChange(val, index, subpanel)
-                            "
-                        />
-                    </div>
-
-                    <div class="item-3">
-                        <FilterSelector
-                            class="w-full"
-                            :columnName="subpanel?.column?.label"
-                            :columnType="subpanel?.column?.type"
-                            v-model:selectedFilter="subpanel.filter"
-                            @change="() => handleFilterChange(subpanel)"
-                        />
-                    </div>
-
-                    <div class="flex item-4">
-                        <Input
-                            v-if="
-                                subpanel?.filter?.type === 'input' &&
-                                !subpanel?.filter?.isVariable
-                            "
-                            :selectedFilter="subpanel.filter"
-                            class="flex-1 w-full"
-                            :type="
-                                getInputTypeFromColumnType(
-                                    subpanel?.column?.type
-                                )
-                            "
-                            v-model:inputValue="subpanel.filter.value"
-                        />
-
-                        <MultiInput
-                            v-if="
-                                subpanel?.filter?.type === 'multi_input' &&
-                                !subpanel?.filter?.isVariable
-                            "
-                            class="flex-1 w-full"
-                            v-model:inputValue="subpanel.filter.value"
-                        />
-
-                        <RangeInput
-                            v-if="
-                                subpanel?.filter?.type === 'range_input' &&
-                                !subpanel?.filter?.isVariable
-                            "
-                            class="flex-1 w-full"
-                            :type="
-                                getInputTypeFromColumnType(
-                                    subpanel?.column?.type
-                                )
-                            "
-                            v-model:inputValue="subpanel.filter.value"
-                        />
-
-                        <!-- Custom variable placeholder -->
-                        <div
-                            class="flex items-center w-full"
-                            v-if="subpanel?.filter?.isVariable"
-                        >
-                            <div
-                                class="flex items-center flex-1 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                style="height: 32px !important"
-                            >
-                                <code class="px-3 truncate bg-white">
-                                    <a-tooltip placement="bottomLeft">
-                                        <template #title
-                                            >{{
-                                                getInputTypeFromColumnType(
-                                                    subpanel?.column?.type
-                                                )?.toUpperCase()
-                                            }}:&nbsp;
-                                            {{
-                                                getCustomVariable(subpanel)
-                                                    .value
-                                            }}
-                                        </template>
-                                        <div
-                                            class="truncate cursor-pointer moustacheDecoration"
-                                        >
-                                            {{
-                                                getCustomVariableText(subpanel)
-                                            }}
-                                        </div>
-                                    </a-tooltip>
-                                </code>
-                            </div>
-                            <!-- Second input field if it is there -->
-                            <div
-                                v-if="
-                                    totalFiledsMapWithInput[
-                                        subpanel?.filter?.type
-                                    ] > 1
+                    <div class="w-full grid-container group">
+                        <div class="item-1">
+                            <ColumnSelector
+                                class="flex-1"
+                                v-model:selectedItem="subpanel.column"
+                                :tableQualfiedName="
+                                    columnSubpanels[0]?.tableQualfiedName
                                 "
-                                class="flex items-center flex-1 w-full border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                style="height: 32px !important"
-                            >
-                                <code class="px-3 truncate bg-white">
-                                    <a-tooltip placement="bottomLeft">
-                                        <template #title
-                                            >{{
-                                                getInputTypeFromColumnType(
-                                                    subpanel?.column?.type
-                                                )?.toUpperCase()
-                                            }}:&nbsp;
-                                            {{
-                                                getCustomVariable(subpanel, 2)
-                                                    .value
-                                            }}
-                                        </template>
-                                        <div
-                                            class="truncate cursor-pointer moustacheDecoration"
-                                        >
-                                            {{
-                                                getCustomVariableText(
-                                                    subpanel,
-                                                    2
-                                                )
-                                            }}
-                                        </div>
-                                    </a-tooltip>
-                                </code>
-                            </div>
+                                :selectedTablesQualifiedNames="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                                @change="
+                                    (val) =>
+                                        handleColumnChange(val, index, subpanel)
+                                "
+                            />
                         </div>
-                        <!--  -->
-                        <div class="flex items-center text-gray-500">
-                            <AtlanIcon
-                                v-if="index !== 0"
-                                @click.stop="
-                                    () => handleDelete(index, subpanel)
+
+                        <div class="item-2">
+                            <FilterSelector
+                                class="w-full"
+                                :columnName="subpanel?.column?.label"
+                                :columnType="subpanel?.column?.type"
+                                v-model:selectedFilter="subpanel.filter"
+                                @change="() => handleFilterChange(subpanel)"
+                            />
+                        </div>
+
+                        <div class="flex item-3">
+                            <Input
+                                v-if="
+                                    subpanel?.filter?.type === 'input' &&
+                                    !subpanel?.filter?.isVariable
                                 "
-                                icon="Close"
-                                class="w-6 h-6 text-gray-500 opacity-0 mt-0.5 cursor-pointer group-hover:opacity-100"
+                                :selectedFilter="subpanel.filter"
+                                class="flex-1 w-full"
+                                :type="
+                                    getInputTypeFromColumnType(
+                                        subpanel?.column?.type
+                                    )
+                                "
+                                v-model:inputValue="subpanel.filter.value"
                             />
 
-                            <a-tooltip placement="bottomLeft">
-                                <template #title
-                                    >Toggle this to change it to
-                                    {{
-                                        subpanel?.filter?.isVariable
-                                            ? 'input field'
-                                            : 'custom variable'
-                                    }}
-                                </template>
-                                <div>
-                                    <AtlanIcon
-                                        v-if="!subpanel?.filter?.isVariable"
-                                        @click.stop="
-                                            () =>
-                                                toggleVariableType(
-                                                    false,
-                                                    index,
-                                                    subpanel
-                                                )
-                                        "
-                                        icon="Flash"
-                                        class="w-6 h-6 ml-3 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                    />
-                                    <AtlanIcon
-                                        v-else
-                                        @click.stop="
-                                            () =>
-                                                toggleVariableType(
-                                                    true,
-                                                    index,
-                                                    subpanel
-                                                )
-                                        "
-                                        icon="FlashColor"
-                                        class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                    />
+                            <MultiInput
+                                v-if="
+                                    subpanel?.filter?.type === 'multi_input' &&
+                                    !subpanel?.filter?.isVariable
+                                "
+                                class="flex-1 w-full"
+                                v-model:inputValue="subpanel.filter.value"
+                            />
+
+                            <RangeInput
+                                v-if="
+                                    subpanel?.filter?.type === 'range_input' &&
+                                    !subpanel?.filter?.isVariable
+                                "
+                                class="flex-1 w-full"
+                                :type="
+                                    getInputTypeFromColumnType(
+                                        subpanel?.column?.type
+                                    )
+                                "
+                                v-model:inputValue="subpanel.filter.value"
+                            />
+
+                            <!-- Custom variable placeholder -->
+                            <div
+                                class="flex items-center w-full"
+                                v-if="subpanel?.filter?.isVariable"
+                            >
+                                <div
+                                    class="flex items-center flex-1 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                                    style="height: 32px !important"
+                                >
+                                    <code class="px-3 truncate bg-white">
+                                        <a-tooltip placement="bottomLeft">
+                                            <template #title
+                                                >{{
+                                                    getInputTypeFromColumnType(
+                                                        subpanel?.column?.type
+                                                    )?.toUpperCase()
+                                                }}:&nbsp;
+                                                {{
+                                                    getCustomVariable(subpanel)
+                                                        .value
+                                                }}
+                                            </template>
+                                            <div
+                                                class="truncate cursor-pointer moustacheDecoration"
+                                            >
+                                                {{
+                                                    getCustomVariableText(
+                                                        subpanel
+                                                    )
+                                                }}
+                                            </div>
+                                        </a-tooltip>
+                                    </code>
                                 </div>
-                            </a-tooltip>
+                                <!-- Second input field if it is there -->
+                                <div
+                                    v-if="
+                                        totalFiledsMapWithInput[
+                                            subpanel?.filter?.type
+                                        ] > 1
+                                    "
+                                    class="flex items-center flex-1 w-full border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                                    style="height: 32px !important"
+                                >
+                                    <code class="px-3 truncate bg-white">
+                                        <a-tooltip placement="bottomLeft">
+                                            <template #title
+                                                >{{
+                                                    getInputTypeFromColumnType(
+                                                        subpanel?.column?.type
+                                                    )?.toUpperCase()
+                                                }}:&nbsp;
+                                                {{
+                                                    getCustomVariable(
+                                                        subpanel,
+                                                        2
+                                                    ).value
+                                                }}
+                                            </template>
+                                            <div
+                                                class="truncate cursor-pointer moustacheDecoration"
+                                            >
+                                                {{
+                                                    getCustomVariableText(
+                                                        subpanel,
+                                                        2
+                                                    )
+                                                }}
+                                            </div>
+                                        </a-tooltip>
+                                    </code>
+                                </div>
+                            </div>
+                            <!--  -->
+                            <div class="flex items-center text-gray-500">
+                                <AtlanIcon
+                                    v-if="index !== 0"
+                                    @click.stop="
+                                        () => handleDelete(index, subpanel)
+                                    "
+                                    icon="Close"
+                                    class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
+                                />
+
+                                <a-tooltip placement="bottomLeft">
+                                    <template #title
+                                        >Toggle this to change it to
+                                        {{
+                                            subpanel?.filter?.isVariable
+                                                ? 'input field'
+                                                : 'custom variable'
+                                        }}
+                                    </template>
+                                    <div>
+                                        <AtlanIcon
+                                            v-if="!subpanel?.filter?.isVariable"
+                                            @click.stop="
+                                                () =>
+                                                    toggleVariableType(
+                                                        false,
+                                                        index,
+                                                        subpanel
+                                                    )
+                                            "
+                                            icon="Flash"
+                                            class="w-6 h-6 ml-3 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
+                                        />
+                                        <AtlanIcon
+                                            v-else
+                                            @click.stop="
+                                                () =>
+                                                    toggleVariableType(
+                                                        true,
+                                                        index,
+                                                        subpanel
+                                                    )
+                                            "
+                                            icon="FlashColor"
+                                            class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
+                                        />
+                                    </div>
+                                </a-tooltip>
+                                <div
+                                    style="width: 32px"
+                                    v-if="index === 0"
+                                ></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -570,7 +584,7 @@
     .grid-container {
         display: grid;
         grid-gap: 12px;
-        grid-template-columns: 0.35fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 0.65fr 1.5fr;
     }
     .item-1 {
         grid-column-start: 1;

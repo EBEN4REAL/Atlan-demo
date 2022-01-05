@@ -54,8 +54,8 @@ export const userColumns = [
     {
         title: 'User',
         key: 'user',
-        sorter: true,
-        width: 400,
+        // sorter: true,
+        width: 350,
         slots: { customRender: 'name' },
         sortKey: 'firstName',
         align: 'left',
@@ -66,16 +66,7 @@ export const userColumns = [
         sorter: false,
         width: 200,
         slots: { customRender: 'role' },
-        dataIndex: ['role_object', 'name'],
-    },
-    {
-        title: 'Groups',
-        key: 'group',
-        sorter: true,
-        width: 200,
-        slots: { customRender: 'group' },
-        sortKey: 'groupCount',
-        dataIndex: 'group_count_string',
+        // dataIndex: ['role_object', 'name'],
     },
     {
         title: 'Status',
@@ -91,15 +82,33 @@ export const userColumns = [
         width: 200,
     },
     {
+        title: 'Groups',
+        key: 'group',
+        // sorter: true,
+        align: 'left',
+        width: 200,
+        slots: { customRender: 'group' },
+        // sortKey: 'groupCount',
+        // dataIndex: 'group_count_string',
+    },
+    {
+        title: 'Personas',
+        key: 'personas',
+        // sorter: true,
+        width: 200,
+        slots: { customRender: 'persona' },
+    },
+    {
+        width: 150,
         title: 'Actions',
         slots: { customRender: 'actions' },
     },
 ]
 
 export const statusColorClass = {
-    Active: 'success-muted',
-    Disabled: 'error-muted',
-    Invited: 'alert-muted',
+    Active: 'success',
+    Disabled: 'error',
+    Invited: 'alert',
 }
 
 export const userStatusOptions = [
@@ -111,6 +120,18 @@ export const userStatusOptions = [
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
+    },
+]
+
+export const roleOptions = [
+    {
+        label: 'Members',
+        value: JSON.stringify({ role: 'member' }),
+    },
+    { label: 'Admin', value: JSON.stringify({ role: 'admin' }) },
+    {
+        label: 'Guest',
+        value: JSON.stringify({ role: 'guest' }),
     },
 ]
 

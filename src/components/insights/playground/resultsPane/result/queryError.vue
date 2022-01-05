@@ -24,7 +24,7 @@
                     v-if="hasErrorData(queryErrorObj)"
                     class="text-center text-gray-500"
                 >
-                    User does not has access to the asset
+                    User does not has access to the table
                     {{ queryErrorObj?.details?.asset.table }}
                 </div>
             </div>

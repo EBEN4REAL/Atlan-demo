@@ -54,17 +54,17 @@
                             </span>
                             <div class="flex gap-x-1">
                                 <span
-                                    v-if="item.users.length > 0"
+                                    v-if="item.users?.length > 0"
                                     class="text-xs text-gray-500"
                                 >
-                                    {{ item.users.length }} users</span
-                                >
+                                    {{ item.users.length }} users
+                                </span>
                                 <span
-                                    v-if="item.groups.length > 0"
+                                    v-if="item.groups?.length > 0"
                                     class="text-xs text-gray-500"
                                 >
-                                    {{ item.groups.length }} groups</span
-                                >
+                                    {{ item.groups.length }} groups
+                                </span>
                                 <span
                                     v-if="
                                         item.metadataPolicies.length > 0 ||

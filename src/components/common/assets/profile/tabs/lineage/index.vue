@@ -214,6 +214,7 @@
             provide('direction', direction)
             provide('lineageDepths', lineageDepths)
             provide('lineageDirections', lineageDirections)
+            provide('config', config)
             provide('control', control)
 
             /** WATCHERS */

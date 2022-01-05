@@ -71,9 +71,13 @@
             const handleClick = ({ key }) => {
                 router.push(`/governance/${key}`)
             }
-            const initialRoute = route.path.split('/').slice(-1)
+            
+            const initialRoute = route.params?.id
+                ? route.path.split('/').slice(-2, -1)
+                : route.path.split('/').slice(-1)
+
             const current = ref(
-                initialRoute[0] === 'governance' ? ['persona'] : initialRoute
+                initialRoute[0] === 'governance' ? ['personas'] : initialRoute
             )
             return {
                 handleClick,

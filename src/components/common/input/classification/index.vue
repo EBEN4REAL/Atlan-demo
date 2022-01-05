@@ -27,6 +27,7 @@
                 </div>
             </template>
             <a-button
+                v-if="editPermission"
                 shape="circle"
                 :disabled="disabled"
                 size="small"

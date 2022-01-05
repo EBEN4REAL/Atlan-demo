@@ -145,7 +145,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref(null)
+            const dependentKey = ref('RELATED_ASSET_LIST')
             const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
@@ -154,7 +154,7 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
-            const preference = ref({})
+            const preference = ref({ sort: 'default', display: [] })
             const relationAttributes = ref([...AssetRelationAttributes])
 
             const updateFacet = () => {
@@ -174,7 +174,7 @@
                 isValidating,
                 updateList,
             } = useDiscoverList({
-                isCache: false,
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -228,7 +228,6 @@
             }
 
             whenever(isGuidArrayReady, () => {
-                dependentKey.value = 'RELATED_ASSET_LIST'
                 updateFacet()
                 quickChange()
             })

@@ -1,5 +1,8 @@
 <template>
-    <div class="absolute right-0 -top-2.5 flex items-center text-xs">
+    <div
+        class="absolute right-0 flex items-center text-xs"
+        :class="[`${topStyle}`]"
+    >
         <div class="flex items-center" v-if="primaryKey">
             <AtlanIcon icon="primaryKey" class="w-4 h-4 mr-1"></AtlanIcon>
             <span style="color: #ebb907" class="">Pkey</span>
@@ -17,7 +20,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
 
     export default defineComponent({
         name: 'Column Keys',
@@ -38,10 +41,18 @@
                 required: false,
                 default: false,
             },
+            topStyle: {
+                type: String,
+                required: false,
+                default: '-top-2.5',
+            },
         },
 
         setup(props, { emit }) {
-            return {}
+            const { topStyle } = toRefs(props)
+            return {
+                topStyle,
+            }
         },
     })
 </script>

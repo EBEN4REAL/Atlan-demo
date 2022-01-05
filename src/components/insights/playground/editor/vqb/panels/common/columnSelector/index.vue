@@ -467,10 +467,10 @@
                         'name',
                         'displayName',
                         'dataType',
+                        'certificateStatus',
                         'isPrimary',
                         'isForeign',
                         'isPartition',
-                        'certificateStatus',
                     ],
                 }
             }

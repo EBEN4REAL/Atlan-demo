@@ -171,20 +171,13 @@
                             </div>
                             <div
                                 class="relative h-full w-14 parent-ellipsis-container-extension"
-                                v-if="item?.attributes?.isPrimary"
                             >
-                                <div
-                                    class="absolute right-0 flex items-center mt-1.5"
-                                >
-                                    <AtlanIcon
-                                        icon="PrimaryKey"
-                                        style="color: #3ca5bc"
-                                        class="w-4 h-4 mr-1"
-                                    ></AtlanIcon>
-                                    <span style="color: #3ca5bc" class="text-sm"
-                                        >Pkey</span
-                                    >
-                                </div>
+                                <ColumnKeys
+                                    :isPrimary="item.isPrimary"
+                                    :isForeign="item.isForeign"
+                                    :isPartition="item.isPartition"
+                                    topStyle="top-2.5"
+                                />
                             </div>
                         </div>
                     </template>
@@ -219,6 +212,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
 
     import useBody from './useBody'
 
@@ -227,6 +221,7 @@
         emits: ['change'],
         components: {
             Loader,
+            ColumnKeys,
         },
         props: {
             selectedColumn: {
@@ -339,6 +334,9 @@
                     type: ls.attributes.dataType,
                     attributes: ls.attributes,
                     order: ls.attributes.order,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                 }))
 
                 // console.log('list: ', list)
@@ -375,6 +373,7 @@
                         'dataType',
                         'order',
                         'isPrimary',
+                        'isPartition',
                         'isForeign',
                     ],
                 }

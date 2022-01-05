@@ -227,38 +227,13 @@
                                 </div>
                                 <div
                                     class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary || item.isForeign"
                                 >
-                                    <div
-                                        class="absolute right-0 flex items-center -top-2.5"
-                                    >
-                                        <AtlanIcon
-                                            icon="PrimaryKey"
-                                            style="color: #3ca5bc"
-                                            class="w-4 h-4 mr-1"
-                                        ></AtlanIcon>
-                                        <span
-                                            style="color: #3ca5bc"
-                                            class="text-sm"
-                                            >Pkey</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="absolute flex items-center -top-2.5"
-                                        :class="
-                                            item.isPrimary
-                                                ? 'right-14'
-                                                : 'right-0'
-                                        "
-                                    >
-                                        <AtlanIcon
-                                            icon="ForeignKey"
-                                            class="w-4 h-4 mr-1 text-purple-700"
-                                        ></AtlanIcon>
-                                        <span class="text-sm text-purple-700"
-                                            >Fkey</span
-                                        >
-                                    </div>
+                                    <ColumnKeys
+                                        :isPrimary="item.isPrimary"
+                                        :isForeign="item.isForeign"
+                                        :isPartition="item.isPartition"
+                                        topStyle="-top-2"
+                                    />
                                 </div>
                             </div>
                         </a-checkbox>
@@ -299,6 +274,7 @@
     import { useVModels } from '@vueuse/core'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
 
     import useBody from './useBody'
 
@@ -307,6 +283,7 @@
         emits: ['change'],
         components: {
             Loader,
+            ColumnKeys,
         },
         props: {
             selectedColumn: {
@@ -446,6 +423,7 @@
                     order: ls.attributes.order,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     value: ls.attributes.qualifiedName,
                 }))
 
@@ -484,6 +462,7 @@
                         'order',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
                     ],
                 }
             }

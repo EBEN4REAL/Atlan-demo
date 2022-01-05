@@ -85,6 +85,7 @@ export const userColumns = [
         title: 'Groups',
         key: 'group',
         // sorter: true,
+        align: 'left',
         width: 200,
         slots: { customRender: 'group' },
         // sortKey: 'groupCount',

@@ -36,6 +36,20 @@
                     <div>
                         {{ title }}
                     </div>
+                    <div
+                        v-if="column.sortKey !== activeSortObject.key"
+                        class="flex opacity-0 group-hover:opacity-100"
+                    >
+                        <div>
+                            <AtlanIcon
+                                icon="ArrowDown"
+                                class="mb-1 transform rotate-180"
+                            />
+                        </div>
+                        <div>
+                            <AtlanIcon icon="ArrowDown" class="mb-0.5 -ml-2" />
+                        </div>
+                    </div>
                 </div>
             </a-tooltip>
             <div
@@ -484,6 +498,7 @@
             const { userList, selectedUserId } = toRefs(props)
 
             const { username: currentUserUsername } = whoami()
+            const activeSortObject = ref({ key: 'firstName' })
 
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -546,6 +561,7 @@
                 map,
                 handleManageGroups,
                 handleGroupUpdated,
+                activeSortObject,
             }
         },
     })

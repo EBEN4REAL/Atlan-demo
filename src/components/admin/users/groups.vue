@@ -35,7 +35,7 @@
                 </div>
             </div>
         </template>
-        <div class="pr-6 text-right text-primary">
+        <div class="text-right text-primary">
             {{ user?.groupCount || '-' }}
         </div>
     </a-popover>

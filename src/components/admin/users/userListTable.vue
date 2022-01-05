@@ -597,6 +597,7 @@
 
             // fetch roles- need this to find role id when changing user/invite role
             const { roleList } = useRoles()
+
             const handleManageGroups = (user) => {
                 emit('showUserPreviewDrawer', user, 'groups')
             }

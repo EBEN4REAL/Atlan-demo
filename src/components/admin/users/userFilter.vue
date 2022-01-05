@@ -3,7 +3,7 @@
     <!-- <template #overlay> -->
     <a-collapse>
         <div
-            class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 uppercase bg-white rounded-lg"
+            class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 border border-gray-200 border-b-0 border-l-0 border-r-0 uppercase bg-white rounded-md"
         >
             filters
         </div>

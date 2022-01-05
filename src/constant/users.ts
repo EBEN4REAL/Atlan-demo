@@ -130,12 +130,12 @@ export const userStatusOptions = [
 export const roleOptions = [
     {
         label: 'Members',
-        value: JSON.stringify({ role: 'member' }),
+        value: JSON.stringify({ roles: {$elemMatch: '$member'} }),
     },
-    { label: 'Admin', value: JSON.stringify({ role: 'admin' }) },
+    { label: 'Admin', value: JSON.stringify({ roles: {$elemMatch: '$admin'} }) },
     {
         label: 'Guest',
-        value: JSON.stringify({ role: 'guest' }),
+        value: JSON.stringify({ roles: {$elemMatch:'$guest'} }),
     },
 ]
 

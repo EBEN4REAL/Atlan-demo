@@ -26,6 +26,7 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                @changeRole="changeFilterRole"
                                 @change="updateFilters"
                             />
                         </template>
@@ -177,6 +178,7 @@
 
             const listType = ref('users')
             const searchText = ref('')
+            const filterRole = ref('')
             const statusFilter = ref([])
             const showChangeRolePopover = ref<boolean>(false)
             const showRevokeInvitePopover = ref<boolean>(false)
@@ -249,6 +251,11 @@
                 }
                 const filterTypes = [searchText.value, statusFilter.value]
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
+                if (filterRole.value) {
+                    const filterRoleParse = JSON.parse(filterRole.value)
+                    filterValues.push(filterRoleParse)
+                    filterTypes.push([filterRoleParse])
+                }
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
                         if (option?.length > 0)
@@ -260,6 +267,11 @@
 
                 userListAPIParams.offset = 0
                 getUserList()
+            }
+
+            const changeFilterRole = (role) => {
+                filterRole.value = role
+                updateFilters()
             }
 
             const handleSearch = useDebounceFn(() => {
@@ -516,6 +528,7 @@
                 updateFilters,
                 clearFilter,
                 refetchData,
+                changeFilterRole,
             }
         },
     })

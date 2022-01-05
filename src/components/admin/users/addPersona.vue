@@ -54,9 +54,9 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, watch } from 'vue'
-    import { message } from 'ant-design-vue'
+    // import { message } from 'ant-design-vue'
     import PersonaList from '@/common/popover/persona/personaList.vue'
-    import { Users } from '~/services/service/users'
+    // import { Users } from '~/services/service/users'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({

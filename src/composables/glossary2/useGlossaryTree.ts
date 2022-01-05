@@ -25,6 +25,7 @@ import {
     AssetAttributes,
     InternalAttributes,
     GlossaryAttributes,
+    AssetRelationAttributes,
 } from '~/constant/projection'
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
@@ -75,7 +76,8 @@ const useGlossaryTree = ({
         ...AssetAttributes,
         ...GlossaryAttributes,
     ])
-    const relationAttributes = ref(['name', 'categories'])
+    const relationAttributes = ref(['categories', ...AssetRelationAttributes])
+
     const preference = ref({
         sort: 'name.keyword-asc',
     })

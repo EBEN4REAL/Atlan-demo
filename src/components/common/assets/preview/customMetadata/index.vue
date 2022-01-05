@@ -55,7 +55,11 @@
         </div>
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto transition-all scrollheight"
-            :class="isProfile ? 'profileHeight' : 'scrollheight'"
+            :style="
+                isProfile
+                    ? 'max-height: calc(100vh - 7rem)'
+                    : 'max-height: calc(100vh - 12rem)'
+            "
         >
             <template
                 v-for="(a, x) in showMore &&
@@ -574,11 +578,4 @@
         },
     })
 </script>
-<style scoped>
-    .scrollheight {
-        max-height: calc(100vh - 13rem);
-    }
-    .profileHeight {
-        max-height: calc(100vh - 8rem);
-    }
-</style>
+<style scoped></style>

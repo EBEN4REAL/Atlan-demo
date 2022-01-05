@@ -11,7 +11,7 @@
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="mr-1"
+                        class="h-8 mr-1"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
@@ -30,7 +30,7 @@
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
                         >
                             <AtlanIcon icon="Filter" class="w-5 h-5" />
                             <span>Filters</span>

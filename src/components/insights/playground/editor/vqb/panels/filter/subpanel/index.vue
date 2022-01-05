@@ -335,7 +335,13 @@
                     JSON.stringify(toRaw(subpanels.value[index]))
                 )
                 copySubPanel.column = val
+                /* 
+                {"filterType":"and","value":"__vue_devtool_undefined__","name":"equal","type":"input","title":"Equal to"} */
                 copySubPanel.filter.value = undefined
+                copySubPanel.filter.name = 'equal'
+                copySubPanel.filter.title = 'Equal to'
+                copySubPanel.filter.type = 'input'
+
                 // copySubPanel.filter = {}
 
                 subpanels.value[index] = copySubPanel

@@ -6,7 +6,7 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="flex items-center w-full mb-3"
+                    class="flex items-center mb-3 container-width"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
@@ -187,5 +187,8 @@
     }
     .border-shift-minus {
         padding: 0px;
+    }
+    .container-width {
+        width: 75% !important;
     }
 </style>

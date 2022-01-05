@@ -551,7 +551,10 @@
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
-                        selectedText = generateSQLQuery(activeInlineTab.value)
+                        selectedText = generateSQLQuery(
+                            activeInlineTab.value,
+                            limitRows.value
+                        )
                     } else {
                         /* Get selected Text from editor */
                         selectedText = toRaw(editorInstance.value)
@@ -591,7 +594,10 @@
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
-                        selectedText = generateSQLQuery(activeInlineTab.value)
+                        selectedText = generateSQLQuery(
+                            activeInlineTab.value,
+                            limitRows.value
+                        )
                     } else {
                         /* Get selected Text from editor */
                         selectedText = toRaw(editorInstance.value)
@@ -726,6 +732,7 @@
                 runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
                 showcustomToolBar: showcustomToolBar,
+                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/

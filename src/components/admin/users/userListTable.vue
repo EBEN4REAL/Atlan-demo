@@ -22,6 +22,7 @@
                         ? 'justify-end'
                         : 'justify-start'
                 "
+                class="p-4"
             >
                 <!-- <template #title>{{
                     getSortTooltipText(
@@ -78,7 +79,7 @@
                         ? 'justify-end'
                         : 'justify-start'
                 "
-                class="flex font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                class="flex p-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
             >
                 {{ title }}
             </div>

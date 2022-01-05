@@ -4,18 +4,21 @@
         :class="[`${topStyle}`]"
     >
         <div class="flex items-center" v-if="primaryKey">
-            <AtlanIcon icon="primaryKey" class="w-4 h-4 mr-1"></AtlanIcon>
+            <AtlanIcon icon="primaryKey" class="w-4 h-4 mr-0.5"></AtlanIcon>
             <span style="color: #ebb907" class="">Pkey</span>
         </div>
         <div class="flex items-center ml-4 mr-1" v-if="ForeignKey">
-            <AtlanIcon icon="ForeignKey" class="w-4 h-4 mr-1"></AtlanIcon>
+            <AtlanIcon icon="ForeignKey" class="w-4 h-4 mr-0.5"></AtlanIcon>
             <span class="" style="color: #9040f5">Fkey</span>
         </div>
 
-        <!-- <div class="flex items-center ml-4 mr-1" v-if="isPartition">
-            <AtlanIcon icon="ForeignKey" class="w-4 h-4 mr-1"></AtlanIcon>
-            <span class="" style="color: #9040f5">Ptkey</span>
-        </div> -->
+        <div class="flex items-center ml-4 mr-1" v-if="isPartition">
+            <AtlanIcon
+                icon="partitionKey"
+                class="w-4 h-4 mr-0.5 mt-0.5"
+            ></AtlanIcon>
+            <span class="" style="color: #3ca5bc">Ptkey</span>
+        </div>
     </div>
 </template>
 

@@ -8,6 +8,7 @@ import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
+import partitionKey from '~/assets/images/icons/partitionKey.svg'
 import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
 import MorningIcon from '~/assets/images/home/Morning.svg'
@@ -330,6 +331,7 @@ import Array from '~/assets/images/dataType/array.svg'
 import primaryKey from '~/assets/images/icons/primaryKey.svg'
 
 export default {
+    partitionKey,
     primaryKey,
     Array,
     Float,

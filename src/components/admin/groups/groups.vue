@@ -91,6 +91,7 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
+                        class="px-4 py-2"
                     >
                         <template #title>{{
                             getSortTooltipText(
@@ -102,7 +103,7 @@
                         <div
                             class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
                         >
-                            <div>
+                            <div class="pt-0.5">
                                 {{ title }}
                             </div>
                             <div
@@ -150,9 +151,9 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex px-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
-                        {{ title }}
+                        <div class="pt-0.5">{{ title }}</div>
                     </div>
                 </template>
 

@@ -33,6 +33,6 @@ export function decodeQuery(queryStr: string): Record<string, any> {
     try {
         return JSON.parse(decodeUnicode(queryStr))
     } catch (error) {
-        return {}
+        return []
     }
 }

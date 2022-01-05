@@ -27,6 +27,7 @@
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
+            :class="{ 'cursor-pointer': editPermission }"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"
             :username="certificateUpdatedBy(selectedAsset)"

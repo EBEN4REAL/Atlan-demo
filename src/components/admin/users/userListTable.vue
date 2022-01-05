@@ -3,7 +3,7 @@
         v-if="userList"
         id="userList"
         class="overflow-hidden border rounded-table users-groups-table"
-        :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
+        :scroll="{ y: 'calc(100vh - 20rem)', x: 1080 }"
         :data-source="userList"
         :columns="userColumns"
         :row-key="(user) => user.id"
@@ -92,6 +92,12 @@
                             (column) => column?.key === 'user'
                         )[0].width + 'px',
                 }"
+                @click="
+                    () => {
+                        if (!user.emailVerified) return
+                        emit('showUserPreviewDrawer', user)
+                    }
+                "
             >
                 <Avatar
                     :image-url="imageUrl(user.username)"
@@ -104,12 +110,6 @@
                 <div
                     class="max-w-full truncate"
                     :class="!user.emailVerified ? '' : 'cursor-pointer'"
-                    @click="
-                        () => {
-                            if (!user.emailVerified) return
-                            emit('showUserPreviewDrawer', user)
-                        }
-                    "
                 >
                     <span v-if="user.emailVerified" class="text-primary">{{
                         nameCase(user.name) || '-'
@@ -172,6 +172,12 @@
         <template #status="{ text: user }">
             <div
                 class="inline-flex items-center px-2 py-0.5 rounded-xl text-gray-700"
+                @click="
+                    () => {
+                        if (!user.emailVerified) return
+                        emit('showUserPreviewDrawer', user)
+                    }
+                "
             >
                 <div
                     class="dot"
@@ -193,7 +199,7 @@
                 :user="user"
                 @handleManageGroups="handleManageGroups"
             />
-            <div v-else class="pr-6 text-right text-primary">-</div>
+            <div v-else class="text-right text-primary">-</div>
         </template>
         <template #persona="{ text: user }">
             <a-popover
@@ -226,11 +232,11 @@
                         </div>
                     </div>
                 </template>
-                <div class="pr-6 text-right cursor-default text-primary">
+                <div class="text-right cursor-default text-primary">
                     {{ user?.personas?.length || '-' }}
                 </div>
             </a-popover>
-            <div v-else class="pr-6 text-right text-primary">-</div>
+            <div v-else class="text-right text-primary">-</div>
         </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">
@@ -239,7 +245,7 @@
                     :trigger="['click']"
                 >
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
@@ -252,9 +258,9 @@
                                     @groupAdded="handleGroupUpdated"
                                 />
                             </a-menu-item>
-                            <!-- <a-menu-item key="verified-user-2">
+                            <a-menu-item key="verified-user-2">
                                 <AddPersonas :user="user" />
-                            </a-menu-item> -->
+                            </a-menu-item>
                             <a-menu-item
                                 key="verified-user-3"
                                 @click="
@@ -279,7 +285,7 @@
                     :trigger="['click']"
                 >
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
@@ -430,7 +436,7 @@
                 </a-tooltip> -->
                 <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu" />

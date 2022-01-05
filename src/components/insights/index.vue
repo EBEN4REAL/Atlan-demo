@@ -555,9 +555,11 @@
 
                 let newQuery
                 if (columnNameFromURL) {
-                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${tableNameFromURL} preview \nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
                 } else {
-                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${tableNameFromURL} preview \nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
                 }
 
                 const attributeName = 'schemaQualifiedName'

@@ -7,6 +7,7 @@
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
+        :allowClear="true"
         :filter-option="() => true"
         @change="handleChange"
         @dropdownVisibleChange="

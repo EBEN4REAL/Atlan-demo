@@ -2,7 +2,7 @@
     <a-select
         v-model:value="localValue"
         ref="inputRef"
-        placeholder="Users"
+        :placeholder="`Select user${multiple ? 's' : ''}`"
         class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"

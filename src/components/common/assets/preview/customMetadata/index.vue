@@ -13,7 +13,7 @@
                         </template>
                         <AtlanIcon
                             v-if="data?.description"
-                            class="h-3 text-gray-400 hover:text-gray-500"
+                            class="text-gray-400 hover:text-gray-500"
                             icon="Info"
                         />
                     </a-tooltip>

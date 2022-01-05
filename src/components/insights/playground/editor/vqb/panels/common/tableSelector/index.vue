@@ -6,29 +6,38 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center"
+        class="relative flex items-center z-1"
         :class="[
             isAreaFocused
                 ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
-            !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
+        style="min-height: 34px"
         @click.stop="() => {}"
     >
-        <template
-            v-if="enrichedSelectedItems.length !== 0"
-            v-for="(item, index) in enrichedSelectedItems"
-            :key="item + index"
+        <div
+            class="flex items-center truncate parent-ellipsis-container"
+            v-if="getTableNameFromTableQualifiedName(modelValue ?? '')"
         >
-            <slot name="chip" :item="item"> </slot>
-        </template>
+            <AtlanIcon
+                :icon="
+                    getEntityStatusIcon(
+                        selectedTableData.assetType,
+                        selectedTableData.certificateStatus
+                    )
+                "
+                class="w-4 h-4 mr-2 -mt-0.5"
+            />
+            <span class="parent-ellipsis-container-base"
+                >{{ getTableNameFromTableQualifiedName(modelValue ?? '') }}
+            </span>
+        </div>
 
         <a-input
-            v-if="selectedItems.length > 0 && isAreaFocused"
+            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
             ref="inputRef"
-            :disabled="!tableQualfiedName"
             v-model:value="inputValue1"
             @focus="
                 () => {
@@ -39,20 +48,18 @@
             :placeholder="placeholder"
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
-                'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
+                'p-0 pr-4 ml-2 text-sm border-none shadow-none outline-none  focus-none',
             ]"
         />
         <a-input
-            v-if="selectedItems.length == 0"
+            v-if="Object.keys(selectedItem).length == 0"
             ref="initialRef"
-            :disabled="!tableQualfiedName"
             v-model:value="inputValue2"
             @change="input2Change"
             :placeholder="placeholder"
+            :style="`width:${placeholder.length + 2}ch;`"
             :class="[
-                'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
+                ' p-0 ml-2  border-none shadow-none outline-none text-sm  focus-none',
             ]"
         />
         <div class="absolute right-2">
@@ -63,7 +70,7 @@
                         isAreaFocused,
                         mouseOver,
                         tableQualfiedName,
-                        selectedItems
+                        selectedItem
                     )
                 "
                 icon="Search"
@@ -78,7 +85,7 @@
                         isAreaFocused,
                         mouseOver,
                         tableQualfiedName,
-                        selectedItems
+                        selectedItem
                     )
                 "
             />
@@ -92,12 +99,11 @@
                         isAreaFocused,
                         mouseOver,
                         tableQualfiedName,
-                        selectedItems
+                        selectedItem
                     )
                 "
             />
         </div>
-
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
@@ -106,20 +112,6 @@
                 'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
-            <div class="border-b border-gray-300" v-if="showSelectAll">
-                <a-checkbox
-                    v-model:checked="selectAll"
-                    @change="onSelectAll"
-                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light"
-                >
-                    <div class="flex items-center">
-                        <span class="mb-0 ml-1 text-sm text-gray-700">
-                            Select All
-                        </span>
-                    </div>
-                </a-checkbox>
-            </div>
-
             <div
                 :class="['flex  justify-center overflow-auto']"
                 style="height: 250px"
@@ -129,71 +121,54 @@
                     style="min-height: 250px !important"
                 ></Loader>
                 <div
-                    class="w-full px-3"
+                    class="w-full"
                     v-if="dropdownOption.length !== 0 && !isLoading"
                 >
                     <template
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
-                                    @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
-                                    "
-                                >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
-                                    >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
-
-                            <a-checkbox
-                                :checked="map[item.value]"
-                                @change="
-                                    (checked) =>
-                                        onCheckboxChange(checked, item.value)
-                                "
-                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        <div
+                            class="flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                            @click="(checked) => onSelectItem(item)"
+                            :class="
+                                modelValue === item.value
+                                    ? 'bg-primary-light'
+                                    : 'bg-white'
+                            "
+                        >
+                            <div
+                                class="flex items-center justify-between w-full truncate parent-ellipsis-container"
                             >
                                 <div
-                                    class="justify-between parent-ellipsis-container"
+                                    class="flex items-center truncate parent-ellipsis-container"
                                 >
-                                    <div class="parent-ellipsis-container">
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                        ></component>
-                                        <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >
-                                            {{ item.label }}
-                                        </span>
-                                    </div>
-                                    <div
-                                        class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    >
-                                        <ColumnKeys
-                                            :isPrimary="item.isPrimary"
-                                            :isForeign="item.isForeign"
-                                            :isPartition="item.isPartition"
-                                        />
-                                    </div>
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 mr-2 -mt-0.5"
+                                    />
+                                    <span class="parent-ellipsis-container-base"
+                                        >{{ item?.label }}
+                                    </span>
                                 </div>
-                            </a-checkbox>
-                        </PopoverAsset>
+                                <div
+                                    v-if="modelValue !== item.value"
+                                    class="text-gray-500 parent-ellipsis-container-extension"
+                                >
+                                    {{ item?.columnCount }}
+                                </div>
+                            </div>
+                            <AtlanIcon
+                                icon="Check"
+                                class="ml-2 text-primary parent-ellipsis-container-base"
+                                v-if="modelValue === item.value"
+                            />
+                        </div>
                     </template>
                 </div>
 
@@ -201,7 +176,7 @@
                     class="w-full mt-4 text-sm text-center text-gray-400"
                     v-if="dropdownOption.length == 0 && !isLoading"
                 >
-                    No Columns found!
+                    No Tables found!
                 </span>
             </div>
         </div>
@@ -216,7 +191,6 @@
         defineComponent,
         ref,
         nextTick,
-        Ref,
         onMounted,
         inject,
         PropType,
@@ -225,17 +199,16 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
-    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import PopoverAsset from '~/components/common/popover/assets/index.vue'
-    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-
     import {
         InternalAttributes,
         BasicSearchAttributes,
@@ -249,71 +222,46 @@
             Pill,
             Loader,
             TablesTree,
-            ColumnKeys,
-            PopoverAsset,
         },
-        // emits: ['queryTextChange', 'checkboxChange'],
+        emits: ['update:modelValue', 'change', 'update:selectedTableData'],
+
         props: {
-            selectedItems: {
-                type: Object as PropType<any[]>,
-                required: true,
-            },
-            selectedColumnsData: {
-                type: Object as PropType<
-                    Array<{
-                        columnsQualifiedName: string
-                        label: string
-                        type: Number
-                    }>
-                >,
+            selectedItem: {
+                type: Object,
                 required: true,
             },
             tableQualfiedName: {
                 type: String,
                 required: true,
             },
-            showSelectAll: {
-                type: Boolean,
-                required: false,
-                default: () => true,
+            modelValue: {
+                type: String,
+                required: true,
+            },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
             },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll } = toRefs(props)
+            const { tableQualfiedName } = toRefs(props)
+            const { assetType, certificateStatus } = useAssetInfo()
+            const { getTableNameFromTableQualifiedName } = useUtils()
             const queryText = ref('')
-            const { selectedItems, selectedColumnsData } = useVModels(props)
-
-            const map = ref({})
-            selectedItems.value.forEach((selectedItem) => {
-                map.value[selectedItem] = true
-            })
-            const {
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-                certificateStatus,
-            } = useAssetInfo()
+            const { selectedItem, modelValue, selectedTableData } =
+                useVModels(props)
 
             const { getDataTypeImage } = useColumn()
-            const inlineTabs = inject('inlineTabs') as Ref<
-                activeInlineTabInterface[]
-            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const { isSameNodeOpenedInSidebar } = useSchema()
-            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
-                inlineTabs,
-                activeInlineTab
-            )
 
             const inputRef = ref()
             const initialRef = ref()
-            const selectAll = ref(selectedItems.value.includes('all'))
+            const selectAll = ref(false)
             const mouseOver = ref(false)
             const topPosShift = ref(0)
             const inputValue1 = ref('')
@@ -322,17 +270,16 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
-                if (!tableQualfiedName.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
-                    console.log(inputRef?.value, 'he')
-                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                    inputRef?.value?.focus()
+                    initialRef?.value?.focus()
                 })
             }
             const setFocusedCusror = () => {
-                if (!tableQualfiedName.value) return
                 nextTick(() => {
-                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                    inputRef?.value?.focus()
+                    initialRef?.value?.focus()
                 })
             }
 
@@ -340,10 +287,10 @@
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
+                    isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
-                    isAreaFocused.value = false
                 }
             }
 
@@ -354,12 +301,13 @@
                     }
                 })
             }
-
             const getInitialBody = () => {
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
-                        tableQualfiedName: tableQualfiedName.value,
+                        schemaQualifiedName:
+                            activeInlineTab.value.playground.editor.context
+                                .attributeValue,
                     }),
                     attributes: [
                         'name',
@@ -387,6 +335,7 @@
                     ],
                 }
             }
+
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
                 false
@@ -400,26 +349,30 @@
                     immediate: true,
                 }
             )
-            watch(tableQualfiedName, () => {
-                map.value = {}
-                selectAll.value = true
-            })
+
+            watch(
+                () => activeInlineTab.value.playground.editor.context,
+                () => {
+                    replaceBody(getInitialBody())
+                },
+                {
+                    immediate: true,
+                }
+            )
             const placeholder = computed(() => {
                 if (tableQualfiedName.value) {
-                    return `Select from ${totalCount.value} columns`
+                    return `Search from ${totalCount.value} columns`
                 }
                 return `Select a table first`
             })
             const totalCount = computed(() => data.value?.approximateCount || 0)
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
+                    ...ls,
                     label: ls.attributes?.displayName || ls.attributes?.name,
-                    type: ls.attributes?.dataType,
-                    isPrimary: ls.attributes?.isPrimary,
-                    isForeign: ls.attributes?.isForeign,
-                    isPartition: ls.attributes?.isPartition,
-                    value: ls.attributes?.qualifiedName,
-                    item: ls,
+                    columnCount: ls.attributes?.columnCount,
+                    certificateStatus: ls.attributes.certificateStatus,
+                    value: ls.attributes.qualifiedName,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -428,18 +381,6 @@
                 })
                 return data
             })
-
-            const onSelectAll = (e) => {
-                /* checked */
-                if (e?.target.checked) {
-                    selectedItems.value = ['all']
-                    map.value = {}
-                    // emit('checkboxChange', ['all'])
-                } else {
-                    selectedItems.value = []
-                    // emit('checkboxChange', [])
-                }
-            }
 
             const input1Change = () => {
                 setFoucs()
@@ -452,61 +393,23 @@
                 // emit('queryTextChange')
             }
 
-            const enrichedSelectedItems = computed(() => {
-                const data: any[] = []
-                selectedItems.value.forEach((val) => {
-                    if (val === 'all') {
-                        data.push({
-                            type: 'Columns',
-                            label: 'All columns',
-                        })
-                    } else {
-                        const t = selectedColumnsData.value.find(
-                            (e) => e.columnsQualifiedName === val
-                        )
-                        data.push({
-                            type: t?.type ?? 'Columns',
-                            label: t?.label,
-                        })
-                    }
-                })
-                return data
-            })
+            // let selectedColumn = ref({})
 
-            const onCheckboxChange = (checked, id) => {
-                selectAll.value = false
-                if (checked.target.checked) {
-                    map.value[id] = true
-                } else {
-                    delete map.value[id]
-                }
-                selectedItems.value = [...Object.keys(map.value)]
-
-                console.log('columns: ', list.value)
-                let columns = []
-                Object.keys(map.value).forEach((col) => {
-                    let x = list.value.find((el) => {
-                        let label = el.attributes?.qualifiedName
-                        return label === col
-                    })
-                    columns.push({
-                        label:
-                            x?.attributes?.displayName || x?.attributes?.name,
-                        type: x?.attributes?.dataType,
-                        columnsQualifiedName: x?.attributes.qualifiedName,
-                    })
-                })
-
-                selectedColumnsData.value = [...columns]
-
-                console.log(
-                    map.value,
-                    'selected columns: ',
-                    columns,
-                    selectedColumnsData.value
-                )
-                // emit('checkboxChange', selectedItems.value)
+            const onSelectItem = (item) => {
                 setFocusedCusror()
+                // qualifiedName
+                console.log(item.value)
+
+                emit('update:modelValue', item.value)
+                emit('change', item)
+                const copySelectedTableData = JSON.parse(
+                    JSON.stringify(selectedTableData.value)
+                )
+                copySelectedTableData.certificateStatus =
+                    certificateStatus(item)
+                copySelectedTableData.assetType = assetType(item)
+                emit('update:selectedTableData', copySelectedTableData)
+                setFoucs()
             }
 
             const handleMouseOver = () => {
@@ -521,16 +424,25 @@
                 isAreaFocused,
                 mouseHover,
                 tableQualifiedName,
-                selectedItems
+                selectedItem
             ) => {
                 switch (key) {
                     case 'chevronDown': {
                         if (!isAreaFocused) {
-                            if (selectedItems.length === 0 && mouseHover)
+                            if (
+                                Object.keys(selectedItem).length === 0 &&
+                                mouseHover
+                            )
                                 return true
-                            if (selectedItems.length === 0 && !mouseHover)
+                            if (
+                                Object.keys(selectedItem).length === 0 &&
+                                !mouseHover
+                            )
                                 return true
-                            if (selectedItems.length !== 0 && !mouseHover)
+                            if (
+                                Object.keys(selectedItem).length !== 0 &&
+                                !mouseHover
+                            )
                                 return true
                         }
                         break
@@ -539,7 +451,7 @@
                         if (isAreaFocused) return false
                         if (
                             !isAreaFocused &&
-                            selectedItems.length > 0 &&
+                            Object.keys(selectedItem).length > 0 &&
                             mouseHover
                         )
                             return true
@@ -555,14 +467,15 @@
             }
 
             const clearAllSelected = () => {
-                selectedItems.value = []
-                map.value = {}
-                selectAll.value = false
-                selectedColumnsData.value = []
-                console.log(map.value, 'destroy')
+                // selectedItem.value = {}
+                emit('change', {})
             }
+
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
+                nextTick(() => {
+                    initialRef.value?.focus()
+                })
             })
             onUpdated(() => {
                 nextTick(() => {
@@ -572,30 +485,9 @@
                 })
             })
 
-            const actionClick = (event, t) => {
-                if (
-                    activeInlineTab?.value &&
-                    Object.keys(activeInlineTab?.value).length
-                ) {
-                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
-                        /* Close it if it is already opened */
-                        closeAssetSidebar(activeInlineTab.value)
-                    } else {
-                        let activeInlineTabCopy: activeInlineTabInterface =
-                            Object.assign({}, activeInlineTab.value)
-                        activeInlineTabCopy.assetSidebar.assetInfo = t
-                        activeInlineTabCopy.assetSidebar.isVisible = true
-                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
-                    }
-                }
-                event.stopPropagation()
-                event.preventDefault()
-                return false
-            }
-
             return {
-                actionClick,
-                showSelectAll,
+                selectedTableData,
+                modelValue,
                 initialRef,
                 queryText,
                 clearAllSelected,
@@ -603,16 +495,14 @@
                 handleMouseOver,
                 handleMouseOut,
                 mouseOver,
-                map,
-                enrichedSelectedItems,
-                onCheckboxChange,
-                onSelectAll,
+                onSelectItem,
+                // selectedColumn,
                 isLoading,
                 totalCount,
                 selectAll,
                 tableQualfiedName,
                 dropdownOption,
-                selectedItems,
+                selectedItem,
                 placeholder,
                 inputChange,
                 topPosShift,
@@ -627,13 +517,10 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
+                getEntityStatusIcon,
                 assetType,
-                title,
                 certificateStatus,
+                getTableNameFromTableQualifiedName,
             }
         },
     })
@@ -657,22 +544,22 @@
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
     }
-    .box-shadow-focus {
-        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
-    }
     .disable-bg {
         background-color: #fbfbfb;
     }
-    .px-3-1 {
-        padding-left: 13px;
-        padding-right: 13px;
+</style>
+<style lang="less" module>
+    .atlanReverse {
+        > span:nth-child(2) {
+            @apply w-full pl-0;
+        }
+
+        :global(.ant-checkbox) {
+            top: 0px !important;
+        }
     }
-    .py-1-1 {
-        padding-top: 7px;
-        padding-bottom: 7px;
-    }
-    .chip-container {
-        gap: 4px;
+    .custom_input {
+        background-color: #fbfbfb !important;
     }
     .parent-ellipsis-container {
         display: flex;
@@ -686,10 +573,5 @@
     }
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
-    }
-</style>
-<style lang="less" module>
-    .custom_input {
-        background-color: #fbfbfb !important;
     }
 </style>

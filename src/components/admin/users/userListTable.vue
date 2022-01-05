@@ -34,6 +34,7 @@
                 }}</template>
                 <div
                     class="flex font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    :class="column.align === 'right' ? 'flex-row-reverse' : ''"
                 >
                     <div>
                         {{ title }}

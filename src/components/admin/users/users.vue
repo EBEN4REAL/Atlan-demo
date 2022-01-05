@@ -266,18 +266,9 @@
                 updateFilters()
             }, 600)
 
-            const handleTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                if (Object.keys(sorter).length) {
-                    let sortValue = 'firstName'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    userListAPIParams.sort = sortValue
+            const handleTableChange = (query: any) => {
+                if (query) {
+                    userListAPIParams.sort = query
                 }
                 getUserList()
             }

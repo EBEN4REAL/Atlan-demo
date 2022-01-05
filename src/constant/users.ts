@@ -59,6 +59,10 @@ export const userColumns = [
         sortKey: 'firstName',
         align: 'left',
         width: 350,
+        sortDirections: ['ASC', 'DESC'],
+        ascOrderString: `Sort by name (A-Z)`,
+        descOrderString: `Sort by name (Z-A)`,
+        sorter: true,
     },
     {
         title: 'Role',
@@ -82,10 +86,13 @@ export const userColumns = [
     {
         title: 'Groups',
         key: 'group',
-        // sorter: true,
+        sorter: true,
         align: 'right',
         slots: { customRender: 'group' },
-        // sortKey: 'groupCount',
+        sortKey: 'groupCount',
+        sortDirections: ['ASC', 'DESC'],
+        ascOrderString: `Sort by group count`,
+        descOrderString: `Sort by group count`,
         // dataIndex: 'group_count_string',
     },
     {

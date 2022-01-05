@@ -26,7 +26,6 @@
 
         <div class="flex flex-wrap items-center gap-1 text-sm">
             <a-button
-                v-if="editPermission"
                 shape="circle"
                 :disabled="!editPermission"
                 size="small"
@@ -52,9 +51,7 @@
                     />
                 </Popover>
             </template>
-            <span
-                v-if="!editPermission && list?.length < 1"
-                class="text-gray-500"
+            <span v-if="list?.length < 1" class="text-gray-500"
                 >No linked classifications</span
             >
         </div>

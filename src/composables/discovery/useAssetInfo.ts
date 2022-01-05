@@ -92,6 +92,11 @@ export default function useAssetInfo() {
         return found?.label
     }
 
+    const assetTypeRelations = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.relationships
+    }
+
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
@@ -1038,5 +1043,6 @@ export default function useAssetInfo() {
         allowQueryPreview,
         queries,
         assetPermission,
+        assetTypeRelations,
     }
 }

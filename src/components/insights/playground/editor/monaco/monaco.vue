@@ -41,6 +41,8 @@
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     const turndownService = new TurndownService({})
 
@@ -216,6 +218,16 @@
                 languageTokens
             )
 
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
+
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
@@ -236,6 +248,66 @@
                         }
                     )
                 // editor.trigger('', 'showSuggestWidget', suggestions)
+
+                // editor autosuggestion icons
+
+                let data1 = computed(() =>
+                    document.getElementsByClassName(
+                        'suggest-icon codicon codicon-symbol-field'
+                    )
+                )
+                let data2 = computed(() =>
+                    document.getElementsByClassName(
+                        'suggest-icon codicon codicon-symbol-keyword'
+                    )
+                )
+
+                promise.then((item) => {
+                    let items = item.suggestions
+
+                    console.log('suggestions: ', items)
+
+                    for (var i = 0; i < items.length; i++) {
+                        let item = items[i].documentation?.entity
+
+                        if (
+                            (item && assetType(item) === 'Table') ||
+                            assetType(item) === 'View'
+                        ) {
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-field'
+                            // )
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/${getEntityStatusIcon(
+                                    assetType(item),
+                                    certificateStatus(item)
+                                )}.png")`
+                            }
+                        } else if (item && assetType(item) === 'Column') {
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-field'
+                            // )
+
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
+                            }
+                        } else {
+                            // let data = document.getElementsByClassName(
+                            //     'suggest-icon codicon codicon-symbol-keyword'
+                            // )
+                            // console.log('suggestion other: ', data[i])
+                            if (data2.value[i] && data2.value[i].style) {
+                                data2.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/default.png")`
+                            }
+                        }
+                    }
+                })
             }
 
             // try {
@@ -286,6 +358,7 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
+            let suggestionsList = ref(null)
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -331,9 +404,9 @@
                         e.selection.startColumn === e.selection.endColumn
                     ) {
                         editorContentSelectionState.value = false
-                        console.log('selection false')
+                        // console.log('selection false')
                     } else {
-                        console.log('selection true')
+                        // console.log('selection true')
                         editorContentSelectionState.value = true
                     }
                 })
@@ -358,7 +431,7 @@
                     let startCount = 0
                     let endCount = 0
 
-                    console.log('line code: ', lineCode)
+                    // console.log('line code: ', lineCode)
 
                     while (lineCode.startsWith('\n')) {
                         lineCode = lineCode.slice(1)
@@ -369,22 +442,12 @@
                         endCount++
                     }
 
-                    let testValStart = /\/\*(.*?)/
-                    let testValEnd = /(.*?)\*\//
+                    let testVal = /--+.*/
 
-                    // console.log(
-                    //     'line code check: ',
-                    //     testValStart.test(lineCode) && testValEnd.test(lineCode)
-                    // )
-
-                    if (
-                        testValStart.test(lineCode) &&
-                        testValEnd.test(lineCode)
-                    ) {
+                    if (testVal.test(lineCode)) {
                         lineCode = lineCode.slice(2)
-                        lineCode = lineCode.slice(0, lineCode.length - 2)
                     } else {
-                        lineCode = `/*${lineCode}*/`
+                        lineCode = `--${lineCode}`
                     }
 
                     // console.log('line code update: ', lineCode)
@@ -424,23 +487,64 @@
                 const multiLineComment = () => {
                     let selection = toRaw(editor)?.getSelection()
 
-                    let selectedText = toRaw(editor)
-                        ?.getModel()
-                        ?.getValueInRange(selection)
+                    // let selectedText = toRaw(editor)
+                    //     ?.getModel()
+                    //     ?.getValueInRange(selection)
 
-                    selectedText = modifyLine(selectedText)
+                    // selectedText = modifyLine(selectedText)
 
-                    var op = {
-                        range: {
-                            startLineNumber: selection?.startLineNumber,
-                            endLineNumber: selection?.endLineNumber,
-                            startColumn: selection?.startColumn,
-                            endColumn: selection?.endColumn + 1,
-                        },
-                        text: selectedText,
-                        forceMoveMarkers: true,
+                    let lineCount = 0
+                    for (
+                        var i = selection?.startLineNumber;
+                        i <= selection?.endLineNumber;
+                        i++
+                    ) {
+                        let testVal = /--+.*/
+
+                        let selectedText = toRaw(editor)
+                            ?.getModel()
+                            ?.getLineContent(i)
+
+                        if (testVal.test(selectedText)) {
+                            lineCount++
+                        }
                     }
-                    editor.executeEdits('my-source', [op])
+
+                    let check =
+                        lineCount ===
+                        selection?.endLineNumber -
+                            selection?.startLineNumber +
+                            1
+
+                    for (
+                        var i = selection?.startLineNumber;
+                        i <= selection?.endLineNumber;
+                        i++
+                    ) {
+                        let selectedText = toRaw(editor)
+                            ?.getModel()
+                            ?.getLineContent(i)
+
+                        let copyLineCode = selectedText
+                        let testVal = /--+.*/
+
+                        if (testVal.test(selectedText) && check) {
+                            selectedText = selectedText.slice(2)
+                        } else {
+                            selectedText = `--${selectedText}`
+                        }
+                        var op = {
+                            range: {
+                                startLineNumber: i,
+                                endLineNumber: i,
+                                startColumn: 1,
+                                endColumn: copyLineCode?.length + 1,
+                            },
+                            text: selectedText,
+                            forceMoveMarkers: true,
+                        }
+                        editor.executeEdits('my-source', [op])
+                    }
                 }
 
                 const commentCode = () => {
@@ -516,6 +620,7 @@
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
                     }>
+                    suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
@@ -569,6 +674,28 @@
             //     // { immediate: true }
             // )
 
+            // let s1 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+            // let s2 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+
+            // watch(
+            //     [s1, s2],
+            //     () => {
+            //         console.log('reset auto')
+            //         if (suggestionsList.value) {
+            //             triggerAutoCompletion(suggestionsList.value)
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
+
             watch(activeInlineTab, () => {
                 // console.log('editor permisisons: ', {
                 //     isQueryCreatedByCurrentUser,
@@ -591,10 +718,10 @@
                     if (isLineError(activeInlineTab)) {
                         setErrorDecorations(activeInlineTab, editor, monaco)
                     }
-                    console.log('editor active inline tab change')
+                    // console.log('editor active inline tab change')
                     /* ------------------------------------------ */
                     editor?.getModel()?.onDidChangeContent(async (event) => {
-                        console.log('editor content change')
+                        // console.log('editor content change')
                         if (isLineError(activeInlineTab)) {
                             resetErrorDecorations(activeInlineTab, editor)
                         }
@@ -614,6 +741,7 @@
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
                         }>
+                        suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()
@@ -772,5 +900,58 @@
     :global(.cldr.codicon.codicon-folding-collapsed) {
         left: 35px !important;
     }
+    :global(.editor-widget.suggest-widget.visible) {
+        // top: 28px;
+        // left: 207px;
+        margin-top: 10px !important;
+        margin-left: 10px !important;
+        border-radius: 4px;
+        background-color: #fefefe;
+        border: 1px solid #e2e2e2;
+        // padding-left: 4px !important;
+        // padding-right: 4px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-field) {
+        // background-image: url('~/assets/images/source/python.png') !important;
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-keyword) {
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-keyword)::before {
+        visibility: hidden !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-field)::before {
+        visibility: hidden !important;
+    }
+    :global(.monaco-list-row.show-file-icons.string-label.focused) {
+        @apply bg-gray-light !important;
+        @apply text-gray-500 !important;
+        border-radius: 3px !important;
+    }
+    :global(.main) {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    :global(.monaco-editor
+            .suggest-widget
+            .monaco-list
+            .monaco-list-row.focused
+            .monaco-highlighted-label
+            .highlight) {
+        @apply text-primary !important;
+    }
+    // :global(.suggest-icon.codicon.codicon-symbol-field)::after {
+    //     background-image: url('~/assets/images/source/python.png') !important;
+    //     width: 14px !important;
+    //     height: 14px !important;
+    //     background-size: 14px 14px;
+    // }
     // }
 </style>

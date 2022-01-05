@@ -98,6 +98,8 @@ export function useDiscoverList({
         }
     })
 
+    watch(error, () => console.log(error))
+
     const getAggregationList = (
         aggregationKey: string,
         labelList?: any,

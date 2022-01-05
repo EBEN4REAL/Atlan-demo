@@ -22,11 +22,15 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <a-popover trigger="click" placement="bottomRight">
+                    <a-popover trigger="click" placement="bottomLeft">
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                @changeRole="changeFilterRole"
                                 @change="updateFilters"
+                                :numberOfActiveUser="numberOfActiveUser"
+                                :numberOfDisableUser="numberOfDisableUser"
+                                :numberOfInvitedUser="numberOfInvitedUser"
                             />
                         </template>
                         <button
@@ -177,6 +181,7 @@
 
             const listType = ref('users')
             const searchText = ref('')
+            const filterRole = ref('')
             const statusFilter = ref([])
             const showChangeRolePopover = ref<boolean>(false)
             const showRevokeInvitePopover = ref<boolean>(false)
@@ -201,6 +206,18 @@
                 isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
+
+            const numberOfActiveUser = ref(0)
+            const numberOfDisableUser = ref(0)
+            const numberOfInvitedUser = ref(0)
+            watch(userList, (v) => {
+                v.reduce((counter, user) => {
+                    if (user.enabled) numberOfActiveUser.value += 1
+                    if (!user.enabled) numberOfDisableUser.value += 1
+                    if (!user.emailVerified) numberOfInvitedUser.value += 1
+                    return counter
+                }, 0)
+            })
 
             const clearFilter = () => {
                 userListAPIParams.filter = {}
@@ -249,6 +266,11 @@
                 }
                 const filterTypes = [searchText.value, statusFilter.value]
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
+                if (filterRole.value) {
+                    const filterRoleParse = JSON.parse(filterRole.value)
+                    filterValues.push(filterRoleParse)
+                    filterTypes.push([filterRoleParse])
+                }
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
                         if (option?.length > 0)
@@ -260,6 +282,11 @@
 
                 userListAPIParams.offset = 0
                 getUserList()
+            }
+
+            const changeFilterRole = (role) => {
+                filterRole.value = role
+                updateFilters()
             }
 
             const handleSearch = useDebounceFn(() => {
@@ -516,6 +543,10 @@
                 updateFilters,
                 clearFilter,
                 refetchData,
+                changeFilterRole,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })

@@ -2,12 +2,31 @@
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
     <a-collapse>
-        <div class="w-full p-2 text-sm text-gray-500 uppercase bg-white">
+        <div
+            class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
+        >
+            {{
+                statusFilter.length > 0 && role
+                    ? statusFilter.length + 1
+                    : statusFilter.length > 0
+                    ? statusFilter.length
+                    : role
+                    ? 1
+                    : ''
+            }}
             filters
+            <span
+                v-if="role || statusFilter.length > 0"
+                class="capitalize cursor-pointer text-primary"
+                @click="handleClearFilter"
+            >
+                Clear All
+            </span>
         </div>
+
         <a-collapse-panel class="group" :show-arrow="false">
             <template #header>
-                <div class="flex justify-between w-36 hover:text-primary">
+                <div class="flex justify-between w-48 hover:text-primary">
                     <span
                         class="text-sm text-gray-500 uppercase hover:text-primary"
                         >status</span
@@ -18,12 +37,11 @@
                     />
                 </div>
             </template>
-            <div class="justify-center p-2 bg-white rounded w-36">
+            <div class="justify-center w-48 p-2 bg-white rounded">
                 <a-form layout="vertical" class="p-0">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
-                            class="grid gap-y-2"
                             @change="handleStatusFilterChange"
                         >
                             <div class="flex flex-col w-full">
@@ -32,7 +50,7 @@
                                     :key="item.id"
                                 >
                                     <a-checkbox
-                                        class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
+                                        class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                         :value="item.value"
                                     >
                                         <div
@@ -49,6 +67,17 @@
                                         ></div>
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
+                                            <span class="text-sm text-gray-500"
+                                                >({{
+                                                    item.label.toLocaleLowerCase() ===
+                                                    'active'
+                                                        ? numberOfActiveUser
+                                                        : item.label.toLocaleLowerCase() ===
+                                                          'disabled'
+                                                        ? numberOfDisableUser
+                                                        : numberOfInvitedUser
+                                                }})</span
+                                            >
                                         </span>
                                     </a-checkbox>
                                 </template>
@@ -61,7 +90,7 @@
         <a-collapse-panel class="border-t-0 group" :show-arrow="false">
             <template #header>
                 <div
-                    class="flex justify-between border-t-0 hover:text-primary w-36"
+                    class="flex justify-between w-48 border-t-0 hover:text-primary"
                 >
                     <span class="text-sm text-gray-500 uppercase border-t-0"
                         >role</span
@@ -72,20 +101,23 @@
                     />
                 </div>
             </template>
-            <div class="p-2 text-left bg-white rounded w-36">
+            <div class="w-48 p-2 text-left bg-white rounded">
                 <a-radio-group
-                    v-model:value="statusFilter"
+                    v-model:value="role"
                     class="grid w-full text-left gap-y-2"
-                    @change="handleStatusFilterChange"
+                    @change="handleChangeRoleFilter"
                 >
                     <div class="flex flex-col w-full">
-                        <template v-for="item in roleOptions" :key="item.id">
+                        <template v-for="item in rolesWithCount" :key="item.id">
                             <a-radio
-                                class="flex flex-row-reverse justify-between mb-1 atlan-reverse w-36"
+                                class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                 :value="item.value"
                             >
                                 <span class="mb-0 ml-1 text-gray">
                                     {{ item.label }}
+                                    <span class="text-sm text-gray-500"
+                                        >({{ item?.memberCount }})</span
+                                    >
                                 </span>
                             </a-radio>
                         </template>
@@ -106,8 +138,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, computed, toRefs } from 'vue'
     import { userStatusOptions, roleOptions } from '~/constant/users'
+
+    import useUserStore from '~/store/users'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -116,11 +151,27 @@
                 type: Array,
                 default: () => null,
             },
+            numberOfActiveUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfDisableUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfInvitedUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:modelValue', 'change', 'changeRole'],
         setup(props, { emit }) {
             const activeCollapse = ref<Array<String>>(['1'])
             const statusFilter = ref<Array<any>>(props.modelValue)
+            const role = ref('')
             const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
@@ -137,6 +188,27 @@
                     if (!props.modelValue?.length) statusFilter.value = []
                 }
             )
+            const handleChangeRoleFilter = () => {
+                emit('changeRole', role.value)
+            }
+            const handleClearFilter = () => {
+                role.value = ''
+                statusFilter.value = []
+                emit('update:modelValue', [])
+                emit('changeRole', role.value)
+            }
+            const storeUser = useUserStore()
+            const { roles } = storeToRefs(storeUser)
+            const rolesWithCount = computed(() =>
+                roleOptions.map((item, i) =>
+                    Object.assign({}, item, roles?.value[i])
+                )
+            )
+            const {
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
+            } = toRefs(props)
 
             return {
                 userStatusOptions,
@@ -144,7 +216,14 @@
                 handleStatusFilterChange,
                 activeCollapse,
                 filterOpened,
-                roleOptions,
+                role,
+                handleChangeRoleFilter,
+                handleClearFilter,
+                roles,
+                rolesWithCount,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })
@@ -159,5 +238,10 @@
         width: 6px;
         border-radius: 50%;
         margin-right: 8px;
+    }
+    .group {
+        // .ant-collapse-content-box {
+        //     padding: 0 !important;
+        // }
     }
 </style>

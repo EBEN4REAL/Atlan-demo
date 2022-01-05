@@ -3,7 +3,7 @@
     <!-- <template #overlay> -->
     <a-collapse>
         <div
-            class="relative w-full p-2 -mt-3.5 text-sm text-gray-500 uppercase bg-white rounded-lg"
+            class="relative w-full p-2.5 -mt-3.5 text-sm text-gray-500 uppercase bg-white rounded-lg"
         >
             filters
         </div>
@@ -25,7 +25,6 @@
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
-                            class="grid gap-y-2"
                             @change="handleStatusFilterChange"
                         >
                             <div class="flex flex-col w-full">
@@ -166,5 +165,10 @@
         width: 6px;
         border-radius: 50%;
         margin-right: 8px;
+    }
+    .group {
+        // .ant-collapse-content-box {
+        //     padding: 0 !important;
+        // }
     }
 </style>

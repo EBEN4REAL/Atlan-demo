@@ -2,7 +2,7 @@
     <a-table
         v-if="userList"
         id="userList"
-        class="overflow-hidden border rounded-table users-groups-table"
+        class="overflow-hidden border border-gray-200 rounded-b-lg rounded-table users-groups-table"
         :scroll="{ y: 'calc(100vh - 20rem)', x: 1080 }"
         :data-source="userList"
         :columns="userColumns"

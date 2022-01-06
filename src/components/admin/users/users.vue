@@ -11,7 +11,7 @@
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >

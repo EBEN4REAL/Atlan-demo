@@ -256,20 +256,23 @@
         padding: 0px;
     }
     .grid-container {
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 0.5fr 1.133fr 1.3fr;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
     .item-1 {
         grid-column-start: 1;
         grid-column-end: 2;
+        width: 185px;
     }
     .item-2 {
         grid-column-start: 2;
         grid-column-end: 3;
+        width: 40%;
     }
     .item-3 {
         grid-column-start: 3;
         grid-column-end: 4;
+        width: 40%;
     }
 </style>

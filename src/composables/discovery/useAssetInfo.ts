@@ -947,6 +947,11 @@ export default function useAssetInfo() {
         return filteredHierarchy.filter((item) => item.value !== undefined)
     }
 
+    const externalLocation = (asset: assetInterface) =>
+        attributes(asset)?.externalLocation || ''
+    const externalLocationFormat = (asset: assetInterface) =>
+        attributes(asset)?.externalLocationFormat || ''
+
     return {
         attributes,
         title,
@@ -1044,5 +1049,7 @@ export default function useAssetInfo() {
         queries,
         assetPermission,
         assetTypeRelations,
+        externalLocation,
+        externalLocationFormat,
     }
 }

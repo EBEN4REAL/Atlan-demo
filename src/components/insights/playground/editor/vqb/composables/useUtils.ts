@@ -253,6 +253,10 @@ export function useUtils() {
         })
         return Array.from(distinctTableQualifiedNames)
     }
+    function isSubpanelClosable(subpanels: object[]) {
+        if (subpanels.length === 1) return false
+        if (subpanels.length > 1) return true
+    }
 
     return {
         getTableName,
@@ -265,5 +269,6 @@ export function useUtils() {
         getSummarisedInfoOfSortPanel,
         getTableNameFromTableQualifiedName,
         getTableNamesStringFromQualfieidNames,
+        isSubpanelClosable,
     }
 }

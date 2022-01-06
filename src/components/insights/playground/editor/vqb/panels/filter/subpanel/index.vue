@@ -163,13 +163,14 @@
                             <!--  -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
-                                    v-if="index !== 0"
+                                    v-if="isSubpanelClosable(subpanels)"
                                     @click.stop="
                                         () => handleDelete(index, subpanel)
                                     "
                                     icon="Close"
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
+                                <!-- <div style="width: 32px" v-else></div> -->
 
                                 <a-tooltip placement="bottomLeft">
                                     <template #title
@@ -205,14 +206,10 @@
                                                     )
                                             "
                                             icon="FlashColor"
-                                            class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
+                                            class="w-6 h-6 ml-3 opacity-0 gap-1cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
                                         />
                                     </div>
                                 </a-tooltip>
-                                <div
-                                    style="width: 32px"
-                                    v-if="index === 0"
-                                ></div>
                             </div>
                         </div>
                     </div>
@@ -259,6 +256,7 @@
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { editor } from 'monaco-editor'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -291,6 +289,7 @@
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const { isSubpanelClosable } = useUtils()
             const { getInputTypeFromColumnType, totalFiledsMapWithInput } =
                 useFilter()
 
@@ -555,6 +554,7 @@
             let hoverItem = ref(null)
 
             return {
+                isSubpanelClosable,
                 activeInlineTab,
                 handleFilterChange,
                 totalFiledsMapWithInput,

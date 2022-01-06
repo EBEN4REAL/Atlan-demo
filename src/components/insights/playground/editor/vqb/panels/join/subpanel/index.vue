@@ -50,9 +50,8 @@
                                     )
                             "
                         />
-                        <div style="width: 36px" v-if="index === 0"></div>
                         <AtlanIcon
-                            v-if="index !== 0"
+                            v-if="isSubpanelClosable(subpanels)"
                             @click.stop="() => handleDelete(index)"
                             icon="Close"
                             style="min-width: 26px"
@@ -61,6 +60,7 @@
                                 hoverItem === subpanel.id ? 100 : 0
                             }`"
                         />
+                        <div style="width: 32px" v-else></div>
                     </div>
                 </div>
             </template>
@@ -71,7 +71,7 @@
             @click.stop="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-            <span>Add Another</span>
+            <span>Add another</span>
         </span>
     </div>
 </template>
@@ -111,7 +111,10 @@
         },
 
         setup(props, { emit }) {
-            const { getTableQualifiedNameFromColumnQualifiedName } = useUtils()
+            const {
+                getTableQualifiedNameFromColumnQualifiedName,
+                isSubpanelClosable,
+            } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
 
@@ -229,6 +232,7 @@
             let hoverItem = ref(null)
 
             return {
+                isSubpanelClosable,
                 selectedAggregates,
                 columnName,
                 columnType,

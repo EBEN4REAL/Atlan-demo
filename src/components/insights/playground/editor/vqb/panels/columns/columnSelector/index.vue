@@ -278,10 +278,17 @@
                 required: false,
                 default: () => true,
             },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll } = toRefs(props)
+            const { tableQualfiedName, showSelectAll, selectedTableData } =
+                toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
 
@@ -361,8 +368,7 @@
                     dsl: useBody({
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
+                        assetType: selectedTableData.value?.assetType,
                     }),
                     attributes: [
                         'name',

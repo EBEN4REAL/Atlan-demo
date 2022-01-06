@@ -49,6 +49,7 @@
                         size="sm"
                         @click="handleInviteUsers"
                     >
+                        <AtlanIcon icon="AddUser" />
                         Invite Users
                     </AtlanButton>
                 </div>

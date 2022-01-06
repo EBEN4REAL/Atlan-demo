@@ -113,51 +113,24 @@
             </div>
         </template>
         <template #role="{ text: user }">
-            <a-tooltip
+            <!-- <a-tooltip
                 v-if="user.enabled && user.emailVerified"
                 placement="top"
                 class="mr-3.5"
             >
-                <!-- <template #title>
+                <template #title>
                     <span>Change Role</span>
-                </template> -->
-                <a-popover
-                    :align="{ offset: [-60, 100] }"
-                    placement="right"
-                    trigger="click"
-                    :destroy-tooltip-on-hide="true"
-                    :visible="
-                        selectedUserId === user.id && showChangeRolePopover
-                    "
-                >
-                    <template #content>
-                        <ChangeRole
-                            :user="selectedUser"
-                            :role-list="roleList"
-                            @close="emit('closeChangeRolePopover')"
-                            @updateRole="emit('handleUpdateRole')"
-                            @errorUpdateRole="emit('handleErrorUpdateRole')"
-                        />
-                    </template>
-                    <div
-                        v-if="user.enabled"
-                        v-auth="map.UPDATE_USERS"
-                        class="flex items-center h-8 mr-auto text-center cursor-pointer"
-                        @click="emit('handleChangeRole', user)"
-                    >
-                        {{ user.role_object.name }}
-                        <AtlanIcon
-                            :icon="
-                                selectedUserId === user.id &&
-                                showChangeRolePopover
-                                    ? 'ChevronUp'
-                                    : 'ChevronDown'
-                            "
-                            class="self-center h-3 ml-1 caret-role"
-                        />
-                    </div>
-                </a-popover>
-            </a-tooltip>
+                </template>
+
+            </a-tooltip> -->
+            <ChangeRole
+                :user="user"
+                :selected-user="selectedUser"
+                :role-list="roleList"
+                @close="emit('closeChangeRolePopover')"
+                @updateRole="emit('handleUpdateRole')"
+                @errorUpdateRole="emit('handleErrorUpdateRole')"
+            />
         </template>
         <template #status="{ text: user }">
             <div

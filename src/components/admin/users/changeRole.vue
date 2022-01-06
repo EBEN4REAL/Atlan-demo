@@ -1,7 +1,7 @@
 <template>
     <a-popover
         v-model:visible="visible"
-        :align="{ offset: [-60, 100] }"
+        :align="{ offset: [-135, 110] }"
         placement="right"
         trigger="click"
         :destroy-tooltip-on-hide="true"
@@ -56,7 +56,7 @@
         >
             {{ user.role_object.name }}
             <AtlanIcon
-                :icon="visible ? 'ChevronIp' : 'ChevronDown'"
+                :icon="visible ? 'ChevronUp' : 'ChevronDown'"
                 class="self-center h-3 ml-1 caret-role"
             />
         </div>

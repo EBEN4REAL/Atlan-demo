@@ -21,7 +21,6 @@
         </a-popover>
         <div class="flex flex-wrap items-center gap-1 text-sm">
             <a-button
-                v-if="!hideAddBtn"
                 :disabled="!editPermission"
                 shape="circle"
                 size="small"
@@ -121,11 +120,6 @@
         },
         props: {
             editPermission: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            hideAddBtn: {
                 type: Boolean,
                 required: false,
                 default: false,

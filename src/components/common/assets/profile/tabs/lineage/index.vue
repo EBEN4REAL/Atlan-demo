@@ -97,7 +97,7 @@
                 { id: 21, label: 'Maximum Depth' },
             ]
             const lineageDirections = [
-                { id: 'BOTH', label: 'Both' },
+                { id: 'BOTH', label: 'Both Direction' },
                 { id: 'INPUT', label: 'Upstream' },
                 { id: 'OUTPUT', label: 'Downstream' },
             ]

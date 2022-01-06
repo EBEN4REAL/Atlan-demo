@@ -1,7 +1,7 @@
 <template>
     <a-popover
         v-model:visible="visible"
-        :align="{ offset: [-135, 110] }"
+        :align="{ offset: [-135, 115] }"
         placement="right"
         trigger="click"
         :destroy-tooltip-on-hide="true"

@@ -63,36 +63,43 @@
             </span>
 
             <span v-else>
-                <AtlanBtn
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
+                <Shortcut
                     v-if="activeInlineTab.queryId && !activeInlineTab.isSaved"
-                    class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
-                    :class="isUpdating ? 'px-4.5' : 'px-2'"
-                    :disabled="
-                        activeInlineTab.isSaved && activeInlineTab.queryId
-                    "
-                    @click="$emit('onClickSaveQuery')"
+                    shortcut-key="cmd+s"
+                    action="Update Query"
+                    placement="right"
+                    :edit-permission="true"
                 >
-                    <div
-                        class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
+                        :class="isUpdating ? 'px-4.5' : 'px-2'"
+                        :disabled="
+                            activeInlineTab.isSaved && activeInlineTab.queryId
+                        "
+                        @click="$emit('onClickSaveQuery')"
                     >
-                        <AtlanIcon
-                            v-if="!isUpdating"
-                            style="margin-right: 2.5px"
-                            icon="Save"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-else
-                            icon="CircleLoader"
-                            style="margin-right: 2.5px"
-                            class="w-4 h-4 animate-spin"
-                        ></AtlanIcon>
+                        <div
+                            class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                        >
+                            <AtlanIcon
+                                v-if="!isUpdating"
+                                style="margin-right: 2.5px"
+                                icon="Save"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-else
+                                icon="CircleLoader"
+                                style="margin-right: 2.5px"
+                                class="w-4 h-4 animate-spin"
+                            ></AtlanIcon>
 
-                        <span>Update</span>
-                    </div>
-                </AtlanBtn>
+                            <span>Update</span>
+                        </div>
+                    </AtlanBtn>
+                </Shortcut>
 
                 <div
                     v-else-if="

@@ -35,8 +35,12 @@
                 </div>
             </div>
         </template>
-        <div class="text-right cursor-pointer text-primary group-count">
-            {{ user?.groupCount || '-' }}
+        <div class="text-left cursor-pointer text-primary group-count">
+            {{
+                user?.groupCount > 1
+                    ? user?.groupCount + ' groups'
+                    : user?.groupCount + ' group' || '-'
+            }}
         </div>
     </a-popover>
 </template>

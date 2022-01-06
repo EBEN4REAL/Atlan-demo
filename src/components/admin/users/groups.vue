@@ -35,8 +35,12 @@
                 </div>
             </div>
         </template>
-        <div class="text-right text-primary">
-            {{ user?.groupCount || '-' }}
+        <div class="text-left cursor-pointer text-primary group-count">
+            {{
+                user?.groupCount > 1
+                    ? user?.groupCount + ' groups'
+                    : user?.groupCount + ' group' || '-'
+            }}
         </div>
     </a-popover>
 </template>
@@ -96,6 +100,13 @@
         margin: 2px 0;
     }
     .content-popover-group-persona {
-        width: 180px;
+        width: 220px;
+        height: 220px;
+        overflow: auto;
+    }
+    .group-count {
+        &:hover {
+            text-decoration: underline;
+        }
     }
 </style>

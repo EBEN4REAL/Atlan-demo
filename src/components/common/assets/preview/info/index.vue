@@ -158,7 +158,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold">{{
+                <span class="font-semibold break-all">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -178,7 +178,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700">{{
+                <span class="text-gray-700 break-all">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>

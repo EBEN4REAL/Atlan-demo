@@ -138,6 +138,16 @@ export const ATTRIBUTE_TYPES = [
         icon: 'String',
     },
     {
+        label: 'Integer',
+        id: 'int',
+        icon: 'Number',
+    },
+    {
+        label: 'Decimal',
+        id: 'float',
+        icon: 'Number',
+    },
+    {
         label: 'Boolean',
         id: 'boolean',
         icon: 'Boolean',
@@ -148,14 +158,14 @@ export const ATTRIBUTE_TYPES = [
         icon: 'DateTime',
     },
     {
-        label: 'Decimal',
-        id: 'float',
-        icon: 'Number',
-    },
-    {
         label: 'Enum',
         id: 'enum',
         icon: 'Enum',
+    },
+    {
+        label: 'Users',
+        id: 'users',
+        icon: 'User',
     },
     {
         label: 'Groups',
@@ -163,20 +173,11 @@ export const ATTRIBUTE_TYPES = [
         icon: 'Group',
     },
     {
-        label: 'Integer',
-        id: 'int',
-        icon: 'Number',
-    },
-    {
         label: 'URL',
         id: 'url',
         icon: 'Link',
     },
-    {
-        label: 'Users',
-        id: 'users',
-        icon: 'User',
-    },
+
 ]
 
 /**

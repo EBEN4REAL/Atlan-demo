@@ -5,6 +5,7 @@ import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
+import { Ref } from 'vue'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
@@ -55,7 +56,13 @@ export function getTableName(columnQualifiedName: string) {
     return ''
 }
 
-export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
+export function generateSQLQuery(
+    activeInlineTab: activeInlineTabInterface,
+    limitRows: {
+        checked: boolean
+        rowsCount: number
+    }
+) {
     const { getTableNameFromTableQualifiedName } = useUtils()
 
     const select = squel.select()
@@ -348,5 +355,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     }
 
     console.log(select.toString(), 'select.toString()')
+    if (limitRows.checked) {
+        return `${select.toString()} LIMIT ${limitRows.rowsCount}`
+    }
     return select.toString()
 }

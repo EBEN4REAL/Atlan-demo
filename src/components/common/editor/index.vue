@@ -166,7 +166,7 @@
                     Placeholder.configure({
                         placeholder: ({ node }) => {
                             if (node.type.name === 'heading') {
-                                return 'Readme Title'
+                                return 'Heading 1/2/3'
                             }
 
                             return props.placeholder

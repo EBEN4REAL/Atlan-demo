@@ -1,12 +1,12 @@
 <template>
     <div
-        ref="container"
+        ref="container "
         @click="setFocus"
         @focusout="handleContainerBlur"
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center group"
+        class="relative flex items-center w-full group"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '

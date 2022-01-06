@@ -110,7 +110,7 @@
             }
 
             const handleContainerBlur = (event) => {
-                if (!container.value.contains(event.relatedTarget)) {
+                if (!container.value?.contains(event?.relatedTarget)) {
                     isAreaFocused.value = false
                 }
             }
@@ -137,6 +137,7 @@
                     type: checked.key,
                     name: checked.label,
                 }
+                isAreaFocused.value = false
             }
 
             onMounted(() => {

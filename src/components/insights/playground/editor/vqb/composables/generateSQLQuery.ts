@@ -128,7 +128,10 @@ export function generateSQLQuery(
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.qualifiedName ??
+                        subpanel.column.qualifiedName
+                )
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
                 if (aggregatorUpperCase === 'UNIQUE') {
@@ -153,7 +156,10 @@ export function generateSQLQuery(
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
             subpanel.columnsData.forEach((columnData) => {
-                const tableName = getTableName(columnData.columnsQualifiedName)
+                const tableName = getTableName(
+                    columnData.columnsQualifiedName ??
+                        subpanel.column.qualifiedName
+                )
                 select.group(`${tableName}."${columnData.label}"`)
             })
         })
@@ -166,7 +172,10 @@ export function generateSQLQuery(
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
             if (subpanel.column.label) {
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.qualifiedName ??
+                        subpanel.column.qualifiedName
+                )
 
                 select.order(`${tableName}."${subpanel.column.label}"`, order)
             }
@@ -179,7 +188,10 @@ export function generateSQLQuery(
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
             res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
-            const tableName = getTableName(subpanel.column.qualifiedName)
+            const tableName = getTableName(
+                subpanel.column.columnQualifiedName ??
+                    subpanel.column.qualifiedName
+            )
             if (index == 0) res = ''
             if (
                 tableName &&
@@ -306,7 +318,8 @@ export function generateSQLQuery(
             )
             // leftTableName = "TABLENAME"
             const rightTableName = getTableName(
-                subpanel.columnsDataRight?.columnQualifiedName ?? ''
+                subpanel.columnsDataRight?.columnQualifiedName ??
+                    subpanel.column.qualifiedName
             )
             if (leftColumnName && rightTableName && rightColumnName) {
                 switch (subpanel.joinType.type) {

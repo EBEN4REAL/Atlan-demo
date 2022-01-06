@@ -1341,6 +1341,10 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],

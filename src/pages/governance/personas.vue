@@ -5,11 +5,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, onMounted, watch, computed } from 'vue'
     import { useHead } from '@vueuse/head'
+    import { useDebounceFn } from '@vueuse/core'
+    import { useRoute } from 'vue-router'
     import NoAccess from '@/common/secured/access.vue'
     import PersonaView from '@/governance/personas/personaView.vue'
     import useAuth from '~/composables/auth/useAuth'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -17,10 +20,30 @@
             NoAccess,
         },
         setup() {
+            const route = useRoute()
+            const id = computed(() => route?.params?.id || null)
+
             useHead({
                 title: 'Personas',
             })
             const { isAccess } = useAuth()
+
+            const sendPageEvent = useDebounceFn(() => {
+                if (id.value) {
+                    useTrackPage('governance', 'personas')
+                }
+            }, 500)
+
+            onMounted(() => {
+                sendPageEvent()
+            })
+
+            watch(id, () => {
+                if (id.value) {
+                    sendPageEvent()
+                }
+            })
+
             return { isAccess }
         },
     })

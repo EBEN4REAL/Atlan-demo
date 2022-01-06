@@ -124,37 +124,62 @@
                         v-for="(item, index) in tableDropdownOption"
                         :key="item?.label + index"
                     >
-                        <div
-                            class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                            @click="onSelectTable(item)"
-                        >
-                            <div class="flex items-center truncate">
-                                <AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            assetType(item),
-                                            certificateStatus(item)
-                                        )
+                        <PopoverAsset :item="item.item" placement="left">
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
                                     "
-                                    class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                ></AtlanIcon>
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
 
-                                <span
-                                    class="ml-2 parent-ellipsis-container-base"
-                                    >{{ item?.label }}
-                                </span>
-                            </div>
                             <div
-                                class="flex items-center justify-between text-gray-500"
+                                class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
+                                @click="onSelectTable(item)"
                             >
-                                {{ item?.columnCount }}
+                                <div class="flex items-center truncate">
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
 
-                                <AtlanIcon
-                                    icon="ChevronRight"
-                                    class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                />
+                                    <span
+                                        class="ml-2 parent-ellipsis-container-base"
+                                        >{{ item?.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between text-gray-500"
+                                >
+                                    {{ item?.columnCount }}
+
+                                    <AtlanIcon
+                                        icon="ChevronRight"
+                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </PopoverAsset>
                     </template>
                 </div>
                 <div
@@ -204,64 +229,64 @@
                         v-for="(item, index) in columnDropdownOption"
                         :key="item?.label + index"
                     >
-                        <a-checkbox
-                            :checked="map[item.value]"
-                            @change="
-                                (checked) => onCheckboxChange(checked, item)
-                            "
-                            class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
-                        >
-                            <div
-                                class="justify-between parent-ellipsis-container"
-                            >
-                                <div class="parent-ellipsis-container">
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary || item.isForeign"
+                        <PopoverAsset :item="item.item" placement="left">
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
                                 >
-                                    <div
-                                        class="absolute right-0 flex items-center -top-2.5"
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
                                     >
-                                        <AtlanIcon
-                                            icon="PrimaryKey"
-                                            style="color: #3ca5bc"
-                                            class="w-4 h-4 mr-1"
-                                        ></AtlanIcon>
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+
+                            <a-checkbox
+                                :checked="map[item.value]"
+                                @change="
+                                    (checked) => onCheckboxChange(checked, item)
+                                "
+                                class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
+                            >
+                                <div
+                                    class="justify-between parent-ellipsis-container"
+                                >
+                                    <div class="parent-ellipsis-container">
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                        ></component>
                                         <span
-                                            style="color: #3ca5bc"
-                                            class="text-sm"
-                                            >Pkey</span
+                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
                                         >
+                                            {{ item.label }}
+                                        </span>
                                     </div>
                                     <div
-                                        class="absolute flex items-center -top-2.5"
-                                        :class="
-                                            item.isPrimary
-                                                ? 'right-14'
-                                                : 'right-0'
-                                        "
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
                                     >
-                                        <AtlanIcon
-                                            icon="ForeignKey"
-                                            class="w-4 h-4 mr-1 text-purple-700"
-                                        ></AtlanIcon>
-                                        <span class="text-sm text-purple-700"
-                                            >Fkey</span
-                                        >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                            topStyle="-top-2"
+                                        />
                                     </div>
                                 </div>
-                            </div>
-                        </a-checkbox>
+                            </a-checkbox>
+                        </PopoverAsset>
                     </template>
 
                     <div
@@ -299,6 +324,14 @@
     import { useVModels } from '@vueuse/core'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
 
     import useBody from './useBody'
 
@@ -307,6 +340,8 @@
         emits: ['change'],
         components: {
             Loader,
+            ColumnKeys,
+            PopoverAsset,
         },
         props: {
             selectedColumn: {
@@ -349,9 +384,17 @@
             } = toRefs(props)
             const { getDataTypeImage } = useColumn()
             const { selectedItems, selectedColumnsData } = useVModels(props)
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const tableText = ref('')
             const columnText = ref('')
@@ -385,8 +428,26 @@
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
+                        'dataType',
+                        'isPrimary',
+                        'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
                         'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -425,15 +486,11 @@
                     qualifiedName: ls.attributes.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -446,16 +503,13 @@
                     order: ls.attributes.order,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     value: ls.attributes.qualifiedName,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.order < y.order) return -1
-                    if (x.order > y.order) return 1
-                    return 0
-                })
                 console.log('col: ', data)
                 return data
             })
@@ -478,12 +532,26 @@
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
-                        'certificateStatus',
                         'dataType',
-                        'order',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -650,7 +718,7 @@
 
                 const copyColumnsData: any = []
 
-                selectedColumnsData.value.forEach((columnData) => {
+                selectedColumnsData.value?.forEach((columnData) => {
                     let _t: any = undefined
                     copySelectedItems.forEach((columnQualifiedName) => {
                         if (
@@ -729,6 +797,26 @@
                 map.value = {}
                 selectedColumnsData.value = []
                 console.log(map.value, 'destroy')
+            }
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             watch(queryText, () => {
@@ -819,6 +907,7 @@
                 input2Change,
                 getDataTypeImage,
                 clearAllSelected,
+                actionClick,
             }
         },
     })

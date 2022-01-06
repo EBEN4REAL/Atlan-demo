@@ -11,7 +11,7 @@
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
@@ -26,15 +26,15 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                :number-of-active-user="numberOfActiveUser"
+                                :number-of-disable-user="numberOfDisableUser"
+                                :number-of-invited-user="numberOfInvitedUser"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
-                                :numberOfActiveUser="numberOfActiveUser"
-                                :numberOfDisableUser="numberOfDisableUser"
-                                :numberOfInvitedUser="numberOfInvitedUser"
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow-none hover:shadow"
                         >
                             <AtlanIcon icon="Filter" class="w-5 h-5" />
                             <span>Filters</span>
@@ -49,6 +49,7 @@
                         size="sm"
                         @click="handleInviteUsers"
                     >
+                        <AtlanIcon icon="AddUser" />
                         Invite Users
                     </AtlanButton>
                 </div>
@@ -188,6 +189,7 @@
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
             const showDisableEnablePopover = ref<boolean>(false)
+            const isFirstLoad = ref(true)
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -211,12 +213,15 @@
             const numberOfDisableUser = ref(0)
             const numberOfInvitedUser = ref(0)
             watch(userList, (v) => {
-                v.reduce((counter, user) => {
-                    if (user.enabled) numberOfActiveUser.value += 1
-                    if (!user.enabled) numberOfDisableUser.value += 1
-                    if (!user.emailVerified) numberOfInvitedUser.value += 1
-                    return counter
-                }, 0)
+                if (isFirstLoad.value) {
+                    v.reduce((counter, user) => {
+                        if (user.enabled) numberOfActiveUser.value += 1
+                        if (!user.enabled) numberOfDisableUser.value += 1
+                        if (!user.emailVerified) numberOfInvitedUser.value += 1
+                        return counter
+                    }, 0)
+                    isFirstLoad.value = false
+                }
             })
 
             const clearFilter = () => {

@@ -148,6 +148,10 @@ export function useSavedQuery(
                                       {
                                           id: '1',
                                           columns: ['all'],
+                                          tableData: {
+                                              certificateStatus: undefined,
+                                              assetType: undefined,
+                                          },
                                           columnsData: [],
                                       },
                                   ],

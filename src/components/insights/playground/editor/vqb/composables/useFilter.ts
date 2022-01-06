@@ -81,7 +81,7 @@ export function useFilter() {
                     {
                         key: 'equal',
                         type: 'input',
-                        name: 'Equal',
+                        name: 'Equal to',
                     },
                     {
                         key: 'not_equal',

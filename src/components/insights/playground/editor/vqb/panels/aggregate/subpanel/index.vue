@@ -38,6 +38,7 @@
                     />
 
                     <AtlanIcon
+                        v-if="index !== 0"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"

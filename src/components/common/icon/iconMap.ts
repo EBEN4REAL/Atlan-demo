@@ -8,6 +8,7 @@ import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
+import partitionKey from '~/assets/images/icons/partitionKey.svg'
 import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
 import MorningIcon from '~/assets/images/home/Morning.svg'
@@ -20,7 +21,6 @@ import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
-import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
@@ -250,7 +250,7 @@ import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
-import WarningIcon from '~/assets/images/icons/warning.svg';
+import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
@@ -330,6 +330,7 @@ import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
+import primaryKey from '~/assets/images/icons/primaryKey.svg'
 import Revoke from '~/assets/images/icons/Revoke.svg'
 import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
@@ -337,6 +338,8 @@ import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 export default {
     Query24,
     Vqb24,
+    partitionKey,
+    primaryKey,
     Array,
     Float,
     EnumType,
@@ -427,7 +430,6 @@ export default {
     WorkflowsIcon,
     GlossaryIcon,
     ForeignKey,
-    PrimaryKey,
     Share,
     NoAccess,
     Cancel,
@@ -658,5 +660,5 @@ export default {
     CollectionIconSmallGray,
     CollectionIconLargeActive,
     Revoke,
-    WarningIcon
+    WarningIcon,
 }

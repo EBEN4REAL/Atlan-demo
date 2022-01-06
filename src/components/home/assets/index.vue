@@ -208,13 +208,12 @@
             // if (discoveryStore.activePostFacet && page.value === 'assets') {
             //     postFacets.value = discoveryStore.activePostFacet
             // }
-            if (discoveryStore.preferences) {
-                preference.value.sort =
-                    discoveryStore.preferences.sort || preference.value.sort
-                preference.value.display =
-                    discoveryStore.preferences.display ||
-                    preference.value.display
-            }
+            // if (discoveryStore.preferences.sort) {
+            //     preference.value.sort = discoveryStore.preferences.sort
+            // }
+            // if (discoveryStore.preferences.display) {
+            //     preference.value.display = discoveryStore.preferences.display
+            // }
             // if (discoveryStore.activeFacetTab?.length > 0) {
             //     activeKey.value = discoveryStore.activeFacetTab
             // } else {

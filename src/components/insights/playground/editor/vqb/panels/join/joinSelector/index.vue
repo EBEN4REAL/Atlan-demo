@@ -1,12 +1,12 @@
 <template>
     <div
-        ref="container"
+        ref="container "
         @click="setFocus"
         @focusout="handleContainerBlur"
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center group"
+        class="relative flex items-center w-full group"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
@@ -110,7 +110,7 @@
             }
 
             const handleContainerBlur = (event) => {
-                if (!container.value.contains(event.relatedTarget)) {
+                if (!container.value?.contains(event?.relatedTarget)) {
                     isAreaFocused.value = false
                 }
             }
@@ -137,6 +137,7 @@
                     type: checked.key,
                     name: checked.label,
                 }
+                isAreaFocused.value = false
             }
 
             onMounted(() => {

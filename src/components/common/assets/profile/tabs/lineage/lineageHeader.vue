@@ -1,21 +1,20 @@
 <template>
     <div class="lineage-control header">
         <div class="controls">
-            <div class="flex items-center cursor-pointer">
+            <div class="flex items-center control-item">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>search graph</span>
                     </template>
                     <AtlanIcon
                         icon="Search"
-                        class="mr-2 outline-none"
+                        class="mx-1 my-2 outline-none"
                         @click="showSearch = !showSearch"
                     ></AtlanIcon>
                 </a-tooltip>
-                <LineageSearch v-if="showSearch" />
+                <LineageSearch v-if="showSearch" class="ml-2" />
             </div>
-            <a-divider type="vertical" />
-            <div class="cursor-pointer" @click="onShowImpactedAssets()">
+            <div class="control-item" @click="onShowImpactedAssets()">
                 <a-tooltip placement="top">
                     <template #title>
                         <span> show impacted assets </span>
@@ -91,21 +90,3 @@
         },
     })
 </script>
-
-<style lang="less">
-    .cyclic-pill {
-        background: #ffe6eb;
-        padding: 0 8px;
-        border-radius: 15px;
-    }
-
-    .lineage-header-menu {
-        .ant-dropdown-menu-item-activee {
-            background-color: #eaf0ff !important;
-        }
-
-        .ant-dropdown-menu-item:hover {
-            background-color: #f8f8fd;
-        }
-    }
-</style>

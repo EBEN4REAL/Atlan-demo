@@ -3,11 +3,7 @@
         <slot></slot>
 
         <div class="controls">
-            <div
-                class="cursor-pointer"
-                :class="{ 'mr-5': isExpanded }"
-                @click="toggleControlVisibility"
-            >
+            <div class="ml-1 control-item" @click="toggleControlVisibility">
                 <a-tooltip placement="top">
                     <template #title>
                         <span
@@ -18,14 +14,28 @@
                     <AtlanIcon
                         icon="CollapseControl"
                         class="transition-transform duration-300 outline-none"
-                        :class="{ 'transform rotate-180': !isExpanded }"
+                        :class="{
+                            'transform rotate-180 mr-1 my-2': !isExpanded,
+                        }"
                     ></AtlanIcon>
                 </a-tooltip>
             </div>
             <template v-if="isExpanded">
+                <div style="height: 40px; width: 1px" class="bg-gray-300" />
+
                 <!-- Preferences Popover -->
-                <div class="mr-5 cursor-pointer">
-                    <a-popover trigger="click">
+                <div
+                    class="control-item"
+                    :class="
+                        isPreferencesVisible
+                            ? 'bg-primary-light text-primary'
+                            : ''
+                    "
+                >
+                    <a-popover
+                        v-model:visible="isPreferencesVisible"
+                        trigger="click"
+                    >
                         <template #content>
                             <div class="px-4 py-3 text-sm">View Options</div>
                             <a-divider class="m-0" />
@@ -112,27 +122,31 @@
                         </a-tooltip>
                     </a-popover>
                 </div>
-                <div class="mr-5 cursor-pointer" @click="onShowMinimap">
+
+                <!-- Minimap -->
+                <div
+                    class="control-item"
+                    :class="showMinimap ? 'bg-primary-light text-primary' : ''"
+                    @click="onShowMinimap"
+                >
                     <a-tooltip placement="top">
                         <template #title>
                             <span>{{
-                                showMinimap ? 'hide minimap' : 'show minimap'
+                                showMinimap ? 'Hide minimap' : 'Show minimap'
                             }}</span>
                         </template>
 
                         <AtlanIcon
                             icon="Minimap"
                             class="outline-none"
-                            :class="
-                                showMinimap ? 'text-primary' : 'text-gray-500'
-                            "
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="mr-5 cursor-pointer" @click="fit(baseEntityGuid)">
+                <!-- Re-center -->
+                <div class="control-item" @click="fit(baseEntityGuid)">
                     <a-tooltip placement="top">
                         <template #title>
-                            <span>recenter</span>
+                            <span>Re-center</span>
                         </template>
 
                         <AtlanIcon
@@ -141,11 +155,14 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="mr-5 cursor-pointer" @click="onFullscreen()">
+                <div style="height: 40px; width: 1px" class="bg-gray-300" />
+
+                <!-- Zoom Controls -->
+                <div class="control-item" @click="onFullscreen()">
                     <a-tooltip placement="top">
                         <template #title>
                             <span>{{
-                                isFullscreen ? 'leave fullscreen' : 'fullscreen'
+                                isFullscreen ? 'Leave fullscreen' : 'Fullscreen'
                             }}</span>
                         </template>
                         <AtlanIcon
@@ -154,10 +171,10 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="mr-5 cursor-pointer" @click="zoom(-0.1)">
+                <div class="control-item" @click="zoom(-0.1)">
                     <a-tooltip placement="top">
                         <template #title>
-                            <span>zoom out</span>
+                            <span>Zoom out</span>
                         </template>
 
                         <AtlanIcon
@@ -166,10 +183,10 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="mr-5 cursor-pointer" @click="zoom(0.1)">
+                <div class="control-item" @click="zoom(0.1)">
                     <a-tooltip placement="top">
                         <template #title>
-                            <span>zoom in</span>
+                            <span>Zoom in</span>
                         </template>
 
                         <AtlanIcon
@@ -178,7 +195,7 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="w-8 text-sm text-gray-500 select-none">
+                <div class="text-sm text-gray-500 select-none control-item">
                     {{ currZoom }}
                 </div>
             </template>
@@ -236,6 +253,8 @@
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
+            const isPreferencesVisible = ref(false)
+
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
             )
@@ -289,6 +308,7 @@
             return {
                 showMinimap,
                 isFullscreen,
+                isPreferencesVisible,
                 isExpanded,
                 depth,
                 lineageDepths,

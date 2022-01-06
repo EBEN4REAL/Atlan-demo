@@ -59,7 +59,7 @@
                         :term="term"
                         :allow-delete="allowDelete"
                         @delete="handleDeleteTerm"
-                        @click="handleDrawerVisible(term)"
+                        @toggleDrawer="handleDrawerVisible(term)"
                     />
                 </TermPopover>
             </template>
@@ -233,16 +233,11 @@
                         }
                         return el
                     })
-                    list.value = temp
+                    localValue.value = temp
+                    console.log(localValue.value)
                 }
             }
 
-            // watch(localValue, () => {
-            //     console.log(localValue)
-            //     localValue.value = localValue.value.filter(
-            //         (term) => term.attributes?.__state === 'ACTIVE'
-            //     )
-            // })
             return {
                 getFetchedTerm,
                 isReady,

@@ -38,6 +38,8 @@ export default function useEventGraph(
     const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
     const nodesCaretClicked = ref([])
     const isCaretClicked = ref(false)
+    const carets = document.getElementsByClassName('node-caret')
+    const caretsArray = Array.from(carets)
 
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
@@ -319,6 +321,14 @@ export default function useEventGraph(
             )
 
             translateCandidates.forEach((x) => {
+                const graphNodeElement = document.querySelectorAll(
+                    `[data-cell-id="${x.id}"]`
+                )[0]
+                const caretElement = Array.from(
+                    graphNodeElement.querySelectorAll('*')
+                ).find((y) => y.classList.contains('node-caret'))
+                caretElement?.classList.add('caret-expanded')
+
                 if (nodesPorts.value?.[x.id]) nodesPorts.value[x.id] = []
                 getNodeColumnList(x, x.store.data.entity, data.value.relations)
             })
@@ -364,17 +374,19 @@ export default function useEventGraph(
 
     // registerCaretListeners
     const registerCaretListeners = () => {
-        const carets = document.getElementsByClassName('node-caret')
-        const caretsArray = Array.from(carets)
         caretsArray.forEach((x) => {
             x.addEventListener('mousedown', function nodeCaretFxn(e) {
                 isCaretClicked.value = true
+
                 const ele = getEventPath(e).find((x) =>
                     x.getAttribute('data-cell-id')
                 )
                 const nodeId = ele.getAttribute('data-cell-id')
                 const graphNodes = graph.value.getNodes()
                 const node = graphNodes.find((x) => x.id === nodeId)
+
+                if (chp.value.portId) return
+
                 if (nodesCaretClicked.value.includes(nodeId)) {
                     const index = nodesCaretClicked.value.findIndex(
                         (x) => x === nodeId
@@ -385,11 +397,7 @@ export default function useEventGraph(
                     nodesCaretClicked.value.push(nodeId)
                     x.classList.add('caret-expanded')
                 }
-                const chpNode = getPortNode(chp.value.portId)
-                if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
-                    loaderCords.value = {}
-                    return
-                }
+
                 getNodeColumnList(node, node.store.data.entity)
             })
         })
@@ -411,6 +419,14 @@ export default function useEventGraph(
             })
             chp.value.expandedNodes.forEach((x) => {
                 // remove ports of all interlinked nodes
+                const graphNodeElement = document.querySelectorAll(
+                    `[data-cell-id="${x.id}"]`
+                )[0]
+                const caretElement = Array.from(
+                    graphNodeElement.querySelectorAll('*')
+                ).find((y) => y.classList.contains('node-caret'))
+                caretElement?.classList.remove('caret-expanded')
+
                 nodesPorts.value[x.id] = []
                 const portsToRemove = x.getPorts()
                 portsToRemove.shift()
@@ -507,12 +523,6 @@ export default function useEventGraph(
         if (isCaretClicked.value) {
             if (nodesColumns.value[node.id]) loaderCords.value = {}
             isCaretClicked.value = false
-            return
-        }
-
-        const chpNode = getPortNode(chp.value.portId)
-        if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
-            loaderCords.value = {}
             return
         }
 

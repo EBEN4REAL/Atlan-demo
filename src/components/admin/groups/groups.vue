@@ -218,7 +218,7 @@
                             :image-url="imageUrl(value)"
                             :allow-upload="false"
                             :avatar-name="value"
-                            :avatar-size="16"
+                            :avatar-size="24"
                             :avatar-shape="'circle'"
                             class="mr-2 mt-0.5"
                         />
@@ -662,7 +662,13 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less">
+    .users-groups-table {
+        .ant-table-thead {
+            height: 44px !important;
+        }
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

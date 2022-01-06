@@ -690,4 +690,9 @@
             border: 1px solid #e6e6eb;
         }
     }
+    .users-groups-table {
+        .ant-table-thead {
+            height: 44px !important;
+        }
+    }
 </style>

@@ -149,6 +149,7 @@
                                 placement="bottom"
                                 trigger="click"
                                 :overlayStyle="{ padding: '0px !important' }"
+                                :destroyTooltipOnHide="true"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {

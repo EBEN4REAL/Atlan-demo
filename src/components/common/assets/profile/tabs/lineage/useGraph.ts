@@ -110,6 +110,25 @@ export default function useGraph() {
             },
             ports: {
                 groups: {
+                    invisiblePort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 69,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                event: 'port:click',
+                                y: -34,
+                            },
+                        },
+                    },
                     columnList: {
                         markup: [
                             {
@@ -156,7 +175,7 @@ export default function useGraph() {
                 items: [
                     {
                         id: `${guid}/index`,
-                        group: 'columnList',
+                        group: 'invisiblePort',
                         zIndex: 0,
                     },
                 ],

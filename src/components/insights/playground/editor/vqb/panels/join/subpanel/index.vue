@@ -10,7 +10,7 @@
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
-                    <div class="item-1">
+                    <div class="flex-none item-1">
                         <JoinSelector
                             class="w-full"
                             v-model:selectedJoinType="subpanel.joinType"
@@ -29,19 +29,15 @@
                             "
                         />
                     </div>
-
+                    <div
+                        class="flex items-center justify-center flex-none item-4"
+                    >
+                        <span
+                            class="w-4 h-4 text-lg text-gray-500 -mt-2.5 outline-none"
+                            >=</span
+                        >
+                    </div>
                     <div class="flex items-center item-3">
-                        <a-tooltip placement="top" color="#363636">
-                            <template #title>
-                                <span>Swap Tables</span>
-                            </template>
-                            <AtlanIcon
-                                @click.stop="() => swapTables(index)"
-                                icon="TableSwap"
-                                class="w-4 h-4 text-gray-300 mt-0.5 mr-3 cursor-pointer outline-none"
-                            />
-                        </a-tooltip>
-
                         <!-- subpanel?.id + index + 2 works as a unique string -->
                         <TreeColumnSelector
                             class="flex-1"
@@ -259,20 +255,26 @@
         display: flex;
         align-items: center;
         gap: 12px;
+        min-width: 0;
     }
     .item-1 {
         grid-column-start: 1;
         grid-column-end: 2;
-        width: 185px;
+        width: 186px;
     }
     .item-2 {
-        grid-column-start: 2;
-        grid-column-end: 3;
-        width: 40%;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-3 {
-        grid-column-start: 3;
-        grid-column-end: 4;
-        width: 40%;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .item-4 {
+        width: 16px;
     }
 </style>

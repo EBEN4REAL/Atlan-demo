@@ -15,22 +15,24 @@
                         />
                     </div>
                 </div>
-                <div v-if="isLoading" class="flex justify-center mt-5">
-                    <AtlanIcon
-                        icon="CircleLoader"
-                        class="mb-1 mr-2 text-primary animate-spin"
-                    />
-                </div>
-                <div v-else class="flex flex-wrap gap-2 mt-3">
-                    <div
-                        v-for="group in groupList"
-                        :key="group.id"
-                        class="flex items-center px-2 border rounded-xl min-w"
-                    >
-                        <div class="mr-2 icon-wrapper">
-                            <AtlanIcon icon="Group" class="text-primary" />
+                <div class="mt-3 container-scroll">
+                    <div v-if="isLoading" class="flex justify-center mt-3">
+                        <AtlanIcon
+                            icon="CircleLoader"
+                            class="mb-1 mr-2 text-primary animate-spin"
+                        />
+                    </div>
+                    <div v-else class="flex flex-wrap gap-2">
+                        <div
+                            v-for="group in groupList"
+                            :key="group.id"
+                            class="flex items-center px-2 border rounded-xl min-w"
+                        >
+                            <div class="mr-2 icon-wrapper">
+                                <AtlanIcon icon="Group" class="text-primary" />
+                            </div>
+                            {{ group.name }}
                         </div>
-                        {{ group.name }}
                     </div>
                 </div>
             </div>
@@ -101,7 +103,9 @@
     }
     .content-popover-group-persona {
         width: 220px;
-        height: 220px;
+    }
+    .container-scroll {
+        height: 170px;
         overflow: auto;
     }
     .group-count {

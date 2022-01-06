@@ -175,11 +175,28 @@
                                         {{ item.label }}
                                     </span>
                                 </div>
-                                <AtlanIcon
-                                    icon="Check"
-                                    class="text-primary"
-                                    v-if="selectedItem?.label === item.label"
-                                />
+                                <div
+                                    class="flex items-center parent-ellipsis-container-extension"
+                                >
+                                    <div
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                            topStyle="-top-2"
+                                        />
+                                    </div>
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary parent-ellipsis-container-base"
+                                        v-if="
+                                            selectedItem?.label === item.label
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
                             </div>
                         </PopoverAsset>
                     </template>
@@ -601,11 +618,6 @@
                     columnQualifiedName: ls.attributes?.qualifiedName,
                     item: ls,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -799,11 +811,6 @@
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -822,11 +829,6 @@
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.order < y.order) return -1
-                    if (x.order > y.order) return 1
-                    return 0
-                })
                 console.log('col: ', data)
                 return data
             })

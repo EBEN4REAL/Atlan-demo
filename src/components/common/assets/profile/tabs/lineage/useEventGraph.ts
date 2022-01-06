@@ -5,6 +5,7 @@ import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
+import fetchAsset from './fetchAsset'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
@@ -13,7 +14,6 @@ const { createPortData, toggleNodesEdges, addEdge } = useGraph()
 export default function useEventGraph(
     graph,
     baseEntity,
-    lineageWithProcess,
     assetGuidToHighlight,
     highlightedNode,
     loaderCords,
@@ -187,18 +187,18 @@ export default function useEventGraph(
     const createRelations = (relations) => {
         const graphNodes = graph.value.getNodes()
         relations.forEach((x) => {
+            const { fromEntityId, toEntityId, processId } = x
+
             const sourceCell = graphNodes.find((y) =>
-                y.hasPort(x.fromEntityId)
+                y.hasPort(fromEntityId)
             ).id
-            const targetCell = graphNodes.find((y) =>
-                y.hasPort(x.toEntityId)
-            ).id
+            const targetCell = graphNodes.find((y) => y.hasPort(toEntityId)).id
             const relation = {
-                id: `processIdGoesHere/${x.fromEntityId}@${x.toEntityId}`,
+                id: `port/${processId}/${fromEntityId}@${toEntityId}`,
                 sourceCell,
-                sourcePort: x.fromEntityId,
+                sourcePort: fromEntityId,
                 targetCell,
-                targetPort: x.toEntityId,
+                targetPort: toEntityId,
                 stroke: '#5277d7',
             }
             addEdge(graph, relation)
@@ -441,8 +441,13 @@ export default function useEventGraph(
 
     // EDGE - CLICK
     const cheCell = graph.value.getCellById(che.value)
-    graph.value.on('edge:click', ({ edge, cell }) => {
-        if (edge.id.includes('processIdGoesHere')) return
+    graph.value.on('edge:click', ({ e, edge, cell }) => {
+        loaderCords.value = { x: e.clientX, y: e.clientY }
+
+        if (edge.id.includes('port')) {
+            loaderCords.value = {}
+            return
+        }
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
@@ -457,16 +462,22 @@ export default function useEventGraph(
         che.value = edge.id
         controlEdgeHighlight(cell, false)
         const processId = edge.id.split('/')[0]
-        const processEntity = lineageWithProcess.value.guidEntityMap[processId]
-        onSelectAsset(processEntity)
-        const target = edge.id.split('/')[1].split('@')[1]
-        highlight(target, false)
+        const { data } = fetchAsset(processId)
+        watch(data, () => {
+            onSelectAsset(data.value)
+            const target = edge.id.split('/')[1].split('@')[1]
+            highlight(target, false)
+            loaderCords.value = {}
+        })
     })
 
     // EDGE - MOUSEENTER
     graph.value.on('edge:mouseenter', ({ cell, edge }) => {
         if (chp.value.portId) return
-        if (edge.id.includes('processIdGoesHere')) return
+        if (edge.id.includes('port')) {
+            loaderCords.value = {}
+            return
+        }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
             controlEdgeHighlight(cell, false, true)
@@ -479,7 +490,10 @@ export default function useEventGraph(
     // EDGE - MOUSELEAVE
     graph.value.on('edge:mouseleave', ({ cell, edge }) => {
         if (chp.value.portId) return
-        if (edge.id.includes('processIdGoesHere')) return
+        if (edge.id.includes('port')) {
+            loaderCords.value = {}
+            return
+        }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
             controlEdgeHighlight(cell, true)

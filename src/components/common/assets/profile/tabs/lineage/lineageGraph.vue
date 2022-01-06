@@ -117,10 +117,6 @@
                 type: Object,
                 required: true,
             },
-            lineageWithProcess: {
-                type: Object,
-                required: true,
-            },
         },
         setup(props, { emit }) {
             /** INJECTIONS */
@@ -131,7 +127,7 @@
 
             /** DATA */
             const isDrawerVisible = ref(false)
-            const { lineage, lineageWithProcess } = toRefs(props)
+            const { lineage } = toRefs(props)
             const graphHeight = ref(0)
             const graphWidth = ref(0)
             const resetSelections = ref(false)
@@ -185,7 +181,6 @@
                     graph,
                     graphLayout,
                     lineage,
-                    lineageWithProcess,
                     searchItems,
                     currZoom,
                     isComputeDone,
@@ -196,7 +191,6 @@
                 useEventGraph(
                     graph,
                     baseEntity,
-                    lineageWithProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,

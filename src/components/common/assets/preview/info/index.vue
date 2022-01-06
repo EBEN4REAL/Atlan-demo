@@ -148,6 +148,43 @@
         </div>
 
         <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location</span
+                >
+                <span class="font-semibold">{{
+                    externalLocation(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div
+                v-if="externalLocationFormat(selectedAsset)"
+                class="flex flex-col text-sm cursor-pointer"
+            >
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location Format</span
+                >
+                <span class="text-gray-700">{{
+                    externalLocationFormat(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div
             v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
             class="flex flex-col px-5 text-sm gap-y-4"
         >
@@ -465,7 +502,6 @@
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -490,7 +526,6 @@
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
-            AtlanIcon,
         },
         props: {
             isDrawer: {
@@ -543,6 +578,8 @@
                 tableName,
                 viewName,
                 attributes,
+                externalLocation,
+                externalLocationFormat,
             } = useAssetInfo()
 
             const {
@@ -641,6 +678,8 @@
                 tableName,
                 viewName,
                 attributes,
+                externalLocation,
+                externalLocationFormat,
             }
         },
     })

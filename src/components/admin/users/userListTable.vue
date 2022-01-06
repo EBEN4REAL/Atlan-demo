@@ -13,7 +13,7 @@
         @change="handleTableChange"
     >
         <template #headerCell="{ title, column }">
-            <a-tooltip v-if="column.sortKey" placement="top" class="p-4">
+            <a-tooltip v-if="column.sortKey" placement="top" class="p-4 py-3">
                 <template #title>{{
                     getSortTooltipText(
                         column.sortKey,
@@ -53,10 +53,7 @@
                             />
                         </div>
                         <div v-if="activeSortObject.order === 'desc'">
-                            <AtlanIcon
-                                icon="ArrowDown"
-                                class="mb-0.5"
-                            ></AtlanIcon>
+                            <AtlanIcon icon="ArrowDown" class="mb-0.5" />
                         </div>
                     </div>
                 </div>
@@ -70,7 +67,7 @@
                         ? 'justify-end'
                         : 'justify-start'
                 "
-                class="flex p-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
             >
                 {{ title }}
             </div>
@@ -95,7 +92,7 @@
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
                     :avatar-name="user.name || user.username || user.email"
-                    :avatar-size="26"
+                    :avatar-size="32"
                     avatar-shape="circle"
                     class="mr-2"
                 />
@@ -121,11 +118,12 @@
                 placement="top"
                 class="mr-3.5"
             >
-                <!-- <template #title>
+                <template #title>
                     <span>Change Role</span>
-                </template> -->
+                </template>
                 <a-popover
-                    placement="bottomRight"
+                    :align="{ offset: [-60, 100] }"
+                    placement="right"
                     trigger="click"
                     :destroy-tooltip-on-hide="true"
                     :visible="
@@ -155,7 +153,7 @@
                                     ? 'ChevronUp'
                                     : 'ChevronDown'
                             "
-                            class="self-center h-3 ml-1 text-primary"
+                            class="self-center h-3 ml-1 caret-role"
                         />
                     </div>
                 </a-popover>
@@ -237,13 +235,13 @@
                     :trigger="['click']"
                 >
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
+                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
                         @click="(e) => e.preventDefault()"
                     >
-                        <AtlanIcon icon="KebabMenu"></AtlanIcon>
+                        <AtlanIcon icon="KebabMenu" />
                     </div>
                     <template #overlay>
-                        <a-menu>
+                        <a-menu class="drop-down-disabled">
                             <a-menu-item key="verified-user-1">
                                 <AddGroups
                                     :user="user"
@@ -255,12 +253,13 @@
                             </a-menu-item> -->
                             <a-menu-item
                                 key="verified-user-3"
+                                class="border-t"
                                 @click="
                                     emit('toggleDisableEnablePopover', user)
                                 "
                             >
                                 <div
-                                    class="flex items-center px-1.5 py-1 cursor-pointer text-red-600 border-t"
+                                    class="flex items-center px-1.5 py-1 cursor-pointer text-red-600"
                                 >
                                     <AtlanIcon
                                         class="mr-2 icon-disabled-user"
@@ -277,10 +276,10 @@
                     :trigger="['click']"
                 >
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
+                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
                         @click="(e) => e.preventDefault()"
                     >
-                        <AtlanIcon icon="KebabMenu"></AtlanIcon>
+                        <AtlanIcon icon="KebabMenu" />
                     </div>
                     <template #overlay>
                         <a-menu>
@@ -428,7 +427,7 @@
                 </a-tooltip> -->
                 <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
-                        class="flex items-center justify-center w-8 h-8 cursor-pointer"
+                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu" />
@@ -675,6 +674,10 @@
 </script>
 
 <style lang="less" scoped>
+    .users-groups-table {
+        border-top: 1px solid #f3f3f3 !important;
+        border-bottom: 1px solid #f3f3f3 !important;
+    }
     .customShadow {
         box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
     }
@@ -696,6 +699,16 @@
         }
         circle {
             stroke: #dc2626;
+        }
+    }
+    .caret-role {
+        path {
+            stroke: #374151;
+        }
+    }
+    .three-dot-wrapper {
+        &:hover {
+            border: 1px solid #e6e6eb;
         }
     }
 </style>

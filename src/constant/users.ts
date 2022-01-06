@@ -103,9 +103,9 @@ export const userColumns = [
         slots: { customRender: 'persona' },
     },
     {
-        title: 'Actions',
+        title: '',
         slots: { customRender: 'actions' },
-        align: 'center',
+        align: 'right',
     },
 ]
 

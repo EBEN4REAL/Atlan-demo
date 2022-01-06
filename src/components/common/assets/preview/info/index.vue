@@ -378,7 +378,6 @@
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
-                :is-loading="isLoadingClassification"
                 class="px-5"
                 @change="handleClassificationChange"
             >

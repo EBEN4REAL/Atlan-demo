@@ -18,19 +18,33 @@
             </template>
         </a-popover>
         <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
-            <a-button
-                shape="circle"
-                :disabled="!editPermission"
-                size="small"
-                class="text-center shadow"
-                :class="{
-                    editPermission:
-                        'hover:bg-primary-light hover:border-primary',
-                }"
-                @click="() => (isEdit = true)"
+            <a-tooltip
+                placement="left"
+                :title="
+                    !editPermission
+                        ? `You don't have permission to link terms to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
             >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
+                <a-button
+                    shape="circle"
+                    :disabled="!editPermission"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="() => (isEdit = true)"
+                >
+                    <span
+                        ><AtlanIcon
+                            icon="Add"
+                            class="h-3"
+                        ></AtlanIcon></span></a-button
+            ></a-tooltip>
+
             <template v-for="term in list" :key="term.guid">
                 <TermPopover
                     :term="term"
@@ -49,9 +63,6 @@
                     />
                 </TermPopover>
             </template>
-            <span v-if="list?.length < 1" class="text-gray-500"
-                >No linked terms</span
-            >
         </div>
         <AssetDrawer
             :data="drawerAsset"
@@ -78,16 +89,8 @@
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
-    import TermPopover from '@/common/popover/term.vue'
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import {
-        AssetAttributes,
-        InternalAttributes,
-        SQLAttributes,
-        AssetRelationAttributes,
-        GlossaryAttributes,
-    } from '~/constant/projection'
-    import { Term } from '~/types/glossary/glossary.interface'
+    import TermPopover from '@/common/popover/term/term.vue'
+    import useTermPopover from '@/common/popover/term/useTermPopover'
 
     export default defineComponent({
         name: 'TermsWidget',
@@ -202,69 +205,14 @@
                 )
             })
 
-            const limit = ref(1)
-            const offset = ref(0)
-            const facets = ref({
-                guid: '',
-            })
-
-            const dependentKey = ref(facets.value.guid)
-
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...GlossaryAttributes,
-            ])
-            const relationAttributes = ref([...AssetRelationAttributes])
-
             const {
-                list: fetchTermArr,
-                isLoading: termLoading,
-                fetch,
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
                 isReady,
-                error: termError,
-                quickChange,
-            } = useDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                relationAttributes,
-            })
-            /**
-             * * OPTMIZING THE TERMS POPOVER vvvvv
-             */
+                termError,
+            } = useTermPopover()
 
-            const fetchedTerms = ref<Term[]>([])
-
-            const getFetchedTerm = (guid) =>
-                fetchedTerms.value.find((t) => t.guid === guid)
-
-            watch([fetchTermArr, isReady], () => {
-                if (fetchTermArr.value.length && isReady?.value) {
-                    const term: Term = fetchTermArr.value[0]
-                    const index = fetchedTerms.value.findIndex(
-                        (t) => t.guid === term.guid
-                    )
-                    drawerAsset.value = term
-                    if (index > -1) fetchedTerms.value[index] = term
-                    else fetchedTerms.value.push(term)
-                }
-            })
-
-            const handleTermPopoverVisibility = (v, term) => {
-                if (getFetchedTerm(term.guid)) return
-                if (v) {
-                    facets.value.guid = term.guid
-                    quickChange()
-                }
-            }
-
-            /**
-             * * OPTMIZING THE TERMS POPOVER ^^^^^
-             */
             const handleCloseDrawer = () => {
                 isTermDrawerVisible.value = false
             }

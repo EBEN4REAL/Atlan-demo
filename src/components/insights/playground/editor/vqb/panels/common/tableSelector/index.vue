@@ -410,11 +410,6 @@
                     value: ls.attributes.qualifiedName,
                     item: ls,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
             const placeholder = computed(() => {

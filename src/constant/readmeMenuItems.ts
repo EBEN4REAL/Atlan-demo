@@ -75,7 +75,7 @@ export const blockMenu: CommandItem[] = [
         title: 'TaskList',
         key: 'taskList',
         helpText: '',
-        icon: 'fa square',
+        icon: 'CheckCircled',
         command: ({ editor, range }) =>
             editor.chain().focus().deleteRange(range).toggleTaskList().run(),
     },

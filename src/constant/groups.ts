@@ -56,7 +56,7 @@ export const columns = [
         ellipsis: true,
         width: 250,
         sortKey: 'userCount',
-        align: 'right',
+        align: 'left',
         sorter: true,
         sortDirections: ['ASC', 'DESC'],
     },
@@ -80,9 +80,9 @@ export const columns = [
         align: 'left',
     },
     {
-        title: 'Actions',
+        title: '',
         key: 'actions',
         // slots: { customRender: 'actions' },
-        align: 'center',
+        align: 'right',
     },
 ]

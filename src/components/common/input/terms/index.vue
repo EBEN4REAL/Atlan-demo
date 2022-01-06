@@ -45,6 +45,7 @@
                         :term="term"
                         :allow-delete="allowDelete"
                         @delete="handleDeleteTerm"
+                        @click="handleDrawerVisible(term)"
                     />
                 </TermPopover>
             </template>
@@ -52,6 +53,12 @@
                 >No linked terms</span
             >
         </div>
+        <AssetDrawer
+            :data="drawerAsset"
+            :show-drawer="isTermDrawerVisible"
+            @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
+        />
     </div>
 </template>
 
@@ -63,6 +70,8 @@
         ref,
         toRefs,
         watch,
+        defineAsyncComponent,
+        inject,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -74,7 +83,14 @@
 
     export default defineComponent({
         name: 'TermsWidget',
-        components: { GlossaryTree, TermPill, TermPopover },
+        components: {
+            GlossaryTree,
+            TermPill,
+            TermPopover,
+            AssetDrawer: defineAsyncComponent(
+                () => import('@/common/assets/preview/drawer.vue')
+            ),
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -112,13 +128,13 @@
             const checkedGuids = ref(modelValue.value.map((term) => term.guid))
             const hasBeenEdited = ref(false)
             const isEdit = ref(false)
-
-            const list = computed(() =>
+            const isTermDrawerVisible = ref(false)
+            const drawerAsset = ref()
+            const list = ref(
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'
                 )
             )
-
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
@@ -186,6 +202,11 @@
                 termError,
             } = useTermPopover()
 
+            watch(localValue, () => {
+                localValue.value.filter(
+                    (term) => term.attributes?.__state === 'ACTIVE'
+                )
+            })
             return {
                 getFetchedTerm,
                 isReady,
@@ -200,6 +221,11 @@
                 onSearchItemCheck,
                 handleDeleteTerm,
                 isEdit,
+                handleDrawerVisible,
+                isTermDrawerVisible,
+                handleCloseDrawer,
+                drawerAsset,
+                handleListUpdate,
             }
         },
     })

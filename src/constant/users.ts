@@ -87,7 +87,7 @@ export const userColumns = [
         title: 'Groups',
         key: 'group',
         sorter: true,
-        align: 'right',
+        align: 'left',
         slots: { customRender: 'group' },
         sortKey: 'groupCount',
         sortDirections: ['ASC', 'DESC'],
@@ -99,13 +99,13 @@ export const userColumns = [
         title: 'Personas',
         key: 'personas',
         // sorter: true,
-        align: 'right',
+        align: 'left',
         slots: { customRender: 'persona' },
     },
     {
-        title: 'Actions',
+        title: '',
         slots: { customRender: 'actions' },
-        align: 'center',
+        align: 'right',
     },
 ]
 
@@ -130,12 +130,15 @@ export const userStatusOptions = [
 export const roleOptions = [
     {
         label: 'Members',
-        value: JSON.stringify({ roles: {$elemMatch: '$member'} }),
+        value: JSON.stringify({ roles: { $elemMatch: '$member' } }),
     },
-    { label: 'Admin', value: JSON.stringify({ roles: {$elemMatch: '$admin'} }) },
+    {
+        label: 'Admin',
+        value: JSON.stringify({ roles: { $elemMatch: '$admin' } }),
+    },
     {
         label: 'Guest',
-        value: JSON.stringify({ roles: {$elemMatch:'$guest'} }),
+        value: JSON.stringify({ roles: { $elemMatch: '$guest' } }),
     },
 ]
 

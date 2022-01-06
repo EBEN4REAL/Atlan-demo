@@ -5,11 +5,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, onMounted, watch, computed } from 'vue'
     import { useHead } from '@vueuse/head'
     import NoAccess from '@/common/secured/access.vue'
     import PersonaView from '@/governance/personas/personaView.vue'
     import useAuth from '~/composables/auth/useAuth'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         components: {
@@ -17,10 +19,24 @@
             NoAccess,
         },
         setup() {
+            const route = useRoute()
+            const id = computed(() => route?.params?.id || null)
+
             useHead({
                 title: 'Personas',
             })
             const { isAccess } = useAuth()
+
+            onMounted(() => {
+                useTrackPage('governance', 'personas')
+            })
+
+            watch(id, () => {
+                if (id.value) {
+                    useTrackPage('governance', 'personas')
+                }
+            })
+
             return { isAccess }
         },
     })

@@ -95,6 +95,12 @@
                             attribute.value?.options?.primitiveType
                         )
                     ) {
+                        if (
+                            ['users', 'groups'].includes(
+                                attribute.value?.options?.primitiveType
+                            )
+                        )
+                            return 'string_user'
                         return 'string'
                     }
                     return attribute.value.options.primitiveType

@@ -37,9 +37,7 @@
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
-                        :class="`${
-                            activeKey.includes('1') ? 'text-primary' : ''
-                        }`"
+                        :class="`${activeKey.includes('1') ? 'blue-icon' : ''}`"
                     />
                 </div>
             </template>
@@ -110,9 +108,7 @@
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
-                        :class="`${
-                            activeKey.includes('2') ? 'text-primary' : ''
-                        }`"
+                        :class="`${activeKey.includes('2') ? 'blue-icon' : ''}`"
                     />
                 </div>
             </template>
@@ -154,10 +150,10 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+    import { storeToRefs } from 'pinia'
     import { userStatusOptions, roleOptions } from '~/constant/users'
 
     import useUserStore from '~/store/users'
-    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -215,9 +211,7 @@
             const storeUser = useUserStore()
             const { roles } = storeToRefs(storeUser)
             const rolesWithCount = computed(() =>
-                roleOptions.map((item, i) =>
-                    Object.assign({}, item, roles?.value[i])
-                )
+                roleOptions.map((item, i) => ({ ...item, ...roles?.value[i] }))
             )
             const {
                 numberOfActiveUser,
@@ -273,6 +267,12 @@
         }
         .ant-collapse-content-box {
             padding-bottom: 0 !important;
+        }
+    }
+    .blue-icon {
+        transform: rotate(180deg) !important;
+        path {
+            stroke: rgb(82, 119, 215);
         }
     }
 </style>

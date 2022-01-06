@@ -4,7 +4,7 @@
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${totalCount} relations`"
+                :placeholder="`Search ${totalCount} related assets`"
                 class=""
                 @change="handleSearchChange"
             >

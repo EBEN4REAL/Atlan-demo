@@ -118,9 +118,9 @@
                 placement="top"
                 class="mr-3.5"
             >
-                <template #title>
+                <!-- <template #title>
                     <span>Change Role</span>
-                </template>
+                </template> -->
                 <a-popover
                     :align="{ offset: [-60, 100] }"
                     placement="right"
@@ -248,9 +248,9 @@
                                     @groupAdded="handleGroupUpdated"
                                 />
                             </a-menu-item>
-                            <!-- <a-menu-item key="verified-user-2">
+                            <a-menu-item key="verified-user-2">
                                 <AddPersonas :user="user" />
-                            </a-menu-item> -->
+                            </a-menu-item>
                             <a-menu-item
                                 key="verified-user-3"
                                 class="border-t"

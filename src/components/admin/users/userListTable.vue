@@ -13,7 +13,7 @@
         @change="handleTableChange"
     >
         <template #headerCell="{ title, column }">
-            <a-tooltip v-if="column.sortKey" placement="top" class="p-4 py-3">
+            <a-tooltip v-if="column.sortKey" placement="top" class="p-4 py-2">
                 <template #title>{{
                     getSortTooltipText(
                         column.sortKey,
@@ -67,7 +67,7 @@
                         ? 'justify-end'
                         : 'justify-start'
                 "
-                class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                class="flex p-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
             >
                 {{ title }}
             </div>

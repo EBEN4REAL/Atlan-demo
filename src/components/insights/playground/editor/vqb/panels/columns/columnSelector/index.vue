@@ -235,6 +235,7 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
     import {
         InternalAttributes,
@@ -360,6 +361,8 @@
                     dsl: useBody({
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }),
                     attributes: [
                         'name',

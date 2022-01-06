@@ -254,9 +254,9 @@
                                     @groupAdded="handleGroupUpdated"
                                 />
                             </a-menu-item>
-                            <a-menu-item key="verified-user-2">
-                                <AddPersonas :user="user" />
-                            </a-menu-item>
+                            <!-- <a-menu-item key="verified-user-2"> -->
+                            <!-- <AddPersonas :user="user" /> -->
+                            <!-- </a-menu-item> -->
                             <a-menu-item
                                 key="verified-user-3"
                                 class="border-t"

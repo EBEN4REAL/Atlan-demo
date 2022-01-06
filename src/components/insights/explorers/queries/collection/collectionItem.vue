@@ -16,13 +16,13 @@
                 <span class="mr-1 text-sm text-gray-700 truncate">{{
                     item.attributes.name
                 }}</span>
-                <AtlanIcon
+                <!-- <AtlanIcon
                     v-if="isCollectionPrivate(item, username)"
                     icon="PrivateCollection"
                     class="self-center w-4 h-4 -mt-1"
-                ></AtlanIcon>
+                ></AtlanIcon> -->
                 <AtlanIcon
-                    v-else
+                    v-if="!isCollectionPrivate(item, username)"
                     icon="PublicCollection"
                     class="self-center w-4 h-4 -mt-1"
                 ></AtlanIcon>

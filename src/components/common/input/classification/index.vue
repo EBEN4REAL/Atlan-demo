@@ -1,8 +1,5 @@
 <template>
-    <div v-if="isLoading">
-        <a-spin size="small" />
-    </div>
-    <div v-else data-test-id="classification-popover">
+    <div data-test-id="classification-popover">
         <a-popover
             v-if="editPermission"
             v-model:visible="isEdit"
@@ -123,17 +120,12 @@
                 required: false,
                 default: null,
             },
-            isLoading: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, editPermission, isLoading } = toRefs(props)
+            const { guid, editPermission } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),

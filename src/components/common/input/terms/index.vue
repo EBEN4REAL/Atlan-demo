@@ -141,7 +141,7 @@
             const isEdit = ref(false)
             const isTermDrawerVisible = ref(false)
             const drawerAsset = ref()
-            const list = ref(
+            const list = computed(() =>
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'
                 )
@@ -237,11 +237,12 @@
                 }
             }
 
-            watch(localValue, () => {
-                localValue.value.filter(
-                    (term) => term.attributes?.__state === 'ACTIVE'
-                )
-            })
+            // watch(localValue, () => {
+            //     console.log(localValue)
+            //     localValue.value = localValue.value.filter(
+            //         (term) => term.attributes?.__state === 'ACTIVE'
+            //     )
+            // })
             return {
                 getFetchedTerm,
                 isReady,

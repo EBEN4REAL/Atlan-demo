@@ -202,6 +202,30 @@
                 termError,
             } = useTermPopover()
 
+            const handleCloseDrawer = () => {
+                isTermDrawerVisible.value = false
+            }
+            const handleDrawerVisible = (term) => {
+                isTermDrawerVisible.value = true
+                if (term) {
+                    handleTermPopoverVisibility(true, term)
+                    drawerAsset.value = getFetchedTerm(term.guid)
+                }
+            }
+            const handleListUpdate = (asset) => {
+                drawerAsset.value = asset
+                if (drawerAsset.value) {
+                    const temp = list.value.map((el) => {
+                        if (el?.guid === drawerAsset.value?.guid) {
+                            console.log(el)
+                            return drawerAsset.value
+                        }
+                        return el
+                    })
+                    list.value = temp
+                }
+            }
+
             watch(localValue, () => {
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'

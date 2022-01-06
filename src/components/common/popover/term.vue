@@ -169,7 +169,7 @@
                 required: true,
             },
             fetchedTerm: {
-                type: Object,
+                type: Object || undefined,
                 required: true,
             },
             placement: {

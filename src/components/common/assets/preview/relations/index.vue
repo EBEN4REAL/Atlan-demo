@@ -161,6 +161,7 @@
                 facets.value = {}
                 facets.value.guidList = guidList.value
             }
+            updateFacet()
 
             const {
                 list,
@@ -229,6 +230,7 @@
 
             whenever(isGuidArrayReady, () => {
                 updateFacet()
+                console.log(guidList.value)
                 quickChange()
             })
 

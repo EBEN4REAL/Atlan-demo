@@ -1321,7 +1321,7 @@
                                             columnsData: [],
                                         },
                                     ],
-                                    expand: false,
+                                    expand: true,
                                 },
                             ],
                         },

@@ -53,7 +53,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                                 columnsData: [],
                             },
                         ],
-                        expand: false,
+                        expand: true,
                     },
                 ],
             },

@@ -153,7 +153,7 @@ export function useSavedQuery(
                                           columnsData: [],
                                       },
                                   ],
-                                  expand: false,
+                                  expand: true,
                               },
                           ],
                       },

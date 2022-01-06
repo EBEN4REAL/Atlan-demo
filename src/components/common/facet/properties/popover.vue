@@ -54,7 +54,7 @@
     import Condition from './condition.vue'
 
     export default defineComponent({
-        name: 'TermPopover',
+        name: 'PropertiesPopover',
         components: { Condition },
         props: {
             attribute: {

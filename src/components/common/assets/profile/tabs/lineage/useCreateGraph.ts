@@ -71,9 +71,11 @@ export default function useCreateGraph(
         rankdir: 'LR',
         controlPoints: true,
         nodesepFunc() {
+            // vertical spacing btw nodes
             return 20
         },
         ranksepFunc() {
+            // horizontal spacing btw nodes
             return 125
         },
     })

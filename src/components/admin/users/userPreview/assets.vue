@@ -4,7 +4,8 @@
             Owned Assets
         </div>
         <div v-auth="map.LIST_USERS" class="flex flex-col rounded-lg">
-            <AssetsWrapper
+            <AssetsV2 :owner-users="ownerFilter.owners.ownerUsers" />
+            <!-- <AssetsWrapper
                 :key="'user-asset-list'"
                 :initial-filters="ownerFilter"
                 :show-filters="false"
@@ -22,7 +23,7 @@
                           } doesn't own any assets.`
                         : ''
                 "
-            />
+            /> -->
         </div>
     </div>
 </template>
@@ -30,12 +31,14 @@
 <script lang="ts">
     import { computed, defineComponent, toRefs, provide } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
+    import AssetsV2 from '@/assetsV2.vue'
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'AssetsTabs',
         components: {
             AssetsWrapper,
+            AssetsV2,
         },
         props: {
             selectedUser: {

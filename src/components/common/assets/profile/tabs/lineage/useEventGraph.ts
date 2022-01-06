@@ -30,13 +30,14 @@ export default function useEventGraph(
     onCloseDrawer
 ) {
     /** DATA */
-    const isNodeClicked = ref(false)
     const nodesColumns = ref({})
     const nodesPorts = ref({})
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
     const che = ref('') // che -> currentHilightedEdge
     const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
+    const nodesCaretClicked = ref([])
+    const isCaretClicked = ref(false)
 
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
@@ -214,6 +215,7 @@ export default function useEventGraph(
         })
     }
 
+    // getValidPortRelations
     const getValidPortRelations = (allRelations) => {
         let rel = []
         if (chp.value.portId) {
@@ -360,6 +362,40 @@ export default function useEventGraph(
         return [target].concat(getParents(target), window)
     }
 
+    // registerCaretListeners
+    const registerCaretListeners = () => {
+        const carets = document.getElementsByClassName('node-caret')
+        const caretsArray = Array.from(carets)
+        caretsArray.forEach((x) => {
+            x.addEventListener('mousedown', function nodeCaretFxn(e) {
+                isCaretClicked.value = true
+                const ele = getEventPath(e).find((x) =>
+                    x.getAttribute('data-cell-id')
+                )
+                const nodeId = ele.getAttribute('data-cell-id')
+                const graphNodes = graph.value.getNodes()
+                const node = graphNodes.find((x) => x.id === nodeId)
+                if (nodesCaretClicked.value.includes(nodeId)) {
+                    const index = nodesCaretClicked.value.findIndex(
+                        (x) => x === nodeId
+                    )
+                    nodesCaretClicked.value.splice(index, 1)
+                    x.classList.remove('caret-expanded')
+                } else {
+                    nodesCaretClicked.value.push(nodeId)
+                    x.classList.add('caret-expanded')
+                }
+                const chpNode = getPortNode(chp.value.portId)
+                if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
+                    loaderCords.value = {}
+                    return
+                }
+                getNodeColumnList(node, node.store.data.entity)
+            })
+        })
+    }
+    registerCaretListeners()
+
     /** EVENTS */
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
@@ -367,6 +403,7 @@ export default function useEventGraph(
 
         const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
+
         if (chp.value.portId === portId) {
             // if current port - deselect
             node.setPortProp(chp.value.portId, 'attrs/portBody', {
@@ -466,34 +503,29 @@ export default function useEventGraph(
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         loaderCords.value = { x: e.clientX, y: e.clientY }
-        const chpNode = getPortNode(chp.value.portId)
-        if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
-            loaderCords.value = {}
-            return
-        }
-        isNodeClicked.value = true
-        const nodeClickAction = () => {
-            if (!isNodeClicked.value) return
-            if (chp.value.portId) {
-                loaderCords.value = {}
-                return
-            }
-            onSelectAsset(node.store.data.entity)
-            highlight(node?.id)
-            che.value = ''
-        }
-        setTimeout(nodeClickAction, 300)
-    })
 
-    // NODE - DBLCLICK
-    graph.value.on('node:dblclick', ({ node }) => {
+        if (isCaretClicked.value) {
+            if (nodesColumns.value[node.id]) loaderCords.value = {}
+            isCaretClicked.value = false
+            return
+        }
+
         const chpNode = getPortNode(chp.value.portId)
         if (isNodeExpanded(node.id) || chpNode?.id === node.id) {
             loaderCords.value = {}
             return
         }
-        isNodeClicked.value = false
-        getNodeColumnList(node, node.store.data.entity)
+
+        if (chp.value.portId) {
+            loaderCords.value = {}
+            return
+        }
+
+        onSelectAsset(node.store.data.entity)
+        highlight(node?.id)
+        che.value = ''
+
+        registerCaretListeners()
     })
 
     // BLANK - CLICK

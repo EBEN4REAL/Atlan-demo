@@ -30,6 +30,7 @@
                     type="primary"
                     @click="isGroupDrawerVisible = true"
                 >
+                    <AtlanIcon class="mr-2" icon="Add" />
                     Create Group
                 </AtlanButton>
             </div>
@@ -152,7 +153,7 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex px-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
                         <div class="pt-0.5">{{ title }}</div>
                     </div>

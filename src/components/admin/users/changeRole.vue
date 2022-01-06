@@ -8,7 +8,7 @@
     >
         <template #content>
             <div class="flex flex-col p-4 gap-y-1">
-                <h3 class="text-lg font-bold">Change Role</h3>
+                <h3 class="text-sm font-bold">Change Role</h3>
                 <!-- <p class="mb-1">
                     {{
                         `Assign a new role for ${

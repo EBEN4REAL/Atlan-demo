@@ -12,6 +12,8 @@
                         :class="[subpanel.tableQualfiedName ? 'width-50' : '']"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
+                        v-model:selectedTableData="subpanel.tableData"
+                        :selectedItem="{}"
                         @change="
                             (val) => hanldeTableQualifiedNameChange(val, index)
                         "
@@ -87,13 +89,14 @@
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
-    import TableSelector from '../tableSelector/index.vue'
+    import TableSelector from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/index.vue'
     import ColumnSelector from '../columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -131,6 +134,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const { getDataTypeImage } = useColumn()
+            const { assetType, certificateStatus } = useAssetInfo()
             const tableQualfiedName = ref(undefined)
 
             const cols = ref([])
@@ -139,14 +143,19 @@
                     cols.value = []
                 }
             })
-            const hanldeTableQualifiedNameChange = (val, index) => {
-                if (!val) {
+            const hanldeTableQualifiedNameChange = (item, index) => {
+                if (!item.value) {
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
                     copySubPanel.columns = []
                     copySubPanel.columnsData = []
                     copySubPanel.tableQualfiedName = undefined
+                    copySubPanel.tableData = {
+                        certificateStatus: undefined,
+                        assetType: undefined,
+                    }
+
                     subpanels.value[index] = copySubPanel
                     console.log(subpanels.value)
                 } else {
@@ -170,6 +179,10 @@
                     copySubPanel.columns = ['all']
 
                     copySubPanel.columnsData = []
+                    copySubPanel.tableData.certificateStatus =
+                        certificateStatus(item)
+                    copySubPanel.tableData.assetType = assetType(item)
+
                     subpanels.value[index] = copySubPanel
                     selectedTables.value = copySelectedTables
                     console.log(subpanels.value)

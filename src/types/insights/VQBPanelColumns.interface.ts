@@ -4,6 +4,10 @@ export interface SubpanelColumn {
     tableQualfiedName: string | undefined
     columns: string[]
     columnsData: SubpanelColumnData[]
+    tableData: {
+        certificateStatus: string | undefined
+        assetType: string | undefined
+    }
 }
 export interface VQBPanelColumnsInterface {
     order: number

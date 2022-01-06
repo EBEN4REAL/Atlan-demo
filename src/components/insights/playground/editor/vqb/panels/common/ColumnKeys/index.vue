@@ -3,11 +3,11 @@
         class="absolute right-0 flex items-center text-xs"
         :class="[`${topStyle}`]"
     >
-        <div class="flex items-center" v-if="primaryKey">
+        <div class="flex items-center" v-if="isPrimary">
             <AtlanIcon icon="primaryKey" class="w-4 h-4 mr-0.5"></AtlanIcon>
             <span style="color: #ebb907" class="">Pkey</span>
         </div>
-        <div class="flex items-center ml-4 mr-1" v-if="ForeignKey">
+        <div class="flex items-center ml-4 mr-1" v-if="isForeign">
             <AtlanIcon icon="ForeignKey" class="w-4 h-4 mr-0.5"></AtlanIcon>
             <span class="" style="color: #9040f5">Fkey</span>
         </div>

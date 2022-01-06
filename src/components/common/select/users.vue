@@ -10,11 +10,7 @@
         :allowClear="true"
         :filter-option="() => true"
         @change="handleChange"
-        @dropdownVisibleChange="
-            (o) => {
-                if (!o) query = ''
-            }
-        "
+        @dropdownVisibleChange="handleOpen"
         @click="
             () => {
                 if (finalList.length < 2) mutate()
@@ -164,7 +160,17 @@
                 inputRef.value.focus()
             }
 
+            const handleOpen = (v) => {
+                if (!v) {
+                    query.value = ''
+                    return
+                }
+                if (!finalList.value.length) mutate()
+                else resetFilter()
+            }
+
             return {
+                handleOpen,
                 query,
                 inputRef,
                 focus,

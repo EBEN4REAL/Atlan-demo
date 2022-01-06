@@ -317,6 +317,10 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],
@@ -599,6 +603,7 @@
             padding: 0 12px !important;
             height: 28px !important;
             @apply bg-gray-light !important;
+            transition: none !important;
 
             > div {
                 height: 100%;
@@ -606,6 +611,7 @@
 
             &:hover {
                 background-color: #fafafa !important;
+
                 // @apply text-gray-700 !important;
                 color: #3e4359 !important;
             }

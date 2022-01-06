@@ -1,5 +1,3 @@
-import { classificationInterface } from '~/types/classifications/classification.interface'
-
 export interface assetInterface {
     attributes: {
         certificateStatus?: string
@@ -102,6 +100,8 @@ export interface assetInterface {
         __state: string
         isPublished?: boolean
         isTopLevelProject?: boolean
+        externalLocation: string
+        externalLocationFormat: string
     }
     categoryCount: number
     termsCount: number

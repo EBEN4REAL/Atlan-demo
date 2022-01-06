@@ -83,6 +83,8 @@ export const AssetAttributes = [
     'collectionQualifiedName',
     'parent',
     'queries',
+    'externalLocation',
+    'externalLocationFormat',
 ]
 
 export const SQLAttributes = [
@@ -106,7 +108,11 @@ export const SQLAttributes = [
     'view',
 ]
 
-export const GlossaryAttributes = ['categories', 'parentCategory', 'assignedEntities']
+export const GlossaryAttributes = [
+    'categories',
+    'parentCategory',
+    'assignedEntities',
+]
 
 export const GlossaryRelationAttributes = ['name']
 

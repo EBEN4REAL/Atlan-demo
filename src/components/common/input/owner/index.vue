@@ -63,7 +63,6 @@
             </template>
             <span
                 v-if="
-                    !editPermission &&
                     localValue?.ownerGroups?.length < 1 &&
                     localValue?.ownerUsers?.length < 1
                 "

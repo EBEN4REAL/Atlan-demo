@@ -149,6 +149,7 @@
                                 placement="bottom"
                                 trigger="click"
                                 :overlayStyle="{ padding: '0px !important' }"
+                                :destroyTooltipOnHide="true"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {
@@ -563,7 +564,8 @@
                     let selectedText = ''
                     if (showVQB.value) {
                         selectedText = generateSQLQuery(
-                            activeInlineTabCopy.value
+                            activeInlineTabCopy.value,
+                            limitRows.value
                         )
                     } else {
                         /* Get selected Text from editor */
@@ -604,7 +606,10 @@
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
-                        selectedText = generateSQLQuery(activeInlineTab.value)
+                        selectedText = generateSQLQuery(
+                            activeInlineTab.value,
+                            limitRows.value
+                        )
                     } else {
                         /* Get selected Text from editor */
                         selectedText = toRaw(editorInstance.value)
@@ -739,6 +744,7 @@
                 runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
                 showcustomToolBar: showcustomToolBar,
+                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/

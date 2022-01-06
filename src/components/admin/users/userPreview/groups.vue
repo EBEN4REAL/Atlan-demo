@@ -175,7 +175,10 @@
                     <hr class="mx-4" />
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin text-primary" />
+                    <AtlanIcon
+                        icon="CircleLoader"
+                        class="h-5 animate-spin text-primary"
+                    />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>

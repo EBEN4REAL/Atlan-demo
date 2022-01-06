@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
-import { iconProcess, iconEllipse } from './icons'
+import { iconProcess, iconEllipse, iconCaretDown } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 
 const getSource = (entity) => {
@@ -63,11 +63,16 @@ export default function useGraph() {
                           ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
                           ">
+                                
+                                
                                 <span class=" ${isBase ? 'inscr' : 'hidden'}">
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
                                     <div class="node-text group-hover:underline">
+                                        <span class="z-50 relative block">
+                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                        </span>
                                         <div class="truncate">${displayText}</div>
                                         
                                     </div>
@@ -105,6 +110,25 @@ export default function useGraph() {
             },
             ports: {
                 groups: {
+                    invisiblePort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 69,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                event: 'port:click',
+                                y: -34,
+                            },
+                        },
+                    },
                     columnList: {
                         markup: [
                             {
@@ -151,7 +175,7 @@ export default function useGraph() {
                 items: [
                     {
                         id: `${guid}/index`,
-                        group: 'columnList',
+                        group: 'invisiblePort',
                         zIndex: 0,
                     },
                 ],

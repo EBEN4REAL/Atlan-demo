@@ -831,9 +831,15 @@
                         // new logic for preview ctc
                         // previous text
 
-                        let newQuery = `\/* ${title(
+                        // let newQuery = `\/* ${title(
+                        //     item.value
+                        // )} preview *\/\nSELECT * FROM \"${title(
+                        //     item.value
+                        // )}\" LIMIT 50;\n`
+
+                        let newQuery = `-- ${title(
                             item.value
-                        )} preview *\/\nSELECT * FROM \"${title(
+                        )} preview \nSELECT * FROM \"${title(
                             item.value
                         )}\" LIMIT 50;\n`
 
@@ -891,13 +897,15 @@
 
                         switch (editorContextType) {
                             case 'connectionQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                 if (
                                     editorContextValue !==
                                     queryConnectionQualifiedName
                                 ) {
                                     // openContextModal()
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     let newText = `${newQuery}`
                                     handleAddNewTab(
                                         newText,
@@ -930,7 +938,8 @@
                                 break
                             }
                             case 'databaseQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
 
                                 if (
                                     editorContextValue !==
@@ -952,7 +961,8 @@
                                         // })
                                         // open in new tab
                                         // openContextModal()
-                                        newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                         let newText = `${newQuery}`
                                         handleAddNewTab(
                                             newText,
@@ -979,7 +989,8 @@
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -991,7 +1002,8 @@
                                     }
                                     // here, check db--->connection
                                 } else {
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1004,13 +1016,14 @@
                             }
                             case 'schemaQualifiedName':
                             case 'defaultSchemaQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                console.log(
-                                    'defaultSchemaQualifiedName',
-                                    newQuery
-                                )
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                // console.log(
+                                //     'defaultSchemaQualifiedName',
+                                //     newQuery
+                                // )
 
-                                console.log('run in schema')
+                                // console.log('run in schema')
                                 if (
                                     editorContextValue !==
                                     querySchemaQualifiedName
@@ -1056,7 +1069,8 @@
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -1068,7 +1082,8 @@
                                             if (
                                                 sqn !== querySchemaQualifiedName
                                             ) {
-                                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 const newText = `${newQuery}${prevText}`
                                                 playQuery(
                                                     newQuery,
@@ -1083,7 +1098,8 @@
                                     //here check schema-->db-->connection
                                 } else {
                                     console.log('match here')
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1126,7 +1142,8 @@
 
                             if (!Object.keys(activeInlineTabCopy).length) {
                                 let tableName = title(item.value)
-                                let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                // let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                let newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                 let updatedEditorSchemaQualifiedName =
                                     item.value?.databaseQualifiedName +
                                     '/' +
@@ -1297,6 +1314,10 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],

@@ -27,6 +27,7 @@
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
+            :class="{ 'cursor-pointer': editPermission }"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"
             :username="certificateUpdatedBy(selectedAsset)"
@@ -52,9 +53,7 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
 
-            <span v-if="!editPermission" class="text-sm text-gray-500"
-                >No certification</span
-            >
+            <span class="text-sm text-gray-500">No certification</span>
         </div>
     </div>
 </template>

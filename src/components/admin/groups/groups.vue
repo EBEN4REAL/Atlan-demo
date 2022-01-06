@@ -18,7 +18,7 @@
                         :placeholder="`Search ${totalGroupsCount} group${
                             totalGroupsCount > 1 ? 's' : ''
                         }`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none"
                         @change="onSearch"
                     />
                 </div>
@@ -191,7 +191,11 @@
                         <div
                             class="cursor-pointer text-primary hover:underline"
                         >
-                            {{ value }}
+                            {{
+                                value >= 2
+                                    ? value + ' members'
+                                    : value + ' member'
+                            }}
                         </div>
                     </div>
                     <div

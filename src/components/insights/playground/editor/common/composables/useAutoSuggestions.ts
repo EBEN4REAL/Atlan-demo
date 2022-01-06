@@ -206,6 +206,7 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
+                                entity: entities[i]
                             },
                             insertText: insertText,
                             sortText: sortString
@@ -230,6 +231,7 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
+                                entity: entities[i]
                             },
                             sortText: sortString,
                             insertText: `${entities[i].attributes.name}`,
@@ -447,12 +449,13 @@ async function getSuggestionsUsingType(
                 },
             })
 
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
             /* Current Word Should be greater than 1char */
             if (
-                currentWord.length > 1 &&
+                currentWord.length > 0 &&
                 connectorsInfo.connectionQualifiedName
             ) {
                 cancelTokenSource.value = axios.CancelToken.source()
@@ -485,7 +488,7 @@ async function getSuggestionsUsingType(
                 cancelTokenSource.value.cancel()
             }
             if (
-                currentWord.length > 1 &&
+                currentWord.length > 0 &&
                 connectorsInfo.connectionQualifiedName
             ) {
                 cancelTokenSource.value = axios.CancelToken.source()

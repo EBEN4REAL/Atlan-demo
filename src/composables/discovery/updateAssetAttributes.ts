@@ -29,7 +29,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         attributes,
         announcementTitle,
         readmeContent,
-        meaningRelationships,
+        meanings,
         categories,
         assignedEntities,
         allowQuery,
@@ -114,7 +114,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
-    const localMeanings = ref(meaningRelationships(selectedAsset.value))
+    const localMeanings = ref(meanings(selectedAsset.value))
     const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
     const localParentCategory = ref(
@@ -152,32 +152,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             mutate()
         }
     }
-
-    // const addParentQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parentQualifiedName: attributes(selectedAsset?.value)
-    //             ?.parentQualifiedName,
-    //     }
-    //     return entity
-    // }
-
-    // const addParent = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parent: attributes(selectedAsset?.value)?.parent,
-    //     }
-    //     return entity
-    // }
-
-    // const addCollectionQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         collectionQualifiedName: attributes(selectedAsset?.value)
-    //             ?.collectionQualifiedName,
-    //     }
-    //     return entity
-    // }
 
     // Description Change
     const handleChangeDescription = () => {
@@ -556,10 +530,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
-        if (
-            meaningRelationships(selectedAsset?.value) !== localMeanings.value
-        ) {
-            localMeanings.value = meaningRelationships(selectedAsset.value)
+        if (meanings(selectedAsset?.value) !== localMeanings.value) {
+            localMeanings.value = meanings(selectedAsset.value)
         }
 
         message.error(

@@ -148,7 +148,7 @@
                     >
                         <Owners
                             :showNone="false"
-                            select-group-key="alias"
+                            select-group-key="name"
                             select-user-key="username"
                             v-model:modelValue="userData[selectedType]"
                             :disabledModalValue="userData[otherType]"

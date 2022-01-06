@@ -1,25 +1,45 @@
 <template>
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
-            <div class="flex justify-between">
-                <div v-auth="map.LIST_USERS" class="flex items-baseline w-1/4">
+            <div
+                v-if="userList.length > 0"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+            >
+                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="mr-1"
-                        size="minimal"
+                        class="h-8 mr-1"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
-                        <template #filter>
+                        <!-- <template #filter>
                             <UserFilter
                                 v-model="statusFilter"
                                 @change="updateFilters"
                             />
-                        </template>
+                        </template> -->
                     </SearchAndFilter>
+                    <a-popover trigger="click" placement="bottomLeft">
+                        <template #content>
+                            <UserFilter
+                                v-model="statusFilter"
+                                :number-of-active-user="numberOfActiveUser"
+                                :number-of-disable-user="numberOfDisableUser"
+                                :number-of-invited-user="numberOfInvitedUser"
+                                @changeRole="changeFilterRole"
+                                @change="updateFilters"
+                            />
+                        </template>
+                        <button
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                        >
+                            <AtlanIcon icon="Filter" class="w-5 h-5" />
+                            <span>Filters</span>
+                        </button>
+                    </a-popover>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
@@ -84,6 +104,7 @@
                     @confirmEnableDisablePopover="confirmEnableDisablePopover"
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
+                    @refetch="refetchData"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -160,12 +181,14 @@
 
             const listType = ref('users')
             const searchText = ref('')
+            const filterRole = ref('')
             const statusFilter = ref([])
             const showChangeRolePopover = ref<boolean>(false)
             const showRevokeInvitePopover = ref<boolean>(false)
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
             const showDisableEnablePopover = ref<boolean>(false)
+            const isFirstLoad = ref(true)
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -184,6 +207,21 @@
                 isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
+
+            const numberOfActiveUser = ref(0)
+            const numberOfDisableUser = ref(0)
+            const numberOfInvitedUser = ref(0)
+            watch(userList, (v) => {
+                if (isFirstLoad.value) {
+                    v.reduce((counter, user) => {
+                        if (user.enabled) numberOfActiveUser.value += 1
+                        if (!user.enabled) numberOfDisableUser.value += 1
+                        if (!user.emailVerified) numberOfInvitedUser.value += 1
+                        return counter
+                    }, 0)
+                    isFirstLoad.value = false
+                }
+            })
 
             const clearFilter = () => {
                 userListAPIParams.filter = {}
@@ -232,6 +270,11 @@
                 }
                 const filterTypes = [searchText.value, statusFilter.value]
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
+                if (filterRole.value) {
+                    const filterRoleParse = JSON.parse(filterRole.value)
+                    filterValues.push(filterRoleParse)
+                    filterTypes.push([filterRoleParse])
+                }
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
                         if (option?.length > 0)
@@ -245,23 +288,22 @@
                 getUserList()
             }
 
+            const changeFilterRole = (role) => {
+                filterRole.value = role
+                updateFilters()
+            }
+
             const handleSearch = useDebounceFn(() => {
                 updateFilters()
             }, 600)
 
-            const handleTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                if (Object.keys(sorter).length) {
-                    let sortValue = 'firstName'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    userListAPIParams.sort = sortValue
+            const handleTableChange = (query: any) => {
+                if (query) {
+                    userListAPIParams.sort = query
                 }
+                getUserList()
+            }
+            const refetchData = () => {
                 getUserList()
             }
             // BEGIN: USER PREVIEW
@@ -273,12 +315,12 @@
                 userId,
                 userUpdated,
             } = useUserPreview()
-            const showUserPreviewDrawer = (user: any) => {
+            const showUserPreviewDrawer = (user: any, activeTab: String) => {
                 if (userId.value === user.id && showPreview.value) {
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    openPreview()
+                    openPreview(null, activeTab)
                     selectedUserId.value = user.id
                 }
             }
@@ -504,6 +546,11 @@
                 offset: userListAPIParams.offset,
                 updateFilters,
                 clearFilter,
+                refetchData,
+                changeFilterRole,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })

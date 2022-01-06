@@ -214,7 +214,6 @@
             const saveModalRef = ref()
             const saveQueryData = ref()
 
-            const { queryRun } = useRunQuery()
             const { getFirstQueryConnection } = useUtils()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
@@ -577,7 +576,6 @@
                 handleAdd,
                 onEdit,
                 onTabClick,
-                queryRun,
                 setTabHover,
                 tabHover,
                 isSaving,
@@ -605,6 +603,7 @@
             padding: 0 12px !important;
             height: 28px !important;
             @apply bg-gray-light !important;
+            transition: none !important;
 
             > div {
                 height: 100%;
@@ -612,6 +611,7 @@
 
             &:hover {
                 background-color: #fafafa !important;
+
                 // @apply text-gray-700 !important;
                 color: #3e4359 !important;
             }
@@ -634,7 +634,7 @@
             }
             &:hover {
                 .unsaved-dot {
-                    visibility: hidden;
+                    visibility: hidden !important;
                 }
                 .ant-tabs-close-x {
                     visibility: visible !important;
@@ -694,6 +694,12 @@
     }
 </style>
 <style lang="less" module>
+    // :global(.unsaved-dot) {
+    //     visibility: hidden !important;
+    // }
+    :global(.ant-tabs-dropdown-menu-item-remove) {
+        visibility: hidden !important;
+    }
     .inline_tabs {
         height: 28px !important;
 
@@ -716,6 +722,20 @@
         :global(.ant-tabs-nav)::before {
             border-bottom: none !important;
         }
+        :global(.ant-tabs-dropdown) {
+            width: 117px !important;
+        }
+
+        :global(.unsaved-dot) {
+            visibility: visible !important;
+        }
+        // :global(.ant-tabs-dropdown-menu-item-remove) {
+        //     visibility: visible !important;
+        // }
+    }
+    :global(.ant-tabs-dropdown-menu-title-content) {
+        display: flex !important;
+        flex-direction: row !important;
     }
 </style>
 <route lang="yaml">

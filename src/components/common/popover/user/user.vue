@@ -186,6 +186,7 @@
 <style lang="less" scoped>
     .user-popover {
         width: 370px;
+        min-height: 8.5rem;
     }
     .user-cover {
         opacity: 0.6;

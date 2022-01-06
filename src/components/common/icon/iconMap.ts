@@ -250,6 +250,7 @@ import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
+import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
@@ -315,6 +316,7 @@ import PublicCollection from '~/assets/images/icons/publicCollection.svg'
 import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
+import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
@@ -329,6 +331,7 @@ import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
 import primaryKey from '~/assets/images/icons/primaryKey.svg'
+import Revoke from '~/assets/images/icons/Revoke.svg'
 
 export default {
     partitionKey,
@@ -366,6 +369,7 @@ export default {
     WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
+    QueryDiscovery,
     QueryDraft,
     ChevronLeft,
     CheckCircled,
@@ -651,4 +655,6 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
+    Revoke,
+    WarningIcon,
 }

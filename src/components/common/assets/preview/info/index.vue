@@ -148,6 +148,43 @@
         </div>
 
         <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location</span
+                >
+                <span class="font-semibold break-all">{{
+                    externalLocation(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div
+                v-if="externalLocationFormat(selectedAsset)"
+                class="flex flex-col text-sm cursor-pointer"
+            >
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location Format</span
+                >
+                <span class="text-gray-700 break-all">{{
+                    externalLocationFormat(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div
             v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
             class="flex flex-col px-5 text-sm gap-y-4"
         >
@@ -207,6 +244,18 @@
                 <div class="text-sm tracking-wider text-gray-700">
                     {{ viewName(selectedAsset) }}
                 </div>
+            </div>
+        </div>
+
+        <div
+            v-if="selectedAsset?.guid && selectedAsset?.typeName === 'Query'"
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">
+                {{ attributes(selectedAsset)?.parent?.typeName }}
+            </div>
+            <div class="text-sm tracking-wider text-gray-700">
+                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
             </div>
         </div>
 
@@ -361,14 +410,14 @@
                         selectedAsset,
                         'RELATIONSHIP_ADD',
                         'AtlasGlossaryTerm'
-                    )
+                    ) && editPermission
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
                         'RELATIONSHIP_REMOVE',
                         'AtlasGlossaryTerm'
-                    )
+                    ) && editPermission
                 "
                 @change="handleMeaningsUpdate"
             >
@@ -453,7 +502,6 @@
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -478,7 +526,6 @@
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
-            AtlanIcon,
         },
         props: {
             isDrawer: {
@@ -530,6 +577,9 @@
                 selectedAssetUpdatePermission,
                 tableName,
                 viewName,
+                attributes,
+                externalLocation,
+                externalLocationFormat,
             } = useAssetInfo()
 
             const {
@@ -627,6 +677,9 @@
                 handleSQLQueryUpdate,
                 tableName,
                 viewName,
+                attributes,
+                externalLocation,
+                externalLocationFormat,
             }
         },
     })

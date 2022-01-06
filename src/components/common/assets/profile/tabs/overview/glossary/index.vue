@@ -9,11 +9,7 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
         <Summary :asset="selectedAsset" />
-        <Readme
-            v-if="readmeContent(selectedAsset) || readmeEditPermission"
-            :asset="selectedAsset"
-            :isEdit="readmeEditPermission"
-        />
+        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>
 
@@ -25,7 +21,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
     import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'GlossaryOverview',
@@ -40,13 +35,6 @@
                 required: false,
                 default: false,
             },
-        },
-        setup() {
-            const { readmeContent } = useAssetInfo()
-
-            return {
-                readmeContent,
-            }
         },
     })
 </script>

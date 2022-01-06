@@ -228,7 +228,7 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
@@ -379,10 +379,11 @@ export function useSavedQuery(
                     activeInlineTabCopy.isSaved = true
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                 } else {
-                    console.log(error.value.toString())
-                    message.error({
-                        content: `Error in saving query!`,
-                    })
+                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
+                        message.error(`You are not allowed to create the query within the selected collection`)
+                    } else {
+                        message.error(`Error in saving query!`)
+                    }
                 }
             }
         })
@@ -566,10 +567,11 @@ export function useSavedQuery(
                     }
                     if (Callback) Callback()
                 } else {
-                    console.log(error.value.toString())
-                    message.error({
-                        content: `Error in saving query!`,
-                    })
+                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
+                        message.error(`You are not allowed to create the query within the selected collection`)
+                    } else {
+                        message.error(`Error in saving query!`)
+                    }
                     /* Saving error in errorRef */
                     if (Callback) Callback(error)
                 }
@@ -745,8 +747,11 @@ export function useSavedQuery(
 
                     openSavedQueryInNewTab(savedQuery)
                 } else {
-                    console.log(error.value.toString())
-                    message.error(`Error in saving query!`)
+                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
+                        message.error(`You are not allowed to create the query within the selected collection`)
+                    } else {
+                        message.error(`Error in saving query!`)
+                    }
                 }
             }
         })
@@ -838,10 +843,11 @@ export function useSavedQuery(
                     })
                     useAddEvent('insights', 'folder', 'created')
                 } else {
-                    console.log(error.value.toString())
-                    message.error({
-                        content: `Error in creating folder!`,
-                    })
+                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
+                        message.error(`You are not allowed to create the folder within the selected collection`)
+                    } else {
+                        message.error(`Error in saving the folder!`)
+                    }
                 }
             }
         })
@@ -1070,10 +1076,13 @@ export function useSavedQuery(
                         }
                     }
                 } else {
-                    console.log(error.value.toString())
-                    message.error({
-                        content: `Error in saving query!`,
-                    })
+                    // console.log('query error: ', error.value.response.data.errorCode)
+                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
+                        message.error(`You are not allowed to create the query within the selected collection`)
+                    } else {
+                        message.error(`Error in saving query!`)
+                    }
+                   
                     /* Saving error in errorRef */
                     if (Callback) Callback(error)
                 }

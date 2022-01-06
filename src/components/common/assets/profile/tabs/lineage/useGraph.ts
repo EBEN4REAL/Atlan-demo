@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
-import { iconProcess, iconEllipse } from './icons'
+import { iconProcess, iconEllipse, iconCaretDown } from './icons'
+import { dataTypeCategoryList } from '~/constant/dataType'
 
 const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
@@ -62,11 +63,16 @@ export default function useGraph() {
                           ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
                           ">
+                                
+                                
                                 <span class=" ${isBase ? 'inscr' : 'hidden'}">
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
                                     <div class="node-text group-hover:underline">
+                                        <span class="z-50 relative block">
+                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                        </span>
                                         <div class="truncate">${displayText}</div>
                                         
                                     </div>
@@ -104,6 +110,25 @@ export default function useGraph() {
             },
             ports: {
                 groups: {
+                    invisiblePort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 69,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                event: 'port:click',
+                                y: -34,
+                            },
+                        },
+                    },
                     columnList: {
                         markup: [
                             {
@@ -150,7 +175,7 @@ export default function useGraph() {
                 items: [
                     {
                         id: `${guid}/index`,
-                        group: 'columnList',
+                        group: 'invisiblePort',
                         zIndex: 0,
                     },
                 ],
@@ -201,17 +226,43 @@ export default function useGraph() {
         }
     }
 
-    const createEdgeData = (relation, process) => {
-        const stroke = '#C7C7C7'
+    const createPortData = (item) => {
+        const text =
+            item.displayText.charAt(0).toUpperCase() +
+            item.displayText.slice(1).toLowerCase()
+        const dataType = dataTypeCategoryList.find((d) =>
+            d.type.includes(item.attributes?.dataType?.toUpperCase())
+        )?.imageText
+        const portData = {
+            id: item.guid,
+            group: 'columnList',
+            attrs: {
+                portBody: {},
+                portNameLabel: {
+                    text,
+                },
+                portImage: {
+                    href: `/dataType/${dataType || 'empty'}.svg`,
+                    width: 16,
+                    height: 16,
+                },
+            },
+        }
+        return { portData }
+    }
+
+    const createEdgeData = (relation) => {
+        const stroke = relation.stroke
         const edgeData = {
-            id: `${process}/${relation.fromEntityId}@${relation.toEntityId}`,
+            zIndex: 0,
+            id: relation.id,
             source: {
-                cell: relation.fromEntityId,
-                port: `${relation.fromEntityId}/index`, // TODO: use dynamic relations
+                cell: relation.sourceCell,
+                port: relation.sourcePort,
             },
             target: {
-                cell: relation.toEntityId,
-                port: `${relation.toEntityId}/index`, // TODO: use dynamic relations
+                cell: relation.targetCell,
+                port: relation.targetPort,
             },
             router: {
                 name: 'metro',
@@ -224,8 +275,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 7,
-                        height: 7,
+                        width: 8,
+                        height: 8,
                     },
                 },
             },
@@ -256,12 +307,23 @@ export default function useGraph() {
         })
     }
 
+    const toggleNodesEdges = (graph, visible) => {
+        const graphEdges = graph.value.getEdges()
+        graphEdges.forEach((x) => {
+            if (x.id.includes('processIdGoesHere')) return
+            const cell = graph.value.getCellById(x.id)
+            cell.setVisible(visible)
+        })
+    }
+
     return {
         createNodeData,
         addNode,
         removeNode,
+        createPortData,
         createEdgeData,
         addEdge,
         removeEdge,
+        toggleNodesEdges,
     }
 }

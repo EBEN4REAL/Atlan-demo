@@ -41,6 +41,8 @@
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     const turndownService = new TurndownService({})
 
@@ -216,6 +218,27 @@
                 languageTokens
             )
 
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
+
+            let data1 = computed(() =>
+                document.getElementsByClassName(
+                    'suggest-icon codicon codicon-symbol-field'
+                )
+            )
+            let data2 = computed(() =>
+                document.getElementsByClassName(
+                    'suggest-icon codicon codicon-symbol-keyword'
+                )
+            )
+
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
@@ -236,6 +259,44 @@
                         }
                     )
                 // editor.trigger('', 'showSuggestWidget', suggestions)
+
+                // editor autosuggestion icons
+
+                promise.then((item) => {
+                    let items = item.suggestions
+
+                    console.log('suggestions: ', items)
+
+                    for (var i = 0; i < items.length; i++) {
+                        let item = items[i].documentation?.entity
+
+                        if (
+                            (item && assetType(item) === 'Table') ||
+                            assetType(item) === 'View'
+                        ) {
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/${getEntityStatusIcon(
+                                    assetType(item),
+                                    certificateStatus(item)
+                                )}.png")`
+                            }
+                        } else if (item && assetType(item) === 'Column') {
+                            if (data1.value[i] && data1.value[i]?.style) {
+                                data1.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
+                            }
+                        } else {
+                            if (data2.value[i] && data2.value[i].style) {
+                                data2.value[
+                                    i
+                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/default.png")`
+                            }
+                        }
+                    }
+                })
             }
 
             // try {
@@ -286,39 +347,43 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
+            let suggestionsList = ref(null)
 
             onMounted(() => {
                 loadThemes(monaco)
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     glyphMargin: false,
-                    folding: false,
+                    folding: true,
                     lineDecorationsWidth: 8,
                     lineNumbersMinChars: 2,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
-                    renderLineHighlight: 'none',
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    // fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,
                     letterSpacing: 0.1,
-                    // cursorSmoothCaretAnimation: true,
-                    // cursorBlinking: 'smooth',
                     minimap: {
                         enabled: false,
                     },
                     automaticLayout: true,
-                    overviewRulerLanes: 0,
-                    scrollbar: {
-                        horizontal: 'hidden',
-                    },
+                    // scrollbar: {
+                    //     horizontal: 'hidden',
+                    // },
+
                     wordWrap: 'on',
                     quickSuggestions: {
                         other: true,
                         comments: false,
                         strings: true,
                     },
+                    // scrollbar: {
+                    //     useShadows: true,
+                    //     verticalHasArrows: false,
+                    //     vertical: 'visible',
+                    //     horizontal: 'hidden',
+                    //     verticalScrollbarSize: 25,
+                    // },
                 })
 
                 editor.onDidChangeCursorSelection((e) => {
@@ -328,9 +393,9 @@
                         e.selection.startColumn === e.selection.endColumn
                     ) {
                         editorContentSelectionState.value = false
-                        console.log('selection false')
+                        // console.log('selection false')
                     } else {
-                        console.log('selection true')
+                        // console.log('selection true')
                         editorContentSelectionState.value = true
                     }
                 })
@@ -349,7 +414,142 @@
                 if (matches && matches?.length > 0)
                     setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
-                console.log(lastLineLength)
+                // console.log(lastLineLength)
+
+                const modifyLine = (lineCode) => {
+                    let startCount = 0
+                    let endCount = 0
+
+                    // console.log('line code: ', lineCode)
+
+                    while (lineCode.startsWith('\n')) {
+                        lineCode = lineCode.slice(1)
+                        startCount++
+                    }
+                    while (lineCode.endsWith('\n')) {
+                        lineCode = lineCode.slice(0, lineCode.length - 1)
+                        endCount++
+                    }
+
+                    let testVal = /--+.*/
+
+                    if (testVal.test(lineCode)) {
+                        lineCode = lineCode.slice(2)
+                    } else {
+                        lineCode = `--${lineCode}`
+                    }
+
+                    // console.log('line code update: ', lineCode)
+
+                    for (var i = 0; i < startCount; i++) {
+                        lineCode = '\n' + lineCode
+                    }
+
+                    for (var i = 0; i < endCount; i++) {
+                        lineCode = lineCode + '\n'
+                    }
+                    return lineCode
+                }
+
+                const singleLineComment = () => {
+                    let lineCode = editor
+                        .getModel()
+                        .getLineContent(editor.getPosition().lineNumber)
+
+                    let copyLineCode = lineCode
+                    lineCode = modifyLine(lineCode)
+
+                    var line = editor.getPosition()
+                    var op = {
+                        range: {
+                            startLineNumber: line?.lineNumber,
+                            endLineNumber: line?.lineNumber,
+                            startColumn: 1,
+                            endColumn: copyLineCode.length + 1,
+                        },
+                        text: lineCode,
+                        forceMoveMarkers: true,
+                    }
+                    editor.executeEdits('my-source', [op])
+                }
+
+                const multiLineComment = () => {
+                    let selection = toRaw(editor)?.getSelection()
+
+                    // let selectedText = toRaw(editor)
+                    //     ?.getModel()
+                    //     ?.getValueInRange(selection)
+
+                    // selectedText = modifyLine(selectedText)
+
+                    let lineCount = 0
+                    for (
+                        var i = selection?.startLineNumber;
+                        i <= selection?.endLineNumber;
+                        i++
+                    ) {
+                        let testVal = /--+.*/
+
+                        let selectedText = toRaw(editor)
+                            ?.getModel()
+                            ?.getLineContent(i)
+
+                        if (testVal.test(selectedText)) {
+                            lineCount++
+                        }
+                    }
+
+                    let check =
+                        lineCount ===
+                        selection?.endLineNumber -
+                            selection?.startLineNumber +
+                            1
+
+                    for (
+                        var i = selection?.startLineNumber;
+                        i <= selection?.endLineNumber;
+                        i++
+                    ) {
+                        let selectedText = toRaw(editor)
+                            ?.getModel()
+                            ?.getLineContent(i)
+
+                        let copyLineCode = selectedText
+                        let testVal = /--+.*/
+
+                        if (testVal.test(selectedText) && check) {
+                            selectedText = selectedText.slice(2)
+                        } else {
+                            selectedText = `--${selectedText}`
+                        }
+                        var op = {
+                            range: {
+                                startLineNumber: i,
+                                endLineNumber: i,
+                                startColumn: 1,
+                                endColumn: copyLineCode?.length + 1,
+                            },
+                            text: selectedText,
+                            forceMoveMarkers: true,
+                        }
+                        editor.executeEdits('my-source', [op])
+                    }
+                }
+
+                const commentCode = () => {
+                    let selection = toRaw(editor)?.getSelection()
+
+                    if (
+                        selection?.startLineNumber ===
+                            selection?.endLineNumber &&
+                        selection?.startColumn === selection?.endColumn
+                    ) {
+                        singleLineComment()
+                    } else {
+                        multiLineComment()
+                    }
+                }
+
                 // emit('editorInstance', editor)
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
@@ -365,14 +565,14 @@
                         }
                     }
                 )
-                // editor?.addCommand(monaco.KeyMod.CtrlCmd | 49, function () {
-                //     saveOrUpdate()
-                // })
-                // /* For command pallete keybinding */
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 85, function () {
+                    commentCode()
+                })
+
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | 46,
                     function () {
-                        // console.log('cmd+sft+p: ', 'presses')
                         editor?.trigger(
                             'editor',
                             'editor.action.quickCommand',
@@ -380,6 +580,10 @@
                         )
                     }
                 )
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 49, function () {
+                    saveOrUpdate()
+                })
 
                 editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
                     // console.log('cmd+k: ', 'presses')
@@ -409,6 +613,7 @@
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
                     }>
+                    suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
@@ -462,6 +667,28 @@
             //     // { immediate: true }
             // )
 
+            // let s1 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+            // let s2 = computed(() =>
+            //     document.getElementsByClassName(
+            //         'suggest-icon codicon codicon-symbol-field'
+            //     )
+            // )
+
+            // watch(
+            //     [s1, s2],
+            //     () => {
+            //         console.log('reset auto')
+            //         if (suggestionsList.value) {
+            //             triggerAutoCompletion(suggestionsList.value)
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
+
             watch(activeInlineTab, () => {
                 // console.log('editor permisisons: ', {
                 //     isQueryCreatedByCurrentUser,
@@ -484,10 +711,10 @@
                     if (isLineError(activeInlineTab)) {
                         setErrorDecorations(activeInlineTab, editor, monaco)
                     }
-                    console.log('editor active inline tab change')
+                    // console.log('editor active inline tab change')
                     /* ------------------------------------------ */
                     editor?.getModel()?.onDidChangeContent(async (event) => {
-                        console.log('editor content change')
+                        // console.log('editor content change')
                         if (isLineError(activeInlineTab)) {
                             resetErrorDecorations(activeInlineTab, editor)
                         }
@@ -507,6 +734,7 @@
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
                         }>
+                        suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()
@@ -612,7 +840,7 @@
     .myLineDecoration {
         @apply bg-primary;
         // background: bg-primary;
-        width: 4px !important;
+        width: 2px !important;
         margin-left: 0px;
     }
     .ghostCursor {
@@ -632,20 +860,22 @@
 <style lang="less" module>
     // .monaco-global {
     :global(.line-numbers) {
-        margin-left: 15px !important;
+        margin-left: 5px !important;
+        margin-right: 10px !important;
     }
     :global(.monaco-scrollable-element.editor-scrollable) {
-        left: 53px !important;
+        left: 63px !important;
+        width: calc(100% - 63px) !important;
     }
     :global(.margin) {
-        width: 53px !important;
+        width: 63px !important;
     }
     :global(.line-numbers) {
-        width: 37px !important;
-        padding-left: 8px !important;
+        width: 47px !important;
+        // padding-left: 8px !important;
         padding-right: 12px !important;
-        margin-left: 16px !important;
-        text-align: left !important;
+        // margin-left: 16px !important;
+        text-align: right !important;
     }
     :global(.monaco-editor) {
         padding-top: 8px !important;
@@ -657,5 +887,85 @@
             background: transparent !important;
         }
     }
-    // }
+    :global(.cldr.codicon.codicon-folding-expanded) {
+        left: 35px !important;
+    }
+    :global(.cldr.codicon.codicon-folding-collapsed) {
+        left: 35px !important;
+    }
+    :global(.editor-widget.suggest-widget.visible) {
+        // top: 28px;
+        // left: 207px;
+        margin-top: 12px !important;
+        margin-left: 10px !important;
+        border-radius: 4px;
+        background-color: #ffffff;
+        @apply text-gray-700 !important;
+
+        box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
+        border: none;
+        // padding-left: 4px !important;
+        // padding-right: 4px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-field) {
+        // background-image: url('~/assets/images/source/python.png') !important;
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-keyword) {
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-keyword)::before {
+        visibility: hidden !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-field)::before {
+        visibility: hidden !important;
+    }
+    :global(.monaco-list-row.show-file-icons.string-label.focused) {
+        @apply bg-gray-light !important;
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
+    :global(.main) {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    :global(.monaco-editor
+            .suggest-widget
+            .monaco-list
+            .monaco-list-row.focused
+            .monaco-highlighted-label
+            .highlight) {
+        @apply text-primary !important;
+    }
+    :global(.monaco-editor
+            .suggest-widget
+            .monaco-list
+            .monaco-list-row
+            .monaco-highlighted-label
+            .highlight) {
+        @apply text-primary !important;
+    }
+    :global(.monaco-list-row.show-file-icons.string-label) {
+        @apply text-xs !important;
+    }
+    :global(.monaco-list-row .show-file-icons .string-label .focused) {
+        @apply text-xs !important;
+    }
+    :global(.monaco-editor .suggest-details) {
+        margin-top: 0px !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        border-radius: 4px;
+        background-color: #ffffff;
+        @apply text-gray-700 !important;
+
+        box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
+        border: none;
+    }
 </style>

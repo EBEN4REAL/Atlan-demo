@@ -1,21 +1,21 @@
 <template>
-    <div class="space-y-2.5" style="padding: 10px 8px">
+    <div class="space-y-1.5" style="padding: 10px 8px">
         <h1 class="font-bold text-primary">{{ p.displayName }}</h1>
-        <div class="flex items-center justify-between">
-            <Classification
-                v-model:modelValue="allClassifications"
-                :allow-delete="false"
-                :edit-permission="false"
-                class="max-w-lg space-x-1"
-            />
-            <div class="flex h-full space-x-1 text-gray-500">
-                <AtlanIcon icon="Policy" class="" />
-                <span class="text-sm">
-                    <b>{{ p.dataPolicies.length }}</b> Metadata,
-                    <b>{{ p.metadataPolicies.length }}</b> Data policies
-                </span>
-            </div>
+        <div v-if="p.description" class="">{{ p.description }}</div>
+        <div class="flex h-full space-x-2 text-gray-500">
+            <AtlanIcon icon="Policy" class="" />
+            <span class="text-sm">
+                <b>{{ p.dataPolicies.length }}</b> Metadata,
+                <b>{{ p.metadataPolicies.length }}</b> Data policies
+            </span>
         </div>
+        <Classification
+            v-if="allClassifications?.length"
+            v-model:modelValue="allClassifications"
+            :allow-delete="false"
+            :edit-permission="false"
+            class="max-w-lg"
+        />
     </div>
 </template>
 

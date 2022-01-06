@@ -27,25 +27,34 @@
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
+            :class="{ 'cursor-pointer': editPermission }"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"
             :username="certificateUpdatedBy(selectedAsset)"
             :timestamp="certificateUpdatedAt(selectedAsset)"
             @click="() => (isEdit = true)"
         ></CertificatePill>
-        <a-button
-            v-else-if="editPermission"
-            shape="circle"
-            size="small"
-            class="text-center shadow hover:bg-primary-light hover:border-primary"
-            @click="() => (isEdit = true)"
-        >
-            <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-        ></a-button>
+
         <span v-else-if="showMessage" class="text-sm text-gray-500">{{
             certificateStatusMessage(selectedAsset)
         }}</span>
-        <span v-else class="text-sm text-gray-500">No certification</span>
+        <div v-else class="flex items-center gap-1">
+            <a-button
+                :disabled="!editPermission"
+                shape="circle"
+                size="small"
+                class="text-center shadow"
+                :class="{
+                    editPermission:
+                        'hover:bg-primary-light hover:border-primary',
+                }"
+                @click="() => (isEdit = true)"
+            >
+                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+            ></a-button>
+
+            <span class="text-sm text-gray-500">No certification</span>
+        </div>
     </div>
 </template>
 

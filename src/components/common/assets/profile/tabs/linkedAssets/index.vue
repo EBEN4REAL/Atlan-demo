@@ -2,8 +2,8 @@
     <div class="p-6">
         <div class="flex flex-col px-3 bg-white">
             <div
-                v-if="!localAssignedEntities.length"
                 class="flex flex-col items-center justify-center pt-12 pb-20"
+                :class="localAssignedEntities.length ? 'hidden' : ''"
             >
                 <atlan-icon icon="NoLinkedAssets" class="h-40 my-8" />
                 <span class="mb-2 text-xl font-bold"
@@ -20,7 +20,9 @@
                     >+ Link Assets</AtlanBtn
                 >
             </div>
-            <div v-else>
+            <div
+                :class="localAssignedEntities.length ? '' : 'hidden'"
+            >
                 <AssetsWrapper
                     ref="linkedAssetsWrapperRef"
                     :show-filters="false"

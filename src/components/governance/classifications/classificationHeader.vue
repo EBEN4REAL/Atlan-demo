@@ -70,28 +70,24 @@
                     </div>
                 </div> -->
             </div>
-            <div class="">
+            <div v-auth="map.UPDATE_CLASSIFICATION" class="">
                 <a-button-group class="">
-                    <a-dropdown>
+                    <a-popover trigger="hover" placement="bottomLeft">
                         <a-button class="px-2.5">
                             <ClassificationIcon
                                 class=""
                                 :color="classificationColor"
                             />
                         </a-button>
-                        <template #overlay>
-                            <a-menu v-auth="map.UPDATE_CLASSIFICATION">
-                                <a-menu-item class="p-0 m-0 bg-white w-28">
-                                    <ClassificationColorSelector
-                                        v-model:selectedColor="
-                                            classificationColor
-                                        "
-                                        menu-mode
-                                    />
-                                </a-menu-item>
-                            </a-menu>
+                        <template #content>
+                            <ClassificationColorSelector
+                                class="py-1"
+                                v-model:selectedColor="classificationColor"
+                                menu-mode
+                            />
                         </template>
-                    </a-dropdown>
+                    </a-popover>
+
                     <a-button
                         v-auth="map.UPDATE_CLASSIFICATION"
                         class="px-2.5"

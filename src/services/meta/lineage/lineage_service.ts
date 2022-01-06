@@ -6,11 +6,12 @@ export default function useLineageService() {
         config:
             | Ref<getLineageOptions>
             | getLineageOptions
-            | ComputedRef<getLineageOptions>
+            | ComputedRef<getLineageOptions>,
+        immediate = false
     ) {
         const asyncOptions = {
             resetOnExecute: false,
-            immediate: false,
+            immediate,
         }
         const { data, error, isLoading, isReady, mutate } =
             lineageServiceAPI.getLineage(config, asyncOptions)

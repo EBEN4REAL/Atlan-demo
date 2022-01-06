@@ -73,7 +73,10 @@
                 ...GlossaryAttributes,
                 ...customMetadataProjections,
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([
+                ...AssetRelationAttributes,
+                'categories',
+            ])
 
             const { list, isLoading, fetch } = useDiscoverList({
                 isCache: false,

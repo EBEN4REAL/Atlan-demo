@@ -26,7 +26,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             defaultTab,
             userUpdated,
         } = useUserPreview()
-        const userNameUser = userNameProp || username.value
+        const userNameUser = computed(() => userNameProp || username.value)
 
         // Params for obtaining that one user.
         const params = computed(() => ({
@@ -38,14 +38,13 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                     ? {
                           $and: [
                               { emailVerified: true },
-                              { username: userNameUser },
+                              { username: userNameUser.value },
                           ],
                       }
                     : {
                           $and: [{ emailVerified: true }, { id: userId.value }],
                       },
         }))
-
         const { userList, getUserList, isLoading, error } = useUsers(
             params,
             'USE_USERS_PREVIEW'
@@ -83,7 +82,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
 
         // If the user ID or the username changes, refresh the list.
         watch([userId, username], () => {
-            activeKey.value = defaultTab.value
+            // activeKey.value = defaultTab.value
             getUserList()
         })
 
@@ -118,7 +117,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         }))
 
         // Obtaining that one group.
-        const { groupList, getGroupList, isLoading, error } = useGroups(
+        const { groupList, getGroupList, isValidating, error } = useGroups(
             params,
             'USE_GROUPS_PREVIEW'
         )
@@ -132,14 +131,16 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         watch([groupAlias, groupId], () => {
             getGroupList()
         })
+        const activeKey = ref(unref(defaultTab))
 
         return {
-            isLoading,
+            isLoading: isValidating,
             error,
             reload: getGroupList,
             selectedGroup,
             defaultTab,
             tabs: finalTabs,
+            activeKey,
         }
     }
     return {

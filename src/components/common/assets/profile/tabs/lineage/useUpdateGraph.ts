@@ -6,11 +6,28 @@ export default function useUpdateGraph() {
         graphNodes.forEach((x) => {
             const itExists = nodesToHighlight.includes(x.id)
             const isHN = highlightedNode?.value === x.id
-            x.updateData({
-                isHighlightedNode: itExists ? (isHN ? x.id : null) : null,
-                isHighlightedNodePath: itExists ? x.id : null,
-                isGrayed: !highlightedNode?.value ? false : !itExists,
-            })
+            const graphNodeElement = document.querySelectorAll(
+                `[data-cell-id="${x.id}"]`
+            )[0]
+            const lineageNodeElement = Array.from(
+                graphNodeElement.querySelectorAll('*')
+            ).find((y) => y.classList.contains('lineage-node'))
+
+            const isHighlightedNode = itExists ? (isHN ? x.id : null) : null
+            const isHighlightedNodePath = itExists ? x.id : null
+            const isGrayed = !highlightedNode?.value ? false : !itExists
+
+            lineageNodeElement?.classList.remove(
+                'isHighlightedNode',
+                'isHighlightedNodePath',
+                'isGrayed'
+            )
+
+            if (isHighlightedNode)
+                lineageNodeElement?.classList.add('isHighlightedNode')
+            if (isHighlightedNodePath)
+                lineageNodeElement?.classList.add('isHighlightedNodePath')
+            if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
     }
 

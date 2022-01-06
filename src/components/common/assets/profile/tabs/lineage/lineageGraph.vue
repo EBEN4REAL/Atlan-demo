@@ -127,6 +127,7 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -200,8 +201,9 @@
                     highlightedNode,
                     loaderCords,
                     currZoom,
-                    onSelectAsset,
                     resetSelections,
+                    config,
+                    onSelectAsset,
                     onCloseDrawer
                 )
             }
@@ -447,8 +449,6 @@
             }
 
             & .node-text {
-                display: flex;
-                justify-content: space-between;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -489,11 +489,28 @@
         .isHighlightedNode {
             border: 1px solid #5277d7 !important;
             background-color: #e5ecff !important;
+
+            & .caret-bg {
+                background: #e5ecff !important;
+            }
         }
 
         .isHighlightedNodePath {
             border: 1px solid #5277d7;
             background-color: #ffffff;
+        }
+
+        .caret-expanded {
+            @apply transform rotate-180;
+        }
+
+        .caret-bg {
+            background: linear-gradient(
+                270deg,
+                #ffffff 0%,
+                #ffffff 84.68%,
+                rgba(255, 255, 255, 0) 103.12%
+            );
         }
     }
 </style>

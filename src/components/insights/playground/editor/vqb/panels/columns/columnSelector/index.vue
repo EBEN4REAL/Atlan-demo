@@ -485,6 +485,9 @@
                 } else {
                     delete map.value[id]
                 }
+                if (map.value?.all) {
+                    delete map.value['all']
+                }
                 selectedItems.value = [...Object.keys(map.value)]
 
                 console.log('columns: ', list.value)
@@ -504,12 +507,6 @@
 
                 selectedColumnsData.value = [...columns]
 
-                console.log(
-                    map.value,
-                    'selected columns: ',
-                    columns,
-                    selectedColumnsData.value
-                )
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }

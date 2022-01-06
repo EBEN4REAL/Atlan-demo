@@ -506,6 +506,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: false,
                                 },
                             ],
                         },

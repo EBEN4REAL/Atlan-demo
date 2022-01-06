@@ -1348,6 +1348,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: false,
                                 },
                             ],
                         },

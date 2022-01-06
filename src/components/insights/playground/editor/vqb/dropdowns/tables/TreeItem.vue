@@ -727,6 +727,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand:false
                                 },
                             ],
                         },

@@ -417,7 +417,7 @@
                     activeInlineTab.value.playground.editor.context
                         .attributeName
                 )
-                    return `Search from ${totalCount.value} tables`
+                    return `Select from ${totalCount.value} tables`
                 return `Select a table first`
             })
 

@@ -34,6 +34,9 @@ export default function useBody({
                 base.filter('term', 'viewQualifiedName', tableQualfiedName)
                 break
             }
+            default: {
+                base.filter('term', 'tableQualifiedName', tableQualfiedName)
+            }
         }
     }
     base.filter('term', '__typeName.keyword', 'Column')

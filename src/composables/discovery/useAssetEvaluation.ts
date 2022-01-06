@@ -39,6 +39,18 @@ export default function useAssetEvaluate() {
                     businessMetadata: '*',
                 },
                 {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_ADD_CLASSIFICATION',
+                    classification: '*',
+                },
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_REMOVE_CLASSIFICATION',
+                    classification: '*',
+                },
+                {
                     action: 'RELATIONSHIP_ADD',
                     relationShipTypeName: 'asset_readme',
                     entityGuidEnd1: asset?.guid,

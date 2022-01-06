@@ -399,12 +399,7 @@
                     immediate: true,
                 }
             )
-            const placeholder = computed(() => {
-                if (tableQualfiedName.value) {
-                    return `Search from ${totalCount.value} columns`
-                }
-                return `Select a table first`
-            })
+
             const totalCount = computed(() => data.value?.approximateCount || 0)
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
@@ -421,6 +416,15 @@
                     return 0
                 })
                 return data
+            })
+            const placeholder = computed(() => {
+                if (isLoading.value) return 'Loading...'
+                if (
+                    activeInlineTab.value.playground.editor.context
+                        .attributeName === 'schemaQualifiedName'
+                )
+                    return `Search from ${totalCount.value} tables`
+                return `Select a table first`
             })
 
             const input1Change = () => {

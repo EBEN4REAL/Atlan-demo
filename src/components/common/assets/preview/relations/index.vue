@@ -51,7 +51,7 @@
         >
             <EmptyView
                 empty-screen="EmptyDiscover"
-                desc="No relations found"
+                desc="No related assets found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->

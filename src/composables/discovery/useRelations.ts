@@ -49,9 +49,10 @@ export function useRelations(selectedAsset) {
                 const element = data.value?.entities[0]?.attributes[el]
                 if (
                     element &&
+                    element.length !== 0 &&
                     assetTypeRelations(selectedAsset.value)?.includes(el)
                 ) {
-                    if (Array.isArray(element) && element.length !== 0) {
+                    if (Array.isArray(element)) {
                         element?.forEach((entity) =>
                             guidList.value.push(entity.guid)
                         )

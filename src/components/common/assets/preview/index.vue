@@ -80,7 +80,7 @@
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
-                    <div class="text-sm tracking-wider uppercase text-gray">
+                    <div class="text-sm tracking-wider text-gray-500 uppercase">
                         {{
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName

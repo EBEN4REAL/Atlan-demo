@@ -5,6 +5,7 @@ import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
+import { Ref } from 'vue'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
@@ -55,7 +56,13 @@ export function getTableName(columnQualifiedName: string) {
     return ''
 }
 
-export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
+export function generateSQLQuery(
+    activeInlineTab: activeInlineTabInterface,
+    limitRows: {
+        checked: boolean
+        rowsCount: number
+    }
+) {
     const { getTableNameFromTableQualifiedName } = useUtils()
 
     const select = squel.select()
@@ -121,7 +128,10 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.qualifiedName ??
+                        subpanel.column.qualifiedName
+                )
                 const columnName = subpanel.column.label
                 // console.log(aggregatorUpperCase, 'fxn')
                 if (aggregatorUpperCase === 'UNIQUE') {
@@ -146,7 +156,10 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
             subpanel.columnsData.forEach((columnData) => {
-                const tableName = getTableName(columnData.columnsQualifiedName)
+                const tableName = getTableName(
+                    columnData.columnsQualifiedName ??
+                        subpanel.column.qualifiedName
+                )
                 select.group(`${tableName}."${columnData.label}"`)
             })
         })
@@ -159,7 +172,10 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
             if (subpanel.column.label) {
-                const tableName = getTableName(subpanel.column.qualifiedName)
+                const tableName = getTableName(
+                    subpanel.column.qualifiedName ??
+                        subpanel.column.qualifiedName
+                )
 
                 select.order(`${tableName}."${subpanel.column.label}"`, order)
             }
@@ -172,7 +188,10 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
             res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
-            const tableName = getTableName(subpanel.column.qualifiedName)
+            const tableName = getTableName(
+                subpanel.column.columnQualifiedName ??
+                    subpanel.column.qualifiedName
+            )
             if (index == 0) res = ''
             if (
                 tableName &&
@@ -299,7 +318,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
             )
             // leftTableName = "TABLENAME"
             const rightTableName = getTableName(
-                subpanel.columnsDataRight?.columnQualifiedName ?? ''
+                subpanel.columnsDataRight?.columnQualifiedName ??
+                    subpanel.column.qualifiedName
             )
             if (leftColumnName && rightTableName && rightColumnName) {
                 switch (subpanel.joinType.type) {
@@ -348,5 +368,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     }
 
     console.log(select.toString(), 'select.toString()')
+    if (limitRows.checked) {
+        return `${select.toString()} LIMIT ${limitRows.rowsCount}`
+    }
     return select.toString()
 }

@@ -13,7 +13,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
+    import { defineComponent, computed, onMounted } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter } from 'vue-router'
     import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue'
@@ -21,6 +21,7 @@
     import { useTenantStore } from '~/store/tenant'
     import NoAccess from '@/common/secured/access.vue'
     import useAuth from '~/composables/auth/useAuth'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'SSO',
@@ -50,6 +51,9 @@
                 router.push(`/admin/sso/${alias.value}`)
 
             const { isAccess } = useAuth()
+            onMounted(() => {
+                useTrackPage('admin', 'sso')
+            })
             return {
                 identityProviders,
                 alias,

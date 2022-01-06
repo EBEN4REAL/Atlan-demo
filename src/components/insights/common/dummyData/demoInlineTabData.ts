@@ -45,6 +45,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                             {
                                 id: '1',
                                 tableQualifiedName: undefined,
+                                tableData: {
+                                    certificateStatus: undefined,
+                                    assetType: undefined,
+                                },
                                 columns: ['all'],
                                 columnsData: [],
                             },

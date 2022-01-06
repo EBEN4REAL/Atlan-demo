@@ -66,7 +66,7 @@ export default function useFacetGroups(
                 list.value = list.value.map((group) => ({
                     ...group,
                     hasUserAsMember:
-                    userGroupsList.value.findIndex(
+                        userGroupsList.value.findIndex(
                             (userGroup) => userGroup.id === group.id
                         ) !== -1,
                 }))
@@ -129,7 +129,12 @@ export default function useFacetGroups(
         }, 200)
     }
 
+    // const handleClick = () => {
+    //     if (!finalList.length ||) resetFilter()
+    // }
+
     return {
+        // handleClick,
         list,
         resetFilter,
         total,

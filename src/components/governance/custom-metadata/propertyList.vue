@@ -49,21 +49,30 @@
                                 $emit('openEditDrawer', { property, index })
                             "
                         >
-                            <span class="text-primary">{{
-                                property.displayName
-                            }}</span>
-                            <a-tooltip>
-                                <template #title>
-                                    <span>{{
-                                        property.options.description
-                                    }}</span>
-                                </template>
-                                <AtlanIcon
-                                    v-if="property.options.description"
-                                    class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
-                                    :icon="'Info'"
+                            <div class="flex items-center">
+                                <Truncate
+                                    :tooltipText="property.displayName"
+                                    classes="text-primary"
+                                    :rows="2"
                                 />
-                            </a-tooltip>
+
+                                <a-tooltip>
+                                    <template #title>
+                                        <span>{{
+                                            property.options.description
+                                        }}</span>
+                                    </template>
+                                    <div
+                                        v-if="property.options.description"
+                                        class="mr-2"
+                                    >
+                                        <AtlanIcon
+                                            class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
+                                            :icon="'Info'"
+                                        />
+                                    </div>
+                                </a-tooltip>
+                            </div>
                         </div>
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
@@ -169,6 +178,7 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         props: {
@@ -181,6 +191,7 @@
                 default: () => {},
             },
         },
+        components: { Truncate },
         emits: ['openEditDrawer', 'removeProperty'],
         setup(props, { emit }) {
             const store = useTypedefStore()

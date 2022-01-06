@@ -34,7 +34,7 @@
                     <div class="flex">
                         <div class="flex space-x-2 font-bold text-gray-700">
                             <Ellipsis
-                                :tooltipText="attributes?.localName"
+                                :tooltip-text="attributes?.localName"
                                 :rows="2"
                                 :classes="'max-w-xs'"
                             />
@@ -91,7 +91,8 @@
                         >
                             <Owners
                                 v-model="attributes.localOwners"
-                                :editPermission="false"
+                                :hide-add-btn="true"
+                                :edit-permission="false"
                                 :selected-asset="fetchedTerm"
                             />
                         </div>
@@ -137,7 +138,7 @@
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    //types
+    // types
     import { Term } from '~/types/glossary/glossary.interface'
 
     // import { useDiscoverList } from '~/composables/discovery/useDiscoverList'

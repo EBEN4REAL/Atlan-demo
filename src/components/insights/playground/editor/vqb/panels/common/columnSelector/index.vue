@@ -132,30 +132,73 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <div
-                            class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                            @click="(checked) => onSelectItem(item)"
-                            :class="
-                                selectedItem?.label === item.label
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
-                        >
-                            <div class="flex items-center">
-                                <component
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                ></component>
-                                <span class="mb-0 ml-1 text-sm text-gray-700">
-                                    {{ item.label }}
-                                </span>
+                        <PopoverAsset :item="item.item" placement="left">
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(checked) => onSelectItem(item)"
+                                :class="
+                                    selectedItem?.label === item.label
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="flex items-center parent-ellipsis-container-extension"
+                                >
+                                    <div
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                            topStyle="-top-2"
+                                        />
+                                    </div>
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary parent-ellipsis-container-base"
+                                        v-if="
+                                            selectedItem?.label === item.label
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
                             </div>
-                            <AtlanIcon
-                                icon="Check"
-                                class="text-primary"
-                                v-if="selectedItem?.label === item.label"
-                            />
-                        </div>
+                        </PopoverAsset>
                     </template>
                 </div>
 
@@ -198,37 +241,63 @@
                             v-for="(item, index) in tableDropdownOption"
                             :key="item?.label + index"
                         >
-                            <div
-                                class="flex items-center justify-between w-full pl-4 pr-2 cursor-pointer h-9 hover:bg-primary-selected-focus"
-                                @click="onSelectTable(item)"
-                            >
-                                <div class="flex items-center truncate">
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
+                            <PopoverAsset :item="item.item" placement="right">
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
                                         "
-                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
+                                    >
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
 
-                                    <span
-                                        class="ml-2 parent-ellipsis-container-base"
-                                        >{{ item?.label }}
-                                    </span>
-                                </div>
                                 <div
-                                    class="flex items-center justify-between text-gray-500"
+                                    class="flex items-center justify-between w-full pl-4 pr-2 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                    @click="onSelectTable(item)"
                                 >
-                                    {{ item?.columnCount }}
+                                    <div class="flex items-center truncate">
+                                        <AtlanIcon
+                                            :icon="
+                                                getEntityStatusIcon(
+                                                    assetType(item),
+                                                    certificateStatus(item)
+                                                )
+                                            "
+                                            class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                            style="min-width: 16px"
+                                        ></AtlanIcon>
 
-                                    <AtlanIcon
-                                        icon="ChevronRight"
-                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                    />
+                                        <span
+                                            class="ml-2 parent-ellipsis-container-base"
+                                            >{{ item?.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between text-gray-500"
+                                    >
+                                        {{ item?.columnCount }}
+
+                                        <AtlanIcon
+                                            icon="ChevronRight"
+                                            class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            </PopoverAsset>
                         </template>
                     </div>
                     <div
@@ -280,32 +349,75 @@
                             v-for="(item, index) in columnDropdownOption"
                             :key="item.value + index + item.qualifiedName"
                         >
-                            <div
-                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                @click="(checked) => onSelectItem(item)"
-                                :class="
-                                    selectedItem?.label === item.label
-                                        ? 'bg-primary-light'
-                                        : 'bg-white'
-                                "
-                            >
-                                <div class="flex items-center">
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700"
+                            <PopoverAsset :item="item.item" placement="left">
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
+                                        "
                                     >
-                                        {{ item.label }}
-                                    </span>
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
+                                <div
+                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
+                                    @click="(checked) => onSelectItem(item)"
+                                    :class="
+                                        selectedItem?.label === item.label
+                                            ? 'bg-primary-light'
+                                            : 'bg-white'
+                                    "
+                                >
+                                    <div
+                                        class="flex items-center parent-ellipsis-container"
+                                    >
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                        ></component>
+                                        <span
+                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >
+                                            {{ item.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="flex items-center parent-ellipsis-container-extension"
+                                    >
+                                        <div
+                                            class="relative h-full w-14 parent-ellipsis-container-extension"
+                                        >
+                                            <ColumnKeys
+                                                :isPrimary="item.isPrimary"
+                                                :isForeign="item.isForeign"
+                                                :isPartition="item.isPartition"
+                                            />
+                                        </div>
+                                        <AtlanIcon
+                                            icon="Check"
+                                            class="ml-2 text-primary parent-ellipsis-container-base"
+                                            v-if="
+                                                selectedItem?.label ===
+                                                item.label
+                                            "
+                                        />
+                                        <div v-else class="w-4 ml-2"></div>
+                                    </div>
                                 </div>
-                                <AtlanIcon
-                                    icon="Check"
-                                    class="text-primary"
-                                    v-if="selectedItem?.label === item.label"
-                                />
-                            </div>
+                            </PopoverAsset>
                         </template>
 
                         <div
@@ -326,6 +438,7 @@
 
 <script lang="ts">
     import {
+        Ref,
         onUpdated,
         computed,
         watch,
@@ -348,6 +461,14 @@
     import { selectedTables } from '~/types/insights/VQB.interface'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
 
     import useBody from './useBody'
 
@@ -357,6 +478,8 @@
             Pill,
             Loader,
             TablesTree,
+            ColumnKeys,
+            PopoverAsset,
         },
         emits: ['change'],
 
@@ -389,9 +512,17 @@
             const { selectedItem } = useVModels(props)
 
             const { getDataTypeImage } = useColumn()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const inputRef = ref()
             const initialRef = ref()
@@ -448,7 +579,24 @@
                         'displayName',
                         'dataType',
                         'isPrimary',
+                        'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
                         'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -462,15 +610,14 @@
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     type: ls.attributes?.dataType,
                     value: ls.attributes?.displayName || ls.attributes?.name,
                     columnQualifiedName: ls.attributes?.qualifiedName,
+                    item: ls,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -587,12 +734,26 @@
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
-                        'certificateStatus',
                         'dataType',
-                        'order',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -614,8 +775,26 @@
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
+                        'dataType',
+                        'isPrimary',
+                        'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
                         'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -627,15 +806,11 @@
                     qualifiedName: ls.attributes.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -644,17 +819,16 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     qualifiedName: ls.attributes.qualifiedName,
                     type: ls.attributes.dataType,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     attributes: ls.attributes,
                     order: ls.attributes.order,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.order < y.order) return -1
-                    if (x.order > y.order) return 1
-                    return 0
-                })
                 console.log('col: ', data)
                 return data
             })
@@ -700,6 +874,27 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                     )
                 )
+            }
+
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             watch(queryText, () => {
@@ -801,6 +996,7 @@
                 certificateStatus,
                 onSelectTable,
                 onUnselectTable,
+                actionClick,
             }
         },
     })

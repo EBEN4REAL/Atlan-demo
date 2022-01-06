@@ -18,7 +18,7 @@
                         :placeholder="`Search ${totalGroupsCount} group${
                             totalGroupsCount > 1 ? 's' : ''
                         }`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none"
                         @change="onSearch"
                     />
                 </div>
@@ -30,6 +30,7 @@
                     type="primary"
                     @click="isGroupDrawerVisible = true"
                 >
+                    <AtlanIcon class="mr-2" icon="Add" />
                     Create Group
                 </AtlanButton>
             </div>
@@ -152,7 +153,7 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex px-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
                         <div class="pt-0.5">{{ title }}</div>
                     </div>
@@ -191,7 +192,11 @@
                         <div
                             class="cursor-pointer text-primary hover:underline"
                         >
-                            {{ value }}
+                            {{
+                                value >= 2
+                                    ? value + ' members'
+                                    : value + ' member'
+                            }}
                         </div>
                     </div>
                     <div

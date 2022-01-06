@@ -36,7 +36,7 @@
             </div>
             <div v-if="localBm.attributeDefs.length" class="pt-2 pb-5">
                 <div
-                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4"
+                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4 bg-primary-light"
                 >
                     <div class="mr-4">
                         <div

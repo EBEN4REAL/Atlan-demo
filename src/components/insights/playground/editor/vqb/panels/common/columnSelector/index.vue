@@ -567,12 +567,18 @@
                 })
             }
 
-            const getInitialBody = () => {
+            const getInitialBody = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
                 // FIXME: it can be a viewQualifiedName,
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
-                        tableQualfiedName: tableQualfiedName.value,
+                        tableQualfiedName:
+                            selectedTablesQualifiedNames?.length > 0
+                                ? selectedTablesQualifiedNames[0]
+                                      .tableQualifiedName
+                                : tableQualfiedName.value,
                     }),
                     attributes: [
                         'name',
@@ -913,7 +919,11 @@
                         )
                     }
                 } else {
-                    replaceBody(getInitialBody())
+                    replaceBody(
+                        getInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                 }
             })
 
@@ -925,7 +935,12 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length == 1
                     ) {
-                        replaceBody(getInitialBody())
+                        replaceBody(
+                            getInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
                     } else if (
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1

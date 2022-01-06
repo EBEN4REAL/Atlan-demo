@@ -1,16 +1,17 @@
 import bodybuilder from 'bodybuilder'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 interface useBodyProps {
     from?: number
     limit?: number
-    schemaQualifiedName?: string | undefined
     searchText?: string | undefined
+    context: connectorsWidgetInterface
 }
 export default function useBody({
     from = 0,
     limit = 100,
-    schemaQualifiedName,
     searchText,
+    context,
 }: useBodyProps) {
     const base = bodybuilder()
     base.sort([
@@ -26,48 +27,26 @@ export default function useBody({
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
         })
-    if (schemaQualifiedName) {
-        base.filter('term', 'schemaQualifiedName', schemaQualifiedName)
+
+    /* for crossed DB and schemas */
+
+    switch (context.attributeName) {
+        case 'connectionQualifiedName': {
+            base.filter('term', context.attributeName, context.attributeValue)
+            break
+        }
+        case 'databaseQualifiedName': {
+            base.filter('term', context.attributeName, context.attributeValue)
+            break
+        }
+        case 'schemaQualifiedName': {
+            base.filter('term', context.attributeName, context.attributeValue)
+            break
+        }
     }
     base.filter('terms', '__typeName.keyword', ['Table', 'View'])
 
     const tempQuery = base.build()
-    const query = {
-        ...tempQuery,
-        query: {
-            function_score: {
-                query: tempQuery.query,
-                functions: [
-                    {
-                        filter: {
-                            match: {
-                                isPrimary: true,
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                isForeign: true,
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                isPartition: true,
-                            },
-                        },
-                        weight: 3,
-                    },
-                ],
-                boost_mode: 'sum',
-                score_mode: 'sum',
-            },
-        },
-    }
 
-    return query
+    return tempQuery
 }

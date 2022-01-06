@@ -26,6 +26,7 @@
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
                         :tableQualfiedName="subpanel.tableQualfiedName"
+                        :selectedTableData="subpanel.tableData"
                     >
                         <template #chip="{ item }">
                             <div

@@ -235,6 +235,7 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
     import {
         InternalAttributes,
@@ -277,10 +278,17 @@
                 required: false,
                 default: () => true,
             },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll } = toRefs(props)
+            const { tableQualfiedName, showSelectAll, selectedTableData } =
+                toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
 
@@ -360,6 +368,7 @@
                     dsl: useBody({
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
+                        assetType: selectedTableData.value?.assetType,
                     }),
                     attributes: [
                         'name',

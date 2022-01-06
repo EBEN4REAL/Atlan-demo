@@ -5,7 +5,7 @@
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div class="flex items-center w-full mb-3 pr-9">
+                <div class="flex items-start w-full mb-3 pr-9">
                     <TableSelector
                         typeName="Table"
                         class="flex-1"

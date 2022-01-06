@@ -29,6 +29,7 @@
                     )
                 "
                 class="w-4 h-4 mr-2 -mt-0.5"
+                style="min-width: 16px"
             />
             <span class="parent-ellipsis-container-base"
                 >{{ getTableNameFromTableQualifiedName(modelValue ?? '') }}
@@ -128,47 +129,74 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <div
-                            class="flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                            @click="(checked) => onSelectItem(item)"
-                            :class="
-                                modelValue === item.value
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
-                        >
+                        <PopoverAsset :item="item.item" placement="left">
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+
                             <div
-                                class="flex items-center justify-between w-full truncate parent-ellipsis-container"
+                                class="flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(checked) => onSelectItem(item)"
+                                :class="
+                                    modelValue === item.value
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
                             >
                                 <div
-                                    class="flex items-center truncate parent-ellipsis-container"
+                                    class="flex items-center justify-between w-full truncate parent-ellipsis-container"
                                 >
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
-                                        "
-                                        class="w-4 h-4 mr-2 -mt-0.5"
-                                    />
-                                    <span class="parent-ellipsis-container-base"
-                                        >{{ item?.label }}
-                                    </span>
+                                    <div
+                                        class="flex items-center truncate parent-ellipsis-container"
+                                    >
+                                        <AtlanIcon
+                                            :icon="
+                                                getEntityStatusIcon(
+                                                    assetType(item),
+                                                    certificateStatus(item)
+                                                )
+                                            "
+                                            class="w-4 h-4 mr-2 -mt-0.5"
+                                            style="min-width: 16px"
+                                        />
+                                        <span
+                                            class="parent-ellipsis-container-base"
+                                            >{{ item?.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        v-if="modelValue !== item.value"
+                                        class="text-gray-500 parent-ellipsis-container-extension"
+                                    >
+                                        {{ item?.columnCount }}
+                                    </div>
                                 </div>
-                                <div
-                                    v-if="modelValue !== item.value"
-                                    class="text-gray-500 parent-ellipsis-container-extension"
-                                >
-                                    {{ item?.columnCount }}
-                                </div>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="ml-2 text-primary parent-ellipsis-container-base"
+                                    v-if="modelValue === item.value"
+                                />
                             </div>
-                            <AtlanIcon
-                                icon="Check"
-                                class="ml-2 text-primary parent-ellipsis-container-base"
-                                v-if="modelValue === item.value"
-                            />
-                        </div>
+                        </PopoverAsset>
                     </template>
                 </div>
 
@@ -185,6 +213,7 @@
 
 <script lang="ts">
     import {
+        Ref,
         onUpdated,
         computed,
         watch,
@@ -206,7 +235,9 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
     import {
@@ -222,6 +253,7 @@
             Pill,
             Loader,
             TablesTree,
+            PopoverAsset,
         },
         emits: ['update:modelValue', 'change', 'update:selectedTableData'],
 
@@ -255,9 +287,17 @@
                 useVModels(props)
 
             const { getDataTypeImage } = useColumn()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const inputRef = ref()
             const initialRef = ref()
@@ -373,6 +413,7 @@
                     columnCount: ls.attributes?.columnCount,
                     certificateStatus: ls.attributes.certificateStatus,
                     value: ls.attributes.qualifiedName,
+                    item: ls,
                 }))
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
@@ -485,7 +526,29 @@
                 })
             })
 
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
             return {
+                actionClick,
                 selectedTableData,
                 modelValue,
                 initialRef,

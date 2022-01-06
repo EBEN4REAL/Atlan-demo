@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
 import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
@@ -258,6 +259,19 @@ export function useUtils() {
         if (subpanels.length > 1) return true
     }
 
+    function collapseAllPanelsExceptCurrent(
+        currentPanel: any,
+        activeInlineTab: Ref<activeInlineTabInterface>
+    ) {
+        const copyPanels = JSON.parse(
+            JSON.stringify(activeInlineTab.value.playground.vqb.panels)
+        )
+        copyPanels.forEach((panel) => {
+            panel.expand = false
+        })
+        activeInlineTab.value.playground.vqb.panels = copyPanels
+    }
+
     return {
         getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
@@ -270,5 +284,6 @@ export function useUtils() {
         getTableNameFromTableQualifiedName,
         getTableNamesStringFromQualfieidNames,
         isSubpanelClosable,
+        collapseAllPanelsExceptCurrent,
     }
 }

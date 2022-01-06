@@ -324,6 +324,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: false,
                                 },
                             ],
                         },

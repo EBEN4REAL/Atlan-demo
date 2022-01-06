@@ -15,4 +15,5 @@ export interface VQBPanelAggregatorsInterface {
     order: number
     hide: boolean
     subpanels: SubpanelAggregator[]
+    expand: boolean
 }

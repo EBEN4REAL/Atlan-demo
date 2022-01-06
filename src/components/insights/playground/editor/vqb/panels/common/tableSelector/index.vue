@@ -37,7 +37,7 @@
         </div>
 
         <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
+            v-if="modelValue && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
             @focus="
@@ -53,7 +53,7 @@
             ]"
         />
         <a-input
-            v-if="Object.keys(selectedItem).length == 0 && isAreaFocused"
+            v-if="!modelValue"
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"

@@ -13,4 +13,5 @@ export interface VQBPanelJoinsInterface {
     id: string
     hide: boolean
     subpanels: SubpanelJoin[]
+    expand: boolean
 }

@@ -153,6 +153,7 @@ export function useSavedQuery(
                                           columnsData: [],
                                       },
                                   ],
+                                  expand: false,
                               },
                           ],
                       },
@@ -228,7 +229,12 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
+        getData: (
+            activeInlineTab,
+            rows: any[],
+            columns: any[],
+            executionTime: number
+        ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
@@ -379,8 +385,13 @@ export function useSavedQuery(
                     activeInlineTabCopy.isSaved = true
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -567,8 +578,13 @@ export function useSavedQuery(
                     }
                     if (Callback) Callback()
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -747,8 +763,13 @@ export function useSavedQuery(
 
                     openSavedQueryInNewTab(savedQuery)
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -843,8 +864,13 @@ export function useSavedQuery(
                     })
                     useAddEvent('insights', 'folder', 'created')
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the folder within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the folder within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving the folder!`)
                     }
@@ -1077,12 +1103,17 @@ export function useSavedQuery(
                     }
                 } else {
                     // console.log('query error: ', error.value.response.data.errorCode)
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
-                   
+
                     /* Saving error in errorRef */
                     if (Callback) Callback(error)
                 }

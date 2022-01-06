@@ -71,6 +71,7 @@
         toRefs,
         watch,
         defineAsyncComponent,
+        inject,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -137,12 +138,11 @@
             const isEdit = ref(false)
             const isTermDrawerVisible = ref(false)
             const drawerAsset = ref()
-            const list = computed(() =>
+            const list = ref(
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'
                 )
             )
-
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
@@ -233,9 +233,6 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
-            const handleListUpdate = (asset) => {
-                drawerAsset.value = asset
-            }
             /**
              * * OPTMIZING THE TERMS POPOVER vvvvv
              */
@@ -278,7 +275,25 @@
                     drawerAsset.value = getFetchedTerm(term.guid)
                 }
             }
+            const handleListUpdate = (asset) => {
+                drawerAsset.value = asset
+                if (drawerAsset.value) {
+                    const temp = list.value.map((el) => {
+                        if (el?.guid === drawerAsset.value?.guid) {
+                            console.log(el)
+                            return drawerAsset.value
+                        }
+                        return el
+                    })
+                    list.value = temp
+                }
+            }
 
+            watch(localValue, () => {
+                localValue.value.filter(
+                    (term) => term.attributes?.__state === 'ACTIVE'
+                )
+            })
             return {
                 getFetchedTerm,
                 isReady,

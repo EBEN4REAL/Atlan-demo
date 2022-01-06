@@ -56,7 +56,7 @@
         >
             {{ user.role_object.name }}
             <AtlanIcon
-                :icon="visible ? 'ChevronIp' : 'ChevronDown'"
+                :icon="visible ? 'ChevronUp' : 'ChevronDown'"
                 class="self-center h-3 ml-1 caret-role"
             />
         </div>

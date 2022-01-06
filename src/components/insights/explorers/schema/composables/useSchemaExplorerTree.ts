@@ -563,17 +563,27 @@ const useTree = ({
         entity: Database | Schema | Table | Column | View
     }) => {
         const currentParents = nodeToParentKeyMap[qualifiedName]
-        // console.log('schema tree update: ', treeData)
+        // console.log('schema tree update: ', entity)
         
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
             // console.log('schema tree update: ', treeData)
             treeData.value = treeData.value.map((treeNode) => {
-                if (treeNode.key === qualifiedName)
+                if (treeNode.key === qualifiedName) {
+                // console.log('node update: ', {
+                //     ...treeNode,
+                //     attributes: entity.attributes,
+                //     classifications: entity.classifications,
+                //     meanings: entity.meanings,
+                // })
                     return {
                         ...treeNode,
+                        ...entity,
                         attributes: entity.attributes,
+                        classifications: entity.classifications,
+                        meanings: entity.meanings,
                     }
+                }
                 return treeNode
             })
         } else {
@@ -587,10 +597,21 @@ const useTree = ({
 
                 // if the target node is reached
                 if (node.key === qualifiedName || !currentPath) {
+                    // console.log('node update: ', {
+                    //     ...node,
+                    //     attributes: entity.attributes,
+                    //     classifications: entity.classifications,
+                    //     meanings: entity.meanings,
+                    // })
                     return {
                         ...node,
+                        ...entity,
                         attributes: entity.attributes,
+                        classifications: entity.classifications,
+                        meanings: entity.meanings,
                     }
+
+                    
                 }
                 return {
                     ...node,

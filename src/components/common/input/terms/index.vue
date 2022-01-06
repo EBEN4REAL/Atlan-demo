@@ -248,6 +248,7 @@
                     const index = fetchedTerms.value.findIndex(
                         (t) => t.guid === term.guid
                     )
+                    drawerAsset.value = term
                     if (index > -1) fetchedTerms.value[index] = term
                     else fetchedTerms.value.push(term)
                 }
@@ -269,7 +270,6 @@
             }
             const handleDrawerVisible = (term) => {
                 isTermDrawerVisible.value = true
-                console.log(term)
                 if (term) {
                     handleTermPopoverVisibility(true, term)
                     drawerAsset.value = getFetchedTerm(term.guid)

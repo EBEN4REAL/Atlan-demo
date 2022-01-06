@@ -147,7 +147,7 @@
             )
 
             const avatarUrl = (item) =>
-                `${window.location.origin}/api/services/avatar/${item.username}`
+                `${window.location.origin}/api/service/avatars/${item.username}`
 
             const handleChange = () => {
                 modelValue.value = localValue.value

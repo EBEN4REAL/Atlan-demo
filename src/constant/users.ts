@@ -99,7 +99,7 @@ export const userColumns = [
         title: 'Personas',
         key: 'personas',
         // sorter: true,
-        align: 'right',
+        align: 'left',
         slots: { customRender: 'persona' },
     },
     {

@@ -222,11 +222,17 @@
                         </div>
                     </div>
                 </template>
-                <div class="text-right cursor-default text-primary">
-                    {{ user?.personas?.length || '-' }}
+                <div
+                    class="text-left cursor-pointer text-primary hover:underline"
+                >
+                    {{
+                        user?.personas?.length > 1
+                            ? user?.personas?.length + ' personas'
+                            : user?.personas?.length + ' persona' || '-'
+                    }}
                 </div>
             </a-popover>
-            <div v-else class="text-right text-primary">-</div>
+            <div v-else class="text-left text-primary">-</div>
         </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">

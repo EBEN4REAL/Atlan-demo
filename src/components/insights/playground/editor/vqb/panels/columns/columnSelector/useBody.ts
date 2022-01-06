@@ -16,13 +16,7 @@ export default function useBody({
 
     base.from(from || 0)
     base.size(limit || 100)
-    base.sort([
-        {
-            'name.keyword': {
-                order: 'asc',
-            },
-        },
-    ])
+
     if (searchText)
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
@@ -31,6 +25,43 @@ export default function useBody({
         base.filter('term', 'tableQualifiedName', tableQualfiedName)
     }
     base.filter('term', '__typeName.keyword', 'Column')
+    const tempQuery = base.build()
+    const query = {
+        ...tempQuery,
+        query: {
+            function_score: {
+                query: tempQuery.query,
+                functions: [
+                    {
+                        filter: {
+                            match: {
+                                isPrimary: true,
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                isForeign: true,
+                            },
+                        },
+                        weight: 4,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                isPartition: true,
+                            },
+                        },
+                        weight: 3,
+                    },
+                ],
+                boost_mode: 'sum',
+                score_mode: 'sum',
+            },
+        },
+    }
 
-    return base.build()
+    return query
 }

@@ -407,11 +407,6 @@
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -429,12 +424,6 @@
                 }))
 
                 // console.log('list: ', list)
-
-                data.sort((x, y) => {
-                    if (x.order < y.order) return -1
-                    if (x.order > y.order) return 1
-                    return 0
-                })
                 console.log('col: ', data)
                 return data
             })

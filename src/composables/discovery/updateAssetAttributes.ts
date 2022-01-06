@@ -153,32 +153,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    // const addParentQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parentQualifiedName: attributes(selectedAsset?.value)
-    //             ?.parentQualifiedName,
-    //     }
-    //     return entity
-    // }
-
-    // const addParent = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parent: attributes(selectedAsset?.value)?.parent,
-    //     }
-    //     return entity
-    // }
-
-    // const addCollectionQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         collectionQualifiedName: attributes(selectedAsset?.value)
-    //             ?.collectionQualifiedName,
-    //     }
-    //     return entity
-    // }
-
     // Description Change
     const handleChangeDescription = () => {
         if (description(selectedAsset?.value) !== localDescription.value) {
@@ -556,9 +530,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
-        if (
-            meanings(selectedAsset?.value) !== localMeanings.value
-        ) {
+        if (meanings(selectedAsset?.value) !== localMeanings.value) {
             localMeanings.value = meanings(selectedAsset.value)
         }
 

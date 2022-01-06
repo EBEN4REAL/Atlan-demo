@@ -26,11 +26,11 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                :number-of-active-user="numberOfActiveUser"
+                                :number-of-disable-user="numberOfDisableUser"
+                                :number-of-invited-user="numberOfInvitedUser"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
-                                :numberOfActiveUser="numberOfActiveUser"
-                                :numberOfDisableUser="numberOfDisableUser"
-                                :numberOfInvitedUser="numberOfInvitedUser"
                             />
                         </template>
                         <button
@@ -188,6 +188,7 @@
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
             const showDisableEnablePopover = ref<boolean>(false)
+            const isFirstLoad = ref(true)
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -211,12 +212,15 @@
             const numberOfDisableUser = ref(0)
             const numberOfInvitedUser = ref(0)
             watch(userList, (v) => {
-                v.reduce((counter, user) => {
-                    if (user.enabled) numberOfActiveUser.value += 1
-                    if (!user.enabled) numberOfDisableUser.value += 1
-                    if (!user.emailVerified) numberOfInvitedUser.value += 1
-                    return counter
-                }, 0)
+                if (isFirstLoad.value) {
+                    v.reduce((counter, user) => {
+                        if (user.enabled) numberOfActiveUser.value += 1
+                        if (!user.enabled) numberOfDisableUser.value += 1
+                        if (!user.emailVerified) numberOfInvitedUser.value += 1
+                        return counter
+                    }, 0)
+                    isFirstLoad.value = false
+                }
             })
 
             const clearFilter = () => {

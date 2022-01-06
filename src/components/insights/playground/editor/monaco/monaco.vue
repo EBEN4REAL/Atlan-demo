@@ -228,6 +228,17 @@
                 certificateStatus,
             } = useAssetInfo()
 
+            let data1 = computed(() =>
+                document.getElementsByClassName(
+                    'suggest-icon codicon codicon-symbol-field'
+                )
+            )
+            let data2 = computed(() =>
+                document.getElementsByClassName(
+                    'suggest-icon codicon codicon-symbol-keyword'
+                )
+            )
+
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
@@ -251,17 +262,6 @@
 
                 // editor autosuggestion icons
 
-                let data1 = computed(() =>
-                    document.getElementsByClassName(
-                        'suggest-icon codicon codicon-symbol-field'
-                    )
-                )
-                let data2 = computed(() =>
-                    document.getElementsByClassName(
-                        'suggest-icon codicon codicon-symbol-keyword'
-                    )
-                )
-
                 promise.then((item) => {
                     let items = item.suggestions
 
@@ -274,9 +274,6 @@
                             (item && assetType(item) === 'Table') ||
                             assetType(item) === 'View'
                         ) {
-                            // let data = document.getElementsByClassName(
-                            //     'suggest-icon codicon codicon-symbol-field'
-                            // )
                             if (data1.value[i] && data1.value[i]?.style) {
                                 data1.value[
                                     i
@@ -286,20 +283,12 @@
                                 )}.png")`
                             }
                         } else if (item && assetType(item) === 'Column') {
-                            // let data = document.getElementsByClassName(
-                            //     'suggest-icon codicon codicon-symbol-field'
-                            // )
-
                             if (data1.value[i] && data1.value[i]?.style) {
                                 data1.value[
                                     i
                                 ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
                             }
                         } else {
-                            // let data = document.getElementsByClassName(
-                            //     'suggest-icon codicon codicon-symbol-keyword'
-                            // )
-                            // console.log('suggestion other: ', data[i])
                             if (data2.value[i] && data2.value[i].style) {
                                 data2.value[
                                     i
@@ -591,6 +580,10 @@
                         )
                     }
                 )
+
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 49, function () {
+                    saveOrUpdate()
+                })
 
                 editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
                     // console.log('cmd+k: ', 'presses')
@@ -903,11 +896,14 @@
     :global(.editor-widget.suggest-widget.visible) {
         // top: 28px;
         // left: 207px;
-        margin-top: 10px !important;
+        margin-top: 12px !important;
         margin-left: 10px !important;
         border-radius: 4px;
-        background-color: #fefefe;
-        border: 1px solid #e2e2e2;
+        background-color: #ffffff;
+        @apply text-gray-700 !important;
+
+        box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
+        border: none;
         // padding-left: 4px !important;
         // padding-right: 4px !important;
     }
@@ -932,7 +928,7 @@
     }
     :global(.monaco-list-row.show-file-icons.string-label.focused) {
         @apply bg-gray-light !important;
-        @apply text-gray-500 !important;
+        @apply text-gray-700 !important;
         border-radius: 3px !important;
     }
     :global(.main) {
@@ -947,11 +943,29 @@
             .highlight) {
         @apply text-primary !important;
     }
-    // :global(.suggest-icon.codicon.codicon-symbol-field)::after {
-    //     background-image: url('~/assets/images/source/python.png') !important;
-    //     width: 14px !important;
-    //     height: 14px !important;
-    //     background-size: 14px 14px;
-    // }
-    // }
+    :global(.monaco-editor
+            .suggest-widget
+            .monaco-list
+            .monaco-list-row
+            .monaco-highlighted-label
+            .highlight) {
+        @apply text-primary !important;
+    }
+    :global(.monaco-list-row.show-file-icons.string-label) {
+        @apply text-xs !important;
+    }
+    :global(.monaco-list-row .show-file-icons .string-label .focused) {
+        @apply text-xs !important;
+    }
+    :global(.monaco-editor .suggest-details) {
+        margin-top: 0px !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        border-radius: 4px;
+        background-color: #ffffff;
+        @apply text-gray-700 !important;
+
+        box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
+        border: none;
+    }
 </style>

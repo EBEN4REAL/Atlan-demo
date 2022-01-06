@@ -250,6 +250,7 @@ import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
+import WarningIcon from '~/assets/images/icons/warning.svg';
 
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
@@ -652,5 +653,6 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
-    Revoke
+    Revoke,
+    WarningIcon
 }

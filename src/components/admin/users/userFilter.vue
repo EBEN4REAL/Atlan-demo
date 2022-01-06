@@ -1,7 +1,7 @@
 <template>
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
-    <a-collapse>
+    <a-collapse bordered @change="handleChange">
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
         >
@@ -24,21 +24,27 @@
             </span>
         </div>
 
-        <a-collapse-panel class="group" :show-arrow="false">
+        <a-collapse-panel class="border-t-0 group" :show-arrow="false">
             <template #header>
                 <div class="flex justify-between w-48 hover:text-primary">
                     <span
                         class="text-sm text-gray-500 uppercase hover:text-primary"
+                        :class="`${
+                            activeKey.includes('1') ? 'text-primary' : ''
+                        }`"
                         >status</span
                     >
                     <AtlanIcon
                         icon="CaretDown"
-                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
+                        :class="`${activeKey.includes('1') ? 'blue-icon' : ''}`"
                     />
                 </div>
             </template>
-            <div class="justify-center w-48 p-2 bg-white rounded">
-                <a-form layout="vertical" class="p-0">
+            <div
+                class="justify-center w-full bg-white border border-b-0 border-l-0 border-r-0 border-gray-200"
+            >
+                <a-form layout="vertical" class="p-2">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
@@ -92,16 +98,21 @@
                 <div
                     class="flex justify-between w-48 border-t-0 hover:text-primary"
                 >
-                    <span class="text-sm text-gray-500 uppercase border-t-0"
+                    <span
+                        class="text-sm text-gray-500 uppercase border-t-0"
+                        :class="`${
+                            activeKey.includes('2') ? 'text-primary' : ''
+                        }`"
                         >role</span
                     >
                     <AtlanIcon
                         icon="CaretDown"
-                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
+                        :class="`${activeKey.includes('2') ? 'blue-icon' : ''}`"
                     />
                 </div>
             </template>
-            <div class="w-48 p-2 text-left bg-white rounded">
+            <div class="w-48 p-2 pt-0 text-left bg-white rounded">
                 <a-radio-group
                     v-model:value="role"
                     class="grid w-full text-left gap-y-2"
@@ -139,10 +150,10 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+    import { storeToRefs } from 'pinia'
     import { userStatusOptions, roleOptions } from '~/constant/users'
 
     import useUserStore from '~/store/users'
-    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -200,17 +211,22 @@
             const storeUser = useUserStore()
             const { roles } = storeToRefs(storeUser)
             const rolesWithCount = computed(() =>
-                roleOptions.map((item, i) =>
-                    Object.assign({}, item, roles?.value[i])
-                )
+                roleOptions.map((item, i) => ({ ...item, ...roles?.value[i] }))
             )
             const {
                 numberOfActiveUser,
                 numberOfDisableUser,
                 numberOfInvitedUser,
             } = toRefs(props)
+            const activeKey = ref([])
+            const handleChange = (t) => {
+                activeKey.value = t
+                console.log('t', t)
+            }
 
             return {
+                activeKey,
+                handleChange,
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
@@ -239,9 +255,24 @@
         border-radius: 50%;
         margin-right: 8px;
     }
+</style>
+
+<style lang="less">
     .group {
-        // .ant-collapse-content-box {
-        //     padding: 0 !important;
-        // }
+        .ant-collapse-content {
+            border: 0 !important;
+        }
+        .ant-collapse-content-active {
+            border: 0 !important;
+        }
+        .ant-collapse-content-box {
+            padding-bottom: 0 !important;
+        }
+    }
+    .blue-icon {
+        transform: rotate(180deg) !important;
+        path {
+            stroke: rgb(82, 119, 215);
+        }
     }
 </style>

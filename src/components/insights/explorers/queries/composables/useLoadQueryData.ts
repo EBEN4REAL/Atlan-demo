@@ -14,6 +14,8 @@ import {
     InternalAttributes,
     BasicSearchAttributes,
     SavedQueryAttributes,
+    AssetAttributes,
+    AssetRelationAttributes
 } from '~/constant/projection'
 
 import whoami from '~/composables/user/whoami'
@@ -54,9 +56,11 @@ const useLoadQueryData = ({
         'folder',
         'compiledQuery',
         'rawQuery',
+        'meanings',
         ...InternalAttributes,
         ...BasicSearchAttributes,
         ...SavedQueryAttributes,
+        // ...AssetAttributes
     ]
     const body = ref()
 
@@ -79,7 +83,10 @@ const useLoadQueryData = ({
                     }
                 }
             },
-            attributes
+            attributes,
+            relationAttributes: [
+                ...AssetRelationAttributes
+            ]
         }
     }
 

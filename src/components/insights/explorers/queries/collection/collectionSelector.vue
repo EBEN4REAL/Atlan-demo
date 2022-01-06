@@ -93,28 +93,38 @@
                         : '🗃'
                 }}</span>
 
-                <div
-                    class="truncate group-hover:text-primary"
-                    style="width: 90%"
-                >
-                    <span
-                        class="mr-1 text-base font-bold text-gray-700 truncate"
-                        >{{ selectedCollection?.attributes?.name }}</span
-                    >
-                    <AtlanIcon
+                <div class="flex group-hover:text-primary" style="width: 90%">
+                    <div class="flex flex-col">
+                        <span
+                            class="mr-1 text-base font-bold text-gray-700 truncate"
+                            >{{ selectedCollection?.attributes?.name }}</span
+                        >
+                        <span class="mr-1 text-xs text-gray-500 truncate">{{
+                            isCollectionPrivate(selectedCollection, username)
+                                ? 'Private'
+                                : hasCollectionWritePermission ||
+                                  isCollectionCreatedByCurrentUser
+                                ? 'Shared'
+                                : 'Shared, Read only'
+                        }}</span>
+                    </div>
+
+                    <!-- <AtlanIcon
                         v-if="isCollectionPrivate(selectedCollection, username)"
                         icon="PrivateCollection"
                         class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon>
-                    <AtlanIcon
-                        v-else
+                    ></AtlanIcon> -->
+                    <!-- <AtlanIcon
+                        v-if="
+                            !isCollectionPrivate(selectedCollection, username)
+                        "
                         icon="PublicCollection"
                         class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon>
+                    ></AtlanIcon> -->
 
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="self-center h-4 ml-1 -mt-1 text-gray-400"
+                        class="self-center h-4 ml-1 -mt-3.5 text-gray-400"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -189,9 +199,14 @@
 
             // computed
             const selectedCollection = computed(() => {
-                const collection = queryCollections.value?.find(
+                let collection = queryCollections.value?.find(
                     (coll) => coll.guid === selectedValue.value
                 )
+                if (!collection) {
+                    collection = queryCollections.value?.length
+                        ? queryCollections.value[0]
+                        : undefined
+                }
                 return collection
             })
 
@@ -222,6 +237,16 @@
                     return isCollectionPrivate(coll, username)
                 })
             )
+
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            )
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            )
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
 
             function handleChange(collectionId: string) {
                 isVisible.value = false
@@ -284,6 +309,9 @@
                 emit,
                 map,
                 createCollectionToggle,
+                hasCollectionWritePermission,
+                hasCollectionReadPermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

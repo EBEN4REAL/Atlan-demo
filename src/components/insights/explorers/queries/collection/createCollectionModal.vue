@@ -90,7 +90,7 @@
                     />
                 </div>
             </div>
-            <div class="px-4 mt-4">
+            <!-- <div class="px-4 mt-4">
                 <span class="text-sm font-normal text-gray-700"
                     >Visibility</span
                 >
@@ -107,13 +107,15 @@
                         </a-radio>
                     </a-radio-group>
                 </div>
-            </div>
-            <div
+            </div> -->
+            <!-- <div
                 class="p-3 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
                 v-if="isShareable === 'true'"
-            >
-                <span class="text-sm text-gray-700">Users and groups</span>
-
+            > -->
+            <!-- <div class="mx-4 mt-3 font-normal" v-if="isShareable === 'true'"> -->
+            <div class="mx-4 mt-3 font-normal">
+                <!-- <span class="text-sm text-gray-700">Users and groups</span> -->
+                <span class="text-sm text-gray-700">Share</span>
                 <div class="flex items-center mb-1.5">
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
@@ -189,7 +191,7 @@
                             class="flex items-center justify-end text-gray-700 cursor-pointer"
                             style="width: 104px"
                         >
-                            <span class="mr-1.5 pl-1 text-sm text-gray-500">
+                            <span class="pl-1 text-sm text-gray-500">
                                 Owner
                             </span>
                         </div>

@@ -194,11 +194,9 @@
                 required: true,
             },
             error: {
-                type: Error,
                 required: true,
             },
             fetchedTerm: {
-                type: Object,
                 required: true,
             },
             placement: {

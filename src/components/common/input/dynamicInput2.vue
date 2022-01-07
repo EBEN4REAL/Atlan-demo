@@ -50,6 +50,7 @@
         v-model:value="localValue"
         :precision="0"
         @change="handleInputChange"
+        @keydown="handleNumberKeyPress"
     ></a-input-number>
     <a-switch
         v-else-if="dataType === 'switch'"
@@ -59,6 +60,8 @@
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        @change="handleInputChange"
+        @keydown="handleNumberKeyPress"
     ></a-input-number>
 
     <a-date-picker
@@ -78,10 +81,10 @@
         class="flex"
         @change="handleInputChange"
     >
-        <a-radio-button value="true" class="flex-1 text-center">
+        <a-radio-button :value="true" class="flex-1 text-center">
             Yes
         </a-radio-button>
-        <a-radio-button value="false" class="flex-1 text-center">
+        <a-radio-button :value="false" class="flex-1 text-center">
             No
         </a-radio-button>
     </a-radio-group>
@@ -144,7 +147,7 @@
 
             // set proper default value
             if (multiple.value && !localValue.value) localValue.value = []
-            else if (!localValue.value) localValue.value = ''
+            else if (localValue.value == null) localValue.value = ''
 
             const handleInputChange = (v) => {
                 if (props.dataType.toLowerCase() === 'date') {
@@ -160,7 +163,25 @@
                 // Can not select days before today and today
                 current > dayjs().endOf('day')
 
+            const handleNumberKeyPress = (v) => {
+                if (
+                    !['int', 'long', 'number', 'double', 'float'].includes(
+                        dataType.value.toLowerCase()
+                    )
+                )
+                    return
+                const allowDecimal = ['double', 'float', 'decimal'].includes(
+                    dataType.value.toLowerCase()
+                )
+                const n = parseInt(v.key, 10)
+                if (Number.isNaN(n)) {
+                    if (allowDecimal && v.key === '.') return
+                    if (v.key !== 'Tab') v.preventDefault()
+                }
+            }
+
             return {
+                handleNumberKeyPress,
                 localValue,
                 handleInputChange,
                 dayjs,

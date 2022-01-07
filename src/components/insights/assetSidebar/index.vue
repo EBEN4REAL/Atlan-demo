@@ -1,11 +1,14 @@
 <template>
-    <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
+    <div
+        v-if="selectedAsset?.guid"
+        class="z-20 flex flex-col bg-white asset-preview-container"
+    >
         <AssetPreview
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
-            page="insights"
             class="w-full"
+            page="insights"
         ></AssetPreview>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
@@ -141,6 +144,10 @@
     })
 </script>
 <style lang="less" scoped>
+    .asset-preview-container {
+        min-width: 420px !important;
+        max-width: 420px !important;
+    }
     .placeholder {
         background-color: #f4f4f4;
     }

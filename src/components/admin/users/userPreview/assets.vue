@@ -4,7 +4,7 @@
             Owned Assets
         </div>
         <div v-auth="map.LIST_USERS" class="flex flex-col rounded-lg">
-            <AssetsV2 :owner-users="ownerFilter.owners.ownerUsers" />
+            <AssetsV2 :filters="ownerFilter" />
             <!-- <AssetsWrapper
                 :key="'user-asset-list'"
                 :initial-filters="ownerFilter"

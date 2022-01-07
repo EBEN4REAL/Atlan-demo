@@ -1,6 +1,5 @@
 <template>
     <div class="flex w-full h-full">
-        <!-- <div><AssetFilters /></div> -->
         <div class="flex flex-col w-full h-full">
             <div class="w-full">
                 <SearchAdvanced
@@ -13,7 +12,7 @@
                         <div style="max-width: 330px">
                             <PreferenceSelector
                                 v-model="preference"
-                                @change="handleChangePreference"
+                                @change="fetchList(0)"
                             />
                         </div>
                     </template>
@@ -21,9 +20,9 @@
             </div>
             <div>
                 <AggregationTabs
-                    v-model="postFacets.typeName"
+                    v-model="postFilters.typeName"
                     :list="assetTypeAggregationList"
-                    @change="handleAssetTypeChange"
+                    @change="fetchList(0)"
                 />
             </div>
             <div>
@@ -46,9 +45,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType } from 'vue'
+    import { defineComponent, ref, PropType, toRefs, watch } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
-    import AssetFilters from '@/common/assets/filters/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -65,7 +63,6 @@
     export default defineComponent({
         name: 'AssetsV2',
         components: {
-            AssetFilters,
             SearchAdvanced,
             AggregationTabs,
             PreferenceSelector,
@@ -73,32 +70,39 @@
             AssetItem,
         },
         props: {
-            ownerUsers: {
-                type: Array as PropType<string[]>,
+            filters: {
+                type: Object,
+                default: () => {},
+            },
+            preference: {
+                type: Object,
+                default: () => ({
+                    sort: 'default',
+                    display: [],
+                }),
+            },
+            attributes: {
+                type: Array,
                 default: () => [],
             },
-            ownerGroups: {
-                type: Array as PropType<string[]>,
-                default: () => [],
+            postFilters: {
+                type: Object,
+                default: () => ({
+                    typeName: '__all',
+                }),
+            },
+            aggregations: {
+                type: Array,
+                default: () => ['typeName'],
             },
         },
         setup(props) {
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-        const facets = ref({})
             const isCache = ref(true) // use SWRV or not
             const dependentKey = ref('DEFAULT_ASSET_LIST') // CacheKey for swrv, when changed causes asset list to get refetched
-            facets.value = {
-                owners: {
-                    ownerUsers: props.ownerUsers,
-                    ownerGroups: props.ownerGroups,
-                },
-            }
-            const preference = ref({
-                sort: 'default',
-                display: [],
-            })
+
             // set all the attributes that would be fetched
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -107,10 +111,15 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
-            const postFacets = ref({
-                typeName: '__all',
-            })
-            const aggregations = ref(['typeName'])
+
+            const {
+                filters,
+                attributes,
+                postFilters,
+                aggregations,
+                preference,
+            } = toRefs(props)
+
             const {
                 list,
                 isLoadMore,
@@ -121,54 +130,56 @@
                 queryText,
                 offset,
                 limit,
-                facets,
-                postFacets,
+                facets: filters,
+                postFacets: postFilters,
                 aggregations,
                 preference,
                 isCache,
                 dependentKey,
-                attributes: defaultAttributes,
+                attributes: attributes.value.length
+                    ? attributes
+                    : defaultAttributes,
             })
+
+            const fetchList = (skip = 0) => {
+                offset.value = skip
+                quickChange()
+            }
 
             // LOAD MORE
             const handleLoadMore = () => {
                 if (isLoadMore.value) {
-                    offset.value += limit.value
+                    fetchList((offset.value += limit.value))
                 }
-                quickChange()
             }
 
             // SEARCH
             const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                quickChange()
+                fetchList()
             }, 100)
 
-            // TYPE FILTER (AGG TABS)
-            const handleAssetTypeChange = () => {
-                offset.value = 0
-                quickChange()
-            }
+            watch(
+                [filters, preference, postFilters, aggregations],
+                () => {
+                    fetchList()
+                },
+                { deep: true }
+            )
 
-            // PREFERENCE : SORT
-            const handleChangePreference = () => {
-                quickChange()
-            }
             return {
                 limit,
                 offset,
                 queryText,
-                facets,
-                postFacets,
                 list,
+                preference,
+                filters,
+                postFilters,
                 isLoadMore,
                 isValidating,
                 assetTypeAggregationList,
-                preference,
+                fetchList,
                 handleLoadMore,
                 handleSearchChange,
-                handleAssetTypeChange,
-                handleChangePreference,
             }
         },
     })

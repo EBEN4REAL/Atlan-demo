@@ -38,14 +38,19 @@ export function useJoin() {
         subIndex: number,
         activeInlineTab: activeInlineTabInterface
     ) {
-        if (rowIndex === 0 && subIndex === 0)
-            return { allowed: [], notAllowed: [] }
+        if (rowIndex === 0 && subIndex === 0) {
+            const columnsFirstTableQualifiedName =
+                activeInlineTab.playground.vqb?.selectedTables[0]
+                    .tableQualifiedName
+
+            return { allowed: [columnsFirstTableQualifiedName], notAllowed: [] }
+        }
         if (rowIndex === 0 && subIndex === 1) {
             const tableQualifiedName =
                 getTableQualifiedNameFromColumnQualifiedName(
-                    activeInlineTab.playground.vqb.panels[panelIndex].subpanels[
-                        rowIndex
-                    ]?.columnsDataLeft?.columnQualifiedName
+                    activeInlineTab.playground.vqb?.panels[panelIndex]
+                        ?.subpanels[rowIndex]?.columnsDataLeft
+                        ?.columnQualifiedName
                 )
             if (tableQualifiedName) {
                 return {
@@ -60,20 +65,32 @@ export function useJoin() {
             }
         }
         if (subIndex === 0) {
+            const columnsFirstTableQualifiedName =
+                activeInlineTab.playground.vqb?.selectedTables[0]
+                    .tableQualifiedName
             const uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow =
                 activeInlineTab.playground.vqb.selectedTables
                     .filter((table) => table.addedBy.includes('joins'))
                     .map((table) => table.tableQualifiedName)
+            uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow.push(
+                columnsFirstTableQualifiedName
+            )
             return {
                 allowed: uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow,
                 notAllowed: [],
             }
         }
         if (subIndex === 1) {
+            const columnsFirstTableQualifiedName =
+                activeInlineTab.playground.vqb?.selectedTables[0]
+                    .tableQualifiedName
             const uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow =
                 activeInlineTab.playground.vqb.selectedTables
                     .filter((table) => table.addedBy.includes('joins'))
                     .map((table) => table.tableQualifiedName)
+            uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow.push(
+                columnsFirstTableQualifiedName
+            )
             return {
                 allowed: [],
                 notAllowed:

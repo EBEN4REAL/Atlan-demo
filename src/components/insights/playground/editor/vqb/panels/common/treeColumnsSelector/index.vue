@@ -585,6 +585,23 @@
                 return false
             }
 
+            // watch(
+            //     tableDropdownOption,
+            //     () => {
+            //         if (rowIndex.value == 0 && subIndex.value == 0) {
+            //             if (tableDropdownOption.value.length > 0) {
+            //                 const items = JSON.parse(
+            //                     JSON.stringify(tableDropdownOption.value)
+            //                 )
+            //                 onSelectTable(items[0])
+            //             }
+            //         }
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
+
             return {
                 actionClick,
                 totalCount,

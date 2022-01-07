@@ -80,13 +80,14 @@ export const getChannelAndMessageIdFromSlackLink = (link) => {
     }
 }
 
-export const getDeepLinkFromUserDmLink = (link: string) => {
+export const getDeepLinkFromUserDmLink = (memberId: string) => {
     // https://app.slack.com/client/TFB0VJX8V/DFQBG65CN
     // slack://channel?team=TFB0VJX8V&id=DFQBG65CN
-    const splits = link.split('/')
-    const teamId = splits[splits.length - 2]
-    const conversationId = splits[splits.length - 1]
-    const deepLink = `slack://channel?team=${teamId}&id=${conversationId}`
+    // const splits = link.split('/')
+    // const teamId = splits[splits.length - 2]
+    // const conversationId = splits[splits.length - 1]
+    // const deepLink = `slack://channel?team=${teamId}&id=${conversationId}`
+    const deepLink = `https://slack.com/app_redirect?channel=${memberId}`
     return deepLink
 }
 

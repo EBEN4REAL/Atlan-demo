@@ -225,6 +225,7 @@
             })
 
             const clearFilter = () => {
+                filterRole.value = ''
                 userListAPIParams.filter = {}
                 searchText.value = ''
                 statusFilter.value = []

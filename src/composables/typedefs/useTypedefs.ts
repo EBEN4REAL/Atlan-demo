@@ -52,7 +52,7 @@ export default function useTypedefs() {
 }
 
 
-export const refetchType = (which) => {
+export const refetchTypedef = (which) => {
   const typedefStore = useTypedefStore()
   const { data, isLoading, error, mutate } = Types.GetTypedef(
     {},
@@ -63,7 +63,7 @@ export const refetchType = (which) => {
   )
 
   watch(data, (v) => {
-    console.log({ refetchType: v })
+    console.log({ refetchTypedef: v })
     switch (which) {
       case 'enum': {
         typedefStore.setEnumList(v?.enumDefs || [])

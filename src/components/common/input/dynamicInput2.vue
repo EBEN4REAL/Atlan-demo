@@ -59,6 +59,7 @@
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        @change="handleInputChange"
     ></a-input-number>
 
     <a-date-picker

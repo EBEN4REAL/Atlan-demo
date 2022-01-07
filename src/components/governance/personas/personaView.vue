@@ -16,17 +16,19 @@
                     size="minimal"
                 >
                 </SearchAndFilter>
-                <AtlanBtn
-                    :disabled="isEditing"
-                    class="flex-none ml-4"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                    data-test-id="add-persona"
-                    @click="() => (modalVisible = true)"
-                >
-                    New
-                </AtlanBtn>
+                <a-tooltip>
+                    <template #title>New Persona</template>
+                    <AtlanBtn
+                        :disabled="isEditing"
+                        class="flex-none px-2 ml-4"
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        data-test-id="add-persona"
+                        @click="() => (modalVisible = true)"
+                    >
+                        <AtlanIcon icon="Add" /> </AtlanBtn
+                ></a-tooltip>
             </div>
 
             <ExplorerList

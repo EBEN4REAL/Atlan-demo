@@ -87,7 +87,7 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center overflow-x-hidden">
-                <span class="w-5 h-5 mr-2 -mt-1.5 text-xl">{{
+                <span class="w-7 h-7 mr-2 -mt-1.5" style="font-size: 28px">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'
@@ -95,10 +95,19 @@
 
                 <div class="flex group-hover:text-primary" style="width: 90%">
                     <div class="flex flex-col">
-                        <span
-                            class="mr-1 text-base font-bold text-gray-700 truncate"
-                            >{{ selectedCollection?.attributes?.name }}</span
-                        >
+                        <div class="flex items-center">
+                            <span
+                                class="mr-2 text-base font-bold text-gray-700 truncate"
+                                >{{
+                                    selectedCollection?.attributes?.name
+                                }}</span
+                            >
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="self-center h-4 text-gray-400"
+                            ></AtlanIcon>
+                        </div>
+
                         <span class="mr-1 text-xs text-gray-500 truncate">{{
                             isCollectionPrivate(selectedCollection, username)
                                 ? 'Private'
@@ -121,11 +130,6 @@
                         icon="PublicCollection"
                         class="self-center w-4 h-4 -mt-1"
                     ></AtlanIcon> -->
-
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="self-center h-4 ml-1 -mt-3.5 text-gray-400"
-                    ></AtlanIcon>
                 </div>
             </div>
         </div>

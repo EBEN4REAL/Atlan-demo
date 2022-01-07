@@ -1,4 +1,3 @@
-/** */
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-col w-full h-full">
@@ -8,6 +7,7 @@
                     v-model="queryText"
                     :autofocus="true"
                     :allow-clear="true"
+                    :class="searchBarClass"
                     size="large"
                     :placeholder="placeholder"
                     @change="handleSearchChange"
@@ -22,7 +22,7 @@
                     </template>
                 </SearchAdvanced>
             </div>
-            <div>
+            <div :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
                     class="mt-3"
@@ -156,6 +156,14 @@
                 required: false,
             },
             assetListClass: {
+                type: String,
+                default: '',
+            },
+            aggregationTabClass: {
+                type: String,
+                default: '',
+            },
+            searchBarClass: {
                 type: String,
                 default: '',
             },

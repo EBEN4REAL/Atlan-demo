@@ -1,29 +1,28 @@
 <template>
-    <div class="h-full bg-white">
-        <Assets
-            v-if="fetchAssets"
-            :show-filters="false"
-            :initial-filters="tabFilter"
-            :static-use="true"
-            emptyViewText="No related assets found"
-            page="profile"
-            :class="$style.relatedAssetsTab"
-            :enableSidebarDrawer="true"
-        />
-    </div>
+    <AssetList
+        v-if="fetchAssets"
+        class="bg-white"
+        :filters="tabFilter"
+        :static-use="true"
+        emptyViewText="No related assets found"
+        :enableSidebarDrawer="true"
+        aggregationTabClass="px-4"
+        searchBarClass="px-4 my-1"
+        asset-list-class="mx-4 mt-1"
+    />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Assets from '@/assets/index.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
     import { useRelations } from '~/composables/discovery/useRelations'
     import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'RelatedAssetsTab',
-        components: { Assets },
+        components: { AssetList },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -34,11 +33,8 @@
             const { selectedAsset } = toRefs(props)
             const fetchAssets = ref(false)
 
-            const {
-                guidList,
-                isLoading: isFetchingGuids,
-                isReady: isGuidArrayReady,
-            } = useRelations(selectedAsset)
+            const { guidList, isReady: isGuidArrayReady } =
+                useRelations(selectedAsset)
 
             const tabFilter = computed(() => {
                 return { guidList: guidList.value }
@@ -50,11 +46,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .relatedAssetsTab {
-        :global(.ant-tabs-tab:first-child) {
-            @apply ml-0 !important;
-        }
-    }
-</style>

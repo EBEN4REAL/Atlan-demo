@@ -87,12 +87,14 @@ export function useDiscoverList({
                 list.value.push(...data.value?.entities)
                 freshList.value = [...data?.value?.entities]
             }
-        } else if (data.value?.entities) {
-            list.value = [...data?.value?.entities]
-            freshList.value = [...data?.value?.entities]
         } else {
-            list.value = []
-            freshList.value = []
+            if (data.value?.entities) {
+                list.value = [...data?.value?.entities]
+                freshList.value = [...data?.value?.entities]
+            } else {
+                list.value = []
+                freshList.value = []
+            }
         }
     })
 
@@ -114,6 +116,7 @@ export function useDiscoverList({
             })
             return temp
         }
+
         const listMap = aggregationMap(aggregationKey).map((i) =>
             i.key.toLowerCase()
         )

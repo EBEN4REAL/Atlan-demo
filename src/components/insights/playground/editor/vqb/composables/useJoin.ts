@@ -41,7 +41,7 @@ export function useJoin() {
         if (rowIndex === 0 && subIndex === 0) {
             const columnsFirstTableQualifiedName =
                 activeInlineTab.playground.vqb?.selectedTables[0]
-                    .tableQualifiedName
+                    ?.tableQualifiedName
 
             return { allowed: [columnsFirstTableQualifiedName], notAllowed: [] }
         }
@@ -67,7 +67,7 @@ export function useJoin() {
         if (subIndex === 0) {
             const columnsFirstTableQualifiedName =
                 activeInlineTab.playground.vqb?.selectedTables[0]
-                    .tableQualifiedName
+                    ?.tableQualifiedName
             const uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow =
                 activeInlineTab.playground.vqb.selectedTables
                     .filter((table) => table.addedBy.includes('joins'))
@@ -83,7 +83,7 @@ export function useJoin() {
         if (subIndex === 1) {
             const columnsFirstTableQualifiedName =
                 activeInlineTab.playground.vqb?.selectedTables[0]
-                    .tableQualifiedName
+                    ?.tableQualifiedName
             const uniqueTableQualifiedNamesSelectedInJoinsPanelTillNow =
                 activeInlineTab.playground.vqb.selectedTables
                     .filter((table) => table.addedBy.includes('joins'))

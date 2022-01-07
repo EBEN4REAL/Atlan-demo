@@ -132,7 +132,11 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="right"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
@@ -241,7 +245,11 @@
                             v-for="(item, index) in tableDropdownOption"
                             :key="item?.label + index"
                         >
-                            <PopoverAsset :item="item.item" placement="right">
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
+                            >
                                 <template #button>
                                     <AtlanBtn
                                         class="flex-none px-0"
@@ -349,7 +357,11 @@
                             v-for="(item, index) in columnDropdownOption"
                             :key="item.value + index + item.qualifiedName"
                         >
-                            <PopoverAsset :item="item.item" placement="left">
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
+                            >
                                 <template #button>
                                     <AtlanBtn
                                         class="flex-none px-0"

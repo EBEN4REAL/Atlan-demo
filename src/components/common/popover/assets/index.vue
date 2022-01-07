@@ -1,5 +1,5 @@
 <template>
-    <a-popover title="" placement="left" :mouseEnterDelay="0.5">
+    <a-popover title="" placement="left" :mouseEnterDelay="mouseEnterDelay">
         <template #content>
             <div class="relation-ship">
                 <div class="flex justify-between">
@@ -228,10 +228,15 @@
                     return {}
                 },
             },
+            mouseEnterDelay: {
+                type: Number,
+                required: false,
+                default: 0.5,
+            },
         },
         emits: [],
         setup(props, { slots }) {
-            const { item } = toRefs(props)
+            const { item, mouseEnterDelay } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -281,6 +286,7 @@
             const path = computed(() => `/assets/${item.value.guid}`)
 
             return {
+                mouseEnterDelay,
                 certificateStatus,
                 certificateUpdatedBy,
                 certificateUpdatedAt,

@@ -8,7 +8,7 @@
         <slot name="prefix" />
         <slot v-if="$slots.label" name="label" />
         <span
-            v-else-if="isLoading"
+            v-else-if="isLoading || loading"
             class="text-sm"
             :class="{ 'font-bold': bold }"
         >
@@ -59,7 +59,13 @@
                 default: () => 'atlan-btn',
                 required: false,
             },
+            // depreciate this , use loading,
             isLoading: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
+            loading: {
                 type: Boolean,
                 default: () => false,
                 required: false,

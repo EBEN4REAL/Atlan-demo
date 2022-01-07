@@ -15,7 +15,8 @@
                 <span
                     v-if="!isEdit && description(selectedAsset)"
                     class="whitespace-pre-wrap"
-                >{{ description(selectedAsset) }}</span>
+                    >{{ description(selectedAsset) }}</span
+                >
                 <span
                     v-else-if="!isEdit && description(selectedAsset) === ''"
                     class="text-gray-500"
@@ -27,16 +28,22 @@
                     v-model:value="localValue"
                     tabindex="0"
                     :rows="4"
-                    @blur="handleBlur($event)"
-                    @press-enter="handleBlur($event)"
-                    @keydown.esc="handleBlur($event)"
+                    @blur="handleBlur"
+                    @keyup.esc="handleCancel"
                 ></a-textarea>
             </div>
         </div>
-        <p v-if="descriptionRef !== null" class="text-xs text-right mt-1 text-gray-500">
-            <span class="font-bold">{{ isMac ? "Return" : "Enter" }}</span> to save
+        <p
+            v-if="descriptionRef !== null"
+            class="mt-1 text-xs text-right text-gray-500"
+        >
+            <span class="font-bold">{{ isMac ? 'Return' : 'Enter' }}</span> to
+            save
             <span class="ml-2">
-                <span class="font-bold">Shift + {{ isMac ? "Return" : "Enter" }}</span> to add a new line
+                <span class="font-bold"
+                    >Shift + {{ isMac ? 'Return' : 'Enter' }}</span
+                >
+                to add a new line
             </span>
         </p>
     </div>
@@ -63,7 +70,6 @@
     } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { Modal } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -102,53 +108,12 @@
              * A utility function to update the model value, and emit a `change`
              * event.
              */
-            const updateValue = () => {
+            const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
 
-            // Do we need to show the confirmation modal
-            const needToConfirm = ref(true)
-
-            /**
-             * A utility function to handle a change in the value, and show a
-             * confirmation modal if necessary.
-             */
-            const handleChange = () => {
-                // if (needToConfirm.value && localValue.value !== modelValue.value) {
-                if (false) {
-                    // Show a modal, if required.
-                    Modal.confirm({
-                        title: "Do you want to save your changes?",
-                        content: "You made changes to the description, but didn't save them. Click on 'Yes' if you want to.",
-                        keyboard: false,
-                        okText: "Yes",
-                        cancelText: "No",
-                        onOk() {
-                            updateValue()
-                        },
-                        onCancel() {
-                            localValue.value = modelValue.value
-                            isEdit.value = false
-                        }
-                    })
-                }
-                else {
-                    updateValue()
-                }
-            }
-
             const { d, enter, shift } = useMagicKeys()
-
-            /**
-             * Here, the enter key, acts as a reset switch. If it is pressed,
-             * we reset the modal show indicator to true.
-             */
-            watchEffect(() => {
-                if (enter.value && !shift.value) {
-                    needToConfirm.value = true
-                }
-            })
 
             const { start } = useTimeoutFn(() => {
                 descriptionRef.value?.focus()
@@ -156,17 +121,10 @@
 
             /**
              * A utility function to handle both blur and keyboard events
-             * @param event
              */
-            const handleBlur = (event: FocusEvent | KeyboardEvent) => {
-                if (
-                    event instanceof KeyboardEvent
-                    && event.key === 'Enter'
-                ) {
-                    if (event.getModifierState('Shift')) {
-                        return
-                    }
-                    needToConfirm.value = false
+            const handleBlur = () => {
+                if (enter.value) {
+                    return
                 }
                 isEdit.value = false
                 handleChange()
@@ -179,8 +137,15 @@
                 }
             }
 
+            const handleCancel = () => {
+                if (isEdit.value) {
+                    isEdit.value = false
+                    localValue.value = modelValue.value
+                }
+            }
+
             // The shortcut keys will change in accordance with this property.
-            const isMac = (window.navigator.userAgent.indexOf("Mac") !== -1)
+            const isMac = window.navigator.userAgent.indexOf('Mac') !== -1
 
             const activeElement = useActiveElement()
             const notUsingInput = computed(
@@ -197,13 +162,16 @@
                     handleEdit()
                 }
             )
-
-            watch(
-                selectedAsset,
-                () => {
-                    localValue.value = description(selectedAsset.value)
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) {
+                    isEdit.value = false
+                    handleChange()
                 }
-            )
+            })
+
+            watch(selectedAsset, () => {
+                localValue.value = description(selectedAsset.value)
+            })
 
             return {
                 localValue,
@@ -214,8 +182,8 @@
                 start,
                 handleBlur,
                 description,
-                updateValue,
-                isMac
+                isMac,
+                handleCancel,
             }
         },
     })

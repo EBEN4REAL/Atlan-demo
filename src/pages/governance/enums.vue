@@ -24,16 +24,21 @@
                 sidebar-class="bg-white"
             >
                 <template #action>
-                    <AtlanBtn
-                        v-auth="map.CREATE_ENUM"
-                        class="flex-none"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        @click="toggleAddModal(true)"
-                    >
-                        <AtlanIcon icon="Add" class="-mx-1 text-gray" />
-                    </AtlanBtn>
+                    <a-tooltip>
+                        <template #title>New Enum</template>
+                        <AtlanBtn
+                            v-auth="map.CREATE_ENUM"
+                            class="flex-none"
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
+                            @click="toggleAddModal(true)"
+                        >
+                            <AtlanIcon
+                                icon="Add"
+                                class="-mx-1 text-gray"
+                            /> </AtlanBtn
+                    ></a-tooltip>
                 </template>
 
                 <template #sidebar>

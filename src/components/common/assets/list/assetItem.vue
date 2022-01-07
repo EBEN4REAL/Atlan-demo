@@ -44,7 +44,7 @@
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
-                            :should-open-in-new-tab="openAssetProfileInANewTab"
+                            :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
 
@@ -478,13 +478,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        computed,
-        PropType,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -570,15 +564,15 @@
                 type: Number,
                 require: true,
             },
-            assetNameTruncatePercentage:{
-                type:String,
-                default:'95%',
-                required: false
+            assetNameTruncatePercentage: {
+                type: String,
+                default: '95%',
+                required: false,
             },
-            openAssetProfileInANewTab:{
-                type:Boolean,
-                default: false
-            }
+            openAssetProfileInNewTab: {
+                type: Boolean,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {

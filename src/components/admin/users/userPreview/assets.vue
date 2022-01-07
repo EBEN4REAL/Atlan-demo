@@ -4,9 +4,10 @@
             Owned Assets
         </div>
         <div v-auth="map.LIST_USERS" class="flex flex-col h-full rounded-lg">
-            <AssetsV2
+            <AssetList
                 :asset-name-truncate-percentage="'93%'"
-                :open-asset-profile-in-a-new-tab="true"
+                :asset-list-class="'h-5/6'"
+                :open-asset-profile-in-new-tab="true"
                 :filters="ownerFilter"
                 :empty-view-text="
                     selectedUser || selectedGroup
@@ -18,40 +19,21 @@
                         : ''
                 "
             />
-            <!-- <AssetsWrapper
-                :key="'user-asset-list'"
-                :initial-filters="ownerFilter"
-                :show-filters="false"
-                :static-use="true"
-                :show-aggrs="true"
-                class="asset-list"
-                page="admin"
-                :preference="{ sort: 'default' }"
-                :empty-view-text="
-                    selectedUser || selectedGroup
-                        ? `Seems like ${
-                              selectedUser
-                                  ? selectedUser.name
-                                  : selectedGroup.name
-                          } doesn't own any assets.`
-                        : ''
-                "
-            /> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs, provide } from 'vue'
+    import { computed, defineComponent, toRefs } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
-    import AssetsV2 from '@/assetsV2.vue'
+    import AssetList from '~/components/common/assetList/assetList.vue'
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'AssetsTabs',
         components: {
             AssetsWrapper,
-            AssetsV2,
+            AssetList,
         },
         props: {
             selectedUser: {
@@ -85,10 +67,7 @@
 </script>
 
 <style lang="less" scoped>
-    .asset-list {
-        height: calc(100vh - 8rem) !important;
-    }
     .component-height {
-        height: calc(100vh - 5rem) !important;
+        height: calc(100% - 5rem) !important;
     }
 </style>

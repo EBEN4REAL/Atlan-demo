@@ -8,6 +8,8 @@
                     v-model="queryText"
                     :autofocus="true"
                     :allow-clear="true"
+                    size="large"
+                    :placeholder="placeholder"
                     @change="handleSearchChange"
                 >
                     <template #postFilter>
@@ -23,6 +25,7 @@
             <div>
                 <AggregationTabs
                     v-model="postFilters.typeName"
+                    class="mt-3"
                     :list="assetTypeAggregationList"
                     @change="fetchList(0)"
                 />
@@ -46,16 +49,16 @@
                 <EmptyView
                     empty-screen="EmptyDiscover"
                     :desc="
-                        !queryText
-                            ? emptyViewText
-                            : 'We didn\'t find anything that matches your search criteria'
+                        queryText
+                            ? 'We didn\'t find anything that matches your search criteria'
+                            : emptyViewText
                     "
-                    :button-text="!queryText ? null : 'Clear search'"
+                    :button-text="queryText ? 'Clear search' : null"
                     class="flex items-center justify-center h-full"
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>
-            <div v-else class="h-full overflow-auto">
+            <div v-else class="overflow-auto" :class="assetListClass">
                 <AssetList
                     :list="list"
                     :is-load-more="isLoadMore"
@@ -67,8 +70,8 @@
                             :asset-name-truncate-percentage="
                                 assetNameTruncatePercentage
                             "
-                            :open-asset-profile-in-a-new-tab="
-                                openAssetProfileInANewTab
+                            :open-asset-profile-in-new-tab="
+                                openAssetProfileInNewTab
                             "
                             :enable-sidebar-drawer="enableSidebarDrawer"
                             :preference="preference"
@@ -84,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, watch } from 'vue'
+    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -93,7 +96,7 @@
     import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useFetchAssetList from '~/composables/discovery/useFetchAssetList'
+    import useFetchAssetList from './useFetchAssetList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
         AssetAttributes,
@@ -102,7 +105,7 @@
     } from '~/constant/projection'
 
     export default defineComponent({
-        name: 'AssetsV2',
+        name: 'AssetListComponent',
         components: {
             SearchAdvanced,
             AggregationTabs,
@@ -130,7 +133,7 @@
                 default: false,
                 required: false,
             },
-            openAssetProfileInANewTab: {
+            openAssetProfileInNewTab: {
                 type: Boolean,
                 default: false,
             },
@@ -151,6 +154,10 @@
                 type: String,
                 default: 'ASSET_LIST',
                 required: false,
+            },
+            assetListClass: {
+                type: String,
+                default: '',
             },
         },
         emits: ['handleAssetCardClick'],
@@ -230,6 +237,17 @@
                 fetchList()
             }
 
+            const placeholder = computed(() => {
+                const found = assetTypeAggregationList.value.find(
+                    (item) => item.id === postFilters.value.typeName
+                )
+
+                if (found) {
+                    return `Search ${found?.label?.toLowerCase()} assets`
+                }
+                return 'Search all assets'
+            })
+
             watch(
                 [filters, postFilters, aggregations],
                 () => {
@@ -250,6 +268,7 @@
                 isValidating,
                 assetTypeAggregationList,
                 searchDirtyTimestamp,
+                placeholder,
                 updateList,
                 fetchList,
                 handleLoadMore,

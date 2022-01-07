@@ -11,50 +11,86 @@
             <!-- Header -->
             <div class="mb-6 text-lg">Downstream Impacted Assets</div>
 
-            <!-- 
-                Name
-                Depth 
-                Owner 
-                Classifications
-                Terms
-                Custom Metadata
-             -->
-
             <!-- Content - Table -->
             <div class="relative mb-6">
                 <a-table
                     :columns="columns"
                     :data-source="columnsData"
-                    :scroll="columnsData.length > 7 ? { y: 300 } : null"
+                    :scroll="{ y: 300, x: 500 }"
                     :pagination="false"
-                    size="small"
+                    size="middle"
                     :loading="isLoading"
+                    bordered
                 >
                     <template #bodyCell="{ text, column }">
+                        <!-- Asset Details -->
                         <template v-if="column.key === 'details'">
-                            <div class="flex items-center gap-1">
-                                <Tooltip
-                                    :tooltip-text="text.name"
-                                    classes="text-base font-bold text-gray-700  mb-0"
-                                />
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-1">
+                                    <Tooltip
+                                        :tooltip-text="text.name"
+                                        classes="text-sm text-primary mb-0"
+                                    />
 
-                                <!-- <CertificateBadge
-                                    v-if="text.certificateStatus"
-                                    :status="text.certificateStatus"
-                                    :username="text.certificateUpdatedBy"
-                                    :timestamp="text.certificateUpdatedAt"
-                                    class="mb-1 ml-1"
-                                ></CertificateBadge> -->
+                                    <CertificateBadge
+                                        v-if="text.certificateStatus"
+                                        :status="text.certificateStatus"
+                                        :username="text.certificateUpdatedBy"
+                                        :timestamp="text.certificateUpdatedAt"
+                                        class="mb-1 ml-1"
+                                    ></CertificateBadge>
+                                </div>
+                                <div
+                                    class="flex items-center text-sm text-gray-500"
+                                >
+                                    <img
+                                        :src="text.sourceImg"
+                                        class="h-3 mr-1 mb-0.5"
+                                    />
+                                    <span class="tracking-wider uppercase">
+                                        {{ text.typeName }}
+                                    </span>
+                                    <span class="px-1 text-gray-400">•</span>
+                                    <span class="truncate">{{
+                                        text.qfPath
+                                    }}</span>
+                                </div>
                             </div>
-                            <!-- {{ text.name }} -->
                         </template>
+
                         <!-- Depth -->
+                        <!-- FIXME: This depth number is dummy for now, change it to use actual depth -->
                         <template v-else-if="column.key === 'depth'">
                             <div class="flex items-center gap-1">
                                 <AtlanIcon icon="Platform" />
                                 <span class="text-sm text-gray">{{
                                     text
                                 }}</span>
+                            </div>
+                        </template>
+
+                        <!-- Owners -->
+                        <!-- FIXME: Change the design as in Figma. -->
+                        <template v-else-if="column.key === 'owners'">
+                            <div class="flex flex-wrap items-center gap-x-1">
+                                <span
+                                    v-for="(owner, idx) in text.slice(0, 2)"
+                                    :key="idx"
+                                    class="px-2 py-1 text-sm border rounded-full text-gray"
+                                >
+                                    {{ owner }}
+                                </span>
+                                <span
+                                    class="text-sm text-gray-500"
+                                    v-if="text.length - 2 > 0"
+                                >
+                                    +{{ text.length - 2 }}
+                                </span>
+                                <span
+                                    v-if="!text.length"
+                                    class="text-sm text-gray-500"
+                                    >--</span
+                                >
                             </div>
                         </template>
 
@@ -73,7 +109,10 @@
                                     :allow-delete="false"
                                 />
 
-                                <span v-if="text.length - 2 > 0">
+                                <span
+                                    v-if="text.length - 2 > 0"
+                                    class="text-sm text-gray-500"
+                                >
                                     +{{ text.length - 2 }}
                                 </span>
                                 <span
@@ -93,7 +132,10 @@
                                     :term="term"
                                     :allow-delete="false"
                                 />
-                                <span v-if="text.length - 2 > 0">
+                                <span
+                                    v-if="text.length - 2 > 0"
+                                    class="text-sm text-gray-500"
+                                >
                                     +{{ text.length - 2 }}
                                 </span>
                                 <span
@@ -137,7 +179,7 @@
     import XLSX from 'xlsx'
 
     /** COMPOSABLES */
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGetNodes from './useGetNodes'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -169,7 +211,13 @@
             const { graph, guid } = toRefs(props)
             const columnsData = ref([])
 
-            const { ownerGroups, ownerUsers } = useAssetInfo()
+            const {
+                ownerGroups,
+                ownerUsers,
+                certificateUpdatedAt,
+                getConnectorImage,
+                assetTypeLabel,
+            } = useAssetInfo()
             const { classificationList } = useTypedefData()
 
             const getClassification = (ids: String[]) =>
@@ -226,15 +274,22 @@
                                 name:
                                     entity.displayText ||
                                     entity.attributes.name,
+                                typeName:
+                                    assetTypeLabel(entity) || entity.typeName,
+                                sourceImg: getConnectorImage(entity),
+                                qfPath: entity.attributes?.qualifiedName
+                                    ?.split('/')
+                                    .slice(3, -1)
+                                    .join('/'),
                                 certificateStatus:
                                     entity.attributes?.certificateStatus,
                                 certificateUpdatedBy:
                                     entity.attributes?.certificateUpdatedBy,
                                 certificateUpdatedAt:
-                                    entity.attributes?.certificateUpdatedAt,
+                                    certificateUpdatedAt(entity),
                             },
                             depth: 1,
-                            owner: [
+                            owners: [
                                 ...ownerUsers(entity),
                                 ...ownerGroups(entity),
                             ],
@@ -286,15 +341,16 @@
                 downloadImpactedAssets,
                 getClassification,
                 isPropagated,
+                getConnectorImage,
+                assetTypeLabel,
                 isLoading,
                 columnsData,
                 columns: [
                     {
-                        width: 400,
+                        width: 300,
                         title: 'Name',
                         dataIndex: 'details',
                         key: 'details',
-                        // ellipsis: true,
                         fixed: 'left',
                     },
                     {
@@ -305,9 +361,9 @@
                     },
                     {
                         width: 250,
-                        title: 'Owner',
-                        dataIndex: 'owner',
-                        key: 'owner',
+                        title: 'Owners',
+                        dataIndex: 'owners',
+                        key: 'owners',
                     },
                     {
                         width: 400,

@@ -66,10 +66,10 @@
                     </div>
                     <a-modal
                         v-model:visible="deleteConfirm"
-                        :width="155"
+                        :width="340"
                         :closable="false"
                     >
-                        <div class="p-4" style="width: 340px; height: 85px">
+                        <div class="p-4" style="height: 85px">
                             <p class="mb-1 font-bold text-md">
                                 Delete {{ metadata.displayName }}
                             </p>

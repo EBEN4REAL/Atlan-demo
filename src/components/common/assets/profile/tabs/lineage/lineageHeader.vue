@@ -1,7 +1,10 @@
 <template>
     <div class="lineage-control header">
         <div class="controls">
-            <div class="flex items-center control-item">
+            <div
+                class="flex items-center control-item"
+                @click="showSearch = !showSearch"
+            >
                 <a-tooltip placement="top">
                     <template #title>
                         <span>search graph</span>
@@ -9,11 +12,10 @@
                     <AtlanIcon
                         icon="Search"
                         class="mx-1 my-2 outline-none"
-                        @click="showSearch = !showSearch"
                     ></AtlanIcon>
                 </a-tooltip>
-                <LineageSearch v-if="showSearch" class="ml-2" />
             </div>
+            <LineageSearch v-if="showSearch" />
             <div class="control-item" @click="onShowImpactedAssets()">
                 <a-tooltip placement="top">
                     <template #title>

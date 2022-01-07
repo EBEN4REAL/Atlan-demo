@@ -112,7 +112,7 @@
                         </template>
                         <a-tooltip placement="top">
                             <template #title>
-                                <span>Preferences</span>
+                                <span>Lineage View</span>
                             </template>
 
                             <AtlanIcon
@@ -146,7 +146,7 @@
                 <div class="control-item" @click="fit(baseEntityGuid)">
                     <a-tooltip placement="top">
                         <template #title>
-                            <span>Re-center</span>
+                            <span>Refocus to base node</span>
                         </template>
 
                         <AtlanIcon
@@ -194,9 +194,6 @@
                             class="text-gray-500 outline-none"
                         ></AtlanIcon>
                     </a-tooltip>
-                </div>
-                <div class="text-sm text-gray-500 select-none control-item">
-                    {{ currZoom }}
                 </div>
             </template>
         </div>

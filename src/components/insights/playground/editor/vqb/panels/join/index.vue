@@ -154,6 +154,7 @@
                     v-model:subpanels="
                         activeInlineTab.playground.vqb.panels[index].subpanels
                     "
+                    :panelIndex="index"
                     v-model:selectedTables="
                         activeInlineTab.playground.vqb.selectedTables
                     "

@@ -88,6 +88,7 @@ const useGlossaryTree = ({
     const treeData = ref<TreeDataItem[]>([])
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
     const defaultBody = ref({})
+    const updateList = inject('updateList')
     const generateBody = () => {
         const dsl = useBody(
             queryText?.value,
@@ -813,7 +814,6 @@ const useGlossaryTree = ({
         }
     }
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
-        console.log(node)
         const assetToDrop = { ...dragNode.dataRef }
         const updateDragNodeAttributes = (newParent) => {
             const selectedAsset = ref(assetToDrop)
@@ -852,7 +852,9 @@ const useGlossaryTree = ({
             })
             whenever(asset, () => {
                 if (asset.value) {
-                    updateNode(asset.value)
+                    // updateNode(asset.value)
+                    console.log(updateList)
+                    if (updateList) updateList(asset.value)
                 }
             })
         }
@@ -863,8 +865,6 @@ const useGlossaryTree = ({
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
             const parentStack = recursivelyFindPath(node?.guid)[0]
-            console.log(parentStack)
-            console.log(nodeToParentKeyMap[node?.guid])
             const parentOfTerm = {
                 guid: parentStack[1],
             }
@@ -882,12 +882,10 @@ const useGlossaryTree = ({
             }, 0)
 
             if (parentStack[1]) {
-                console.log('adding to ', parentStack[1])
                 setTimeout(() => {
                     addNode(assetToDrop, { guid: parentStack[1] })
                 }, 0)
             } else {
-                console.log('adding to root')
                 setTimeout(() => {
                     addNode(assetToDrop)
                 }, 0)

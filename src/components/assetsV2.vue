@@ -27,8 +27,7 @@
                 <AssetList
                     :list="list"
                     :is-load-more="isLoadMore"
-                    :is-loading="isLoading"
-                    :is-validating="isValidating"
+                    :is-loading="isValidating"
                     @loadMore="handleLoadMore"
                 >
                     <template #default="{ item }">
@@ -97,7 +96,6 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
-            console.log('ye wala')
             const { list, isLoadMore, quickChange, isLoading, isValidating } =
                 useFetchAssetList({
                     queryText,

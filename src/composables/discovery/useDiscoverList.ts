@@ -112,7 +112,6 @@ export function useDiscoverList({
             })
             return temp
         }
-        debugger
         const listMap = aggregationMap(aggregationKey).map((i) =>
             i.key.toLowerCase()
         )

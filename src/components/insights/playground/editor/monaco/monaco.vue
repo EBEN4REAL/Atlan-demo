@@ -21,6 +21,7 @@
         toRaw,
         computed,
         ComputedRef,
+        nextTick,
     } from 'vue'
 
     import { languageTokens } from './sqlTokens'
@@ -228,17 +229,6 @@
                 certificateStatus,
             } = useAssetInfo()
 
-            let data1 = computed(() =>
-                document.getElementsByClassName(
-                    'suggest-icon codicon codicon-symbol-field'
-                )
-            )
-            let data2 = computed(() =>
-                document.getElementsByClassName(
-                    'suggest-icon codicon codicon-symbol-keyword'
-                )
-            )
-
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
@@ -262,41 +252,53 @@
 
                 // editor autosuggestion icons
 
-                promise.then((item) => {
-                    let items = item.suggestions
+                setTimeout(() => {
+                    promise.then((item) => {
+                        let items = item.suggestions
 
-                    console.log('suggestions: ', items)
+                        let data1 = document.getElementsByClassName(
+                            'suggest-icon codicon codicon-symbol-field'
+                        )
 
-                    for (var i = 0; i < items.length; i++) {
-                        let item = items[i].documentation?.entity
+                        let data2 = document.getElementsByClassName(
+                            'suggest-icon codicon codicon-symbol-keyword'
+                        )
 
-                        if (
-                            (item && assetType(item) === 'Table') ||
-                            assetType(item) === 'View'
-                        ) {
-                            if (data1.value[i] && data1.value[i]?.style) {
-                                data1.value[
-                                    i
-                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/${getEntityStatusIcon(
-                                    assetType(item),
-                                    certificateStatus(item)
-                                )}.png")`
-                            }
-                        } else if (item && assetType(item) === 'Column') {
-                            if (data1.value[i] && data1.value[i]?.style) {
-                                data1.value[
-                                    i
-                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/Column.png")`
-                            }
-                        } else {
-                            if (data2.value[i] && data2.value[i].style) {
-                                data2.value[
-                                    i
-                                ].style.backgroundImage = `url("/src/assets/images/insights/autocomplete/default.png")`
+                        // console.log('suggestions: ', {
+                        //     data1: data1,
+                        //     data2: data2,
+                        // })
+                        for (var i = 0; i < items.length; i++) {
+                            let item = items[i].documentation?.entity
+
+                            if (
+                                (item && assetType(item) === 'Table') ||
+                                assetType(item) === 'View'
+                            ) {
+                                if (data1[i] && data1[i]?.style) {
+                                    data1[
+                                        i
+                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/${getEntityStatusIcon(
+                                        assetType(item),
+                                        certificateStatus(item)
+                                    )}.png")`
+                                }
+                            } else if (item && assetType(item) === 'Column') {
+                                if (data1[i] && data1[i]?.style) {
+                                    data1[
+                                        i
+                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/Column.png")`
+                                }
+                            } else {
+                                if (data2[i] && data2[i].style) {
+                                    data2[
+                                        i
+                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/default.png")`
+                                }
                             }
                         }
-                    }
-                })
+                    })
+                }, 150)
             }
 
             // try {
@@ -893,6 +895,7 @@
     :global(.cldr.codicon.codicon-folding-collapsed) {
         left: 35px !important;
     }
+
     :global(.editor-widget.suggest-widget.visible) {
         // top: 28px;
         // left: 207px;
@@ -926,6 +929,17 @@
     :global(.suggest-icon.codicon.codicon-symbol-field)::before {
         visibility: hidden !important;
     }
+    :global(.suggest-icon.codicon.codicon-symbol-text)::before {
+        visibility: hidden !important;
+    }
+    :global(.suggest-icon.codicon.codicon-symbol-text) {
+        background-image: url('~/assets/images/insights/autocomplete/default.png') !important;
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
+
     :global(.monaco-list-row.show-file-icons.string-label.focused) {
         @apply bg-gray-light !important;
         @apply text-gray-700 !important;

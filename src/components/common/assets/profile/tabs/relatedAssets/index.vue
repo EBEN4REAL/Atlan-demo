@@ -2,6 +2,7 @@
     <div class="h-full p-6 pt-6">
         <div class="bg-white rounded">
             <Assets
+                v-if="fetchAssets"
                 :show-filters="false"
                 :initial-filters="tabFilter"
                 :static-use="true"
@@ -15,14 +16,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Assets from '@/assets/index.vue'
+    import { useRelations } from '~/composables/discovery/useRelations'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
-        name: 'LinkedAssetsTab',
+        name: 'RelatedAssetsTab',
         components: { Assets },
         props: {
             selectedAsset: {
@@ -31,11 +33,22 @@
             },
         },
         setup(props) {
-            const { qualifiedName, assetType } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            const tabFilter = computed(() => {})
+            const fetchAssets = ref(false)
 
-            return { tabFilter }
+            const {
+                guidList,
+                isLoading: isFetchingGuids,
+                isReady: isGuidArrayReady,
+            } = useRelations(selectedAsset)
+
+            const tabFilter = computed(() => {
+                return { guidList: guidList.value }
+            })
+
+            whenever(isGuidArrayReady, () => (fetchAssets.value = true))
+
+            return { tabFilter, fetchAssets }
         },
     })
 </script>

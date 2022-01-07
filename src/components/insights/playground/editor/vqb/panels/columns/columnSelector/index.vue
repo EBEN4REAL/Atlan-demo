@@ -136,7 +136,11 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="left"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"

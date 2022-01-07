@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!showVQB">
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"

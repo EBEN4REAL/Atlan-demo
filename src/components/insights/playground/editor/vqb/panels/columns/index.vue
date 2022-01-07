@@ -216,7 +216,7 @@
                     expand.value =
                         activeInlineTab.value.playground.vqb.panels[
                             index.value
-                        ].expand
+                        ]?.expand
                 }
             )
 

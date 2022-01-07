@@ -154,6 +154,7 @@
                     v-model:subpanels="
                         activeInlineTab.playground.vqb.panels[index].subpanels
                     "
+                    :panelIndex="index"
                     v-model:selectedTables="
                         activeInlineTab.playground.vqb.selectedTables
                     "
@@ -254,9 +255,9 @@
                 () => activeInlineTab.value.playground.vqb.panels,
                 () => {
                     expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
+                        activeInlineTab.value.playground.vqb?.panels[
                             index.value
-                        ].expand
+                        ]?.expand
                 }
             )
             const checkbox = ref(true)

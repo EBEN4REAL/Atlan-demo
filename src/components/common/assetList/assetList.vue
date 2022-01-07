@@ -200,6 +200,7 @@
                 isValidating,
                 assetTypeAggregationList,
                 updateList,
+                error,
             } = useFetchAssetList({
                 queryText,
                 offset,
@@ -268,6 +269,7 @@
                 isValidating,
                 assetTypeAggregationList,
                 searchDirtyTimestamp,
+                error,
                 placeholder,
                 updateList,
                 fetchList,

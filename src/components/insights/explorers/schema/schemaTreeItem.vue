@@ -121,13 +121,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -248,13 +248,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -495,13 +495,13 @@
                                     >
 
                                     <AtlanIcon
-                                        icon="Info"
+                                        icon="SidebarSwitch"
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'
                                                 : ''
                                         "
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto outline-none"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>

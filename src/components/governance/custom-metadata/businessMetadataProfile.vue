@@ -56,7 +56,7 @@
                                     <AtlanIcon
                                         v-else
                                         icon="Cancel"
-                                        class="h-4 text-red-600"
+                                        class="h-3 text-gray-500"
                                         @click="attrsearchText = ''"
                                     />
                                 </template>
@@ -72,7 +72,32 @@
                         Add property
                     </a-button>
                 </div>
+                <div v-if="!searchedAttributeList.length" class="mt-40">
+                    <a-empty
+                        :image="noPropertyImage"
+                        :image-style="{
+                            height: '115px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }"
+                    >
+                        <template #description>
+                            <!-- <p
+                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
+                            class="font-bold"
+                        >
+                            Start adding properties
+                        </p>-->
+                            <p>No properties found</p>
+                        </template>
+
+                        <Button class="mx-auto" @click="attrsearchText = ''"
+                            >Clear Search</Button
+                        >
+                    </a-empty>
+                </div>
                 <PropertyList
+                    v-else
                     :metadata="localBm"
                     :properties="searchedAttributeList"
                     @remove-property="handleRemoveAttribute"
@@ -139,9 +164,11 @@
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import Button from '@/UI/button.vue'
 
     export default defineComponent({
         components: {
+            Button,
             CreateUpdateInfo,
             MetadataHeaderButton,
             AddPropertyDrawer,

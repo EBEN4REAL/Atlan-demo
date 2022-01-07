@@ -102,6 +102,7 @@
                     <div style="width: 130px">
                         <a-button
                             class="px-1 py-0 border-0"
+                            style="background: inherit"
                             @click="
                                 copyAPI(property.displayName, 'Name Copied!')
                             "
@@ -109,7 +110,11 @@
                             <AtlanIcon icon="CopyOutlined" />
                         </a-button>
                         <a-dropdown :trigger="['click']">
-                            <a-button class="border-0 rounded" size="small">
+                            <a-button
+                                class="border-0 rounded"
+                                size="small"
+                                style="background: inherit"
+                            >
                                 <AtlanIcon icon="KebabMenu"></AtlanIcon>
                             </a-button>
                             <template #overlay>

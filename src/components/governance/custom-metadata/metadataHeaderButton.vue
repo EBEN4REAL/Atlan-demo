@@ -53,7 +53,7 @@
                                 ? 'text-gray-200 cursor-not-allowed'
                                 : ''
                         "
-                        @click.prevent.stop="showDeleteConfirm"
+                        @click.prevent.stop="deleteConfirm = true"
                     >
                         <AtlanIcon
                             class="inline mb-1 mr-2"
@@ -64,6 +64,41 @@
                         />
                         Delete
                     </div>
+                    <a-modal
+                        v-model:visible="deleteConfirm"
+                        :width="155"
+                        :closable="false"
+                    >
+                        <div class="p-4" style="width: 340px; height: 85px">
+                            <p class="mb-1 font-bold text-md">
+                                Delete {{ metadata.displayName }}
+                            </p>
+                            <p class="text-md">
+                                Are you sure you want to delete the custom
+                                metadata?
+                            </p>
+                        </div>
+
+                        <template #footer>
+                            <div class="flex justify-end p-2 space-x-2">
+                                <AtlanButton
+                                    color="minimal"
+                                    padding="compact"
+                                    size="sm"
+                                    @click="deleteConfirm = false"
+                                    >Cancel</AtlanButton
+                                >
+                                <AtlanButton
+                                    color="danger"
+                                    size="sm"
+                                    padding="compact"
+                                    :loading="isLoading"
+                                    @click="deleteCM"
+                                    >Delete</AtlanButton
+                                >
+                            </div>
+                        </template>
+                    </a-modal>
                 </a-tooltip>
             </a-menu>
         </template>
@@ -85,10 +120,12 @@
     import map from '~/constant/accessControl/map'
     import { useTypedefStore } from '~/store/typedef'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         components: {
             addMetadataModal,
+            AtlanButton,
         },
         props: {
             metadata: {
@@ -131,14 +168,26 @@
                     // ? error getting handled in the composable (useDeleteTypedefs)
                 }
             })
+
+            const deleteConfirm = ref(false)
+
+            const deleteCM = () => {
+                message.loading({
+                    key: 'delete_cm',
+                    content: 'deleting...',
+                    duration: 2,
+                } as any)
+                mutate()
+            }
+
             const showDeleteConfirm = () => {
                 if (!props.allowDelete) return
                 Modal.confirm({
                     title: 'Delete metadata',
                     content: () =>
-                        h('div', { class: [''] }, [
+                        h('div', { class: ['h-10'] }, [
                             'Are you sure you want to delete',
-                            h('span', [' ']),
+                            h('span', ['']),
                             h(
                                 'span',
                                 {
@@ -163,6 +212,9 @@
             }
 
             return {
+                isLoading,
+                deleteConfirm,
+                deleteCM,
                 metadataModal,
                 openDeleteModal,
                 copyAPI,

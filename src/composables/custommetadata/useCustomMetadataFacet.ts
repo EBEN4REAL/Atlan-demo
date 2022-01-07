@@ -38,6 +38,7 @@ export default function useCustomMetadataFacet() {
         customMetadataList.value.forEach((bm) => {
             const attributeList = []
             bm.attributeDefs.forEach((a) => {
+                if (a.options.allowFiltering !== 'true') return
                 if (
                     typeof a.options?.customApplicableEntityTypes === 'string'
                 ) {

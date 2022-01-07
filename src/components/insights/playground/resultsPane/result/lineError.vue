@@ -54,11 +54,6 @@
         components: {},
         props: {},
         setup(props) {
-            const errorDecorations = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .errorDecorations
-            )
             /* Regex for extracting the line number & column number */
             const lineRegex = /(?:line )([0-9]+)/gim
             const columnRegex = /(?:column )([0-9]+)/gim
@@ -73,6 +68,13 @@
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const pos: Ref<any> = ref({})
             const renderedLines: Ref<any[]> = ref([])
+
+            const errorDecorations = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .errorDecorations
+            )
+
             const queryErrorObj = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result

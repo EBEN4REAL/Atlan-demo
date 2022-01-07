@@ -118,6 +118,7 @@
             </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
+                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -144,6 +145,7 @@
     import {
         defineComponent,
         toRefs,
+        watch,
         ref,
         ComputedRef,
         Ref,
@@ -199,9 +201,24 @@
                     activeInlineTab.value.playground.vqb?.panels?.length == 1
                 )
                     return true
+                if (
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
+                )
+                    return true
+
                 return false
             }
             const expand = ref(getInitialExpandValue())
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    expand.value =
+                        activeInlineTab.value.playground.vqb.panels[
+                            index.value
+                        ]?.expand
+                }
+            )
 
             const checkbox = ref(true)
             const { deletePanelsInVQB, handleAdd } = useVQB()
@@ -238,6 +255,11 @@
             }
             const toggleExpand = () => {
                 expand.value = !expand.value
+                activeInlineTab.value.playground.vqb.panels[
+                    index.value
+                ].expand =
+                    !activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             }
             const toggleActionPanel = () => {
                 actionPanel.value = !actionPanel.value

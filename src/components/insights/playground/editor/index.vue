@@ -769,15 +769,7 @@
                     : true
             )
 
-            //editor readonly state
             watch([activeInlineTab, editorInstance, readOnly], () => {
-                // console.log('change tab permission: ', {
-                //     isQueryCreatedByCurrentUser:
-                //         isQueryCreatedByCurrentUser.value,
-                //     hasQueryWritePermission: hasQueryWritePermission.value,
-                //     hasQueryReadPermission: hasQueryReadPermission.value,
-                // })
-                // console.log('change tab: ', readOnly.value)
                 if (toRaw(editorInstance.value)) {
                     toRaw(editorInstance.value).updateOptions({
                         readOnly: readOnly.value,

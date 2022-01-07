@@ -335,8 +335,13 @@ import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
 import primaryKey from '~/assets/images/icons/primaryKey.svg'
 import Revoke from '~/assets/images/icons/Revoke.svg'
+import Query24 from '~/assets/images/icons/query_24.svg'
+import Vqb24 from '~/assets/images/icons/vqb_24.svg'
+import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 
 export default {
+    Query24,
+    Vqb24,
     partitionKey,
     primaryKey,
     Array,
@@ -662,4 +667,5 @@ export default {
     CollectionIconLargeActive,
     Revoke,
     WarningIcon,
+    SidebarSwitch
 }

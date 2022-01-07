@@ -5,13 +5,13 @@
                 v-if="userList.length > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
             >
-                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
+                <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="h-8 mr-1 shadow-none"
+                        class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
@@ -225,6 +225,7 @@
             })
 
             const clearFilter = () => {
+                filterRole.value = ''
                 userListAPIParams.filter = {}
                 searchText.value = ''
                 statusFilter.value = []
@@ -560,6 +561,14 @@
 <style lang="less" scoped>
     .a-input-search-icon-left {
         .ant-input-suffix {
+        }
+    }
+</style>
+<style lang="less">
+    .filter-user-wrapper {
+        .input-filter {
+            width: 300px !important;
+            margin-right: 12px !important;
         }
     }
 </style>

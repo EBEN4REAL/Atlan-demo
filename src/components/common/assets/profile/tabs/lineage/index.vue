@@ -19,10 +19,7 @@
 
         <div v-if="isReady" class="absolute w-full h-full">
             <div
-                v-if="
-                    !Object.keys(lineage.guidEntityMap).length ||
-                    !lineageWithProcess.baseEntityGuid
-                "
+                v-if="!Object.keys(lineage.guidEntityMap).length"
                 class="relative bg-white"
             >
                 <div
@@ -33,12 +30,8 @@
                 </div>
             </div>
             <LineageGraph
-                v-if="
-                    Object.keys(lineage.guidEntityMap).length &&
-                    lineageWithProcess.baseEntityGuid
-                "
+                v-if="Object.keys(lineage.guidEntityMap).length"
                 :lineage="lineage"
-                :lineage-with-process="lineageWithProcess"
             />
         </div>
     </div>
@@ -69,6 +62,12 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
+    import {
+        AssetAttributes,
+        BasicSearchAttributes,
+        SQLAttributes,
+        AssetRelationAttributes,
+    } from '~/constant/projection'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -80,7 +79,6 @@
 
             /** DATA */
             const lineage = ref({})
-            const lineageWithProcess = ref({})
             const depth = ref(1)
             const baseEntity = ref({})
             const guid = computed(() => route.params?.id || '')
@@ -107,6 +105,12 @@
                 guid: guid.value,
                 direction: direction.value,
                 hideProcess: hideProcess.value,
+                attributes: [
+                    ...AssetAttributes,
+                    ...SQLAttributes,
+                    ...AssetRelationAttributes,
+                    ...BasicSearchAttributes,
+                ],
             }))
 
             /** METHODS */
@@ -116,44 +120,33 @@
                 useFetchLineage(config)
 
             watch(data, async () => {
-                if (hideProcess.value) {
-                    lineageWithProcess.value = {}
-                    lineage.value = {}
+                lineage.value = {}
 
-                    if (!data.value.relations.length) {
-                        lineage.value = { ...data.value }
-                        const assetStore = useAssetStore()
-                        baseEntity.value = assetStore.getSelectedAsset
-                        lineage.value.guidEntityMap = {
-                            [lineage.value.baseEntityGuid]: baseEntity.value,
-                        }
-                    } else {
-                        lineage.value = data.value
-                        baseEntity.value =
-                            lineage.value.guidEntityMap[
-                                lineage.value.baseEntityGuid
-                            ]
+                if (!data.value.relations.length) {
+                    lineage.value = { ...data.value }
+                    const assetStore = useAssetStore()
+                    baseEntity.value = assetStore.getSelectedAsset
+                    lineage.value.guidEntityMap = {
+                        [lineage.value.baseEntityGuid]: baseEntity.value,
                     }
-
-                    if (
-                        selectedAssetGuid.value &&
-                        data.value.guidEntityMap[selectedAssetGuid.value]
-                    )
-                        selectedAsset.value =
-                            lineage.value.guidEntityMap[selectedAssetGuid.value]
-                    else selectedAsset.value = baseEntity.value
-
-                    if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
-                    isFirstLoad.value = false
                 } else {
-                    lineageWithProcess.value = data.value
-                    hideProcess.value = true
+                    lineage.value = data.value
+                    baseEntity.value =
+                        lineage.value.guidEntityMap[
+                            lineage.value.baseEntityGuid
+                        ]
                 }
 
-                if (!Object.keys(lineageWithProcess.value).length) {
-                    hideProcess.value = false
-                    mutate()
-                }
+                if (
+                    selectedAssetGuid.value &&
+                    data.value.guidEntityMap[selectedAssetGuid.value]
+                )
+                    selectedAsset.value =
+                        lineage.value.guidEntityMap[selectedAssetGuid.value]
+                else selectedAsset.value = baseEntity.value
+
+                if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
+                isFirstLoad.value = false
             })
 
             // updateRouterQuery
@@ -226,7 +219,6 @@
 
             return {
                 lineage,
-                lineageWithProcess,
                 data,
                 loaderText,
                 isLoading,

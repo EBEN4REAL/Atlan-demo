@@ -147,6 +147,7 @@ export function useBody(
 
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
+        console.log(mkey)
         const filterObject = facets[mkey]
         switch (mkey) {
             case 'hierarchy': {
@@ -364,7 +365,6 @@ export function useBody(
                         q.orFilter('term', '__parentCategory', filterObject)
                         return q
                     })
-
                 }
                 break
             }
@@ -385,7 +385,6 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
-                    console.log({ filterObject })
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (element.operator === 'isNull') {
@@ -401,7 +400,10 @@ export function useBody(
                                 element.value
                                     ? base.filter('exists', element.operand)
                                     : base.notFilter('exists', element.operand)
-                            } else if (element.value) {
+                            } else if (
+                                element.value != null ||
+                                element.value !== ''
+                            ) {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -480,7 +482,11 @@ export function useBody(
                                 }
                                 if (element.operator === 'boolean') {
                                     if (element.operand === '__state') {
-                                        state.value = 'DELETED'
+                                        if (element.value) {
+                                            state.value = 'DELETED'
+                                        } else {
+                                            state.value = 'ACTIVE'
+                                        }
                                     } else {
                                         base.filter(
                                             'term',

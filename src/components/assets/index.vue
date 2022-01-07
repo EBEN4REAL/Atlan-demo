@@ -498,6 +498,7 @@
             }, 100)
 
             const handleFilterChange = (filterItem) => {
+                console.log('handleFilterChange')
                 sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()

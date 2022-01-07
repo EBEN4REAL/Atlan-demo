@@ -15,7 +15,7 @@
             </div>
             <div>
                 <KeepAlive>
-                    <AssetTypeList
+                    <!--  <AssetTypeList
                         v-if="activePreviewTabKey === 'card'"
                         :preference="checkedList"
                         asset-type="queries"
@@ -26,7 +26,7 @@
                         :preference="[]"
                         asset-type="queries"
                         :asset-id="selectedAsset.guid"
-                    />
+                    /> -->
                 </KeepAlive>
             </div>
         </div>
@@ -54,10 +54,6 @@
         components: {
             RaisedTab,
             SearchAndFilter,
-            AssetTypeList: defineAsyncComponent(
-                () =>
-                    import('@common/assets/preview/relations/assetTypeList.vue')
-            ),
         },
         props: {
             selectedAsset: {

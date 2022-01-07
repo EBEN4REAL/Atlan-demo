@@ -14,4 +14,5 @@ export interface VQBPanelColumnsInterface {
     id: string
     hide: boolean
     subpanels: SubpanelColumn[]
+    expand: boolean
 }

@@ -4,7 +4,7 @@
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${totalCount} relations`"
+                :placeholder="`Search ${totalCount} related assets`"
                 class=""
                 @change="handleSearchChange"
             >
@@ -51,7 +51,7 @@
         >
             <EmptyView
                 empty-screen="EmptyDiscover"
-                desc="No relations found"
+                desc="No related assets found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->
@@ -145,7 +145,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('RELATED_ASSET_LIST')
+            const dependentKey = ref(null)
             const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
@@ -161,6 +161,7 @@
                 facets.value = {}
                 facets.value.guidList = guidList.value
             }
+            updateFacet()
 
             const {
                 list,
@@ -228,8 +229,11 @@
             }
 
             whenever(isGuidArrayReady, () => {
+                dependentKey.value = 'RELATED_ASSET_LIST'
+
                 updateFacet()
-                quickChange()
+
+                fetch()
             })
 
             return {

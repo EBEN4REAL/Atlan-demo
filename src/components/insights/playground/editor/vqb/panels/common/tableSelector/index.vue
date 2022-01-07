@@ -37,7 +37,7 @@
         </div>
 
         <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
+            v-if="modelValue && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
             @focus="
@@ -53,7 +53,7 @@
             ]"
         />
         <a-input
-            v-if="Object.keys(selectedItem).length == 0"
+            v-if="!modelValue"
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -129,7 +129,11 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="right"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
@@ -345,9 +349,8 @@
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }),
                     attributes: [
                         'name',
@@ -416,9 +419,9 @@
                 if (isLoading.value) return 'Loading...'
                 if (
                     activeInlineTab.value.playground.editor.context
-                        .attributeName === 'schemaQualifiedName'
+                        .attributeName
                 )
-                    return `Search from ${totalCount.value} tables`
+                    return `Select from ${totalCount.value} tables`
                 return `Select a table first`
             })
 
@@ -436,7 +439,6 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                setFocusedCusror()
                 // qualifiedName
                 console.log(item.value)
 
@@ -449,7 +451,7 @@
                     certificateStatus(item)
                 copySelectedTableData.assetType = assetType(item)
                 emit('update:selectedTableData', copySelectedTableData)
-                setFoucs()
+                isAreaFocused.value = false
             }
 
             const handleMouseOver = () => {

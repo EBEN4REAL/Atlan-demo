@@ -26,6 +26,7 @@
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
                         :tableQualfiedName="subpanel.tableQualfiedName"
+                        :selectedTableData="subpanel.tableData"
                     >
                         <template #chip="{ item }">
                             <div
@@ -49,16 +50,6 @@
                             </div>
                         </template>
                     </ColumnSelector>
-                    <!-- <div
-                        v-if="subpanel.tableQualfiedName"
-                        class="text-gray-500 hover:text-primary"
-                        @click.stop="() => handleDelete(index)"
-                    >
-                        <AtlanIcon
-                            icon="Close"
-                            class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
-                        />
-                    </div> -->
                 </div>
             </template>
         </div>

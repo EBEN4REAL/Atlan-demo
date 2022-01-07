@@ -23,11 +23,18 @@ export function useVQB() {
             {},
             { ...toRaw(inlineTabs.value)[index] }
         )
+
         copyTabData.playground.vqb.panels.splice(
             Number(panelIndex) + 1,
             0,
             panel
         )
+        copyTabData.playground.vqb.panels.forEach((panel, i) => {
+            if (i === Number(panelIndex) + 1) {
+                panel.expand = true
+            }
+        })
+
         inlineTabs.value[index] = copyTabData
     }
     function deletePanelsInVQB(
@@ -63,6 +70,7 @@ export function useVQB() {
                         columnQualfiedName: undefined,
                     },
                     aggregators: [],
+                    expand: true,
                 }
                 panelCopy.subpanels = [subpanel]
 
@@ -78,6 +86,7 @@ export function useVQB() {
                         value: undefined,
                         columnQualfiedName: undefined,
                     },
+                    expand: true,
                 }
                 panelCopy.subpanels = [subpanel]
                 break
@@ -91,6 +100,7 @@ export function useVQB() {
                         value: undefined,
                         columnQualfiedName: undefined,
                     },
+                    expand: true,
                 }
                 panelCopy.subpanels = [subpanel]
                 break

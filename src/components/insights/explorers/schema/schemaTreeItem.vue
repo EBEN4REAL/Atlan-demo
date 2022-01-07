@@ -121,13 +121,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -248,13 +248,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -495,13 +495,13 @@
                                     >
 
                                     <AtlanIcon
-                                        icon="Info"
+                                        icon="SidebarSwitch"
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'
                                                 : ''
                                         "
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto outline-none"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
@@ -871,6 +871,11 @@
                                     attributeValue:
                                         updatedEditorSchemaQualifiedName,
                                 },
+                                {
+                                    attributeName: 'schemaQualifiedName',
+                                    attributeValue:
+                                        updatedEditorSchemaQualifiedName,
+                                },
                                 item.value
                             )
                             let activeInlineTabCopy: activeInlineTabInterface =
@@ -914,6 +919,10 @@
                                                 'schemaQualifiedName',
                                             attributeValue:
                                                 updatedEditorSchemaQualifiedName,
+                                        },
+                                        {
+                                            ...activeInlineTab.value.explorer
+                                                .schema.connectors,
                                         },
                                         item.value
                                     )
@@ -971,6 +980,10 @@
                                                     'schemaQualifiedName',
                                                 attributeValue:
                                                     updatedEditorSchemaQualifiedName,
+                                            },
+                                            {
+                                                ...activeInlineTab.value
+                                                    .explorer.schema.connectors,
                                             },
                                             item.value
                                         )
@@ -1051,6 +1064,10 @@
                                                     'schemaQualifiedName',
                                                 attributeValue:
                                                     updatedEditorSchemaQualifiedName,
+                                            },
+                                            {
+                                                ...activeInlineTab.value
+                                                    .explorer.schema.connectors,
                                             },
                                             item.value
                                         )
@@ -1151,6 +1168,11 @@
 
                                 handleAddNewTab(
                                     newQuery,
+                                    {
+                                        attributeName: 'schemaQualifiedName',
+                                        attributeValue:
+                                            updatedEditorSchemaQualifiedName,
+                                    },
                                     {
                                         attributeName: 'schemaQualifiedName',
                                         attributeValue:
@@ -1260,7 +1282,12 @@
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
 
-            const handleAddNewTab = async (query, context, previewItem) => {
+            const handleAddNewTab = async (
+                query,
+                context,
+                explorerContext,
+                previewItem
+            ) => {
                 const key = generateUUID()
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
@@ -1279,7 +1306,7 @@
                     explorer: {
                         schema: {
                             connectors: {
-                                ...context,
+                                ...explorerContext,
                             },
                         },
                         queries: {
@@ -1321,6 +1348,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: true,
                                 },
                             ],
                         },

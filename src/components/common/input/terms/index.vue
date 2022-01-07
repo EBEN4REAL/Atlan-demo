@@ -59,7 +59,7 @@
                         :term="term"
                         :allow-delete="allowDelete"
                         @delete="handleDeleteTerm"
-                        @click="handleDrawerVisible(term)"
+                        @toggleDrawer="handleDrawerVisible(term)"
                     />
                 </TermPopover>
             </template>
@@ -141,7 +141,7 @@
             const isEdit = ref(false)
             const isTermDrawerVisible = ref(false)
             const drawerAsset = ref()
-            const list = ref(
+            const list = computed(() =>
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'
                 )
@@ -233,15 +233,11 @@
                         }
                         return el
                     })
-                    list.value = temp
+                    localValue.value = temp
+                    console.log(localValue.value)
                 }
             }
 
-            watch(localValue, () => {
-                localValue.value.filter(
-                    (term) => term.attributes?.__state === 'ACTIVE'
-                )
-            })
             return {
                 getFetchedTerm,
                 isReady,

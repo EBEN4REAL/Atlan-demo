@@ -88,6 +88,7 @@ const useGlossaryTree = ({
     const treeData = ref<TreeDataItem[]>([])
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
     const defaultBody = ref({})
+    const updateList = inject('updateList')
     const generateBody = () => {
         const dsl = useBody(
             queryText?.value,
@@ -498,12 +499,17 @@ const useGlossaryTree = ({
                         )
                             updatedChildren.push(element)
                     })
-                    updatedChildren.push({
-                        ...asset,
-                        id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
-                        key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
-                        isLeaf: asset.typeName === 'AtlasGlossaryTerm',
-                    })
+
+                    const found = node?.children?.find(
+                        (el) => el?.guid === asset?.guid
+                    )
+                    if (!found)
+                        updatedChildren.push({
+                            ...asset,
+                            id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+                            key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+                            isLeaf: asset.typeName === 'AtlasGlossaryTerm',
+                        })
                     if (loadMoreNode) {
                         updatedChildren.push(loadMoreNode)
                     }
@@ -808,10 +814,8 @@ const useGlossaryTree = ({
         }
     }
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
-        console.log(event, node, dragNode, dragNodesKeys)
         const assetToDrop = { ...dragNode.dataRef }
         const updateDragNodeAttributes = (newParent) => {
-            console.log(newParent)
             const selectedAsset = ref(assetToDrop)
             const {
                 localCategories,
@@ -828,6 +832,7 @@ const useGlossaryTree = ({
                 if (node?.typeName !== 'AtlasGlossary' && newParent?.guid)
                     newCategories.push(newParent)
                 localCategories.value = newCategories
+                console.log(newParent)
                 handleCategoriesUpdate()
             }
             if (dragNode?.typeName === 'AtlasGlossaryCategory') {
@@ -847,8 +852,9 @@ const useGlossaryTree = ({
             })
             whenever(asset, () => {
                 if (asset.value) {
-                    console.log(asset.value)
-                    updateNode(asset.value, false)
+                    // updateNode(asset.value)
+                    console.log(updateList)
+                    if (updateList) updateList(asset.value)
                 }
             })
         }
@@ -859,11 +865,13 @@ const useGlossaryTree = ({
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
             const parentStack = recursivelyFindPath(node?.guid)[0]
-            console.log(parentStack)
             const parentOfTerm = {
                 guid: parentStack[1],
             }
-            if (treeData.value?.find((el) => el.guid === parentOfTerm?.guid))
+            if (
+                treeData.value?.find((el) => el.guid === parentOfTerm?.guid) &&
+                parentGlossaryQualifiedName?.value === ''
+            )
                 parentOfTerm.guid = ''
             setTimeout(() => {
                 deleteNode(
@@ -873,15 +881,15 @@ const useGlossaryTree = ({
                 )
             }, 0)
 
-            if (parentStack[1])
+            if (parentStack[1]) {
                 setTimeout(() => {
                     addNode(assetToDrop, { guid: parentStack[1] })
                 }, 0)
-            else
+            } else {
                 setTimeout(() => {
                     addNode(assetToDrop)
                 }, 0)
-
+            }
             updateDragNodeAttributes(parentOfTerm)
         } else {
             let nodeParentGlossaryGuid

@@ -24,19 +24,22 @@
                 sidebar-class="bg-white"
             >
                 <template #action>
-                    <AtlanBtn
-                        v-auth="map.CREATE_BUSINESS_METADATA"
-                        class="flex-none"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        @click="addMetaDataModal.open()"
-                    >
-                        <AtlanIcon
-                            icon="Add"
-                            class="-mx-1 text-gray"
-                        ></AtlanIcon>
-                    </AtlanBtn>
+                    <a-tooltip>
+                        <template #title>New Custom Metadata</template>
+                        <AtlanBtn
+                            v-auth="map.CREATE_BUSINESS_METADATA"
+                            class="flex-none"
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
+                            @click="addMetaDataModal.open()"
+                        >
+                            <AtlanIcon
+                                icon="Add"
+                                class="-mx-1 text-gray"
+                            ></AtlanIcon>
+                        </AtlanBtn>
+                    </a-tooltip>
                 </template>
 
                 <template #sidebar>

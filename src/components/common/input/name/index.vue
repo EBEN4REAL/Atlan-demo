@@ -22,14 +22,21 @@
                 tabindex="0"
                 :rows="4"
                 @blur="handleBlur"
-                @pressEnter="handleBlur"
+                @keyup.esc="handleCancel"
             ></a-input>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        watchEffect,
+    } from 'vue'
     import {
         and,
         useActiveElement,
@@ -65,15 +72,23 @@
                 emit('change')
             }
 
-            const handleReset = (val) => {
-                localValue.value = val
+            const handleCancel = () => {
+                if (isEdit.value) {
+                    isEdit.value = false
+                    localValue.value = modelValue.value
+                }
             }
+
+            const { n, enter } = useMagicKeys()
 
             const { start } = useTimeoutFn(() => {
                 nameRef.value?.focus()
             }, 100)
 
             const handleBlur = () => {
+                if (enter.value) {
+                    return
+                }
                 isEdit.value = false
                 handleChange()
             }
@@ -93,7 +108,12 @@
                         'true'
             )
 
-            const { n } = useMagicKeys()
+            watchEffect(() => {
+                if (enter.value && isEdit.value) {
+                    isEdit.value = false
+                    handleChange()
+                }
+            })
 
             whenever(and(n, notUsingInput, editPermission.value), () => {
                 handleEdit()
@@ -107,7 +127,7 @@
                 isEdit,
                 start,
                 handleBlur,
-                handleReset,
+                handleCancel,
             }
         },
     })

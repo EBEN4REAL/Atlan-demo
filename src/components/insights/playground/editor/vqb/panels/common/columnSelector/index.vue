@@ -132,7 +132,11 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="right"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
@@ -241,7 +245,11 @@
                             v-for="(item, index) in tableDropdownOption"
                             :key="item?.label + index"
                         >
-                            <PopoverAsset :item="item.item" placement="right">
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
+                            >
                                 <template #button>
                                     <AtlanBtn
                                         class="flex-none px-0"
@@ -349,7 +357,11 @@
                             v-for="(item, index) in columnDropdownOption"
                             :key="item.value + index + item.qualifiedName"
                         >
-                            <PopoverAsset :item="item.item" placement="left">
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
+                            >
                                 <template #button>
                                     <AtlanBtn
                                         class="flex-none px-0"
@@ -567,12 +579,18 @@
                 })
             }
 
-            const getInitialBody = () => {
+            const getInitialBody = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
                 // FIXME: it can be a viewQualifiedName,
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
-                        tableQualfiedName: tableQualfiedName.value,
+                        tableQualfiedName:
+                            selectedTablesQualifiedNames?.length > 0
+                                ? selectedTablesQualifiedNames[0]
+                                      .tableQualifiedName
+                                : tableQualfiedName.value,
                     }),
                     attributes: [
                         'name',
@@ -635,9 +653,13 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                setFocusedCusror()
                 // selectedColumn.value = item
                 emit('change', item)
+                if (item.item.typeName === 'Column') {
+                    isAreaFocused.value = false
+                } else {
+                    setFocusedCusror()
+                }
             }
 
             const handleMouseOver = () => {
@@ -913,7 +935,11 @@
                         )
                     }
                 } else {
-                    replaceBody(getInitialBody())
+                    replaceBody(
+                        getInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                 }
             })
 
@@ -925,7 +951,12 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length == 1
                     ) {
-                        replaceBody(getInitialBody())
+                        replaceBody(
+                            getInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables
+                            )
+                        )
                     } else if (
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1

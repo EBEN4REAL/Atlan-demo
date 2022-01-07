@@ -40,11 +40,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ComputedRef, inject } from 'vue'
+    import { defineComponent, ComputedRef, inject, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { generateUUID } from '~/utils/helper/generator'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Columns',
@@ -61,9 +62,15 @@
                 reqruied: true,
                 default: false,
             },
+            panelInfo: {
+                type: Object,
+                reqruied: true,
+            },
         },
         setup(props, { emit }) {
             const { submenuHovered, containerHovered } = useVModels(props)
+            const { panelInfo } = toRefs(props)
+            const { collapseAllPanelsExceptCurrent } = useUtils()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -76,6 +83,7 @@
                         id: uuid,
                         column: {},
                         aggregators: [],
+                        expand: true,
                     }
                 } else if (type === 'group') {
                     panel = {
@@ -83,12 +91,14 @@
                         tableQualfiedName: undefined,
                         columns: [],
                         columsData: [],
+                        expand: true,
                     }
                 } else if (type === 'sort') {
                     panel = {
                         id: uuid,
                         column: {},
                         order: 'asc',
+                        expand: true,
                     }
                 } else if (type === 'filter') {
                     panel = {
@@ -97,6 +107,7 @@
                         filter: {
                             filterType: 'and',
                         },
+                        expand: true,
                     }
                 } else if (type === 'join') {
                     panel = {
@@ -107,8 +118,10 @@
                             type: 'inner_join',
                             name: 'Inner Join',
                         },
+                        expand: true,
                     }
                 }
+                collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
 
                 // emit('add', type)

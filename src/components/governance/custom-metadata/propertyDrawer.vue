@@ -407,6 +407,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -619,6 +620,7 @@
             const handleEnumCreateSuccess = (newEnum) => {
                 newEnumMode.value = false
                 form.value.options.enumType = newEnum.name
+                refetchTypedef('enum')
                 handleUpdateProperty()
             }
 
@@ -802,6 +804,7 @@
             })
 
             return {
+                refetchTypedef,
                 handleEnumSelect,
                 isMultiValuedSupport,
                 handleArrayType,

@@ -54,6 +54,7 @@
     import useGlossaryStore from '~/store/glossary'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '~/components/glossary/constants/assetTypeLabel.ts'
 
     export default defineComponent({
         name: 'RemoveGtcModal',
@@ -162,23 +163,13 @@
                             )
                         } else emit('delete', 'root')
                     } else {
-                        if (props.redirect) {
-                            console.log('change select')
-                            handleSelectGlossary('')
-                        }
                         emit('delete', 'root')
                     }
                 }
                 isLoading.value = loading.value
                 visible.value = false
-                let eventCategory
-                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
-                    eventCategory = 'category'
-                } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
-                    eventCategory = 'term'
-                } else {
-                    eventCategory = 'glossary'
-                }
+                // delete entity event
+                const eventCategory = assetTypeLabel[props.entity?.typeName]
                 useAddEvent('gtc', eventCategory, 'deleted', {})
             }
             return {

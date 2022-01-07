@@ -603,10 +603,6 @@
             )
 
             const showVQB = computed(() => {
-                console.log(
-                    'showVQB: ',
-                    activeInlineTab?.value?.playground?.isVQB
-                )
                 return activeInlineTab?.value?.playground?.isVQB
             })
 

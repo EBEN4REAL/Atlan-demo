@@ -861,9 +861,10 @@
                             activeInlineTab.value.playground.vqb.selectedTables
                         )
                     )
-                    reComputeSelectedColumns(
-                        activeInlineTab.value.playground.vqb.selectedTables
-                    )
+                    /* For removing the columns when table got removed */
+                    // reComputeSelectedColumns(
+                    //     activeInlineTab.value.playground.vqb.selectedTables
+                    // )
                 },
                 { deep: true }
             )

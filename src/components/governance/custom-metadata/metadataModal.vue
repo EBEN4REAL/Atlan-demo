@@ -7,12 +7,15 @@
         :destroy-on-close="true"
     >
         <div class="p-4">
-            <a-input
-                id="name-input"
-                v-model:value="form.displayName"
-                placeholder="Name"
-                class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
-            ></a-input>
+            <div class="flex items-center gap-x-1">
+                <AvatarUpdate :metadata="form" class="mb-1" />
+                <a-input
+                    id="name-input"
+                    v-model:value="form.displayName"
+                    placeholder="Name"
+                    class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
+                ></a-input>
+            </div>
             <a-textarea
                 v-model:value="form.description"
                 placeholder="Add description..."
@@ -22,13 +25,15 @@
                 <a-button class="border-0" @click="visible = false"
                     >Cancel</a-button
                 >
-                <a-button
-                    type="primary"
+                <AtlanButton
+                    color="primary"
+                    size="sm"
                     :loading="loading"
                     :disabled="!form.displayName"
                     @click="handleAddBusinessMetadata"
-                    >{{ isEdit ? 'Update' : 'Create' }}</a-button
                 >
+                    {{ isEdit ? 'Update' : 'Create' }}
+                </AtlanButton>
             </div>
         </div>
     </a-modal>
@@ -43,7 +48,11 @@
     // store
     import { useTypedefStore } from '~/store/typedef'
 
+    import AtlanButton from '@/UI/button.vue'
+    import AvatarUpdate from './avatarUpdate.vue'
+
     export default defineComponent({
+        components: { AtlanButton, AvatarUpdate },
         props: {
             isEdit: {
                 type: Boolean,

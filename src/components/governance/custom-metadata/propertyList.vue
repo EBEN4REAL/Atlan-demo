@@ -20,9 +20,12 @@
                     :id="`prop-${property.name}`"
                     :key="property.name"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between last:rounded-b hover:bg-gray-light"
                     style="height: 44px"
-                    :class="{ 'border-b': properties.length !== index + 1 }"
+                    :class="{
+                        'bg-primary-light': selected === property.name,
+                        'border-b': properties.length !== index + 1,
+                    }"
                 >
                     <div class="flex items-center">
                         <div
@@ -185,6 +188,11 @@
             metadata: {
                 type: Object,
                 default: () => {},
+            },
+            selected: {
+                type: String,
+                required: false,
+                default: '',
             },
             properties: {
                 type: Object,

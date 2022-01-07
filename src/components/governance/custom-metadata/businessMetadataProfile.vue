@@ -101,15 +101,8 @@
                     :metadata="localBm"
                     :properties="searchedAttributeList"
                     @remove-property="handleRemoveAttribute"
-                    @open-edit-drawer="
-                        addPropertyDrawer.open(
-                            cleanLocalBm.attributeDefs.find(
-                                (x) => x.name === $event.property.name
-                            ),
-                            true,
-                            $event.index
-                        )
-                    "
+                    :selected="selected"
+                    @open-edit-drawer="openEdit"
                 />
             </div>
             <div v-else class="flex items-center justify-center h-full">
@@ -134,7 +127,7 @@
                     <a-button
                         v-auth="map.UPDATE_BUSINESS_METADATA"
                         type="primary"
-                        @click="addPropertyDrawer.open(undefinded, false)"
+                        @click="addPropertyDrawer.open(undefined, false)"
                         ><AtlanIcon icon="Add" class="inline" /> Add property
                     </a-button>
                 </a-empty>
@@ -290,7 +283,22 @@
                 return !assetCount.value
             })
 
+            const selected = ref('')
+
+            const openEdit = ({ property, index }) => {
+                selected.value = property.name
+                addPropertyDrawer.value.open(
+                    cleanLocalBm.value.attributeDefs.find(
+                        (x) => x.name === property.name
+                    ),
+                    true,
+                    index
+                )
+            }
+
             return {
+                selected,
+                openEdit,
                 allowDelete,
                 assetCount,
                 attrsearchText,

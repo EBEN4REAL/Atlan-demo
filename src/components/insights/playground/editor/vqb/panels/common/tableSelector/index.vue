@@ -435,7 +435,6 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                setFocusedCusror()
                 // qualifiedName
                 console.log(item.value)
 
@@ -448,7 +447,7 @@
                     certificateStatus(item)
                 copySelectedTableData.assetType = assetType(item)
                 emit('update:selectedTableData', copySelectedTableData)
-                setFoucs()
+                isAreaFocused.value = false
             }
 
             const handleMouseOver = () => {

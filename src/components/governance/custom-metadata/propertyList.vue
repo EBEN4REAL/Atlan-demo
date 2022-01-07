@@ -20,9 +20,12 @@
                     :id="`prop-${property.name}`"
                     :key="property.name"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between last:rounded-b hover:bg-gray-light"
                     style="height: 44px"
-                    :class="{ 'border-b': properties.length !== index + 1 }"
+                    :class="{
+                        'bg-primary-light': selected === property.name,
+                        'border-b': properties.length !== index + 1,
+                    }"
                 >
                     <div class="flex items-center">
                         <div
@@ -99,6 +102,7 @@
                     <div style="width: 130px">
                         <a-button
                             class="px-1 py-0 border-0"
+                            style="background: inherit"
                             @click="
                                 copyAPI(property.displayName, 'Name Copied!')
                             "
@@ -106,7 +110,11 @@
                             <AtlanIcon icon="CopyOutlined" />
                         </a-button>
                         <a-dropdown :trigger="['click']">
-                            <a-button class="border-0 rounded" size="small">
+                            <a-button
+                                class="border-0 rounded"
+                                size="small"
+                                style="background: inherit"
+                            >
                                 <AtlanIcon icon="KebabMenu"></AtlanIcon>
                             </a-button>
                             <template #overlay>
@@ -185,6 +193,11 @@
             metadata: {
                 type: Object,
                 default: () => {},
+            },
+            selected: {
+                type: String,
+                required: false,
+                default: '',
             },
             properties: {
                 type: Object,

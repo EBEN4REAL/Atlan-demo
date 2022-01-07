@@ -495,7 +495,6 @@
                     columnQualifiedName: item.qualifiedName,
                 }
                 emit('change', item.qualifiedName)
-                console.log()
             }
 
             const placeholder = computed(() => {

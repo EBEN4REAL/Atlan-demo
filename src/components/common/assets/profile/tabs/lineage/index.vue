@@ -62,6 +62,12 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
+    import {
+        AssetAttributes,
+        BasicSearchAttributes,
+        SQLAttributes,
+        AssetRelationAttributes,
+    } from '~/constant/projection'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -99,6 +105,12 @@
                 guid: guid.value,
                 direction: direction.value,
                 hideProcess: hideProcess.value,
+                attributes: [
+                    ...AssetAttributes,
+                    ...SQLAttributes,
+                    ...AssetRelationAttributes,
+                    ...BasicSearchAttributes,
+                ],
             }))
 
             /** METHODS */

@@ -641,9 +641,13 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                setFocusedCusror()
                 // selectedColumn.value = item
                 emit('change', item)
+                if (item.item.typeName === 'Column') {
+                    isAreaFocused.value = false
+                } else {
+                    setFocusedCusror()
+                }
             }
 
             const handleMouseOver = () => {

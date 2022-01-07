@@ -29,18 +29,13 @@ const getLineageUpdated = (
         options || {}
     )
 
-const getLineage = (
-    options:
-        | getLineageOptions
-        | Ref<getLineageOptions>
-        | ComputedRef<getLineageOptions>,
-    asyncOptions
-) =>
+const getLineage = (body, asyncOptions) =>
     useAPI(
         map.GET_LINEAGE,
-        'GET',
+        'POST',
         {
-            pathVariables: options,
+            body,
+            pathVariables: {},
             initialState: {
                 guidEntityMap: <Record<string, assetInterface>>{},
                 relations: [],

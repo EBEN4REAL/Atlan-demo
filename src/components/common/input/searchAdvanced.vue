@@ -9,6 +9,7 @@
         :class="{
             [$style.transparent]: true,
             [allowTabShortcut]: true,
+            [$style.inputBox]: true,
         }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
         @change="handleChange"
@@ -166,6 +167,14 @@
     })
 </script>
 <style lang="less" module>
+    .inputBox {
+        :global(.ant-input) {
+            @apply text-gray-700 !important;
+            &::placeholder {
+                @apply text-gray-500 !important;
+            }
+        }
+    }
     .search {
         :global(.ant-popover-inner-content) {
             @apply p-3 !important;

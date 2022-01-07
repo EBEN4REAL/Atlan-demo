@@ -2,6 +2,7 @@ import { getAPIPath } from '~/services/api/common'
 
 import { BASE_PATH } from '..'
 
+export const GET_TYPEDEF = 'GET_TYPEDEF'
 export const GET_TYPEDEFS = 'GET_TYPEDEFS'
 export const CREATE_TYPEDEFS = 'CREATE_TYPEDEFS'
 export const EDIT_TYPEDEFS = 'EDIT_TYPEDEFS'
@@ -10,6 +11,11 @@ export const UPDATE_CUSTOM_METADATA = 'UPDATE_CUSTOM_METADATA'
 export const UPDATE_ASSET_BUSINESS_METADATA = 'UPDATE_ASSET_BUSINESS_METADATA'
 
 export const map = {
+    [GET_TYPEDEF]: ({ type }: Record<string, any>) =>
+        getAPIPath(
+            BASE_PATH,
+            `/types/typedefs?type=${type}`
+        ),
     [GET_TYPEDEFS]: () =>
         getAPIPath(
             BASE_PATH,

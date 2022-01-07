@@ -37,7 +37,7 @@
         </div>
 
         <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
+            v-if="modelValue && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
             @focus="
@@ -53,7 +53,7 @@
             ]"
         />
         <a-input
-            v-if="Object.keys(selectedItem).length == 0"
+            v-if="!modelValue"
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -345,9 +345,8 @@
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }),
                     attributes: [
                         'name',
@@ -416,9 +415,9 @@
                 if (isLoading.value) return 'Loading...'
                 if (
                     activeInlineTab.value.playground.editor.context
-                        .attributeName === 'schemaQualifiedName'
+                        .attributeName
                 )
-                    return `Search from ${totalCount.value} tables`
+                    return `Select from ${totalCount.value} tables`
                 return `Select a table first`
             })
 

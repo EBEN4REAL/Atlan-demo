@@ -14,18 +14,18 @@
                 <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                     >Search from your assets</span
                 >
-                    <Assets
-                        :show-filters="false"
-                        :static-use="true"
-                        :show-aggrs="true"
-                        :showCheckBox="true"
-                        :preference="preference"
-                        :allCheckboxAreaClick="true"
-                        :disableHandlePreview="true"
-                        class="asset-list-height"
-                        key="all-assets"
-                        page="glossary"
-                    />
+                <Assets
+                    :show-filters="false"
+                    :static-use="true"
+                    :show-aggrs="true"
+                    :showCheckBox="true"
+                    :preference="preference"
+                    :allCheckboxAreaClick="true"
+                    :disableHandlePreview="true"
+                    class="asset-list-height"
+                    key="all-assets"
+                    page="glossary"
+                />
             </div>
         </div>
         <div class="flex items-center justify-end m-2 mt-6 gap-x-2">
@@ -45,32 +45,28 @@
                 padding="compact"
                 data-test-id="save"
                 @click="saveAssets"
-                >Save</AtlanBtn
+                >Link asset(s)</AtlanBtn
             >
         </div>
     </a-drawer>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-    } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Assets from '@/assets/index.vue'
-
 
     export default defineComponent({
         name: 'LinkedAssetsDrawer',
         components: {
             Assets,
-            AtlanBtn
+            AtlanBtn,
         },
         props: {
             isVisible: {
                 type: Object as PropType<Boolean>,
                 required: true,
-                default: false
+                default: false,
             },
             preference: {
                 type: Object,
@@ -80,11 +76,9 @@
                 type: Number,
                 required: true,
             },
-
         },
         emits: ['closeDrawer', 'saveAssets'],
         setup(props, { emit }) {
-
             const closeDrawer = () => {
                 emit('closeDrawer')
             }

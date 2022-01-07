@@ -5,12 +5,14 @@ interface useBodyProps {
     limit?: number
     tableQualfiedName?: string | undefined
     searchText?: string | undefined
+    assetType: string | undefined
 }
 export default function useBody({
     from = 0,
     limit = 100,
     tableQualfiedName,
     searchText,
+    assetType,
 }: useBodyProps) {
     const base = bodybuilder()
 
@@ -21,8 +23,21 @@ export default function useBody({
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
         })
+
     if (tableQualfiedName) {
-        base.filter('term', 'tableQualifiedName', tableQualfiedName)
+        switch (assetType) {
+            case 'Table': {
+                base.filter('term', 'tableQualifiedName', tableQualfiedName)
+                break
+            }
+            case 'View': {
+                base.filter('term', 'viewQualifiedName', tableQualfiedName)
+                break
+            }
+            default: {
+                base.filter('term', 'tableQualifiedName', tableQualfiedName)
+            }
+        }
     }
     base.filter('term', '__typeName.keyword', 'Column')
     const tempQuery = base.build()

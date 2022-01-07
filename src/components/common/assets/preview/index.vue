@@ -19,35 +19,28 @@
                     />
                 </div>
 
-                <router-link
-                    :to="getProfilePath(selectedAsset)"
-                    :class="
-                        isDrawer &&
-                        ['column'].includes(
-                            selectedAsset.typeName?.toLowerCase()
-                        )
-                            ? 'pointer-events-none text-gray-500'
-                            : 'text-primary'
-                    "
-                    class="flex-shrink mb-0 overflow-hidden font-bold truncate bg-transparent cursor-pointer hover:underline overflow-ellipsis whitespace-nowrap"
+                <Tooltip
+                    :tooltip-text="`${title(selectedAsset)}`"
+                    :route-to="getProfilePath(selectedAsset)"
+                    classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
                     @click="() => $emit('closeDrawer')"
-                >
-                    {{ title(selectedAsset) }}
-                </router-link>
+                />
+
                 <CertificateBadge
                     v-if="certificateStatus(selectedAsset)"
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
-                    class="ml-1"
+                    class="mb-1 ml-1"
                 ></CertificateBadge>
                 <a-tooltip placement="bottomRight"
                     ><template #title>Limited Access</template>
                     <AtlanIcon
                         v-if="isScrubbed(selectedAsset)"
                         icon="Lock"
-                        class="h-4 mb-0.5 ml-1"
+                        class="w-4 h-4 mb-1 ml-1"
+                        style="min-width: 1rem"
                     ></AtlanIcon
                 ></a-tooltip>
             </div>
@@ -87,7 +80,7 @@
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
-                    <div class="text-sm tracking-wider uppercase text-gray">
+                    <div class="text-sm tracking-wider text-gray-500 uppercase">
                         {{
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName
@@ -211,6 +204,7 @@
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -219,12 +213,8 @@
             CertificateBadge,
             ShareMenu,
             NoAccess,
-            // Tooltip,
-            // AssetLogo,
-            // StatusBadge,
-            // SidePanelTabHeaders,
-            // NoAccessPage,
-            // AtlanButton,
+            Tooltip,
+
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
@@ -241,19 +231,12 @@
             resources: defineAsyncComponent(
                 () => import('@common/widgets/resources/index.vue')
             ),
-            // chat: defineAsyncComponent(
-            //     () => import('./tabs/chat/assetChat.vue')
-            // ),
-            // actions: defineAsyncComponent(
-            //     () => import('./tabs/actions/actions.vue')
-            // ),
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),
-            // CertificatePopover,
         },
 
         props: {

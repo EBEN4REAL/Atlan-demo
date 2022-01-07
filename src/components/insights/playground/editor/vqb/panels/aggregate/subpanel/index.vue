@@ -38,6 +38,7 @@
                     />
 
                     <AtlanIcon
+                        v-if="isSubpanelClosable(subpanels)"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
@@ -45,6 +46,7 @@
                             hoverItem === subpanel.id ? 100 : 0
                         }`"
                     />
+                    <div style="width: 32px" v-else></div>
                 </div>
             </template>
         </div>
@@ -80,6 +82,7 @@
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -108,6 +111,7 @@
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const { isSubpanelClosable } = useUtils()
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const activeInlineTab = inject(
@@ -168,6 +172,7 @@
             let hoverItem = ref(null)
 
             return {
+                isSubpanelClosable,
                 activeInlineTab,
                 selectedTables,
                 selectedAggregates,

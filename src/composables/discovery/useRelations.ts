@@ -49,12 +49,16 @@ export function useRelations(selectedAsset) {
                 const element = data.value?.entities[0]?.attributes[el]
                 if (
                     element &&
-                    element?.length !== 0 &&
+                    element.length !== 0 &&
                     assetTypeRelations(selectedAsset.value)?.includes(el)
                 ) {
-                    element?.forEach((entity) =>
-                        guidList.value.push(entity.guid)
-                    )
+                    if (Array.isArray(element)) {
+                        element?.forEach((entity) =>
+                            guidList.value.push(entity.guid)
+                        )
+                    } else {
+                        guidList.value.push(element.guid)
+                    }
                 }
             })
         }

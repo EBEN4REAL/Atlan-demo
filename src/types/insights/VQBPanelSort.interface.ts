@@ -10,4 +10,5 @@ export interface VQBPanelSortInterface {
     order: number
     hide: boolean
     subpanels: SubpanelSort[]
+    expand: boolean
 }

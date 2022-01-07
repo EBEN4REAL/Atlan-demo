@@ -442,20 +442,23 @@
                                 v-for="term in meaningRelationships(item)"
                                 :key="term.guid"
                             >
-                                <div
-                                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
-                                >
-                                    <AtlanIcon
-                                        :icon="termIcon(term)"
-                                        class="group-hover:text-white text-purple mb-0.5"
-                                    ></AtlanIcon>
-
-                                    <div class="ml-1 group-hover:text-white">
-                                        {{
-                                            term.attributes?.name ??
-                                            term.displayText
-                                        }}
-                                    </div>
+                                <div class="flex flex-wrap">
+                                    <TermPopover
+                                        :term="term"
+                                        :loading="termLoading"
+                                        :fetched-term="
+                                            getFetchedTerm(term.termGuid)
+                                        "
+                                        :error="termError"
+                                        trigger="hover"
+                                        :ready="isReady"
+                                        @visible="handleTermPopoverVisibility"
+                                    >
+                                        <TermPill
+                                            :term="term"
+                                            :allow-delete="false"
+                                        />
+                                    </TermPopover>
                                 </div>
                             </template>
                         </div>
@@ -491,15 +494,22 @@
     import PopoverClassification from '@/common/popover/classification.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Truncate from '@/common/ellipsis/index.vue'
+    import TermPopover from '@/common/popover/term/term.vue'
+    import TermPill from '@/common/pills/term.vue'
+    import useTermPopover from '@/common/popover/term/useTermPopover'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
+            TermPill,
             CertificateBadge,
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
             Tooltip,
+            Truncate,
+            TermPopover,
         },
         props: {
             item: {
@@ -687,7 +697,20 @@
                 return 'Term'
             }
 
+            const {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+            } = useTermPopover()
+
             return {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
                 isSelected,
                 title,
                 getConnectorImage,

@@ -88,6 +88,7 @@
 
             watch(selectedAsset, () => {
                 assetInfo.value = {}
+                console.log('selected asset: ', selectedAsset.value)
                 fetchAsset()
             })
 
@@ -96,26 +97,35 @@
             ) as Ref<Object>
 
             const updateList = (asset) => {
-                let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
-                    JSON.stringify(toRaw(activeInlineTab.value))
-                )
+                // let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+                //     JSON.stringify(toRaw(activeInlineTab.value))
+                // )
+                console.log('updated asset: ', asset)
 
+                let activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+
+                // console.log('updated asset: ', asset)
                 assetSidebarUpdatedData.value = asset
 
-                activeInlineTabCopy = {
-                    ...activeInlineTabCopy,
-                    updateTime:
-                        asset?.updateTime ??
-                        asset?.attributes.__modificationTimestamp,
-                    updatedBy:
-                        asset?.updatedBy ?? asset?.attributes.__modifiedBy,
-                    description: asset?.attributes.description,
-                    status: asset?.attributes.certificateStatus,
-                    attributes: asset?.attribute,
+                if (asset?.typeName === 'Query') {
+                    if (activeInlineTabCopy.queryId === asset?.guid) {
+                        activeInlineTabCopy = {
+                            ...activeInlineTabCopy,
+                            updateTime:
+                                asset?.updateTime ??
+                                asset?.attributes.__modificationTimestamp,
+                            updatedBy:
+                                asset?.updatedBy ??
+                                asset?.attributes.__modifiedBy,
+                            description: asset?.attributes.description,
+                            status: asset?.attributes.certificateStatus,
+                            attributes: asset?.attribute,
+                        }
+                    }
+                    modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }
-
                 // console.log('old data update: ', asset)
-                modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
             }
 
             provide('updateList', updateList)

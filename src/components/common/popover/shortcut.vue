@@ -44,7 +44,7 @@
             },
             delay: {
                 type: Number,
-                default: 0,
+                default: 0.5,
             },
         },
         setup(props) {

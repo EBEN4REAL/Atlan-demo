@@ -129,6 +129,9 @@
                                 "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
+                                :panelInfo="
+                                    activeInlineTab.playground.vqb.panels[index]
+                                "
                             />
                             <!-- ------------------------------ -->
                         </div>
@@ -177,6 +180,7 @@
             </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
+                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -249,7 +253,7 @@
             )
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
-            const expand = ref(true)
+
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -260,6 +264,18 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const expand = ref(
+                activeInlineTab.value.playground.vqb.panels[index.value].expand
+            )
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    expand.value =
+                        activeInlineTab.value.playground.vqb.panels[
+                            index.value
+                        ].expand
+                }
+            )
             const checkbox = ref(true)
             const { deletePanelsInVQB, handleAdd } = useVQB()
 
@@ -294,6 +310,11 @@
             }
             const toggleExpand = () => {
                 expand.value = !expand.value
+                activeInlineTab.value.playground.vqb.panels[
+                    index.value
+                ].expand =
+                    !activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             }
             const toggleActionPanel = () => {
                 actionPanel.value = !actionPanel.value

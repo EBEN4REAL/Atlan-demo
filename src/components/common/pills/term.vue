@@ -5,11 +5,13 @@
         <AtlanIcon
             :icon="icon(term)"
             class="group-hover:text-white text-purple"
+            @click="$emit('toggleDrawer', term)"
         ></AtlanIcon>
 
         <div
             class="ml-1 truncate group-hover:text-white overflow-ellipsis"
             style="max-width: 150px"
+            @click="$emit('toggleDrawer', term)"
         >
             {{ term.attributes?.name ?? term.displayText }}
         </div>
@@ -40,7 +42,7 @@
                 },
             },
         },
-        emits: ['delete'],
+        emits: ['delete', 'toggleDrawer'],
         setup(props, { emit }) {
             const { term } = toRefs(props)
 

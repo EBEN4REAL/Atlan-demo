@@ -69,7 +69,7 @@
                                 <template #content>
                                     <div class="p-3 text-gray-500 w-52">
                                         <PopOverContent
-                                            content="Open a direct message with yourself on Slack in your browser and copy the url. It will look something like this: myorg.slack.com/client/id"
+                                            content="You can find the member ID in your slack profile's More menu. Make sure you are in the correct slack workspace."
                                         />
                                     </div>
                                 </template>
@@ -80,7 +80,7 @@
                             v-model:value="formData.slack"
                             class="mt-2"
                             :loading="isRequestLoading"
-                            placeholder="https://app.slack.com/client/abc/xyz"
+                            placeholder="Add your slack workspace's member ID"
                         >
                             <template #prefix>
                                 <span
@@ -213,12 +213,12 @@
                         message: 'Please enter a designation.',
                     },
                 ],
-                slack: [
-                    {
-                        message: 'Please enter your Slack User ID.',
-                        pattern: /^.+(slack.com).+/g,
-                    },
-                ],
+                // slack: [
+                //     {
+                //         message: 'Please enter your Slack User ID.',
+                //         pattern: /^.+(slack.com).+/g,
+                //     },
+                // ],
             }
 
             const updateSuccess = ref(false)

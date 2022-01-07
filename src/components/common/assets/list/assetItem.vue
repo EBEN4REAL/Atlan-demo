@@ -40,10 +40,11 @@
                         </div>
 
                         <Tooltip
+                            :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
-                            :shouldOpenInNewTab="shouldOpenInNewTab"
+                            :should-open-in-new-tab="openAssetProfileInANewTab"
                             @click="(e) => e.stopPropagation()"
                         />
 
@@ -483,7 +484,6 @@
         toRefs,
         computed,
         PropType,
-        inject,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -570,6 +570,15 @@
                 type: Number,
                 require: true,
             },
+            assetNameTruncatePercentage:{
+                type:String,
+                default:'95%',
+                required: false
+            },
+            openAssetProfileInANewTab:{
+                type:Boolean,
+                default: false
+            }
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -586,10 +595,6 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
-            // inject props for enabling open asset profile in new tab
-            const shouldOpenInNewTab = computed(
-                () => inject('shouldOpenInNewTab') || false
-            )
 
             const {
                 title,
@@ -753,7 +758,6 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
-                shouldOpenInNewTab,
             }
         },
     })

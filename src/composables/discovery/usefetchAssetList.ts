@@ -45,6 +45,7 @@ export default function useFetchAssetList({
         cancelRequest,
         error,
         isValidating,
+        isLoading,
     } = useIndexSearch<assetInterface>(
         defaultBody,
         localKey,
@@ -76,9 +77,7 @@ export default function useFetchAssetList({
         }
     }
     const updateList = (asset) => {
-        console.log('assset', asset)
         const index = list.value.findIndex((i) => i.guid === asset.guid)
-        console.log('assset', index)
         if (index > -1) {
             list.value[index] = asset
         }
@@ -117,11 +116,7 @@ export default function useFetchAssetList({
             const found = labelList.find(
                 (t) => t.id.toLowerCase() === item.toLowerCase()
             )
-
             if (found) {
-                // found.count = aggregationMap(aggregationKey).find(
-                //     (i) => i.key.toLowerCase() === item.toLowerCase()
-                // )?.doc_count
                 temp.push({
                     ...found,
                     count:
@@ -185,6 +180,7 @@ export default function useFetchAssetList({
         quickChange,
         isLoadMore,
         isValidating,
+        isLoading,
         assetTypeAggregationList,
     }
 }

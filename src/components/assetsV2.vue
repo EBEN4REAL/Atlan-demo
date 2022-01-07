@@ -1,8 +1,10 @@
+/** */
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-col w-full h-full">
             <div class="w-full">
                 <SearchAdvanced
+                    :key="searchDirtyTimestamp"
                     v-model="queryText"
                     :autofocus="true"
                     :allow-clear="true"
@@ -25,7 +27,35 @@
                     @change="fetchList(0)"
                 />
             </div>
-            <div>
+            <div
+                v-if="isValidating && !list.length"
+                class="flex items-center justify-center h-full"
+            >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
+            </div>
+            <div
+                v-else-if="!isValidating && error"
+                class="flex items-center justify-center h-full"
+            >
+                <ErrorView></ErrorView>
+            </div>
+            <div v-if="list.length === 0 && !isValidating" class="h-full">
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    :desc="
+                        !queryText
+                            ? emptyViewText
+                            : 'We didn\'t find anything that matches your search criteria'
+                    "
+                    :button-text="!queryText ? null : 'Clear search'"
+                    class="flex items-center justify-center h-full"
+                    @event="handleClearSearch"
+                ></EmptyView>
+            </div>
+            <div v-else class="h-full overflow-auto">
                 <AssetList
                     :list="list"
                     :is-load-more="isLoadMore"
@@ -34,8 +64,17 @@
                 >
                     <template #default="{ item }">
                         <AssetItem
+                            :asset-name-truncate-percentage="
+                                assetNameTruncatePercentage
+                            "
+                            :open-asset-profile-in-a-new-tab="
+                                openAssetProfileInANewTab
+                            "
+                            :enable-sidebar-drawer="enableSidebarDrawer"
                             :preference="preference"
                             :item="item"
+                            @updateDrawer="updateList"
+                            @preview="$emit('handleAssetCardClick')"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -47,6 +86,8 @@
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs, watch } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -68,40 +109,71 @@
             PreferenceSelector,
             AssetList,
             AssetItem,
+            EmptyView,
+            ErrorView,
         },
         props: {
+            /**
+             * @example { owners: {ownerUsers: ['harrypotter']} }
+             * It uses discovery's useBody composable under the hood, anything that works there, you can pass here.
+             * @see {@link src/composables/discovery/useBody.ts}
+             */
             filters: {
                 type: Object,
                 default: () => {},
             },
-            preference: {
-                type: Object,
-                default: () => ({
-                    sort: 'default',
-                    display: [],
-                }),
+            /**
+             * Enables sidebar on asset card click; If you turn it off, you can also listen to `handleAssetCardClick` event that this component emits to implement custom functionality
+             */
+            enableSidebarDrawer: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            openAssetProfileInANewTab: {
+                type: Boolean,
+                default: false,
+            },
+            emptyViewText: {
+                type: String,
+                default: 'No assets found',
+            },
+            assetNameTruncatePercentage: {
+                type: String,
+                default: '95%',
+                required: false,
             },
             attributes: {
                 type: Array,
                 default: () => [],
             },
-            postFilters: {
-                type: Object,
-                default: () => ({
-                    typeName: '__all',
-                }),
-            },
-            aggregations: {
-                type: Array,
-                default: () => ['typeName'],
+            initialCacheKey: {
+                type: String,
+                default: 'ASSET_LIST',
+                required: false,
             },
         },
+        emits: ['handleAssetCardClick'],
         setup(props) {
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
+            const preference = ref({ sort: 'default', display: [] })
+            const postFilters = ref({
+                typeName: '__all',
+            })
+            const aggregations = ref(['typeName'])
             const isCache = ref(true) // use SWRV or not
-            const dependentKey = ref('DEFAULT_ASSET_LIST') // CacheKey for swrv, when changed causes asset list to get refetched
+
+            /**
+             * CacheKey for swrv, when changed causes asset list to get refetched
+             */
+            const dependentKey = ref(props.initialCacheKey)
+
+            /**
+             * needed for search component, otherwise clearing queryText from here doesn't get reflected in there
+             */
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             // set all the attributes that would be fetched
             const { customMetadataProjections } = useTypedefData()
@@ -112,13 +184,7 @@
                 ...customMetadataProjections,
             ])
 
-            const {
-                filters,
-                attributes,
-                postFilters,
-                aggregations,
-                preference,
-            } = toRefs(props)
+            const { filters, attributes } = toRefs(props)
 
             const {
                 list,
@@ -126,6 +192,7 @@
                 quickChange,
                 isValidating,
                 assetTypeAggregationList,
+                updateList,
             } = useFetchAssetList({
                 queryText,
                 offset,
@@ -157,9 +224,14 @@
             const handleSearchChange = useDebounceFn(() => {
                 fetchList()
             }, 100)
+            const handleClearSearch = () => {
+                queryText.value = ''
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                fetchList()
+            }
 
             watch(
-                [filters, preference, postFilters, aggregations],
+                [filters, postFilters, aggregations],
                 () => {
                     fetchList()
                 },
@@ -177,9 +249,12 @@
                 isLoadMore,
                 isValidating,
                 assetTypeAggregationList,
+                searchDirtyTimestamp,
+                updateList,
                 fetchList,
                 handleLoadMore,
                 handleSearchChange,
+                handleClearSearch,
             }
         },
     })

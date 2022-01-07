@@ -3,8 +3,21 @@
         <div class="py-1 mb-3 text-base font-semibold text-gray-500">
             Owned Assets
         </div>
-        <div v-auth="map.LIST_USERS" class="flex flex-col rounded-lg">
-            <AssetsV2 :filters="ownerFilter" />
+        <div v-auth="map.LIST_USERS" class="flex flex-col h-full rounded-lg">
+            <AssetsV2
+                :asset-name-truncate-percentage="'93%'"
+                :open-asset-profile-in-a-new-tab="true"
+                :filters="ownerFilter"
+                :empty-view-text="
+                    selectedUser || selectedGroup
+                        ? `Seems like ${
+                              selectedUser
+                                  ? selectedUser.name
+                                  : selectedGroup.name
+                          } doesn't own any assets.`
+                        : ''
+                "
+            />
             <!-- <AssetsWrapper
                 :key="'user-asset-list'"
                 :initial-filters="ownerFilter"
@@ -62,8 +75,6 @@
                         : [],
                 },
             }))
-            // provide props for enabling open asset profile in new tab
-            provide('shouldOpenInNewTab', true)
 
             return {
                 ownerFilter,

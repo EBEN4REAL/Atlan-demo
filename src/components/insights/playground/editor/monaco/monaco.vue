@@ -47,6 +47,17 @@
 
     const turndownService = new TurndownService({})
 
+    import Column from '~/assets/images/insights/autocomplete/Column.png'
+    import Default from '~/assets/images/insights/autocomplete/default.png'
+    import Table from '~/assets/images/insights/autocomplete/Table.png'
+    import TableDeprecated from '~/assets/images/insights/autocomplete/TableDeprecated.png'
+    import TableDraft from '~/assets/images/insights/autocomplete/TableDraft.png'
+    import TableVerified from '~/assets/images/insights/autocomplete/TableVerified.png'
+    import View from '~/assets/images/insights/autocomplete/View.png'
+    import ViewDeprecated from '~/assets/images/insights/autocomplete/ViewDeprecated.png'
+    import ViewDraft from '~/assets/images/insights/autocomplete/ViewDraft.png'
+    import ViewVerified from '~/assets/images/insights/autocomplete/ViewVerified.png'
+
     // @ts-ignore
     self.MonacoEnvironment = {
         getWorker(_, label) {
@@ -275,25 +286,57 @@
                                 (item && assetType(item) === 'Table') ||
                                 assetType(item) === 'View'
                             ) {
+                                let component =
+                                    assetType(item) === 'Table'
+                                        ? getEntityStatusIcon(
+                                              assetType(item),
+                                              certificateStatus(item)
+                                          ) === 'Table'
+                                            ? Table
+                                            : getEntityStatusIcon(
+                                                  assetType(item),
+                                                  certificateStatus(item)
+                                              ) === 'TableVerified'
+                                            ? TableVerified
+                                            : getEntityStatusIcon(
+                                                  assetType(item),
+                                                  certificateStatus(item)
+                                              ) === 'TableDraft'
+                                            ? TableDraft
+                                            : TableDeprecated
+                                        : getEntityStatusIcon(
+                                              assetType(item),
+                                              certificateStatus(item)
+                                          ) === 'View'
+                                        ? View
+                                        : getEntityStatusIcon(
+                                              assetType(item),
+                                              certificateStatus(item)
+                                          ) === 'ViewVerified'
+                                        ? ViewVerified
+                                        : getEntityStatusIcon(
+                                              assetType(item),
+                                              certificateStatus(item)
+                                          ) === 'ViewDraft'
+                                        ? ViewDraft
+                                        : ViewDeprecated
+
                                 if (data1[i] && data1[i]?.style) {
                                     data1[
                                         i
-                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/${getEntityStatusIcon(
-                                        assetType(item),
-                                        certificateStatus(item)
-                                    )}.png")`
+                                    ].style.backgroundImage = `url(${component})`
                                 }
                             } else if (item && assetType(item) === 'Column') {
                                 if (data1[i] && data1[i]?.style) {
                                     data1[
                                         i
-                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/Column.png")`
+                                    ].style.backgroundImage = `url(${Column})`
                                 }
                             } else {
                                 if (data2[i] && data2[i].style) {
                                     data2[
                                         i
-                                    ].style.backgroundImage = `url("src/assets/images/insights/autocomplete/default.png")`
+                                    ].style.backgroundImage = `url(${Default})`
                                 }
                             }
                         }

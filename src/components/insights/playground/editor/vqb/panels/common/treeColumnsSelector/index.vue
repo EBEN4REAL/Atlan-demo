@@ -58,7 +58,11 @@
                         v-for="(item, index) in tableDropdownOption"
                         :key="item?.label + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            :placement="subIndex === 0 ? 'right' : 'left'"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
@@ -175,7 +179,11 @@
                         v-for="(item, index) in columnDropdownOption"
                         :key="item?.label + index"
                     >
-                        <PopoverAsset :item="item.item" placement="left">
+                        <PopoverAsset
+                            :item="item.item"
+                            :placement="subIndex === 0 ? 'right' : 'left'"
+                            :mouseEnterDelay="0.85"
+                        >
                             <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
@@ -603,6 +611,7 @@
             // )
 
             return {
+                subIndex,
                 actionClick,
                 totalCount,
                 data,

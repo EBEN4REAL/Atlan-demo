@@ -96,7 +96,7 @@
     import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useFetchAssetList from './useFetchAssetList'
+    import useFetchAssetList from './usefetchAssetList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
         AssetAttributes,

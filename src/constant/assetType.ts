@@ -253,6 +253,6 @@ export const assetTypeList: {
         label: 'Power BI Datasource',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
-        relationships: ['datasets'],
+        relationships: ['dataset'],
     },
 ]

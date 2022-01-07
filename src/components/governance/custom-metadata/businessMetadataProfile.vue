@@ -283,10 +283,13 @@
                 return !assetCount.value
             })
 
-            const selected = ref('')
+            const selected = computed(() =>
+                addPropertyDrawer.value?.visible
+                    ? addPropertyDrawer.value?.form.name
+                    : ''
+            )
 
             const openEdit = ({ property, index }) => {
-                selected.value = property.name
                 addPropertyDrawer.value.open(
                     cleanLocalBm.value.attributeDefs.find(
                         (x) => x.name === property.name

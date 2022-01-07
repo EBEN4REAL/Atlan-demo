@@ -145,7 +145,7 @@
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('RELATED_ASSET_LIST')
+            const dependentKey = ref(null)
             const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
@@ -229,9 +229,11 @@
             }
 
             whenever(isGuidArrayReady, () => {
+                dependentKey.value = 'RELATED_ASSET_LIST'
+
                 updateFacet()
-                console.log(guidList.value)
-                quickChange()
+
+                fetch()
             })
 
             return {

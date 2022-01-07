@@ -79,10 +79,10 @@
         class="flex"
         @change="handleInputChange"
     >
-        <a-radio-button value="true" class="flex-1 text-center">
+        <a-radio-button :value="true" class="flex-1 text-center">
             Yes
         </a-radio-button>
-        <a-radio-button value="false" class="flex-1 text-center">
+        <a-radio-button :value="false" class="flex-1 text-center">
             No
         </a-radio-button>
     </a-radio-group>
@@ -145,7 +145,7 @@
 
             // set proper default value
             if (multiple.value && !localValue.value) localValue.value = []
-            else if (!localValue.value) localValue.value = ''
+            else if (localValue.value == null) localValue.value = ''
 
             const handleInputChange = (v) => {
                 if (props.dataType.toLowerCase() === 'date') {

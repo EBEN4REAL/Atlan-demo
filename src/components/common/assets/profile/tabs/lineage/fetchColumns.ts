@@ -24,21 +24,31 @@ export default function fetchColumns({
             key: '__state',
             value: 'ACTIVE',
             type: 'must',
+            prop: 'term',
         },
         {
             key: '__typeName.keyword',
             value: 'Column',
             type: 'must',
+            prop: 'term',
+        },
+        {
+            key: 'field',
+            value: '__hasLineage',
+            type: 'must',
+            prop: 'exists',
         },
         {
             key: 'viewQualifiedName',
             value: viewQualifiedName,
             type: 'should',
+            prop: 'terms',
         },
         {
             key: 'tableQualifiedName',
             value: tableQualifiedName,
             type: 'should',
+            prop: 'terms',
         },
     ]
 
@@ -47,10 +57,9 @@ export default function fetchColumns({
     base.size(limit)
     base.filterMinimumShouldMatch(1)
     facets.forEach((x) => {
-        const { key, value, type } = x
+        const { key, value, type, prop } = x
         const filterType = type === 'should' ? 'orFilter' : 'filter'
-        const termType = type === 'should' ? 'terms' : 'term'
-        base[filterType](termType, key, value)
+        base[filterType](prop, key, value)
     })
 
     const localKey = ref('LINEAGE_COLUMNS_TWO')

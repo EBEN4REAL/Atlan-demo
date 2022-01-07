@@ -42,10 +42,10 @@ export default function useProject() {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
             columnList.value = []
-            columns.map((col: any) => {
+            columns.map((col: any, index) => {
                 columnList.value.push({
                     title: col.columnName.split('_').join('_'),
-                    dataIndex: col.columnName,
+                    dataIndex: col.columnName + index,
                     key: col.columnName,
                     data_type: col.type.name,
                 })
@@ -278,7 +278,7 @@ export default function useProject() {
                                 )
                         }
                         /* ---------------------------------- */
-                        // console.log(message, 'message')
+                        console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)

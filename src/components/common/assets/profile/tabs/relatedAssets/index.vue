@@ -1,17 +1,15 @@
 <template>
-    <div class="h-full p-6 pt-6">
-        <div class="bg-white rounded">
-            <Assets
-                v-if="fetchAssets"
-                :show-filters="false"
-                :initial-filters="tabFilter"
-                :static-use="true"
-                emptyViewText="No related assets found"
-                page="profile"
-                :class="$style.relatedAssetsTab"
-                :enableSidebarDrawer="true"
-            />
-        </div>
+    <div class="h-full bg-white">
+        <Assets
+            v-if="fetchAssets"
+            :show-filters="false"
+            :initial-filters="tabFilter"
+            :static-use="true"
+            emptyViewText="No related assets found"
+            page="profile"
+            :class="$style.relatedAssetsTab"
+            :enableSidebarDrawer="true"
+        />
     </div>
 </template>
 

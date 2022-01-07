@@ -76,6 +76,9 @@
             TermsAndCategories: defineAsyncComponent(
                 () => import('./tabs/termsAndCategories/index.vue')
             ),
+            RelatedAssets: defineAsyncComponent(
+                () => import('./tabs/relatedAssets/index.vue')
+            ),
         },
         props: {
             asset: {

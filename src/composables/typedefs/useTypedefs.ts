@@ -50,3 +50,27 @@ export default function useTypedefs() {
     data,
   }
 }
+
+
+export const refetchType = (which) => {
+  const typedefStore = useTypedefStore()
+  const { data, isLoading, error, mutate } = Types.GetTypedef(
+    {},
+    which,
+    {
+      asyncOptions: {}
+    }
+  )
+
+  watch(data, (v) => {
+    console.log({ refetchType: v })
+    switch (which) {
+      case 'enum': {
+        typedefStore.setEnumList(v?.enumDefs || [])
+        break
+      }
+      default:
+        break
+    }
+  })
+}

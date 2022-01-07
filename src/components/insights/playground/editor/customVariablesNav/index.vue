@@ -505,12 +505,10 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import dayjs from 'dayjs'
-    import EditVariablePopover from './EditVariablePopover.vue'
 
     export default defineComponent({
         components: {
             AtlanBtn,
-            EditVariablePopover,
         },
         props: {},
         setup(props) {

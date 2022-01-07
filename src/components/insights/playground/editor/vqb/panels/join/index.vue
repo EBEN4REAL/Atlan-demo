@@ -255,9 +255,9 @@
                 () => activeInlineTab.value.playground.vqb.panels,
                 () => {
                     expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
+                        activeInlineTab.value.playground.vqb?.panels[
                             index.value
-                        ].expand
+                        ]?.expand
                 }
             )
             const checkbox = ref(true)

@@ -20,33 +20,37 @@
     </div>
 </template>
 
-<script setup lang="ts">
-    import { toRefs } from 'vue'
+<script lang="ts">
+    import { toRefs, defineComponent } from 'vue'
     import Tags from '~/components/common/badge/tags/index.vue'
 
-    const props = defineProps({
-        user: {
-            type: Object,
-            default: () => {},
-            required: true,
-        },
-        isCurrentUser: {
-            type: Boolean,
-            default: false,
-        },
-    })
-
-    const { user } = toRefs(props)
-    const personas = user.value.personaList
-</script>
-
-<script lang="ts">
-    export default {
+    export default defineComponent({
         name: 'ViewPersonas',
         components: {
             Tags,
         },
-    }
+        props: {
+            user: {
+                type: Object,
+                default: () => {},
+                required: true,
+            },
+            isCurrentUser: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        setup(props) {
+            const { user } = toRefs(props)
+            const { personas } = user.value
+            const personaList = (personas || []).map(
+                (persona) => persona?.name ?? ''
+            )
+            return {
+                personas: personaList,
+            }
+        },
+    })
 </script>
 
 <style scoped></style>

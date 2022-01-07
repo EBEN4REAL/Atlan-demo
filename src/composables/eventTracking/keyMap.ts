@@ -23,20 +23,91 @@ const keyMap = {
             },
         },
         metadata: {
+            name_updated: {
+                action: 'discovery_metadata_name_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
             description_updated: {
                 action: 'discovery_metadata_description_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             classifications_updated: {
                 action: 'discovery_metadata_classifications_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             certification_updated: {
                 action: 'discovery_metadata_certification_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    certificate: props.certificate,
+                    has_message: !!props.has_message,
+                }),
+            },
+            query_config_updated: {
+                action: 'discovery_metadata_query_config_updated',
+                properties: (props) => ({
+                    allow_query: props.allow_query,
+                    row_limit: props.row_limit,
+                    allow_query_preview: !!props.allow_query_preview,
+                }),
             },
             owners_updated: {
                 action: 'discovery_metadata_owners_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
+            admins_updated: {
+                action: 'discovery_metadata_admins_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             terms_updated: {
                 action: 'discovery_metadata_terms_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
+        },
+        announcement: {
+            created: {
+                action: 'discovery_announcement_created',
+                // properties: (props) => ({
+                //     create_more: !!props.create_more,
+                // asset_type: props.asset_type,
+                // }),
+            },
+            updated: {
+                action: 'discovery_announcement_updated',
+            },
+            deleted: {
+                action: 'discovery_announcement_deleted',
+            },
+        },
+        resource: {
+            created: {
+                action: 'discovery_announcement_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            updated: {
+                action: 'discovery_announcement_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            deleted: {
+                action: 'discovery_announcement_deleted',
             },
         },
         search: {

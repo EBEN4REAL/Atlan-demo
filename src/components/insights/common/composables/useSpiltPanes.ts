@@ -1,4 +1,10 @@
 import { ref } from 'vue'
+
+export const explorerPaneSize = ref(24.5)
+export const minExplorerSize = ref(0)
+export const maxExplorerSize = ref(24.5)
+export const currentNormalExplorerSize = ref(24.5)
+
 export function useSpiltPanes() {
     /* ---- Panes  ----- */
     /* TODO: Collapse panes if it reach  threshold */
@@ -9,8 +15,9 @@ export function useSpiltPanes() {
     const explorerThreshold = 10
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10
-    const explorerPaneSize = ref(24.5)
+
     const assetSidebarPaneSize = ref(25)
+
     const outputPaneSize = ref(27.3)
     const paneResize = (event: any) => {
         if (event.length > 0) {
@@ -24,7 +31,6 @@ export function useSpiltPanes() {
         ASSET_SIDEBAR_WIDTH,
         EXPLORER_WIDTH,
         outputPaneSize,
-        explorerPaneSize,
         assetSidebarPaneSize,
         paneResize,
     }

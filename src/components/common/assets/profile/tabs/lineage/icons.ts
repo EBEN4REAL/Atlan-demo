@@ -25,3 +25,8 @@ export const iconEllipse = `<svg width="3" height="4" viewBox="0 0 3 4" fill="no
 <circle cx="1.5" cy="2" r="1.5" fill="#C4C4C4"/>
 </svg>
 `
+
+export const iconCaretDown = `<svg class="node-caret" width="25" height="25" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 6L8.35355 9.64645C8.15829 9.84171 7.84171 9.84171 7.64645 9.64645L4 6" stroke="#6F7590" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`

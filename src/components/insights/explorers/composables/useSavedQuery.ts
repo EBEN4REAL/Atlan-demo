@@ -61,6 +61,8 @@ export function useSavedQuery(
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
+
+        console.log('decoded vars: ', Array.isArray(decodedVariables))
         // debugger
         // console.log(decodedVariables, savedQuery)
         // if (!Array.isArray(decodedVariables)) decodedVariables = []
@@ -92,12 +94,12 @@ export function useSavedQuery(
         let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
 
         const newTab: activeInlineTabInterface = {
-            attributes: savedQuery.attributes,
-            label: savedQuery.attributes.name ?? '',
+            attributes: savedQuery?.attributes,
+            label: savedQuery?.attributes?.name ?? '',
             key: savedQuery?.guid,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
-            queryId: savedQuery.guid,
+            queryId: savedQuery?.guid,
             updateTime:
                 savedQuery?.updateTime ??
                 savedQuery.attributes.__modificationTimestamp,
@@ -112,7 +114,7 @@ export function useSavedQuery(
             status: savedQuery.attributes.certificateStatus as string,
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
             collectionQualifiedName:
-                savedQuery.attributes.collectionQualifiedName,
+                savedQuery?.attributes?.collectionQualifiedName,
             explorer: {
                 schema: {
                     connectors: connectors,
@@ -126,7 +128,7 @@ export function useSavedQuery(
                         guid: activeInlineTab?.value?.explorer?.queries
                             ?.collection?.guid,
                         qualifiedName:
-                            savedQuery.attributes.collectionQualifiedName,
+                            savedQuery?.attributes?.collectionQualifiedName,
                         parentQualifiedName: undefined,
                     },
                 },
@@ -146,18 +148,23 @@ export function useSavedQuery(
                                       {
                                           id: '1',
                                           columns: ['all'],
+                                          tableData: {
+                                              certificateStatus: undefined,
+                                              assetType: undefined,
+                                          },
                                           columnsData: [],
                                       },
                                   ],
+                                  expand: true,
                               },
                           ],
                       },
                 editor: {
-                    text: savedQuery.attributes.rawQuery,
+                    text: savedQuery?.attributes?.rawQuery ? savedQuery?.attributes?.rawQuery : "",
                     dataList: [],
                     columnList: [],
-                    variables: decodedVariables,
-                    savedVariables: decodedVariables,
+                    variables:  Array.isArray(decodedVariables) ? decodedVariables : [],
+                    savedVariables: Array.isArray(decodedVariables) ? decodedVariables : [],
                     limitRows: {
                         checked: false,
                         rowsCount: -1,
@@ -171,8 +178,9 @@ export function useSavedQuery(
                         activeInlineTab.value?.playground.resultsPane
                             .activeTab ?? 0,
                     result: {
-                        title: savedQuery.attributes.name,
+                        title: savedQuery?.attributes?.name,
                         isQueryRunning: '',
+                        isQueryAborted: false,
                         queryErrorObj: {},
                         errorDecorations: [],
                         totalRowsCount: -1,
@@ -224,7 +232,12 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
+        getData: (
+            activeInlineTab,
+            rows: any[],
+            columns: any[],
+            executionTime: number
+        ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
@@ -375,8 +388,13 @@ export function useSavedQuery(
                     activeInlineTabCopy.isSaved = true
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -563,8 +581,13 @@ export function useSavedQuery(
                     }
                     if (Callback) Callback()
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -743,8 +766,13 @@ export function useSavedQuery(
 
                     openSavedQueryInNewTab(savedQuery)
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
@@ -839,8 +867,13 @@ export function useSavedQuery(
                     })
                     useAddEvent('insights', 'folder', 'created')
                 } else {
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the folder within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the folder within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving the folder!`)
                     }
@@ -1073,12 +1106,17 @@ export function useSavedQuery(
                     }
                 } else {
                     // console.log('query error: ', error.value.response.data.errorCode)
-                    if(error?.value?.response?.data?.errorCode==='ATLAS-403-00-001') {
-                        message.error(`You are not allowed to create the query within the selected collection`)
+                    if (
+                        error?.value?.response?.data?.errorCode ===
+                        'ATLAS-403-00-001'
+                    ) {
+                        message.error(
+                            `You are not allowed to create the query within the selected collection`
+                        )
                     } else {
                         message.error(`Error in saving query!`)
                     }
-                   
+
                     /* Saving error in errorRef */
                     if (Callback) Callback(error)
                 }

@@ -96,6 +96,8 @@ export function useDiscoverList({
         }
     })
 
+    watch(dependentKey, () => (localKey.value = dependentKey?.value))
+
     const getAggregationList = (
         aggregationKey: string,
         labelList?: any,

@@ -9,6 +9,7 @@ import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
 import { Entity } from '~/services/meta/entity/index'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -143,6 +144,18 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const isConfetti = ref(false)
     const shouldDrawerUpdate = ref(false)
 
+    // analytics event
+    const sendMetadataTrackEvent = (metadataEvent: string, props = {}) => {
+        const baseProps = {
+            asset_type: selectedAsset.value?.typeName,
+        }
+        const finalProps = {
+            ...baseProps,
+            ...props,
+        }
+        useAddEvent('discovery', 'metadata', metadataEvent, finalProps)
+    }
+
     // Name Change
     const handleChangeName = () => {
         if (title(selectedAsset?.value) !== localName.value) {
@@ -150,34 +163,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             body.value.entities = [entity.value]
             currentMessage.value = 'Name has been updated'
             mutate()
+            sendMetadataTrackEvent('name_updated')
         }
     }
-
-    // const addParentQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parentQualifiedName: attributes(selectedAsset?.value)
-    //             ?.parentQualifiedName,
-    //     }
-    //     return entity
-    // }
-
-    // const addParent = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         parent: attributes(selectedAsset?.value)?.parent,
-    //     }
-    //     return entity
-    // }
-
-    // const addCollectionQualifiedName = (entity) => {
-    //     entity.attributes = {
-    //         ...entity.attributes,
-    //         collectionQualifiedName: attributes(selectedAsset?.value)
-    //             ?.collectionQualifiedName,
-    //     }
-    //     return entity
-    // }
 
     // Description Change
     const handleChangeDescription = () => {
@@ -187,6 +175,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Description has been updated'
             mutate()
+            sendMetadataTrackEvent('description_updated')
         }
     }
 
@@ -226,6 +215,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Owners have been updated'
             mutate()
+            sendMetadataTrackEvent('owners_updated')
         }
     }
 
@@ -265,6 +255,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Admins have been updated'
             mutate()
+            sendMetadataTrackEvent('admins_updated')
         }
     }
 
@@ -291,6 +282,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Certificate has been updated'
             mutate()
+            sendMetadataTrackEvent('certification_updated', {
+                certificate: localCertificate.value.certificateStatus,
+                has_message: !!localCertificate.value.certificateStatusMessage,
+            })
         }
     }
 
@@ -319,6 +314,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'SQL Query Config has been updated'
         mutate()
+        sendMetadataTrackEvent('query_config_updated', {
+            allow_query: localSQLQuery.value.allowQuery,
+            allow_query_preview: localSQLQuery.value.allowQueryPreview,
+            row_limit: localSQLQuery.value.connectionRowLimit,
+        })
     }
 
     const handleAnnouncementDelete = () => {
@@ -345,6 +345,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Terms have been updated'
         mutate()
+        sendMetadataTrackEvent('terms_updated')
     }
 
     const handleAssignedEntitiesUpdate = ({
@@ -556,9 +557,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
-        if (
-            meanings(selectedAsset?.value) !== localMeanings.value
-        ) {
+        if (meanings(selectedAsset?.value) !== localMeanings.value) {
             localMeanings.value = meanings(selectedAsset.value)
         }
 
@@ -629,6 +628,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             }
             currentMessage.value = 'Classifications have been updated'
             mutateClassification()
+            sendMetadataTrackEvent('classifications_updated')
         }
     }
 

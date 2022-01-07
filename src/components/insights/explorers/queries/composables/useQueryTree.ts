@@ -599,7 +599,10 @@ const useQueryTree = ({
                 if (treeNode.key === guid)
                     return {
                         ...treeNode,
+                        entity: entity,
                         attributes: entity.attributes,
+                        classifications: entity.classifications,
+                        meanings: entity.meanings,
                     }
                 return treeNode
             })
@@ -618,7 +621,10 @@ const useQueryTree = ({
                 if (node.key === guid || !currentPath) {
                     return {
                         ...node,
+                        entity: entity,
                         attributes: entity.attributes,
+                        classifications: entity.classifications,
+                        meanings: entity.meanings,
                     }
                 }
                 return {
@@ -696,6 +702,7 @@ const useQueryTree = ({
             title: item.attributes.name,
             typeName: item.typeName,
             classifications: item.classifications,
+            meanings: item.meanings,
             // ...item.attributes,
             isLeaf: item.typeName === 'Query' ? true : false,
             entity: item,

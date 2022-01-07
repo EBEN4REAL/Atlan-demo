@@ -1,11 +1,14 @@
 <template>
-    <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
+    <div
+        v-if="selectedAsset?.guid"
+        class="z-20 flex flex-col bg-white asset-preview-container"
+    >
         <AssetPreview
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
-            page="insights"
             class="w-full"
+            page="insights"
         ></AssetPreview>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
@@ -88,6 +91,7 @@
 
             watch(selectedAsset, () => {
                 assetInfo.value = {}
+                console.log('selected asset: ', selectedAsset.value)
                 fetchAsset()
             })
 
@@ -96,26 +100,35 @@
             ) as Ref<Object>
 
             const updateList = (asset) => {
-                let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
-                    JSON.stringify(toRaw(activeInlineTab.value))
-                )
+                // let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+                //     JSON.stringify(toRaw(activeInlineTab.value))
+                // )
+                console.log('updated asset: ', asset)
 
+                let activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+
+                // console.log('updated asset: ', asset)
                 assetSidebarUpdatedData.value = asset
 
-                activeInlineTabCopy = {
-                    ...activeInlineTabCopy,
-                    updateTime:
-                        asset?.updateTime ??
-                        asset?.attributes.__modificationTimestamp,
-                    updatedBy:
-                        asset?.updatedBy ?? asset?.attributes.__modifiedBy,
-                    description: asset?.attributes.description,
-                    status: asset?.attributes.certificateStatus,
-                    attributes: asset?.attribute,
+                if (asset?.typeName === 'Query') {
+                    if (activeInlineTabCopy.queryId === asset?.guid) {
+                        activeInlineTabCopy = {
+                            ...activeInlineTabCopy,
+                            updateTime:
+                                asset?.updateTime ??
+                                asset?.attributes.__modificationTimestamp,
+                            updatedBy:
+                                asset?.updatedBy ??
+                                asset?.attributes.__modifiedBy,
+                            description: asset?.attributes.description,
+                            status: asset?.attributes.certificateStatus,
+                            attributes: asset?.attribute,
+                        }
+                    }
+                    modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }
-
                 // console.log('old data update: ', asset)
-                modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
             }
 
             provide('updateList', updateList)
@@ -131,6 +144,10 @@
     })
 </script>
 <style lang="less" scoped>
+    .asset-preview-container {
+        min-width: 420px !important;
+        max-width: 420px !important;
+    }
     .placeholder {
         background-color: #f4f4f4;
     }

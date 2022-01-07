@@ -121,13 +121,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -248,13 +248,13 @@
                                         >
 
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -495,13 +495,13 @@
                                     >
 
                                     <AtlanIcon
-                                        icon="Info"
+                                        icon="SidebarSwitch"
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'
                                                 : ''
                                         "
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto outline-none"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
@@ -831,9 +831,15 @@
                         // new logic for preview ctc
                         // previous text
 
-                        let newQuery = `\/* ${title(
+                        // let newQuery = `\/* ${title(
+                        //     item.value
+                        // )} preview *\/\nSELECT * FROM \"${title(
+                        //     item.value
+                        // )}\" LIMIT 50;\n`
+
+                        let newQuery = `-- ${title(
                             item.value
-                        )} preview *\/\nSELECT * FROM \"${title(
+                        )} preview \nSELECT * FROM \"${title(
                             item.value
                         )}\" LIMIT 50;\n`
 
@@ -865,6 +871,11 @@
                                     attributeValue:
                                         updatedEditorSchemaQualifiedName,
                                 },
+                                {
+                                    attributeName: 'schemaQualifiedName',
+                                    attributeValue:
+                                        updatedEditorSchemaQualifiedName,
+                                },
                                 item.value
                             )
                             let activeInlineTabCopy: activeInlineTabInterface =
@@ -891,13 +902,15 @@
 
                         switch (editorContextType) {
                             case 'connectionQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                 if (
                                     editorContextValue !==
                                     queryConnectionQualifiedName
                                 ) {
                                     // openContextModal()
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     let newText = `${newQuery}`
                                     handleAddNewTab(
                                         newText,
@@ -906,6 +919,10 @@
                                                 'schemaQualifiedName',
                                             attributeValue:
                                                 updatedEditorSchemaQualifiedName,
+                                        },
+                                        {
+                                            ...activeInlineTab.value.explorer
+                                                .schema.connectors,
                                         },
                                         item.value
                                     )
@@ -930,7 +947,8 @@
                                 break
                             }
                             case 'databaseQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
 
                                 if (
                                     editorContextValue !==
@@ -952,7 +970,8 @@
                                         // })
                                         // open in new tab
                                         // openContextModal()
-                                        newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                         let newText = `${newQuery}`
                                         handleAddNewTab(
                                             newText,
@@ -961,6 +980,10 @@
                                                     'schemaQualifiedName',
                                                 attributeValue:
                                                     updatedEditorSchemaQualifiedName,
+                                            },
+                                            {
+                                                ...activeInlineTab.value
+                                                    .explorer.schema.connectors,
                                             },
                                             item.value
                                         )
@@ -979,7 +1002,8 @@
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -991,7 +1015,8 @@
                                     }
                                     // here, check db--->connection
                                 } else {
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1004,13 +1029,14 @@
                             }
                             case 'schemaQualifiedName':
                             case 'defaultSchemaQualifiedName': {
-                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                console.log(
-                                    'defaultSchemaQualifiedName',
-                                    newQuery
-                                )
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                // console.log(
+                                //     'defaultSchemaQualifiedName',
+                                //     newQuery
+                                // )
 
-                                console.log('run in schema')
+                                // console.log('run in schema')
                                 if (
                                     editorContextValue !==
                                     querySchemaQualifiedName
@@ -1039,6 +1065,10 @@
                                                 attributeValue:
                                                     updatedEditorSchemaQualifiedName,
                                             },
+                                            {
+                                                ...activeInlineTab.value
+                                                    .explorer.schema.connectors,
+                                            },
                                             item.value
                                         )
                                         let activeInlineTabCopy: activeInlineTabInterface =
@@ -1056,7 +1086,8 @@
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -1068,7 +1099,8 @@
                                             if (
                                                 sqn !== querySchemaQualifiedName
                                             ) {
-                                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 const newText = `${newQuery}${prevText}`
                                                 playQuery(
                                                     newQuery,
@@ -1083,7 +1115,8 @@
                                     //here check schema-->db-->connection
                                 } else {
                                     console.log('match here')
-                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1126,7 +1159,8 @@
 
                             if (!Object.keys(activeInlineTabCopy).length) {
                                 let tableName = title(item.value)
-                                let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                // let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                let newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
                                 let updatedEditorSchemaQualifiedName =
                                     item.value?.databaseQualifiedName +
                                     '/' +
@@ -1134,6 +1168,11 @@
 
                                 handleAddNewTab(
                                     newQuery,
+                                    {
+                                        attributeName: 'schemaQualifiedName',
+                                        attributeValue:
+                                            updatedEditorSchemaQualifiedName,
+                                    },
                                     {
                                         attributeName: 'schemaQualifiedName',
                                         attributeValue:
@@ -1243,7 +1282,12 @@
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
 
-            const handleAddNewTab = async (query, context, previewItem) => {
+            const handleAddNewTab = async (
+                query,
+                context,
+                explorerContext,
+                previewItem
+            ) => {
                 const key = generateUUID()
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
@@ -1262,7 +1306,7 @@
                     explorer: {
                         schema: {
                             connectors: {
-                                ...context,
+                                ...explorerContext,
                             },
                         },
                         queries: {
@@ -1297,9 +1341,14 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: true,
                                 },
                             ],
                         },

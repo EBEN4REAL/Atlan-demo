@@ -1,8 +1,8 @@
 <template>
     <a-popover placement="bottomLeft" :trigger="['click']">
         <div
-            class="flex items-center px-2 border border-gray-300 rounded box-shadow focus:border-primary-focus"
-            style="height: 32px"
+            class="flex items-center px-2 overflow-hidden border border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px; width: 100%"
         >
             <div
                 v-if="selectedColumn?.label"
@@ -32,8 +32,8 @@
                 <a-input
                     v-model:value="tableText"
                     placeholder="Enter table name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
+                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
+                    style="height: 36px"
                 >
                     <template #suffix>
                         <AtlanIcon
@@ -42,7 +42,10 @@
                         ></AtlanIcon>
                     </template>
                 </a-input>
-                <div style="height: 300px !important" class="overflow-y-scroll">
+                <div
+                    style="height: 300px !important; width: 400px"
+                    class="overflow-y-scroll"
+                >
                     <AtlanIcon
                         v-if="isLoading"
                         icon="Loader"
@@ -55,39 +58,68 @@
                         v-for="(item, index) in tableDropdownOption"
                         :key="item?.label + index"
                     >
-                        <div
-                            class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                            style="width: 400px"
-                            @click="onSelectTable(item)"
+                        <PopoverAsset
+                            :item="item.item"
+                            :placement="subIndex === 0 ? 'right' : 'left'"
+                            :mouseEnterDelay="0.85"
                         >
-                            <div class="flex items-center truncate">
-                                <AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            assetType(item),
-                                            certificateStatus(item)
-                                        )
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
                                     "
-                                    class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                ></AtlanIcon>
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
 
-                                <span
-                                    class="ml-2 parent-ellipsis-container-base"
-                                    style="width: 300px"
-                                    >{{ item?.label }}
-                                </span>
-                            </div>
                             <div
-                                class="flex items-center justify-between text-gray-500"
+                                class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
+                                style="width: 400px"
+                                @click="onSelectTable(item)"
                             >
-                                {{ item?.columnCount }}
+                                <div class="flex items-center truncate">
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
 
-                                <AtlanIcon
-                                    icon="ChevronRight"
-                                    class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                />
+                                    <span
+                                        class="ml-2 parent-ellipsis-container-base"
+                                        style="width: 300px"
+                                        >{{ item?.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between text-gray-500"
+                                >
+                                    {{ item?.columnCount }}
+
+                                    <AtlanIcon
+                                        icon="ChevronRight"
+                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </PopoverAsset>
                     </template>
                     <div
                         v-if="tableDropdownOption.length === 0 && !isLoading"
@@ -125,8 +157,8 @@
                 <a-input
                     v-model:value="columnText"
                     placeholder="Enter column name"
-                    class="border-l-0 border-r-0 rounded-none outline-none"
-                    style="height: 36px; width: 400px"
+                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
+                    style="height: 36px"
                 >
                     <template #suffix>
                         <AtlanIcon
@@ -147,46 +179,68 @@
                         v-for="(item, index) in columnDropdownOption"
                         :key="item?.label + index"
                     >
-                        <div
-                            class="flex items-center justify-between pl-4 pr-4 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                            style="width: 400px"
-                            @click="onSelectColumn(item)"
-                            :class="
-                                selectedColumn?.columnQualifiedName ===
-                                item?.qualifiedName
-                                    ? 'bg-primary-light'
-                                    : ''
-                            "
+                        <PopoverAsset
+                            :item="item.item"
+                            :placement="subIndex === 0 ? 'right' : 'left'"
+                            :mouseEnterDelay="0.85"
                         >
-                            <div class="flex items-center truncate">
-                                <component
-                                    :is="dataTypeImage(item)"
-                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                ></component>
-                                <span
-                                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
                                 >
-                                    {{ item.label }}
-                                </span>
-                            </div>
-                            <div
-                                class="relative h-full w-14 parent-ellipsis-container-extension"
-                                v-if="item?.attributes?.isPrimary"
-                            >
-                                <div
-                                    class="absolute right-0 flex items-center mt-1.5"
-                                >
-                                    <AtlanIcon
-                                        icon="PrimaryKey"
-                                        style="color: #3ca5bc"
-                                        class="w-4 h-4 mr-1"
-                                    ></AtlanIcon>
-                                    <span style="color: #3ca5bc" class="text-sm"
-                                        >Pkey</span
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
                                     >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+
+                            <div
+                                class="flex items-center justify-between pl-4 pr-4 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
+                                style="width: 400px"
+                                @click="onSelectColumn(item)"
+                                :class="
+                                    selectedColumn?.columnQualifiedName ===
+                                    item?.qualifiedName
+                                        ? 'bg-primary-light'
+                                        : ''
+                                "
+                            >
+                                <div class="flex items-center truncate">
+                                    <component
+                                        :is="dataTypeImage(item)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                >
+                                    <ColumnKeys
+                                        :isPrimary="item.isPrimary"
+                                        :isForeign="item.isForeign"
+                                        :isPartition="item.isPartition"
+                                        topStyle="top-2.5"
+                                    />
                                 </div>
                             </div>
-                        </div>
+                        </PopoverAsset>
                     </template>
                     <div
                         v-if="columnDropdownOption.length === 0 && !isLoading"
@@ -207,6 +261,7 @@
         toRefs,
         PropType,
         ref,
+        Ref,
         computed,
         inject,
         ComputedRef,
@@ -219,7 +274,16 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
     import useBody from './useBody'
 
     export default defineComponent({
@@ -227,10 +291,24 @@
         emits: ['change'],
         components: {
             Loader,
+            ColumnKeys,
+            PopoverAsset,
         },
         props: {
             selectedColumn: {
                 type: Object,
+                required: true,
+            },
+            panelIndex: {
+                type: Number,
+                required: true,
+            },
+            rowIndex: {
+                type: Number,
+                required: true,
+            },
+            subIndex: {
+                type: Number,
                 required: true,
             },
             selectedTablesQualifiedNames: {
@@ -243,11 +321,37 @@
             },
         },
         setup(props, { emit }) {
-            const { showColumnWithTable, selectedTablesQualifiedNames } =
-                toRefs(props)
+            const {
+                showColumnWithTable,
+                selectedTablesQualifiedNames,
+                panelIndex,
+                subIndex,
+                rowIndex,
+            } = toRefs(props)
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { allowedTablesInJoinSelector } = useJoin()
+
+            const tableQualifiedNamesContraint: Ref<{
+                allowed: string[]
+                notAllowed: string[]
+            }> = ref(
+                allowedTablesInJoinSelector(
+                    panelIndex.value,
+                    rowIndex.value,
+                    subIndex.value,
+                    activeInlineTab.value
+                )
+            )
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const tableText = ref('')
             const columnText = ref('')
@@ -271,15 +375,32 @@
                                 .attributeValue,
 
                         searchText: tableText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNamesContraint:
+                            tableQualifiedNamesContraint.value,
                     }),
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
+                        'dataType',
+                        'isPrimary',
+                        'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
                         'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -301,9 +422,19 @@
                 replaceBody(getTableInitialBody())
             })
 
-            watch(selectedTablesQualifiedNames, () => {
-                replaceBody(getTableInitialBody())
-            })
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    tableQualifiedNamesContraint.value =
+                        allowedTablesInJoinSelector(
+                            panelIndex.value,
+                            rowIndex.value,
+                            subIndex.value,
+                            activeInlineTab.value
+                        )
+                    replaceBody(getTableInitialBody())
+                }
+            )
 
             let tableSelected = ref(null)
 
@@ -320,15 +451,11 @@
                     qualifiedName: ls.attributes.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
 
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -339,15 +466,13 @@
                     type: ls.attributes.dataType,
                     attributes: ls.attributes,
                     order: ls.attributes.order,
+                    isPrimary: ls.attributes?.isPrimary,
+                    isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
+                    item: ls,
                 }))
 
                 // console.log('list: ', list)
-
-                data.sort((x, y) => {
-                    if (x.order < y.order) return -1
-                    if (x.order > y.order) return 1
-                    return 0
-                })
                 console.log('col: ', data)
                 return data
             })
@@ -370,12 +495,26 @@
                     attributes: [
                         'name',
                         'displayName',
-                        'columnCount',
-                        'certificateStatus',
                         'dataType',
-                        'order',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -405,7 +544,13 @@
                     columnQualifiedName: item.qualifiedName,
                 }
                 emit('change', item.qualifiedName)
-                console.log()
+                activeInlineTab.value.playground.vqb.selectedTables =
+                    JSON.parse(
+                        JSON.stringify(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
+                //activeInlineTab.value.playground.vqb.selectedTables
             }
 
             const placeholder = computed(() => {
@@ -427,7 +572,47 @@
                 return data
             })
 
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
+            // watch(
+            //     tableDropdownOption,
+            //     () => {
+            //         if (rowIndex.value == 0 && subIndex.value == 0) {
+            //             if (tableDropdownOption.value.length > 0) {
+            //                 const items = JSON.parse(
+            //                     JSON.stringify(tableDropdownOption.value)
+            //                 )
+            //                 onSelectTable(items[0])
+            //             }
+            //         }
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
+
             return {
+                subIndex,
+                actionClick,
                 totalCount,
                 data,
                 isLoading,
@@ -474,5 +659,15 @@
     }
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .input_styles {
+        width: 100% !important;
+        // padding: 5px;
+        // margin: 0;
+        -webkit-box-sizing: border-box !important;
+        -moz-box-sizing: border-box !important;
+        -o-box-sizing: border-box !important;
+        -ms-box-sizing: border-box !important;
+        box-sizing: border-box !important;
     }
 </style>

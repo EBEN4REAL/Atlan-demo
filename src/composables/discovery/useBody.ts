@@ -401,7 +401,7 @@ export function useBody(
                                 element.value
                                     ? base.filter('exists', element.operand)
                                     : base.notFilter('exists', element.operand)
-                            } else if (element.value) {
+                            } else if (element.value != null || element.value !== '') {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -433,10 +433,9 @@ export function useBody(
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${
-                                            Array.isArray(element.value)
-                                                ? JSON.stringify(element.value)
-                                                : element.value
+                                        `*${Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                         }`
                                     )
                                 }

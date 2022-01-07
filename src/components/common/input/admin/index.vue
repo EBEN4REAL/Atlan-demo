@@ -1,9 +1,7 @@
 <template>
-    <div
-        class="flex flex-wrap items-center gap-1 text-sm"
-        data-test-id="admins-popover"
-    >
+    <div data-test-id="admins-popover">
         <a-popover
+            v-if="editPermission"
             v-model:visible="isEdit"
             :placement="placementPos"
             :overlay-class-name="$style.adminPopover"
@@ -20,48 +18,62 @@
                     ></AdminFacets>
                 </div>
             </template>
-            <a-button
-                v-if="editPermission"
-                shape="circle"
-                size="small"
-                class="text-center shadow hover:bg-primary-light hover:border-primary"
-            >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
         </a-popover>
 
-        <template v-for="username in localValue?.adminUsers" :key="username">
-            <PopOverUser :item="username">
-                <UserPill
-                    :username="username"
-                    :allow-delete="editPermission"
-                    :enable-hover="enableHover"
-                    @delete="handleDeleteUser"
-                    @click="handleClickUser(username)"
-                ></UserPill>
-            </PopOverUser>
-        </template>
+        <div class="flex flex-wrap items-center gap-1 text-sm">
+            <a-tooltip
+                placement="left"
+                :title="
+                    !editPermission
+                        ? `You don't have permission to add admins to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
+            >
+                <a-button
+                    :disabled="!editPermission"
+                    shape="circle"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="() => (isEdit = true)"
+                >
+                    <span
+                        ><AtlanIcon
+                            icon="Add"
+                            class="h-3"
+                        ></AtlanIcon></span></a-button
+            ></a-tooltip>
+            <template
+                v-for="username in localValue?.adminUsers"
+                :key="username"
+            >
+                <PopOverUser :item="username">
+                    <UserPill
+                        :username="username"
+                        :allow-delete="editPermission"
+                        :enable-hover="enableHover"
+                        @delete="handleDeleteUser"
+                        @click="handleClickUser(username)"
+                    ></UserPill>
+                </PopOverUser>
+            </template>
 
-        <template v-for="name in localValue?.adminGroups" :key="name">
-            <PopOverGroup :item="name">
-                <GroupPill
-                    :name="name"
-                    :allow-delete="editPermission"
-                    :enable-hover="enableHover"
-                    @delete="handleDeleteGroup"
-                    @click="handleClickGroup(name)"
-                ></GroupPill>
-            </PopOverGroup>
-        </template>
-        <span
-            v-if="
-                !editPermission &&
-                localValue?.adminGroups?.length < 1 &&
-                localValue?.adminUsers?.length < 1
-            "
-            class="-ml-1 text-gray-500"
-            >No admins assigned</span
-        >
+            <template v-for="name in localValue?.adminGroups" :key="name">
+                <PopOverGroup :item="name">
+                    <GroupPill
+                        :name="name"
+                        :allow-delete="editPermission"
+                        :enable-hover="enableHover"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                    ></GroupPill>
+                </PopOverGroup>
+            </template>
+        </div>
     </div>
 </template>
 

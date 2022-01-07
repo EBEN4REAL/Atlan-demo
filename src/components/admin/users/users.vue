@@ -5,13 +5,13 @@
                 v-if="userList.length > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
             >
-                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
+                <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
@@ -22,15 +22,19 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <a-popover trigger="click" placement="bottomRight">
+                    <a-popover trigger="click" placement="bottomLeft">
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                :number-of-active-user="numberOfActiveUser"
+                                :number-of-disable-user="numberOfDisableUser"
+                                :number-of-invited-user="numberOfInvitedUser"
+                                @changeRole="changeFilterRole"
                                 @change="updateFilters"
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow-none hover:shadow"
                         >
                             <AtlanIcon icon="Filter" class="w-5 h-5" />
                             <span>Filters</span>
@@ -45,6 +49,7 @@
                         size="sm"
                         @click="handleInviteUsers"
                     >
+                        <AtlanIcon icon="AddUser" />
                         Invite Users
                     </AtlanButton>
                 </div>
@@ -177,12 +182,14 @@
 
             const listType = ref('users')
             const searchText = ref('')
+            const filterRole = ref('')
             const statusFilter = ref([])
             const showChangeRolePopover = ref<boolean>(false)
             const showRevokeInvitePopover = ref<boolean>(false)
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
             const showDisableEnablePopover = ref<boolean>(false)
+            const isFirstLoad = ref(true)
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -202,7 +209,23 @@
                 totalUserCount,
             } = useUsers(userListAPIParams)
 
+            const numberOfActiveUser = ref(0)
+            const numberOfDisableUser = ref(0)
+            const numberOfInvitedUser = ref(0)
+            watch(userList, (v) => {
+                if (isFirstLoad.value) {
+                    v.reduce((counter, user) => {
+                        if (user.enabled) numberOfActiveUser.value += 1
+                        if (!user.enabled) numberOfDisableUser.value += 1
+                        if (!user.emailVerified) numberOfInvitedUser.value += 1
+                        return counter
+                    }, 0)
+                    isFirstLoad.value = false
+                }
+            })
+
             const clearFilter = () => {
+                filterRole.value = ''
                 userListAPIParams.filter = {}
                 searchText.value = ''
                 statusFilter.value = []
@@ -249,6 +272,11 @@
                 }
                 const filterTypes = [searchText.value, statusFilter.value]
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
+                if (filterRole.value) {
+                    const filterRoleParse = JSON.parse(filterRole.value)
+                    filterValues.push(filterRoleParse)
+                    filterTypes.push([filterRoleParse])
+                }
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
                         if (option?.length > 0)
@@ -260,6 +288,11 @@
 
                 userListAPIParams.offset = 0
                 getUserList()
+            }
+
+            const changeFilterRole = (role) => {
+                filterRole.value = role
+                updateFilters()
             }
 
             const handleSearch = useDebounceFn(() => {
@@ -516,6 +549,10 @@
                 updateFilters,
                 clearFilter,
                 refetchData,
+                changeFilterRole,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
             }
         },
     })
@@ -524,6 +561,14 @@
 <style lang="less" scoped>
     .a-input-search-icon-left {
         .ant-input-suffix {
+        }
+    }
+</style>
+<style lang="less">
+    .filter-user-wrapper {
+        .input-filter {
+            width: 300px !important;
+            margin-right: 12px !important;
         }
     }
 </style>

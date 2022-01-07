@@ -27,6 +27,8 @@ const useLoadQueryTree = () => {
             'isPrivate',
             'folder',
             'description',
+            'meanings',
+            'classifications'
         ],
         entityFilters: null,
         termName: null,

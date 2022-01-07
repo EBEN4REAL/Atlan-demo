@@ -2,18 +2,15 @@
     <a-select
         v-model:value="localValue"
         ref="inputRef"
-        placeholder="Users"
+        :placeholder="`Select user${multiple ? 's' : ''}`"
         class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
+        :allowClear="true"
         :filter-option="() => true"
         @change="handleChange"
-        @dropdownVisibleChange="
-            (o) => {
-                if (!o) query = ''
-            }
-        "
+        @dropdownVisibleChange="handleOpen"
         @click="
             () => {
                 if (finalList.length < 2) mutate()
@@ -150,7 +147,7 @@
             )
 
             const avatarUrl = (item) =>
-                `${window.location.origin}/api/services/avatar/${item.username}`
+                `${window.location.origin}/api/service/avatars/${item.username}`
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -163,7 +160,17 @@
                 inputRef.value.focus()
             }
 
+            const handleOpen = (v) => {
+                if (!v) {
+                    query.value = ''
+                    return
+                }
+                if (!finalList.value.length) mutate()
+                else resetFilter()
+            }
+
             return {
+                handleOpen,
                 query,
                 inputRef,
                 focus,

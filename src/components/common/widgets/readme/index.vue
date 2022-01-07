@@ -10,51 +10,80 @@
                     >Readme</span
                 >
             </div>
-
-            <a-button
-                v-if="!localReadmeContent && isEdit && !isEditMode"
-                class="flex items-center"
-                type="primary"
-                @click="handleEditMode"
-            >
-                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
-                readme</a-button
-            >
-
-            <div v-if="isEdit && isEditMode" class="flex gap-x-1">
-                <a-button
-                    v-if="!isLoading"
-                    class="flex items-center"
-                    @click="handleCancel"
+            <div>
+                <a-tooltip
+                    placement="top"
+                    :title="
+                        !isEdit
+                            ? `You don't have permission to add readme for this asset`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.5"
                 >
-                    Cancel</a-button
+                    <a-button
+                        v-if="!localReadmeContent && !isEditMode"
+                        :disabled="!isEdit"
+                        class="flex items-center"
+                        type="primary"
+                        @click="handleEditMode"
+                    >
+                        <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
+                        readme</a-button
+                    ></a-tooltip
                 >
 
-                <a-button
-                    class="flex items-center"
-                    type="primary"
-                    :loading="isLoading"
-                    @click="handleUpdate"
+                <div v-if="isEdit && isEditMode" class="flex gap-x-1">
+                    <a-button
+                        v-if="!isLoading"
+                        class="flex items-center"
+                        @click="handleCancel"
+                    >
+                        Cancel</a-button
+                    >
+
+                    <a-button
+                        class="flex items-center"
+                        type="primary"
+                        :loading="isLoading"
+                        @click="handleUpdate"
+                    >
+                        Save</a-button
+                    >
+                </div>
+                <a-tooltip
+                    placement="top"
+                    :title="
+                        !isEdit
+                            ? `You don't have permission to edit readme for this asset`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.5"
                 >
-                    Save</a-button
+                    <a-button
+                        v-if="localReadmeContent && !isEditMode"
+                        :disabled="!isEdit"
+                        class="flex items-center"
+                        type="primary"
+                        @click="handleEditMode"
+                    >
+                        <AtlanIcon
+                            icon="Edit"
+                            class="w-auto h-4 mr-1"
+                        />Edit</a-button
+                    ></a-tooltip
                 >
             </div>
-
-            <a-button
-                v-if="isEdit && localReadmeContent && !isEditMode"
-                class="flex items-center"
-                type="primary"
-                @click="handleEditMode"
-            >
-                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Edit</a-button
-            >
         </div>
 
         <div
             v-if="!localReadmeContent && !isEditMode"
             class="text-sm text-gray-500"
         >
-            Add a README with an overview of your asset.
+            {{
+                isEdit
+                    ? 'Add a README with an overview of your asset.'
+                    : `Readme hasn't been added for this asset.`
+            }}
         </div>
         <div v-if="isEditMode || readmeGuid(asset)" class="border-0">
             <Editor

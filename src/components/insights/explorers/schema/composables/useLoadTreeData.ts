@@ -14,6 +14,8 @@ import { map } from '~/services/meta/search/key'
 import {
     InternalAttributes,
     BasicSearchAttributes,
+    AssetAttributes,
+    AssetRelationAttributes
 } from '~/constant/projection'
 import { useBody } from './useBody'
 
@@ -32,6 +34,7 @@ const attributes = [
     'viewCount',
     'columnCount',
     'connectorName',
+    ...AssetAttributes,
     ...InternalAttributes,
     ...BasicSearchAttributes,
 ]
@@ -76,6 +79,9 @@ const useLoadTreeData = (
         body.value = {
             dsl,
             attributes,
+            relationAttributes: [
+                ...AssetRelationAttributes
+            ]
         }
     }
 

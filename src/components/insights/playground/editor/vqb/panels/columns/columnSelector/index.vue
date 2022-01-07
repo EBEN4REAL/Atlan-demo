@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center z-1"
+        class="relative flex items-center"
         :class="[
             isAreaFocused
                 ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
@@ -136,65 +136,68 @@
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
                     >
-                        <a-checkbox
-                            :checked="map[item.value]"
-                            @change="
-                                (checked) =>
-                                    onCheckboxChange(checked, item.value)
-                            "
-                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="left"
+                            :mouseEnterDelay="0.85"
                         >
-                            <div
-                                class="justify-between parent-ellipsis-container"
-                            >
-                                <div class="parent-ellipsis-container">
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary || item.isForeign"
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @mousedown.stop="
+                                        (e) => actionClick(e, item.item)
+                                    "
                                 >
-                                    <div
-                                        class="absolute right-0 flex items-center -top-2.5"
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
                                     >
-                                        <AtlanIcon
-                                            icon="PrimaryKey"
-                                            style="color: #3ca5bc"
-                                            class="w-4 h-4 mr-1"
-                                        ></AtlanIcon>
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+
+                            <a-checkbox
+                                :checked="map[item.value]"
+                                @change="
+                                    (checked) =>
+                                        onCheckboxChange(checked, item.value)
+                                "
+                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                            >
+                                <div
+                                    class="justify-between parent-ellipsis-container"
+                                >
+                                    <div class="parent-ellipsis-container">
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                        ></component>
                                         <span
-                                            style="color: #3ca5bc"
-                                            class="text-sm"
-                                            >Pkey</span
+                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
                                         >
+                                            {{ item.label }}
+                                        </span>
                                     </div>
                                     <div
-                                        class="absolute flex items-center -top-2.5"
-                                        :class="
-                                            item.isPrimary
-                                                ? 'right-14'
-                                                : 'right-0'
-                                        "
+                                        class="relative h-full w-14 parent-ellipsis-container-extension"
                                     >
-                                        <AtlanIcon
-                                            icon="ForeignKey"
-                                            class="w-4 h-4 mr-1 text-purple-700"
-                                        ></AtlanIcon>
-                                        <span class="text-sm text-purple-700"
-                                            >Fkey</span
-                                        >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
                                     </div>
                                 </div>
-                            </div>
-                        </a-checkbox>
+                            </a-checkbox>
+                        </PopoverAsset>
                     </template>
                 </div>
 
@@ -217,6 +220,7 @@
         defineComponent,
         ref,
         nextTick,
+        Ref,
         onMounted,
         inject,
         PropType,
@@ -230,6 +234,17 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
 
     import useBody from './useBody'
 
@@ -239,6 +254,8 @@
             Pill,
             Loader,
             TablesTree,
+            ColumnKeys,
+            PopoverAsset,
         },
         // emits: ['queryTextChange', 'checkboxChange'],
         props: {
@@ -265,21 +282,46 @@
                 required: false,
                 default: () => true,
             },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll } = toRefs(props)
+            const { tableQualfiedName, showSelectAll, selectedTableData } =
+                toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
+
             const map = ref({})
             selectedItems.value.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
 
             const { getDataTypeImage } = useColumn()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const inputRef = ref()
             const initialRef = ref()
@@ -310,10 +352,10 @@
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
-                    isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
+                    isAreaFocused.value = false
                 }
             }
 
@@ -330,6 +372,7 @@
                     dsl: useBody({
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
+                        assetType: selectedTableData.value?.assetType,
                     }),
                     attributes: [
                         'name',
@@ -337,6 +380,23 @@
                         'dataType',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -370,13 +430,11 @@
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     value: ls.attributes?.qualifiedName,
+                    item: ls,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
+
                 return data
             })
 
@@ -431,6 +489,9 @@
                 } else {
                     delete map.value[id]
                 }
+                if (map.value?.all) {
+                    delete map.value['all']
+                }
                 selectedItems.value = [...Object.keys(map.value)]
 
                 console.log('columns: ', list.value)
@@ -450,12 +511,6 @@
 
                 selectedColumnsData.value = [...columns]
 
-                console.log(
-                    map.value,
-                    'selected columns: ',
-                    columns,
-                    selectedColumnsData.value
-                )
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }
@@ -523,7 +578,29 @@
                 })
             })
 
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
             return {
+                actionClick,
                 showSelectAll,
                 initialRef,
                 queryText,
@@ -556,6 +633,13 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
             }
         },
     })

@@ -27,6 +27,7 @@
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
+            :class="{ 'cursor-pointer': editPermission }"
             :status="certificateStatus(selectedAsset)"
             :message="certificateStatusMessage(selectedAsset)"
             :username="certificateUpdatedBy(selectedAsset)"
@@ -38,23 +39,29 @@
             certificateStatusMessage(selectedAsset)
         }}</span>
         <div v-else class="flex items-center gap-1">
-            <a-button
-                :disabled="!editPermission"
-                shape="circle"
-                size="small"
-                class="text-center shadow"
-                :class="{
-                    editPermission:
-                        'hover:bg-primary-light hover:border-primary',
-                }"
-                @click="() => (isEdit = true)"
+            <a-tooltip
+                placement="left"
+                :title="
+                    !editPermission
+                        ? `You don't have permission to add a certification to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
             >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
-
-            <span v-if="!editPermission" class="text-sm text-gray-500"
-                >No certification</span
-            >
+                <a-button
+                    :disabled="!editPermission"
+                    shape="circle"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="() => (isEdit = true)"
+                >
+                    <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+                ></a-button>
+            </a-tooltip>
         </div>
     </div>
 </template>

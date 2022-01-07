@@ -117,10 +117,6 @@
                 type: Object,
                 required: true,
             },
-            lineageWithProcess: {
-                type: Object,
-                required: true,
-            },
         },
         setup(props, { emit }) {
             /** INJECTIONS */
@@ -131,7 +127,7 @@
 
             /** DATA */
             const isDrawerVisible = ref(false)
-            const { lineage, lineageWithProcess } = toRefs(props)
+            const { lineage } = toRefs(props)
             const graphHeight = ref(0)
             const graphWidth = ref(0)
             const resetSelections = ref(false)
@@ -185,7 +181,6 @@
                     graph,
                     graphLayout,
                     lineage,
-                    lineageWithProcess,
                     searchItems,
                     currZoom,
                     isComputeDone,
@@ -196,7 +191,6 @@
                 useEventGraph(
                     graph,
                     baseEntity,
-                    lineageWithProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
@@ -449,8 +443,6 @@
             }
 
             & .node-text {
-                display: flex;
-                justify-content: space-between;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -491,11 +483,28 @@
         .isHighlightedNode {
             border: 1px solid #5277d7 !important;
             background-color: #e5ecff !important;
+
+            & .caret-bg {
+                background: #e5ecff !important;
+            }
         }
 
         .isHighlightedNodePath {
             border: 1px solid #5277d7;
             background-color: #ffffff;
+        }
+
+        .caret-expanded {
+            @apply transform rotate-180;
+        }
+
+        .caret-bg {
+            background: linear-gradient(
+                270deg,
+                #ffffff 0%,
+                #ffffff 84.68%,
+                rgba(255, 255, 255, 0) 103.12%
+            );
         }
     }
 </style>

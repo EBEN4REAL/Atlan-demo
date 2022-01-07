@@ -45,7 +45,7 @@
                     <a-timeline-item
                         v-for="(s, x) in sessionList"
                         :key="x"
-                        class="cursor-default"
+                        class="pb-5 cursor-default"
                     >
                         <template #dot>
                             <div

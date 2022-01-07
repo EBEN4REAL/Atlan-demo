@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!showVQB">
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
@@ -603,10 +603,6 @@
             )
 
             const showVQB = computed(() => {
-                console.log(
-                    'showVQB: ',
-                    activeInlineTab?.value?.playground?.isVQB
-                )
                 return activeInlineTab?.value?.playground?.isVQB
             })
 

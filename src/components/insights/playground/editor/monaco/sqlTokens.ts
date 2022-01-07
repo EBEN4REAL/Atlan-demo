@@ -372,9 +372,11 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
         ],
         comment: [
             [/[^*/]+/, 'comment'],
+
             // Not supporting nested comments, as nested comments seem to not be standard?
             // i.e. http://stackoverflow.com/questions/728172/are-there-multiline-comment-delimiters-in-sql-that-are-vendor-agnostic
             // [/\/\*/, { token: 'comment.quote', next: '@push' }],    // nested comment not allowed :-(
+
             [/\*\//, { token: 'comment.quote', next: '@pop' }],
             [/./, 'comment'],
         ],

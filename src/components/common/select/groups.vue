@@ -2,18 +2,16 @@
     <a-select
         ref="inputRef"
         v-model:value="localValue"
-        placeholder="Groups"
+        :placeholder="`Select group${multiple ? 's' : ''}`"
         class="w-full center-arrow"
         :show-search="true"
+        :allow-clear="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
         :filter-option="() => true"
+        :auto-clear-search-value="false"
         @change="handleChange"
-        @click="
-            () => {
-                if (finalList.length < 2) mutate()
-            }
-        "
+        @dropdownVisibleChange="handleOpen"
         @select="resetFilter"
         @search="handleSearch"
     >
@@ -130,7 +128,14 @@
                 inputRef.value.focus()
             }
 
+            const handleOpen = (v) => {
+                if (!v) return
+                if (!finalList.value.length) mutate()
+                else resetFilter()
+            }
+
             return {
+                handleOpen,
                 focus,
                 inputRef,
                 loadMore,

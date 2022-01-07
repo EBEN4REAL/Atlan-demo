@@ -25,14 +25,35 @@
                                     <AtlanIcon icon="Add" />
                                 </span>
                                 <template #overlay>
-                                    <a-menu>
-                                        <a-menu-item @click="handleAdd(false)">
-                                            <span class="h-8"> New Query </span>
-                                        </a-menu-item>
-                                        <a-menu-item @click="handleAdd(true)">
-                                            <span class="h-8"> New VQB </span>
-                                        </a-menu-item>
-                                    </a-menu>
+                                    <div
+                                        style="width: 176px; height: 104px"
+                                        class="p-2 mt-2 bg-white newTabDropdown"
+                                    >
+                                        <div
+                                            @click="handleAdd(false)"
+                                            class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
+                                        >
+                                            <AtlanIcon
+                                                icon="Query24"
+                                                class="w-6 h-6 mr-2"
+                                            />
+                                            <span class="text-xs font-bold">
+                                                New Query
+                                            </span>
+                                        </div>
+                                        <div
+                                            @click="handleAdd(true)"
+                                            class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
+                                        >
+                                            <AtlanIcon
+                                                icon="Vqb24"
+                                                class="w-6 h-6 mr-2"
+                                            />
+                                            <span class="text-xs font-bold">
+                                                New Visual Query
+                                            </span>
+                                        </div>
+                                    </div>
                                 </template>
                             </a-dropdown>
                         </div>
@@ -317,9 +338,14 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: true,
                                 },
                             ],
                         },
@@ -599,6 +625,7 @@
             padding: 0 12px !important;
             height: 28px !important;
             @apply bg-gray-light !important;
+            transition: none !important;
 
             > div {
                 height: 100%;
@@ -606,6 +633,7 @@
 
             &:hover {
                 background-color: #fafafa !important;
+
                 // @apply text-gray-700 !important;
                 color: #3e4359 !important;
             }
@@ -642,6 +670,44 @@
     }
 </style>
 <style lang="less" scoped>
+    .newTabDropdown {
+        width: 176px;
+        height: 104px;
+
+        background: #ffffff;
+
+        box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+            0px 6px 16px rgba(0, 0, 0, 0.08),
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+    }
+    .newTabDropdownOption {
+        width: 160px;
+        height: 40px;
+        @apply cursor-pointer;
+
+        // background: rgba(82, 119, 215, 0.1);
+        border-radius: 4px;
+        @apply transition-all;
+    }
+    .newTabDropdownOption1 {
+        background: rgba(82, 119, 215, 0.1);
+        color: #5277d7;
+
+        &:hover {
+            background: #5277d7;
+            color: #fff;
+        }
+    }
+    .newTabDropdownOption2 {
+        background: rgba(109, 109, 218, 0.1);
+        color: #6d6dda;
+
+        &:hover {
+            background: #6d6dda;
+            color: #fff;
+        }
+    }
     .btn {
         // border: 1px solid #f06;
         padding: 10px 16px;

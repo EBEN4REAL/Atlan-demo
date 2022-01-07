@@ -6,11 +6,7 @@ export const GET_LINEAGE = 'GET_LINEAGE'
 export const GET_LINEAGE_UPDATED = 'GET_LINEAGE_UPDATED'
 
 export const map = {
-    GET_LINEAGE: ({ guid, depth, direction, hideProcess }: PathParams) =>
-        getAPIPath(
-            'meta',
-            `/lineage/${guid}?depth=${depth}&direction=${direction}&hideProcess=${hideProcess}`
-        ),
+    GET_LINEAGE: () => getAPIPath('meta', `/lineage/getlineage`),
     [GET_LINEAGE_UPDATED]: ({ guid }: PathParams) =>
         getAPIPath(BASE_PATH, `/lineage/${guid}`),
 }

@@ -92,6 +92,11 @@ export default function useAssetInfo() {
         return found?.label
     }
 
+    const assetTypeRelations = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.relationships
+    }
+
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
@@ -942,6 +947,11 @@ export default function useAssetInfo() {
         return filteredHierarchy.filter((item) => item.value !== undefined)
     }
 
+    const externalLocation = (asset: assetInterface) =>
+        attributes(asset)?.externalLocation || ''
+    const externalLocationFormat = (asset: assetInterface) =>
+        attributes(asset)?.externalLocationFormat || ''
+
     return {
         attributes,
         title,
@@ -1038,5 +1048,8 @@ export default function useAssetInfo() {
         allowQueryPreview,
         queries,
         assetPermission,
+        assetTypeRelations,
+        externalLocation,
+        externalLocationFormat,
     }
 }

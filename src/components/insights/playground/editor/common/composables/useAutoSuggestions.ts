@@ -154,7 +154,8 @@ export function entitiesToEditorKeyword(
                     case 'TABLE': {
                         // console.log('su type: ', 'table')
                         /* When Schema Or database not selected TableQN will be used */
-                        let entityType = `${type}`
+                        // let entityType = `${type}`
+                        let entityType = ``
                         let insertText = entities[i].attributes.name
                         let label = entities[i].attributes.name
 
@@ -162,26 +163,12 @@ export function entitiesToEditorKeyword(
                             entities[i].attributes.qualifiedName.split('/')
                         let tableQN = `${qualifiedName[3]}.${qualifiedName[4]}.${qualifiedName[5]}`
 
-                        // if (!connectorsInfo.schemaName) {
-                        //     insertText = tableQN as string
-                        //     const spilltedVal = insertText.split('.')
-                        //     // insertText = tableQN as string
-                        //     /* database name is selected */
-                        //     if (connectorsInfo.databaseName) {
-                        //         insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
-                        //         entityType = `${type}: ${insertText}`
-                        //     } else {
-                        //         entityType = `${type}: ${tableQN}`
-                        //     }
-                        // } else if (!connectorsInfo.databaseName) {
-                        //     insertText = tableQN as string
-                        //     entityType = `${type}: ${insertText}`
-                        // }
 
                         if (connectorsInfo.schemaName) {
                             var spilltedVal = tableQN.split('.')
                             insertText = spilltedVal[2] as string
                             entityType = `${type}: ${spilltedVal[1]}`
+                            entityType = `${spilltedVal[1]}`
 
                             // }
                         } else {
@@ -189,16 +176,20 @@ export function entitiesToEditorKeyword(
                                 insertText = tableQN as string
                                 var spilltedVal = tableQN.split('.')
                                 insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
-                                entityType = `${type}: ${insertText}`
+                                // entityType = `${type}: ${insertText}`
+                                entityType = `${insertText}`
                             } else {
                                 insertText = tableQN as string
-                                entityType = `${type}: ${insertText}`
+                                // entityType = `${type}: ${insertText}`
+                                entityType = `${insertText}`
                             }
                         }
 
                         keyword = {
+                            // label: label,
+                            // detail: `${entityType}`, // TABLE,
                             label: label,
-                            detail: `${entityType}`, // TABLE,
+                            detail: `${entityType}`,
                             kind: monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
@@ -206,6 +197,7 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
+                                entity: entities[i]
                             },
                             insertText: insertText,
                             sortText: sortString
@@ -221,8 +213,10 @@ export function entitiesToEditorKeyword(
                         let tableName = qualifiedName[qualifiedName.length - 2]
 
                         keyword = {
+                            // label: entities[i].attributes.name,
+                            // detail: `${type}: ${tableName}`, // COLUMN - TABLE_NAME,
                             label: entities[i].attributes.name,
-                            detail: `${type}: ${tableName}`, // COLUMN - TABLE_NAME,
+                            detail: `${tableName}`, // COLUMN - TABLE_NAME,
                             kind: monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
@@ -230,6 +224,7 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
+                                entity: entities[i]
                             },
                             sortText: sortString,
                             insertText: `${entities[i].attributes.name}`,
@@ -447,12 +442,13 @@ async function getSuggestionsUsingType(
                 },
             })
 
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
             /* Current Word Should be greater than 1char */
             if (
-                currentWord.length > 1 &&
+                currentWord.length > 0 &&
                 connectorsInfo.connectionQualifiedName
             ) {
                 cancelTokenSource.value = axios.CancelToken.source()
@@ -485,7 +481,7 @@ async function getSuggestionsUsingType(
                 cancelTokenSource.value.cancel()
             }
             if (
-                currentWord.length > 1 &&
+                currentWord.length > 0 &&
                 connectorsInfo.connectionQualifiedName
             ) {
                 cancelTokenSource.value = axios.CancelToken.source()

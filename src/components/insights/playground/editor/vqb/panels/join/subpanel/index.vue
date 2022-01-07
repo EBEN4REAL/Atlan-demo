@@ -10,7 +10,7 @@
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
-                    <div class="item-1">
+                    <div class="flex-none item-1">
                         <JoinSelector
                             class="w-full"
                             v-model:selectedJoinType="subpanel.joinType"
@@ -20,6 +20,9 @@
                         <TreeColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataLeft"
+                            :panelIndex="Number(panelIndex)"
+                            :rowIndex="index"
+                            :subIndex="0"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -29,23 +32,22 @@
                             "
                         />
                     </div>
-
+                    <div
+                        class="flex items-center justify-center flex-none item-4"
+                    >
+                        <span
+                            class="w-4 h-4 text-lg text-gray-500 -mt-2.5 outline-none"
+                            >=</span
+                        >
+                    </div>
                     <div class="flex items-center item-3">
-                        <a-tooltip placement="top" color="#363636">
-                            <template #title>
-                                <span>Swap Tables</span>
-                            </template>
-                            <AtlanIcon
-                                @click.stop="() => swapTables(index)"
-                                icon="TableSwap"
-                                class="w-4 h-4 text-gray-300 mt-0.5 mr-3 cursor-pointer outline-none"
-                            />
-                        </a-tooltip>
-
                         <!-- subpanel?.id + index + 2 works as a unique string -->
                         <TreeColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataRight"
+                            :panelIndex="Number(panelIndex)"
+                            :rowIndex="index"
+                            :subIndex="1"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -54,9 +56,8 @@
                                     )
                             "
                         />
-                        <div style="width: 36px" v-if="index === 0"></div>
                         <AtlanIcon
-                            v-if="index !== 0"
+                            v-if="isSubpanelClosable(subpanels)"
                             @click.stop="() => handleDelete(index)"
                             icon="Close"
                             style="min-width: 26px"
@@ -65,6 +66,7 @@
                                 hoverItem === subpanel.id ? 100 : 0
                             }`"
                         />
+                        <div style="width: 32px" v-else></div>
                     </div>
                 </div>
             </template>
@@ -75,13 +77,22 @@
             @click.stop="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-            <span>Add Another</span>
+            <span>Add another</span>
         </span>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        toRefs,
+        inject,
+        ComputedRef,
+    } from 'vue'
     import JoinSelector from '../joinSelector/index.vue'
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
@@ -89,6 +100,8 @@
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -112,16 +125,28 @@
                 required: true,
                 default: [],
             },
+            panelIndex: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
-            const { getTableQualifiedNameFromColumnQualifiedName } = useUtils()
+            const {
+                getTableQualifiedNameFromColumnQualifiedName,
+                isSubpanelClosable,
+            } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const { allowedTablesInJoinSelector } = useJoin()
 
             const { subpanels, selectedTables } = useVModels(props)
+            const { panelIndex } = toRefs(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -233,6 +258,10 @@
             let hoverItem = ref(null)
 
             return {
+                panelIndex,
+                activeInlineTab,
+                allowedTablesInJoinSelector,
+                isSubpanelClosable,
                 selectedAggregates,
                 columnName,
                 columnType,
@@ -256,20 +285,29 @@
         padding: 0px;
     }
     .grid-container {
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 0.5fr 1.133fr 1.3fr;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
     }
     .item-1 {
         grid-column-start: 1;
         grid-column-end: 2;
+        width: 186px;
     }
     .item-2 {
-        grid-column-start: 2;
-        grid-column-end: 3;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-3 {
-        grid-column-start: 3;
-        grid-column-end: 4;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .item-4 {
+        width: 16px;
     }
 </style>

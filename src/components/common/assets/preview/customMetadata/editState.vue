@@ -17,7 +17,7 @@
             class="flex-grow shadow-none"
             :placeholder="`Press Enter to add multiple ${getHumanTypeName(
                 typeName
-            )}s`"
+            )}(s)`"
             :data-type="typeName"
             @change="handleChange"
         />

@@ -9,20 +9,33 @@
                 <b>{{ p.metadataPolicies.length }}</b> Data policies
             </span>
         </div>
-        <Classification
+
+        <div
             v-if="allClassifications?.length"
-            v-model:modelValue="allClassifications"
-            :allow-delete="false"
-            :edit-permission="false"
-            class="max-w-lg"
-        />
+            class="flex flex-wrap gap-1 text-sm itesm-center"
+        >
+            <template
+                v-for="classification in allClassifications"
+                :key="classification.guid"
+            >
+                <Popover :classification="classification">
+                    <ClassificationPill
+                        :name="classification.name"
+                        :display-name="classification?.displayName"
+                        :allow-delete="false"
+                        :color="classification.options?.color"
+                    />
+                </Popover>
+            </template>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
     import { PropType, Ref, ref, toRefs } from 'vue'
     import { ClassificationInterface as CF } from '~/types/classifications/classification.interface'
-    import Classification from '@common/input/classification/index.vue'
+    import ClassificationPill from '@/common/pills/classification.vue'
+    import Popover from '@/common/popover/classification.vue'
 
     const props = defineProps({
         p: {
@@ -43,6 +56,7 @@
                 classificationList.value.find((cf) => cf.name === c)
             if (classification)
                 allClassifications.value.push({
+                    ...classification,
                     typeName: classification.name,
                     entityGuid: classification.guid,
                     entityStatus: 'ACTIVE',

@@ -432,19 +432,9 @@
                     if (asset.typeName === 'AtlasGlossary') {
                         glossaryStore.addGlossary(asset)
                         handleSelectGlossary(asset?.attributes?.qualifiedName)
-                        if (glossaryTree.value) {
-                            glossaryTree.value.addGlossary(asset)
-                        }
                     }
-                    if (asset.typeName === 'AtlasGlossaryTerm') {
-                        if (glossaryTree.value) {
-                            glossaryTree.value.addGlossary(asset)
-                        }
-                    }
-                    if (asset.typeName === 'AtlasGlossaryCategory') {
-                        if (glossaryTree.value) {
-                            glossaryTree.value.addGlossary(asset)
-                        }
+                    if (glossaryTree.value) {
+                        glossaryTree.value.addGlossary(asset)
                     }
                 }
             }

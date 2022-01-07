@@ -4,16 +4,18 @@
         title="Classification"
     >
         <template #action>
-            <AtlanBtn
-                v-auth="map.CREATE_CLASSIFICATION"
-                class="flex-none px-2 ml-4"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="createClassificationModalVisible = true"
-            >
-                <AtlanIcon icon="Add" />
-            </AtlanBtn>
+            <a-tooltip>
+                <template #title>New Classification</template>
+                <AtlanBtn
+                    v-auth="map.CREATE_CLASSIFICATION"
+                    class="flex-none px-2 ml-4"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    @click="createClassificationModalVisible = true"
+                >
+                    <AtlanIcon icon="Add" /> </AtlanBtn
+            ></a-tooltip>
         </template>
         <template #sidebar>
             <div v-auth="map.LIST_CLASSIFICATION" class="">

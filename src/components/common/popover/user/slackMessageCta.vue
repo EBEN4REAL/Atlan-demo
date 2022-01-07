@@ -1,7 +1,7 @@
 <template>
     <div
-        @click="handleClick"
         class="flex items-center px-1 overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
+        @click="handleClick"
     >
         <AtlanIcon
             :icon="'Slack'"
@@ -14,7 +14,6 @@
 <script lang="ts">
     import { toRefs } from 'vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
     export default {
         name: 'PopoverUser',
@@ -30,10 +29,9 @@
         setup(props) {
             const { slackLink } = toRefs(props)
             const handleClick = () => {
-                window.open(getDeepLinkFromUserDmLink(slackLink.value))
+                window.open(slackLink.value)
             }
             return {
-                getDeepLinkFromUserDmLink,
                 handleClick,
             }
         },

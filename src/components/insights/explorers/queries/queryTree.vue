@@ -383,6 +383,11 @@ TR
             @apply bg-primary-selected-focus !important;
             @apply hover:bg-primary-selected-focus !important;
         }
+
+        // fix tree width Jan,7 ,2021
+        :global(.ant-tree-indent-unit) {
+            width: 20px !important;
+        }
     }
 </style>
 <style lang="less" scoped>

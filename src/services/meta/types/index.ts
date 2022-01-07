@@ -12,6 +12,12 @@ const GetTypedefs = (
     options?: useOptions
 ) => useAPI(map.GET_TYPEDEFS, 'GET', { params }, options || {})
 
+const GetTypedef = (
+    params: Record<string, any> | URLSearchParams,
+    type,
+    options?: useOptions
+) => useAPI(map.GET_TYPEDEF, 'GET', { params, pathVariables: { type } }, options || {})
+
 const CreateTypedefs = (
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
@@ -55,6 +61,7 @@ const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions) =>
     )
 
 export const Types = {
+    GetTypedef,
     GetTypedefs,
     CreateTypedefs,
     EditTypedefs,

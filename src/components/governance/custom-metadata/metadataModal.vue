@@ -3,33 +3,41 @@
         v-model:visible="visible"
         class="add-metadata-modal"
         :closable="false"
-        :footer="false"
         :destroy-on-close="true"
+        :width="632"
     >
-        <div class="p-4">
-            <a-input
-                id="name-input"
-                v-model:value="form.displayName"
-                placeholder="Name"
-                class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
-            ></a-input>
+        <template #footer>
+            <div class="flex items-center justify-end space-x-3">
+                <a-button class="border-0" @click="visible = false"
+                    >Cancel</a-button
+                >
+                <AtlanButton
+                    color="primary"
+                    padding="compact"
+                    size="sm"
+                    :loading="loading"
+                    :disabled="!form.displayName"
+                    @click="handleAddBusinessMetadata"
+                >
+                    {{ isEdit ? 'Update' : 'Create' }}
+                </AtlanButton>
+            </div>
+        </template>
+        <div class="h-32 p-4 space-y-2">
+            <div class="flex items-center gap-x-1">
+                <AvatarUpdate :metadata="form" class="mb-1" />
+                <a-input
+                    id="name-input"
+                    v-model:value="form.displayName"
+                    placeholder="Name"
+                    class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
+                ></a-input>
+            </div>
             <a-textarea
                 v-model:value="form.description"
                 placeholder="Add description..."
                 class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none"
             ></a-textarea>
-            <div class="flex items-center justify-end space-x-3">
-                <a-button class="border-0" @click="visible = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    type="primary"
-                    :loading="loading"
-                    :disabled="!form.displayName"
-                    @click="handleAddBusinessMetadata"
-                    >{{ isEdit ? 'Update' : 'Create' }}</a-button
-                >
-            </div>
         </div>
     </a-modal>
 </template>
@@ -43,7 +51,11 @@
     // store
     import { useTypedefStore } from '~/store/typedef'
 
+    import AtlanButton from '@/UI/button.vue'
+    import AvatarUpdate from './avatarUpdate.vue'
+
     export default defineComponent({
+        components: { AtlanButton, AvatarUpdate },
         props: {
             isEdit: {
                 type: Boolean,

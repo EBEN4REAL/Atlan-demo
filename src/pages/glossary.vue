@@ -140,6 +140,7 @@
             }
 
             const updateList = (asset) => {
+                console.log(asset)
                 handlePreview(asset)
                 if (asset?.typeName === 'AtlasGlossary') {
                     glossaryStore.updateGlossary(asset)

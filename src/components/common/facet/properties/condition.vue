@@ -139,10 +139,12 @@
             }
 
             const handleValueChange = () => {
+                console.log(localCondition.value.value)
                 if (attribute.value?.typeName === 'boolean') {
                     condition.value.operator = 'boolean'
                     condition.value.value =
-                        localCondition.value.value === 'true'
+                        localCondition.value.value === 'true' ||
+                        localCondition.value.value === true
                     condition.value.operand = attribute.value.name
                 } else {
                     condition.value.operand = attribute.value.name

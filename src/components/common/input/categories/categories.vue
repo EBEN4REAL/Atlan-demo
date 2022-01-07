@@ -152,7 +152,7 @@
             const { initCategories, treeData, onLoadData } =
                 useCategoriesWidget({
                     parentGlossaryQf:
-                        selectedAsset.value.attributes.anchor.uniqueAttributes
+                        selectedAsset.value.attributes.anchor?.uniqueAttributes
                             .qualifiedName ?? '',
                 })
 

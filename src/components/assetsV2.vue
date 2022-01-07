@@ -1,27 +1,30 @@
 <template>
-    <div class="flex">
+    <div class="flex w-full h-full">
         <!-- <div><AssetFilters /></div> -->
-        <div class="flex flex-col">
-            <div>
+        <div class="flex flex-col w-full h-full">
+            <div class="w-full">
                 <SearchAdvanced
                     v-model="queryText"
                     :autofocus="true"
                     :allow-clear="true"
                     @change="handleSearchChange"
                 >
-                    <!-- <template #postFilter>
+                    <template #postFilter>
                         <div style="max-width: 330px">
                             <PreferenceSelector
                                 v-model="preference"
                                 @change="handleChangePreference"
-                                @display="handleDisplayChange"
                             />
                         </div>
-                    </template> -->
+                    </template>
                 </SearchAdvanced>
             </div>
             <div>
-                <AggregationTabs />
+                <AggregationTabs
+                    v-model="postFacets.typeName"
+                    :list="assetTypeAggregationList"
+                    @change="handleAssetTypeChange"
+                />
             </div>
             <div>
                 <AssetList
@@ -31,10 +34,12 @@
                     @loadMore="handleLoadMore"
                 >
                     <template #default="{ item }">
-                        <AssetItem :item="item"></AssetItem>
+                        <AssetItem
+                            :preference="preference"
+                            :item="item"
+                        ></AssetItem>
                     </template>
                 </AssetList>
-                {{ isLoading }} {{ isValidating }}
             </div>
         </div>
     </div>
@@ -45,6 +50,7 @@
     import { useDebounceFn } from '@vueuse/core'
     import AssetFilters from '@/common/assets/filters/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
@@ -61,6 +67,7 @@
         components: {
             AssetFilters,
             SearchAdvanced,
+            AggregationTabs,
             PreferenceSelector,
             AssetList,
             AssetItem,
@@ -79,7 +86,7 @@
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({})
+        const facets = ref({})
             const isCache = ref(true) // use SWRV or not
             const dependentKey = ref('DEFAULT_ASSET_LIST') // CacheKey for swrv, when changed causes asset list to get refetched
             facets.value = {
@@ -88,6 +95,10 @@
                     ownerGroups: props.ownerGroups,
                 },
             }
+            const preference = ref({
+                sort: 'default',
+                display: [],
+            })
             // set all the attributes that would be fetched
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -96,16 +107,28 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
-            const { list, isLoadMore, quickChange, isLoading, isValidating } =
-                useFetchAssetList({
-                    queryText,
-                    offset,
-                    limit,
-                    facets,
-                    isCache,
-                    dependentKey,
-                    attributes: defaultAttributes,
-                })
+            const postFacets = ref({
+                typeName: '__all',
+            })
+            const aggregations = ref(['typeName'])
+            const {
+                list,
+                isLoadMore,
+                quickChange,
+                isValidating,
+                assetTypeAggregationList,
+            } = useFetchAssetList({
+                queryText,
+                offset,
+                limit,
+                facets,
+                postFacets,
+                aggregations,
+                preference,
+                isCache,
+                dependentKey,
+                attributes: defaultAttributes,
+            })
 
             // LOAD MORE
             const handleLoadMore = () => {
@@ -114,23 +137,38 @@
                 }
                 quickChange()
             }
+
             // SEARCH
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
             }, 100)
 
+            // TYPE FILTER (AGG TABS)
+            const handleAssetTypeChange = () => {
+                offset.value = 0
+                quickChange()
+            }
+
+            // PREFERENCE : SORT
+            const handleChangePreference = () => {
+                quickChange()
+            }
             return {
                 limit,
                 offset,
                 queryText,
                 facets,
+                postFacets,
                 list,
                 isLoadMore,
-                isLoading,
                 isValidating,
+                assetTypeAggregationList,
+                preference,
                 handleLoadMore,
                 handleSearchChange,
+                handleAssetTypeChange,
+                handleChangePreference,
             }
         },
     })

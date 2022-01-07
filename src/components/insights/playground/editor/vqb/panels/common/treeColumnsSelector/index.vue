@@ -270,6 +270,8 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+
     import {
         InternalAttributes,
         BasicSearchAttributes,
@@ -289,6 +291,18 @@
                 type: Object,
                 required: true,
             },
+            panelIndex: {
+                type: Number,
+                required: true,
+            },
+            rowIndex: {
+                type: Number,
+                required: true,
+            },
+            subIndex: {
+                type: Number,
+                required: true,
+            },
             selectedTablesQualifiedNames: {
                 type: Object as PropType<selectedTables[]>,
             },
@@ -299,14 +313,32 @@
             },
         },
         setup(props, { emit }) {
-            const { showColumnWithTable, selectedTablesQualifiedNames } =
-                toRefs(props)
+            const {
+                showColumnWithTable,
+                selectedTablesQualifiedNames,
+                panelIndex,
+                subIndex,
+                rowIndex,
+            } = toRefs(props)
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { allowedTablesInJoinSelector } = useJoin()
+
+            const tableQualifiedNamesContraint: Ref<{
+                allowed: string[]
+                notAllowed: string[]
+            }> = ref(
+                allowedTablesInJoinSelector(
+                    panelIndex.value,
+                    rowIndex.value,
+                    subIndex.value,
+                    activeInlineTab.value
+                )
+            )
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -335,9 +367,8 @@
                                 .attributeValue,
 
                         searchText: tableText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNamesContraint:
+                            tableQualifiedNamesContraint.value,
                     }),
                     attributes: [
                         'name',
@@ -383,9 +414,19 @@
                 replaceBody(getTableInitialBody())
             })
 
-            watch(selectedTablesQualifiedNames, () => {
-                replaceBody(getTableInitialBody())
-            })
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    tableQualifiedNamesContraint.value =
+                        allowedTablesInJoinSelector(
+                            panelIndex.value,
+                            rowIndex.value,
+                            subIndex.value,
+                            activeInlineTab.value
+                        )
+                    replaceBody(getTableInitialBody())
+                }
+            )
 
             let tableSelected = ref(null)
 
@@ -495,7 +536,13 @@
                     columnQualifiedName: item.qualifiedName,
                 }
                 emit('change', item.qualifiedName)
-                console.log()
+                activeInlineTab.value.playground.vqb.selectedTables =
+                    JSON.parse(
+                        JSON.stringify(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
+                //activeInlineTab.value.playground.vqb.selectedTables
             }
 
             const placeholder = computed(() => {
@@ -537,6 +584,23 @@
                 event.preventDefault()
                 return false
             }
+
+            // watch(
+            //     tableDropdownOption,
+            //     () => {
+            //         if (rowIndex.value == 0 && subIndex.value == 0) {
+            //             if (tableDropdownOption.value.length > 0) {
+            //                 const items = JSON.parse(
+            //                     JSON.stringify(tableDropdownOption.value)
+            //                 )
+            //                 onSelectTable(items[0])
+            //             }
+            //         }
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
 
             return {
                 actionClick,

@@ -20,6 +20,9 @@
                         <TreeColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataLeft"
+                            :panelIndex="Number(panelIndex)"
+                            :rowIndex="index"
+                            :subIndex="0"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -42,6 +45,9 @@
                         <TreeColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataRight"
+                            :panelIndex="Number(panelIndex)"
+                            :rowIndex="index"
+                            :subIndex="1"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -50,9 +56,8 @@
                                     )
                             "
                         />
-                        <div style="width: 36px" v-if="index === 0"></div>
                         <AtlanIcon
-                            v-if="index !== 0"
+                            v-if="isSubpanelClosable(subpanels)"
                             @click.stop="() => handleDelete(index)"
                             icon="Close"
                             style="min-width: 26px"
@@ -61,6 +66,7 @@
                                 hoverItem === subpanel.id ? 100 : 0
                             }`"
                         />
+                        <div style="width: 32px" v-else></div>
                     </div>
                 </div>
             </template>
@@ -71,13 +77,22 @@
             @click.stop="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-            <span>Add Another</span>
+            <span>Add another</span>
         </span>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        toRefs,
+        inject,
+        ComputedRef,
+    } from 'vue'
     import JoinSelector from '../joinSelector/index.vue'
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
@@ -85,6 +100,8 @@
     import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -108,16 +125,28 @@
                 required: true,
                 default: [],
             },
+            panelIndex: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
-            const { getTableQualifiedNameFromColumnQualifiedName } = useUtils()
+            const {
+                getTableQualifiedNameFromColumnQualifiedName,
+                isSubpanelClosable,
+            } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const { allowedTablesInJoinSelector } = useJoin()
 
             const { subpanels, selectedTables } = useVModels(props)
+            const { panelIndex } = toRefs(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -229,6 +258,10 @@
             let hoverItem = ref(null)
 
             return {
+                panelIndex,
+                activeInlineTab,
+                allowedTablesInJoinSelector,
+                isSubpanelClosable,
                 selectedAggregates,
                 columnName,
                 columnType,

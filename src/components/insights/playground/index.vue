@@ -345,6 +345,7 @@
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: true,
                                 },
                             ],
                         },

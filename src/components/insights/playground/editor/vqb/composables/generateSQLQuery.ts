@@ -386,9 +386,13 @@ export function generateSQLQuery(
         })
     }
 
-    console.log(select.toString(), 'select.toString()')
+    let res = select.toString()
+    // keyword subsitution
+    res = res.replaceAll('OUTER JOIN', 'FULL OUTER JOIN')
     if (limitRows.checked) {
-        return `${select.toString()} LIMIT ${limitRows.rowsCount}`
+        return `${res} LIMIT ${limitRows.rowsCount}`
     }
-    return select.toString()
+    console.log(res, 'res')
+
+    return res
 }

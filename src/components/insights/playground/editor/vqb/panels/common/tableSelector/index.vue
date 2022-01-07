@@ -37,7 +37,7 @@
         </div>
 
         <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
+            v-if="modelValue && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
             @focus="
@@ -53,7 +53,7 @@
             ]"
         />
         <a-input
-            v-if="Object.keys(selectedItem).length == 0 && isAreaFocused"
+            v-if="!modelValue"
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -435,7 +435,6 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                setFocusedCusror()
                 // qualifiedName
                 console.log(item.value)
 
@@ -448,7 +447,7 @@
                     certificateStatus(item)
                 copySelectedTableData.assetType = assetType(item)
                 emit('update:selectedTableData', copySelectedTableData)
-                setFoucs()
+                isAreaFocused.value = false
             }
 
             const handleMouseOver = () => {

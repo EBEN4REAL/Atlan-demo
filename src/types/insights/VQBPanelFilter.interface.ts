@@ -22,4 +22,5 @@ export interface VQBPanelFilterInterface {
     order: number
     hide: boolean
     subpanels: SubpanelFilter[]
+    expand: boolean
 }

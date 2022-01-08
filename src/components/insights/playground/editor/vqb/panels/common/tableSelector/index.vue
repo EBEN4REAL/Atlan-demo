@@ -105,113 +105,119 @@
                 "
             />
         </div>
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px`"
-            :class="[
-                'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
-            ]"
-        >
+        <teleport to="body">
             <div
-                :class="['flex  justify-center overflow-auto']"
-                style="height: 250px"
+                v-if="isAreaFocused"
+                @click.stop="() => {}"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
+                :class="[
+                    'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
+                ]"
             >
-                <Loader
-                    v-if="isLoading"
-                    style="min-height: 250px !important"
-                ></Loader>
                 <div
-                    class="w-full"
-                    v-if="dropdownOption.length !== 0 && !isLoading"
+                    :class="['flex  justify-center overflow-auto w-full']"
+                    style="height: 250px"
                 >
-                    <template
-                        v-for="(item, index) in dropdownOption"
-                        :key="item.value + index"
+                    <Loader
+                        v-if="isLoading"
+                        style="min-height: 250px !important"
+                    ></Loader>
+                    <div
+                        class="w-full"
+                        v-if="dropdownOption.length !== 0 && !isLoading"
                     >
-                        <PopoverAsset
-                            :item="item.item"
-                            placement="right"
-                            :mouseEnterDelay="0.85"
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.value + index"
                         >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
+                            >
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
+                                        "
+                                    >
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
+
+                                <div
+                                    class="flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
+                                        (e) => onSelectItem(item, e)
+                                    "
+                                    :class="
+                                        modelValue === item.value
+                                            ? 'bg-primary-light'
+                                            : 'bg-white'
                                     "
                                 >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    <div
+                                        class="flex items-center justify-between w-full truncate parent-ellipsis-container"
                                     >
-                                        Show Preview</span
-                                    >
+                                        <div
+                                            class="flex items-center truncate parent-ellipsis-container"
+                                        >
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        assetType(item),
+                                                        certificateStatus(item)
+                                                    )
+                                                "
+                                                class="w-4 h-4 mr-2 -mt-0.5"
+                                                style="min-width: 16px"
+                                            />
+                                            <span
+                                                class="parent-ellipsis-container-base"
+                                                >{{ item?.label }}
+                                            </span>
+                                        </div>
+                                        <div
+                                            v-if="modelValue !== item.value"
+                                            class="text-gray-500 parent-ellipsis-container-extension"
+                                        >
+                                            {{ item?.columnCount }}
+                                        </div>
+                                    </div>
                                     <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
+                                        icon="Check"
+                                        class="ml-2 text-primary parent-ellipsis-container-base"
+                                        v-if="modelValue === item.value"
                                     />
-                                </AtlanBtn>
-                            </template>
-
-                            <div
-                                class="flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                @click="(checked) => onSelectItem(item)"
-                                :class="
-                                    modelValue === item.value
-                                        ? 'bg-primary-light'
-                                        : 'bg-white'
-                                "
-                            >
-                                <div
-                                    class="flex items-center justify-between w-full truncate parent-ellipsis-container"
-                                >
-                                    <div
-                                        class="flex items-center truncate parent-ellipsis-container"
-                                    >
-                                        <AtlanIcon
-                                            :icon="
-                                                getEntityStatusIcon(
-                                                    assetType(item),
-                                                    certificateStatus(item)
-                                                )
-                                            "
-                                            class="w-4 h-4 mr-2 -mt-0.5"
-                                            style="min-width: 16px"
-                                        />
-                                        <span
-                                            class="parent-ellipsis-container-base"
-                                            >{{ item?.label }}
-                                        </span>
-                                    </div>
-                                    <div
-                                        v-if="modelValue !== item.value"
-                                        class="text-gray-500 parent-ellipsis-container-extension"
-                                    >
-                                        {{ item?.columnCount }}
-                                    </div>
                                 </div>
-                                <AtlanIcon
-                                    icon="Check"
-                                    class="ml-2 text-primary parent-ellipsis-container-base"
-                                    v-if="modelValue === item.value"
-                                />
-                            </div>
-                        </PopoverAsset>
-                    </template>
-                </div>
+                            </PopoverAsset>
+                        </template>
+                    </div>
 
-                <span
-                    class="w-full mt-4 text-sm text-center text-gray-400"
-                    v-if="dropdownOption.length == 0 && !isLoading"
-                >
-                    No Tables found!
-                </span>
+                    <span
+                        class="w-full mt-4 text-sm text-center text-gray-400"
+                        v-if="dropdownOption.length == 0 && !isLoading"
+                    >
+                        No Tables found!
+                    </span>
+                </div>
             </div>
-        </div>
+        </teleport>
     </div>
 </template>
 
@@ -227,6 +233,7 @@
         onMounted,
         inject,
         PropType,
+        onUnmounted,
         ComputedRef,
         toRefs,
     } from 'vue'
@@ -289,6 +296,14 @@
             const queryText = ref('')
             const { selectedItem, modelValue, selectedTableData } =
                 useVModels(props)
+
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
 
             const { getDataTypeImage } = useColumn()
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -438,7 +453,7 @@
 
             // let selectedColumn = ref({})
 
-            const onSelectItem = (item) => {
+            const onSelectItem = (item, event) => {
                 // qualifiedName
                 console.log(item.value)
 
@@ -452,6 +467,9 @@
                 copySelectedTableData.assetType = assetType(item)
                 emit('update:selectedTableData', copySelectedTableData)
                 isAreaFocused.value = false
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             const handleMouseOver = () => {
@@ -515,16 +533,56 @@
 
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
+                topPosShift.value = container.value?.offsetHeight
+                const viewportOffset = container.value?.getBoundingClientRect()
+                console.log(viewportOffset, 'viewportOffset', container.value)
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
                 nextTick(() => {
                     initialRef.value?.focus()
                 })
             })
+
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
             onUpdated(() => {
                 nextTick(() => {
+                    const viewportOffset =
+                        container.value?.getBoundingClientRect()
+                    if (viewportOffset?.width)
+                        containerPosition.value.width = viewportOffset?.width
+                    if (viewportOffset?.top)
+                        containerPosition.value.top = viewportOffset?.top
+                    if (viewportOffset?.left)
+                        containerPosition.value.left = viewportOffset?.left
+                    if (viewportOffset?.height)
+                        containerPosition.value.height = viewportOffset?.height
                     if (topPosShift.value !== container.value?.offsetHeight) {
                         topPosShift.value = container.value?.offsetHeight
                     }
                 })
+            })
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
             })
 
             const actionClick = (event, t) => {
@@ -549,6 +607,7 @@
             }
 
             return {
+                containerPosition,
                 actionClick,
                 selectedTableData,
                 modelValue,

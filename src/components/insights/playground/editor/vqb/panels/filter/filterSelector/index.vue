@@ -235,7 +235,7 @@
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 observer.value = new ResizeObserver(onResize).observe(
-                    container.value
+                    container?.value
                 )
                 const viewportOffset = container.value?.getBoundingClientRect()
                 if (viewportOffset?.width)

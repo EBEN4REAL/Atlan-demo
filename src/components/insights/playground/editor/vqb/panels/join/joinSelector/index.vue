@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="container "
+        ref="container"
         @click="setFocus"
         @focusout="handleContainerBlur"
         @mouseover="handleMouseOver"
@@ -8,17 +8,15 @@
         tabindex="0"
         class="relative flex items-center w-full group"
         :class="[
-            isAreaFocused
-                ? ' border-primary-focus border-2 '
-                : 'border-gray-300 border border-plus',
+            isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
             ,
-            'flex flex-wrap items-center  rounded box-shadow selector-height px-3',
+            'flex flex-wrap items-center  rounded selector-height px-3',
         ]"
         @click.stop="() => {}"
     >
         <template v-if="selectedJoinType?.name">
             <!-- chips -->
-            <div class="flex items-center">
+            <div class="flex items-center cursor-pointer">
                 <AtlanIcon
                     :icon="selectedJoinType.name.replace(' ', '')"
                     class="text-primary"
@@ -29,58 +27,62 @@
             </div>
         </template>
 
-        <div class="absolute right-2">
+        <div class="relative left-1">
             <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px`"
-            :class="[
-                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
-            ]"
-        >
+        <teleport to="body">
             <div
-                :class="['flex  justify-center overflow-auto']"
-                style="max-height: 250px"
+                v-if="isAreaFocused"
+                @click.stop="() => {}"
+                :style="`width: ${containerPosition?.width}px;top:${
+                    containerPosition?.top + containerPosition?.height
+                }px;left:${containerPosition?.left}px`"
+                :class="[
+                    'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                ]"
             >
-                <div class="w-full">
-                    <template
-                        v-for="(item, index) in dropdownOption"
-                        :key="item.key"
-                    >
-                        <div
-                            class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
-                            @click="onCheckChange(item)"
-                            :class="
-                                selectedJoinType.type === item.key
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
+                <div
+                    :class="['flex  justify-center overflow-auto']"
+                    style="max-height: 250px"
+                >
+                    <div class="w-full">
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.key"
                         >
-                            <div class="flex items-center">
-                                <!-- <AtlanIcon
+                            <div
+                                class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
+                                @mousedown.stop="(e) => onCheckChange(item, e)"
+                                :class="
+                                    selectedJoinType.type === item.key
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <!-- <AtlanIcon
                                     :icon="item.icon"
                                     class="mr-3 text-primary"
                                     v-if="selectedJoinType.type === item.key"
                                 /> -->
-                                <span>{{ item.label }}</span>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="text-primary"
+                                    v-if="selectedJoinType.type === item.key"
+                                />
                             </div>
-                            <AtlanIcon
-                                icon="Check"
-                                class="text-primary"
-                                v-if="selectedJoinType.type === item.key"
-                            />
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
             </div>
-        </div>
+        </teleport>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, onMounted } from 'vue'
+    import { computed, defineComponent, ref, onMounted, onUnmounted } from 'vue'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useVModels } from '@vueuse/core'
 
@@ -108,6 +110,13 @@
             const setFocus = () => {
                 isAreaFocused.value = true
             }
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
 
             const handleContainerBlur = (event) => {
                 if (!container.value?.contains(event?.relatedTarget)) {
@@ -132,17 +141,51 @@
                 return data
             })
 
-            const onCheckChange = (checked) => {
+            const onCheckChange = (checked, event) => {
                 selectedJoinType.value = {
                     type: checked.key,
                     name: checked.label,
                 }
                 isAreaFocused.value = false
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
-                console.log(container.value)
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top + 1
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+                console.log(
+                    container.value?.getBoundingClientRect(),
+                    'container'
+                )
+            })
+
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top + 1
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+
+            onUnmounted(() => {
+                // observer?.value?.unobserve(container?.value)
             })
 
             const mouseOver = ref(false)
@@ -169,6 +212,7 @@
                 handleMouseOver,
                 handleMouseOut,
                 mouseOver,
+                containerPosition,
             }
         },
     })

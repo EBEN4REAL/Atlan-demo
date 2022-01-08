@@ -6,7 +6,7 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="w-full mb-3 grid-container"
+                    class="w-full p-3 mb-3 border border-gray-300 rounded grid-container"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >

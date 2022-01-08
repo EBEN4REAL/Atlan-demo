@@ -532,7 +532,6 @@
         },
 
         setup(props, { emit }) {
-            const observer = ref()
             const { tableQualfiedName, selectedTablesQualifiedNames } =
                 toRefs(props)
             const {
@@ -544,6 +543,7 @@
                 certificateStatus,
             } = useAssetInfo()
 
+            const observer = ref()
             const containerPosition = ref({
                 width: undefined,
                 height: undefined,
@@ -755,15 +755,19 @@
             }
 
             onMounted(() => {
+                topPosShift.value = container.value?.offsetHeight
                 observer.value = new ResizeObserver(onResize).observe(
                     container.value
                 )
-                topPosShift.value = container.value?.offsetHeight
                 const viewportOffset = container.value?.getBoundingClientRect()
-                containerPosition.value.width = viewportOffset.width
-                containerPosition.value.top = viewportOffset.top
-                containerPosition.value.left = viewportOffset.left
-                containerPosition.value.height = viewportOffset.height
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
                 nextTick(() => {
                     initialRef.value?.focus()
                 })
@@ -771,10 +775,14 @@
 
             const onResize = () => {
                 const viewportOffset = container.value?.getBoundingClientRect()
-                containerPosition.value.width = viewportOffset.width
-                containerPosition.value.top = viewportOffset.top
-                containerPosition.value.left = viewportOffset.left
-                containerPosition.value.height = viewportOffset.height
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
             }
             onUpdated(() => {
                 nextTick(() => {

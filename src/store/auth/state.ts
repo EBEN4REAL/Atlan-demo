@@ -21,8 +21,8 @@ export interface State {
         roleId: string
         privelage: string
     }[]
-    personas: string[]
-    purposes: string[]
+    personas: { id: string; name: string }[]
+    purposes: { id: string; name: string }[]
 }
 
 export const state: State = {

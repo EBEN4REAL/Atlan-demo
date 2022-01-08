@@ -7,13 +7,10 @@
             </div>
         </div>
         <div style="max-height: 281px">
-            <AssetsWrapper
-                :initial-filters="filterConfig"
-                :show-filters="false"
-                :static-use="true"
-                page="classifications"
+            <AssetList
                 class="flex-grow bg-white"
                 :enable-sidebar-drawer="true"
+                :filters="filterConfig"
             />
         </div>
     </div>
@@ -30,12 +27,12 @@
     } from 'vue'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-    import AssetsWrapper from '@/assets/index.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
 
     export default defineComponent({
         name: 'ClassificationAssetWidget',
         components: {
-            AssetsWrapper,
+            AssetList,
         },
         props: {
             classification: {
@@ -49,7 +46,7 @@
 
             const filterConfig = computed(() => ({
                 __traitNames: {
-                    classifications: [selectedClassification.value.name],
+                    classifications: [selectedClassification?.value?.name],
                 },
             }))
 

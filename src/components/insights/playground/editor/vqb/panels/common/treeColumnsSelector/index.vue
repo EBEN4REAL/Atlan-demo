@@ -1,11 +1,13 @@
 <template>
     <div
         ref="container"
-        @click="setFoucs"
-        @focusout="handleContainerBlur"
+        @click="
+            () => {
+                isAreaFocused = true
+            }
+        "
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
-        tabindex="0"
         class="relative flex items-center w-full z-1"
         :class="[
             isAreaFocused
@@ -14,7 +16,6 @@
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container truncate',
         ]"
-        @click.stop="() => {}"
     >
         <div class="flex w-full">
             <component
@@ -103,7 +104,7 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
+                @click="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
@@ -113,20 +114,18 @@
             >
                 <div>
                     <div
-                        @mousedown.stop="cancelContainerBlur"
                         class="flex items-center justify-between flex-grow py-1 mb-2 border-b bordery-gray-300"
                     >
                         <AtlanIcon
                             icon="Search"
                             class="flex-none pr-1 text-gray-500"
                         />
-                        <!-- <input
-                            ref="inputRef"
+                        <input
                             :placeholder="placeholder"
                             type="text"
-                            class="flex-1 text-xs bg-transparent focus:outline-none"
-                            style="z-index: 11 !important"
-                        /> -->
+                            class="flex-1 text-xs bg-transparent focus:outline-none child_input"
+                            style="z-index: 10 !important"
+                        />
                     </div>
 
                     <div
@@ -170,7 +169,7 @@
                                                 color="minimal"
                                                 padding="compact"
                                                 style="height: fit-content"
-                                                @mousedown.stop="
+                                                @click="
                                                     (e) =>
                                                         actionClick(
                                                             e,
@@ -192,7 +191,7 @@
 
                                         <div
                                             class="flex items-center justify-between w-full cursor-pointer h-9 hover:bg-primary-selected-focus"
-                                            @mousedown.stop="
+                                            @click="
                                                 (e) => onSelectTable(item, e)
                                             "
                                         >
@@ -253,7 +252,7 @@
                                     <AtlanIcon
                                         icon="ChevronLeft"
                                         class="w-4 h-4 -mt-0.5 text-gray-500"
-                                        @mousedown.stop="onUnselectTable"
+                                        @click="onUnselectTable"
                                     />
 
                                     <span
@@ -296,7 +295,7 @@
                                                 color="minimal"
                                                 padding="compact"
                                                 style="height: fit-content"
-                                                @mousedown.stop="
+                                                @click="
                                                     (e) =>
                                                         actionClick(
                                                             e,
@@ -317,7 +316,7 @@
                                         </template>
                                         <div
                                             class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
-                                            @mousedown.stop="
+                                            @click="
                                                 (e) => onSelectColumn(item, e)
                                             "
                                             :class="
@@ -537,26 +536,22 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
 
-            const setFoucs = () => {
-                isAreaFocused.value = true
-                nextTick(() => {
-                    inputRef?.value?.focus()
-                })
-            }
-            const setFocusedCusror = () => {
-                nextTick(() => {
-                    inputRef?.value?.focus()
-                })
-            }
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
+                debugger
+                if (event.relatedTarget === null) {
                     isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
                 }
+                // if (!container.value.contains(event.relatedTarget)) {
+                //     isAreaFocused.value = false
+                //     inputValue1.value = ''
+                //     inputValue2.value = ''
+                //     queryText.value = ''
+                // }
             }
 
             const inputChange = () => {
@@ -567,16 +562,6 @@
                 })
             }
 
-            const input1Change = () => {
-                setFoucs()
-                queryText.value = inputValue1.value
-                // emit('queryTextChange')
-            }
-            const input2Change = () => {
-                setFoucs()
-                queryText.value = inputValue2.value
-                // emit('queryTextChange')
-            }
             const handleMouseOver = () => {
                 if (!mouseOver.value) mouseOver.value = true
             }
@@ -637,6 +622,17 @@
                     containerPosition.value.height = viewportOffset?.height
                 nextTick(() => {
                     initialRef.value?.focus()
+                })
+                document?.addEventListener('click', function (event) {
+                    let isClickInside = container.value.contains(event.target)
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains('child_input')
+                    }
+
+                    if (!isClickInside) {
+                        isAreaFocused.value = false
+                    }
                 })
             })
 
@@ -919,7 +915,6 @@
 
             watch(isAreaFocused, () => {
                 if (!isAreaFocused) {
-                    setFocusedCusror()
                 }
             })
 
@@ -950,16 +945,12 @@
                 inputChange,
                 topPosShift,
                 inputRef,
-                input1Change,
-                input2Change,
                 inputValue1,
                 inputValue2,
                 clearAllSelected,
-                setFocusedCusror,
                 handleMouseOver,
                 handleMouseOut,
                 findVisibility,
-                setFoucs,
                 handleContainerBlur,
                 isAreaFocused,
                 getDataTypeImage,

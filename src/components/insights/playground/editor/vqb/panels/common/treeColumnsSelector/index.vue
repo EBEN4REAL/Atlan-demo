@@ -104,28 +104,31 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
                 :class="[
-                    'absolute z-10  p-4 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10  py-4 overflow-auto bg-white rounded custom-shadow position',
                 ]"
             >
                 <div>
-                    <div
-                        class="flex items-center justify-between flex-grow py-1 mb-2 border-b bordery-gray-300"
-                    >
-                        <AtlanIcon
-                            icon="Search"
-                            class="flex-none pr-1 text-gray-500"
-                        />
-                        <input
-                            :placeholder="placeholder"
-                            type="text"
-                            class="flex-1 text-xs bg-transparent focus:outline-none child_input"
-                            style="z-index: 10 !important"
-                        />
+                    <div class="px-4">
+                        <div
+                            class="flex items-center justify-between flex-grow py-1 border-b bordery-gray-300"
+                        >
+                            <AtlanIcon
+                                icon="Search"
+                                class="flex-none pr-1 text-gray-500"
+                            />
+                            <input
+                                ref="inputRef"
+                                v-model="queryText"
+                                :placeholder="placeholder"
+                                type="text"
+                                class="flex-1 text-xs bg-transparent focus:outline-none child_input"
+                                style="z-index: 10 !important"
+                            />
+                        </div>
                     </div>
 
                     <div
@@ -190,7 +193,7 @@
                                         </template>
 
                                         <div
-                                            class="flex items-center justify-between w-full cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                            class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-selected-focus"
                                             @click="
                                                 (e) => onSelectTable(item, e)
                                             "
@@ -245,29 +248,31 @@
                             class="w-full"
                             v-if="tableSelected?.qualifiedName && !isLoading"
                         >
-                            <div
-                                class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
-                            >
-                                <div class="flex items-center truncate">
-                                    <AtlanIcon
-                                        icon="ChevronLeft"
-                                        class="w-4 h-4 -mt-0.5 text-gray-500"
-                                        @click="onUnselectTable"
-                                    />
-
-                                    <span
-                                        class="ml-2 parent-ellipsis-container-base"
-                                        >{{ tableSelected?.label }}
-                                    </span>
-                                </div>
+                            <div class="px-4">
                                 <div
-                                    class="flex items-center justify-between text-gray-500"
+                                    class="flex items-center justify-between h-9 truncanimate-spin pt-0.5 border-b border-gray-300"
                                 >
-                                    {{ tableSelected?.columnCount }}
+                                    <div class="flex items-center truncate">
+                                        <AtlanIcon
+                                            icon="ChevronLeft"
+                                            class="w-4 h-4 -mt-0.5 text-gray-500"
+                                            @click="onUnselectTable"
+                                        />
+
+                                        <span
+                                            class="ml-2 parent-ellipsis-container-base"
+                                            >{{ tableSelected?.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between mr-2 text-gray-500"
+                                    >
+                                        {{ tableSelected?.columnCount }}
+                                    </div>
                                 </div>
                             </div>
                             <div
-                                class="pl-2 pr-2 overflow-y-auto"
+                                class="overflow-y-auto"
                                 style="height: 250px"
                                 :class="[
                                     columnDropdownOption.length === 0
@@ -553,6 +558,11 @@
                 //     queryText.value = ''
                 // }
             }
+            const setFocusedCusror = () => {
+                nextTick(() => {
+                    inputRef?.value?.focus()
+                })
+            }
 
             const inputChange = () => {
                 nextTick(() => {
@@ -829,6 +839,7 @@
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()
+                setFocusedCusror()
                 return false
             }
             const onUnselectTable = (event) => {
@@ -837,6 +848,7 @@
                 replaceBody(getTableInitialBody())
                 event.stopPropagation()
                 event.preventDefault()
+                setFocusedCusror()
                 return false
             }
 
@@ -869,17 +881,6 @@
             }
 
             const placeholder = computed(() => {
-                if (selectedColumn?.value?.label) {
-                    let data =
-                        selectedColumn.value.columnQualifiedName.split('/')
-
-                    if (showColumnWithTable)
-                        return `${data[data.length - 2]}.${
-                            data[data.length - 1]
-                        }`
-                    else return `${data[data.length - 1]}`
-                }
-
                 let data = !tableSelected.value?.qualifiedName
                     ? `Select from ${totalCount.value} tables`
                     : `Select from ${totalCount.value} columns`
@@ -913,8 +914,9 @@
                 return false
             }
 
-            watch(isAreaFocused, () => {
-                if (!isAreaFocused) {
+            watch(isAreaFocused, (newIsAreaFocused) => {
+                if (newIsAreaFocused) {
+                    setFocusedCusror()
                 }
             })
 

@@ -39,7 +39,7 @@
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
 
-                            <div class="self-center text-sm">
+                            <div class="self-center text-sm font-normal">
                                 {{ item.label }}
                             </div>
                             <div

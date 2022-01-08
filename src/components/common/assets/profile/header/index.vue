@@ -245,13 +245,7 @@
             </div>
             <a-button-group>
                 <a-tooltip
-                    v-if="
-                        ![
-                            'AtlasGlossary',
-                            'AtlasGlossaryTerm',
-                            'AtlasGlossaryCategory',
-                        ].includes(item?.typeName)
-                    "
+                    v-if="!isGTC(item) && !isBiAsset(item)"
                     title="Query"
                 >
                     <a-button
@@ -264,6 +258,17 @@
                             class="mr-1 mb-0.5"
                         /> </a-button
                 ></a-tooltip>
+
+                <a-button
+                    v-if="isBiAsset(item) && webURL(item)"
+                    block
+                    @click="handleBIRedirect"
+                    ><div class="flex items-center justify-center px-1">
+                        <img :src="getConnectorImage(item)" class="h-4 mr-1" />
+                        Open in PowerBI
+                    </div>
+                </a-button>
+
                 <ShareMenu :asset="item" :edit-permission="true">
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="Share" class="mb-0.5" />
@@ -311,7 +316,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -343,7 +348,8 @@
                 },
             },
         },
-        setup() {
+        setup(props) {
+            const { item } = toRefs(props)
             const {
                 title,
                 getConnectorImage,
@@ -371,6 +377,8 @@
                 isScrubbed,
                 selectedAssetUpdatePermission,
                 isGTC,
+                isBiAsset,
+                webURL,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -396,6 +404,10 @@
                     return false
                 }
                 router.back()
+            }
+
+            const handleBIRedirect = () => {
+                window.open(webURL(item.value), '_blank').focus()
             }
 
             whenever(and(Escape, notUsingInput), (v) => {
@@ -434,6 +446,9 @@
                 isGTC,
                 map,
                 checkAccess,
+                isBiAsset,
+                webURL,
+                handleBIRedirect,
             }
         },
     })

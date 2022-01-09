@@ -1,4 +1,5 @@
 import bodybuilder from 'bodybuilder'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 interface useBodyProps {
     from?: number
@@ -8,6 +9,7 @@ interface useBodyProps {
     viewQualifiedName?: string[] | undefined
     tableQualifiedNames?: string[] | undefined
     searchText?: string | undefined
+    context: connectorsWidgetInterface
 }
 export default function useBody({
     from = 0,
@@ -17,41 +19,68 @@ export default function useBody({
     viewQualifiedName,
     tableQualifiedNames,
     searchText,
+    context,
 }: useBodyProps) {
     const base = bodybuilder()
 
     base.from(from || 0)
     base.size(limit || 100)
-    if (schemaQualifiedName) {
-        base.sort([
-            {
-                'name.keyword': {
-                    order: 'asc',
-                },
-            },
-        ])
-    }
+
     if (searchText)
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
         })
 
-    if (schemaQualifiedName) {
-        base.filter('term', 'schemaQualifiedName', schemaQualifiedName)
-        base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-    }
     if (tableQualfiedName) {
         base.filter('term', 'tableQualifiedName', tableQualfiedName)
         base.filter('term', '__typeName.keyword', 'Column')
     }
     if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 1) {
-        // debugger
         base.filter('terms', 'qualifiedName', tableQualifiedNames)
     }
     if (viewQualifiedName) {
         base.filter('term', 'viewQualifiedName', tableQualfiedName)
         base.filter('term', '__typeName.keyword', 'Column')
     }
+
+    switch (context.attributeName) {
+        case 'connectionQualifiedName': {
+            base.filter('term', context.attributeName, context.attributeValue)
+            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+            base.sort([
+                {
+                    'name.keyword': {
+                        order: 'asc',
+                    },
+                },
+            ])
+            break
+        }
+        case 'databaseQualifiedName': {
+            base.filter('term', context.attributeName, context.attributeValue)
+            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+            base.sort([
+                {
+                    'name.keyword': {
+                        order: 'asc',
+                    },
+                },
+            ])
+            break
+        }
+        case 'schemaQualifiedName': {
+            base.filter('term', 'schemaQualifiedName', context.attributeValue)
+            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+            base.sort([
+                {
+                    'name.keyword': {
+                        order: 'asc',
+                    },
+                },
+            ])
+        }
+    }
+
     const tempQuery = base.build()
     const query = {
         ...tempQuery,

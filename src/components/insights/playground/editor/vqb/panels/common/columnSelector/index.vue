@@ -614,6 +614,8 @@
                 return {
                     dsl: useBody({
                         searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                         tableQualfiedName:
                             selectedTablesQualifiedNames?.length > 0
                                 ? selectedTablesQualifiedNames[0]
@@ -810,6 +812,8 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames

@@ -251,10 +251,7 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
     import useBody from './useBody'
 
@@ -367,30 +364,7 @@
                         context:
                             activeInlineTab.value.playground.editor.context,
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 

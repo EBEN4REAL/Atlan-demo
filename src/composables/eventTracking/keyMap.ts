@@ -22,6 +22,15 @@ const keyMap = {
                 properties: (props) => ({ click_index: props.click_index }),
             },
         },
+        asset_sidebar: {
+            tab_changed: {
+                action: 'discovery_asset_sidebar_tab_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    tab_name: props.tab_name,
+                }),
+            },
+        },
         metadata: {
             name_updated: {
                 action: 'discovery_metadata_name_updated',

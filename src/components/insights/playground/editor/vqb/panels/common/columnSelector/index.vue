@@ -880,14 +880,14 @@
                     return `Search from ${totalCount.value} columns`
                 }
                 if (
-                    !tableSelected.value &&
+                    !isTableSelected.value &&
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
                     return `Search from ${totalCount.value} tables`
                 }
                 if (
-                    tableSelected.value &&
+                    isTableSelected.value &&
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {

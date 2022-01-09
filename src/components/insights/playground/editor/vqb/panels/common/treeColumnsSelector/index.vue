@@ -654,6 +654,8 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNamesContraint:
@@ -712,11 +714,15 @@
                     data = {
                         tableQualifiedName: item?.qualifiedName,
                         searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
                         searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }
                 }
                 return {
@@ -766,7 +772,7 @@
             }
 
             const placeholder = computed(() => {
-                let data = !tableSelected.value?.qualifiedName
+                let data = !isTableSelected.value
                     ? `Select from ${totalCount.value} tables`
                     : `Select from ${totalCount.value} columns`
 

@@ -541,6 +541,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Readme has been updated'
             mutate()
+            sendTrackEvent('readme', 'updated')
         }
     }
 

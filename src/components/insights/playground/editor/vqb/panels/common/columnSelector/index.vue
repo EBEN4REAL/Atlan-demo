@@ -611,17 +611,30 @@
                 selectedTablesQualifiedNames: selectedTables[]
             ) => {
                 // FIXME: it can be a viewQualifiedName,
+
+                /* IMP: If the selection is viewQualifiedName then set it as view */
+
+                let data = {
+                    searchText: queryText.value,
+                    context: activeInlineTab.value.playground.editor.context,
+                }
+                if (
+                    activeInlineTab.value.playground.vqb?.panels[0]
+                        ?.subpanels[0]?.tableData?.assetType === 'View'
+                ) {
+                    data.viewQualfiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                } else {
+                    data.tableQualfiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                }
+
                 return {
-                    dsl: useBody({
-                        searchText: queryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-                        tableQualfiedName:
-                            selectedTablesQualifiedNames?.length > 0
-                                ? selectedTablesQualifiedNames[0]
-                                      .tableQualifiedName
-                                : tableQualfiedName.value,
-                    }),
+                    dsl: useBody(data),
                     attributes: attributes,
                 }
             }
@@ -809,9 +822,6 @@
             ) => {
                 return {
                     dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
                         context:
                             activeInlineTab.value.playground.editor.context,
 

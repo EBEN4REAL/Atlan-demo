@@ -5,7 +5,6 @@ interface useBodyProps {
     from?: number
     limit?: number
     tableQualfiedName?: string | undefined
-    schemaQualifiedName?: string | undefined
     viewQualifiedName?: string[] | undefined
     tableQualifiedNames?: string[] | undefined
     searchText?: string | undefined
@@ -15,7 +14,6 @@ export default function useBody({
     from = 0,
     limit = 100,
     tableQualfiedName,
-    schemaQualifiedName,
     viewQualifiedName,
     tableQualifiedNames,
     searchText,
@@ -34,17 +32,17 @@ export default function useBody({
     if (tableQualfiedName) {
         base.filter('term', 'tableQualifiedName', tableQualfiedName)
         base.filter('term', '__typeName.keyword', 'Column')
-    }
-    if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 1) {
-        base.filter('terms', 'qualifiedName', tableQualifiedNames)
-    }
-    if (viewQualifiedName) {
-        base.filter('term', 'viewQualifiedName', tableQualfiedName)
+    } else if (viewQualifiedName) {
+        base.filter('term', 'viewQualifiedName', viewQualifiedName)
         base.filter('term', '__typeName.keyword', 'Column')
     }
 
-    if (!tableQualfiedName) {
-        switch (context.attributeName) {
+    if (Array.isArray(tableQualifiedNames) && tableQualifiedNames?.length > 1) {
+        base.filter('terms', 'qualifiedName', tableQualifiedNames)
+    }
+
+    if (!tableQualfiedName && !viewQualifiedName) {
+        switch (context?.attributeName) {
             case 'connectionQualifiedName': {
                 base.filter(
                     'term',

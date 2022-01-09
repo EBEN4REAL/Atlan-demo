@@ -94,7 +94,9 @@ export default function useCustomMetadataHelpers() {
             return 'Number'
         if (['float'].includes(t))
             return 'Decimal'
-        return 'Text'
+        if (['text', 'string'].includes(t))
+            return 'Text'
+        return tName
     }
 
     return {

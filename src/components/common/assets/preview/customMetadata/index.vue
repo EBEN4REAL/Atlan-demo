@@ -59,7 +59,7 @@
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto scrollheight"
             :style="
-                isProfile
+                isProfile || $route?.params?.id
                     ? 'max-height: calc(100vh - 7rem)'
                     : 'max-height: calc(100vh - 12rem)'
             "
@@ -142,7 +142,7 @@
                     </transition>
                     <div
                         v-if="applicableList.filter((i) => hasValue(i)).length"
-                        class="mt-2"
+                        class="mt-2 mb-2"
                     >
                         <span
                             class="text-gray-500 bg-white border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"

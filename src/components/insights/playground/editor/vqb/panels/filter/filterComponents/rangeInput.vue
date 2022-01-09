@@ -77,6 +77,12 @@
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
             let firstvalue = ref(undefined)
             let secondValue = ref(undefined)
+            if (inputValue.value?.length > 0) {
+                firstvalue.value = inputValue.value[0]
+            }
+            if (inputValue.value?.length > 0 && inputValue.value?.length == 2) {
+                secondValue.value = inputValue.value[1]
+            }
 
             if (
                 type.value === 'date' &&

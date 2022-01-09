@@ -221,7 +221,6 @@
                     ...selectedFilter.value,
                     name: checked.key,
                     type: checked.type,
-                    value: undefined,
                     title: checked.name,
                 }
                 emit('change')
@@ -235,7 +234,7 @@
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 observer.value = new ResizeObserver(onResize).observe(
-                    container.value
+                    container?.value
                 )
                 const viewportOffset = container.value?.getBoundingClientRect()
                 if (viewportOffset?.width)

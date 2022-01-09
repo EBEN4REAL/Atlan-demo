@@ -1,257 +1,405 @@
 <template>
-    <a-popover placement="bottomLeft" :trigger="['click']">
-        <div
-            class="flex items-center px-2 overflow-hidden border border-gray-300 rounded box-shadow focus:border-primary-focus"
-            style="height: 32px; width: 100%"
-        >
-            <div
-                v-if="selectedColumn?.label"
-                style="max-width: 98%"
-                class="flex items-center truncate"
-            >
-                <component
-                    :is="
-                        dataTypeImage({
-                            attributes: { dataType: selectedColumn?.type },
-                        })
-                    "
-                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                ></component>
-                <span
-                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+    <div
+        ref="container"
+        @click="
+            () => {
+                isAreaFocused = true
+            }
+        "
+        @mouseover="handleMouseOver"
+        @mouseout="handleMouseOut"
+        class="relative flex items-center w-full z-1"
+        :class="[
+            isAreaFocused
+                ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
+                : 'border-gray-300 border  px-3 py-1 box-shadow',
+            ,
+            'flex flex-wrap items-center    rounded  selector-height chip-container truncate',
+        ]"
+    >
+        <div class="flex w-full">
+            <component
+                :is="getDataTypeImage(selectedColumn?.type)"
+                class="flex-none w-auto h-4 mr-1 text-gray-500"
+            ></component>
+            <div class="w-full">
+                <div
+                    v-if="selectedColumn?.label"
+                    style="max-width: 98%"
+                    class="flex items-center text-xs truncate"
                 >
-                    {{ placeholder }}
-                </span>
+                    <span
+                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                    >
+                        {{ selectedColumn?.label }}
+                    </span>
+                </div>
+                <div v-else-if="subIndex == 0" class="text-gray-700">
+                    LEFT TABLE
+                </div>
+                <div v-else-if="subIndex == 1" class="text-gray-700">
+                    RIGHT TABLE
+                </div>
+
+                <div
+                    class="mt-0.5 text-xs text-gray-500 truncate"
+                    style="max-width: 90%"
+                >
+                    <span v-if="selectedColumn?.tableName" class="truncate">
+                        {{ selectedColumn?.tableName }}
+                    </span>
+                    <span v-else>
+                        {{ placeholder }}
+                    </span>
+                </div>
             </div>
-            <span v-else>
-                {{ placeholder }}
-            </span>
+            <!-- <span v-else>
+            {{ placeholder }}
+        </span> -->
         </div>
-        <template #content>
-            <div v-if="!tableSelected?.qualifiedName">
-                <a-input
-                    v-model:value="tableText"
-                    placeholder="Enter table name"
-                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
-                    style="height: 36px"
-                >
-                    <template #suffix>
-                        <AtlanIcon
-                            icon="Search"
-                            class="text-gray-500"
-                        ></AtlanIcon>
-                    </template>
-                </a-input>
-                <div
-                    style="height: 300px !important; width: 400px"
-                    class="overflow-y-scroll"
-                >
-                    <AtlanIcon
-                        v-if="isLoading"
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                        style="margin-left: 175px; margin-top: 100px"
-                    ></AtlanIcon>
 
-                    <template
-                        v-if="tableDropdownOption.length !== 0 && !isLoading"
-                        v-for="(item, index) in tableDropdownOption"
-                        :key="item?.label + index"
-                    >
-                        <PopoverAsset
-                            :item="item.item"
-                            :placement="subIndex === 0 ? 'right' : 'left'"
-                            :mouseEnterDelay="0.85"
+        <div class="absolute right-4">
+            <AtlanIcon
+                v-if="
+                    findVisibility(
+                        'search',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedColumn
+                    )
+                "
+                icon="Search"
+                class="w-4 h-4"
+            />
+            <AtlanIcon
+                icon="ChevronDown"
+                class="w-4 h-4"
+                v-if="
+                    findVisibility(
+                        'chevronDown',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedColumn
+                    )
+                "
+            />
+            <AtlanIcon
+                icon="Cross"
+                class="w-4 h-4 cursor-pointer"
+                @click.stop="clearAllSelected"
+                v-if="
+                    findVisibility(
+                        'cross',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedColumn
+                    )
+                "
+            />
+        </div>
+
+        <teleport to="body">
+            <div
+                v-if="isAreaFocused"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
+                :class="[
+                    'absolute z-10  py-4 overflow-auto bg-white rounded custom-shadow position',
+                ]"
+            >
+                <div>
+                    <div class="px-4">
+                        <div
+                            class="flex items-center justify-between flex-grow py-1 border-b bordery-gray-300"
                         >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
-                                    @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
-                                    "
+                            <AtlanIcon
+                                icon="Search"
+                                class="flex-none pr-1 text-gray-500"
+                            />
+                            <input
+                                ref="inputRef"
+                                v-model="queryText"
+                                :placeholder="placeholder"
+                                type="text"
+                                class="flex-1 text-xs bg-transparent focus:outline-none child_input"
+                                style="z-index: 10 !important"
+                            />
+                        </div>
+                    </div>
+
+                    <div
+                        :class="['flex  justify-center overflow-auto w-full']"
+                        style="height: 250px"
+                    >
+                        <Loader
+                            v-if="isLoading"
+                            style="min-height: 250px !important"
+                        ></Loader>
+
+                        <!--  Multiple table column selection-->
+                        <div
+                            class="w-full"
+                            style="height: 250px"
+                            :class="[
+                                tableDropdownOption.length === 0
+                                    ? 'flex justify-center items-center'
+                                    : '',
+                            ]"
+                            v-if="
+                                !isTableSelected &&
+                                tableDropdownOption.length !== 0 &&
+                                !isLoading
+                            "
+                        >
+                            <div class="overflow-auto">
+                                <template
+                                    v-for="(item, index) in tableDropdownOption"
+                                    :key="item?.label + index"
                                 >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    <PopoverAsset
+                                        :item="item.item"
+                                        placement="right"
+                                        :mouseEnterDelay="0.85"
                                     >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
+                                        <template #button>
+                                            <AtlanBtn
+                                                class="flex-none px-0"
+                                                size="sm"
+                                                color="minimal"
+                                                padding="compact"
+                                                style="height: fit-content"
+                                                @click="
+                                                    (e) =>
+                                                        actionClick(
+                                                            e,
+                                                            item.item
+                                                        )
+                                                "
+                                            >
+                                                <span
+                                                    class="cursor-pointer text-primary whitespace-nowrap"
+                                                >
+                                                    Show Preview</span
+                                                >
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="text-primary"
+                                                />
+                                            </AtlanBtn>
+                                        </template>
 
-                            <div
-                                class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                                style="width: 400px"
-                                @click="onSelectTable(item)"
-                            >
-                                <div class="flex items-center truncate">
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
-                                        "
-                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
+                                        <div
+                                            class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                            @click="
+                                                (e) => onSelectTable(item, e)
+                                            "
+                                        >
+                                            <div
+                                                class="flex items-center truncate"
+                                            >
+                                                <AtlanIcon
+                                                    :icon="
+                                                        getEntityStatusIcon(
+                                                            assetType(item),
+                                                            certificateStatus(
+                                                                item
+                                                            )
+                                                        )
+                                                    "
+                                                    class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                                    style="min-width: 16px"
+                                                ></AtlanIcon>
 
-                                    <span
-                                        class="ml-2 parent-ellipsis-container-base"
-                                        style="width: 300px"
-                                        >{{ item?.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="flex items-center justify-between text-gray-500"
-                                >
-                                    {{ item?.columnCount }}
+                                                <span
+                                                    class="ml-2 parent-ellipsis-container-base"
+                                                    >{{ item?.label }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="flex items-center justify-between text-gray-500"
+                                            >
+                                                {{ item?.columnCount }}
 
-                                    <AtlanIcon
-                                        icon="ChevronRight"
-                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                    />
-                                </div>
+                                                <AtlanIcon
+                                                    icon="ChevronRight"
+                                                    class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </PopoverAsset>
+                                </template>
                             </div>
-                        </PopoverAsset>
-                    </template>
-                    <div
-                        v-if="tableDropdownOption.length === 0 && !isLoading"
-                        class="flex items-center justify-center h-full"
-                    >
-                        No tables found
-                    </div>
-                </div>
-            </div>
-
-            <div v-else>
-                <div
-                    class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5"
-                    style="width: 400px"
-                >
-                    <div class="flex items-center truncate">
-                        <AtlanIcon
-                            icon="ChevronLeft"
-                            class="w-4 h-4 -mt-0.5 text-gray-500"
-                            @click="onUnselectTable"
-                        />
-
-                        <span
-                            class="ml-2 parent-ellipsis-container-base"
-                            style="width: 300px"
-                            >{{ tableSelected?.label }}
-                        </span>
-                    </div>
-                    <div
-                        class="flex items-center justify-between text-gray-500"
-                    >
-                        {{ tableSelected?.columnCount }}
-                    </div>
-                </div>
-                <a-input
-                    v-model:value="columnText"
-                    placeholder="Enter column name"
-                    class="border-l-0 border-r-0 rounded-none outline-none input_styles"
-                    style="height: 36px"
-                >
-                    <template #suffix>
-                        <AtlanIcon
-                            icon="Search"
-                            class="text-gray-500"
-                        ></AtlanIcon>
-                    </template>
-                </a-input>
-                <div style="height: 278px !important" class="overflow-y-scroll">
-                    <AtlanIcon
-                        v-if="isLoading"
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                        style="margin-left: 175px; margin-top: 100px"
-                    ></AtlanIcon>
-                    <template
-                        v-if="columnDropdownOption.length !== 0 && !isLoading"
-                        v-for="(item, index) in columnDropdownOption"
-                        :key="item?.label + index"
-                    >
-                        <PopoverAsset
-                            :item="item.item"
-                            :placement="subIndex === 0 ? 'right' : 'left'"
-                            :mouseEnterDelay="0.85"
-                        >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
-                                    @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
-                                    "
-                                >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
-                                    >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
-
                             <div
-                                class="flex items-center justify-between pl-4 pr-4 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                                style="width: 400px"
-                                @click="onSelectColumn(item)"
-                                :class="
-                                    selectedColumn?.columnQualifiedName ===
-                                    item?.qualifiedName
-                                        ? 'bg-primary-light'
-                                        : ''
+                                v-if="
+                                    tableDropdownOption.length === 0 &&
+                                    !isLoading
                                 "
+                                class="flex items-center justify-center h-full text-sm text-center text-gray-400"
                             >
-                                <div class="flex items-center truncate">
-                                    <component
-                                        :is="dataTypeImage(item)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
+                                No tables found
+                            </div>
+                        </div>
+                        <!-- For columns -->
+                        <div
+                            class="w-full"
+                            v-if="isTableSelected && !isLoading"
+                        >
+                            <div class="px-4">
                                 <div
-                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    class="flex items-center justify-between h-9 truncanimate-spin pt-0.5 border-b border-gray-300"
                                 >
-                                    <ColumnKeys
-                                        :isPrimary="item.isPrimary"
-                                        :isForeign="item.isForeign"
-                                        :isPartition="item.isPartition"
-                                        topStyle="top-2.5"
-                                    />
+                                    <div class="flex items-center truncate">
+                                        <AtlanIcon
+                                            icon="ChevronLeft"
+                                            class="w-4 h-4 -mt-0.5 text-gray-500"
+                                            @click="onUnselectTable"
+                                        />
+
+                                        <span
+                                            class="ml-2 parent-ellipsis-container-base"
+                                            >{{ tableSelected?.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="flex items-center justify-between mr-2 text-gray-500"
+                                    >
+                                        {{ tableSelected?.columnCount }}
+                                    </div>
                                 </div>
                             </div>
-                        </PopoverAsset>
-                    </template>
-                    <div
-                        v-if="columnDropdownOption.length === 0 && !isLoading"
-                        class="flex items-center justify-center h-full"
-                    >
-                        No columns found
+                            <div
+                                class="overflow-y-auto"
+                                style="height: 250px"
+                                :class="[
+                                    columnDropdownOption.length === 0
+                                        ? 'flex justify-center items-center'
+                                        : '',
+                                ]"
+                            >
+                                <template
+                                    v-for="(
+                                        item, index
+                                    ) in columnDropdownOption"
+                                    :key="
+                                        item.value + index + item.qualifiedName
+                                    "
+                                >
+                                    <PopoverAsset
+                                        :item="item.item"
+                                        placement="right"
+                                        :mouseEnterDelay="0.85"
+                                    >
+                                        <template #button>
+                                            <AtlanBtn
+                                                class="flex-none px-0"
+                                                size="sm"
+                                                color="minimal"
+                                                padding="compact"
+                                                style="height: fit-content"
+                                                @click="
+                                                    (e) =>
+                                                        actionClick(
+                                                            e,
+                                                            item.item
+                                                        )
+                                                "
+                                            >
+                                                <span
+                                                    class="cursor-pointer text-primary whitespace-nowrap"
+                                                >
+                                                    Show Preview</span
+                                                >
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="text-primary"
+                                                />
+                                            </AtlanBtn>
+                                        </template>
+                                        <div
+                                            class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
+                                            @click="
+                                                (e) => onSelectColumn(item, e)
+                                            "
+                                            :class="
+                                                selectedColumn?.label ===
+                                                item.label
+                                                    ? 'bg-primary-light'
+                                                    : 'bg-white'
+                                            "
+                                        >
+                                            <div
+                                                class="flex items-center parent-ellipsis-container"
+                                            >
+                                                <component
+                                                    :is="
+                                                        getDataTypeImage(
+                                                            item.type
+                                                        )
+                                                    "
+                                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                                ></component>
+                                                <span
+                                                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                                >
+                                                    {{ item.label }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="flex items-center parent-ellipsis-container-extension"
+                                            >
+                                                <div
+                                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                                >
+                                                    <ColumnKeys
+                                                        :isPrimary="
+                                                            item.isPrimary
+                                                        "
+                                                        :isForeign="
+                                                            item.isForeign
+                                                        "
+                                                        :isPartition="
+                                                            item.isPartition
+                                                        "
+                                                    />
+                                                </div>
+                                                <AtlanIcon
+                                                    icon="Check"
+                                                    class="ml-2 text-primary parent-ellipsis-container-base"
+                                                    v-if="
+                                                        selectedColumn?.label ===
+                                                        item.label
+                                                    "
+                                                />
+                                                <div
+                                                    v-else
+                                                    class="w-4 ml-2"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </PopoverAsset>
+                                </template>
+
+                                <div
+                                    v-if="
+                                        columnDropdownOption.length === 0 &&
+                                        !isLoading
+                                    "
+                                    class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                                >
+                                    No columns found
+                                </div>
+                            </div>
+                        </div>
+                        <!--  -->
                     </div>
                 </div>
             </div>
-        </template>
-    </a-popover>
+        </teleport>
+    </div>
 </template>
 
 <script lang="ts">
@@ -266,6 +414,9 @@
         inject,
         ComputedRef,
         onMounted,
+        onUnmounted,
+        nextTick,
+        onUpdated,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -279,11 +430,10 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
     import useBody from './useBody'
 
     export default defineComponent({
@@ -293,6 +443,7 @@
             Loader,
             ColumnKeys,
             PopoverAsset,
+            SearchAndFilter,
         },
         props: {
             selectedColumn: {
@@ -353,19 +504,139 @@
                 activeInlineTab
             )
 
-            const tableText = ref('')
-            const columnText = ref('')
+            let tableSelected = ref(null)
 
             const { selectedColumn } = useVModels(props)
+            const { getDataTypeImage } = useColumn()
 
             const {
                 isPrimary,
                 dataTypeImageForColumn,
-                dataTypeImage,
                 dataType,
                 assetType,
                 certificateStatus,
             } = useAssetInfo()
+
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
+            const isTableSelected = ref(false)
+            const inputRef = ref()
+            const queryText = ref('')
+            const mouseOver = ref(false)
+            const inputValue1 = ref('')
+            const inputValue2 = ref('')
+            const isAreaFocused = ref(false)
+            const container = ref()
+
+            const setFocusedCusror = () => {
+                nextTick(() => {
+                    inputRef?.value?.focus()
+                })
+            }
+
+            const handleMouseOver = () => {
+                if (!mouseOver.value) mouseOver.value = true
+            }
+            const handleMouseOut = () => {
+                if (mouseOver.value) mouseOver.value = false
+            }
+            const findVisibility = (
+                key: string,
+                isAreaFocused,
+                mouseHover,
+                tableQualifiedName,
+                selectedColumn
+            ) => {
+                switch (key) {
+                    case 'chevronDown': {
+                        if (!isAreaFocused) {
+                            if (!selectedColumn?.label && mouseHover)
+                                return true
+                            if (!selectedColumn?.label && !mouseHover)
+                                return true
+                            if (selectedColumn?.label && !mouseHover)
+                                return true
+                        }
+                        break
+                    }
+                    case 'cross': {
+                        if (isAreaFocused) return false
+                        if (
+                            !isAreaFocused &&
+                            selectedColumn?.label &&
+                            mouseHover
+                        )
+                            return true
+                        else return false
+                        break
+                    }
+                    case 'search': {
+                        if (!isAreaFocused) return false
+                        if (tableQualifiedName) return true
+                        break
+                    }
+                }
+            }
+
+            onMounted(() => {
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+                document?.addEventListener('click', function (event) {
+                    let isClickInside = container.value?.contains(event.target)
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains('child_input')
+                    }
+
+                    if (!isClickInside) {
+                        isAreaFocused.value = false
+                    }
+                })
+            })
+
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+            onUpdated(() => {
+                nextTick(() => {
+                    const viewportOffset =
+                        container.value?.getBoundingClientRect()
+                    if (viewportOffset?.width)
+                        containerPosition.value.width = viewportOffset?.width
+                    if (viewportOffset?.top)
+                        containerPosition.value.top = viewportOffset?.top
+                    if (viewportOffset?.left)
+                        containerPosition.value.left = viewportOffset?.left
+                    if (viewportOffset?.height)
+                        containerPosition.value.height = viewportOffset?.height
+                })
+            })
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
+            })
 
             const getTableInitialBody = () => {
                 return {
@@ -374,73 +645,21 @@
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
 
-                        searchText: tableText.value,
+                        searchText: queryText.value,
                         tableQualifiedNamesContraint:
                             tableQualifiedNamesContraint.value,
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
+            }
+            const clearAllSelected = () => {
+                emit('change', {})
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
                 false
             )
-            watch(
-                () => activeInlineTab.value.playground.editor.context,
-                () => {
-                    replaceBody(getTableInitialBody())
-                },
-                {
-                    immediate: true,
-                }
-            )
-            watch(tableText, () => {
-                replaceBody(getTableInitialBody())
-            })
-
-            watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    tableQualifiedNamesContraint.value =
-                        allowedTablesInJoinSelector(
-                            panelIndex.value,
-                            rowIndex.value,
-                            subIndex.value,
-                            activeInlineTab.value
-                        )
-                    replaceBody(getTableInitialBody())
-                }
-            )
-
-            let tableSelected = ref(null)
-
-            watch(columnText, () => {
-                replaceBody(getColumnInitialBody(tableSelected?.value))
-            })
 
             const totalCount = computed(() => data.value?.approximateCount || 0)
 
@@ -482,66 +701,46 @@
                 if (item.typeName === 'Table') {
                     data = {
                         tableQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 }
                 return {
                     dsl: useBody(data),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
-            const onSelectTable = (item) => {
-                // console.log('selected table: ', item)
+            const onSelectTable = (item, event) => {
                 tableSelected.value = item
+                isTableSelected.value = true
                 replaceBody(getColumnInitialBody(item))
+                event.stopPropagation()
+                event.preventDefault()
+                setFocusedCusror()
+                return false
             }
-            const onUnselectTable = () => {
-                tableSelected.value = null
+            const onUnselectTable = (event) => {
+                isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceBody(getTableInitialBody())
+                event.stopPropagation()
+                event.preventDefault()
+                setFocusedCusror()
+                return false
             }
 
-            const onSelectColumn = (item) => {
-                let qualifiedName = item?.qualifiedName.split('/')
-                let size = qualifiedName?.length
-                console.log(
-                    'name: ',
-                    `${qualifiedName[size - 2]}.${qualifiedName[size - 1]}`
-                )
+            const onSelectColumn = (item, event) => {
                 selectedColumn.value = {
                     label: item.label,
                     type: item.type,
                     value: item.label,
                     columnQualifiedName: item.qualifiedName,
+                    tableName: item.item.attributes.tableName,
                 }
                 emit('change', item.qualifiedName)
                 activeInlineTab.value.playground.vqb.selectedTables =
@@ -550,24 +749,16 @@
                             activeInlineTab.value.playground.vqb.selectedTables
                         )
                     )
-                //activeInlineTab.value.playground.vqb.selectedTables
+                event.stopPropagation()
+                event.preventDefault()
+                isAreaFocused.value = false
+                return false
             }
 
             const placeholder = computed(() => {
-                if (selectedColumn?.value?.label) {
-                    let data =
-                        selectedColumn.value.columnQualifiedName.split('/')
-
-                    if (showColumnWithTable)
-                        return `${data[data.length - 2]}.${
-                            data[data.length - 1]
-                        }`
-                    else return `${data[data.length - 1]}`
-                }
-
                 let data = !tableSelected.value?.qualifiedName
-                    ? `select from ${totalCount.value} tables`
-                    : `select from ${totalCount.value} columns`
+                    ? `Select from ${totalCount.value} tables`
+                    : `Select from ${totalCount.value} columns`
 
                 return data
             })
@@ -593,65 +784,119 @@
                 return false
             }
 
-            // watch(
-            //     tableDropdownOption,
-            //     () => {
-            //         if (rowIndex.value == 0 && subIndex.value == 0) {
-            //             if (tableDropdownOption.value.length > 0) {
-            //                 const items = JSON.parse(
-            //                     JSON.stringify(tableDropdownOption.value)
-            //                 )
-            //                 onSelectTable(items[0])
-            //             }
-            //         }
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
+            watch(
+                () => activeInlineTab.value.playground.editor.context,
+                () => {
+                    if (selectedColumn.value?.label && tableSelected?.value) {
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
+                },
+                {
+                    immediate: true,
+                }
+            )
+
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    tableQualifiedNamesContraint.value =
+                        allowedTablesInJoinSelector(
+                            panelIndex.value,
+                            rowIndex.value,
+                            subIndex.value,
+                            activeInlineTab.value
+                        )
+
+                    if (selectedColumn.value?.label && tableSelected?.value) {
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
+                }
+            )
+
+            watch(isAreaFocused, (newIsAreaFocused) => {
+                if (newIsAreaFocused) {
+                    setFocusedCusror()
+                }
+                if (selectedColumn.value?.label && tableSelected?.value) {
+                    // retain column view
+                    isTableSelected.value = true
+                    // debugger
+                    replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else {
+                    replaceBody(getTableInitialBody())
+                }
+            })
+
+            watch(queryText, () => {
+                if (tableSelected.value) {
+                    replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else {
+                    replaceBody(getTableInitialBody())
+                }
+            })
 
             return {
+                isTableSelected,
+                queryText,
+                container,
                 subIndex,
                 actionClick,
                 totalCount,
                 data,
                 isLoading,
                 tableDropdownOption,
-                tableText,
                 onSelectTable,
                 onUnselectTable,
                 tableSelected,
-                columnText,
                 columnDropdownOption,
                 onSelectColumn,
                 getEntityStatusIcon,
                 isPrimary,
                 dataTypeImageForColumn,
-                dataTypeImage,
                 dataType,
                 assetType,
                 certificateStatus,
                 selectedColumn,
                 placeholder,
+                inputRef,
+                inputValue1,
+                inputValue2,
+                clearAllSelected,
+                handleMouseOver,
+                handleMouseOut,
+                findVisibility,
+                isAreaFocused,
+                getDataTypeImage,
+                containerPosition,
             }
         },
     })
 </script>
-<style lang="less" module>
-    .selector {
-        :global(.ant-select-selector) {
-            height: 100% !important;
-            @apply border border-gray-300 !important;
-        }
-        :global(.ant-select-selection-item::after) {
-            display: none !important;
-        }
-    }
-    // input::placeholder {
-    //     color: #6f7590 !important;
-    // }
-</style>
+
 <style lang="less" scoped>
+    .border-plus {
+        padding: 1px;
+    }
+    .border-minus {
+        padding: 0px;
+    }
+    .custom-shadow {
+        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+    .selector-height {
+        min-height: 32px;
+    }
+    .position {
+        @apply right-0;
+    }
+    .box-shadow {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .disable-bg {
+        background-color: #fbfbfb;
+    }
     .parent-ellipsis-container-base {
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -669,5 +914,10 @@
         -o-box-sizing: border-box !important;
         -ms-box-sizing: border-box !important;
         box-sizing: border-box !important;
+    }
+</style>
+<style lang="less" module>
+    .custom_input {
+        background-color: #fbfbfb !important;
     }
 </style>

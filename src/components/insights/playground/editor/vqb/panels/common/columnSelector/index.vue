@@ -610,8 +610,6 @@
             const getInitialBody = (
                 selectedTablesQualifiedNames: selectedTables[]
             ) => {
-                // FIXME: it can be a viewQualifiedName,
-
                 /* IMP: If the selection is viewQualifiedName then set it as view */
 
                 let data = {
@@ -622,7 +620,7 @@
                     activeInlineTab.value.playground.vqb?.panels[0]
                         ?.subpanels[0]?.tableData?.assetType === 'View'
                 ) {
-                    data.viewQualfiedName =
+                    data.viewQualifiedName =
                         selectedTablesQualifiedNames?.length > 0
                             ? selectedTablesQualifiedNames[0].tableQualifiedName
                             : tableQualfiedName.value

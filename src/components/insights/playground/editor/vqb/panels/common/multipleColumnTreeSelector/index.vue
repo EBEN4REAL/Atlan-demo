@@ -448,6 +448,8 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames

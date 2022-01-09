@@ -3,22 +3,20 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 
-export default function generalHelper() {
+export default function useWorkflowInfo() {
     const name = (item: any): string => item.metadata?.name
-    
+
     const creationTimestamp = (item: any) => item.metadata?.creationTimestamp
-    
+
     const labels = (item: any) => item.metadata?.labels
-    
+
     const phase = (item: any) => item.status?.phase
-    
+
     const startedAt = (item: any, relative: any) => {
         if (relative) {
             return dayjs().from(item.status.startedAt, true)
         }
-        return dayjs(item.status.startedAt).format(
-            'dddd MMMM D YYYY HH:mm:ss'
-        )
+        return dayjs(item.status.startedAt).format('dddd MMMM D YYYY HH:mm:ss')
     }
     const finishedAt = (item: any, relative: any) => {
         if (relative) {
@@ -44,8 +42,8 @@ export default function generalHelper() {
         }
         return ''
     }
-    const progress = (item) =>  item.status.progress
-    
+    const progress = (item) => item.status.progress
+
     const progressPercent = (item) => {
         const split = item.status.progress.split('/')
         let percentage = 100
@@ -55,16 +53,16 @@ export default function generalHelper() {
         return percentage
     }
 
-    return { 
-      name,
-      creationTimestamp,
-      labels,
-      phase,
-      startedAt,
-      finishedAt,
-      podFinishedAt,
-      duration,
-      progress,
-      progressPercent
+    return {
+        name,
+        creationTimestamp,
+        labels,
+        phase,
+        startedAt,
+        finishedAt,
+        podFinishedAt,
+        duration,
+        progress,
+        progressPercent,
     }
 }

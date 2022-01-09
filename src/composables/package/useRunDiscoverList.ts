@@ -63,9 +63,9 @@ export function useRunDiscoverList({
             refreshInterval
         )
     const list = ref([])
+    const runByWorkflowMap = ref({})
 
     watch(data, () => {
-        console.log('changed data')
         if (offset?.value > 0) {
             data.value?.hits?.hits?.forEach((item) => {
                 list.value.push(item._source)
@@ -79,7 +79,12 @@ export function useRunDiscoverList({
         } else {
             list.value = []
         }
-        console.log(list.value)
+        data.value?.aggregations?.by_status?.by_status?.buckets?.forEach(
+            (element) => {
+                runByWorkflowMap.value[element.key] =
+                    element.by_status?.top_hits_by_status?.hits?.hits
+            }
+        )
     })
 
     const quickChange = () => {
@@ -123,5 +128,6 @@ export function useRunDiscoverList({
         killRefresh,
         refresh,
         error,
+        runByWorkflowMap,
     }
 }

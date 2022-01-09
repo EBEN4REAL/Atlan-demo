@@ -51,6 +51,7 @@
                     <WorkflowList
                         v-else
                         :list="list"
+                        :packageList="packageList"
                         class="px-6 mb-4"
                         @select="handleSelect"
                     ></WorkflowList>
@@ -61,7 +62,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
+    import { defineComponent, ref, computed, watch, provide } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import WorkflowList from '@/workflows/list/index.vue'
@@ -70,6 +71,7 @@
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import { useDebounceFn } from '@vueuse/core'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -122,15 +124,6 @@
                 emit('sandbox', selectedPackage.value)
             }
 
-            // const { refresh, isLoading, list, error } = usePackageList({
-            //     isCache: true,
-            //     dependentKey,
-            //     queryText,
-            //     filters,
-            //     limit,
-            //     offset,
-            // })
-
             const { isLoading, list, error, quickChange } =
                 useWorkflowDiscoverList({
                     isCache: true,
@@ -145,25 +138,33 @@
                     preference,
                 })
 
+            const packageList = ref([])
             const dependentKeyPackage = ref('')
-            const facetRun = ref({})
-            const aggregationRun = ref(['status'])
-            const { quickChange: quickChangeRun } = useRunDiscoverList({
-                isCache: false,
-                dependentKey: dependentKeyPackage,
-                facets: facetRun,
-                limit,
-                offset,
-                aggregations: aggregationRun,
-                queryText,
-                source: ref({
-                    excludes: ['spec'],
-                }),
-                preference,
-            })
+            const facetPackage = ref({})
+            const packageLimit = ref(20)
+            const packageOffset = ref(0)
 
             watch(list, () => {
-                console.log('changed list')
+                const map = list.value.map((i) => {
+                    return i?.metadata.annotations['package.argoproj.io/name']
+                })
+                const dedup = [...new Set(map)]
+
+                const existingPackageList = packageList.value.map((i) => {
+                    return i?.metadata.annotations['package.argoproj.io/name']
+                })
+
+                const newPackageList = dedup.filter((i) => {
+                    return !existingPackageList.includes(i)
+                })
+
+                if (newPackageList.length > 0) {
+                    packageLimit.value = newPackageList.length
+                    facetPackage.value = {
+                        packageNames: newPackageList,
+                    }
+                    quickChangePackage()
+                }
                 facetRun.value = {
                     workflowTemplates: list.value.map(
                         (item) => item.metadata.name
@@ -171,6 +172,50 @@
                 }
                 quickChangeRun()
             })
+
+            const { quickChange: quickChangePackage, list: packageFetchList } =
+                usePackageDiscoverList({
+                    isCache: false,
+                    dependentKey: dependentKeyPackage,
+                    facets: facetPackage,
+                    limit: packageLimit,
+                    offset: packageOffset,
+                })
+
+            watch(packageFetchList, () => {
+                packageList.value = packageList.value.concat(
+                    packageFetchList.value
+                )
+            })
+
+            const dependentKeyRun = ref('')
+            const facetRun = ref({})
+            const aggregationRun = ref(['status'])
+            const { quickChange: quickChangeRun, runByWorkflowMap } =
+                useRunDiscoverList({
+                    isCache: false,
+                    dependentKey: dependentKeyRun,
+                    facets: facetRun,
+                    limit: ref(0),
+                    offset,
+                    aggregations: aggregationRun,
+                    queryText,
+                    source: ref({
+                        excludes: ['spec'],
+                    }),
+                    preference,
+                })
+
+            provide('runMap', runByWorkflowMap)
+            // watch(list, () => {
+            //     console.log('changed list')
+            //     facetRun.value = {
+            //         workflowTemplates: list.value.map(
+            //             (item) => item.metadata.name
+            //         ),
+            //     }
+            //     quickChangeRun()
+            // })
 
             const handleFilterChange = () => {
                 offset.value = 0
@@ -223,6 +268,13 @@
                 preference,
                 quickChangeRun,
                 dependentKeyPackage,
+                facetPackage,
+                quickChangePackage,
+                packageLimit,
+                packageOffset,
+                packageFetchList,
+                packageList,
+                runByWorkflowMap,
             }
         },
     })

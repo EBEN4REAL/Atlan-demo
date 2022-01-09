@@ -80,7 +80,6 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         props: {

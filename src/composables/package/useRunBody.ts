@@ -449,20 +449,20 @@ export function useRunBody(
             switch (mkey) {
                 case 'status': {
                     base.rawOption('aggs', {
-                        name: {
+                        by_status: {
                             nested: {
                                 path: 'spec',
                             },
                             aggs: {
-                                name: {
+                                by_status: {
                                     terms: {
                                         field: 'spec.workflowTemplateRef.name.keyword',
                                     },
                                     aggs: {
-                                        agg_by_phase: {
+                                        by_status: {
                                             reverse_nested: {},
                                             aggs: {
-                                                top_sales_hits: {
+                                                top_hits_by_status: {
                                                     top_hits: {
                                                         size: 5,
                                                         sort: [

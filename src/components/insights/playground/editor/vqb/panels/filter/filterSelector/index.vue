@@ -39,51 +39,55 @@
         <div class="absolute right-2">
             <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px`"
-            :class="[
-                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
-            ]"
-        >
+        <teleport to="body">
             <div
-                :class="['flex  justify-center overflow-auto']"
-                style="max-height: 250px"
+                v-if="isAreaFocused"
+                @click.stop="() => {}"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
+                :class="[
+                    'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                ]"
             >
-                <div class="w-full">
-                    <template
-                        v-for="(item, index) in dropdownOption"
-                        :key="item.value + index"
-                        v-if="dropdownOption?.length !== 0"
-                    >
-                        <div
-                            class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
-                            @click="onCheckChange(item)"
-                            :class="
-                                selectedFilter.name === item.key
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
+                <div
+                    :class="['flex  justify-center overflow-auto']"
+                    style="max-height: 250px"
+                >
+                    <div class="w-full">
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.value + index"
+                            v-if="dropdownOption?.length !== 0"
                         >
-                            <span>{{ item.label }}</span>
-                            <AtlanIcon
-                                icon="Check"
-                                class="text-primary"
-                                v-if="selectedFilter.name === item.key"
-                            />
-                        </div>
-                    </template>
+                            <div
+                                class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
+                                @mousedown.stop="(e) => onCheckChange(e, item)"
+                                :class="
+                                    selectedFilter.name === item.key
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <span>{{ item.label }}</span>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="text-primary"
+                                    v-if="selectedFilter.name === item.key"
+                                />
+                            </div>
+                        </template>
 
-                    <span
-                        class="flex items-center justify-center w-full mt-4 text-sm text-center text-gray-400"
-                        v-if="dropdownOption.length == 0"
-                    >
-                        No functions found!
-                    </span>
+                        <span
+                            class="flex items-center justify-center w-full mt-4 text-sm text-center text-gray-400"
+                            v-if="dropdownOption.length == 0"
+                        >
+                            No functions found!
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </teleport>
     </div>
 </template>
 
@@ -98,6 +102,7 @@
         inject,
         PropType,
         ComputedRef,
+        onUnmounted,
         toRefs,
     } from 'vue'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
@@ -128,6 +133,13 @@
             const { columnName, columnType } = toRefs(props)
 
             const { selectedFilter } = useVModels(props)
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
 
             const { filterList } = useFilter()
 
@@ -202,23 +214,54 @@
                 return data
             })
 
-            const onCheckChange = (checked) => {
+            const onCheckChange = (event, checked) => {
                 // inputChange()
                 // console.log(checked)
                 selectedFilter.value = {
                     ...selectedFilter.value,
                     name: checked.key,
                     type: checked.type,
-                    value: undefined,
                     title: checked.name,
                 }
                 emit('change')
+                isAreaFocused.value = false
                 // filterName.value = checked.name
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
+                observer.value = new ResizeObserver(onResize).observe(
+                    container?.value
+                )
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
                 console.log(container.value)
+            })
+
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
             })
 
             const mouseOver = ref(false)
@@ -230,6 +273,7 @@
             }
 
             return {
+                containerPosition,
                 onCheckChange,
                 selectAll,
                 dropdownOption,

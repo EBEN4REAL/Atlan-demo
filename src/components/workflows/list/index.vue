@@ -1,10 +1,11 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-y-4">
+    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
         <Item
-            class="col-span-3"
+            style="height: 200px"
             v-for="item in list"
             :key="item.name"
             :item="item"
+            :packageObject="getPackage(item)"
             :selectedItem="selectedItem"
             @click="handleSelect(item)"
         ></Item>
@@ -25,10 +26,17 @@
                     return []
                 },
             },
+            packageList: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
         },
         emits: ['select'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
+            const { list, packageList } = toRefs(props)
 
             const selectedItem = ref(null)
 
@@ -37,10 +45,23 @@
                 emit('select', item)
             }
 
+            const getPackage = (item) => {
+                console.log(item)
+                const packageName =
+                    item.metadata.annotations['package.argoproj.io/name']
+                return packageList.value.find(
+                    (p) =>
+                        p.metadata.annotations['package.argoproj.io/name'] ===
+                        packageName
+                )
+            }
+
             return {
                 list,
                 handleSelect,
                 selectedItem,
+                packageList,
+                getPackage,
             }
         },
     })

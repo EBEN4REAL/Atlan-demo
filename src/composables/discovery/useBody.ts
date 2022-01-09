@@ -147,7 +147,6 @@ export function useBody(
 
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
-        console.log(mkey)
         const filterObject = facets[mkey]
         switch (mkey) {
             case 'hierarchy': {

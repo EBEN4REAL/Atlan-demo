@@ -87,6 +87,7 @@
                                 <div
                                     :data-test-id="'insert-in-editor'"
                                     class="pl-2 ml-20"
+                                    v-if="!showVQB"
                                     @click="() => actionClick('add', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -215,6 +216,7 @@
                                 <div
                                     :data-test-id="'insert-in-editor'"
                                     class="pl-2 ml-4"
+                                    v-if="!showVQB"
                                     @click="() => actionClick('add', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -261,6 +263,7 @@
                                 <!-- Add pr-2 for next icon -->
                                 <div
                                     :data-test-id="'run-table-query'"
+                                    v-if="!showVQB"
                                     class
                                     @click="() => actionClick('play', item)"
                                 >
@@ -383,6 +386,7 @@
                                             </div>
                                         </a-menu-item>
                                         <a-menu-item
+                                            v-if="!showVQB"
                                             @click="
                                                 () => actionClick('add', item)
                                             "
@@ -707,6 +711,9 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
+            const showVQB = computed(() => {
+                return activeInlineTab?.value?.playground?.isVQB
+            })
 
             const limitRows = ref({
                 checked: true,
@@ -1467,7 +1474,7 @@
                 // closeContextModal,
                 // openInCurrentTab,
                 // openInNewTab,
-
+                showVQB,
                 hoverActions,
                 isPopoverAllowed,
                 activeInlineTab,

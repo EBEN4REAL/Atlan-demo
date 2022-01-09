@@ -14,9 +14,19 @@
     >
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
             <div class="absolute w-full h-full pt-4 bg-white">
-                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
-                    >Search from your assets</span
-                >
+                <div class="flex items-center mx-4 mt-2">
+                    <Tooltip
+                        :tooltip-text="`Select and link assets to ${selectedAsset?.displayText}`"
+                        classes="text-base font-bold text-gray-500"
+                    />
+                    <CertificateBadge
+                        v-if="certificateStatus(selectedAsset)"
+                        :status="certificateStatus(selectedAsset)"
+                        :username="certificateUpdatedBy(selectedAsset)"
+                        :timestamp="certificateUpdatedAt(selectedAsset)"
+                        class="mb-1 ml-1"
+                    ></CertificateBadge>
+                </div>
                 <Assets
                     :show-filters="false"
                     :static-use="true"
@@ -59,12 +69,17 @@
     import { defineComponent, PropType } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Assets from '@/assets/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'LinkedAssetsDrawer',
         components: {
             Assets,
             AtlanBtn,
+            Tooltip,
+            CertificateBadge,
         },
         props: {
             isVisible: {
@@ -80,6 +95,10 @@
                 type: Number,
                 required: true,
             },
+            selectedAsset: {
+                type: Object,
+                required: true,
+            },
         },
         emits: ['closeDrawer', 'saveAssets'],
         setup(props, { emit }) {
@@ -89,8 +108,18 @@
             const saveAssets = () => {
                 emit('saveAssets')
             }
+            const {
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+            } = useAssetInfo()
 
             return {
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
                 closeDrawer,
                 saveAssets,
             }

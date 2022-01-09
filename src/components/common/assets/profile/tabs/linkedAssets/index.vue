@@ -56,6 +56,7 @@
         :selectedAssetCount="selectedAssetCount"
         @closeDrawer="closeDrawer"
         @saveAssets="saveAssets"
+        :selected-asset="selectedAsset"
     />
 </template>
 

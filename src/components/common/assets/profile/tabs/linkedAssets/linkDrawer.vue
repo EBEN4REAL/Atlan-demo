@@ -13,7 +13,7 @@
         :close="closeDrawer"
     >
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
-            <div class="absolute w-full h-full py-6 bg-white">
+            <div class="absolute w-full h-full pt-4 bg-white">
                 <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                     >Search from your assets</span
                 >
@@ -25,13 +25,14 @@
                     :preference="preference"
                     :allCheckboxAreaClick="true"
                     :disableHandlePreview="true"
-                    class="asset-list-height"
+                    class="mt-2 asset-list-height"
                     key="all-assets"
                     page="glossary"
                 />
             </div>
         </div>
-        <div class="flex items-center justify-end m-2 mt-6 gap-x-2">
+        <a-divider />
+        <div class="flex items-center justify-end mx-4 gap-x-2">
             <span class="text-base font-bold text-gray-500"
                 >{{ selectedAssetCount || 'No' }} items selected</span
             >

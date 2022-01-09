@@ -144,8 +144,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const isConfetti = ref(false)
     const shouldDrawerUpdate = ref(false)
 
-    // analytics event
-    const sendMetadataTrackEvent = (metadataEvent: string, props = {}) => {
+    // metadata analytics event
+    const sendMetadataTrackEvent = (action: string, props = {}) => {
         const baseProps = {
             asset_type: selectedAsset.value?.typeName,
         }
@@ -153,7 +153,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             ...baseProps,
             ...props,
         }
-        useAddEvent('discovery', 'metadata', metadataEvent, finalProps)
+        useAddEvent('discovery', 'metadata', action, finalProps)
+    }
+
+    // general analytics event
+    const sendTrackEvent = (objectName: string, action: string, props = {}) => {
+        const baseProps = {
+            asset_type: selectedAsset.value?.typeName,
+        }
+        const finalProps = {
+            ...baseProps,
+            ...props,
+        }
+        useAddEvent('discovery', objectName, action, finalProps)
     }
 
     // Name Change
@@ -453,6 +465,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'A new resource has been added'
         mutate()
+        sendTrackEvent('resource', 'created', {
+            domain: localResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Update
@@ -474,6 +489,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             selectedAsset.value
         )} updated`
         mutate()
+        sendTrackEvent('resource', 'updated', {
+            domain: localResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Deletion
@@ -492,6 +510,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             guid.value = selectedAsset.value.guid
 
             mutateUpdate()
+            sendTrackEvent('resource', 'deleted')
         })
     }
 

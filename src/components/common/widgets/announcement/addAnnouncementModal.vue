@@ -125,11 +125,13 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
+            const { updating } = toRefs(props)
+
             const { isLoading, localAnnouncement, handleAnnouncementUpdate } =
                 updateAssetAttributes(asset)
 
             const handleUpdate = async () => {
-                handleAnnouncementUpdate()
+                handleAnnouncementUpdate(updating.value)
                 await nextTick()
                 visible.value = false
             }

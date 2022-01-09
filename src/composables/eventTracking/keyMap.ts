@@ -22,6 +22,15 @@ const keyMap = {
                 properties: (props) => ({ click_index: props.click_index }),
             },
         },
+        asset_sidebar: {
+            tab_changed: {
+                action: 'discovery_asset_sidebar_tab_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    tab_name: props.tab_name,
+                }),
+            },
+        },
         metadata: {
             name_updated: {
                 action: 'discovery_metadata_name_updated',
@@ -79,13 +88,15 @@ const keyMap = {
         announcement: {
             created: {
                 action: 'discovery_announcement_created',
-                // properties: (props) => ({
-                //     create_more: !!props.create_more,
-                // asset_type: props.asset_type,
-                // }),
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                }),
             },
             updated: {
                 action: 'discovery_announcement_updated',
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                }),
             },
             deleted: {
                 action: 'discovery_announcement_deleted',
@@ -93,21 +104,21 @@ const keyMap = {
         },
         resource: {
             created: {
-                action: 'discovery_announcement_created',
+                action: 'discovery_resource_created',
                 properties: (props) => ({
                     domain: props.domain,
                     asset_type: props.asset_type,
                 }),
             },
             updated: {
-                action: 'discovery_announcement_updated',
+                action: 'discovery_resource_updated',
                 properties: (props) => ({
                     domain: props.domain,
                     asset_type: props.asset_type,
                 }),
             },
             deleted: {
-                action: 'discovery_announcement_deleted',
+                action: 'discovery_resource_deleted',
             },
         },
         search: {

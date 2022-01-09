@@ -156,6 +156,7 @@
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                         :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
+                        @click="onClickTabIcon(tab)"
                     />
                 </template>
                 <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
@@ -205,6 +206,7 @@
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -387,6 +389,22 @@
                 // else activeKey.value = k
             }
 
+            const onClickTabIcon = (tabObj: object) => {
+                console.log('onClickTabIcon', tabObj)
+                if (!tabObj.analyticsKey) {
+                    return
+                }
+                const scrubbed =
+                    isScrubbed(selectedAsset.value) && tabObj.scrubbed
+                if (scrubbed) {
+                    return
+                }
+                useAddEvent('discovery', 'asset_sidebar', 'tab_changed', {
+                    asset_type: selectedAsset.value.typeName,
+                    tab_name: tabObj.analyticsKey,
+                })
+            }
+
             provide('isProfile', isProfile.value)
 
             return {
@@ -426,6 +444,7 @@
                 isScrubbed,
                 selectedAssetUpdatePermission,
                 showCTA,
+                onClickTabIcon,
             }
         },
     })

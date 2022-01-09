@@ -35,7 +35,7 @@
                     :preference="preference"
                     :allCheckboxAreaClick="true"
                     :disableHandlePreview="true"
-                    class="mt-2 asset-list-height"
+                    class="pb-6 mt-2 asset-list-height"
                     key="all-assets"
                     page="glossary"
                 />

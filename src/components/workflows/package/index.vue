@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, provide } from 'vue'
+    import { defineComponent, ref, computed, watch, provide, inject } from 'vue'
 
     import WorkflowList from './list/index.vue'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
@@ -89,6 +89,8 @@
                 quickChangeRun()
             })
 
+            const handlePreview = inject('preview')
+
             const { quickChange: quickChangePackage, list } =
                 usePackageDiscoverList({
                     isCache: false,
@@ -147,7 +149,7 @@
 
             const handleSelect = (item) => {
                 selectedPackage.value = item
-                emit('select', item)
+                handlePreview(item)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -197,6 +199,7 @@
                 packageListFromWorkflows,
                 workflowDistinctList,
                 workflowMapByPackage,
+                handlePreview,
             }
         },
     })

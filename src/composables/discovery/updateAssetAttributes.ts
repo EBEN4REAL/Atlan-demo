@@ -302,7 +302,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Announcement Update
-    const handleAnnouncementUpdate = () => {
+    const handleAnnouncementUpdate = (isUpdating) => {
         entity.value.attributes.announcementTitle =
             localAnnouncement.value.announcementTitle
         entity.value.attributes.announcementMessage =
@@ -313,6 +313,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been updated'
         mutate()
+        const action = isUpdating ? 'updated' : 'created'
+        sendTrackEvent('announcement', action, {
+            announcement_type: localAnnouncement.value.announcementType,
+        })
     }
 
     // SQL Query Config Update
@@ -341,6 +345,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been deleted'
         mutate()
+        sendTrackEvent('announcement', 'deleted')
     }
 
     const handleMeaningsUpdate = () => {
@@ -490,7 +495,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         )} updated`
         mutate()
         sendTrackEvent('resource', 'updated', {
-            domain: localResource.value.link.split('/')[2],
+            domain: localLResource.value.link.split('/')[2],
         })
     }
 

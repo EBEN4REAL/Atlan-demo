@@ -142,7 +142,7 @@
                     </transition>
                     <div
                         v-if="applicableList.filter((i) => hasValue(i)).length"
-                        class="mt-2"
+                        class="mt-2 mb-2"
                     >
                         <span
                             class="text-gray-500 bg-white border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"

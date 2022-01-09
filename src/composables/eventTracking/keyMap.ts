@@ -19,7 +19,10 @@ const keyMap = {
         asset_card: {
             clicked: {
                 action: 'discovery_asset_card_clicked',
-                properties: (props) => ({ click_index: props.click_index }),
+                properties: (props) => ({
+                    click_index: props.click_index,
+                    keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
             },
         },
         asset_sidebar: {

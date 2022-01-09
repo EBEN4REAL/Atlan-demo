@@ -1,6 +1,6 @@
 <template>
-    <div class="p-6">
-        <div class="flex flex-col px-3 bg-white">
+    <div class="p-8">
+        <div class="flex flex-col pt-1 bg-white">
             <div
                 class="flex flex-col items-center justify-center pt-12 pb-20"
                 :class="localAssignedEntities.length ? 'hidden' : ''"
@@ -20,9 +20,7 @@
                     >+ Link Assets</AtlanBtn
                 >
             </div>
-            <div
-                :class="localAssignedEntities.length ? '' : 'hidden'"
-            >
+            <div :class="localAssignedEntities.length ? '' : 'hidden'">
                 <AssetsWrapper
                     ref="linkedAssetsWrapperRef"
                     :show-filters="false"
@@ -40,20 +38,20 @@
                 >
                     <template #searchAction>
                         <AtlanBtn
-                            class="ml-4 mt-2"
+                            class="mx-4 mt-2"
                             size="sm"
                             padding="compact"
                             data-test-id="save"
                             @click="openLinkDrawer"
-                            >Link</AtlanBtn
+                            >Link assets</AtlanBtn
                         >
                     </template>
                 </AssetsWrapper>
             </div>
         </div>
     </div>
-    <LinkAssetsDrawer 
-        :isVisible="isVisible" 
+    <LinkAssetsDrawer
+        :isVisible="isVisible"
         :preference="preference"
         :selectedAssetCount="selectedAssetCount"
         @closeDrawer="closeDrawer"
@@ -96,7 +94,7 @@
             AssetItem,
             AtlanBtn,
             AssetsWrapper,
-            LinkAssetsDrawer
+            LinkAssetsDrawer,
         },
         props: {
             selectedAsset: {
@@ -154,10 +152,11 @@
                 const assetSet = new Set([...bulkStore.bulkSelectedAssets])
                 const currentCheckedAssets = [...assetSet]
 
-                linkedAssets.value = [...assetSet].filter((linkedAsset) =>
-                    !(localAssignedEntities?.value?.find(
-                        (current) => linkedAsset.guid === current.guid
-                    ))
+                linkedAssets.value = [...assetSet].filter(
+                    (linkedAsset) =>
+                        !localAssignedEntities?.value?.find(
+                            (current) => linkedAsset.guid === current.guid
+                        )
                 )
                 unlinkedAssets.value =
                     localAssignedEntities?.value?.filter(
@@ -172,17 +171,16 @@
                     unlinkedAssets: unlinkedAssets.value,
                     term: selectedAsset.value,
                 })
-                
+
                 bulkStore.setBulkSelectedAssets([])
                 closeDrawer()
             }
 
             watch(localAssignedEntities, () => {
-                if(linkedAssetsWrapperRef?.value?.quickChange) {
+                if (linkedAssetsWrapperRef?.value?.quickChange) {
                     setTimeout(() => {
                         linkedAssetsWrapperRef.value.quickChange()
                     }, 1000)
-                    
                 }
             })
             return {
@@ -196,7 +194,7 @@
                 localAssignedEntities,
                 selectedAssetCount,
                 tabFilter,
-                linkedAssetsWrapperRef
+                linkedAssetsWrapperRef,
             }
         },
     })

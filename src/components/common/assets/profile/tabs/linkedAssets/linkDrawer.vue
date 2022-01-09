@@ -5,9 +5,12 @@
         :visible="isVisible"
         :get-container="false"
         :closable="false"
+        :keyboard="true"
+        :maskClosable="true"
         :mask="true"
         :class="$style.drawerStyle"
         :width="460"
+        :close="closeDrawer"
     >
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
             <div class="absolute w-full h-full py-6 bg-white">

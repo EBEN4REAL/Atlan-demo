@@ -63,10 +63,30 @@
             >
         </div>
     </a-drawer>
+    <a-modal
+        v-model:visible="isModalVisible"
+        width="25%"
+        :closable="false"
+        okText="Save"
+        cancelText=""
+        :footer="null"
+    >
+        <div class="p-3">
+            <p class="mb-1 font-bold text-md">Cancel linking assets</p>
+            <p class="text-md">This action will clear your selection.</p>
+        </div>
+
+        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
+            <a-button @click="handleCancel">Cancel</a-button>
+            <a-button class="text-white bg-error" @click="handleConfirmCancel"
+                >Confirm</a-button
+            >
+        </div>
+    </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Assets from '@/assets/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -102,8 +122,10 @@
         },
         emits: ['closeDrawer', 'saveAssets'],
         setup(props, { emit }) {
+            const isModalVisible = ref(false)
             const closeDrawer = () => {
-                emit('closeDrawer')
+                isModalVisible.value = true
+                // emit('closeDrawer')
             }
             const saveAssets = () => {
                 emit('saveAssets')
@@ -114,7 +136,13 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
             } = useAssetInfo()
-
+            const handleCancel = () => {
+                isModalVisible.value = false
+            }
+            const handleConfirmCancel = () => {
+                isModalVisible.value = false
+                emit('closeDrawer')
+            }
             return {
                 certificateStatus,
                 certificateUpdatedAt,
@@ -122,6 +150,9 @@
                 certificateStatusMessage,
                 closeDrawer,
                 saveAssets,
+                isModalVisible,
+                handleCancel,
+                handleConfirmCancel,
             }
         },
     })

@@ -230,7 +230,7 @@
                     <div
                         class="w-full"
                         v-if="
-                            !tableSelected?.qualifiedName &&
+                            !isTableSelected &&
                             !isLoading &&
                             selectedTablesQualifiedNames.length >= 2
                         "
@@ -331,7 +331,7 @@
                     <div
                         class="w-full"
                         v-if="
-                            tableSelected?.qualifiedName &&
+                            isTableSelected &&
                             !isLoading &&
                             selectedTablesQualifiedNames.length >= 2
                         "
@@ -550,6 +550,7 @@
                 top: undefined,
                 left: undefined,
             })
+            const isTableSelected = ref(false)
             const queryText = ref('')
             const { selectedItem } = useVModels(props)
 
@@ -955,6 +956,7 @@
 
             const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
+                isTableSelected.value = true
                 tableSelected.value = item
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
@@ -962,7 +964,7 @@
                 return false
             }
             const onUnselectTable = (event) => {
-                tableSelected.value = null
+                isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceBody(
                     getTableInitialBody(
@@ -1000,9 +1002,12 @@
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
-                    if (tableSelected?.value)
+                    if (selectedItem.value?.label && tableSelected?.value) {
+                        // retain column view
+                        isTableSelected.value = true
+                        // debugger
                         replaceBody(getColumnInitialBody(tableSelected?.value))
-                    else {
+                    } else {
                         replaceBody(
                             getTableInitialBody(
                                 activeInlineTab.value.playground.vqb
@@ -1037,12 +1042,21 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1
                     ) {
-                        replaceBody(
-                            getTableInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables
+                        if (selectedItem.value?.label && tableSelected?.value) {
+                            // retain column view
+                            isTableSelected.value = true
+                            // debugger
+                            replaceBody(
+                                getColumnInitialBody(tableSelected?.value)
                             )
-                        )
+                        } else {
+                            replaceBody(
+                                getTableInitialBody(
+                                    activeInlineTab.value.playground.vqb
+                                        .selectedTables
+                                )
+                            )
+                        }
                     }
                 },
                 { immediate: true }
@@ -1053,18 +1067,27 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1
                     ) {
-                        tableSelected.value = null
-                        replaceBody(
-                            getTableInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables
+                        if (selectedItem.value?.label && tableSelected?.value) {
+                            // retain column view
+                            isTableSelected.value = true
+                            // debugger
+                            replaceBody(
+                                getColumnInitialBody(tableSelected?.value)
                             )
-                        )
+                        } else {
+                            replaceBody(
+                                getTableInitialBody(
+                                    activeInlineTab.value.playground.vqb
+                                        .selectedTables
+                                )
+                            )
+                        }
                     }
                 }
             })
 
             return {
+                isTableSelected,
                 containerPosition,
                 initialRef,
                 queryText,

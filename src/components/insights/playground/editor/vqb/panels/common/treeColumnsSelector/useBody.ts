@@ -1,4 +1,5 @@
 import bodybuilder from 'bodybuilder'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 interface useBodyProps {
     from?: number
@@ -7,6 +8,7 @@ interface useBodyProps {
     tableQualifiedName?: string | undefined
     viewQualifiedName?: string | undefined
     searchText?: string | undefined
+    context: connectorsWidgetInterface
     tableQualifiedNamesContraint?: {
         allowed: string[]
         notAllowed: string[]
@@ -20,60 +22,118 @@ export default function useBody({
     viewQualifiedName,
     searchText,
     tableQualifiedNamesContraint,
+    context,
 }: useBodyProps) {
     const base = bodybuilder()
-    if (schemaQualifiedName) {
-        base.sort([
-            {
-                'name.keyword': {
-                    order: 'asc',
-                },
-            },
-        ])
-    }
+
     base.from(from || 0)
     base.size(limit || 100)
     if (searchText)
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
         })
-    if (schemaQualifiedName) {
-        if (
-            tableQualifiedNamesContraint?.allowed?.length === 0 &&
-            tableQualifiedNamesContraint?.notAllowed?.length === 0
-        ) {
-            base.filter('term', 'schemaQualifiedName', schemaQualifiedName)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-        } else if (
-            tableQualifiedNamesContraint?.allowed?.length > 0 &&
-            tableQualifiedNamesContraint?.notAllowed?.length === 0
-        ) {
-            base.filter('term', 'schemaQualifiedName', schemaQualifiedName)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-            base.filter('terms', 'qualifiedName', [
-                ...tableQualifiedNamesContraint?.allowed,
-            ])
-        } else if (
-            tableQualifiedNamesContraint?.allowed?.length === 0 &&
-            tableQualifiedNamesContraint?.notAllowed?.length > 0
-        ) {
-            base.filter('term', 'schemaQualifiedName', schemaQualifiedName)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-            base.notFilter(
-                'terms',
-                'qualifiedName',
-                tableQualifiedNamesContraint?.notAllowed
-            )
-        }
-    }
+
     if (tableQualifiedName) {
         base.filter('term', 'tableQualifiedName', tableQualifiedName)
         base.filter('term', '__typeName.keyword', 'Column')
+    } else if (viewQualifiedName) {
+        base.filter('term', 'viewQualifiedName', viewQualifiedName)
+        base.filter('term', '__typeName.keyword', 'Column')
     }
 
-    if (viewQualifiedName) {
-        base.filter('term', 'viewQualifiedName', tableQualifiedName)
-        base.filter('term', '__typeName.keyword', 'Column')
+    if (!tableQualifiedName && !viewQualifiedName) {
+        switch (context?.attributeName) {
+            case 'connectionQualifiedName': {
+                base.filter(
+                    'term',
+                    context.attributeName,
+                    context.attributeValue
+                )
+                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
+                    },
+                ])
+                break
+            }
+            case 'databaseQualifiedName': {
+                base.filter(
+                    'term',
+                    context.attributeName,
+                    context.attributeValue
+                )
+                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
+                    },
+                ])
+                break
+            }
+            case 'schemaQualifiedName': {
+                if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        'schemaQualifiedName',
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length > 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        'schemaQualifiedName',
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.filter('terms', 'qualifiedName', [
+                        ...tableQualifiedNamesContraint?.allowed,
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length > 0
+                ) {
+                    base.filter(
+                        'term',
+                        'schemaQualifiedName',
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.notFilter(
+                        'terms',
+                        'qualifiedName',
+                        tableQualifiedNamesContraint?.notAllowed
+                    )
+                }
+
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
+                    },
+                ])
+            }
+        }
     }
 
     const tempQuery = base.build()

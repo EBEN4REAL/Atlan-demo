@@ -275,7 +275,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const expand = ref(
-                activeInlineTab.value.playground.vqb.panels[index.value].expand
+                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
             )
             watch(
                 () => activeInlineTab.value.playground.vqb.panels,

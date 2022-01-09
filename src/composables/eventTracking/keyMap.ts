@@ -79,13 +79,15 @@ const keyMap = {
         announcement: {
             created: {
                 action: 'discovery_announcement_created',
-                // properties: (props) => ({
-                //     create_more: !!props.create_more,
-                // asset_type: props.asset_type,
-                // }),
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                }),
             },
             updated: {
                 action: 'discovery_announcement_updated',
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                }),
             },
             deleted: {
                 action: 'discovery_announcement_deleted',

@@ -485,13 +485,17 @@
                 }
             }, 600)
 
+            // args[0]: asset, args[1]: index, args[2]: keyboard shortcut used
             const handleClickAssetItem = (...args) => {
                 if (allCheckboxAreaClick.value) {
                     updateBulkSelectedAssets(...args)
                 }
-                useAddEvent('discovery', 'asset_card', 'clicked', {
-                    click_index: args[1],
-                })
+                if (args[1] !== undefined) {
+                    useAddEvent('discovery', 'asset_card', 'clicked', {
+                        click_index: args[1],
+                        keyboard_shortcut: args[2],
+                    })
+                }
                 if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
@@ -552,7 +556,7 @@
             const route = useRoute()
             const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
-                handleClickAssetItem(asset, index)
+                handleClickAssetItem(asset, index, true)
                 console.log('onKeyboardNavigate', {
                     isAssetProfile: isAssetProfile.value,
                     index,

@@ -19,7 +19,10 @@ const keyMap = {
         asset_card: {
             clicked: {
                 action: 'discovery_asset_card_clicked',
-                properties: (props) => ({ click_index: props.click_index }),
+                properties: (props) => ({
+                    click_index: props.click_index,
+                    keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
             },
         },
         asset_sidebar: {
@@ -90,12 +93,14 @@ const keyMap = {
                 action: 'discovery_announcement_created',
                 properties: (props) => ({
                     announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
                 }),
             },
             updated: {
                 action: 'discovery_announcement_updated',
                 properties: (props) => ({
                     announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
                 }),
             },
             deleted: {
@@ -143,22 +148,10 @@ const keyMap = {
                 }),
             },
         },
-        saved_search: {
-            deleted: {
-                action: 'discovery_saved_search_deleted',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            clicked: {
-                action: 'discovery_saved_search_clicked',
-                properties: (props) => ({ facets: props.facets }),
-            },
+        readme: {
             updated: {
-                action: 'discovery_saved_search_updated',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            created: {
-                action: 'discovery_saved_search_created',
-                properties: (props) => ({ facets: props.facets }),
+                action: 'discovery_readme_updated',
+                properties: (props) => ({ asset_type: props.asset_type }),
             },
         },
     },

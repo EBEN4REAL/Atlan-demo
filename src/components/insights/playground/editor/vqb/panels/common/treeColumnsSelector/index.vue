@@ -612,7 +612,6 @@
                                 'dropdown-container'
                             )
                     }
-                    console.log(event, isClickInside, 'isClickInside')
 
                     if (!isClickInside) {
                         isAreaFocused.value = false

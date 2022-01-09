@@ -43,41 +43,55 @@ export default function useBody({
         base.filter('term', '__typeName.keyword', 'Column')
     }
 
-    switch (context.attributeName) {
-        case 'connectionQualifiedName': {
-            base.filter('term', context.attributeName, context.attributeValue)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-            base.sort([
-                {
-                    'name.keyword': {
-                        order: 'asc',
+    if (!tableQualfiedName) {
+        switch (context.attributeName) {
+            case 'connectionQualifiedName': {
+                base.filter(
+                    'term',
+                    context.attributeName,
+                    context.attributeValue
+                )
+                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
                     },
-                },
-            ])
-            break
-        }
-        case 'databaseQualifiedName': {
-            base.filter('term', context.attributeName, context.attributeValue)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-            base.sort([
-                {
-                    'name.keyword': {
-                        order: 'asc',
+                ])
+                break
+            }
+            case 'databaseQualifiedName': {
+                base.filter(
+                    'term',
+                    context.attributeName,
+                    context.attributeValue
+                )
+                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
                     },
-                },
-            ])
-            break
-        }
-        case 'schemaQualifiedName': {
-            base.filter('term', 'schemaQualifiedName', context.attributeValue)
-            base.filter('terms', '__typeName.keyword', ['Table', 'View'])
-            base.sort([
-                {
-                    'name.keyword': {
-                        order: 'asc',
+                ])
+                break
+            }
+            case 'schemaQualifiedName': {
+                base.filter(
+                    'term',
+                    'schemaQualifiedName',
+                    context.attributeValue
+                )
+                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                base.sort([
+                    {
+                        'name.keyword': {
+                            order: 'asc',
+                        },
                     },
-                },
-            ])
+                ])
+            }
         }
     }
 

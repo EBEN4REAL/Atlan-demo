@@ -221,7 +221,6 @@
                     ...selectedFilter.value,
                     name: checked.key,
                     type: checked.type,
-                    value: undefined,
                     title: checked.name,
                 }
                 emit('change')

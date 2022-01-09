@@ -150,7 +150,7 @@
                                     : '',
                             ]"
                             v-if="
-                                !tableSelected?.qualifiedName &&
+                                !isTableSelected &&
                                 tableDropdownOption.length !== 0 &&
                                 !isLoading
                             "
@@ -246,7 +246,7 @@
                         <!-- For columns -->
                         <div
                             class="w-full"
-                            v-if="tableSelected?.qualifiedName && !isLoading"
+                            v-if="isTableSelected && !isLoading"
                         >
                             <div class="px-4">
                                 <div
@@ -432,11 +432,8 @@
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
     import useBody from './useBody'
 
     export default defineComponent({
@@ -507,8 +504,7 @@
                 activeInlineTab
             )
 
-            const tableText = ref('')
-            const columnText = ref('')
+            let tableSelected = ref(null)
 
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
@@ -528,47 +524,18 @@
                 top: undefined,
                 left: undefined,
             })
-
+            const isTableSelected = ref(false)
             const inputRef = ref()
             const queryText = ref('')
-            const initialRef = ref()
-            const selectAll = ref(false)
             const mouseOver = ref(false)
-            const topPosShift = ref(0)
             const inputValue1 = ref('')
             const inputValue2 = ref('')
             const isAreaFocused = ref(false)
             const container = ref()
-            const clickPos = ref({ left: 0, top: 0 })
 
-            const handleContainerBlur = (event) => {
-                // if the blur was because of outside focus
-                // currentTarget is the parent element, relatedTarget is the clicked element
-                debugger
-                if (event.relatedTarget === null) {
-                    isAreaFocused.value = false
-                    inputValue1.value = ''
-                    inputValue2.value = ''
-                    queryText.value = ''
-                }
-                // if (!container.value.contains(event.relatedTarget)) {
-                //     isAreaFocused.value = false
-                //     inputValue1.value = ''
-                //     inputValue2.value = ''
-                //     queryText.value = ''
-                // }
-            }
             const setFocusedCusror = () => {
                 nextTick(() => {
                     inputRef?.value?.focus()
-                })
-            }
-
-            const inputChange = () => {
-                nextTick(() => {
-                    if (topPosShift.value !== container.value?.offsetHeight) {
-                        topPosShift.value = container.value?.offsetHeight
-                    }
                 })
             }
 
@@ -617,7 +584,6 @@
             }
 
             onMounted(() => {
-                topPosShift.value = container.value?.offsetHeight
                 observer.value = new ResizeObserver(onResize).observe(
                     container.value
                 )
@@ -630,11 +596,8 @@
                     containerPosition.value.left = viewportOffset?.left
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
-                nextTick(() => {
-                    initialRef.value?.focus()
-                })
                 document?.addEventListener('click', function (event) {
-                    let isClickInside = container.value.contains(event.target)
+                    let isClickInside = container.value?.contains(event.target)
                     if (!isClickInside) {
                         isClickInside =
                             event?.target?.classList?.contains('child_input')
@@ -669,9 +632,6 @@
                         containerPosition.value.left = viewportOffset?.left
                     if (viewportOffset?.height)
                         containerPosition.value.height = viewportOffset?.height
-                    if (topPosShift.value !== container.value?.offsetHeight) {
-                        topPosShift.value = container.value?.offsetHeight
-                    }
                 })
             })
             onUnmounted(() => {
@@ -685,34 +645,11 @@
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
 
-                        searchText: tableText.value,
+                        searchText: queryText.value,
                         tableQualifiedNamesContraint:
                             tableQualifiedNamesContraint.value,
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
             const clearAllSelected = () => {
@@ -723,38 +660,6 @@
                 '',
                 false
             )
-            watch(
-                () => activeInlineTab.value.playground.editor.context,
-                () => {
-                    replaceBody(getTableInitialBody())
-                },
-                {
-                    immediate: true,
-                }
-            )
-            watch(tableText, () => {
-                replaceBody(getTableInitialBody())
-            })
-
-            watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    tableQualifiedNamesContraint.value =
-                        allowedTablesInJoinSelector(
-                            panelIndex.value,
-                            rowIndex.value,
-                            subIndex.value,
-                            activeInlineTab.value
-                        )
-                    replaceBody(getTableInitialBody())
-                }
-            )
-
-            let tableSelected = ref(null)
-
-            watch(columnText, () => {
-                replaceBody(getColumnInitialBody(tableSelected?.value))
-            })
 
             const totalCount = computed(() => data.value?.approximateCount || 0)
 
@@ -796,46 +701,23 @@
                 if (item.typeName === 'Table') {
                     data = {
                         tableQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
-                        searchText: columnText.value,
+                        searchText: queryText.value,
                     }
                 }
                 return {
                     dsl: useBody(data),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
             const onSelectTable = (item, event) => {
-                // console.log('selected table: ', item)
                 tableSelected.value = item
+                isTableSelected.value = true
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()
@@ -843,7 +725,7 @@
                 return false
             }
             const onUnselectTable = (event) => {
-                tableSelected.value = null
+                isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceBody(getTableInitialBody())
                 event.stopPropagation()
@@ -853,12 +735,6 @@
             }
 
             const onSelectColumn = (item, event) => {
-                let qualifiedName = item?.qualifiedName.split('/')
-                let size = qualifiedName?.length
-                console.log(
-                    'name: ',
-                    `${qualifiedName[size - 2]}.${qualifiedName[size - 1]}`
-                )
                 selectedColumn.value = {
                     label: item.label,
                     type: item.type,
@@ -877,7 +753,6 @@
                 event.preventDefault()
                 isAreaFocused.value = false
                 return false
-                //activeInlineTab.value.playground.vqb.selectedTables
             }
 
             const placeholder = computed(() => {
@@ -908,19 +783,55 @@
                 event.preventDefault()
                 return false
             }
-            const cancelContainerBlur = (event) => {
-                event.stopPropagation()
-                event.preventDefault()
-                return false
-            }
+
+            watch(
+                () => activeInlineTab.value.playground.editor.context,
+                () => {
+                    replaceBody(getTableInitialBody())
+                },
+                {
+                    immediate: true,
+                }
+            )
+
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    tableQualifiedNamesContraint.value =
+                        allowedTablesInJoinSelector(
+                            panelIndex.value,
+                            rowIndex.value,
+                            subIndex.value,
+                            activeInlineTab.value
+                        )
+                    replaceBody(getTableInitialBody())
+                }
+            )
 
             watch(isAreaFocused, (newIsAreaFocused) => {
                 if (newIsAreaFocused) {
                     setFocusedCusror()
                 }
+                if (selectedColumn.value?.label && tableSelected?.value) {
+                    // retain column view
+                    isTableSelected.value = true
+                    // debugger
+                    replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else {
+                    replaceBody(getTableInitialBody())
+                }
+            })
+
+            watch(queryText, () => {
+                if (tableSelected.value) {
+                    replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else {
+                    replaceBody(getTableInitialBody())
+                }
             })
 
             return {
+                isTableSelected,
                 queryText,
                 container,
                 subIndex,
@@ -929,11 +840,9 @@
                 data,
                 isLoading,
                 tableDropdownOption,
-                tableText,
                 onSelectTable,
                 onUnselectTable,
                 tableSelected,
-                columnText,
                 columnDropdownOption,
                 onSelectColumn,
                 getEntityStatusIcon,
@@ -944,8 +853,6 @@
                 certificateStatus,
                 selectedColumn,
                 placeholder,
-                inputChange,
-                topPosShift,
                 inputRef,
                 inputValue1,
                 inputValue2,
@@ -953,11 +860,9 @@
                 handleMouseOver,
                 handleMouseOut,
                 findVisibility,
-                handleContainerBlur,
                 isAreaFocused,
                 getDataTypeImage,
                 containerPosition,
-                cancelContainerBlur,
             }
         },
     })

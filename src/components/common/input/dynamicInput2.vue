@@ -69,7 +69,6 @@
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
         :allow-clear="true"
-        :disabled-date="disabledDate"
         :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
         @change="handleInputChange"
     />
@@ -160,9 +159,9 @@
                 emit('change')
             }
 
-            const disabledDate = (current: Dayjs) =>
-                // Can not select days before today and today
-                current > dayjs().endOf('day')
+            // const disabledDate = (current: Dayjs) =>
+            //     // Can not select days before today and today
+            //     current > dayjs().endOf('day')
 
             const handleNumberKeyPress = (v) => {
                 if (
@@ -203,7 +202,7 @@
                 localValue,
                 handleInputChange,
                 dayjs,
-                disabledDate,
+                // disabledDate,
             }
         },
     })

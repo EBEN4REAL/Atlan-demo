@@ -111,7 +111,6 @@
                 isSelected,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

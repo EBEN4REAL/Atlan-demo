@@ -1,29 +1,28 @@
 <template>
     <div class="flex items-center justify-between">
-        <div class="flex flex-col">
-            <div>last run 2hrs ago</div>
-            <div class="flex items-center">
-                <div class="flex w-3 h-3 mr-1">
-                    <span
-                        class="absolute inline-flex w-4 h-4 -mt-0.5 -ml-0.5 rounded-full opacity-75 animate-ping bg-primary-focus"
-                    ></span>
-                    <span
-                        class="relative inline-flex w-3 h-3 rounded-full bg-primary"
-                    ></span>
-                </div>
-                Scheduled
+        <div class="flex-col flx">
+            <div class="text-sm text-gray-500">Latest run</div>
+            <div class="flex">
+                <div
+                    class="w-4 h-8 p-1 mr-1 bg-gray-200 rounded shadow-sm"
+                    :class="getRunClass(1)"
+                ></div>
+                <div>2hrs ago</div>
             </div>
         </div>
+        <div class="flex-col flx">
+            <div class="text-sm text-gray-500">Last 5 runs</div>
 
-        <div class="flex items-center gap-x-2">
-            <template v-for="index in 5" :key="index">
-                <a-tooltip>
-                    <div
-                        class="w-4 h-8 p-1 bg-gray-200 rounded shadow-sm"
-                        :class="getRunClass(index)"
-                    ></div>
-                </a-tooltip>
-            </template>
+            <div class="flex items-center gap-x-2">
+                <template v-for="index in 5" :key="index">
+                    <a-tooltip>
+                        <div
+                            class="w-4 h-8 p-1 bg-gray-200 rounded shadow-sm"
+                            :class="getRunClass(index)"
+                        ></div>
+                    </a-tooltip>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -65,12 +64,13 @@
                     } else if (tempPhase._source.status.phase === 'Failed') {
                         return 'bg-red-500'
                     } else if (tempPhase._source.status.phase === 'Running') {
-                        return 'bg-primary-focus animate-pulse'
+                        return 'bg-primary opacity-75 animate-pulse'
                     } else {
                         return 'bg-gray-200'
                     }
                 }
             }
+
             const getRunStatus = (index) => {
                 if (runs.value.length >= index) {
                     const tempPhase = runs.value[index - 1]

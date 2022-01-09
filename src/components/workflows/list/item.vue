@@ -74,6 +74,7 @@
                         <AtlanIcon icon="Info" class="ml-1"></AtlanIcon
                     ></a-tooltip>
                 </div>
+
                 <div class="flex text-gray-500">
                     {{ item.metadata.annotations['package.argoproj.io/name'] }}
                     ({{ item.metadata.labels['package.argoproj.io/version'] }})
@@ -82,6 +83,11 @@
         </div>
 
         <RunWidget :item="item" :runs="runs"></RunWidget>
+
+        <div class="flex items-center">
+            <AtlanIcon icon="Refresh" class="mr-1 -mt-0.5"></AtlanIcon>
+            {{ cronString }}
+        </div>
 
         <div class="mt-2">
             {{ item.metadata.name }}
@@ -92,6 +98,7 @@
 <script lang="ts">
     import { computed, defineComponent, inject, toRefs } from 'vue'
     import RunWidget from './run.vue'
+    import cronstrue from 'cronstrue'
 
     export default defineComponent({
         components: { RunWidget },
@@ -132,12 +139,26 @@
                 return runMap.value[item.value.metadata.name]
             })
 
+            const cron = computed(() => {
+                return item.value.metadata.annotations[
+                    'orchestration.atlan.com/schedule'
+                ]
+            })
+
+            const cronString = computed(() => {
+                if (cron.value) {
+                    return cronstrue.toString(cron.value)
+                }
+            })
+
             return {
                 item,
                 isSelected,
                 packageObject,
                 runMap,
                 runs,
+                cronString,
+                cron,
             }
         },
     })

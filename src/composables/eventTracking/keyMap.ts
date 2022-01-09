@@ -93,21 +93,21 @@ const keyMap = {
         },
         resource: {
             created: {
-                action: 'discovery_announcement_created',
+                action: 'discovery_resource_created',
                 properties: (props) => ({
                     domain: props.domain,
                     asset_type: props.asset_type,
                 }),
             },
             updated: {
-                action: 'discovery_announcement_updated',
+                action: 'discovery_resource_updated',
                 properties: (props) => ({
                     domain: props.domain,
                     asset_type: props.asset_type,
                 }),
             },
             deleted: {
-                action: 'discovery_announcement_deleted',
+                action: 'discovery_resource_deleted',
             },
         },
         search: {

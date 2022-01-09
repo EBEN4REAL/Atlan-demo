@@ -59,12 +59,12 @@ export function usePackageDiscoverList({
 
     watch(data, () => {
         if (offset?.value > 0) {
-            data.value?.hits.hits.forEach((item) => {
+            data.value?.hits?.hits.forEach((item) => {
                 list.value.push(item._source)
             })
-        } else if (data.value?.hits.hits) {
+        } else if (data.value?.hits?.hits) {
             const temp = []
-            data.value?.hits.hits.forEach((item) => {
+            data.value?.hits?.hits.forEach((item) => {
                 temp.push(item._source)
             })
             list.value = temp

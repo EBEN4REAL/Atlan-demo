@@ -10,10 +10,7 @@
             </keep-alive>
         </div>
 
-        <div
-            class="relative hidden bg-white asset-preview-container md:block"
-            v-else-if="!isItem"
-        >
+        <div class="relative hidden bg-white asset-preview-container md:block">
             <AssetPreview :selected-asset="localSelected"></AssetPreview>
         </div>
     </div>

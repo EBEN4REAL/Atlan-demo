@@ -39,9 +39,13 @@
             const { item, runs } = toRefs(props)
 
             const getRunClass = (index) => {
+                console.log(item.value.metadata.name)
+                console.log(runs)
                 if (runs.value.length >= index) {
                     const tempPhase = runs.value[index - 1]
 
+                    console.log(item.value.metadata.name)
+                    console.log(runs)
                     if (tempPhase._source.status.phase === 'Succeeded') {
                         return 'bg-green-500 opacity-75'
                     } else if (tempPhase._source.status.phase === 'Failed') {

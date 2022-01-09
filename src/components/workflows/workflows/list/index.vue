@@ -1,5 +1,5 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
+    <div class="grid w-full grid-cols-2 gap-4 grid-flow-cols auto-rows-min">
         <Item
             v-for="item in list"
             :key="item.name"

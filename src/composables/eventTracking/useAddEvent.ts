@@ -1,6 +1,8 @@
+import { watch } from 'vue'
 import keyMap from '~/composables/eventTracking/keyMap'
 import { useTenantStore } from '~/store/tenant'
 import { useAuthStore } from '~/store/auth'
+import { storeToRefs } from 'pinia'
 
 const useAddEvent = (category, obj, action, props = {}) => {
     if (!(window as any).analytics || !(window as any).analytics.track) {
@@ -42,7 +44,11 @@ export const useTrackPage = (category, name, props = {}) => {
     ;(window as any).analytics.page(category, name, props)
 }
 
-export const identifyUser = () => {
+const addDelay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
+
+export const identifyUser = async () => {
+    await addDelay(1500)
     const authStore = useAuthStore()
     if ((window as any).analytics) {
         if ((window as any).analytics.identify) {
@@ -58,7 +64,8 @@ export const identifyUser = () => {
     }
 }
 
-export const identifyGroup = () => {
+export const identifyGroup = async () => {
+    await addDelay(1500)
     if ((window as any).analytics) {
         const tenantStore = useTenantStore()
         const domain = window.location.host

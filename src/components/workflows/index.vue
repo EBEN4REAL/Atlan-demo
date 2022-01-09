@@ -1,24 +1,40 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full bg-primary-light">
         <div class="flex flex-1 w-full overflow-y-auto">
-            <div
-                class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
-            >
-                <PackageFilters
-                    :filter-list="packageFilters"
-                    v-model="facets"
-                    v-model:activeKey="activeKey"
-                    @change="handleFilterChange"
-                    @reset="handleResetEvent"
-                ></PackageFilters>
-            </div>
-
             <div class="flex flex-col flex-1 h-full">
+                <div class="flex items-center justify-between px-6 py-6">
+                    <a-radio-group
+                        button-style="solid"
+                        v-model:value="discoveryType"
+                    >
+                        <a-radio-button value="packages"
+                            >Packages</a-radio-button
+                        >
+                        <a-radio-button value="workflows"
+                            >Workflows</a-radio-button
+                        >
+                    </a-radio-group>
+                    <a-button type="primary">New Workflow</a-button>
+                </div>
                 <div
-                    class="flex flex-col px-6 py-3 pb-4 font-extrabold focus-within:text-2xl"
+                    class="flex px-6 pb-4 font-extrabold gap-x-3 focus-within:text-2xl"
                 >
+                    <a-popover placement="bottomRight">
+                        <template #content>
+                            <PackageFilters
+                                :filter-list="packageFilters"
+                                v-model="facets"
+                                v-model:activeKey="activeKey"
+                                @change="handleFilterChange"
+                                @reset="handleResetEvent"
+                            ></PackageFilters>
+                        </template>
+                        <a-button
+                            ><AtlanIcon icon="Filter" class="mr-1"></AtlanIcon
+                            >Filter</a-button
+                        >
+                    </a-popover>
                     <a-input
-                        size="large"
                         v-model:value="queryText"
                         placeholder="Search Packages"
                         @change="handleSearchChange"
@@ -26,7 +42,7 @@
                 </div>
 
                 <div class="flex h-full overflow-y-auto">
-                    <div
+                    <!-- <div
                         class="flex items-center justify-center w-full"
                         v-if="isLoading"
                     >
@@ -46,15 +62,20 @@
                             desc="No packages found"
                             empty-screen="WFEmptyTab"
                         ></EmptyView>
-                    </div>
+                    </div> -->
 
-                    <WorkflowList
-                        v-else
+                    <PackageWiseDiscovery
+                        v-if="discoveryType === 'packages'"
+                    ></PackageWiseDiscovery>
+                    <WorkflowWiseDiscovery
+                        v-if="discoveryType === 'workflows'"
+                    ></WorkflowWiseDiscovery>
+                    <!-- <WorkflowList
                         :list="list"
-                        :packageList="packageList"
                         class="px-6 mb-4"
                         @select="handleSelect"
                     ></WorkflowList>
+                    {{ packageListFromWorkflows }} -->
                 </div>
             </div>
         </div>
@@ -65,216 +86,174 @@
     import { defineComponent, ref, computed, watch, provide } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-    import WorkflowList from '@/workflows/list/index.vue'
+
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { useDebounceFn } from '@vueuse/core'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+
+    import PackageWiseDiscovery from '~/components/workflows/package/index.vue'
+    import WorkflowWiseDiscovery from '~/components/workflows/workflows/index.vue'
 
     export default defineComponent({
-        name: 'PackageDiscovery',
+        name: 'WorkflowDiscovery',
         components: {
             PackageFilters,
-            WorkflowList,
+
             ErrorView,
             EmptyView,
-        },
-        props: {
-            initialFilters: {
-                type: Object,
-                required: false,
-            },
-            showAggrs: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
-            staticUse: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
+            PackageWiseDiscovery,
+            WorkflowWiseDiscovery,
         },
         emits: ['setup', 'sandbox', 'select'],
         setup(props, { emit }) {
-            const limit = ref(20)
-            const offset = ref(0)
-            const queryText = ref('')
-            const facets = ref({
-                ui: true,
-            })
-
-            const preference = ref({
-                sort: 'metadata.creationTimestamp-desc',
-            })
-
             const activeKey = ref(['sourceCategory_0'])
 
-            const dependentKey = ref('DEFAULT_PACKAGES')
+            const discoveryType = ref('packages')
 
-            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            // const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            // const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
-            const handleSetup = (item) => {
-                emit('setup', selectedPackage.value)
-            }
-            const handleSetupSandbox = (item) => {
-                emit('sandbox', selectedPackage.value)
-            }
+            // const handleSetup = (item) => {
+            //     emit('setup', selectedPackage.value)
+            // }
+            // const handleSetupSandbox = (item) => {
+            //     emit('sandbox', selectedPackage.value)
+            // }
 
-            const { isLoading, list, error, quickChange } =
-                useWorkflowDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    facets,
-                    limit,
-                    offset,
-                    queryText,
-                    source: ref({
-                        excludes: ['spec'],
-                    }),
-                    preference,
-                })
-
-            const packageList = ref([])
-            const dependentKeyPackage = ref('')
-            const facetPackage = ref({})
-            const packageLimit = ref(20)
-            const packageOffset = ref(0)
-
-            watch(list, () => {
-                const map = list.value.map((i) => {
-                    return i?.metadata.annotations['package.argoproj.io/name']
-                })
-                const dedup = [...new Set(map)]
-
-                const existingPackageList = packageList.value.map((i) => {
-                    return i?.metadata.annotations['package.argoproj.io/name']
-                })
-
-                const newPackageList = dedup.filter((i) => {
-                    return !existingPackageList.includes(i)
-                })
-
-                if (newPackageList.length > 0) {
-                    packageLimit.value = newPackageList.length
-                    facetPackage.value = {
-                        packageNames: newPackageList,
-                    }
-                    quickChangePackage()
-                }
-                facetRun.value = {
-                    workflowTemplates: list.value.map(
-                        (item) => item.metadata.name
-                    ),
-                }
-                quickChangeRun()
-            })
-
-            const { quickChange: quickChangePackage, list: packageFetchList } =
-                usePackageDiscoverList({
-                    isCache: false,
-                    dependentKey: dependentKeyPackage,
-                    facets: facetPackage,
-                    limit: packageLimit,
-                    offset: packageOffset,
-                })
-
-            watch(packageFetchList, () => {
-                packageList.value = packageList.value.concat(
-                    packageFetchList.value
-                )
-            })
-
-            const dependentKeyRun = ref('')
-            const facetRun = ref({})
-            const aggregationRun = ref(['status'])
-            const { quickChange: quickChangeRun, runByWorkflowMap } =
-                useRunDiscoverList({
-                    isCache: false,
-                    dependentKey: dependentKeyRun,
-                    facets: facetRun,
-                    limit: ref(0),
-                    offset,
-                    aggregations: aggregationRun,
-                    queryText,
-                    source: ref({
-                        excludes: ['spec'],
-                    }),
-                    preference,
-                })
-
-            provide('runMap', runByWorkflowMap)
-            // watch(list, () => {
-            //     console.log('changed list')
-            //     facetRun.value = {
-            //         workflowTemplates: list.value.map(
-            //             (item) => item.metadata.name
-            //         ),
-            //     }
-            //     quickChangeRun()
+            // const limit = ref(0)
+            // const offset = ref(0)
+            // const queryText = ref('')
+            // const facets = ref({
+            //     ui: true,
+            // })
+            // const dependentKey = ref('DEFAULT_PACKAGES')
+            // const aggregationWorkflow = ref(['package'])
+            // const {
+            //     isLoading,
+            //     error,
+            //     quickChange,
+            //     packageList: packageListFromWorkflows,
+            // } = useWorkflowDiscoverList({
+            //     isCache: true,
+            //     dependentKey,
+            //     facets,
+            //     limit,
+            //     offset,
+            //     queryText,
+            //     source: ref({
+            //         excludes: ['spec'],
+            //     }),
+            //     aggregations: aggregationWorkflow,
             // })
 
-            const handleFilterChange = () => {
-                offset.value = 0
+            // const packageList = ref([])
+            // const dependentKeyPackage = ref('')
+            // const facetPackage = ref({})
+            // const packageLimit = ref(20)
+            // const packageOffset = ref(0)
+            // const preference = ref({
+            //     sort: 'metadata.creationTimestamp-desc',
+            // })
 
-                quickChange()
-            }
+            // watch(packageListFromWorkflows, () => {
+            //     const map = Object.keys(packageListFromWorkflows.value)
 
-            const placeholder = computed(() => 'Search all packages')
+            //     // const dedup = [...new Set(map)]
+            //     // const existingPackageList = packageList.value.map((i) => {
+            //     //     return i?.metadata.annotations['package.argoproj.io/name']
+            //     // })
+            //     // const newPackageList = dedup.filter((i) => {
+            //     //     return !existingPackageList.includes(i)
+            //     // })
+            //     facetPackage.value = {
+            //         packageNames: map,
+            //     }
+            //     quickChangePackage()
+            //     // }
+            //     // facetRun.value = {
+            //     //     workflowTemplates: list.value.map(
+            //     //         (item) => item.metadata.name
+            //     //     ),
+            //     // }
+            //     // quickChangeRun()
+            // })
 
-            const selectedPackage = ref<any>(null)
+            // const { quickChange: quickChangePackage, list } =
+            //     usePackageDiscoverList({
+            //         isCache: false,
+            //         dependentKey: dependentKeyPackage,
+            //         facets: facetPackage,
+            //         limit: packageLimit,
+            //         offset: packageOffset,
+            //     })
 
-            const handleSelect = (item) => {
-                selectedPackage.value = item
-                emit('select', item)
-            }
+            // // watch(packageFetchList, () => {
+            // //     packageList.value = packageList.value.concat(
+            // //         packageFetchList.value
+            // //     )
+            // // })
 
-            const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                quickChange()
-            }, 150)
+            // const dependentKeyRun = ref('')
+            // const facetRun = ref({})
+            // const aggregationRun = ref(['status'])
+            // const { quickChange: quickChangeRun, runByWorkflowMap } =
+            //     useRunDiscoverList({
+            //         isCache: false,
+            //         dependentKey: dependentKeyRun,
+            //         facets: facetRun,
+            //         limit: ref(0),
+            //         offset,
+            //         aggregations: aggregationRun,
+            //         queryText,
+            //         source: ref({
+            //             excludes: ['spec'],
+            //         }),
+            //         preference,
+            //     })
 
-            const handleResetEvent = () => {
-                facets.value = {
-                    verified: true,
-                }
-                queryText.value = ''
-                handleFilterChange()
-                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
-            }
+            // provide('runMap', runByWorkflowMap)
+            // // watch(list, () => {
+            // //     console.log('changed list')
+            // //     facetRun.value = {
+            // //         workflowTemplates: list.value.map(
+            // //             (item) => item.metadata.name
+            // //         ),
+            // //     }
+            // //     quickChangeRun()
+            // // })
+
+            // const handleFilterChange = () => {
+            //     offset.value = 0
+
+            //     quickChange()
+            // }
+
+            // const placeholder = computed(() => 'Search all packages')
+
+            // const selectedPackage = ref<any>(null)
+
+            // const handleSelect = (item) => {
+            //     selectedPackage.value = item
+            //     emit('select', item)
+            // }
+
+            // const handleSearchChange = useDebounceFn(() => {
+            //     offset.value = 0
+            //     quickChange()
+            // }, 150)
+
+            // const handleResetEvent = () => {
+            //     facets.value = {
+            //         verified: true,
+            //     }
+            //     queryText.value = ''
+            //     handleFilterChange()
+            //     dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            //     searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            // }
 
             return {
-                placeholder,
-                dirtyTimestamp,
-                searchDirtyTimestamp,
-                isLoading,
-                list,
-                handleSelect,
-                selectedPackage,
-                queryText,
-                error,
                 packageFilters,
-                facets,
-                handleSetupSandbox,
-                handleSetup,
-                handleFilterChange,
-                handleSearchChange,
-                activeKey,
-                handleResetEvent,
-                preference,
-                quickChangeRun,
-                dependentKeyPackage,
-                facetPackage,
-                quickChangePackage,
-                packageLimit,
-                packageOffset,
-                packageFetchList,
-                packageList,
-                runByWorkflowMap,
+                discoveryType,
             }
         },
     })

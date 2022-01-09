@@ -12,7 +12,8 @@ export function usePackageBody(
     offset?: any,
     limit?: any,
     facets?: Record<string, any>,
-    preference?: Record<string, any>
+    preference?: Record<string, any>,
+    aggregations?: string[]
 ) {
     const base = bodybuilder()
 
@@ -211,10 +212,45 @@ export function usePackageBody(
         }
     })
 
+    if (aggregations) {
+        aggregations?.forEach((mkey) => {
+            switch (mkey) {
+                case 'package': {
+                    base.rawOption('aggs', {
+                        by_package: {
+                            nested: {
+                                path: 'metadata',
+                            },
+                            aggs: {
+                                by_package: {
+                                    terms: {
+                                        field: 'metadata.annotations.package.argoproj.io/name.keyword',
+                                        size: 200,
+                                    },
+                                    aggs: {
+                                        by_package: {
+                                            terms: {
+                                                field: 'metadata.name.keyword',
+                                                size: 200,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    })
+
+                    break
+                }
+            }
+        })
+    }
+
     const tempQuery = base.build()
 
     const query = {
         ...tempQuery,
     }
+
     return query
 }

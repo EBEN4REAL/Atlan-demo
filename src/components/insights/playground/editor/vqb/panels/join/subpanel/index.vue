@@ -238,7 +238,6 @@
                 t = copySelectedTables.filter(
                     (selectedTable) => !addedBy.includes(selectedTable.addedBy)
                 )
-                debugger
                 selectedTables.value = t
                 subpanels.value.splice(index, 1)
             }

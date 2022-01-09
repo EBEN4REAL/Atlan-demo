@@ -59,6 +59,21 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'prefix': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'spec',
+                            ...bodybuilder()
+                                .query(
+                                    'prefix',
+                                    'spec.workflowTemplateRef.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {
@@ -464,7 +479,7 @@ export function useRunBody(
                                             aggs: {
                                                 top_hits_by_status: {
                                                     top_hits: {
-                                                        size: 5,
+                                                        size: 3,
                                                         sort: [
                                                             {
                                                                 'status.startedAt':

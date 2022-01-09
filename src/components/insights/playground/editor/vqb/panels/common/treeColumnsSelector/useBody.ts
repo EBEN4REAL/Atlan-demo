@@ -44,12 +44,54 @@ export default function useBody({
     if (!tableQualifiedName && !viewQualifiedName) {
         switch (context?.attributeName) {
             case 'connectionQualifiedName': {
-                base.filter(
-                    'term',
-                    context.attributeName,
-                    context.attributeValue
-                )
-                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length > 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.filter('terms', 'qualifiedName', [
+                        ...tableQualifiedNamesContraint?.allowed,
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length > 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.notFilter(
+                        'terms',
+                        'qualifiedName',
+                        tableQualifiedNamesContraint?.notAllowed
+                    )
+                }
                 base.sort([
                     {
                         'name.keyword': {
@@ -60,12 +102,54 @@ export default function useBody({
                 break
             }
             case 'databaseQualifiedName': {
-                base.filter(
-                    'term',
-                    context.attributeName,
-                    context.attributeValue
-                )
-                base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+                if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length > 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length === 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.filter('terms', 'qualifiedName', [
+                        ...tableQualifiedNamesContraint?.allowed,
+                    ])
+                } else if (
+                    tableQualifiedNamesContraint?.allowed?.length === 0 &&
+                    tableQualifiedNamesContraint?.notAllowed?.length > 0
+                ) {
+                    base.filter(
+                        'term',
+                        context.attributeName,
+                        context.attributeValue
+                    )
+                    base.filter('terms', '__typeName.keyword', [
+                        'Table',
+                        'View',
+                    ])
+                    base.notFilter(
+                        'terms',
+                        'qualifiedName',
+                        tableQualifiedNamesContraint?.notAllowed
+                    )
+                }
                 base.sort([
                     {
                         'name.keyword': {

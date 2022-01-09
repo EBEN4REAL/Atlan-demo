@@ -17,3 +17,8 @@ export function isFunction(fun: any): boolean {
 export function isString(text: any): boolean {
     return !isNil(text) && (typeof text === 'string' || text instanceof String)
 }
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+export function isFloat(number: any): boolean {
+    return !isNil(number) && (Number(number) === number && number % 1 !== 0);
+}
+

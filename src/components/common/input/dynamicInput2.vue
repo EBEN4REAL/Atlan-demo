@@ -114,6 +114,7 @@
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
+    import { isFloat } from '~/utils/checkType'
 
     dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
@@ -175,8 +176,25 @@
                 )
                 const n = parseInt(v.key, 10)
                 if (Number.isNaN(n)) {
-                    if (allowDecimal && v.key === '.') return
-                    if (v.key !== 'Tab') v.preventDefault()
+                    // * if dataType is decimal then allow '.' only one time
+                    if (
+                        allowDecimal &&
+                        typeof localValue.value === 'number' &&
+                        v.key === '.' &&
+                        !isFloat(localValue.value)
+                    )
+                        return
+                    if (
+                        ![
+                            'Tab',
+                            'Backspace',
+                            'ArrowDown',
+                            'ArrowUp',
+                            'Enter',
+                        ].includes(v.key) &&
+                        !v.metaKey
+                    )
+                        v.preventDefault()
                 }
             }
 

@@ -10,7 +10,7 @@
         :class="[
             isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
             ,
-            'flex flex-wrap items-center  rounded selector-height px-3',
+            'flex flex-wrap items-center  rounded selector-height pl-3',
         ]"
         @click.stop="() => {}"
     >

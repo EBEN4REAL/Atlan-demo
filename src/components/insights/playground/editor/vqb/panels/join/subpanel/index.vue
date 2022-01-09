@@ -6,7 +6,7 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="w-full p-3 mb-3 border border-gray-300 rounded grid-container"
+                    class="w-full p-2 rounded grid-container"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
@@ -57,16 +57,16 @@
                             "
                         />
                         <AtlanIcon
-                            v-if="isSubpanelClosable(subpanels)"
-                            @click.stop="() => handleDelete(index)"
+                            v-if="index !== 0"
+                            @click="() => handleDelete(index)"
                             icon="Close"
                             style="min-width: 26px"
-                            class="w-6 h-6 text-gray-500 ml-2.5 mt-0.5 cursor-pointer ml-auto"
+                            class="w-6 h-6 text-gray-500 ml-2 mt-0.5 cursor-pointer"
                             :class="`opacity-${
                                 hoverItem === subpanel.id ? 100 : 0
                             }`"
                         />
-                        <div style="width: 32px" v-else></div>
+                        <div style="width: 34px" v-else></div>
                     </div>
                 </div>
             </template>
@@ -238,6 +238,7 @@
                 t = copySelectedTables.filter(
                     (selectedTable) => !addedBy.includes(selectedTable.addedBy)
                 )
+                debugger
                 selectedTables.value = t
                 subpanels.value.splice(index, 1)
             }
@@ -293,7 +294,7 @@
     .item-1 {
         grid-column-start: 1;
         grid-column-end: 2;
-        width: 186px;
+        width: 126px;
     }
     .item-2 {
         flex: 0.5;

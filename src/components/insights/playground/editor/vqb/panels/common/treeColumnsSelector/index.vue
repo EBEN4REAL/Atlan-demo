@@ -787,7 +787,10 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 () => {
-                    replaceBody(getTableInitialBody())
+                    if (selectedColumn.value?.label && tableSelected?.value) {
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
                 },
                 {
                     immediate: true,
@@ -804,7 +807,11 @@
                             subIndex.value,
                             activeInlineTab.value
                         )
-                    replaceBody(getTableInitialBody())
+
+                    if (selectedColumn.value?.label && tableSelected?.value) {
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
                 }
             )
 

@@ -59,7 +59,7 @@
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto scrollheight"
             :style="
-                isProfile
+                isProfile || $route?.params?.id
                     ? 'max-height: calc(100vh - 7rem)'
                     : 'max-height: calc(100vh - 12rem)'
             "

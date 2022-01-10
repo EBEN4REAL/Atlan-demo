@@ -42,14 +42,9 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
         },
         setup(props) {
-            const { asset, editPermission } = toRefs(props)
+            const { asset } = toRefs(props)
             const { title } = useAssetInfo()
 
             const visible = ref<boolean>(false)
@@ -62,9 +57,7 @@
             }
 
             const showModal = async () => {
-                if (editPermission?.value) {
-                    visible.value = true
-                }
+                visible.value = true
             }
 
             return {

@@ -63,6 +63,7 @@ export const userColumns = [
         ascOrderString: `Sort by name (A-Z)`,
         descOrderString: `Sort by name (Z-A)`,
         sorter: true,
+        fixed: 'left',
     },
     {
         title: 'Role',

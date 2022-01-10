@@ -9,13 +9,17 @@
         <template #default="{ item, isSelected }">
             <div class="flex items-center">
                 <CustomMetadataAvatar
-                    class="mr-1"
+                    class="mr-2"
                     :metadata="item"
                     size="16px"
                 />
                 <p
-                    class="w-full pr-2 m-0 overflow-hidden text-sm leading-none truncate"
-                    :class="isSelected ? 'text-primary' : 'text-gray'"
+                    class="w-full pr-1 m-0 overflow-hidden text-sm leading-none"
+                    :class="
+                        isSelected
+                            ? 'text-primary font-semibold'
+                            : 'text-gray hover:text-primary hover:font-semibold'
+                    "
                 >
                     <Truncate :tooltipText="item.displayName" />
                 </p>

@@ -35,7 +35,7 @@
                             >
                         </div>
                         <template #overlay>
-                            <a-menu class="pb-1">
+                            <a-menu class="py-1" :class="$style.ctaDropdown">
                                 <a-menu-item
                                     key="0"
                                     v-if="hasWritePermission"
@@ -46,7 +46,7 @@
                                             )
                                     "
                                 >
-                                    <div class="flex items-center">
+                                    <div class="flex items-center px-4 h-9">
                                         <!-- <AtlanIcon
                                             icon="NewQuery"
                                             color="#5277D7"
@@ -60,7 +60,7 @@
                                     @click="createFolderInput"
                                     v-if="hasWritePermission"
                                 >
-                                    <div class="flex items-center">
+                                    <div class="flex items-center px-4 h-9">
                                         <!-- <AtlanIcon
                                             color="#5277D7"
                                             icon="NewFolder"
@@ -73,7 +73,7 @@
                                     key="1"
                                     @click="toggleCollectionModal"
                                 >
-                                    <div class="flex items-center">
+                                    <div class="flex items-center px-4 h-9">
                                         <!-- <AtlanIcon
                                             icon="CollectionIconSmall"
                                             class="h-4 mr-2 outline-none hover:text-primary"
@@ -1201,7 +1201,7 @@
     }
 </style>
 
-<style lang="css" module>
+<style lang="less" module>
     .inputSearch {
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
         background-color: #fff !important;
@@ -1220,6 +1220,12 @@
         border: 1px solid #e6e6eb;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
+    }
+
+    .ctaDropdown {
+        :global(.ant-dropdown-menu-item) {
+            padding: 0;
+        }
     }
 </style>
 

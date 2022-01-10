@@ -37,7 +37,7 @@
                     attributes: activeInlineTab?.attributes,
                 }"
                 mouseEnterDelay="0.6"
-                placement="right"
+                placement="bottomLeft"
                 v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
             >
                 <template #extraHeaders>

@@ -23,16 +23,27 @@
         <template #content>
             <div class="p-3">
                 <div class="flex flex-col gap-y-4">
-                    <Condition
+                    <template
                         v-for="(condition, index) in localValue"
                         :key="`${index}_${dirtyTimestamp}`"
-                        :index="index"
-                        :attribute="attribute"
-                        :condition="condition"
-                        @change="handleChangeCondition"
-                        @clear="handleRemove(index)"
-                    />
+                    >
+                        <Condition
+                            :index="index"
+                            :attribute="attribute"
+                            :condition="condition"
+                            @change="handleChangeCondition"
+                            @clear="handleRemove(index)"
+                        />
+                        <div
+                            v-if="index !== localValue.length - 1"
+                            class="flex text-gray-500"
+                        >
+                            AND
+                            <div class="w-full h-0 my-auto ml-2 border-b"></div>
+                        </div>
+                    </template>
                 </div>
+
                 <a-divider v-if="attribute.typeName !== 'boolean'" class="my-2">
                     <a-button size="small" @click="handleAdd">
                         <AtlanIcon

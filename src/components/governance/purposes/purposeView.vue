@@ -51,8 +51,8 @@
                                 class="text-sm capitalize truncate"
                                 :class="
                                     isSelected
-                                        ? 'text-primary'
-                                        : 'text-gray hover:text-primary'
+                                        ? 'text-primary font-semibold'
+                                        : 'text-gray-700 hover:text-primary hover:font-semibold'
                                 "
                             >
                                 {{ item.displayName }}
@@ -60,7 +60,7 @@
                             <div class="flex gap-x-1">
                                 <span
                                     v-if="item.tags.length > 0"
-                                    class="text-xs text-gray-500"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{ item.tags.length }}
                                     classifications</span
@@ -71,7 +71,7 @@
                                         item.dataPolicies.length > 0 ||
                                         item.metadataPolicies.length > 0
                                     "
-                                    class="text-xs text-gray-500"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{
                                         item.metadataPolicies.length +

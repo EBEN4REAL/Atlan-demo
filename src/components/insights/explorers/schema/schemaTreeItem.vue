@@ -1324,6 +1324,7 @@
                                             tableData: {
                                                 certificateStatus: undefined,
                                                 assetType: undefined,
+                                                item: {},
                                             },
                                             columnsData: [],
                                         },

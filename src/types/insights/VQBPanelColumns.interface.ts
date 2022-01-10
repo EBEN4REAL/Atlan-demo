@@ -7,6 +7,7 @@ export interface SubpanelColumn {
     tableData: {
         certificateStatus: string | undefined
         assetType: string | undefined
+        item: Object
     }
 }
 export interface VQBPanelColumnsInterface {

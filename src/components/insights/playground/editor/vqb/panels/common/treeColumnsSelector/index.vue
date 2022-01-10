@@ -328,8 +328,8 @@
                                                 (e) => onSelectColumn(item, e)
                                             "
                                             :class="
-                                                selectedColumn?.label ===
-                                                item.label
+                                                selectedColumn?.columnQualifiedName ===
+                                                item.qualifiedName
                                                     ? 'bg-primary-light'
                                                     : 'bg-white'
                                             "
@@ -373,8 +373,8 @@
                                                     icon="Check"
                                                     class="ml-2 text-primary parent-ellipsis-container-base"
                                                     v-if="
-                                                        selectedColumn?.label ===
-                                                        item.label
+                                                        selectedColumn?.columnQualifiedName ===
+                                                        item.qualifiedName
                                                     "
                                                 />
                                                 <div

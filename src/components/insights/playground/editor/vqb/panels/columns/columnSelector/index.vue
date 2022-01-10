@@ -252,6 +252,7 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     import {
         InternalAttributes,
@@ -294,6 +295,9 @@
                 required: false,
                 default: () => true,
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
+            },
             selectedTableData: {
                 type: Object as PropType<{
                     certificateStatus: string | undefined
@@ -303,8 +307,12 @@
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll, selectedTableData } =
-                toRefs(props)
+            const {
+                tableQualfiedName,
+                showSelectAll,
+                selectedTableData,
+                selectedTablesQualifiedNames,
+            } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const observer = ref()
@@ -387,12 +395,27 @@
             }
 
             const getInitialBody = () => {
+                let data = {
+                    searchText: queryText.value,
+                    assetType: selectedTableData.value?.assetType,
+                }
+                if (
+                    activeInlineTab.value.playground.vqb?.panels[0]
+                        ?.subpanels[0]?.tableData?.assetType === 'View'
+                ) {
+                    data.viewQualifiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                } else {
+                    data.tableQualfiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                }
+
                 return {
-                    dsl: useBody({
-                        searchText: queryText.value,
-                        tableQualfiedName: tableQualfiedName.value,
-                        assetType: selectedTableData.value?.assetType,
-                    }),
+                    dsl: useBody(data),
                     attributes: [
                         'name',
                         'displayName',

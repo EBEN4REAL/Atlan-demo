@@ -3,6 +3,9 @@ import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
+import { useConnectionStore } from '~/store/connection'
+
 import { Ref } from 'vue'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
@@ -53,6 +56,17 @@ export function getTableName(columnQualifiedName: string) {
     }
     return ''
 }
+const getConnectionName = (attributeValue) => {
+    let newValue = ''
+    let newValueArr = attributeValue.split('/')
+    // default/snowflake/1242
+    newValue = `${newValueArr[0]}/${newValueArr[1]}/${newValueArr[2]}`
+    const connStore = useConnectionStore()
+    const found = connStore.getList.find(
+        (conn) => conn.attributes.qualifiedName === newValue
+    )
+    return found?.attributes?.name || ''
+}
 
 export function generateSQLQuery(
     activeInlineTab: activeInlineTabInterface,
@@ -62,6 +76,9 @@ export function generateSQLQuery(
     }
 ) {
     const { getTableNameFromTableQualifiedName } = useUtils()
+    const { getDatabaseName, getSchemaName } = useConnector()
+
+    const context = activeInlineTab.playground.editor.context
 
     const select = squel.select()
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
@@ -84,18 +101,43 @@ export function generateSQLQuery(
         (panel) => panel.id.toLowerCase() === 'join'
     )
 
+    function getContext(qualifiedName) {
+        let contextPrefix = ''
+        /*_______________CONTEXT_______ */
+        if (context.attributeName === 'connectionQualifiedName') {
+            contextPrefix += `"${
+                getDatabaseName(qualifiedName ?? '') ?? ''
+            }"."${getSchemaName(qualifiedName ?? '') ?? ''}"`
+        }
+        if (context.attributeName === 'databaseQualifiedName') {
+            contextPrefix += `"${getSchemaName(qualifiedName ?? '') ?? ''}"`
+        }
+        return contextPrefix
+        /* _______________________________ */
+    }
+
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
 
     if (columnPanel?.hide) {
         columnPanel?.subpanels.forEach((subpanel, i) => {
             if (i == 0) {
+                let contextPrefix = ''
+                contextPrefix = getContext(
+                    columnPanel?.subpanels[0]?.tableQualfiedName ?? ''
+                )
+
                 if (subpanel.tableQualfiedName) {
-                    const tableName = getTableNameFromTableQualifiedName(
+                    let tableName = getTableNameFromTableQualifiedName(
                         subpanel.tableQualfiedName
                     )
                     if (tableName) {
-                        select.from(`"${tableName}"`)
+                        // if context is set
+                        if (contextPrefix !== '') {
+                            select.from(`${contextPrefix}."${tableName}"`)
+                        } else {
+                            select.from(`"${tableName}"`)
+                        }
                     }
                 }
 
@@ -108,13 +150,28 @@ export function generateSQLQuery(
                 ) {
                     groupPanel?.subpanels[0]?.columnsData?.forEach(
                         (columnData) => {
+                            let contextPrefix = ''
+                            contextPrefix = getContext(
+                                columnData.columnsQualifiedName ??
+                                    columnData?.qualifiedName ??
+                                    columnData?.columnQualifiedName ??
+                                    ''
+                            )
+
                             _addAggregatorGroup = true
                             const tableName = getTableName(
                                 columnData.columnsQualifiedName ??
                                     columnData?.qualifiedName ??
                                     columnData?.columnQualifiedName
                             )
-                            select.field(`${tableName}."${columnData.label}"`)
+                            if (contextPrefix !== '') {
+                                select.field(
+                                    `${contextPrefix}.${tableName}."${columnData.label}"`
+                                )
+                            } else
+                                select.field(
+                                    `${tableName}."${columnData.label}"`
+                                )
                         }
                     )
                 }
@@ -142,6 +199,13 @@ export function generateSQLQuery(
     if (aggregatePanel?.hide) {
         aggregatePanel?.subpanels.forEach((subpanel, i) => {
             subpanel.aggregators.forEach((aggregator: string) => {
+                let contextPrefix = ''
+                contextPrefix = getContext(
+                    subpanel.column?.qualifiedName ??
+                        subpanel.column?.columnsQualifiedName ??
+                        subpanel.column?.columnQualifiedName ??
+                        ''
+                )
                 const aggregatorUpperCase = aggregator.toUpperCase()
                 const tableName = getTableName(
                     subpanel.column?.qualifiedName ??
@@ -152,17 +216,39 @@ export function generateSQLQuery(
                 // console.log(aggregatorUpperCase, 'fxn')
                 if (aggregatorUpperCase === 'UNIQUE') {
                     if (aggregatorUpperCase && tableName && columnName) {
-                        select.field(
-                            `COUNT (DISTINCT ${tableName}."${columnName}")`,
-                            aggregatedAliasMap[aggregatorUpperCase](columnName)
-                        )
+                        if (contextPrefix !== '') {
+                            select.field(
+                                `COUNT (DISTINCT ${contextPrefix}.${tableName}."${columnName}")`,
+                                aggregatedAliasMap[aggregatorUpperCase](
+                                    columnName
+                                )
+                            )
+                        } else {
+                            select.field(
+                                `COUNT (DISTINCT ${tableName}."${columnName}")`,
+                                aggregatedAliasMap[aggregatorUpperCase](
+                                    columnName
+                                )
+                            )
+                        }
                     }
                 } else {
                     if (aggregatorUpperCase && tableName && columnName) {
-                        select.field(
-                            `${aggregatorUpperCase} (${tableName}."${columnName}")`,
-                            aggregatedAliasMap[aggregatorUpperCase](columnName)
-                        )
+                        if (contextPrefix !== '') {
+                            select.field(
+                                `${aggregatorUpperCase} (${contextPrefix}.${tableName}."${columnName}")`,
+                                aggregatedAliasMap[aggregatorUpperCase](
+                                    columnName
+                                )
+                            )
+                        } else {
+                            select.field(
+                                `${aggregatorUpperCase} (${tableName}."${columnName}")`,
+                                aggregatedAliasMap[aggregatorUpperCase](
+                                    columnName
+                                )
+                            )
+                        }
                     }
                 }
             })
@@ -182,7 +268,20 @@ export function generateSQLQuery(
                         subpanel.column?.columnQualifiedName
                 )
                 if (tableName && columnData?.label) {
-                    select.group(`${tableName}."${columnData.label}"`)
+                    let contextPrefix = ''
+                    contextPrefix = getContext(
+                        columnData.columnsQualifiedName ??
+                            subpanel.column?.qualifiedName ??
+                            subpanel.column?.columnQualifiedName ??
+                            ''
+                    )
+                    if (contextPrefix !== '') {
+                        select.group(
+                            `${contextPrefix}.${tableName}."${columnData.label}"`
+                        )
+                    } else {
+                        select.group(`${tableName}."${columnData.label}"`)
+                    }
                 }
             })
         })
@@ -194,6 +293,13 @@ export function generateSQLQuery(
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
+            let contextPrefix = ''
+            contextPrefix = getContext(
+                subpanel.column?.qualifiedName ??
+                    subpanel.column?.columnsQualifiedName ??
+                    subpanel.column?.columnQualifiedName ??
+                    ''
+            )
 
             if (subpanel.aggregateORGroupColumn?.active === false) {
                 if (subpanel.column.label) {
@@ -204,17 +310,31 @@ export function generateSQLQuery(
                     )
 
                     if (tableName && subpanel.column?.label && order) {
-                        select.order(
-                            `${tableName}."${subpanel.column.label}"`,
-                            order
-                        )
+                        if (contextPrefix !== '') {
+                            select.order(
+                                `${contextPrefix}.${tableName}."${subpanel.column.label}"`,
+                                order
+                            )
+                        } else {
+                            select.order(
+                                `${tableName}."${subpanel.column.label}"`,
+                                order
+                            )
+                        }
                     }
                 }
             } else {
-                select.order(
-                    `"${subpanel.aggregateORGroupColumn?.label}"`,
-                    order
-                )
+                if (contextPrefix !== '') {
+                    select.order(
+                        `${contextPrefix}."${subpanel.aggregateORGroupColumn?.label}"`,
+                        order
+                    )
+                } else {
+                    select.order(
+                        `"${subpanel.aggregateORGroupColumn?.label}"`,
+                        order
+                    )
+                }
             }
         })
         // console.log(select.toString(), 'select.toString()')
@@ -355,16 +475,42 @@ export function generateSQLQuery(
 
         join?.subpanels.forEach((subpanel, i) => {
             // leftColumnName = "TABLENAME"."COLUMNNAME"
-            const leftColumnName = getJoinFormattedColumnName(
+
+            let leftColumnName = getJoinFormattedColumnName(
                 subpanel.columnsDataLeft?.columnQualifiedName ?? ''
             )
-            const rightColumnName = getJoinFormattedColumnName(
+            let rightColumnName = getJoinFormattedColumnName(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
             // leftTableName = "TABLENAME"
-            const rightTableName = getTableName(
+            let rightTableName = getTableName(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
+
+            let leftColumnContextPrefix = ''
+            leftColumnContextPrefix = getContext(
+                subpanel.columnsDataLeft?.columnQualifiedName ?? ''
+            )
+            if (leftColumnContextPrefix !== '') {
+                leftColumnName = `${leftColumnContextPrefix}.${leftColumnName}`
+            }
+
+            let rightColumnContextPrefix = ''
+            rightColumnContextPrefix = getContext(
+                subpanel.columnsDataRight?.columnQualifiedName ?? ''
+            )
+            if (rightColumnContextPrefix !== '') {
+                rightColumnName = `${leftColumnContextPrefix}.${rightColumnName}`
+            }
+
+            let rightTableContextPrefix = ''
+            rightTableContextPrefix = getContext(
+                subpanel.columnsDataRight?.columnQualifiedName ?? ''
+            )
+            if (rightColumnContextPrefix !== '') {
+                rightTableName = `${rightTableContextPrefix}.${rightTableName}`
+            }
+
             if (leftColumnName && rightTableName && rightColumnName) {
                 switch (subpanel.joinType.type) {
                     case 'inner_join': {

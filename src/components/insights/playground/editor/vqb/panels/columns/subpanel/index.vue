@@ -113,6 +113,7 @@
                     copySubPanel.tableData = {
                         certificateStatus: undefined,
                         assetType: undefined,
+                        item: {},
                     }
 
                     subpanels.value[index] = copySubPanel

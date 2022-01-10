@@ -149,6 +149,7 @@ export function useSavedQuery(
                                           tableData: {
                                               certificateStatus: undefined,
                                               assetType: undefined,
+                                              item: {},
                                           },
                                           columnsData: [],
                                       },

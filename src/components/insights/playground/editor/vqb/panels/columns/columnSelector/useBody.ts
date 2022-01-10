@@ -4,6 +4,7 @@ interface useBodyProps {
     from?: number
     limit?: number
     tableQualfiedName?: string | undefined
+    viewQualifiedName?: string | undefined
     searchText?: string | undefined
     assetType: string | undefined
 }
@@ -13,6 +14,7 @@ export default function useBody({
     tableQualfiedName,
     searchText,
     assetType,
+    viewQualifiedName,
 }: useBodyProps) {
     const base = bodybuilder()
 
@@ -38,7 +40,11 @@ export default function useBody({
                 base.filter('term', 'tableQualifiedName', tableQualfiedName)
             }
         }
+    } else if (viewQualifiedName) {
+        base.filter('term', 'viewQualifiedName', viewQualifiedName)
+        base.filter('term', '__typeName.keyword', 'Column')
     }
+
     base.filter('term', '__typeName.keyword', 'Column')
     const tempQuery = base.build()
     const query = {

@@ -339,6 +339,7 @@
         onMounted,
         onUpdated,
         onUnmounted,
+        Ref,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -354,8 +355,9 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-
+    import AtlanBtn from '~/components/UI/button.vue'
     import useBody from './useBody'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Table Selector',
@@ -364,6 +366,7 @@
             Loader,
             ColumnKeys,
             PopoverAsset,
+            AtlanBtn,
         },
         props: {
             selectedColumn: {
@@ -419,6 +422,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -491,7 +501,7 @@
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     columnCount: ls.attributes?.columnCount,
-                    qualifiedName: ls.attributes.qualifiedName,
+                    qualifiedName: ls.attributes?.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
                     item: ls,
@@ -505,14 +515,14 @@
             const columnDropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
-                    qualifiedName: ls.attributes.qualifiedName,
-                    type: ls.attributes.dataType,
+                    qualifiedName: ls.attributes?.qualifiedName,
+                    type: ls.attributes?.dataType,
                     attributes: ls.attributes,
-                    order: ls.attributes.order,
+                    order: ls.attributes?.order,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
                     isPartition: ls.attributes?.isPartition,
-                    value: ls.attributes.qualifiedName,
+                    value: ls.attributes?.qualifiedName,
                     item: ls,
                 }))
 
@@ -545,6 +555,7 @@
                 // console.log('selected table: ', item)
                 tableSelected.value = item
                 replaceBody(getColumnInitialBody(item))
+                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -557,6 +568,7 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                     )
                 )
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const onSelectColumn = (item) => {
@@ -567,6 +579,7 @@
                     columnQualifiedName: item.qualifiedName,
                 }
                 emit('change', item.qualifiedName)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const placeholder = computed(() => {
@@ -598,6 +611,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 selectedColumnsData.value = selectedColumnsDataCopy
+                updateVQB(activeInlineTabKey, inlineTabs)
                 setFocusedCusror()
             }
 
@@ -832,6 +846,8 @@
                 selectedItems.value = []
                 map.value = {}
                 selectedColumnsData.value = []
+                updateVQB(activeInlineTabKey, inlineTabs)
+
                 console.log(map.value, 'destroy')
             }
             const actionClick = (event, t) => {

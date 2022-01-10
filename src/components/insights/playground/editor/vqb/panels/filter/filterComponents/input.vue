@@ -38,9 +38,13 @@
         computed,
         toRaw,
         onUnmounted,
+        ComputedRef,
+        inject,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs from 'dayjs'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -67,6 +71,16 @@
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
             const localeValue: Ref<any> = ref(inputValue.value)
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             watch(
                 [selectedFilter],
                 () => {
@@ -92,6 +106,7 @@
                 } else if (type == 'number') {
                     inputValue.value = event
                 }
+                // updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             return {

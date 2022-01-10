@@ -252,8 +252,9 @@
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-
+    import AtlanBtn from '~/components/UI/button.vue'
     import useBody from './useBody'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -262,6 +263,7 @@
             Loader,
             TablesTree,
             PopoverAsset,
+            AtlanBtn,
         },
         emits: ['update:modelValue', 'change', 'update:selectedTableData'],
 
@@ -309,6 +311,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -399,7 +408,7 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     columnCount: ls.attributes?.columnCount,
                     certificateStatus: ls.attributes.certificateStatus,
-                    value: ls.attributes.qualifiedName,
+                    value: ls.attributes?.qualifiedName,
                     item: ls,
                 }))
                 return data
@@ -441,6 +450,7 @@
                 copySelectedTableData.assetType = assetType(item)
                 emit('update:selectedTableData', copySelectedTableData)
                 isAreaFocused.value = false
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -503,6 +513,7 @@
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             onMounted(() => {

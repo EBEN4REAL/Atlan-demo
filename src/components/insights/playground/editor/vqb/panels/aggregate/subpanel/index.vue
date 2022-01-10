@@ -83,6 +83,7 @@
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -117,11 +118,22 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const columnName = ref('Hello World')
             const columnType = ref('char')
             const selectedTables = computed(() => {
                 return activeInlineTab.value.playground.vqb.selectedTables
             })
+
+            const { updateVQB } = useVQB()
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -159,10 +171,13 @@
                 })
                 subpanels.value = copySubPanels
 
+                updateVQB(activeInlineTabKey, inlineTabs)
+
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const changeColumn = (column) => {

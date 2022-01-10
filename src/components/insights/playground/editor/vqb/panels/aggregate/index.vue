@@ -329,13 +329,15 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            watch(
-                activeInlineTab,
-                () => {
-                    console.log('updated data: ', activeInlineTab.value)
-                },
-                { immediate: true }
-            )
+            // watch(
+            //     activeInlineTab.value.playground.vqb?.panels[index.value]
+            //         ?.subpanels,
+            //     (state, prev) => {
+            //         activeInlineTab.value.isSaved = false
+            //         console.log('vqb update: ')
+            //     },
+            //     { deep: true }
+            // )
 
             return {
                 isChecked,

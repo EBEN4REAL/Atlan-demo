@@ -220,6 +220,15 @@
                 }
             )
 
+            // watch(
+            //     activeInlineTab.value.playground.vqb.panels[index.value]
+            //         .subpanels,
+            //     () => {
+            //         activeInlineTab.value.isSaved = false
+            //     },
+            //     { deep: true }
+            // )
+
             const checkbox = ref(true)
             const { deletePanelsInVQB, handleAdd } = useVQB()
 

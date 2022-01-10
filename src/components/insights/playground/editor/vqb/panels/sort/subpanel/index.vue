@@ -28,6 +28,7 @@
                         v-model:active="subpanel.order"
                         class="mr-auto"
                         :data="tabConfig"
+                        @update:active="updateData"
                     />
 
                     <AtlanIcon
@@ -78,6 +79,9 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+
     export default defineComponent({
         name: 'Sub panel',
         components: {
@@ -113,6 +117,16 @@
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             watch(columnName, () => {
                 if (!columnName.value) {
                     selectedAggregates.value = []
@@ -147,11 +161,13 @@
                     order: 'asc',
                 })
                 subpanels.value = copySubPanels
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const changeColumn = (column) => {
@@ -163,6 +179,10 @@
                 { key: 'asc', label: 'ASC' },
                 { key: 'desc', label: 'DESC' },
             ])
+
+            const updateData = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
 
             // const selectedOrder = ref('asc')
 
@@ -182,6 +202,7 @@
                 hoverItem,
                 // selectedOrder,
                 tabConfig,
+                updateData,
             }
         },
     })

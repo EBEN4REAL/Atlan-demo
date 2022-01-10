@@ -1,9 +1,9 @@
 <template>
     <div
-        class="flex items-center justify-between px-2 py-1 mb-1 rounded hover:border-primary hover:bg-primary-light"
+        class="flex items-center justify-between px-2 py-1 mb-1 rounded hover:border-primary hover:bg-primary-menu"
         :class="
             activeProperty === attribute.name
-                ? 'outline-primary bg-primary-light'
+                ? 'outline-primary bg-primary-menu'
                 : ''
         "
     >

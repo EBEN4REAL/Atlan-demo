@@ -842,16 +842,24 @@
                     isTableSelected.value = true
                     // debugger
                     replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else if (
+                    !selectedColumn.value?.label &&
+                    tableSelected.value
+                ) {
+                    isTableSelected.value = false
+                    replaceBody(getTableInitialBody())
                 } else {
                     replaceBody(getTableInitialBody())
                 }
             })
 
-            watch(queryText, () => {
-                if (selectedColumn.value?.label && isTableSelected?.value) {
-                    replaceBody(getColumnInitialBody(tableSelected?.value))
-                } else {
-                    replaceBody(getTableInitialBody())
+            watch(queryText, (newQueryText) => {
+                if (newQueryText !== '') {
+                    if (selectedColumn.value?.label && isTableSelected?.value) {
+                        replaceBody(getColumnInitialBody(tableSelected?.value))
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
                 }
             })
 

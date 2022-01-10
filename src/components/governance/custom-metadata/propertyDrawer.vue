@@ -10,7 +10,7 @@
             :body-style="{ display: 'flex', 'flex-direction': 'column' }"
         >
             <div class="flex items-center justify-between px-3 py-4 border-b">
-                <div>
+                <div class="w-full">
                     <p class="text-gray-500">Property</p>
                     <p class="text-xl">
                         <Truncate

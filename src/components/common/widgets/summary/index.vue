@@ -116,6 +116,7 @@
                         :selected-asset="asset"
                         :edit-permission="false"
                         :in-profile="true"
+                        :show-add-btn="false"
                         @change="handleOwnersChange"
                     />
                 </div>

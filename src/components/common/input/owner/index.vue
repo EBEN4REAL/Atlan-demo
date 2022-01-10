@@ -30,6 +30,7 @@
                 :mouse-enter-delay="0.5"
             >
                 <a-button
+                    v-if="showAddBtn"
                     :disabled="!editPermission"
                     shape="circle"
                     size="small"
@@ -157,6 +158,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            showAddBtn: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

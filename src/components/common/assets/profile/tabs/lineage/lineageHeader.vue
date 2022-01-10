@@ -1,95 +1,29 @@
 <template>
     <div class="lineage-control header">
         <div class="controls">
-            <div class="flex items-center cursor-pointer">
+            <div
+                class="flex items-center control-item"
+                @click="showSearch = !showSearch"
+            >
                 <a-tooltip placement="top">
                     <template #title>
                         <span>search graph</span>
                     </template>
                     <AtlanIcon
                         icon="Search"
-                        :class="showSearch ? 'mr-2' : 'mr-5'"
-                        class="outline-none"
-                        @click="showSearch = !showSearch"
+                        class="mx-1 my-2 outline-none"
                     ></AtlanIcon>
                 </a-tooltip>
-                <LineageSearch v-if="showSearch" />
             </div>
-            <div class="cursor-pointer">
-                <a-tooltip placement="top">
-                    <template #title>
-                        <span>filter graph</span>
-                    </template>
-                    <a-dropdown :trigger="['click']">
-                        <AtlanIcon
-                            icon="Filter"
-                            class="mr-5 outline-none"
-                        ></AtlanIcon>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in lineageDirections"
-                                    :key="item.id"
-                                >
-                                    <a-radio
-                                        :value="item.id"
-                                        :checked="direction === item.id"
-                                        @change="onChangeDirection"
-                                    >
-                                        {{
-                                            item.id === 'BOTH'
-                                                ? 'Both Direction'
-                                                : item.label
-                                        }}</a-radio
-                                    >
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                </a-tooltip>
-            </div>
-            <div class="cursor-pointer">
-                <a-tooltip placement="top">
-                    <template #title>
-                        <span>change depth</span>
-                    </template>
-                    <a-dropdown :trigger="['click']">
-                        <span
-                            class="flex items-center inline-block mr-3 text-gray-500"
-                        >
-                            {{ currDepth }}
-                            <AtlanIcon
-                                icon="CaretRight"
-                                class="ml-1 transform rotate-90 outline-none"
-                            ></AtlanIcon>
-                        </span>
-                        <template #overlay>
-                            <a-menu class="lineage-header-menu">
-                                <a-menu-item
-                                    v-for="item in lineageDepths"
-                                    :key="item.id"
-                                    :class="{
-                                        'ant-dropdown-menu-item-activee':
-                                            depth === item.id,
-                                    }"
-                                    @click="onChangeDepth(item.id)"
-                                >
-                                    {{ item.label }}
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                </a-tooltip>
-            </div>
-            <a-divider type="vertical" />
-            <div class="cursor-pointer" @click="onShowImpactedAssets()">
+            <LineageSearch v-if="showSearch" />
+            <div class="control-item" @click="onShowImpactedAssets()">
                 <a-tooltip placement="top">
                     <template #title>
                         <span> show impacted assets </span>
                     </template>
                     <AtlanIcon
                         icon="ImpactedAssets"
-                        class="ml-3 outline-none"
+                        class="outline-none"
                         :class="
                             isLeafNode || !highlightedNode
                                 ? 'text-gray-500 cursor-not-allowed'
@@ -131,19 +65,10 @@
         },
         emits: ['show-process', 'show-impacted-assets', 'show-add-lineage'],
         setup(props, { emit }) {
-            /** INJECTIONS */
-            const control = inject('control')
-            const depth = inject('depth')
-            const direction = inject('direction')
-            const lineageDepths = inject('lineageDepths')
-            const lineageDirections = inject('lineageDirections')
-
             /** DATA */
             const { highlightedNode, baseEntityGuid, graph } = toRefs(props)
             const showSearch = ref(false)
-            const currDepth = computed(
-                () => lineageDepths.find((x) => x.id === depth.value)?.label
-            )
+
             const isLeafNode = computed(() => {
                 const id = highlightedNode.value || baseEntityGuid.value
                 const cell = graph.value.getCellById(id)
@@ -158,48 +83,12 @@
                 emit('show-impacted-assets')
             }
 
-            // onChangeDirection
-            const onChangeDirection = (e) => {
-                control('direction', e.target.value)
-            }
-
-            // onChangeDepth
-            const onChangeDepth = (d) => {
-                control('depth', d)
-            }
-
             return {
                 isLeafNode,
                 emit,
-                currDepth,
-                depth,
-                direction,
-                control,
                 showSearch,
-                lineageDepths,
-                lineageDirections,
                 onShowImpactedAssets,
-                onChangeDirection,
-                onChangeDepth,
             }
         },
     })
 </script>
-
-<style lang="less">
-    .cyclic-pill {
-        background: #ffe6eb;
-        padding: 0 8px;
-        border-radius: 15px;
-    }
-
-    .lineage-header-menu {
-        .ant-dropdown-menu-item-activee {
-            background-color: #eaf0ff !important;
-        }
-
-        .ant-dropdown-menu-item:hover {
-            background-color: #f8f8fd;
-        }
-    }
-</style>

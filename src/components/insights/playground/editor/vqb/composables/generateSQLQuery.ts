@@ -177,19 +177,24 @@ export function generateSQLQuery(
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
-            if (subpanel.column.label) {
-                const tableName = getTableName(
-                    subpanel.column?.qualifiedName ??
-                        subpanel.column?.columnsQualifiedName ??
-                        subpanel.column?.columnQualifiedName
-                )
 
-                if (tableName && subpanel.column?.label && order) {
-                    select.order(
-                        `${tableName}."${subpanel.column.label}"`,
-                        order
+            if (subpanel.aggregateORGroupColumn?.active === false) {
+                if (subpanel.column.label) {
+                    const tableName = getTableName(
+                        subpanel.column?.qualifiedName ??
+                            subpanel.column?.columnsQualifiedName ??
+                            subpanel.column?.columnQualifiedName
                     )
+
+                    if (tableName && subpanel.column?.label && order) {
+                        select.order(
+                            `${tableName}."${subpanel.column.label}"`,
+                            order
+                        )
+                    }
                 }
+            } else {
+                select.order(subpanel.aggregateORGroupColumn?.label, order)
             }
         })
         // console.log(select.toString(), 'select.toString()')

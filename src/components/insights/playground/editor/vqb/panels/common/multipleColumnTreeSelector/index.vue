@@ -352,10 +352,8 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
+
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
     import useBody from './useBody'
 
@@ -450,36 +448,15 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames
                             ?.filter((x) => x !== null || undefined)
                             .map((t) => t.tableQualifiedName),
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
@@ -560,36 +537,16 @@
                 }
                 return {
                     dsl: useBody(data),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
             const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()

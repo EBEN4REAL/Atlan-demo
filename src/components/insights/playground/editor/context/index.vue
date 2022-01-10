@@ -318,7 +318,21 @@
                         >
                             <template #title>
                                 {{
-                                    editorContentSelectionState
+                                    activeInlineTab?.playground.resultsPane
+                                        ?.result?.runQueryId &&
+                                    !activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                        ? 'Abort Query'
+                                        : activeInlineTab?.playground
+                                              .resultsPane?.result
+                                              ?.runQueryId &&
+                                          activeInlineTab?.playground
+                                              ?.resultsPane?.result
+                                              ?.buttonDisable
+                                        ? 'Aborting query'
+                                        : isQueryRunning === 'loading'
+                                        ? 'Running query'
+                                        : editorContentSelectionState
                                         ? 'Run selected'
                                         : 'Run query'
                                 }}

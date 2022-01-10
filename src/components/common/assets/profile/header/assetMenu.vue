@@ -91,7 +91,6 @@
                     @click="closeMenu"
                     ><AnnouncementModal
                         :updating="announcementTitle(asset) ? true : false"
-                        :edit-permission="editPermission"
                         :asset="asset"
                         ><template #trigger>
                             <div class="flex items-center">

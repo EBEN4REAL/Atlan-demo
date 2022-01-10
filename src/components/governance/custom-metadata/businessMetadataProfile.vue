@@ -21,7 +21,7 @@
                 <MetadataHeaderButton
                     :metadata="localBm"
                     :allow-delete="allowDelete"
-                    :assetCount="assetCount"
+                    :asset-count="assetCount"
                 />
             </div>
         </div>
@@ -103,8 +103,8 @@
                     v-else
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @remove-property="handleRemoveAttribute"
                     :selected="selected"
+                    @remove-property="handleRemoveAttribute"
                     @open-edit-drawer="openEdit"
                 />
             </div>

@@ -98,23 +98,40 @@ export function generateSQLQuery(
                         select.from(`"${tableName}"`)
                     }
                 }
-                if (!subpanel.columns.includes('all')) {
-                    subpanel.columnsData.forEach((column) => {
-                        const tableName = getTableNameFromTableQualifiedName(
-                            subpanel.tableQualfiedName
-                        )
-                        select.field(`"${tableName}"."${column.label}"`)
+
+                /* GROUP PANEL */
+                let _addAggregatorGroup = false
+
+                if (
+                    groupPanel?.subpanels[0]?.columnsData?.length > 0 &&
+                    groupPanel?.hide
+                ) {
+                    groupPanel?.subpanels[0]?.columnsData?.forEach(
+                        (columnData) => {
+                            _addAggregatorGroup = true
+                            const tableName = getTableName(
+                                columnData.columnsQualifiedName ??
+                                    columnData?.qualifiedName ??
+                                    columnData?.columnQualifiedName
+                            )
+                            select.field(`${tableName}."${columnData.label}"`)
+                        }
+                    )
+                }
+
+                /* AGGREGATE PANEL LOOPING for checking if there are aggregators for select field */
+                if (
+                    aggregatePanel?.subpanels?.length > 0 &&
+                    aggregatePanel?.hide
+                ) {
+                    aggregatePanel?.subpanels?.forEach((subpanel) => {
+                        subpanel?.aggregators?.forEach((aggregator) => {
+                            _addAggregatorGroup = true
+                        })
                     })
-                } else {
-                    if (
-                        aggregatePanel?.subpanels?.length > 0 &&
-                        aggregatePanel?.subpanels[0]?.column?.label &&
-                        aggregatePanel?.subpanels[0]?.aggregators?.length > 0 &&
-                        aggregatePanel?.subpanels[0]?.aggregators[0]
-                    ) {
-                    } else {
-                        select.field('*')
-                    }
+                }
+                if (!_addAggregatorGroup) {
+                    select.field('*')
                 }
             }
         })
@@ -177,19 +194,27 @@ export function generateSQLQuery(
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
-            if (subpanel.column.label) {
-                const tableName = getTableName(
-                    subpanel.column?.qualifiedName ??
-                        subpanel.column?.columnsQualifiedName ??
-                        subpanel.column?.columnQualifiedName
-                )
 
-                if (tableName && subpanel.column?.label && order) {
-                    select.order(
-                        `${tableName}."${subpanel.column.label}"`,
-                        order
+            if (subpanel.aggregateORGroupColumn?.active === false) {
+                if (subpanel.column.label) {
+                    const tableName = getTableName(
+                        subpanel.column?.qualifiedName ??
+                            subpanel.column?.columnsQualifiedName ??
+                            subpanel.column?.columnQualifiedName
                     )
+
+                    if (tableName && subpanel.column?.label && order) {
+                        select.order(
+                            `${tableName}."${subpanel.column.label}"`,
+                            order
+                        )
+                    }
                 }
+            } else {
+                select.order(
+                    `"${subpanel.aggregateORGroupColumn?.label}"`,
+                    order
+                )
             }
         })
         // console.log(select.toString(), 'select.toString()')

@@ -195,9 +195,10 @@
             })
 
             watch(modelValue, (cur) => {
-                selectedTab.value = cur
-                onTabChange()
-                // emit('change', selectedTab.value)
+                if (selectedTab.value !== cur) {
+                    selectedTab.value = cur
+                    onTabChange()
+                }
             })
 
             return {

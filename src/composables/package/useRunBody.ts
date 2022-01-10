@@ -29,7 +29,7 @@ export function useRunBody(
         Object.keys(facets ?? {}).forEach((mkey) => {
             const filterObject = facets[mkey]
             switch (mkey) {
-                case 'templateName': {
+                case 'workflowTemplate': {
                     if (filterObject) {
                         base.andFilter('nested', {
                             path: 'spec',
@@ -51,6 +51,21 @@ export function useRunBody(
                             ...bodybuilder()
                                 .query(
                                     'terms',
+                                    'spec.workflowTemplateRef.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'prefix': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'spec',
+                            ...bodybuilder()
+                                .query(
+                                    'prefix',
                                     'spec.workflowTemplateRef.name.keyword',
                                     filterObject
                                 )
@@ -464,7 +479,7 @@ export function useRunBody(
                                             aggs: {
                                                 top_hits_by_status: {
                                                     top_hits: {
-                                                        size: 5,
+                                                        size: 3,
                                                         sort: [
                                                             {
                                                                 'status.startedAt':
@@ -593,6 +608,24 @@ export function useRunBody(
     //         },
     //     },
     // }
+
+    Object.keys(preference ?? {}).forEach((mkey) => {
+        const filterObject = preference[mkey]
+        switch (mkey) {
+            case 'sort': {
+                if (filterObject !== 'default') {
+                    const split = filterObject.split('-')
+                    if (split.length > 1) {
+                        base.sort(split[0], {
+                            order: split[1],
+                            nested_path: 'metadata',
+                        })
+                    }
+                }
+                break
+            }
+        }
+    })
 
     return base.build()
 }

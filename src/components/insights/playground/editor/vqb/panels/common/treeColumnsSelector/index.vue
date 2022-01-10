@@ -103,12 +103,13 @@
 
         <teleport to="body">
             <div
+                tabindex="-1"
                 v-if="isAreaFocused"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
                 :class="[
-                    'absolute z-10  py-4 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10  py-4 overflow-auto bg-white rounded custom-shadow position dropdown-container',
                 ]"
             >
                 <div>
@@ -132,7 +133,8 @@
                     </div>
 
                     <div
-                        :class="['flex  justify-center overflow-auto w-full']"
+                        tabindex="-1"
+                        :class="['flex  justify-center  overflow-auto w-full']"
                         style="height: 250px"
                     >
                         <Loader
@@ -142,8 +144,9 @@
 
                         <!--  Multiple table column selection-->
                         <div
-                            class="w-full"
+                            class="w-full dropdown-container"
                             style="height: 250px"
+                            tabindex="-1"
                             :class="[
                                 tableDropdownOption.length === 0
                                     ? 'flex justify-center items-center'
@@ -598,9 +601,16 @@
                     containerPosition.value.height = viewportOffset?.height
                 document?.addEventListener('click', function (event) {
                     let isClickInside = container.value?.contains(event.target)
+
                     if (!isClickInside) {
                         isClickInside =
                             event?.target?.classList?.contains('child_input')
+                    }
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains(
+                                'dropdown-container'
+                            )
                     }
 
                     if (!isClickInside) {
@@ -644,6 +654,8 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNamesContraint:
@@ -702,11 +714,15 @@
                     data = {
                         tableQualifiedName: item?.qualifiedName,
                         searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
                         searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
                     }
                 }
                 return {
@@ -718,10 +734,12 @@
             const onSelectTable = (item, event) => {
                 tableSelected.value = item
                 isTableSelected.value = true
+                queryText.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()
                 setFocusedCusror()
+
                 return false
             }
             const onUnselectTable = (event) => {
@@ -756,7 +774,7 @@
             }
 
             const placeholder = computed(() => {
-                let data = !tableSelected.value?.qualifiedName
+                let data = !isTableSelected.value
                     ? `Select from ${totalCount.value} tables`
                     : `Select from ${totalCount.value} columns`
 
@@ -824,16 +842,24 @@
                     isTableSelected.value = true
                     // debugger
                     replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else if (
+                    !selectedColumn.value?.label &&
+                    tableSelected.value
+                ) {
+                    isTableSelected.value = false
+                    replaceBody(getTableInitialBody())
                 } else {
                     replaceBody(getTableInitialBody())
                 }
             })
 
-            watch(queryText, () => {
-                if (tableSelected.value) {
-                    replaceBody(getColumnInitialBody(tableSelected?.value))
-                } else {
-                    replaceBody(getTableInitialBody())
+            watch(queryText, (newQueryText) => {
+                if (newQueryText !== '') {
+                    if (selectedColumn.value?.label && isTableSelected?.value) {
+                        replaceBody(getColumnInitialBody(tableSelected?.value))
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
                 }
             })
 

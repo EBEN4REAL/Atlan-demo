@@ -230,7 +230,7 @@
                     <div
                         class="w-full"
                         v-if="
-                            !tableSelected?.qualifiedName &&
+                            !isTableSelected &&
                             !isLoading &&
                             selectedTablesQualifiedNames.length >= 2
                         "
@@ -331,7 +331,7 @@
                     <div
                         class="w-full"
                         v-if="
-                            tableSelected?.qualifiedName &&
+                            isTableSelected &&
                             !isLoading &&
                             selectedTablesQualifiedNames.length >= 2
                         "
@@ -499,10 +499,7 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
     import useBody from './useBody'
 
@@ -550,6 +547,7 @@
                 top: undefined,
                 left: undefined,
             })
+            const isTableSelected = ref(false)
             const queryText = ref('')
             const { selectedItem } = useVModels(props)
 
@@ -612,40 +610,30 @@
             const getInitialBody = (
                 selectedTablesQualifiedNames: selectedTables[]
             ) => {
-                // FIXME: it can be a viewQualifiedName,
+                /* IMP: If the selection is viewQualifiedName then set it as view */
+
+                let data = {
+                    searchText: queryText.value,
+                    context: activeInlineTab.value.playground.editor.context,
+                }
+                if (
+                    activeInlineTab.value.playground.vqb?.panels[0]
+                        ?.subpanels[0]?.tableData?.assetType === 'View'
+                ) {
+                    data.viewQualifiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                } else {
+                    data.tableQualfiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                }
+
                 return {
-                    dsl: useBody({
-                        searchText: queryText.value,
-                        tableQualfiedName:
-                            selectedTablesQualifiedNames?.length > 0
-                                ? selectedTablesQualifiedNames[0]
-                                      .tableQualifiedName
-                                : tableQualfiedName.value,
-                    }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    dsl: useBody(data),
+                    attributes: attributes,
                 }
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -823,30 +811,7 @@
                 }
                 return {
                     dsl: useBody(data),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
@@ -855,39 +820,15 @@
             ) => {
                 return {
                     dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames
                             ?.filter((x) => x !== null || undefined)
                             .map((t) => t.tableQualifiedName),
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
@@ -937,14 +878,14 @@
                     return `Search from ${totalCount.value} columns`
                 }
                 if (
-                    !tableSelected.value &&
+                    !isTableSelected.value &&
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
                     return `Search from ${totalCount.value} tables`
                 }
                 if (
-                    tableSelected.value &&
+                    isTableSelected.value &&
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
@@ -955,14 +896,18 @@
 
             const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
+                isTableSelected.value = true
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()
                 return false
             }
             const onUnselectTable = (event) => {
-                tableSelected.value = null
+                isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceBody(
                     getTableInitialBody(
@@ -1000,9 +945,12 @@
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
-                    if (tableSelected?.value)
+                    if (selectedItem.value?.label && tableSelected?.value) {
+                        // retain column view
+                        isTableSelected.value = true
+                        // debugger
                         replaceBody(getColumnInitialBody(tableSelected?.value))
-                    else {
+                    } else {
                         replaceBody(
                             getTableInitialBody(
                                 activeInlineTab.value.playground.vqb
@@ -1037,12 +985,21 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1
                     ) {
-                        replaceBody(
-                            getTableInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables
+                        if (selectedItem.value?.label && tableSelected?.value) {
+                            // retain column view
+                            isTableSelected.value = true
+                            // debugger
+                            replaceBody(
+                                getColumnInitialBody(tableSelected?.value)
                             )
-                        )
+                        } else {
+                            replaceBody(
+                                getTableInitialBody(
+                                    activeInlineTab.value.playground.vqb
+                                        .selectedTables
+                                )
+                            )
+                        }
                     }
                 },
                 { immediate: true }
@@ -1053,18 +1010,27 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1
                     ) {
-                        tableSelected.value = null
-                        replaceBody(
-                            getTableInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables
+                        if (selectedItem.value?.label && tableSelected?.value) {
+                            // retain column view
+                            isTableSelected.value = true
+                            // debugger
+                            replaceBody(
+                                getColumnInitialBody(tableSelected?.value)
                             )
-                        )
+                        } else {
+                            replaceBody(
+                                getTableInitialBody(
+                                    activeInlineTab.value.playground.vqb
+                                        .selectedTables
+                                )
+                            )
+                        }
                     }
                 }
             })
 
             return {
+                isTableSelected,
                 containerPosition,
                 initialRef,
                 queryText,

@@ -15,6 +15,7 @@
         ref,
         watch,
         nextTick,
+        onMounted,
     } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
@@ -109,6 +110,7 @@
                     handlePreview(list.value[0])
                 }
             })
+
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
             })
@@ -124,8 +126,15 @@
             })
 
             watch(profileActiveTab, () => {
-                console.log('profileActiveTab', profileActiveTab.value)
-                sendPageTrack()
+                if (profileActiveTab.value) {
+                    sendPageTrack()
+                }
+            })
+
+            onMounted(() => {
+                if (!isLoading.value) {
+                    sendPageTrack()
+                }
             })
 
             return {

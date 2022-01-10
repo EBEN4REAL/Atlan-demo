@@ -19,7 +19,19 @@ const keyMap = {
         asset_card: {
             clicked: {
                 action: 'discovery_asset_card_clicked',
-                properties: (props) => ({ click_index: props.click_index }),
+                properties: (props) => ({
+                    click_index: props.click_index,
+                    keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
+            },
+        },
+        asset_sidebar: {
+            tab_changed: {
+                action: 'discovery_asset_sidebar_tab_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    tab_name: props.tab_name,
+                }),
             },
         },
         metadata: {
@@ -79,13 +91,17 @@ const keyMap = {
         announcement: {
             created: {
                 action: 'discovery_announcement_created',
-                // properties: (props) => ({
-                //     create_more: !!props.create_more,
-                // asset_type: props.asset_type,
-                // }),
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
+                }),
             },
             updated: {
                 action: 'discovery_announcement_updated',
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
+                }),
             },
             deleted: {
                 action: 'discovery_announcement_deleted',
@@ -132,22 +148,10 @@ const keyMap = {
                 }),
             },
         },
-        saved_search: {
-            deleted: {
-                action: 'discovery_saved_search_deleted',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            clicked: {
-                action: 'discovery_saved_search_clicked',
-                properties: (props) => ({ facets: props.facets }),
-            },
+        readme: {
             updated: {
-                action: 'discovery_saved_search_updated',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            created: {
-                action: 'discovery_saved_search_created',
-                properties: (props) => ({ facets: props.facets }),
+                action: 'discovery_readme_updated',
+                properties: (props) => ({ asset_type: props.asset_type }),
             },
         },
     },

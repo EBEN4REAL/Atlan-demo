@@ -1,28 +1,14 @@
 <template>
-    <div class="flex items-center justify-between">
-        <div class="flex-col flx">
-            <div class="text-sm text-gray-500">Latest run</div>
-            <div class="flex">
-                <div
-                    class="w-4 h-8 p-1 mr-1 bg-gray-200 rounded shadow-sm"
-                    :class="getRunClass(1)"
-                ></div>
-                <div>2hrs ago</div>
-            </div>
-        </div>
-        <div class="flex-col flx">
-            <div class="text-sm text-gray-500">Last 5 runs</div>
-
-            <div class="flex items-center gap-x-2">
-                <template v-for="index in 5" :key="index">
-                    <a-tooltip>
-                        <div
-                            class="w-4 h-8 p-1 bg-gray-200 rounded shadow-sm"
-                            :class="getRunClass(index)"
-                        ></div>
-                    </a-tooltip>
-                </template>
-            </div>
+    <div class="flex-col">
+        <div class="flex items-center gap-x-1">
+            <template v-for="index in 3" :key="index">
+                <a-tooltip>
+                    <div
+                        class="w-2 h-6 p-1 bg-gray-200 rounded shadow-sm"
+                        :class="getRunClass(index)"
+                    ></div>
+                </a-tooltip>
+            </template>
         </div>
     </div>
 </template>
@@ -30,6 +16,7 @@
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import cronstrue from 'cronstrue'
 
     export default defineComponent({
         props: {
@@ -52,17 +39,13 @@
             const { item, runs } = toRefs(props)
 
             const getRunClass = (index) => {
-                console.log(item.value.metadata.name)
-                console.log(runs)
                 if (runs.value.length >= index) {
                     const tempPhase = runs.value[index - 1]
 
-                    console.log(item.value.metadata.name)
-                    console.log(runs)
                     if (tempPhase._source.status.phase === 'Succeeded') {
-                        return 'bg-green-500'
+                        return 'bg-green-500 opacity-75'
                     } else if (tempPhase._source.status.phase === 'Failed') {
-                        return 'bg-red-500'
+                        return 'bg-red-500 opacity-75'
                     } else if (tempPhase._source.status.phase === 'Running') {
                         return 'bg-primary opacity-75 animate-pulse'
                     } else {
@@ -78,6 +61,18 @@
                 }
             }
 
+            const cron = computed(() => {
+                return item.value.metadata.annotations[
+                    'orchestration.atlan.com/schedule'
+                ]
+            })
+
+            const cronString = computed(() => {
+                if (cron.value) {
+                    return cronstrue.toString(cron.value)
+                }
+            })
+
             const { phase } = useWorkflowInfo()
 
             return {
@@ -86,6 +81,8 @@
                 phase,
                 getRunStatus,
                 getRunClass,
+                cron,
+                cronString,
             }
         },
     })

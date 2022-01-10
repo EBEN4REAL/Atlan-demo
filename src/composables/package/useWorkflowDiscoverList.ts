@@ -1,4 +1,4 @@
-import { ref, Ref, watch } from 'vue'
+import { computed, ref, Ref, watch } from 'vue'
 
 import { usePackageBody } from './usePackageBody'
 
@@ -39,7 +39,8 @@ export function useWorkflowDiscoverList({
             offset?.value,
             limit?.value,
             facets?.value,
-            preference?.value
+            preference?.value,
+            aggregations?.value
         )
         defaultBody.value = {
             ...dsl,
@@ -71,6 +72,37 @@ export function useWorkflowDiscoverList({
         }
     })
 
+    const packageList = computed(() => {
+        const temp = {}
+        data.value?.aggregations?.by_package?.by_package?.buckets?.forEach(
+            (element) => {
+                temp[element.key] = element.doc_count
+            }
+        )
+        return temp
+    })
+
+    const workflowMapByPackage = computed(() => {
+        let temp = {}
+        data.value?.aggregations?.by_package?.by_package?.buckets?.forEach(
+            (element) => {
+                const list = element?.by_package?.buckets.map((i) => i.key)
+                temp[element.key] = list
+            }
+        )
+        return temp
+    })
+
+    const workflowDistinctList = computed(() => {
+        let temp = []
+        data.value?.aggregations?.by_package?.by_package?.buckets?.forEach(
+            (element) => {
+                temp = temp.concat(element?.by_package?.buckets)
+            }
+        )
+        return temp.map((i) => i?.key)
+    })
+
     const quickChange = () => {
         generateBody()
         cancelRequest()
@@ -94,5 +126,8 @@ export function useWorkflowDiscoverList({
         cancelRequest,
         error,
         quickChange,
+        packageList,
+        workflowDistinctList,
+        workflowMapByPackage,
     }
 }

@@ -200,11 +200,13 @@ export function useConnector() {
             attributeValue: undefined,
         }
 
+
+        // TODO: removed defaultSchemaQualifiedName: 
         if (
             defaultSchemaQualifiedName &&
             defaultSchemaQualifiedName.length !== 0
         ) {
-            connectors.attributeName = 'defaultSchemaQualifiedName'
+            connectors.attributeName = 'schemaQualifiedName'
             connectors.attributeValue = defaultSchemaQualifiedName
         } else if (
             defaultDatabaseQualifiedName &&

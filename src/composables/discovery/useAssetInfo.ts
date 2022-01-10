@@ -186,6 +186,7 @@ export default function useAssetInfo() {
                     scrubbed: true,
                     requiredInProfile: true,
                     data: i,
+                    analyticsKey: 'custom_metadata',
                 }
             })
         }

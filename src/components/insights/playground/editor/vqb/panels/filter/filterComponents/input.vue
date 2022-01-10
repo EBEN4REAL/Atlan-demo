@@ -97,6 +97,17 @@
             if (type.value === 'date' && inputValue.value)
                 localeValue.value = dayjs(inputValue.value)
 
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
+            }
+
             const onChange = (event, type) => {
                 if (type === 'text') {
                     inputValue.value = event.target.value
@@ -106,6 +117,10 @@
                 } else if (type == 'number') {
                     inputValue.value = event
                 }
+
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
                 // updateVQB(activeInlineTabKey, inlineTabs)
             }
 

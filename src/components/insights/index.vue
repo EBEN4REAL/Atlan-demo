@@ -188,6 +188,10 @@
                 'refetchQueryCollection'
             ) as Ref<Function>
 
+            const isCollectionCreated = inject(
+                'isCollectionCreated'
+            ) as Ref<Boolean>
+
             const {
                 MIN_EXPLORER_WIDTH,
                 MAX_EXPLORER_WIDTH,
@@ -623,10 +627,13 @@
                             } else {
                                 queryCollections.value = []
                             }
+
+                            console.log('collection create:')
                             selectFirstCollectionByDefault(
                                 queryCollections.value,
                                 activeInlineTab,
-                                tabsArray
+                                tabsArray,
+                                isCollectionCreated
                             )
                             queryCollectionsError.value = undefined
                         } else {

@@ -18,13 +18,13 @@ export default function useBody({
 
     base.from(from || 0)
     base.size(limit || 100)
-    base.sort([
-        {
-            'name.keyword': {
-                order: 'asc',
-            },
-        },
-    ])
+    // base.sort([
+    //     {
+    //         'name.keyword': {
+    //             order: 'asc',
+    //         },
+    //     },
+    // ])
     base.filter('term', '__typeName.keyword', 'Collection')
     base.filter('term', '__state', 'ACTIVE')
     if (searchText)

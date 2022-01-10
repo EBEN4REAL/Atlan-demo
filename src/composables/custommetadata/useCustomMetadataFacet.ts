@@ -33,28 +33,23 @@ export default function useCustomMetadataFacet() {
         return []
     })
 
-    const getList = (typeName) => {
-        const list = []
-        customMetadataList.value.forEach((bm) => {
-            const attributeList = []
-            bm.attributeDefs.forEach((a) => {
-                if (a.options.allowFiltering !== 'true') return
-                if (
-                    typeof a.options?.customApplicableEntityTypes === 'string'
-                ) {
-                    let temp = JSON.parse(
-                        a.options?.customApplicableEntityTypes
-                    )
-                    if (temp) {
-                        if (temp.includes(typeName) || typeName === '__all') {
-                            attributeList.push({
-                                ...a,
-                                typeList: JSON.parse(
-                                    a.options?.customApplicableEntityTypes
-                                ),
-                            })
-                        }
-                    } else {
+    /**
+     * 
+     * @param attributeDefs array of CM attributes
+     * @param typeName the typeName of the selected asset or tab
+     * @returns filters out CM attributes based on the support of the typeName
+     */
+    const typeNameFiltering = (attributeDefs, typeName) => {
+        const attributeList = []
+        attributeDefs.forEach((a) => {
+            if (
+                typeof a.options?.customApplicableEntityTypes === 'string'
+            ) {
+                let temp = JSON.parse(
+                    a.options?.customApplicableEntityTypes
+                )
+                if (temp) {
+                    if (temp.includes(typeName) || typeName === '__all') {
                         attributeList.push({
                             ...a,
                             typeList: JSON.parse(
@@ -65,12 +60,32 @@ export default function useCustomMetadataFacet() {
                 } else {
                     attributeList.push({
                         ...a,
-                        typeList: [],
+                        typeList: JSON.parse(
+                            a.options?.customApplicableEntityTypes
+                        ),
                     })
                 }
-            })
+            } else {
+                attributeList.push({
+                    ...a,
+                    typeList: [],
+                })
+            }
+        })
+        return attributeList
+    }
+    /**
+     * 
+     * @param typeName 
+     * @param facet flag to check if required list is for filtering, if facet then check for allowFiltering
+     * @returns 
+     */
+    const getList = (typeName, facet = false) => {
+        const finalList: any = []
+        customMetadataList.value.forEach((bm) => {
+            const attributeList = typeNameFiltering(bm.attributeDefs.filter(a => facet ? a.options?.allowFiltering !== 'true' : true), typeName)
             if (attributeList.length > 0) {
-                list.push({
+                finalList.push({
                     description: bm.description,
                     id: bm.name,
                     label: bm.displayName,
@@ -86,7 +101,7 @@ export default function useCustomMetadataFacet() {
                 })
             }
         })
-        return list
+        return finalList
     }
 
     return {

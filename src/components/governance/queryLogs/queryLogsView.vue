@@ -17,12 +17,14 @@
         </div>
         <DefaultLayout v-else title="Query Logs">
             <template #header>
-                <div class="flex items-center justify-between pb-3">
+                <div
+                    class="flex items-center justify-between p-4 pb-3 -mb-3 border border-b-0 border-gray-200 rounded-t-lg query-logs"
+                >
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
                             <AtlanBtn
                                 color="secondary"
-                                class="px-2 rounded-tr-none rounded-br-none"
+                                class="px-2 rounded-tr-none rounded-br-none filter-button"
                                 :class="
                                     queryLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
@@ -43,11 +45,11 @@
                                     ? `Search through ${filteredLogsCount} logs`
                                     : `Search logs`
                             "
-                            class="w-1/3 mr-1 border border-l-0 border-gray-300 rounded-none rounded-tr rounded-br shadow-sm"
-                            size="default"
+                            class="w-1/3 h-full mr-1"
+                            size="minimal"
                             :allow-clear="true"
                             @change="handleSearch"
-                        ></a-input-search>
+                        />
                     </div>
                     <div class="mr-3">
                         <a-tooltip placement="bottom">
@@ -84,10 +86,10 @@
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination
-                    :totalPages="pagination.total"
-                    :loading="isLoading"
-                    :pageSize="size"
                     v-model:offset="from"
+                    :total-pages="pagination.total"
+                    :loading="isLoading"
+                    :page-size="size"
                     @mutate="refreshList"
                 />
             </div>
@@ -335,3 +337,11 @@
         },
     })
 </script>
+
+<style lang="less">
+    .query-logs {
+        .filter-button {
+            height: 30px !important;
+        }
+    }
+</style>

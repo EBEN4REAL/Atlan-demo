@@ -19,25 +19,9 @@
                 >
                     <component :is="component" :asset="asset"></component>
                 </div>
-
-                <div
-                    v-if="
-                        !isGTC(asset) &&
-                        !['Connection', 'Process'].includes(asset.typeName)
-                    "
-                    class="flex flex-col text-sm"
-                >
-                    <span class="mb-1 text-gray-500">Connection</span>
-                    <div class="flex items-center">
-                        <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
-                        <span>{{
-                            `${connectorName(asset)}/${connectionName(asset)}`
-                        }}</span>
-                    </div>
-                </div>
             </div>
             <div class="flex flex-col">
-                <p class="text-gray-500">Description</p>
+                <p class="mb-1 text-gray-500">Description</p>
                 <Description
                     ref="descriptionRef"
                     v-model="localDescription"
@@ -119,6 +103,9 @@
             ),
             ParentGlossary: defineAsyncComponent(
                 () => import('./types/parentGlossary.vue')
+            ),
+            Connection: defineAsyncComponent(
+                () => import('./types/connection.vue')
             ),
         },
 

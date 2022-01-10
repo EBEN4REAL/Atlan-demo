@@ -1,17 +1,17 @@
 <template>
-    <SQL :sql="definition(asset)">
-        <div class="flex flex-col text-sm cursor-pointer">
-            <span class="mb-1 text-sm text-gray-500">Definition</span>
-            <span class="text-primary">SQL</span>
+    <div class="flex flex-col text-sm">
+        <span class="mb-1 text-sm text-gray-500">Connection</span>
+        <div class="flex items-center">
+            <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
+            <span>{{
+                `${connectorName(asset)}/${connectionName(asset)}`
+            }}</span>
         </div>
-    </SQL>
+    </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-
-    // Components
-    import SQL from '@/common/popover/sql.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -20,10 +20,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: {
-            SQL,
-        },
-
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -31,10 +27,13 @@
             },
         },
         setup() {
-            const { definition } = useAssetInfo()
+            const { getConnectorImage, connectorName, connectionName } =
+                useAssetInfo()
 
             return {
-                definition,
+                getConnectorImage,
+                connectorName,
+                connectionName,
             }
         },
     })

@@ -2,13 +2,13 @@ export const summaryVariants = [
     {
         id: 'table',
         label: 'Table',
-        components: ['Rows', 'Columns'],
+        components: ['Rows', 'Columns', 'Connection'],
         includes: ['Table', 'PartitionTable'],
     },
     {
         id: 'view',
         label: 'View',
-        components: ['Definition', 'Columns'],
+        components: ['Definition', 'Columns', 'Connection'],
         includes: ['View', 'MaterialisedViews'],
     },
     {
@@ -32,49 +32,49 @@ export const summaryVariants = [
     {
         id: 'workspace',
         label: 'Workspace',
-        components: ['Datasets', 'Reports', 'Dashboards'],
+        components: ['Datasets', 'Reports', 'Dashboards', 'Connection'],
         includes: ['PowerBIWorkspace'],
     },
     {
         id: 'datasource',
         label: 'Datasource',
-        components: ['Workspace'],
+        components: ['Workspace', 'Connection'],
         includes: ['PowerBIDatasource'],
     },
     {
         id: 'dataset',
         label: 'Dataset',
-        components: ['Workspace'],
+        components: ['Workspace', 'Connection'],
         includes: ['PowerBIDataset'],
     },
     {
         id: 'dataflow',
         label: 'Dataflow',
-        components: ['Workspace'],
+        components: ['Workspace', 'Connection'],
         includes: ['PowerBIDataflow'],
     },
     {
         id: 'report',
         label: 'Report',
-        components: ['Workspace', 'Pages'],
+        components: ['Workspace', 'Pages', 'Connection'],
         includes: ['PowerBIReport'],
     },
     {
         id: 'dashboard',
         label: 'Dashboard',
-        components: ['Workspace', 'Tiles'],
+        components: ['Workspace', 'Tiles', 'Connection'],
         includes: ['PowerBIDashboard'],
     },
     {
         id: 'page',
         label: 'Page',
-        components: ['Workspace', 'Report'],
+        components: ['Workspace', 'Report', 'Connection'],
         includes: ['PowerBIPage'],
     },
     {
         id: 'tile',
         label: 'Tile',
-        components: ['Workspace', 'Dashboard'],
+        components: ['Workspace', 'Dashboard', 'Connection'],
         includes: ['PowerBITile'],
     },
 ]

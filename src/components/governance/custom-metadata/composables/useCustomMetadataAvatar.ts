@@ -2,7 +2,7 @@ import { ref, watch, computed, Ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useTypedefStore } from '~/store/typedef'
 import { Types } from '~/services/meta/types'
-
+import { FileItem } from '~/types/typedefs/customMetadata.interface'
 
 // composables
 import useUploadImage from '~/composables/image/uploadImage'
@@ -13,19 +13,6 @@ interface avatarOptions {
   imageId: string | null
   emoji: string | null
 }
-
-interface FileItem {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  url?: string;
-  preview?: string;
-  originFileObj?: any;
-  file: string | Blob;
-}
-
-
 
 export default function useCustomMetadataAvatar(metadata) {
   // data

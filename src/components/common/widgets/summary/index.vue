@@ -104,6 +104,15 @@
             ParentGlossary: defineAsyncComponent(
                 () => import('./types/parentGlossary.vue')
             ),
+            ParentWorkspace: defineAsyncComponent(
+                () => import('./types/parentWorkspace.vue')
+            ),
+            ParentReport: defineAsyncComponent(
+                () => import('./types/parentReport.vue')
+            ),
+            ParentDashboard: defineAsyncComponent(
+                () => import('./types/parentDashboard.vue')
+            ),
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
             ),

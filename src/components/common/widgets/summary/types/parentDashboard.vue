@@ -3,7 +3,7 @@
         <span class="mb-1 text-sm text-gray-500">Dashboard</span>
         <router-link
             :to="`/assets/${parentDashboard(asset)?.guid}`"
-            class="text-primary hover:underline"
+            class="font-bold text-primary hover:underline"
             >{{ parentDashboard(asset)?.attributes?.name }}</router-link
         >
     </div>

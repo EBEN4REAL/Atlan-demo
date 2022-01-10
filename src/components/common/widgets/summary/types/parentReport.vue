@@ -3,7 +3,7 @@
         <span class="mb-1 text-sm text-gray-500">Report</span>
         <router-link
             :to="`/assets/${parentReport(asset)?.guid}`"
-            class="text-primary hover:underline"
+            class="font-bold text-primary hover:underline"
             >{{ parentReport(asset)?.attributes?.name }}</router-link
         >
     </div>

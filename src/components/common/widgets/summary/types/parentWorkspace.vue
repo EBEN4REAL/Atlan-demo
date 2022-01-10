@@ -3,7 +3,7 @@
         <span class="mb-1 text-sm text-gray-500">Workspace</span>
         <router-link
             :to="`/assets/${parentWorkspace(asset)?.guid}`"
-            class="text-primary hover:underline"
+            class="font-bold text-primary hover:underline"
             >{{ parentWorkspace(asset)?.attributes?.name }}</router-link
         >
     </div>

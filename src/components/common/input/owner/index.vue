@@ -29,24 +29,32 @@
                 "
                 :mouse-enter-delay="0.5"
             >
-                <a-button
-                    v-if="showAddBtn"
-                    :disabled="!editPermission"
-                    shape="circle"
-                    size="small"
-                    class="text-center shadow"
-                    :class="{
-                        editPermission:
-                            'hover:bg-primary-light hover:border-primary',
-                    }"
-                    @click="() => (isEdit = true)"
+                <Shortcut
+                    shortcut-key="o"
+                    action="set owners"
+                    placement="left"
+                    :edit-permission="editPermission && showShortcut"
                 >
-                    <span
-                        ><AtlanIcon
-                            icon="Add"
-                            class="h-3"
-                        ></AtlanIcon></span></a-button
-            ></a-tooltip>
+                    <a-button
+                        v-if="showAddBtn"
+                        :disabled="!editPermission"
+                        shape="circle"
+                        size="small"
+                        class="text-center shadow"
+                        :class="{
+                            editPermission:
+                                'hover:bg-primary-light hover:border-primary',
+                        }"
+                        @click="() => (isEdit = true)"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="Add"
+                                class="h-3"
+                            ></AtlanIcon></span
+                    ></a-button>
+                </Shortcut>
+            </a-tooltip>
 
             <template
                 v-for="username in localValue?.ownerUsers"
@@ -115,6 +123,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     // Composables
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -133,6 +142,7 @@
             OwnerFacets,
             PopOverUser,
             PopOverGroup,
+            Shortcut,
         },
         props: {
             editPermission: {
@@ -149,6 +159,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            showShortcut: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             destroyTooltipOnHide: {
                 type: Boolean,

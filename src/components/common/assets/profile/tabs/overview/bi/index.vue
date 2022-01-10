@@ -4,7 +4,7 @@
             <template #announcement>
                 <AnnouncementWidget
                     :selected-asset="selectedAsset"
-                    class="mb-3"
+                    class="mb-4"
                 ></AnnouncementWidget> </template
         ></Summary>
         <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />

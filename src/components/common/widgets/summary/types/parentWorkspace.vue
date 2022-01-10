@@ -1,10 +1,10 @@
 <template>
     <div class="flex flex-col text-sm cursor-pointer">
-        <span class="mb-1 text-sm text-gray-500">Glossary</span>
+        <span class="mb-1 text-sm text-gray-500">Workspace</span>
         <router-link
-            :to="getAnchorProfile(asset)"
+            :to="`/assets/${parentWorkspace(asset)?.guid}`"
             class="font-bold text-primary hover:underline"
-            >{{ getAnchorName(asset) }}</router-link
+            >{{ parentWorkspace(asset)?.attributes?.name }}</router-link
         >
     </div>
 </template>
@@ -26,10 +26,9 @@
             },
         },
         setup() {
-            const { getAnchorProfile, getAnchorName } = useAssetInfo()
+            const { parentWorkspace } = useAssetInfo()
             return {
-                getAnchorProfile,
-                getAnchorName,
+                parentWorkspace,
             }
         },
     })

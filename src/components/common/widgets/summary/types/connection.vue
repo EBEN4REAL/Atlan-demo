@@ -1,11 +1,12 @@
 <template>
-    <div class="flex flex-col text-sm cursor-pointer">
-        <span class="mb-1 text-sm text-gray-500">Glossary</span>
-        <router-link
-            :to="getAnchorProfile(asset)"
-            class="font-bold text-primary hover:underline"
-            >{{ getAnchorName(asset) }}</router-link
-        >
+    <div class="flex flex-col text-sm">
+        <span class="mb-1 text-sm text-gray-500">Connection</span>
+        <div class="flex items-center">
+            <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
+            <span>{{
+                `${connectorName(asset)}/${connectionName(asset)}`
+            }}</span>
+        </div>
     </div>
 </template>
 
@@ -26,10 +27,13 @@
             },
         },
         setup() {
-            const { getAnchorProfile, getAnchorName } = useAssetInfo()
+            const { getConnectorImage, connectorName, connectionName } =
+                useAssetInfo()
+
             return {
-                getAnchorProfile,
-                getAnchorName,
+                getConnectorImage,
+                connectorName,
+                connectionName,
             }
         },
     })

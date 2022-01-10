@@ -30,6 +30,7 @@
                 :mouse-enter-delay="0.5"
             >
                 <a-button
+                    v-if="showAddBtn"
                     :disabled="!editPermission"
                     shape="circle"
                     size="small"
@@ -73,6 +74,16 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
+
+            <span
+                v-if="
+                    !showAddBtn &&
+                    localValue?.ownerGroups?.length < 1 &&
+                    localValue?.ownerUsers?.length < 1
+                "
+                class="-ml-1 text-gray-600"
+                >No owners assigned</span
+            >
         </div>
     </div>
 </template>
@@ -157,6 +168,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            showAddBtn: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

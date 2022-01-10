@@ -6,7 +6,7 @@
             <div>
                 <div class="flex items-center gap-2 mb-2">
                     <AvatarUpdate :metadata="localBm" />
-                    <div class="text-xl">
+                    <div class="text-xl truncate">
                         {{ localBm.displayName }}
                     </div>
                 </div>
@@ -18,7 +18,7 @@
                 <MetadataHeaderButton
                     :metadata="localBm"
                     :allow-delete="allowDelete"
-                    :assetCount="assetCount"
+                    :asset-count="assetCount"
                 />
             </div>
         </div>
@@ -100,8 +100,8 @@
                     v-else
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @remove-property="handleRemoveAttribute"
                     :selected="selected"
+                    @remove-property="handleRemoveAttribute"
                     @open-edit-drawer="openEdit"
                 />
             </div>

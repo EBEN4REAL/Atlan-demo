@@ -1,8 +1,13 @@
 <template>
     <div
         ref="container"
-        @click="setFoucs"
-        @focusout="handleContainerBlur"
+        @click="
+            () => {
+                if (!disabled) {
+                    isAreaFocused = true
+                }
+            }
+        "
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
@@ -15,7 +20,6 @@
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
-        @click.stop="() => {}"
     >
         <template v-if="selectedItem?.label">
             <div class="flex items-center">
@@ -90,7 +94,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',
@@ -105,7 +109,7 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
+                @click="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
@@ -148,7 +152,7 @@
                                         color="minimal"
                                         padding="compact"
                                         style="height: fit-content"
-                                        @mousedown.stop="
+                                        @click.stop="
                                             (e) => actionClick(e, item.item)
                                         "
                                     >
@@ -165,9 +169,7 @@
                                 </template>
                                 <div
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                    @mousedown.stop="
-                                        (e) => onSelectItem(item, e)
-                                    "
+                                    @click.stop="(e) => onSelectItem(item, e)"
                                     :class="
                                         selectedItem?.qualifiedName ===
                                         item.columnQualifiedName
@@ -266,7 +268,7 @@
                                             color="minimal"
                                             padding="compact"
                                             style="height: fit-content"
-                                            @mousedown.stop="
+                                            @click.stop="
                                                 (e) => actionClick(e, item.item)
                                             "
                                         >
@@ -284,7 +286,7 @@
 
                                     <div
                                         class="flex items-center justify-between w-full pl-4 pr-2 cursor-pointer h-9 hover:bg-primary-selected-focus"
-                                        @mousedown.stop="
+                                        @click.stop="
                                             (e) => onSelectTable(item, e)
                                         "
                                     >
@@ -344,7 +346,7 @@
                                 <AtlanIcon
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5 text-gray-500"
-                                    @mousedown.stop="onUnselectTable"
+                                    @click.stop="onUnselectTable"
                                 />
 
                                 <span
@@ -383,7 +385,7 @@
                                             color="minimal"
                                             padding="compact"
                                             style="height: fit-content"
-                                            @mousedown.stop="
+                                            @click.stop="
                                                 (e) => actionClick(e, item.item)
                                             "
                                         >
@@ -400,7 +402,7 @@
                                     </template>
                                     <div
                                         class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
-                                        @mousedown.stop="
+                                        @click.stop="
                                             (e) => onSelectItem(item, e)
                                         "
                                         :class="
@@ -780,6 +782,25 @@
                     containerPosition.value.left = viewportOffset?.left
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
+
+                document?.addEventListener('click', function (event) {
+                    let isClickInside = container.value?.contains(event.target)
+
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains('child_input')
+                    }
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains(
+                                'dropdown-container'
+                            )
+                    }
+
+                    if (!isClickInside) {
+                        isAreaFocused.value = false
+                    }
+                })
                 nextTick(() => {
                     initialRef.value?.focus()
                 })

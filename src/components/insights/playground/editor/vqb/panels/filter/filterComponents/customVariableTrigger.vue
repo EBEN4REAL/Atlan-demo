@@ -44,6 +44,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         ref,
         watch,
@@ -103,38 +104,27 @@
             )
             const { subpanels } = useVModels(props)
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             const toggleVariableType = (currVal, index, subpanel) => {
-                // /* Check if variable already exists */
-                // const Varindex =
-                //     activeInlineTab.value.playground.editor.variables.findIndex(
-                //         (variable) => variable?.subpanelId === subpanel.id
-                //     )
-                // const Varindex2 =
-                //     activeInlineTab.value.playground.editor.variables.findIndex(
-                //         (variable) =>
-                //             variable?.subpanelId === `${subpanel.id}${2}`
-                //     )
-                // if (Varindex < 0) {
-                //     addVariableFromVQB(activeInlineTab, tabs, {
-                //         vqbPanelId: subpanel.id,
-                //         subpanelId: subpanel.id,
-                //         type: subpanel?.column?.type?.toLowerCase(),
-                //     })
-                //     /* If fileds are more than one, then it will have inputFiledValue 2 */
-                //     if (Varindex2 < 0) {
-                //         if (
-                //             totalFiledsMapWithInput[subpanel?.filter?.type] > 1
-                //         ) {
-                //             addVariableFromVQB(activeInlineTab, tabs, {
-                //                 vqbPanelId: `${subpanel.id}${2}`,
-                //                 subpanelId: `${subpanel.id}${2}`,
-                //                 type: subpanel?.column?.type.toLowerCase(),
-                //             })
-                //         }
-                //     }
-                // }
+                if (readOnly.value) return
                 subpanels.value[index].filter.isVariable = !currVal
-                // showcustomVariablesToolBar.value = !currVal
             }
             return {
                 toggleVariableType,

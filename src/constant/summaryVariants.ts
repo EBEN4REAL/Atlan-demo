@@ -12,16 +12,22 @@ export const summaryVariants = [
         includes: ['View', 'MaterialisedViews'],
     },
     {
-        id: 'term',
-        label: 'Term',
-        components: ['ParentGlossary', 'Categories'],
-        includes: ['AtlasGlossaryTerm'],
+        id: 'glossary',
+        label: 'Glossary',
+        components: ['TermsCount', 'CategoriesCount'],
+        includes: ['AtlasGlossary'],
     },
     {
         id: 'category',
         label: 'Category',
-        components: ['ParentGlossary'],
+        components: ['ParentGlossary', 'TermsCount'],
         includes: ['AtlasGlossaryCategory'],
+    },
+    {
+        id: 'term',
+        label: 'Term',
+        components: ['ParentGlossary', 'Categories'],
+        includes: ['AtlasGlossaryTerm'],
     },
     {
         id: 'workspace',

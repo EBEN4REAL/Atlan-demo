@@ -168,7 +168,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
-                if (disabled.value) return
+                if (disabled?.value) return
                 isAreaFocused.value = true
             }
             const observer = ref()

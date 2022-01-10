@@ -46,6 +46,7 @@
                                 :columnName="subpanel?.column?.label"
                                 :columnType="subpanel?.column?.type"
                                 v-model:selectedFilter="subpanel.filter"
+                                :disabled="readOnly"
                                 @change="() => handleFilterChange(subpanel)"
                             />
                         </div>

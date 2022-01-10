@@ -582,7 +582,7 @@
                                 return true
                             if (selectedColumn?.label && !mouseHover)
                                 return true
-                            if (disabled.value) return true
+                            if (disabled?.value) return true
                         }
                         break
                     }

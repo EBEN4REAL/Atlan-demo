@@ -71,4 +71,30 @@
     const fileList = ref<FileItem[]>([])
 </script>
 
-<style scoped></style>
+<style lang="less">
+    .emoji-mart {
+        border: unset;
+
+        .emoji-mart-anchor-selected {
+            color: rgb(82, 119, 215) !important;
+        }
+        .emoji-mart-anchor:hover {
+            color: rgb(51, 81, 155) !important;
+        }
+        .emoji-mart-anchor-bar {
+            background-color: rgb(82, 119, 215) !important;
+        }
+    }
+
+    .ant-tabs-nav {
+        padding-left: 15px;
+        margin-bottom: 0;
+    }
+    .ant-upload.ant-upload-select {
+        display: block;
+    }
+    button.emoji-mart-emoji,
+    .emoji-mart-category .emoji-mart-emoji span {
+        cursor: pointer;
+    }
+</style>

@@ -14,7 +14,7 @@ interface avatarOptions {
   emoji: string | null
 }
 
-export default function useCustomMetadataAvatar(metadata) {
+export default function useCustomMetadataAvatar(metadata, immediate = true) {
   // data
   const popOverVisible = ref(false)
   const isUpdating = ref(false)

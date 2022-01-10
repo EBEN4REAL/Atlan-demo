@@ -1,7 +1,6 @@
 <template>
     <div class="flex">
         <a-popover
-            overlay-class-name="cm-avatar-update-modal"
             :visible="popOverVisible"
             :trigger="['click']"
             placement="bottom"
@@ -24,6 +23,7 @@
                     @select="handleEmojiSelect"
                     @remove="removeAvatar"
                     @upload="handleUploadImage"
+                    :loading="isUpdating"
                 />
             </template>
         </a-popover>
@@ -83,35 +83,3 @@
         },
     })
 </script>
-
-<style lang="less">
-    .cm-avatar-update-modal {
-        .emoji-mart {
-            border: unset;
-
-            .emoji-mart-anchor-selected {
-                color: rgb(82, 119, 215) !important;
-            }
-            .emoji-mart-anchor:hover {
-                color: rgb(51, 81, 155) !important;
-            }
-            .emoji-mart-anchor-bar {
-                background-color: rgb(82, 119, 215) !important;
-            }
-        }
-
-        .ant-tabs-nav {
-            padding-left: 15px;
-            margin-bottom: 0;
-        }
-    }
-    .metadata-avatar-uploader {
-        .ant-upload.ant-upload-select {
-            display: block;
-        }
-    }
-    button.emoji-mart-emoji,
-    .emoji-mart-category .emoji-mart-emoji span {
-        cursor: pointer;
-    }
-</style>

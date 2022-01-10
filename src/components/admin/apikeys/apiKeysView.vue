@@ -32,7 +32,7 @@
                         <SearchAndFilter
                             v-model:value="searchText"
                             :placeholder="`Search ${totalAPIKeysCount} api keys`"
-                            size="minimal"
+                            class="h-8 mr-1 shadow-none"
                         />
                     </div>
 
@@ -245,8 +245,7 @@
                 const localAPIKey = {
                     displayName: apikey?.displayName,
                     description: apikey?.attributes?.description,
-                    validitySeconds:
-                        apikey?.attributes?.['accessTokenLifespan'],
+                    validitySeconds: apikey?.attributes?.accessTokenLifespan,
                     personas: apikey?.attributes?.personas || [],
                     id: apikey?.id,
                     rawKey: { ...(apikey || {}) },

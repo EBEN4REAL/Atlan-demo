@@ -13,6 +13,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -34,10 +35,12 @@
                 }
             "
             @change="input1Change"
+            :disabled="disabled"
             :placeholder="placeholder"
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
                 'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <a-input
@@ -45,9 +48,11 @@
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"
+            :disabled="disabled"
             :placeholder="placeholder"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -59,7 +64,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -88,7 +93,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -397,9 +402,15 @@
                 required: false,
                 default: () => true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const {
+                disabled,
                 showColumnWithTable,
                 selectedTablesQualifiedNames,
                 showSelectAll,
@@ -645,18 +656,17 @@
             const clickPos = ref({ left: 0, top: 0 })
 
             const setFoucs = () => {
-                // if (!tableQualfiedName.value) return
+                if (disabled.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
-                    console.log(inputRef?.value, 'he')
-                    // if (tableQualfiedName.value)
+                    if (disabled.value) return
                     inputRef?.value?.focus()
                 })
             }
             const setFocusedCusror = () => {
-                // if (!tableQualfiedName.value) return
+                if (disabled.value) return
                 nextTick(() => {
-                    // if (tableQualfiedName.value)
+                    if (disabled.value) return
                     inputRef?.value?.focus()
                 })
             }
@@ -752,6 +762,7 @@
                                 return true
                             if (selectedItems.length !== 0 && !mouseHover)
                                 return true
+                            if (disabled.value) return true
                         }
                         break
                     }
@@ -902,6 +913,7 @@
             )
 
             return {
+                disabled,
                 cancelEventBlur,
                 map,
                 showSelectAll,

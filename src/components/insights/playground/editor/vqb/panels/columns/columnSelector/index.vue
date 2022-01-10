@@ -64,7 +64,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -93,7 +93,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -586,6 +586,7 @@
                                 return true
                             if (selectedItems.length !== 0 && !mouseHover)
                                 return true
+                            if (disabled.value) return true
                         }
                         break
                     }

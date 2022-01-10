@@ -13,7 +13,7 @@
                 : 'border-gray-300 border border-plus',
             ,
             'flex flex-wrap items-center  rounded box-shadow selector-height px-3',
-            !columnName ? ' cursor-not-allowed disable-bg' : '',
+            disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -32,12 +32,12 @@
 
         <a-input
             v-if="selectedItems.length == 0"
-            :disabled="!columnName"
+            :disabled="disabled"
             :placeholder="placeholder"
             :contenteditable="false"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !columnName ? $style.custom_input : '',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -132,10 +132,15 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { columnName, columnType } = toRefs(props)
+            const { columnName, columnType, disabled } = toRefs(props)
 
             const { selectedItems } = useVModels(props)
             const map = ref({})
@@ -160,6 +165,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
+                if (disabled) return
                 if (!columnType.value) return
                 // inputChange()
                 isAreaFocused.value = true
@@ -295,6 +301,7 @@
             }
 
             return {
+                disabled,
                 map,
                 enrichedSelectedItems,
                 onCheckChange,

@@ -219,7 +219,7 @@
                                 class="flex items-center px-1"
                                 v-if="
                                     isFilterIsInteractive(
-                                        VQBfilterPanel.subpanels
+                                        VQBfilterPanel?.subpanels
                                     )
                                 "
                             >
@@ -783,7 +783,7 @@
             }
 
             const VQBfilterPanel =
-                activeInlineTab.value.playground.vqb.panels.find(
+                activeInlineTab.value?.playground?.vqb?.panels?.find(
                     (panel) => panel.id.toLowerCase() === 'filter'
                 )
 

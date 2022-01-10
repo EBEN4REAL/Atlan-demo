@@ -60,10 +60,10 @@
                 </div>
             </template>
         </div>
-
+        {{ readonly }}
         <span>
             <div
-                v-if="!readonly"
+                v-if="readonly"
                 class="items-center mt-3 cursor-pointer text-primary"
                 @click.stop="handleAddPanel"
             >
@@ -219,6 +219,8 @@
             )
 
             return {
+                isQueryCreatedByCurrentUser,
+                hasQueryWritePermission,
                 readOnly,
                 getAggregationORGroupPanelColumns,
                 isAggregationORGroupPanelColumnsAdded,

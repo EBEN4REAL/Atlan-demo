@@ -1,6 +1,10 @@
 <template>
     <div style="width: min-content !important">
-        <RaisedTab v-model:active="filterType" :data="tabConfig" />
+        <RaisedTab
+            v-model:active="filterType"
+            :disabled="disabled"
+            :data="tabConfig"
+        />
     </div>
 </template>
 
@@ -19,16 +23,22 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { filterType } = useVModels(props)
+            const { filterType, disabled } = useVModels(props)
             const tabConfig = ref([
                 { key: 'and', label: 'AND' },
                 { key: 'or', label: 'OR' },
             ])
 
             return {
+                disabled,
                 tabConfig,
                 filterType,
             }

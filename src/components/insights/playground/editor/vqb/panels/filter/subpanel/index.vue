@@ -14,6 +14,7 @@
                             class=""
                             v-if="index !== 0"
                             v-model:filterType="subpanel.filter.filterType"
+                            :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
                             >Where</span
@@ -104,7 +105,7 @@
         </div>
 
         <span
-            v-if="!readonly"
+            v-if="readonly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -451,9 +452,6 @@
             /* Accesss */
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryReadPermission = inject(
-                'hasQueryReadPermission'
             ) as ComputedRef
             const hasQueryWritePermission = inject(
                 'hasQueryWritePermission'

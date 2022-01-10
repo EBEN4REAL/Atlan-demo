@@ -2,6 +2,7 @@
     <a-input
         v-if="type === 'text'"
         v-model:value="localeValue"
+        :disabled="readOnly && !subpanel?.filter?.isVariable"
         placeholder="Enter Value"
         class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
@@ -18,6 +19,7 @@
     <a-input
         v-else-if="type === 'number'"
         v-model:value="localeValue"
+        :disabled="readOnly && !subpanel?.filter?.isVariable"
         placeholder="Enter Numeric Value"
         class="flex-1 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
@@ -39,6 +41,7 @@
             placeholder="Select Date"
             :show-time="{ format: 'HH:mm' }"
             v-model:value="localeValue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
             style="height: 32px !important"
             @change="(event) => onChange(event, type)"
@@ -66,13 +69,16 @@
         Ref,
         PropType,
         computed,
+        inject,
         toRaw,
+        ComputedRef,
         onUnmounted,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs from 'dayjs'
     import CustomVariableTrigger from './customVariableTrigger.vue'
     import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -112,6 +118,9 @@
             const { inputValue, subpanels } = useVModels(props)
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
             const localeValue: Ref<any> = ref(inputValue.value)
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
 
             watch(
                 [selectedFilter],
@@ -146,7 +155,26 @@
                 return true
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                readOnly,
                 index,
                 type,
                 localeValue,

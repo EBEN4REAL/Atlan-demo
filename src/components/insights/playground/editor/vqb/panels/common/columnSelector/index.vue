@@ -60,7 +60,7 @@
             ]"
         />
 
-        <div class="absolute right-2" v-if="!disabled">
+        <div class="absolute right-2">
             <AtlanIcon
                 v-if="
                     findVisibility(
@@ -69,7 +69,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItem
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -98,7 +98,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItem
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -725,6 +725,8 @@
                                 !mouseHover
                             )
                                 return true
+
+                            if (disabled.value) return true
                         }
                         break
                     }

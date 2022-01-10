@@ -293,7 +293,7 @@ export function useFilter() {
 
     function isFilterIsInteractive(subpanels: SubpanelFilter[]) {
         let isInteractive = false
-        subpanels.forEach((subpanel) => {
+        subpanels?.forEach((subpanel) => {
             if (subpanel?.filter?.isVariable) {
                 isInteractive = true
             }

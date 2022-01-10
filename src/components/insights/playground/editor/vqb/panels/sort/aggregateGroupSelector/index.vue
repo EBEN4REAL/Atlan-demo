@@ -59,46 +59,7 @@
         />
 
         <div class="absolute right-2">
-            <AtlanIcon
-                v-if="
-                    findVisibility(
-                        'search',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-                icon="Search"
-                class="w-4 h-4"
-            />
-            <AtlanIcon
-                icon="ChevronDown"
-                class="w-4 h-4"
-                v-if="
-                    findVisibility(
-                        'chevronDown',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-            />
-            <AtlanIcon
-                icon="Cross"
-                class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
-                v-if="
-                    findVisibility(
-                        'cross',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-            />
+            <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
         <teleport to="body">
             <div
@@ -381,53 +342,6 @@
                 if (mouseOver.value) mouseOver.value = false
             }
 
-            const findVisibility = (
-                key: string,
-                isAreaFocused,
-                mouseHover,
-                tableQualifiedName,
-                selectedItem
-            ) => {
-                switch (key) {
-                    case 'chevronDown': {
-                        if (!isAreaFocused) {
-                            if (
-                                Object.keys(selectedItem).length === 0 &&
-                                mouseHover
-                            )
-                                return true
-                            if (
-                                Object.keys(selectedItem).length === 0 &&
-                                !mouseHover
-                            )
-                                return true
-                            if (
-                                Object.keys(selectedItem).length !== 0 &&
-                                !mouseHover
-                            )
-                                return true
-                        }
-                        break
-                    }
-                    case 'cross': {
-                        if (isAreaFocused) return false
-                        if (
-                            !isAreaFocused &&
-                            Object.keys(selectedItem).length > 0 &&
-                            mouseHover
-                        )
-                            return true
-                        else return false
-                        break
-                    }
-                    case 'search': {
-                        if (!isAreaFocused) return false
-                        if (tableQualifiedName) return true
-                        break
-                    }
-                }
-            }
-
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
@@ -527,7 +441,6 @@
                 initialRef,
                 queryText,
                 clearAllSelected,
-                findVisibility,
                 handleMouseOver,
                 handleMouseOut,
                 mouseOver,

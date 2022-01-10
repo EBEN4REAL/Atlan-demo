@@ -19,6 +19,7 @@
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
+                        :disabled="readOnly"
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
@@ -35,10 +36,11 @@
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         @checkChange="checkChange"
+                        :disabled="readOnly"
                     />
 
                     <AtlanIcon
-                        v-if="isSubpanelClosable(subpanels)"
+                        v-if="isSubpanelClosable(subpanels) && !readOnly"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
@@ -52,6 +54,7 @@
         </div>
 
         <span
+            v-if="readonly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -170,8 +173,27 @@
             }
 
             let hoverItem = ref(null)
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             return {
+                readOnly,
                 isSubpanelClosable,
                 activeInlineTab,
                 selectedTables,

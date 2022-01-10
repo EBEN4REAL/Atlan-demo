@@ -167,7 +167,7 @@
                 purposeStore.list.find((item) => item.id === id)
 
             const isAccessPurpose = (id) => {
-                if (purposes.find((i) => i.id === id)) {
+                if (purposes?.find((i) => i.id === id)) {
                     return true
                 }
                 return false

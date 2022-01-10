@@ -9,7 +9,7 @@
             <span v-if="!attribute.value?.length">-</span>
             <template v-else>
                 <template v-for="v in attribute.value" :key="v">
-                    <span v-linkified class="space-x-1">
+                    <span v-linkified class="space-x-1 text-primary">
                         <img
                             :src="`https://www.google.com/s2/favicons?domain=${v}`"
                             :alt="v"
@@ -47,12 +47,9 @@
             <span v-if="!attribute.value?.length">-</span>
 
             <div v-else class="flex flex-wrap gap-1">
-                <span
-                    v-for="v in attribute.value"
-                    :key="v"
-                    class="px-2 bg-gray-200 rounded-full"
-                    >{{ v }}
-                </span>
+                <span class="break-normal">{{
+                    attribute.value.join(', ')
+                }}</span>
             </div>
         </template>
         <a-typography-paragraph

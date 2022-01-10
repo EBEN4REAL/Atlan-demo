@@ -3,42 +3,26 @@
         <div class="flex flex-1 w-full overflow-y-auto">
             <div class="flex flex-col flex-1 h-full">
                 <div class="flex items-center justify-between px-6 py-6">
-                    <a-radio-group
-                        button-style="solid"
-                        v-model:value="discoveryType"
-                    >
-                        <a-radio-button value="packages"
-                            >Packages</a-radio-button
+                    <div class="flex flex-grow">
+                        <a-radio-group
+                            button-style="solid"
+                            v-model:value="discoveryType"
                         >
-                        <a-radio-button value="workflows"
-                            >Workflows</a-radio-button
-                        >
-                    </a-radio-group>
+                            <a-radio-button value="packages"
+                                >Packages</a-radio-button
+                            >
+                            <a-radio-button value="workflows"
+                                >Workflows</a-radio-button
+                            >
+                        </a-radio-group>
+                        <a-input
+                            class="w-1/3 ml-3"
+                            v-model:value="queryText"
+                            placeholder="Search Packages"
+                            @change="handleSearchChange"
+                        ></a-input>
+                    </div>
                     <a-button type="primary">New Workflow</a-button>
-                </div>
-                <div
-                    class="flex px-6 pb-4 font-extrabold gap-x-3 focus-within:text-2xl"
-                >
-                    <a-popover placement="bottomRight">
-                        <template #content>
-                            <PackageFilters
-                                :filter-list="packageFilters"
-                                v-model="facets"
-                                v-model:activeKey="activeKey"
-                                @change="handleFilterChange"
-                                @reset="handleResetEvent"
-                            ></PackageFilters>
-                        </template>
-                        <a-button
-                            ><AtlanIcon icon="Filter" class="mr-1"></AtlanIcon
-                            >Filter</a-button
-                        >
-                    </a-popover>
-                    <a-input
-                        v-model:value="queryText"
-                        placeholder="Search Packages"
-                        @change="handleSearchChange"
-                    ></a-input>
                 </div>
 
                 <div class="flex h-full overflow-y-auto">

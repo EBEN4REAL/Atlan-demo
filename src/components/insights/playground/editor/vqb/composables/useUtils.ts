@@ -286,8 +286,8 @@ export function useUtils() {
             return false
         }
 
-        if (groupPanel?.subpanels?.length > 0) return true
-        if (aggregatePanel?.subpanels?.length > 0) return true
+        if (groupPanel?.subpanels[0]?.columnsData?.length > 0) return true
+        if (aggregatePanel?.subpanels[0]?.aggregators?.length > 0) return true
         return false
     }
     function getAggregationORGroupPanelColumns(

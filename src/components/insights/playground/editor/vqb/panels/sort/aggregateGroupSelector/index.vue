@@ -29,7 +29,7 @@
         </template>
 
         <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
+            v-if="selectedItem?.label && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
             @focus="
@@ -45,7 +45,7 @@
             ]"
         />
         <a-input
-            v-if="Object.keys(selectedItem).length == 0"
+            v-if="!selectedItem?.label"
             ref="initialRef"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -484,8 +484,8 @@
             })
 
             const placeholder = computed(() => {
-                if (totalCount.value?.length > 0) {
-                    return `Search from ${totalCount.value} columns`
+                if (dropdownOption.value?.length > 0) {
+                    return `Search from ${dropdownOption.value?.length} columns`
                 }
                 return `Select a Column first`
             })

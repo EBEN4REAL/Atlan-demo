@@ -24,7 +24,7 @@
                         <div class="flex items-center">
                             <AtlanBtn
                                 color="secondary"
-                                class="px-2 rounded-tr-none rounded-br-none filter-button"
+                                class="px-2 border-r-0 rounded-tr-none rounded-br-none filter-button"
                                 :class="
                                     queryLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'

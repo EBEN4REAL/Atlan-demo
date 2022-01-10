@@ -12,6 +12,9 @@
                         v-model:selectedItems="subpanel.columns"
                         :showSelectAll="false"
                         v-model:selectedColumnsData="subpanel.columnsData"
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "

@@ -723,11 +723,12 @@
                                             tableData: {
                                                 certificateStatus: undefined,
                                                 assetType: undefined,
+                                                item: {},
                                             },
                                             columnsData: [],
                                         },
                                     ],
-                                    expand:false
+                                    expand: false,
                                 },
                             ],
                         },

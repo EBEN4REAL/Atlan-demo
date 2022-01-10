@@ -544,6 +544,9 @@
             const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()

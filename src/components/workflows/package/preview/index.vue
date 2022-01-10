@@ -1,10 +1,102 @@
 <template>
     <div class="flex flex-col h-full">
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
-            <div
-                class="flex items-center mb-1"
-                style="padding-bottom: 1px"
-            ></div>
+            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+                <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center flex-grow border-gray-200"
+                        v-if="item?.metadata?.annotations"
+                    >
+                        <div
+                            class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+                        >
+                            <img
+                                v-if="
+                                    item?.metadata?.annotations[
+                                        'orchestration.atlan.com/icon'
+                                    ]
+                                "
+                                class="self-center w-6 h-6"
+                                :src="
+                                    item?.metadata?.annotations[
+                                        'orchestration.atlan.com/icon'
+                                    ]
+                                "
+                            />
+                            <span
+                                v-else-if="
+                                    item?.metadata?.annotations[
+                                        'orchestration.atlan.com/emoji'
+                                    ]
+                                "
+                                class="self-center w-6 h-6"
+                            >
+                                {{
+                                    item?.metadata?.annotations[
+                                        'orchestration.atlan.com/emoji'
+                                    ]
+                                }}</span
+                            >
+                            <span v-else class="self-center w-6 h-6">
+                                {{ '\ud83d\udce6' }}</span
+                            >
+
+                            <div
+                                v-if="
+                                    item?.metadata?.labels[
+                                        'orchestration.atlan.com/certified'
+                                    ] === 'true'
+                                "
+                                class="absolute -right-1 -top-2"
+                            >
+                                <a-tooltip title="Certified" placement="left">
+                                    <AtlanIcon
+                                        icon="Verified"
+                                        class="ml-1"
+                                    ></AtlanIcon>
+                                </a-tooltip>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div
+                                class="flex items-center text-base font-semibold truncate overflow-ellipsis"
+                            >
+                                {{
+                                    item?.metadata?.annotations[
+                                        'orchestration.atlan.com/name'
+                                    ]
+                                }}
+                                <a-tooltip
+                                    placement="right"
+                                    :title="
+                                        item?.metadata?.annotations[
+                                            'package.argoproj.io/description'
+                                        ]
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="ml-1"
+                                    ></AtlanIcon
+                                ></a-tooltip>
+                            </div>
+
+                            <div class="flex text-gray-500">
+                                {{
+                                    item?.metadata.annotations[
+                                        'package.argoproj.io/name'
+                                    ]
+                                }}
+                                ({{
+                                    item?.metadata.labels[
+                                        'package.argoproj.io/version'
+                                    ]
+                                }})
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <a-tabs
@@ -19,16 +111,14 @@
                 :destroy-inactive-tab-pane="true"
             >
                 <template #tab>
-                    <!-- <PreviewTabsIcon
+                    <PreviewTabsIcon
                         :title="tab.tooltip"
                         :icon="tab.icon"
                         :image="tab.image"
                         :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
-                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
-                        @click="onClickTabIcon(tab)"
-                    /> -->
+                    />
                 </template>
 
                 <!-- <component
@@ -64,13 +154,15 @@
         provide,
     } from 'vue'
 
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+
     export default defineComponent({
         name: 'AssetPreview',
-        components: {},
+        components: { PreviewTabsIcon },
 
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
+            item: {
+                type: Object,
                 required: false,
                 default: () => {},
             },
@@ -108,7 +200,9 @@
                 },
             ]
 
-            return { filteredTabs, activeKey }
+            const { item } = toRefs(props)
+
+            return { filteredTabs, activeKey, item }
         },
     })
 </script>

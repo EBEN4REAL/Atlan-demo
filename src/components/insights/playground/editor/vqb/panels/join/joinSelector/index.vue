@@ -11,6 +11,7 @@
             isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
             ,
             'flex flex-wrap items-center  rounded selector-height pl-3',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -134,6 +135,7 @@
         ref,
         onMounted,
         onUnmounted,
+        toRefs,
         Ref,
         ComputedRef,
         inject,
@@ -155,6 +157,7 @@
 
         setup(props, { emit }) {
             const { selectedJoinType } = useVModels(props)
+            const { disabled } = toRefs(props)
 
             const { list } = useJoin()
 
@@ -165,6 +168,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
+                if (disabled.value) return
                 isAreaFocused.value = true
             }
             const observer = ref()

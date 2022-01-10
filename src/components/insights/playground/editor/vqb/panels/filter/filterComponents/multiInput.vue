@@ -9,6 +9,9 @@
         :token-separators="[',']"
         @change="handleChange"
     >
+        <template #suffixIcon>
+            <CustomVariableTrigger />
+        </template>
     </a-select>
 </template>
 
@@ -23,12 +26,13 @@
         ComputedRef,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import CustomVariableTrigger from './customVariableTrigger.vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: {},
+        components: { CustomVariableTrigger },
         props: {
             inputValue: {
                 type: String,

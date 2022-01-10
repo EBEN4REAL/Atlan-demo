@@ -3,7 +3,9 @@
         ref="container"
         @click="
             () => {
-                isAreaFocused = true
+                if (!disabled) {
+                    isAreaFocused = true
+                }
             }
         "
         @mouseover="handleMouseOver"
@@ -15,6 +17,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container truncate',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
     >
         <div class="flex w-full">
@@ -67,7 +70,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedColumn
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -96,7 +99,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedColumn
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -475,6 +478,11 @@
                 required: false,
                 default: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -483,6 +491,7 @@
                 panelIndex,
                 subIndex,
                 rowIndex,
+                disabled,
             } = toRefs(props)
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -573,6 +582,7 @@
                                 return true
                             if (selectedColumn?.label && !mouseHover)
                                 return true
+                            if (disabled.value) return true
                         }
                         break
                     }
@@ -877,6 +887,7 @@
             })
 
             return {
+                disabled,
                 isTableSelected,
                 queryText,
                 container,

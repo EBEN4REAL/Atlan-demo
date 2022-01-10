@@ -14,6 +14,7 @@
                             class=""
                             v-if="index !== 0"
                             v-model:filterType="subpanel.filter.filterType"
+                            :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
                             >Where</span
@@ -27,6 +28,7 @@
                                 :tableQualfiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
+                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
@@ -50,11 +52,11 @@
 
                         <div class="flex item-3">
                             <Input
-                                v-if="
-                                    subpanel?.filter?.type === 'input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'input'"
                                 :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 class="flex-1 w-full"
                                 :type="
                                     getInputTypeFromColumnType(
@@ -65,19 +67,13 @@
                             />
 
                             <MultiInput
-                                v-if="
-                                    subpanel?.filter?.type === 'multi_input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'multi_input'"
                                 class="flex-1 w-full"
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
                             <RangeInput
-                                v-if="
-                                    subpanel?.filter?.type === 'range_input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'range_input'"
                                 class="flex-1 w-full"
                                 :type="
                                     getInputTypeFromColumnType(
@@ -87,83 +83,13 @@
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
-                            <!-- Custom variable placeholder -->
-                            <div
-                                class="flex items-center w-full"
-                                v-if="subpanel?.filter?.isVariable"
-                            >
-                                <div
-                                    class="flex items-center flex-1 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                    style="height: 32px !important"
-                                >
-                                    <code class="px-3 truncate bg-white">
-                                        <a-tooltip placement="bottomLeft">
-                                            <template #title
-                                                >{{
-                                                    getInputTypeFromColumnType(
-                                                        subpanel?.column?.type
-                                                    )?.toUpperCase()
-                                                }}:&nbsp;
-                                                {{
-                                                    getCustomVariable(subpanel)
-                                                        .value
-                                                }}
-                                            </template>
-                                            <div
-                                                class="truncate cursor-pointer moustacheDecoration"
-                                            >
-                                                {{
-                                                    getCustomVariableText(
-                                                        subpanel
-                                                    )
-                                                }}
-                                            </div>
-                                        </a-tooltip>
-                                    </code>
-                                </div>
-                                <!-- Second input field if it is there -->
-                                <div
-                                    v-if="
-                                        totalFiledsMapWithInput[
-                                            subpanel?.filter?.type
-                                        ] > 1
-                                    "
-                                    class="flex items-center flex-1 w-full border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                    style="height: 32px !important"
-                                >
-                                    <code class="px-3 truncate bg-white">
-                                        <a-tooltip placement="bottomLeft">
-                                            <template #title
-                                                >{{
-                                                    getInputTypeFromColumnType(
-                                                        subpanel?.column?.type
-                                                    )?.toUpperCase()
-                                                }}:&nbsp;
-                                                {{
-                                                    getCustomVariable(
-                                                        subpanel,
-                                                        2
-                                                    ).value
-                                                }}
-                                            </template>
-                                            <div
-                                                class="truncate cursor-pointer moustacheDecoration"
-                                            >
-                                                {{
-                                                    getCustomVariableText(
-                                                        subpanel,
-                                                        2
-                                                    )
-                                                }}
-                                            </div>
-                                        </a-tooltip>
-                                    </code>
-                                </div>
-                            </div>
                             <!--  -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
-                                    v-if="isSubpanelClosable(subpanels)"
+                                    v-if="
+                                        isSubpanelClosable(subpanels) &&
+                                        !readOnly
+                                    "
                                     @click.stop="
                                         () => handleDelete(index, subpanel)
                                     "
@@ -171,45 +97,6 @@
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
                                 <!-- <div style="width: 32px" v-else></div> -->
-
-                                <a-tooltip placement="bottomLeft">
-                                    <template #title
-                                        >Toggle this to change it to
-                                        {{
-                                            subpanel?.filter?.isVariable
-                                                ? 'input field'
-                                                : 'custom variable'
-                                        }}
-                                    </template>
-                                    <div>
-                                        <AtlanIcon
-                                            v-if="!subpanel?.filter?.isVariable"
-                                            @click.stop="
-                                                () =>
-                                                    toggleVariableType(
-                                                        false,
-                                                        index,
-                                                        subpanel
-                                                    )
-                                            "
-                                            icon="Flash"
-                                            class="w-6 h-6 ml-3 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                        />
-                                        <AtlanIcon
-                                            v-else
-                                            @click.stop="
-                                                () =>
-                                                    toggleVariableType(
-                                                        true,
-                                                        index,
-                                                        subpanel
-                                                    )
-                                            "
-                                            icon="FlashColor"
-                                            class="w-6 h-6 ml-3 opacity-0 gap-1cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                        />
-                                    </div>
-                                </a-tooltip>
                             </div>
                         </div>
                     </div>
@@ -218,6 +105,7 @@
         </div>
 
         <span
+            v-if="readonly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -236,6 +124,8 @@
         toRaw,
         inject,
         ComputedRef,
+        computed,
+        toRefs,
         Ref,
     } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
@@ -285,12 +175,18 @@
                 required: true,
                 default: [],
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
             const { isSubpanelClosable } = useUtils()
+            const { disabled } = toRefs(props)
             const { getInputTypeFromColumnType, totalFiledsMapWithInput } =
                 useFilter()
 
@@ -567,7 +463,27 @@
 
             let hoverItem = ref(null)
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                disabled,
+                readOnly,
                 isSubpanelClosable,
                 activeInlineTab,
                 handleFilterChange,

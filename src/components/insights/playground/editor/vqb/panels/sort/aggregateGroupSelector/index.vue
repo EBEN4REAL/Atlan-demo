@@ -13,6 +13,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -32,6 +33,7 @@
             v-if="selectedItem?.label && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
+            :disabled="disabled"
             @focus="
                 () => {
                     isAreaFocused = true
@@ -48,6 +50,7 @@
             v-if="!selectedItem?.label"
             ref="initialRef"
             v-model:value="inputValue2"
+            :disabled="disabled"
             @change="input2Change"
             :placeholder="placeholder"
             :class="[
@@ -56,46 +59,7 @@
         />
 
         <div class="absolute right-2">
-            <AtlanIcon
-                v-if="
-                    findVisibility(
-                        'search',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-                icon="Search"
-                class="w-4 h-4"
-            />
-            <AtlanIcon
-                icon="ChevronDown"
-                class="w-4 h-4"
-                v-if="
-                    findVisibility(
-                        'chevronDown',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-            />
-            <AtlanIcon
-                icon="Cross"
-                class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
-                v-if="
-                    findVisibility(
-                        'cross',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    )
-                "
-            />
+            <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
         <teleport to="body">
             <div
@@ -212,6 +176,11 @@
                 type: Object,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             mixedSubpanels: {
                 type: Object as PropType<{
                     mappedGroupSubpanels: SubpanelColumnData &
@@ -225,7 +194,7 @@
         },
 
         setup(props, { emit }) {
-            const { mixedSubpanels } = toRefs(props)
+            const { mixedSubpanels, disabled } = toRefs(props)
             const {
                 isPrimary,
                 dataTypeImageForColumn,
@@ -270,9 +239,10 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
+                if (disabled.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
-                    inputRef?.value?.focus()
+                    if (disabled.value) inputRef?.value?.focus()
                 })
             }
             const setFocusedCusror = () => {
@@ -284,7 +254,7 @@
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
+                if (!container.value.contains(event?.relatedTarget)) {
                     isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
@@ -323,7 +293,9 @@
                                 label: aggregatedAliasMap[aggregatorUpperCase](
                                     item?.column?.label
                                 ),
-                                value: item?.column?.columnQualifiedName,
+                                value:
+                                    item?.column?.columnQualifiedName ??
+                                    item?.column?.qualifiedName,
                                 addedBy: item.addedBy,
                                 type: item?.column?.type,
                                 aggregator: aggregator,
@@ -370,53 +342,6 @@
             }
             const handleMouseOut = () => {
                 if (mouseOver.value) mouseOver.value = false
-            }
-
-            const findVisibility = (
-                key: string,
-                isAreaFocused,
-                mouseHover,
-                tableQualifiedName,
-                selectedItem
-            ) => {
-                switch (key) {
-                    case 'chevronDown': {
-                        if (!isAreaFocused) {
-                            if (
-                                Object.keys(selectedItem).length === 0 &&
-                                mouseHover
-                            )
-                                return true
-                            if (
-                                Object.keys(selectedItem).length === 0 &&
-                                !mouseHover
-                            )
-                                return true
-                            if (
-                                Object.keys(selectedItem).length !== 0 &&
-                                !mouseHover
-                            )
-                                return true
-                        }
-                        break
-                    }
-                    case 'cross': {
-                        if (isAreaFocused) return false
-                        if (
-                            !isAreaFocused &&
-                            Object.keys(selectedItem).length > 0 &&
-                            mouseHover
-                        )
-                            return true
-                        else return false
-                        break
-                    }
-                    case 'search': {
-                        if (!isAreaFocused) return false
-                        if (tableQualifiedName) return true
-                        break
-                    }
-                }
             }
 
             const clearAllSelected = () => {
@@ -512,12 +437,12 @@
             }
 
             return {
+                disabled,
                 isTableSelected,
                 containerPosition,
                 initialRef,
                 queryText,
                 clearAllSelected,
-                findVisibility,
                 handleMouseOver,
                 handleMouseOut,
                 mouseOver,

@@ -11,7 +11,9 @@ import { Ref } from 'vue'
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
     let res = ''
-    const type = getInputTypeFromColumnType(subpanel?.column?.type)
+    const type = getInputTypeFromColumnType(
+        subpanel?.column?.type
+    )?.toLocaleLowerCase()
     if (type === 'number') res += `${Number(value)}`
     else if (type === 'text') {
         if (subpanel?.filter?.name?.includes('like')) {

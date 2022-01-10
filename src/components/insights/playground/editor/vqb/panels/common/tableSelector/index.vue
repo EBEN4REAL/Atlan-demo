@@ -13,6 +13,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         style="min-height: 34px"
         @click.stop="() => {}"
@@ -40,6 +41,7 @@
             v-if="modelValue && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
+            :disabled="disabled"
             @focus="
                 () => {
                     isAreaFocused = true
@@ -50,6 +52,7 @@
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
                 'p-0 pr-4 ml-2 text-sm border-none shadow-none outline-none  focus-none',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <a-input
@@ -61,6 +64,7 @@
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
                 ' p-0 ml-2  border-none shadow-none outline-none text-sm  focus-none',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -72,7 +76,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItem
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -101,7 +105,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItem
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -286,10 +290,15 @@
                     assetType: string | undefined
                 }>,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName } = toRefs(props)
+            const { tableQualfiedName, disabled } = toRefs(props)
             const { assetType, certificateStatus } = useAssetInfo()
             const { getTableNameFromTableQualifiedName } = useUtils()
             const queryText = ref('')
@@ -335,6 +344,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
+                if (disabled.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
                     inputRef?.value?.focus()
@@ -489,6 +499,7 @@
                                 !mouseHover
                             )
                                 return true
+                            if (disabled.value) return true
                         }
                         break
                     }
@@ -593,6 +604,7 @@
             }
 
             return {
+                disabled,
                 containerPosition,
                 actionClick,
                 selectedTableData,

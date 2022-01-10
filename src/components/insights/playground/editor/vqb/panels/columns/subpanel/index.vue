@@ -13,6 +13,7 @@
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         v-model:selectedTableData="subpanel.tableData"
+                        :disabled="readOnly"
                         :selectedItem="{}"
                         @change="
                             (val) => hanldeTableQualifiedNameChange(val, index)
@@ -174,8 +175,26 @@
                     subpanels.value.splice(index, 1)
                 }
             }
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             return {
+                readOnly,
                 filteredTablesValues,
                 activeInlineTab,
                 handleDelete,

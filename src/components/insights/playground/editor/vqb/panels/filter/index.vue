@@ -39,9 +39,18 @@
                             ]"
                             style="z-index: 2"
                         >
-                            <span class="absolute text-sm -right-0.5 -top-1.5"
-                                >⚡️</span
-                            >
+                            <span class="absolute text-sm -right-1 -top-2">
+                                <AtlanIcon
+                                    v-if="
+                                        isFilterIsInteractive(
+                                            activeInlineTab.playground.vqb
+                                                .panels[index].subpanels
+                                        )
+                                    "
+                                    icon="GlowFlash"
+                                    class="w-4 h-4"
+                            /></span>
+
                             <AtlanIcon
                                 icon="FilterFunnel"
                                 :class="[
@@ -70,7 +79,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <p
+
+                            <div
                                 :class="[
                                     isChecked
                                         ? 'text-gray-500'
@@ -79,19 +89,29 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                {{
-                                    getSummarisedInfoOfFilterPanel(
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].subpanels,
-                                        activeInlineTab
-                                    )
-                                }}
-                            </p>
+                                <p
+                                    :class="[
+                                        isChecked
+                                            ? 'text-gray-500'
+                                            : 'text-gray-400 line-through',
+                                        'text-xs truncate',
+                                    ]"
+                                    v-if="!expand"
+                                >
+                                    {{
+                                        getSummarisedInfoOfFilterPanel(
+                                            activeInlineTab.playground.vqb
+                                                .panels[index].subpanels,
+                                            activeInlineTab
+                                        )
+                                    }}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     <div
+                        v-if="!readOnly"
                         :class="[
                             containerHovered ? 'opacity-100' : 'opacity-0',
                             'flex border border-gray-300 rounded   items-strech',
@@ -179,7 +199,8 @@
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index)
+                        Number(index) &&
+                    !readOnly
                 "
             />
         </div>
@@ -223,6 +244,7 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
+    import VariableRender from './variableRender/index.vue'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -231,6 +253,7 @@
             Actions,
             AtlanBtn,
             FilterSubPanel,
+            VariableRender,
         },
         props: {
             index: {
@@ -245,7 +268,8 @@
         setup(props, { emit }) {
             const STRING_CHECK = 'ksdghkjsdhfksdfhkjsdhfkjshfkjshfkjhsfkjh'
             const { index, panel } = toRefs(props)
-            const { totalFiledsMapWithInput } = useFilter()
+            const { totalFiledsMapWithInput, isFilterIsInteractive } =
+                useFilter()
             const editorInstanceRef = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
@@ -410,6 +434,24 @@
                 }
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             watch(
                 activeInlineTab,
                 () => {
@@ -423,6 +465,8 @@
             }
 
             return {
+                readOnly,
+                isFilterIsInteractive,
                 STRING_CHECK,
                 toggleConfirmPopover,
                 getPopoverContent,

@@ -8,6 +8,18 @@
         </div>
         <slot name="announcement"></slot>
         <div class="flex flex-col gap-y-3">
+            <div
+                v-if="getSummaryVariants(asset)?.components?.length"
+                class="flex gap-x-16"
+            >
+                <div
+                    v-for="(component, index) in getSummaryVariants(asset)
+                        ?.components"
+                    :key="index"
+                >
+                    <component :is="component" :asset="asset"></component>
+                </div>
+            </div>
             <div class="grid grid-cols-2">
                 <div class="flex flex-col">
                     <p class="text-gray-500">Name</p>
@@ -70,10 +82,6 @@
                             }}</span>
                         </div>
                     </div>
-                    <!-- <div class="flex flex-col">
-                    <p class="text-gray-500">Asset Type</p>
-                    {{ asset.typeName }}
-                </div> -->
                 </div>
             </div>
             <div class="flex flex-col">
@@ -87,6 +95,30 @@
                     class="-ml-1"
                     @change="handleChangeDescription"
                 />
+            </div>
+            <div class="flex gap-x-32">
+                <div ref="animationPoint" class="flex flex-col">
+                    <p class="mb-1 text-sm text-gray-500">Certificate</p>
+
+                    <Certificate
+                        v-model="localCertificate"
+                        :selected-asset="asset"
+                        :edit-permission="false"
+                        :in-profile="true"
+                        @change="handleChangeCertificate"
+                    />
+                </div>
+
+                <div v-if="asset.guid" class="flex flex-col max-w-sm">
+                    <p class="mb-1 text-sm text-gray-500">Owners</p>
+                    <Owners
+                        v-model="localOwners"
+                        :selected-asset="asset"
+                        :edit-permission="false"
+                        :in-profile="true"
+                        @change="handleOwnersChange"
+                    />
+                </div>
             </div>
         </div>
         <slot></slot>

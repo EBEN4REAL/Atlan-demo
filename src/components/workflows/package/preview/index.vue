@@ -76,7 +76,7 @@
                                 >
                                     <AtlanIcon
                                         icon="Info"
-                                        class="ml-1"
+                                        class="h-3 ml-1"
                                     ></AtlanIcon
                                 ></a-tooltip>
                             </div>
@@ -121,23 +121,7 @@
                     />
                 </template>
 
-                <!-- <component
-                    :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
-                    "
-                    :data="tab.data"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                ></component> -->
+                <component :is="tab.component" :item="item"></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -152,13 +136,19 @@
         toRefs,
         computed,
         provide,
+        defineAsyncComponent,
     } from 'vue'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
-        components: { PreviewTabsIcon },
+        components: {
+            PreviewTabsIcon,
+            property: defineAsyncComponent(
+                () => import('./property/index.vue')
+            ),
+        },
 
         props: {
             item: {
@@ -187,16 +177,14 @@
             const activeKey = ref(0)
             const filteredTabs = [
                 {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
-                },
-                {
-                    name: 'Run History',
-                    component: 'runs',
-                    icon: 'ActivityLogs',
-                    tooltip: 'Runs History',
+                    name: 'Property',
+                    component: 'property',
+                    icon: 'Property',
+                    activeIcon: 'PropertyActive',
+                    tooltip: 'Property',
+                    scrubbed: false,
+                    requiredInProfile: true,
+                    analyticsKey: 'property',
                 },
             ]
 

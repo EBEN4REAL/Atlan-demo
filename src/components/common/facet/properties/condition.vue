@@ -146,6 +146,9 @@
                         localCondition.value.value === 'true' ||
                         localCondition.value.value === true
                     condition.value.operand = attribute.value.name
+                } else if (localCondition.value.value === null) {
+                    delete condition.value.operand
+                    delete condition.value.value
                 } else {
                     condition.value.operand = attribute.value.name
                     condition.value.value = localCondition.value.value

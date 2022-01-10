@@ -535,6 +535,7 @@
                         searchText: queryText.value,
                     }
                 }
+
                 return {
                     dsl: useBody(data),
                     attributes: attributes,

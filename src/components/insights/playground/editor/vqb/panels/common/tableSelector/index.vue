@@ -439,6 +439,7 @@
                 copySelectedTableData.certificateStatus =
                     certificateStatus(item)
                 copySelectedTableData.assetType = assetType(item)
+                copySelectedTableData.item = item
                 emit('update:selectedTableData', copySelectedTableData)
                 isAreaFocused.value = false
                 event.stopPropagation()

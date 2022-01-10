@@ -401,7 +401,7 @@ export function useBody(
                                     ? base.filter('exists', element.operand)
                                     : base.notFilter('exists', element.operand)
                             } else if (
-                                element.value != null ||
+                                element.value != null &&
                                 element.value !== ''
                             ) {
                                 if (element.operator === 'equals') {

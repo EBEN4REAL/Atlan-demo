@@ -6,6 +6,8 @@
             :width="450"
             :closable="false"
             :destroy-on-close="true"
+            class="flex flex-col"
+            :body-style="{ display: 'flex', 'flex-direction': 'column' }"
         >
             <div class="flex items-center justify-between px-3 py-4 border-b">
                 <div>
@@ -25,7 +27,7 @@
                 </a-button>
             </div>
             <!-- Form =============================================================================================================== -->
-            <div class="px-3 py-4">
+            <div class="flex-grow px-3 py-4 overflow-y-auto">
                 <a-form
                     ref="formRef"
                     class="ant-form-right-asterix"
@@ -350,36 +352,21 @@
                             </a-form-item> -->
                         </div>
                     </div>
-                    <div
-                        :style="{
-                            position: 'absolute',
-                            right: 0,
-                            bottom: 0,
-                            width: '100%',
-                            borderTop: '1px solid #e9e9e9',
-                            padding: '10px 16px',
-                            background: '#fff',
-                            textAlign: 'right',
-                            zIndex: 1,
-                        }"
-                    >
-                        <a-button
-                            :style="{ marginRight: '8px' }"
-                            @click="handleClose"
-                        >
-                            Cancel
-                        </a-button>
-                        <a-button
-                            type="primary"
-                            :loading="loading"
-                            @click="handleUpdateProperty"
-                        >
-                            {{ isEdit ? 'Update' : 'Create' }}
-                        </a-button>
-                    </div>
                 </a-form>
             </div>
 
+            <div class="flex justify-end p-3 border-t">
+                <a-button :style="{ marginRight: '8px' }" @click="handleClose">
+                    Cancel
+                </a-button>
+                <a-button
+                    type="primary"
+                    :loading="loading"
+                    @click="handleUpdateProperty"
+                >
+                    {{ isEdit ? 'Update' : 'Create' }}
+                </a-button>
+            </div>
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>

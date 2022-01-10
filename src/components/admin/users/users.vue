@@ -22,7 +22,12 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover
+                        trigger="click"
+                        placement="bottomLeft"
+                        @visibleChange="handleClickFilter"
+                        v-model="visible"
+                    >
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
@@ -34,7 +39,11 @@
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow-none focus:border-primary focus:text-primary"
+                            :class="`flex items-center justify-center h-8 py-2 pl-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow-none hover:border-primary hover:text-primary ${
+                                visible
+                                    ? 'border-primary text-primary blue-icons'
+                                    : ''
+                            }`"
                         >
                             <AtlanIcon icon="FilterDot" class="w-5 h-5" />
                             <span class="text-sm"
@@ -531,6 +540,12 @@
                 }
             )
 
+            const visible = ref(false)
+
+            const handleClickFilter = (v) => {
+                visible.value = v
+            }
+
             return {
                 isReady,
                 tenantName,
@@ -583,6 +598,8 @@
                 numberOfDisableUser,
                 numberOfInvitedUser,
                 filtersLength,
+                handleClickFilter,
+                visible,
             }
         },
     })
@@ -599,6 +616,11 @@
         .input-filter {
             width: 300px !important;
             margin-right: 12px !important;
+        }
+    }
+    .blue-icons {
+        path {
+            stroke: rgb(82, 119, 215);
         }
     }
 </style>

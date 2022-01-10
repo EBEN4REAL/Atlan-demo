@@ -27,7 +27,9 @@
         </div>
         <DefaultLayout v-else title="API Keys">
             <template #header>
-                <div class="flex items-center justify-between pb-3">
+                <div
+                    class="flex items-center justify-between p-4 pb-3 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+                >
                     <div class="flex w-1/4">
                         <SearchAndFilter
                             v-model:value="searchText"

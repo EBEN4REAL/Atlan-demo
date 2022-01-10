@@ -211,7 +211,10 @@ export function generateSQLQuery(
                     }
                 }
             } else {
-                select.order(subpanel.aggregateORGroupColumn?.label, order)
+                select.order(
+                    `"${subpanel.aggregateORGroupColumn?.label}"`,
+                    order
+                )
             }
         })
         // console.log(select.toString(), 'select.toString()')

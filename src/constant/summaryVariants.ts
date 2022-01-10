@@ -32,7 +32,7 @@ export const summaryVariants = [
     {
         id: 'workspace',
         label: 'Workspace',
-        components: ['Datasets', 'Reports', 'Dashboards', 'Connection'],
+        components: [/* 'Datasets', 'Reports', 'Dashboards', */ 'Connection'],
         includes: ['PowerBIWorkspace'],
     },
     {
@@ -56,25 +56,25 @@ export const summaryVariants = [
     {
         id: 'report',
         label: 'Report',
-        components: ['Workspace', 'Pages', 'Connection'],
+        components: ['Workspace', /* 'Pages', */ 'Connection'],
         includes: ['PowerBIReport'],
     },
     {
         id: 'dashboard',
         label: 'Dashboard',
-        components: ['Workspace', 'Tiles', 'Connection'],
+        components: ['Workspace', /* 'Tiles', */ 'Connection'],
         includes: ['PowerBIDashboard'],
     },
     {
         id: 'page',
         label: 'Page',
-        components: ['Workspace', 'Report', 'Connection'],
+        components: [/* 'Workspace', */ 'Report', 'Connection'],
         includes: ['PowerBIPage'],
     },
     {
         id: 'tile',
         label: 'Tile',
-        components: ['Workspace', 'Dashboard', 'Connection'],
+        components: [/* 'Workspace', */ 'Dashboard', 'Connection'],
         includes: ['PowerBITile'],
     },
 ]

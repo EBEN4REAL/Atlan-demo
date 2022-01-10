@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white border border-gray-200 rounded">
+    <div class="p-4 bg-white border border-gray-200 rounded">
         <div class="flex items-center mb-4">
             <AtlanIcon icon="TableSummary" class="w-auto h-8 mr-3" /><span
                 class="text-base font-bold text-gray"

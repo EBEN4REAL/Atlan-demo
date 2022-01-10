@@ -64,7 +64,7 @@
                 ></a-button>
             </a-tooltip>
 
-            <span v-if="!showAddBtn" class="-ml-1 text-sm text-gray-500"
+            <span v-if="!showAddBtn" class="-ml-1 text-sm text-gray-600"
                 >No certification</span
             >
         </div>

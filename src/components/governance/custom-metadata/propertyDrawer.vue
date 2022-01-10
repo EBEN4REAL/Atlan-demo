@@ -395,6 +395,7 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
+    import { onKeyStroke } from '@vueuse/core'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -409,7 +410,7 @@
                 default: () => {},
             },
         },
-        emits: ['addedProperty'],
+        emits: ['addedProperty', 'openIndex'],
         setup(props, { emit }) {
             const initializeForm = (): CMA => ({
                 ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
@@ -466,6 +467,20 @@
                 isEdit.value = makeEdit
                 visible.value = true
             }
+
+            const openPrev = (i) => {
+                emit('openIndex', i - 1)
+            }
+            const openNext = (i) => {
+                emit('openIndex', i + 1)
+            }
+
+            onKeyStroke(['ArrowUp', 'ArrowDown'], (e) => {
+                if (!visible.value) return
+                if (e.key === 'ArrowUp') openPrev(propertyIndex.value)
+
+                if (e.key === 'ArrowDown') openNext(propertyIndex.value)
+            })
 
             const handleUpdateError = (error) => {
                 const errorCode = error.response?.data.errorCode

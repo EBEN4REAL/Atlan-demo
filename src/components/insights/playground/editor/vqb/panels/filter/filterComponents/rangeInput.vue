@@ -3,18 +3,25 @@
         <a-input
             v-if="type === 'text'"
             v-model:value="firstvalue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
             placeholder="Enter  value"
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'first', type)"
         >
             <template #suffix>
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </template>
         </a-input>
         <div v-else-if="type === 'date'" class="relative flex flex-1">
             <a-date-picker
                 v-model:value="firstvalue"
+                :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
                 @change="(event) => onChange(event, 'first', type)"
                 :show-time="{ format: 'HH:mm' }"
@@ -22,15 +29,26 @@
                 place
             >
                 <template #suffixIcon>
-                    <CustomVariableTrigger />
+                    <CustomVariableTrigger
+                        v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                        :subpanel="subpanel"
+                        :index="index"
+                        v-model:subpanels="subpanels"
+                    />
                 </template>
             </a-date-picker>
             <div class="absolute right-2.5 top-1">
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </div>
         </div>
         <a-input
             v-model:value="firstvalue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
             v-else-if="type === 'number'"
             placeholder="Enter numeric value"
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
@@ -40,40 +58,63 @@
             @keypress="isNumberKey(event)"
         >
             <template #suffix>
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </template>
         </a-input>
         <a-input
             v-if="type === 'text'"
             v-model:value="secondValue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
             placeholder="Enter value"
             class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'second', type)"
         >
             <template #suffix>
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </template>
         </a-input>
         <div v-else-if="type === 'date'" class="relative flex flex-1">
             <a-date-picker
                 v-model:value="secondValue"
+                :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
                 style="height: 32px !important"
                 :show-time="{ format: 'HH:mm' }"
                 @change="(event) => onChange(event, 'second', type)"
             >
                 <template #suffixIcon>
-                    <CustomVariableTrigger />
+                    <CustomVariableTrigger
+                        v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                        :subpanel="subpanel"
+                        :index="index"
+                        v-model:subpanels="subpanels"
+                    />
                 </template>
             </a-date-picker>
             <div class="absolute right-2.5 top-1">
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </div>
         </div>
         <a-input
             v-else-if="type === 'number'"
             v-model:value="secondValue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
             placeholder="Enter numeric value"
             class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
@@ -82,7 +123,12 @@
             @keypress="isNumberKey(event)"
         >
             <template #suffix>
-                <CustomVariableTrigger />
+                <CustomVariableTrigger
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                    :subpanel="subpanel"
+                    :index="index"
+                    v-model:subpanels="subpanels"
+                />
             </template>
         </a-input>
     </div>
@@ -90,6 +136,7 @@
 
 <script lang="ts">
     import {
+        toRefs,
         defineComponent,
         ref,
         watch,
@@ -97,12 +144,14 @@
         toRaw,
         inject,
         ComputedRef,
+        computed,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs, { Dayjs } from 'dayjs'
     import CustomVariableTrigger from './customVariableTrigger.vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -117,10 +166,25 @@
                 required: true,
                 default: 'text',
             },
+            subpanel: {
+                type: Object as PropType<SubpanelFilter>,
+                required: true,
+                default: () => {},
+            },
+            index: {
+                type: Number,
+                required: true,
+            },
+            subpanels: {
+                type: Object as PropType<SubpanelFilter[]>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
-            const { inputValue, type } = useVModels(props)
+            const { inputValue, type, subpanels } = useVModels(props)
+            const { subpanel, index } = toRefs(props)
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
             const activeInlineTabKey = inject(
@@ -129,6 +193,9 @@
 
             const inlineTabs = inject(
                 'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTab = inject(
+                'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
             const { updateVQB } = useVQB()
@@ -205,7 +272,28 @@
                 return true
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
             return {
+                subpanels,
+                index,
+                subpanel,
+                readOnly,
                 isNumberKey,
                 firstvalue,
                 secondValue,

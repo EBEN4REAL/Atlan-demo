@@ -10,6 +10,7 @@
     >
         <template #suffix>
             <CustomVariableTrigger
+                v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                 :subpanel="subpanel"
                 :index="index"
                 v-model:subpanels="subpanels"
@@ -29,6 +30,7 @@
     >
         <template #suffix>
             <CustomVariableTrigger
+                v-if="!readOnly && !subpanel?.filter?.isVariable"
                 :subpanel="subpanel"
                 :index="index"
                 v-model:subpanels="subpanels"
@@ -53,6 +55,7 @@
         <div class="absolute right-2.5 top-1">
             <CustomVariableTrigger
                 :subpanel="subpanel"
+                v-if="!readOnly && !subpanel?.filter?.isVariable"
                 :index="index"
                 v-model:subpanels="subpanels"
             />
@@ -73,8 +76,6 @@
         toRaw,
         ComputedRef,
         onUnmounted,
-        ComputedRef,
-        inject,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs from 'dayjs'

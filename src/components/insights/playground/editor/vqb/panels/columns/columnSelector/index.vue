@@ -377,7 +377,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
-                if (disabled.value) return
+                if (disabled?.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
                     console.log(inputRef?.value, 'he')
@@ -385,7 +385,7 @@
                 })
             }
             const setFocusedCusror = () => {
-                if (disabled.value) return
+                if (disabled?.value) return
                 nextTick(() => {
                     inputRef?.value?.focus()
                 })
@@ -598,7 +598,7 @@
                                 return true
                             if (selectedItems.length !== 0 && !mouseHover)
                                 return true
-                            if (disabled.value) return true
+                            if (disabled?.value) return true
                         }
                         break
                     }

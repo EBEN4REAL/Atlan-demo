@@ -1,6 +1,7 @@
 <template>
     <a-select
         v-model:value="inputValue"
+        :disabled="readOnly && !subpanel?.filter?.isVariable"
         mode="tags"
         class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         :class="$style.multi_input"
@@ -10,7 +11,12 @@
         @change="handleChange"
     >
         <template #suffixIcon>
-            <CustomVariableTrigger />
+            <CustomVariableTrigger
+                v-if="!(readOnly && !subpanel?.filter?.isVariable)"
+                :subpanel="subpanel"
+                :index="index"
+                v-model:subpanels="subpanels"
+            />
         </template>
     </a-select>
 </template>
@@ -20,15 +26,20 @@
         defineComponent,
         ref,
         watch,
+        toRefs,
+        Ref,
         PropType,
-        toRaw,
+        computed,
         inject,
+        toRaw,
         ComputedRef,
+        onUnmounted,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import CustomVariableTrigger from './customVariableTrigger.vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -38,13 +49,31 @@
                 type: String,
                 required: true,
             },
+            subpanel: {
+                type: Object as PropType<SubpanelFilter>,
+                required: true,
+                default: () => {},
+            },
+            index: {
+                type: Number,
+                required: true,
+            },
+            subpanels: {
+                type: Object as PropType<SubpanelFilter[]>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
-            const { inputValue } = useVModels(props)
+            const { inputValue, subpanels } = useVModels(props)
+            const { subpanel, index } = toRefs(props)
 
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTab = inject(
+                'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
             const inlineTabs = inject(
@@ -70,7 +99,29 @@
                 }, 2000)
                 // updateVQB(activeInlineTabKey, inlineTabs)
             }
+
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
             return {
+                subpanels,
+                index,
+                subpanel,
+                readOnly,
                 inputValue,
                 handleChange,
             }

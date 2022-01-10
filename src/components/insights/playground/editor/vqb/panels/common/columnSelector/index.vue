@@ -169,7 +169,8 @@
                                         (e) => onSelectItem(item, e)
                                     "
                                     :class="
-                                        selectedItem?.label === item.label
+                                        selectedItem?.qualifiedName ===
+                                        item.columnQualifiedName
                                             ? 'bg-primary-light'
                                             : 'bg-white'
                                     "
@@ -202,8 +203,8 @@
                                             icon="Check"
                                             class="ml-2 text-primary parent-ellipsis-container-base"
                                             v-if="
-                                                selectedItem?.label ===
-                                                item.label
+                                                selectedItem?.qualifiedName ===
+                                                item.columnQualifiedName
                                             "
                                         />
                                         <div v-else class="w-4 ml-2"></div>
@@ -403,7 +404,8 @@
                                             (e) => onSelectItem(item, e)
                                         "
                                         :class="
-                                            selectedItem?.label === item.label
+                                            selectedItem?.qualifiedName ===
+                                            item.qualifiedName
                                                 ? 'bg-primary-light'
                                                 : 'bg-white'
                                         "
@@ -441,8 +443,8 @@
                                                 icon="Check"
                                                 class="ml-2 text-primary parent-ellipsis-container-base"
                                                 v-if="
-                                                    selectedItem?.label ===
-                                                    item.label
+                                                    selectedItem?.qualifiedName ===
+                                                    item.qualifiedName
                                                 "
                                             />
                                             <div v-else class="w-4 ml-2"></div>

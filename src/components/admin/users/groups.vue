@@ -1,7 +1,7 @@
 <template>
     <a-popover v-model:visible="visiblePopover" placement="bottom">
         <template #content>
-            <div class="p-3 content-popover-group-persona">
+            <div class="p-3 pb-4 content-popover-group-persona">
                 <div class="flex justify-between">
                     Groups
                     <div
@@ -105,8 +105,9 @@
         width: 220px;
     }
     .container-scroll {
-        height: 170px;
+        max-height: 170px;
         overflow: auto;
+        height: auto;
     }
     .group-count {
         &:hover {

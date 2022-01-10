@@ -6,6 +6,7 @@
         bordered
         :default-active-key="['1', '2']"
         @change="handleChange"
+        class="-mt-3"
     >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"

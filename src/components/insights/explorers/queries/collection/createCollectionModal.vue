@@ -457,20 +457,12 @@
                     return
                 }
 
-                let ownersData =
-                    isShareable.value === 'true'
-                        ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
-                              viewerUsers: userData.value['view'].ownerUsers,
-                              viewerGroups: userData.value['view'].ownerGroups,
-                          }
-                        : {
-                              adminUsers: [],
-                              adminGroups: [],
-                              viewerUsers: [],
-                              viewerGroups: [],
-                          }
+                let ownersData = {
+                    adminUsers: userData.value['edit'].ownerUsers,
+                    adminGroups: userData.value['edit'].ownerGroups,
+                    viewerUsers: userData.value['view'].ownerUsers,
+                    viewerGroups: userData.value['view'].ownerGroups,
+                }
 
                 const { data, error, isLoading, isReady, mutate } =
                     createCollection({
@@ -510,20 +502,12 @@
             const updateCollectionData = () => {
                 console.log('item: ', item.value)
 
-                let ownersData =
-                    isShareable.value === 'true'
-                        ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
-                              viewerUsers: userData.value['view'].ownerUsers,
-                              viewerGroups: userData.value['view'].ownerGroups,
-                          }
-                        : {
-                              adminUsers: [],
-                              adminGroups: [],
-                              viewerUsers: [],
-                              viewerGroups: [],
-                          }
+                let ownersData = {
+                    adminUsers: userData.value['edit'].ownerUsers,
+                    adminGroups: userData.value['edit'].ownerGroups,
+                    viewerUsers: userData.value['view'].ownerUsers,
+                    viewerGroups: userData.value['view'].ownerGroups,
+                }
 
                 const entity = {
                     typeName: 'Collection',

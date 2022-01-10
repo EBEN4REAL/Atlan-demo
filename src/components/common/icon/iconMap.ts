@@ -283,6 +283,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
 // source list
@@ -342,6 +343,7 @@ import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import Clock from '~/assets/images/icons/clock.svg'
 
 export default {
+    GlowFlash,
     Query24,
     Vqb24,
     partitionKey,

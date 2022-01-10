@@ -171,7 +171,7 @@
                 :destroy-tooltip-on-hide="true"
             >
                 <template #content>
-                    <div class="p-3 content-popover-group-persona">
+                    <div class="p-3 pb-4 content-popover-group-persona">
                         <div class="flex justify-between">
                             Personas
                             <!-- <div>
@@ -668,6 +668,8 @@
     }
     .content-popover-group-persona {
         width: 180px;
+        height: auto;
+        max-height: 170px;
     }
 </style>
 

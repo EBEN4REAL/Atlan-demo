@@ -3,22 +3,25 @@
         <div
             class="flex items-start justify-between px-4 pb-4 bg-white border-b pt-7"
         >
-            <div>
+            <div class="w-full">
                 <div class="flex items-center gap-2 mb-2">
                     <AvatarUpdate :metadata="localBm" />
-                    <div class="text-xl">
-                        {{ localBm.displayName }}
+                    <div class="w-full text-xl">
+                        <Truncate
+                            :tooltip-text="localBm.displayName"
+                            :rows="2"
+                        />
                     </div>
                 </div>
-                <div>
+                <!-- <div>
                     <p class="text-gray-500">{{ localBm.description }}</p>
-                </div>
+                </div> -->
             </div>
             <div class="flex items-center">
                 <MetadataHeaderButton
                     :metadata="localBm"
                     :allow-delete="allowDelete"
-                    :assetCount="assetCount"
+                    :asset-count="assetCount"
                 />
             </div>
         </div>
@@ -100,8 +103,8 @@
                     v-else
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @remove-property="handleRemoveAttribute"
                     :selected="selected"
+                    @remove-property="handleRemoveAttribute"
                     @open-edit-drawer="openEdit"
                 />
             </div>
@@ -159,9 +162,11 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Button from '@/UI/button.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
+            Truncate,
             Button,
             CreateUpdateInfo,
             MetadataHeaderButton,

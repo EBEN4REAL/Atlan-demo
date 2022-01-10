@@ -99,6 +99,7 @@
                         column: {},
                         order: 'asc',
                         expand: true,
+                        aggregateORGroupColumn: {},
                     }
                 } else if (type === 'filter') {
                     panel = {

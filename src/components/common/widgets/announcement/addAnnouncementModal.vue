@@ -101,11 +101,6 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
             updating: {
                 type: Boolean,
                 required: false,
@@ -113,7 +108,7 @@
             },
         },
         setup(props) {
-            const { asset, editPermission } = toRefs(props)
+            const { asset } = toRefs(props)
             const {
                 title,
                 announcementMessage,
@@ -164,11 +159,9 @@
             }
 
             const showModal = async () => {
-                if (editPermission?.value) {
-                    visible.value = true
-                    await nextTick()
-                    titleBar.value?.focus()
-                }
+                visible.value = true
+                await nextTick()
+                titleBar.value?.focus()
             }
 
             const handleMenuClick = (announcement) => {

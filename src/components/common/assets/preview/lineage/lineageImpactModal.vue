@@ -199,6 +199,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useLineageService from '~/services/meta/lineage/lineage_service'
+    import { AssetAttributes } from '~/constant/projection'
 
     /** COMPONENTS */
     import TermPill from '@/common/pills/term.vue'
@@ -292,6 +293,7 @@
                     direction,
                     guid: guid.value,
                     hideProcess: true,
+                    attributes: AssetAttributes,
                 }))
             )
 

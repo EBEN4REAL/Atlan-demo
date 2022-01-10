@@ -180,7 +180,8 @@ const useQueryCollection = () => {
     const selectFirstCollectionByDefault = (
         collection: QueryCollection[],
         activeInlineTab: Ref<activeInlineTabInterface>,
-        tabs: Ref<activeInlineTabInterface[]>
+        tabs: Ref<activeInlineTabInterface[]>,
+        isCollectionCreated: Ref<Boolean>
     ) => {
         if (collection?.length > 0) {
             if (activeInlineTab.value?.key) {
@@ -189,27 +190,35 @@ const useQueryCollection = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
 
-                if (activeInlineTab.value?.queryId) {
-                    col = collection.find(
-                        (col) =>
-                            col?.attributes?.qualifiedName ===
-                            activeInlineTabCopy.explorer.queries.collection
-                                .qualifiedName
-                    )
-
-                    if(col) {
-
-                    } else {
-                        col=collection[0]
+                if(isCollectionCreated.value) {
+                    let l = collection.length
+                    col = collection[l-1]
+                    isCollectionCreated.value = false
+                } else {
+                    if (activeInlineTab.value?.queryId) {
+                        col = collection.find(
+                            (col) =>
+                                col?.attributes?.qualifiedName ===
+                                activeInlineTabCopy.explorer.queries.collection
+                                    .qualifiedName
+                        )
+    
+                        if(col) {
+    
+                        } else {
+                            col=collection[0]
+                        }
+                    } else if(activeInlineTabCopy.explorer.queries.collection.qualifiedName) {
+                        col = collection.find(
+                            (col) =>
+                                col?.attributes?.qualifiedName ===
+                                activeInlineTabCopy.explorer.queries.collection
+                                    .qualifiedName
+                        )
                     }
-                } else if(activeInlineTabCopy.explorer.queries.collection.qualifiedName) {
-                    col = collection.find(
-                        (col) =>
-                            col?.attributes?.qualifiedName ===
-                            activeInlineTabCopy.explorer.queries.collection
-                                .qualifiedName
-                    )
                 }
+
+                
 
                 activeInlineTabCopy.explorer.queries.collection.guid = col.guid
 

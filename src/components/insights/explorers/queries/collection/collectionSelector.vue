@@ -215,31 +215,63 @@
             })
 
             const sharedCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            !isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
-                    return !isCollectionPrivate(coll, username)
-                })
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                !isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
+                        return !isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
             const privateCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
 
-                    return isCollectionPrivate(coll, username)
-                })
+                        return isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
 
             const hasCollectionReadPermission = inject(

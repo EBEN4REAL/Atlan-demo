@@ -283,12 +283,13 @@ export function useFilter() {
 
     function getInputTypeFromColumnType(columnType: string) {
         if (numbers.includes(columnType)) return 'number'
-        if (text.includes(columnType)) return 'text'
-        if (date.includes(columnType)) return 'date'
-        if (boolean.includes(columnType)) return 'number'
-        if (array.includes(columnType)) return 'array'
-        if (object.includes(columnType)) return 'object'
-        if (geography.includes(columnType)) return 'geography'
+        else if (text.includes(columnType)) return 'text'
+        else if (date.includes(columnType)) return 'date'
+        else if (boolean.includes(columnType)) return 'number'
+        else if (array.includes(columnType)) return 'array'
+        else if (object.includes(columnType)) return 'object'
+        else if (geography.includes(columnType)) return 'geography'
+        return 'text'
     }
 
     function isFilterIsInteractive(subpanels: SubpanelFilter[]) {

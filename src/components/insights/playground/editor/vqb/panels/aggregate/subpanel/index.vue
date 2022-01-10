@@ -86,6 +86,7 @@
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -143,8 +144,32 @@
                 const copySubPanel = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value[index]))
                 )
+                /* Change only if types are different */
+
+                const _getDataType1 = () => {
+                    const found = dataTypeCategoryList.find((d) =>
+                        d.type.find(
+                            (type) =>
+                                type.toLowerCase() ===
+                                copySubPanel.column?.type?.toLowerCase()
+                        )
+                    )
+                    return found?.label
+                }
+                const _getDataType2 = () => {
+                    const found = dataTypeCategoryList.find((d) =>
+                        d.type.find(
+                            (type) =>
+                                type.toLowerCase() === val?.type?.toLowerCase()
+                        )
+                    )
+                    return found?.label
+                }
+                if (_getDataType1() !== _getDataType2()) {
+                    copySubPanel.aggregators = []
+                }
+
                 copySubPanel.column = val
-                copySubPanel.aggregators = []
 
                 subpanels.value[index] = copySubPanel
                 console.log(subpanels.value)

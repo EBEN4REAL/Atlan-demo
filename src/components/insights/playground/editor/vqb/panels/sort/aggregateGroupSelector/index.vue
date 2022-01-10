@@ -293,7 +293,9 @@
                                 label: aggregatedAliasMap[aggregatorUpperCase](
                                     item?.column?.label
                                 ),
-                                value: item?.column?.columnQualifiedName,
+                                value:
+                                    item?.column?.columnQualifiedName ??
+                                    item?.column?.qualifiedName,
                                 addedBy: item.addedBy,
                                 type: item?.column?.type,
                                 aggregator: aggregator,

@@ -165,7 +165,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
-                if (disabled) return
+                if (disabled.value) return
                 if (!columnType.value) return
                 // inputChange()
                 isAreaFocused.value = true
@@ -232,14 +232,16 @@
                 const data: any[] = []
                 selectedItems.value.forEach((key) => {
                     let item = aggregationList.value.find(
-                        (el) => el.key === key
+                        (el) => el.key?.toLowerCase() === key?.toLowerCase()
                     )
-                    data.push({
-                        label: item.label,
-                    })
-                    // }
-                    // console.log('selected: ', key)
-                    map.value[key] = true
+                    if (item) {
+                        data.push({
+                            label: item?.label,
+                        })
+                        // }
+                        // console.log('selected: ', key)
+                        map.value[key] = true
+                    }
                 })
                 return data
             })
@@ -299,6 +301,11 @@
             const handleMouseOut = () => {
                 if (mouseOver.value) mouseOver.value = false
             }
+            watch(selectedItems, (newSelectedItems) => {
+                if (newSelectedItems.length == 0) {
+                    map.value = {}
+                }
+            })
 
             return {
                 disabled,

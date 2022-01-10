@@ -36,7 +36,7 @@
             </MinimalTab>
         </div>
 
-        <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
+        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PurposeMeta
                 class="flex flex-col"
                 :persona="persona"
@@ -44,8 +44,8 @@
             />
         </div>
         <div
+            v-else-if="activeTabKey === 'policies'"
             class="flex flex-col px-6 pt-6"
-            v-if="activeTabKey === 'policies'"
             style="height: calc(100% - 155px)"
         >
             <div class="flex items-center justify-between mb-3">
@@ -173,13 +173,12 @@
             </div>
         </div>
 
-        <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white">
+        <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white px-7 h-full">
             <div class="wrapper-height">
-                <AssetsWrapper
-                    :initial-filters="filterConfig"
-                    :show-filters="false"
-                    page="purposes"
+                <AssetList
+                    :filters="filterConfig"
                     :enable-sidebar-drawer="true"
+                    :asset-list-style-obj="{ height: 'calc(100% - 9rem)' }"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -249,7 +248,7 @@
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
-    import AssetsWrapper from '@/assets/index.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
@@ -261,10 +260,10 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
-            AssetsWrapper,
             SearchAndFilter,
             AggregationTabs,
             Addpolicy,
+            AssetList,
         },
         props: {
             persona: {
@@ -520,7 +519,7 @@
         height: inherit;
     }
     .wrapper-height {
-        height: 660px;
+        height: 90%;
         overflow: auto;
         padding-bottom: 20px;
     }

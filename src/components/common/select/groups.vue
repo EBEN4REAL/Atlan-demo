@@ -6,6 +6,7 @@
         class="w-full center-arrow"
         :show-search="true"
         :allow-clear="true"
+        :showArrow="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
         :filter-option="() => true"

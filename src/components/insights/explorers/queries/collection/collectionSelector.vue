@@ -87,7 +87,7 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center overflow-x-hidden">
-                <span class="w-7 h-7 mr-2 -mt-1.5" style="font-size: 28px">{{
+                <span class="mr-2 -mt-2 w-7 h-7" style="font-size: 28px">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'
@@ -97,14 +97,14 @@
                     <div class="flex flex-col">
                         <div class="flex items-center">
                             <span
-                                class="mr-2 text-base font-bold text-gray-700 truncate"
+                                class="mr-1 text-base font-bold text-gray-700 truncate"
                                 >{{
                                     selectedCollection?.attributes?.name
                                 }}</span
                             >
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="self-center h-4 text-gray-400"
+                                class="self-center h-4 text-gray-500"
                             ></AtlanIcon>
                         </div>
 
@@ -215,31 +215,63 @@
             })
 
             const sharedCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            !isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
-                    return !isCollectionPrivate(coll, username)
-                })
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                !isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
+                        return !isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
             const privateCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
 
-                    return isCollectionPrivate(coll, username)
-                })
+                        return isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
 
             const hasCollectionReadPermission = inject(

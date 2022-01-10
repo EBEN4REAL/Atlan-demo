@@ -10,7 +10,11 @@
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName) && hoverActions"
             >
-                <PopoverAsset :item="item" placement="right">
+                <PopoverAsset
+                    :item="item"
+                    placement="right"
+                    mouseEnterDelay="0.6"
+                >
                     <template #button>
                         <!-- <a-button
                             class="mt-3"
@@ -1351,6 +1355,7 @@
                                             tableData: {
                                                 certificateStatus: undefined,
                                                 assetType: undefined,
+                                                item: {},
                                             },
                                             columnsData: [],
                                         },

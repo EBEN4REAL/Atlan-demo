@@ -53,9 +53,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        inject,
+        ComputedRef,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs, { Dayjs } from 'dayjs'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -75,6 +85,17 @@
         setup(props, { emit }) {
             const { inputValue, type } = useVModels(props)
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             let firstvalue = ref(undefined)
             let secondValue = ref(undefined)
             if (inputValue.value?.length > 0) {
@@ -95,6 +116,17 @@
                 secondValue.value = inputValue.value
                     ? dayjs(inputValue.value[1])
                     : undefined
+            }
+
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
             }
 
             const onChange = (event, _pos, type) => {
@@ -123,6 +155,11 @@
                         secondValue.value?.format(dateFormat),
                     ]
                 }
+                // updateVQB(activeInlineTabKey, inlineTabs)
+
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
             }
 
             return {

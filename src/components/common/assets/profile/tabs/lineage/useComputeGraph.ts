@@ -47,9 +47,9 @@ export default async function useComputeGraph(
         const relation = {
             id: `${processId}/${fromEntityId}@${toEntityId}`,
             sourceCell: fromEntityId,
-            sourcePort: `${fromEntityId}/index`,
+            sourcePort: `${fromEntityId}-invisiblePort`,
             targetCell: toEntityId,
-            targetPort: `${toEntityId}/index`,
+            targetPort: `${toEntityId}-invisiblePort`,
             stroke: '#C7C7C7',
         }
         const { edgeData } = createEdgeData(relation)

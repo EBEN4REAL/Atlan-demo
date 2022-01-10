@@ -23,20 +23,20 @@ export default function useProject() {
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
-    const columnList: Ref<
-        [
-            {
-                title: string
-                dataIndex: string
-                width: string
-                key: any
-            }
-        ]
-    > = ref([])
-    const dataList = ref([])
-    const isQueryRunning = ref('')
-    const queryExecutionTime = ref(-1)
-    const queryErrorObj = ref()
+    // const columnList: Ref<
+    //     [
+    //         {
+    //             title: string
+    //             dataIndex: string
+    //             width: string
+    //             key: any
+    //         }
+    //     ]
+    // > = ref([])
+    // const dataList = ref([])
+    // const isQueryRunning = ref('')
+    // const queryExecutionTime = ref(-1)
+    // const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
@@ -50,13 +50,6 @@ export default function useProject() {
                     data_type: col.type.name,
                 })
             })
-
-            // columnList.value.unshift({
-            //     title: 'KEY',
-            //     dataIndex: 'key',
-            //     width: 'fit-content',
-            //     key: 'key',
-            // })
         }
     }
 
@@ -94,6 +87,22 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+
+        const columnList: Ref<
+            [
+                {
+                    title: string
+                    dataIndex: string
+                    width: string
+                    key: any
+                }
+            ]
+        > = ref([])
+        const dataList = ref([])
+        const isQueryRunning = ref('')
+        const queryExecutionTime = ref(-1)
+        const queryErrorObj = ref()
+        
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if(editorInstance?.value) {
             resetLineDecorations(editorInstance.value)
@@ -507,11 +516,11 @@ export default function useProject() {
     return {
         onRunCompletion,
         abortQuery,
-        queryErrorObj,
-        queryExecutionTime,
-        isQueryRunning,
+        // queryErrorObj,
+        // queryExecutionTime,
+        // isQueryRunning,
         queryRun,
-        dataList,
-        columnList,
+        // dataList,
+        // columnList,
     }
 }

@@ -9,9 +9,10 @@
                     v-auth="map.ADD_USER_GROUP"
                     color="secondary"
                     padding="compact"
-                    class="flex mr-3.5 p-0 w-7 h-7 items-center justify-center border-transparent cursor-pointer rounded hover:border-primary-focus"
+                    size="sm"
+                    class="flex items-center justify-center w-8 h-8 p-0 mr-2 border-transparent rounded cursor-pointer hover:border-primary-focus"
                 >
-                    <AtlanIcon icon="AddUser" class="text-gray-500" />
+                    <AtlanIcon icon="AddUser" class="text-gray-700" />
                 </AtlanBtn>
             </template>
         </MemberPopover>
@@ -48,7 +49,8 @@
             @visibleChange="handleVisibleChange"
         >
             <AtlanBtn
-                class="flex items-center justify-center p-0 border-transparent rounded cursor-pointer w-7 h-7 hover:border-primary-focus"
+                class="flex items-center justify-center w-8 h-8 p-0 border-transparent rounded cursor-pointer hover:border-primary-focus"
+                size="sm"
                 color="secondary"
                 padding="compact"
             >

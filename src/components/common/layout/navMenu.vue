@@ -4,10 +4,11 @@
             <AtlanIcon
                 icon="Dots"
                 v-if="!isHome"
-                class="h-6 mr-2 rounded cursor-pointer select-none hover:bg-primary-light hover:text-primary"
+                class="h-6 mr-2 rounded cursor-pointer select-none hover:bg-primary-menu hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
+
             <div v-if="logoUrl && !logoNotFound" class="mb-1">
                 <router-link to="/">
                     <img
@@ -136,10 +137,7 @@
             })
 
             const logoUrl = computed(() => {
-                if (tenantStore.displayNameHtml) {
-                    return `${window.location.origin}/api/service/avatars/_logo_`
-                }
-                return ''
+                return `${window.location.origin}/api/service/avatars/_logo_`
             })
 
             const logoName = computed(() => tenantStore.displayName)

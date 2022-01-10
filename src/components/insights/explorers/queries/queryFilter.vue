@@ -11,6 +11,7 @@
                 @change-active-key="handleActiveKeyChange"
                 @reset="handleResetEvent"
                 :allow-custom-filters="false"
+                noFilterTitle="Filter queries"
             ></AssetFilters>
         </div>
     </div>

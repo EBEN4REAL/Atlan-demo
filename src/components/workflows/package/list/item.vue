@@ -76,7 +76,10 @@
                                     ]
                                 "
                             >
-                                <AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                                <AtlanIcon
+                                    icon="Info"
+                                    class="h-3 ml-1"
+                                ></AtlanIcon
                             ></a-tooltip>
                         </div>
 

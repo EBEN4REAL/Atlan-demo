@@ -169,7 +169,8 @@
                                         (e) => onSelectItem(item, e)
                                     "
                                     :class="
-                                        selectedItem?.label === item.label
+                                        selectedItem?.qualifiedName ===
+                                        item.columnQualifiedName
                                             ? 'bg-primary-light'
                                             : 'bg-white'
                                     "
@@ -202,8 +203,8 @@
                                             icon="Check"
                                             class="ml-2 text-primary parent-ellipsis-container-base"
                                             v-if="
-                                                selectedItem?.label ===
-                                                item.label
+                                                selectedItem?.qualifiedName ===
+                                                item.columnQualifiedName
                                             "
                                         />
                                         <div v-else class="w-4 ml-2"></div>
@@ -403,7 +404,8 @@
                                             (e) => onSelectItem(item, e)
                                         "
                                         :class="
-                                            selectedItem?.label === item.label
+                                            selectedItem?.qualifiedName ===
+                                            item.qualifiedName
                                                 ? 'bg-primary-light'
                                                 : 'bg-white'
                                         "
@@ -441,8 +443,8 @@
                                                 icon="Check"
                                                 class="ml-2 text-primary parent-ellipsis-container-base"
                                                 v-if="
-                                                    selectedItem?.label ===
-                                                    item.label
+                                                    selectedItem?.qualifiedName ===
+                                                    item.qualifiedName
                                                 "
                                             />
                                             <div v-else class="w-4 ml-2"></div>
@@ -500,8 +502,10 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     import useBody from './useBody'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -511,6 +515,7 @@
             TablesTree,
             ColumnKeys,
             PopoverAsset,
+            AtlanBtn,
         },
         emits: ['change'],
 
@@ -558,6 +563,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -678,6 +690,7 @@
                 } else {
                     setFocusedCusror()
                 }
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -740,6 +753,7 @@
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             onMounted(() => {
@@ -836,7 +850,7 @@
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     columnCount: ls.attributes?.columnCount,
-                    qualifiedName: ls.attributes.qualifiedName,
+                    qualifiedName: ls?.attributes?.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
                     item: ls,
@@ -850,13 +864,13 @@
             const columnDropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
-                    qualifiedName: ls.attributes.qualifiedName,
-                    type: ls.attributes.dataType,
+                    qualifiedName: ls?.attributes?.qualifiedName,
+                    type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
                     isPartition: ls.attributes?.isPartition,
                     attributes: ls.attributes,
-                    order: ls.attributes.order,
+                    order: ls.attributes?.order,
                     item: ls,
                 }))
 
@@ -898,7 +912,11 @@
                 // console.log('selected table: ', item)
                 isTableSelected.value = true
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false

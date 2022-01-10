@@ -233,9 +233,9 @@
             transition: all 0.3s ease-out;
 
             &:hover {
-                @apply bg-primary-light !important;
+                @apply bg-primary-menu !important;
                 @apply text-primary !important;
-                @apply border-primary-light !important;
+                @apply border-primary-menu !important;
                 .chip {
                     @apply text-primary !important;
                 }
@@ -256,7 +256,7 @@
         }
 
         :global(.ant-tabs-tab-active) {
-            @apply bg-primary-light !important;
+            @apply bg-primary-menu !important;
             @apply text-primary !important;
             @apply border-primary !important;
 
@@ -291,7 +291,7 @@
         }
 
         :global(.ant-tabs-tab-btn:focus) {
-            @apply bg-primary-light !important;
+            @apply bg-primary-menu !important;
             @apply text-primary !important;
             @apply border-primary !important;
         }

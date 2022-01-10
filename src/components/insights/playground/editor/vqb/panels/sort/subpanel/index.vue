@@ -11,6 +11,11 @@
                     @mouseout="hoverItem = null"
                 >
                     <ColumnSelector
+                        v-if="
+                            !isAggregationORGroupPanelColumnsAdded(
+                                activeInlineTab
+                            )
+                        "
                         class="flex-1"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
@@ -21,6 +26,15 @@
                         "
                         @change="(val) => handleColumnChange(val, index)"
                     />
+                    <AggregatorGroupColumnsSelector
+                        class="flex-1"
+                        v-else
+                        :mixedSubpanels="
+                            getAggregationORGroupPanelColumns(activeInlineTab)
+                        "
+                        @change="(val) => handleColumnChange(val, index)"
+                        v-model:selectedItem="subpanel.aggregateORGroupColumn"
+                    />
 
                     <span class="px-3 text-sm text-gray-500">order by</span>
                     <!-- {{ subpanel }} -->
@@ -28,6 +42,7 @@
                         v-model:active="subpanel.order"
                         class="mr-auto"
                         :data="tabConfig"
+                        @update:active="updateData"
                     />
 
                     <AtlanIcon
@@ -77,12 +92,17 @@
     import ColumnSelector from '../../common/columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import AggregatorGroupColumnsSelector from '../aggregateGroupSelector/index.vue'
+
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             ColumnSelector,
             RaisedTab,
+            AggregatorGroupColumnsSelector,
         },
         props: {
             expand: {
@@ -104,7 +124,11 @@
 
         setup(props, { emit }) {
             const selectedAggregates = ref([])
-            const { isSubpanelClosable } = useUtils()
+            const {
+                isSubpanelClosable,
+                getAggregationORGroupPanelColumns,
+                isAggregationORGroupPanelColumnsAdded,
+            } = useUtils()
             const selectedColumn = ref({})
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -112,6 +136,16 @@
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -145,13 +179,16 @@
                     id: generateUUID(),
                     column: {},
                     order: 'asc',
+                    aggregateORGroupColumn: {},
                 })
                 subpanels.value = copySubPanels
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const changeColumn = (column) => {
@@ -164,9 +201,15 @@
                 { key: 'desc', label: 'DESC' },
             ])
 
+            const updateData = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             // const selectedOrder = ref('asc')
 
             return {
+                getAggregationORGroupPanelColumns,
+                isAggregationORGroupPanelColumnsAdded,
                 isSubpanelClosable,
                 activeInlineTab,
                 selectedAggregates,
@@ -182,6 +225,7 @@
                 hoverItem,
                 // selectedOrder,
                 tabConfig,
+                updateData,
             }
         },
     })

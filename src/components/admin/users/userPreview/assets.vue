@@ -25,14 +25,12 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
-    import AssetsWrapper from '@/assets/index.vue'
     import AssetList from '~/components/common/assetList/assetList.vue'
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'AssetsTabs',
         components: {
-            AssetsWrapper,
             AssetList,
         },
         props: {

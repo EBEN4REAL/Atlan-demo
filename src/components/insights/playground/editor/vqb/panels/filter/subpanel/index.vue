@@ -257,6 +257,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { editor } from 'monaco-editor'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -296,6 +297,15 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const showcustomVariablesToolBar = inject(
                 'showcustomToolBar'
             ) as Ref<Boolean>
@@ -312,6 +322,8 @@
                 getCustomVaribleByVQBFilterSubpanelId,
             } = useCustomVariable(editorInstance, monacoInstance)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
+            const { updateVQB } = useVQB()
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
@@ -389,11 +401,13 @@
                     },
                 })
                 subpanels.value = copySubPanels
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index, subpanel) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
                 /* FIXME: This needed an improvment when variable is used more than one place
                 right now it assuems that it present in only one place */
                 const subpanelIds = [subpanel.id]

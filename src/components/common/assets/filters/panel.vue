@@ -10,7 +10,7 @@
                     <div
                         class="flex items-center justify-between hover:text-primary"
                     >
-                        <div class="flex items-center">
+                        <div class="flex items-center w-full">
                             <img
                                 v-if="item?.options?.logoType === 'image'"
                                 class="float-left w-auto h-4 mr-2"
@@ -24,11 +24,11 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="text-xs uppercase text-gray hover:text-primary title"
+                                class="w-full text-xs uppercase text-gray hover:text-primary title"
                                 style="letter-spacing: 0.07em"
                             >
-                                {{ item.label }}</span
-                            >
+                                <Truncate :tooltipText="item.label" :rows="2" />
+                            </span>
                         </div>
 
                         <span
@@ -95,10 +95,12 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
+            Truncate,
             Hierarchy,
             Certificate,
             Owners,

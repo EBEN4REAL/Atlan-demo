@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, provide } from 'vue'
+    import { defineComponent, ref, computed, watch, provide, inject } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import WorkflowList from './list/index.vue'
@@ -173,9 +173,11 @@
 
             const selectedPackage = ref<any>(null)
 
+            const handlePreview = inject('preview')
+
             const handleSelect = (item) => {
                 selectedPackage.value = item
-                emit('select', item)
+                handlePreview(item)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -221,6 +223,7 @@
                 packageFetchList,
                 packageList,
                 runByWorkflowMap,
+                handlePreview,
             }
         },
     })

@@ -8,7 +8,6 @@ export function useHotKeys() {
         if (explorerPaneSizeParam.value == 0) {
             // setting original width
             explorerPaneSizeParam.value = currentNormalExplorerSize.value
-            debugger
         } else explorerPaneSizeParam.value = 0
     }
     function assetSidebarToggle(assetSidebarPaneSizeParam: Ref<any>) {

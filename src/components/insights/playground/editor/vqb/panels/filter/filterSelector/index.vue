@@ -107,6 +107,8 @@
     } from 'vue'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     // import useBody from './useBody'
 
@@ -142,6 +144,16 @@
             })
 
             const { filterList } = useFilter()
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
 
             const inputRef = ref()
             const selectAll = ref(false)
@@ -224,6 +236,7 @@
                     title: checked.name,
                 }
                 emit('change')
+                updateVQB(activeInlineTabKey, inlineTabs)
                 isAreaFocused.value = false
                 // filterName.value = checked.name
                 event.stopPropagation()

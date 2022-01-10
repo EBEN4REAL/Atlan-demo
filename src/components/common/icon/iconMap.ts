@@ -151,6 +151,7 @@ import CaretLeft from '~/assets/images/icons/caret-left.svg'
 import CaretRight from '~/assets/images/icons/caret-right.svg'
 import CaretDown from '~/assets/images/icons/caret-down.svg'
 import Settings from '~/assets/images/icons/setings.svg'
+import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
@@ -211,6 +212,8 @@ import Trigger from '~/assets/images/icons/trigger.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
@@ -280,6 +283,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
 // source list
@@ -340,8 +344,10 @@ import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
+import Clock from '~/assets/images/icons/clock.svg'
 
 export default {
+    GlowFlash,
     Query24,
     Vqb24,
     partitionKey,
@@ -381,6 +387,7 @@ export default {
     QueryDeprecated,
     QueryDiscovery,
     QueryDraft,
+    CollapseControl,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -531,6 +538,7 @@ export default {
     AssetsInactive,
     CaretLeft,
     Settings,
+    SettingsOutlined,
     Delete,
     Slack,
     EmptySearchQuery,
@@ -672,4 +680,5 @@ export default {
     VqbVerified,
     VqbDeprecated,
     VqbDraft,
+    Clock,
 }

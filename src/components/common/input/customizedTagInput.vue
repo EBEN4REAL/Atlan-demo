@@ -8,7 +8,6 @@
         :open="dropdownOpen"
         style="width: 100%"
         :dropdown-style="{ display: 'none' }"
-        @keydown.e="(e) => e.preventDefault()"
         @change="change"
         @keyup.enter="dropdownOpen = false"
         @input-key-down="handleNumberKeyPress"

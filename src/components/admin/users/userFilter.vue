@@ -1,7 +1,13 @@
 <template>
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
-    <a-collapse bordered @change="handleChange">
+    <a-collapse
+        v-model="activeCollapse"
+        bordered
+        :default-active-key="['1', '2']"
+        @change="handleChange"
+        class="-mt-3"
+    >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
         >
@@ -24,20 +30,26 @@
             </span>
         </div>
 
-        <a-collapse-panel class="border-t-0 group" :show-arrow="false">
+        <a-collapse-panel
+            :key="'1'"
+            class="border-t-0 group"
+            :show-arrow="false"
+        >
             <template #header>
                 <div class="flex justify-between w-48 hover:text-primary">
                     <span
                         class="text-sm text-gray-500 uppercase hover:text-primary"
                         :class="`${
-                            activeKey.includes('1') ? 'text-primary' : ''
+                            activeCollapse.includes('1') ? 'text-primary' : ''
                         }`"
                         >status</span
                     >
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
-                        :class="`${activeKey.includes('1') ? 'blue-icon' : ''}`"
+                        :class="`${
+                            activeCollapse.includes('1') ? 'blue-icon' : ''
+                        }`"
                     />
                 </div>
             </template>
@@ -93,7 +105,11 @@
                 </a-form>
             </div>
         </a-collapse-panel>
-        <a-collapse-panel class="border-t-0 group" :show-arrow="false">
+        <a-collapse-panel
+            :key="'2'"
+            class="border-t-0 group"
+            :show-arrow="false"
+        >
             <template #header>
                 <div
                     class="flex justify-between w-48 border-t-0 hover:text-primary"
@@ -101,14 +117,16 @@
                     <span
                         class="text-sm text-gray-500 uppercase border-t-0"
                         :class="`${
-                            activeKey.includes('2') ? 'text-primary' : ''
+                            activeCollapse.includes('2') ? 'text-primary' : ''
                         }`"
                         >role</span
                     >
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
-                        :class="`${activeKey.includes('2') ? 'blue-icon' : ''}`"
+                        :class="`${
+                            activeCollapse.includes('2') ? 'blue-icon' : ''
+                        }`"
                     />
                 </div>
             </template>
@@ -180,7 +198,7 @@
         },
         emits: ['update:modelValue', 'change', 'changeRole'],
         setup(props, { emit }) {
-            const activeCollapse = ref<Array<String>>(['1'])
+            const activeCollapse = ref<Array<String>>(['1', '2'])
             const statusFilter = ref<Array<any>>(props.modelValue)
             const role = ref('')
             const filterOpened = ref(false)
@@ -218,15 +236,10 @@
                 numberOfDisableUser,
                 numberOfInvitedUser,
             } = toRefs(props)
-            const activeKey = ref([])
-            const handleChange = (t) => {
-                activeKey.value = t
-                console.log('t', t)
+            const handleChange = (collapse) => {
+                activeCollapse.value = collapse
             }
-
             return {
-                activeKey,
-                handleChange,
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
@@ -240,6 +253,7 @@
                 numberOfActiveUser,
                 numberOfDisableUser,
                 numberOfInvitedUser,
+                handleChange,
             }
         },
     })

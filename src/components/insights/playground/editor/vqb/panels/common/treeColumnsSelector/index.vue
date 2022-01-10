@@ -328,8 +328,8 @@
                                                 (e) => onSelectColumn(item, e)
                                             "
                                             :class="
-                                                selectedColumn?.label ===
-                                                item.label
+                                                selectedColumn?.columnQualifiedName ===
+                                                item.qualifiedName
                                                     ? 'bg-primary-light'
                                                     : 'bg-white'
                                             "
@@ -373,8 +373,8 @@
                                                     icon="Check"
                                                     class="ml-2 text-primary parent-ellipsis-container-base"
                                                     v-if="
-                                                        selectedColumn?.label ===
-                                                        item.label
+                                                        selectedColumn?.columnQualifiedName ===
+                                                        item.qualifiedName
                                                     "
                                                 />
                                                 <div
@@ -744,11 +744,13 @@
             const onSelectTable = (item, event) => {
                 tableSelected.value = item
                 isTableSelected.value = true
+                queryText.value = ''
                 replaceBody(getColumnInitialBody(item))
                 // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 setFocusedCusror()
+
                 return false
             }
             const onUnselectTable = (event) => {
@@ -853,16 +855,24 @@
                     isTableSelected.value = true
                     // debugger
                     replaceBody(getColumnInitialBody(tableSelected?.value))
+                } else if (
+                    !selectedColumn.value?.label &&
+                    tableSelected.value
+                ) {
+                    isTableSelected.value = false
+                    replaceBody(getTableInitialBody())
                 } else {
                     replaceBody(getTableInitialBody())
                 }
             })
 
-            watch(queryText, () => {
-                if (tableSelected.value) {
-                    replaceBody(getColumnInitialBody(tableSelected?.value))
-                } else {
-                    replaceBody(getTableInitialBody())
+            watch(queryText, (newQueryText) => {
+                if (newQueryText !== '') {
+                    if (selectedColumn.value?.label && isTableSelected?.value) {
+                        replaceBody(getColumnInitialBody(tableSelected?.value))
+                    } else {
+                        replaceBody(getTableInitialBody())
+                    }
                 }
             })
 

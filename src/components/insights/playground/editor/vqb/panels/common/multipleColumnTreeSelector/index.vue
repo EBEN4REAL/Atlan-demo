@@ -545,6 +545,7 @@
                         searchText: queryText.value,
                     }
                 }
+
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
@@ -554,6 +555,9 @@
             const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
                 // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()

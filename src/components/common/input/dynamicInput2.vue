@@ -189,6 +189,8 @@
                             'Backspace',
                             'ArrowDown',
                             'ArrowUp',
+                            'ArrowRight',
+                            'ArrowLeft',
                             'Enter',
                         ].includes(v.key) &&
                         !v.metaKey

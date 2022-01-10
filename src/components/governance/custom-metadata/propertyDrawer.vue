@@ -6,12 +6,19 @@
             :width="450"
             :closable="false"
             :destroy-on-close="true"
+            class="flex flex-col"
+            :body-style="{ display: 'flex', 'flex-direction': 'column' }"
         >
             <div class="flex items-center justify-between px-3 py-4 border-b">
-                <div>
+                <div class="w-full">
                     <p class="text-gray-500">Property</p>
                     <p class="text-xl">
-                        {{ isEdit ? form.displayName : 'Add new' }}
+                        <Truncate
+                            :tooltip-text="
+                                isEdit ? form.displayName : 'Add new'
+                            "
+                            :rows="2"
+                        />
                     </p>
                 </div>
 
@@ -25,7 +32,7 @@
                 </a-button>
             </div>
             <!-- Form =============================================================================================================== -->
-            <div class="px-3 py-4">
+            <div class="flex-grow px-3 py-4 overflow-y-auto">
                 <a-form
                     ref="formRef"
                     class="ant-form-right-asterix"
@@ -350,36 +357,21 @@
                             </a-form-item> -->
                         </div>
                     </div>
-                    <div
-                        :style="{
-                            position: 'absolute',
-                            right: 0,
-                            bottom: 0,
-                            width: '100%',
-                            borderTop: '1px solid #e9e9e9',
-                            padding: '10px 16px',
-                            background: '#fff',
-                            textAlign: 'right',
-                            zIndex: 1,
-                        }"
-                    >
-                        <a-button
-                            :style="{ marginRight: '8px' }"
-                            @click="handleClose"
-                        >
-                            Cancel
-                        </a-button>
-                        <a-button
-                            type="primary"
-                            :loading="loading"
-                            @click="handleUpdateProperty"
-                        >
-                            {{ isEdit ? 'Update' : 'Create' }}
-                        </a-button>
-                    </div>
                 </a-form>
             </div>
 
+            <div class="flex justify-end p-3 border-t">
+                <a-button :style="{ marginRight: '8px' }" @click="handleClose">
+                    Cancel
+                </a-button>
+                <a-button
+                    type="primary"
+                    :loading="loading"
+                    @click="handleUpdateProperty"
+                >
+                    {{ isEdit ? 'Update' : 'Create' }}
+                </a-button>
+            </div>
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>
@@ -408,12 +400,15 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
+    import { onKeyStroke } from '@vueuse/core'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
             NewEnumForm,
+            Truncate,
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
@@ -422,7 +417,7 @@
                 default: () => {},
             },
         },
-        emits: ['addedProperty'],
+        emits: ['addedProperty', 'openIndex'],
         setup(props, { emit }) {
             const initializeForm = (): CMA => ({
                 ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
@@ -479,6 +474,20 @@
                 isEdit.value = makeEdit
                 visible.value = true
             }
+
+            const openPrev = (i) => {
+                emit('openIndex', i - 1)
+            }
+            const openNext = (i) => {
+                emit('openIndex', i + 1)
+            }
+
+            onKeyStroke(['ArrowUp', 'ArrowDown'], (e) => {
+                if (!visible.value) return
+                if (e.key === 'ArrowUp') openPrev(propertyIndex.value)
+
+                if (e.key === 'ArrowDown') openNext(propertyIndex.value)
+            })
 
             const handleUpdateError = (error) => {
                 const errorCode = error.response?.data.errorCode

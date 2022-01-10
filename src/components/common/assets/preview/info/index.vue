@@ -27,18 +27,7 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="n"
-                action="set name"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Name</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">Name</div>
 
             <Name
                 ref="nameRef"
@@ -260,25 +249,18 @@
         </div>
 
         <div class="flex flex-col">
-            <Shortcut
-                shortcut-key="d"
-                action="set description"
-                placement="left"
-                :edit-permission="editPermission"
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span>Description</span>
-                    <a-tooltip title="User Description" placement="left">
-                        <AtlanIcon
-                            v-if="isUserDescription(selectedAsset)"
-                            icon="User"
-                            class="h-3 mr-1"
-                        ></AtlanIcon
-                    ></a-tooltip>
-                </div>
-            </Shortcut>
+                <span>Description</span>
+                <a-tooltip title="User Description" placement="left">
+                    <AtlanIcon
+                        v-if="isUserDescription(selectedAsset)"
+                        icon="User"
+                        class="h-3 mr-1"
+                    ></AtlanIcon
+                ></a-tooltip>
+            </div>
 
             <Description
                 ref="descriptionRef"
@@ -299,24 +281,18 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="o"
-                action="set owners"
-                placement="left"
-                :edit-permission="editPermission"
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Owners</span>
-                </div>
-            </Shortcut>
+                <span> Owners</span>
+            </div>
 
             <Owners
                 v-model="localOwners"
                 class="px-5"
                 :selected-asset="selectedAsset"
                 :edit-permission="editPermission"
+                :showShortcut="true"
                 @change="handleOwnersChange"
             />
         </div>
@@ -350,18 +326,9 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="t"
-                action="set classification"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Classification</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">
+                <span> Classification</span>
+            </div>
 
             <Classification
                 v-model="localClassifications"
@@ -379,6 +346,7 @@
                     )
                 "
                 class="px-5"
+                :showShortcut="true"
                 @change="handleClassificationChange"
             >
             </Classification>
@@ -395,11 +363,7 @@
             "
             class="flex flex-col"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-            >
-                Terms
-            </p>
+            <p class="px-5 mb-1 text-sm text-gray-500">Terms</p>
             <TermsWidget
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
@@ -424,18 +388,7 @@
         </div>
 
         <div ref="animationPoint" class="flex flex-col">
-            <Shortcut
-                shortcut-key="c"
-                action="set certificate"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Certificate</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">Certificate</div>
 
             <Certificate
                 v-model="localCertificate"
@@ -498,7 +451,6 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
-    import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
@@ -516,7 +468,6 @@
             RowInfoHoverCard,
             SQL,
             TermsWidget,
-            Shortcut,
             Categories,
             Admins,
             SampleDataTable: defineAsyncComponent(

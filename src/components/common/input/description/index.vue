@@ -1,38 +1,44 @@
 <template>
     <div>
-        <div
-            class="flex flex-col px-1 rounded"
-            :class="{
-                'bg-primary-light': isEdit,
-                'hover:bg-primary-light': editPermission,
-            }"
+        <Shortcut
+            shortcut-key="d"
+            action="set description"
+            placement="left"
+            :edit-permission="editPermission && !isEdit"
         >
             <div
-                class="text-sm text-gray-700"
-                :class="$style.editable"
-                @click="handleEdit"
+                class="flex flex-col px-1 rounded"
+                :class="{
+                    'bg-primary-light': isEdit,
+                    'hover:bg-primary-light': editPermission,
+                }"
             >
-                <span
-                    v-if="!isEdit && description(selectedAsset)"
-                    class="whitespace-pre-wrap"
-                    >{{ description(selectedAsset) }}</span
+                <div
+                    class="text-sm text-gray-700"
+                    :class="$style.editable"
+                    @click="handleEdit"
                 >
-                <span
-                    v-else-if="!isEdit && description(selectedAsset) === ''"
-                    class="text-gray-600"
-                    >No description available</span
-                >
-                <a-textarea
-                    v-else
-                    ref="descriptionRef"
-                    v-model:value="localValue"
-                    tabindex="0"
-                    :rows="4"
-                    @blur="handleBlur"
-                    @keyup.esc="handleCancel"
-                ></a-textarea>
-            </div>
-        </div>
+                    <span
+                        v-if="!isEdit && description(selectedAsset)"
+                        class="whitespace-pre-wrap"
+                        >{{ description(selectedAsset) }}</span
+                    >
+                    <span
+                        v-else-if="!isEdit && description(selectedAsset) === ''"
+                        class="text-gray-600"
+                        >No description available</span
+                    >
+                    <a-textarea
+                        v-else
+                        ref="descriptionRef"
+                        v-model:value="localValue"
+                        tabindex="0"
+                        :rows="4"
+                        @blur="handleBlur"
+                        @keyup.esc="handleCancel"
+                    ></a-textarea>
+                </div></div
+        ></Shortcut>
         <p
             v-if="descriptionRef !== null"
             class="mt-1 text-xs text-right text-gray-500"
@@ -70,9 +76,11 @@
     } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'DescriptionWidget',
+        components: { Shortcut },
         props: {
             modelValue: {
                 type: String,

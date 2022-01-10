@@ -48,20 +48,30 @@
                 "
                 :mouse-enter-delay="0.5"
             >
-                <a-button
-                    v-if="showAddBtn"
-                    :disabled="!editPermission"
-                    shape="circle"
-                    size="small"
-                    class="text-center shadow"
-                    :class="{
-                        editPermission:
-                            'hover:bg-primary-light hover:border-primary',
-                    }"
-                    @click="() => (isEdit = true)"
+                <Shortcut
+                    shortcut-key="c"
+                    action="set certificate"
+                    placement="left"
+                    :edit-permission="editPermission"
                 >
-                    <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-                ></a-button>
+                    <a-button
+                        v-if="showAddBtn"
+                        :disabled="!editPermission"
+                        shape="circle"
+                        size="small"
+                        class="text-center shadow"
+                        :class="{
+                            editPermission:
+                                'hover:bg-primary-light hover:border-primary',
+                        }"
+                        @click="() => (isEdit = true)"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="Add"
+                                class="h-3"
+                            ></AtlanIcon></span></a-button
+                ></Shortcut>
             </a-tooltip>
 
             <span v-if="!showAddBtn" class="-ml-1 text-sm text-gray-600"
@@ -94,12 +104,14 @@
     import CertificatePill from '@/common/pills/certificate.vue'
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'CertificateWidget',
         components: {
             CertificatePill,
             CertificateFacet,
+            Shortcut,
         },
         props: {
             modelValue: {

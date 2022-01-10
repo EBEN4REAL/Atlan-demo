@@ -8,70 +8,6 @@
         </div>
         <slot name="announcement"></slot>
         <div class="flex flex-col gap-y-3">
-            <div class="grid grid-cols-2">
-                <div class="flex flex-col">
-                    <p class="text-gray-500">Name</p>
-                    <div class="flex items-center mb-0 overflow-hidden">
-                        <div
-                            v-if="
-                                ['column'].includes(
-                                    asset.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex mr-1"
-                        >
-                            <component
-                                :is="dataTypeCategoryImage(asset)"
-                                class="h-4 text-gray-500 mb-0.5"
-                            />
-                        </div>
-                        <div
-                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
-                        >
-                            {{ title(asset) }}
-                        </div>
-
-                        <CertificateBadge
-                            v-if="certificateStatus(asset)"
-                            :status="certificateStatus(asset)"
-                            :username="certificateUpdatedBy(asset)"
-                            :timestamp="certificateUpdatedAt(asset)"
-                            class="mb-1 ml-1"
-                        ></CertificateBadge>
-                        <a-tooltip placement="right"
-                            ><template #title>Limited Access</template>
-                            <AtlanIcon
-                                v-if="isScrubbed(asset)"
-                                icon="Lock"
-                                class="h-4 mb-1 ml-1"
-                            ></AtlanIcon
-                        ></a-tooltip>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-3">
-                    <div
-                        v-if="
-                            !isGTC(asset) &&
-                            !['Connection', 'Process'].includes(asset.typeName)
-                        "
-                        class="flex flex-col text-sm"
-                    >
-                        <span class="mb-1 text-gray-500">Connection</span>
-                        <div class="flex items-center">
-                            <img
-                                :src="getConnectorImage(asset)"
-                                class="h-4 mr-1"
-                            />
-                            <span>{{
-                                `${connectorName(asset)}/${connectionName(
-                                    asset
-                                )}`
-                            }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div
                 v-if="getSummaryVariants(asset)?.components?.length"
                 class="flex gap-x-16"
@@ -82,6 +18,22 @@
                     :key="index"
                 >
                     <component :is="component" :asset="asset"></component>
+                </div>
+
+                <div
+                    v-if="
+                        !isGTC(asset) &&
+                        !['Connection', 'Process'].includes(asset.typeName)
+                    "
+                    class="flex flex-col text-sm"
+                >
+                    <span class="mb-1 text-gray-500">Connection</span>
+                    <div class="flex items-center">
+                        <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
+                        <span>{{
+                            `${connectorName(asset)}/${connectionName(asset)}`
+                        }}</span>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col">

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
-            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+            <div class="flex items-center" style="padding-bottom: 1px">
                 <div class="flex items-center justify-between">
                     <div
                         class="flex items-center flex-grow border-gray-200"
@@ -59,7 +59,7 @@
                         </div>
                         <div class="flex flex-col">
                             <div
-                                class="flex items-center text-base font-semibold truncate overflow-ellipsis"
+                                class="flex items-center text-base font-semibold leading-none truncate overflow-ellipsis"
                             >
                                 {{
                                     item?.metadata?.annotations[
@@ -76,7 +76,7 @@
                                 >
                                     <AtlanIcon
                                         icon="Info"
-                                        class="ml-1"
+                                        class="h-3 ml-1"
                                     ></AtlanIcon
                                 ></a-tooltip>
                             </div>
@@ -104,6 +104,7 @@
             :class="$style.previewtab"
             tab-position="left"
             :destroy-inactive-tab-pane="true"
+            style="height: calc(100% - 74px)"
         >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
@@ -121,23 +122,11 @@
                     />
                 </template>
 
-                <!-- <component
+                <component
                     :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
-                    "
-                    :data="tab.data"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                ></component> -->
+                    :item="item"
+                    :key="item?.metadata.name"
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -152,13 +141,22 @@
         toRefs,
         computed,
         provide,
+        defineAsyncComponent,
     } from 'vue'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
-        components: { PreviewTabsIcon },
+        components: {
+            PreviewTabsIcon,
+            property: defineAsyncComponent(
+                () => import('./property/index.vue')
+            ),
+            workflows: defineAsyncComponent(
+                () => import('./workflows/index.vue')
+            ),
+        },
 
         props: {
             item: {
@@ -166,37 +164,30 @@
                 required: false,
                 default: () => {},
             },
-            tab: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            isDrawer: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            page: {
-                type: String,
-                required: false,
-                default: 'assets',
-            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const activeKey = ref(0)
+            const activeKey = ref(1)
             const filteredTabs = [
                 {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
+                    name: 'Property',
+                    component: 'property',
+                    icon: 'Property',
+                    activeIcon: 'PropertyActive',
+                    tooltip: 'Property',
+                    scrubbed: false,
+                    requiredInProfile: true,
+                    analyticsKey: 'property',
                 },
                 {
-                    name: 'Run History',
-                    component: 'runs',
-                    icon: 'ActivityLogs',
-                    tooltip: 'Runs History',
+                    name: 'Worfklows',
+                    component: 'workflows',
+                    icon: 'Property',
+                    activeIcon: 'PropertyActive',
+                    tooltip: 'Workflows',
+                    scrubbed: false,
+                    requiredInProfile: true,
+                    analyticsKey: 'property',
                 },
             ]
 

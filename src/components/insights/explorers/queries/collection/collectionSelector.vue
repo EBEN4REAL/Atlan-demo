@@ -87,7 +87,7 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center overflow-x-hidden">
-                <span class="w-7 h-7 mr-2 -mt-1.5" style="font-size: 28px">{{
+                <span class="mr-2 -mt-2 w-7 h-7" style="font-size: 28px">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'

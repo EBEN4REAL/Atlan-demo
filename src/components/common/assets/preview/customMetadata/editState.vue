@@ -73,7 +73,9 @@
             ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
+            format="YYYY-MM-DD HH:mm:ss"
             class="flex-grow w-100"
+            :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
             value-format="x"
             @change="handleChange"
         />
@@ -140,6 +142,7 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
+    import dayjs, { Dayjs } from 'dayjs'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
@@ -212,6 +215,7 @@
             // }
 
             return {
+                dayjs,
                 getHumanTypeName,
                 // getMultiInputPlaceholder,
                 inputRef,

@@ -10,9 +10,7 @@
     >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
-                <span class="overflow-hidden text-sm overflow-ellipsis">{{
-                    title(asset)
-                }}</span>
+                <span class="text-sm truncate">{{ title(asset) }}</span>
                 <AtlanIcon icon="ChevronRight" class="flex-none" />
                 <span class="flex-none text-sm font-bold text-gray"
                     >{{ updating ? 'Edit' : 'New' }} Resource</span

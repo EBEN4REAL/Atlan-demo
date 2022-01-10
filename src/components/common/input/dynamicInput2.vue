@@ -69,7 +69,6 @@
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
         :allow-clear="true"
-        :disabled-date="disabledDate"
         :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
         @change="handleInputChange"
     />
@@ -114,6 +113,7 @@
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
+    import { isFloat } from '~/utils/checkType'
 
     dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
@@ -159,9 +159,9 @@
                 emit('change')
             }
 
-            const disabledDate = (current: Dayjs) =>
-                // Can not select days before today and today
-                current > dayjs().endOf('day')
+            // const disabledDate = (current: Dayjs) =>
+            //     // Can not select days before today and today
+            //     current > dayjs().endOf('day')
 
             const handleNumberKeyPress = (v) => {
                 if (
@@ -175,8 +175,27 @@
                 )
                 const n = parseInt(v.key, 10)
                 if (Number.isNaN(n)) {
-                    if (allowDecimal && v.key === '.') return
-                    if (v.key !== 'Tab') v.preventDefault()
+                    // * if dataType is decimal then allow '.' only one time
+                    if (
+                        allowDecimal &&
+                        typeof localValue.value === 'number' &&
+                        v.key === '.' &&
+                        !isFloat(localValue.value)
+                    )
+                        return
+                    if (
+                        ![
+                            'Tab',
+                            'Backspace',
+                            'ArrowDown',
+                            'ArrowUp',
+                            'ArrowRight',
+                            'ArrowLeft',
+                            'Enter',
+                        ].includes(v.key) &&
+                        !v.metaKey
+                    )
+                        v.preventDefault()
                 }
             }
 
@@ -185,7 +204,7 @@
                 localValue,
                 handleInputChange,
                 dayjs,
-                disabledDate,
+                // disabledDate,
             }
         },
     })

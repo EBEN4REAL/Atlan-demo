@@ -20,9 +20,6 @@
         },
         setup(props) {
             const { data, options } = toRefs(props)
-
-            console.log('bar', data)
-
             return { data, options }
         },
     })

@@ -92,134 +92,23 @@
                 "
             />
         </div>
-
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px;`"
-            :class="[
-                'absolute z-10  pb-2  bg-white rounded custom-shadow position ',
-            ]"
-        >
-            <!--  -->
+        <teleport to="body">
             <div
-                v-if="!tableSelected?.qualifiedName"
-                style="height: 250px"
+                v-if="isAreaFocused"
+                @mousedown.stop="cancelEventBlur"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
                 :class="[
-                    tableDropdownOption.length === 0
-                        ? 'flex justify-center items-center'
-                        : '',
+                    'absolute z-10  pb-2  bg-white rounded custom-shadow position ',
                 ]"
             >
-                <Loader
-                    v-if="isLoading"
-                    style="min-height: 100px !important"
-                ></Loader>
+                <!--  -->
                 <div
-                    class="overflow-auto"
-                    v-if="tableDropdownOption.length !== 0"
-                >
-                    <template
-                        v-if="tableDropdownOption.length !== 0 && !isLoading"
-                        v-for="(item, index) in tableDropdownOption"
-                        :key="item?.label + index"
-                    >
-                        <PopoverAsset
-                            :item="item.item"
-                            placement="left"
-                            :mouseEnterDelay="0.85"
-                        >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
-                                    @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
-                                    "
-                                >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
-                                    >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
-
-                            <div
-                                class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                                @click="onSelectTable(item)"
-                            >
-                                <div class="flex items-center truncate">
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
-                                        "
-                                        class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
-
-                                    <span
-                                        class="ml-2 parent-ellipsis-container-base"
-                                        >{{ item?.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="flex items-center justify-between text-gray-500"
-                                >
-                                    {{ item?.columnCount }}
-
-                                    <AtlanIcon
-                                        icon="ChevronRight"
-                                        class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                    />
-                                </div>
-                            </div>
-                        </PopoverAsset>
-                    </template>
-                </div>
-                <div
-                    v-if="tableDropdownOption.length === 0 && !isLoading"
-                    class="flex items-center justify-center h-full text-sm text-center text-gray-400"
-                >
-                    No tables found
-                </div>
-            </div>
-            <!-- For columns -->
-            <div v-else>
-                <div
-                    class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
-                >
-                    <div class="flex items-center truncate">
-                        <AtlanIcon
-                            icon="ChevronLeft"
-                            class="w-4 h-4 -mt-0.5 text-gray-500"
-                            @click="onUnselectTable"
-                        />
-
-                        <span class="ml-2 parent-ellipsis-container-base"
-                            >{{ tableSelected?.label }}
-                        </span>
-                    </div>
-                    <div
-                        class="flex items-center justify-between text-gray-500"
-                    >
-                        {{ tableSelected?.columnCount }}
-                    </div>
-                </div>
-                <div
-                    class="pl-2 pr-2 overflow-y-auto"
+                    v-if="!tableSelected?.qualifiedName"
                     style="height: 250px"
                     :class="[
-                        columnDropdownOption.length === 0
+                        tableDropdownOption.length === 0
                             ? 'flex justify-center items-center'
                             : '',
                     ]"
@@ -228,85 +117,211 @@
                         v-if="isLoading"
                         style="min-height: 100px !important"
                     ></Loader>
-                    <template
-                        v-if="columnDropdownOption.length !== 0 && !isLoading"
-                        v-for="(item, index) in columnDropdownOption"
-                        :key="item?.label + index"
+                    <div
+                        class="overflow-auto"
+                        v-if="tableDropdownOption.length !== 0"
                     >
-                        <PopoverAsset
-                            :item="item.item"
-                            placement="left"
-                            :mouseEnterDelay="0.85"
+                        <template
+                            v-if="
+                                tableDropdownOption.length !== 0 && !isLoading
+                            "
+                            v-for="(item, index) in tableDropdownOption"
+                            :key="item?.label + index"
                         >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="left"
+                                :mouseEnterDelay="0.85"
+                            >
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
+                                        "
+                                    >
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
+
+                                <div
+                                    class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
                                     @mousedown.stop="
-                                        (e) => actionClick(e, item.item)
+                                        (e) => onSelectTable(item, e)
                                     "
                                 >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
-                                    >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
+                                    <div class="flex items-center truncate">
+                                        <AtlanIcon
+                                            :icon="
+                                                getEntityStatusIcon(
+                                                    assetType(item),
+                                                    certificateStatus(item)
+                                                )
+                                            "
+                                            class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                        ></AtlanIcon>
 
-                            <a-checkbox
-                                :checked="map[item.value]"
-                                @change="
-                                    (checked) => onCheckboxChange(checked, item)
-                                "
-                                class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
-                            >
-                                <div
-                                    class="justify-between parent-ellipsis-container"
-                                >
-                                    <div class="parent-ellipsis-container">
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                        ></component>
                                         <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >
-                                            {{ item.label }}
+                                            class="ml-2 parent-ellipsis-container-base"
+                                            >{{ item?.label }}
                                         </span>
                                     </div>
                                     <div
-                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                        class="flex items-center justify-between text-gray-500"
                                     >
-                                        <ColumnKeys
-                                            :isPrimary="item.isPrimary"
-                                            :isForeign="item.isForeign"
-                                            :isPartition="item.isPartition"
-                                            topStyle="-top-2"
+                                        {{ item?.columnCount }}
+
+                                        <AtlanIcon
+                                            icon="ChevronRight"
+                                            class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
                                         />
                                     </div>
                                 </div>
-                            </a-checkbox>
-                        </PopoverAsset>
-                    </template>
-
+                            </PopoverAsset>
+                        </template>
+                    </div>
                     <div
-                        v-if="columnDropdownOption.length === 0 && !isLoading"
+                        v-if="tableDropdownOption.length === 0 && !isLoading"
                         class="flex items-center justify-center h-full text-sm text-center text-gray-400"
                     >
-                        No columns found
+                        No tables found
                     </div>
                 </div>
+                <!-- For columns -->
+                <div v-else>
+                    <div
+                        class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
+                        @mousedown.stop="cancelEventBlur"
+                    >
+                        <div class="flex items-center truncate">
+                            <AtlanIcon
+                                icon="ChevronLeft"
+                                class="w-4 h-4 -mt-0.5 text-gray-500"
+                                @click="onUnselectTable"
+                            />
+
+                            <span class="ml-2 parent-ellipsis-container-base"
+                                >{{ tableSelected?.label }}
+                            </span>
+                        </div>
+                        <div
+                            class="flex items-center justify-between text-gray-500"
+                        >
+                            {{ tableSelected?.columnCount }}
+                        </div>
+                    </div>
+                    <div
+                        class="pl-2 pr-2 overflow-y-auto"
+                        style="height: 250px"
+                        :class="[
+                            columnDropdownOption.length === 0
+                                ? 'flex justify-center items-center'
+                                : '',
+                        ]"
+                    >
+                        <Loader
+                            v-if="isLoading"
+                            style="min-height: 100px !important"
+                        ></Loader>
+                        <template
+                            v-if="
+                                columnDropdownOption.length !== 0 && !isLoading
+                            "
+                            v-for="(item, index) in columnDropdownOption"
+                            :key="item?.label + index"
+                        >
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="left"
+                                :mouseEnterDelay="0.85"
+                            >
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
+                                        "
+                                    >
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
+
+                                <a-checkbox
+                                    :checked="map[item.value]"
+                                    @change="
+                                        (checked) =>
+                                            onCheckboxChange(checked, item)
+                                    "
+                                    class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
+                                >
+                                    <div
+                                        class="justify-between parent-ellipsis-container"
+                                    >
+                                        <div class="parent-ellipsis-container">
+                                            <component
+                                                :is="
+                                                    getDataTypeImage(item.type)
+                                                "
+                                                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                            ></component>
+                                            <span
+                                                class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            >
+                                                {{ item.label }}
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="relative h-full w-14 parent-ellipsis-container-extension"
+                                        >
+                                            <ColumnKeys
+                                                :isPrimary="item.isPrimary"
+                                                :isForeign="item.isForeign"
+                                                :isPartition="item.isPartition"
+                                                topStyle="-top-2"
+                                            />
+                                        </div>
+                                    </div>
+                                </a-checkbox>
+                            </PopoverAsset>
+                        </template>
+
+                        <div
+                            v-if="
+                                columnDropdownOption.length === 0 && !isLoading
+                            "
+                            class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                        >
+                            No columns found
+                        </div>
+                    </div>
+                </div>
+                <!--  -->
             </div>
-            <!--  -->
-        </div>
+        </teleport>
     </div>
 </template>
 
@@ -323,6 +338,7 @@
         ComputedRef,
         onMounted,
         onUpdated,
+        onUnmounted,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -336,10 +352,8 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import {
-        InternalAttributes,
-        BasicSearchAttributes,
-    } from '~/constant/projection'
+
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
     import useBody from './useBody'
 
@@ -390,6 +404,13 @@
                 selectedTablesQualifiedNames,
                 showSelectAll,
             } = toRefs(props)
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
             const { getDataTypeImage } = useColumn()
             const { selectedItems, selectedColumnsData } = useVModels(props)
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -427,36 +448,15 @@
                         schemaQualifiedName:
                             activeInlineTab.value.playground.editor.context
                                 .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
 
                         searchText: queryText.value,
                         tableQualifiedNames: selectedTablesQualifiedNames
                             ?.filter((x) => x !== null || undefined)
                             .map((t) => t.tableQualifiedName),
                     }),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
@@ -537,37 +537,20 @@
                 }
                 return {
                     dsl: useBody(data),
-                    attributes: [
-                        'name',
-                        'displayName',
-                        'dataType',
-                        'isPrimary',
-                        'isForeign',
-                        'isPartition',
-                        'name',
-                        'displayName',
-                        'typeName',
-                        'dataType',
-                        'description',
-                        'userDescription',
-                        'certificateStatus',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'classifications',
-                        'tableCount',
-                        'viewCount',
-                        'columnCount',
-                        'connectorName',
-                        ...InternalAttributes,
-                        ...BasicSearchAttributes,
-                    ],
+                    attributes: attributes,
                 }
             }
 
-            const onSelectTable = (item) => {
+            const onSelectTable = (item, event) => {
                 // console.log('selected table: ', item)
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
             const onUnselectTable = () => {
                 tableSelected.value = null
@@ -690,12 +673,18 @@
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
+                if (event.relatedTarget == null) {
                     isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
                 }
+                // if (!container.value.contains(event.relatedTarget)) {
+                //     isAreaFocused.value = false
+                //     inputValue1.value = ''
+                //     inputValue2.value = ''
+                //     queryText.value = ''
+                // }
             }
 
             const inputChange = () => {
@@ -790,15 +779,57 @@
             const handleMouseOut = () => {
                 if (mouseOver.value) mouseOver.value = false
             }
+            const cancelEventBlur = (event) => {
+                // debugger
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
             })
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
             onUpdated(() => {
                 nextTick(() => {
+                    const viewportOffset =
+                        container.value?.getBoundingClientRect()
+                    if (viewportOffset?.width)
+                        containerPosition.value.width = viewportOffset?.width
+                    if (viewportOffset?.top)
+                        containerPosition.value.top = viewportOffset?.top
+                    if (viewportOffset?.left)
+                        containerPosition.value.left = viewportOffset?.left
+                    if (viewportOffset?.height)
+                        containerPosition.value.height = viewportOffset?.height
                     if (topPosShift.value !== container.value?.offsetHeight) {
                         topPosShift.value = container.value?.offsetHeight
                     }
                 })
+            })
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
             })
             const clearAllSelected = () => {
                 selectedItems.value = []
@@ -870,6 +901,7 @@
             )
 
             return {
+                cancelEventBlur,
                 map,
                 showSelectAll,
                 totalCount,
@@ -917,6 +949,7 @@
                 getDataTypeImage,
                 clearAllSelected,
                 actionClick,
+                containerPosition,
             }
         },
     })

@@ -3,7 +3,7 @@
         <a-cascader
             v-model:value="selectedValue"
             :options="tree"
-            :showSearch="true"
+            expand-trigger="hover"
             @change="onChange"
         >
             <a href="#" class="flex">
@@ -23,16 +23,30 @@
                         <AtlanIcon icon="ChevronRight" class="mx-1" />
 
                         <div
-                            class="capitalize"
+                            class="flex items-center"
                             v-if="selectedValue[0] === 'persona'"
                         >
-                            {{ getPersona(selectedValue[1])?.displayName }}
+                            <div class="capitalize">
+                                {{ getPersona(selectedValue[1])?.displayName }}
+                            </div>
+                            <AtlanIcon
+                                icon="Lock"
+                                class="mb-1 ml-1 h4"
+                                v-if="!isAccessPersona(selectedValue[1])"
+                            ></AtlanIcon>
                         </div>
                         <div
-                            class="capitalize"
+                            class="flex items-center"
                             v-if="selectedValue[0] === 'purpose'"
                         >
-                            {{ getPurpose(selectedValue[1])?.displayName }}
+                            <div class="capitalize">
+                                {{ getPurpose(selectedValue[1])?.displayName }}
+                            </div>
+                            <AtlanIcon
+                                icon="Lock"
+                                class="h-3 ml-1"
+                                v-if="!isAccessPurpose(selectedValue[1])"
+                            ></AtlanIcon>
                         </div>
                     </div>
                 </div>
@@ -49,6 +63,7 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import { defineComponent, ref, computed } from 'vue'
+    import { useAuthStore } from '~/store/auth'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -77,6 +92,11 @@
 
             const purposeStore = usePurposeStore()
 
+            const authStore = useAuthStore()
+
+            const personas = authStore.personas
+            const purposes = authStore.purposes
+
             const text = ref<string[]>([])
 
             const selectedValue = ref(modelValue.value)
@@ -95,12 +115,24 @@
                     label: 'Persona',
                     children: [],
                 }
-                personaStore.list.forEach((item) => {
+
+                if (!personaStore.list || personaStore.list?.length == 0) {
+                    persona.disabled = true
+                }
+
+                personaStore.list?.forEach((item) => {
                     persona.children.push({
                         value: item.id,
                         label: capitalizeFirstLetter(item.displayName),
                     })
                 })
+
+                persona.children = persona.children.sort(
+                    (a, b) =>
+                        personas.findIndex((i) => i.id === b.value) -
+                        personas.findIndex((i) => i.id === a.value)
+                )
+
                 temp.push(persona)
 
                 const purpose = {
@@ -109,7 +141,11 @@
                     children: [],
                 }
 
-                purposeStore.list.forEach((item) => {
+                if (!purposeStore.list || purposeStore.list?.length == 0) {
+                    purpose.disabled = true
+                }
+
+                purposeStore.list?.forEach((item) => {
                     purpose.children.push({
                         value: item.id,
                         label: capitalizeFirstLetter(item.displayName),
@@ -130,6 +166,20 @@
             const getPurpose = (id) =>
                 purposeStore.list.find((item) => item.id === id)
 
+            const isAccessPurpose = (id) => {
+                if (purposes.find((i) => i.id === id)) {
+                    return true
+                }
+                return false
+            }
+            const isAccessPersona = (id) => {
+                if (personas.find((i) => i.id === id)) {
+                    return true
+                }
+
+                return false
+            }
+
             return {
                 selectedValue,
                 text,
@@ -138,6 +188,10 @@
                 getPersona,
                 tree,
                 getPurpose,
+                personas,
+                purposes,
+                isAccessPurpose,
+                isAccessPersona,
             }
         },
     })

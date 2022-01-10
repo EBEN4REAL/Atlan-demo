@@ -40,11 +40,6 @@
                             <a-menu-item key="edit">
                                 <AddAnnouncementModal
                                     :asset="selectedAsset"
-                                    :edit-permission="
-                                        selectedAssetUpdatePermission(
-                                            selectedAsset
-                                        )
-                                    "
                                     :updating="true"
                                     ><template #trigger>
                                         <div class="flex items-center">
@@ -123,9 +118,8 @@
             },
             allowEdit: {
                 type: Boolean,
-                default() {
-                    return true
-                },
+                required: false,
+                default: true,
             },
         },
         setup(props) {

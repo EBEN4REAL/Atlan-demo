@@ -144,8 +144,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const isConfetti = ref(false)
     const shouldDrawerUpdate = ref(false)
 
-    // analytics event
-    const sendMetadataTrackEvent = (metadataEvent: string, props = {}) => {
+    // metadata analytics event
+    const sendMetadataTrackEvent = (action: string, props = {}) => {
         const baseProps = {
             asset_type: selectedAsset.value?.typeName,
         }
@@ -153,7 +153,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             ...baseProps,
             ...props,
         }
-        useAddEvent('discovery', 'metadata', metadataEvent, finalProps)
+        useAddEvent('discovery', 'metadata', action, finalProps)
+    }
+
+    // general analytics event
+    const sendTrackEvent = (objectName: string, action: string, props = {}) => {
+        const baseProps = {
+            asset_type: selectedAsset.value?.typeName,
+        }
+        const finalProps = {
+            ...baseProps,
+            ...props,
+        }
+        useAddEvent('discovery', objectName, action, finalProps)
     }
 
     // Name Change
@@ -290,7 +302,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Announcement Update
-    const handleAnnouncementUpdate = () => {
+    const handleAnnouncementUpdate = (isUpdating) => {
         entity.value.attributes.announcementTitle =
             localAnnouncement.value.announcementTitle
         entity.value.attributes.announcementMessage =
@@ -301,6 +313,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been updated'
         mutate()
+        const action = isUpdating ? 'updated' : 'created'
+        sendTrackEvent('announcement', action, {
+            announcement_type: localAnnouncement.value.announcementType,
+        })
     }
 
     // SQL Query Config Update
@@ -329,6 +345,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been deleted'
         mutate()
+        sendTrackEvent('announcement', 'deleted')
     }
 
     const handleMeaningsUpdate = () => {
@@ -453,6 +470,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'A new resource has been added'
         mutate()
+        sendTrackEvent('resource', 'created', {
+            domain: localResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Update
@@ -474,6 +494,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             selectedAsset.value
         )} updated`
         mutate()
+        sendTrackEvent('resource', 'updated', {
+            domain: localLResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Deletion
@@ -492,6 +515,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             guid.value = selectedAsset.value.guid
 
             mutateUpdate()
+            sendTrackEvent('resource', 'deleted')
         })
     }
 
@@ -517,6 +541,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Readme has been updated'
             mutate()
+            sendTrackEvent('readme', 'updated')
         }
     }
 

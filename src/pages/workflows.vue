@@ -12,9 +12,9 @@
 
         <div
             class="relative hidden bg-white asset-preview-container md:block"
-            v-else-if="!isItem"
+            v-if="!isItem"
         >
-            <AssetPreview :selected-asset="localSelected"></AssetPreview>
+            <WorfklowPreview :item="localSelected"></WorfklowPreview>
         </div>
     </div>
 </template>
@@ -24,13 +24,13 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     import WorkflowDiscovery from '@/workflows/index.vue'
-    import AssetPreview from '@/common/assets/preview/index.vue'
+    import WorfklowPreview from '@/workflows/preview.vue'
     import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
             WorkflowDiscovery,
-            AssetPreview,
+            WorfklowPreview,
         },
         setup() {
             useHead({
@@ -49,7 +49,6 @@
 
             const handlePreview = (asset) => {
                 localSelected.value = asset
-                assetStore.setSelectedAsset(asset)
             }
             const updateList = (asset) => {
                 if (assetdiscovery.value) {

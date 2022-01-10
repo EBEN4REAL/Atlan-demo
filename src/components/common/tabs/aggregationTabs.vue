@@ -39,7 +39,7 @@
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
 
-                            <div class="self-center text-sm">
+                            <div class="self-center text-sm font-normal">
                                 {{ item.label }}
                             </div>
                             <div
@@ -195,9 +195,10 @@
             })
 
             watch(modelValue, (cur) => {
-                selectedTab.value = cur
-                onTabChange()
-                // emit('change', selectedTab.value)
+                if (selectedTab.value !== cur) {
+                    selectedTab.value = cur
+                    onTabChange()
+                }
             })
 
             return {

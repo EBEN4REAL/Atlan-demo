@@ -17,7 +17,9 @@
         </div>
         <DefaultLayout v-else title="Query Logs">
             <template #header>
-                <div class="flex items-center justify-between pb-3 query-logs">
+                <div
+                    class="flex items-center justify-between p-4 pb-3 -mb-3 border border-b-0 border-gray-200 rounded-t-lg query-logs"
+                >
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
                             <AtlanBtn

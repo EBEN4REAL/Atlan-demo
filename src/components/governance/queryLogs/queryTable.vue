@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg query-access-logs-table query-table"
+            class="overflow-hidden border rounded-b-lg query-access-logs-table query-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
@@ -381,24 +381,26 @@
                     key: 'QueryInfo',
                     ellipsis: true,
                     slots: { customRender: 'queryInfo' },
-                    width: 500,
+                    width: '25%',
                 },
                 {
                     title: 'Execution details',
                     slots: { customRender: 'details' },
                     key: 'execution_details',
+                    width: '15%',
                 },
                 {
                     title: 'User',
                     key: 'user',
                     ellipsis: true,
                     slots: { customRender: 'user' },
-                    width: 120,
+                    width: '10%',
                 },
                 {
                     title: 'Timestamp',
                     key: 'timestamp',
                     slots: { customRender: 'timestamp' },
+                    width: '15%',
                 },
             ]
 

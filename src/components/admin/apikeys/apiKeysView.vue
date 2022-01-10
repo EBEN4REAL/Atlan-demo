@@ -28,7 +28,7 @@
         <DefaultLayout v-else title="API Keys">
             <template #header>
                 <div
-                    class="flex items-center justify-between p-4 border border-b-0 border-gray-200 rounded-t-lg header-api-keys"
+                    class="flex items-center justify-between p-4 border border-b-0 border-gray-300 rounded-t-lg header-api-keys"
                 >
                     <div class="flex w-1/4">
                         <SearchAndFilter

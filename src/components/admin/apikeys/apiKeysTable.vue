@@ -2,7 +2,7 @@
     <div>
         <a-table
             v-if="apiKeysList"
-            class="overflow-hidden border rounded-lg apikey-list api-keys-table"
+            class="overflow-hidden border rounded-b-lg apikey-list api-keys-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :pagination="false"

@@ -28,7 +28,7 @@
         <DefaultLayout v-else title="API Keys">
             <template #header>
                 <div
-                    class="flex items-center justify-between p-4 pb-3 header-api-keys border border-b-0 border-gray-200 rounded-t-lg"
+                    class="flex items-center justify-between p-4 border border-b-0 border-gray-200 rounded-t-lg header-api-keys"
                 >
                     <div class="flex w-1/4">
                         <SearchAndFilter
@@ -300,7 +300,7 @@
 </script>
 
 <style lang="less" scoped>
-    .header-api-keys{
-        margin-bottom: -16px!important;
+    .header-api-keys {
+        margin-bottom: -16px !important;
     }
 </style>

@@ -34,16 +34,16 @@
             <div
                 v-if="isAreaFocused"
                 @click.stop="() => {}"
-                :style="`width: ${containerPosition?.width}px;top:${
+                :style="`width: 161px;top:${
                     containerPosition?.top + containerPosition?.height
                 }px;left:${containerPosition?.left}px`"
                 :class="[
-                    'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
                 ]"
             >
                 <div
-                    :class="['flex  justify-center overflow-auto']"
-                    style="max-height: 250px"
+                    :class="['flex  justify-center overflow-auto ']"
+                    style="height: 144px; width: 161px"
                 >
                     <div class="w-full">
                         <template
@@ -51,7 +51,7 @@
                             :key="item.key"
                         >
                             <div
-                                class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
+                                class="flex items-center justify-between w-full px-4 h-9 group-hover:bg-primary-light group"
                                 @mousedown.stop="(e) => onCheckChange(item, e)"
                                 :class="
                                     selectedJoinType.type === item.key
@@ -60,11 +60,10 @@
                                 "
                             >
                                 <div class="flex items-center">
-                                    <!-- <AtlanIcon
-                                    :icon="item.icon"
-                                    class="mr-3 text-primary"
-                                    v-if="selectedJoinType.type === item.key"
-                                /> -->
+                                    <AtlanIcon
+                                        :icon="item.icon"
+                                        class="mr-1 text-primary"
+                                    />
                                     <span>{{ item.label }}</span>
                                 </div>
                                 <AtlanIcon
@@ -72,6 +71,53 @@
                                     class="text-primary"
                                     v-if="selectedJoinType.type === item.key"
                                 />
+
+                                <a-popover
+                                    :trigger="'hover'"
+                                    placement="right"
+                                    v-else
+                                >
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="transition opacity-0 cursor-pointer delay-50 text-primary group-hover:opacity-100"
+                                    />
+                                    <template #content>
+                                        <div class="infoPopover">
+                                            <AtlanIcon
+                                                :icon="`${item.icon}Info`"
+                                                style="
+                                                    width: 220px;
+                                                    height: 206px;
+                                                "
+                                            />
+                                            <div
+                                                class="mt-3 text-sm font-bold text-gray-700"
+                                            >
+                                                {{
+                                                    item.key === 'left_join'
+                                                        ? 'The Left Join returns all records from the left table and the matching records from the right table'
+                                                        : item.key ===
+                                                          'inner_join'
+                                                        ? 'The Inner Join returns all common records from the left table and the right table'
+                                                        : item.key ===
+                                                          'right_join'
+                                                        ? 'The Right Join returns all records from the right table and the matching records from the left table'
+                                                        : 'The Outer Join returns all records from the left and the right table'
+                                                }}
+                                            </div>
+
+                                            <div
+                                                class="flex items-center mt-3 text-sm cursor-pointer text-primary"
+                                            >
+                                                Learn more
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="w-4 h-4 ml-1"
+                                                />
+                                            </div>
+                                        </div>
+                                    </template>
+                                </a-popover>
                             </div>
                         </template>
                     </div>
@@ -218,6 +264,19 @@
                 if (mouseOver.value) mouseOver.value = false
             }
 
+            let infoText = computed(() => {
+                let text =
+                    selectedJoinType.value.type === 'left_join'
+                        ? 'The Left Join returns all records from the left table and the matching records from the right table'
+                        : selectedJoinType.value.type === 'inner_join'
+                        ? 'The Inner Join returns all common records from the left table and the right table'
+                        : selectedJoinType.value.type === 'right_join'
+                        ? 'The Right Join returns all records from the right table and the matching records from the left table'
+                        : 'The Outer Join returns all records from the left and the right table'
+
+                return text
+            })
+
             return {
                 onCheckChange,
                 selectAll,
@@ -235,6 +294,7 @@
                 handleMouseOut,
                 mouseOver,
                 containerPosition,
+                infoText,
             }
         },
     })
@@ -261,9 +321,29 @@
     .disable-bg {
         background-color: #fbfbfb;
     }
+    .infoPopover {
+        padding: 12px;
+
+        width: 244px;
+        // height: 350px;
+
+        /* Grays/white */
+
+        background: #ffffff;
+        /* popover_drop_shadow */
+
+        box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+    }
 </style>
 <style lang="less" module>
     .custom_input {
         background-color: #fbfbfb !important;
+    }
+    .info {
+        :global(.ant-popover.ant-popover-placement-right) {
+            margin-top: 80px !important;
+            margin-left: 10px !important;
+        }
     }
 </style>

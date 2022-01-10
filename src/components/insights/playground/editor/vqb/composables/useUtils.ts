@@ -6,6 +6,7 @@ import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
 import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { aggregatedAliasMap } from '../constants/aggregation'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -272,6 +273,64 @@ export function useUtils() {
         activeInlineTab.value.playground.vqb.panels = copyPanels
     }
 
+    function isAggregationORGroupPanelColumnsAdded(
+        activeInlineTab: activeInlineTabInterface
+    ) {
+        const groupPanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'group'
+        )
+        const aggregatePanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'aggregate'
+        )
+        if (!groupPanel?.hide && !aggregatePanel?.hide) {
+            return false
+        }
+
+        if (groupPanel?.subpanels?.length > 0) return true
+        if (aggregatePanel?.subpanels?.length > 0) return true
+        return false
+    }
+    function getAggregationORGroupPanelColumns(
+        activeInlineTab: activeInlineTabInterface
+    ) {
+        const groupPanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'group'
+        )
+        const aggregatePanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'aggregate'
+        )
+        let mappedGroupSubpanels: any[] = []
+        let mappedAggregateSubpanels: any[] = []
+
+        if (groupPanel?.hide) {
+            mappedGroupSubpanels = groupPanel?.subpanels[0]?.columnsData?.map(
+                (columnData) => {
+                    return {
+                        ...columnData,
+                        addedBy: 'group',
+                    }
+                }
+            )
+        }
+        if (aggregatePanel?.hide) {
+            mappedAggregateSubpanels = aggregatePanel?.subpanels?.map(
+                (subpanel) => {
+                    return {
+                        ...subpanel,
+                        addedBy: 'aggregate',
+                    }
+                }
+            )
+        }
+
+        return {
+            mappedGroupSubpanels: mappedGroupSubpanels ?? [],
+            mappedAggregateSubpanels: mappedAggregateSubpanels ?? [],
+            totalCount:
+                mappedGroupSubpanels?.length + mappedAggregateSubpanels?.length,
+        }
+    }
+
     return {
         getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
@@ -285,5 +344,7 @@ export function useUtils() {
         getTableNamesStringFromQualfieidNames,
         isSubpanelClosable,
         collapseAllPanelsExceptCurrent,
+        isAggregationORGroupPanelColumnsAdded,
+        getAggregationORGroupPanelColumns,
     }
 }

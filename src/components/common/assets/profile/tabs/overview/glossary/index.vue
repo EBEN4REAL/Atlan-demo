@@ -5,10 +5,15 @@
             v-if="selectedAsset?.typeName === 'AtlasGlossary'"
             :entity="selectedAsset"
         /> -->
-        <AnnouncementWidget
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
-        <Summary :asset="selectedAsset" />
+
+        <Summary :asset="selectedAsset">
+            <template #announcement>
+                <AnnouncementWidget
+                    :selected-asset="selectedAsset"
+                    class="mb-3"
+                ></AnnouncementWidget>
+            </template>
+        </Summary>
         <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>

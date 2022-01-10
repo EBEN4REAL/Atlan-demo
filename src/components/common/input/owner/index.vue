@@ -74,6 +74,16 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
+
+            <span
+                v-if="
+                    !showAddBtn &&
+                    localValue?.ownerGroups?.length < 1 &&
+                    localValue?.ownerUsers?.length < 1
+                "
+                class="-ml-1 text-gray-500"
+                >No owners assigned</span
+            >
         </div>
     </div>
 </template>

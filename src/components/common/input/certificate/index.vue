@@ -49,6 +49,7 @@
                 :mouse-enter-delay="0.5"
             >
                 <a-button
+                    v-if="showAddBtn"
                     :disabled="!editPermission"
                     shape="circle"
                     size="small"
@@ -62,6 +63,10 @@
                     <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
                 ></a-button>
             </a-tooltip>
+
+            <span v-if="!showAddBtn" class="-ml-1 text-sm text-gray-500"
+                >No certification</span
+            >
         </div>
     </div>
 </template>
@@ -125,6 +130,11 @@
                 default: () => {
                     return false
                 },
+            },
+            showAddBtn: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

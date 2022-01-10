@@ -8,18 +8,6 @@
         </div>
         <slot name="announcement"></slot>
         <div class="flex flex-col gap-y-3">
-            <div
-                v-if="getSummaryVariants(asset)?.components?.length"
-                class="flex gap-x-16"
-            >
-                <div
-                    v-for="(component, index) in getSummaryVariants(asset)
-                        ?.components"
-                    :key="index"
-                >
-                    <component :is="component" :asset="asset"></component>
-                </div>
-            </div>
             <div class="grid grid-cols-2">
                 <div class="flex flex-col">
                     <p class="text-gray-500">Name</p>
@@ -84,6 +72,18 @@
                     </div>
                 </div>
             </div>
+            <div
+                v-if="getSummaryVariants(asset)?.components?.length"
+                class="flex gap-x-16"
+            >
+                <div
+                    v-for="(component, index) in getSummaryVariants(asset)
+                        ?.components"
+                    :key="index"
+                >
+                    <component :is="component" :asset="asset"></component>
+                </div>
+            </div>
             <div class="flex flex-col">
                 <p class="text-gray-500">Description</p>
                 <Description
@@ -105,6 +105,7 @@
                         :selected-asset="asset"
                         :edit-permission="false"
                         :in-profile="true"
+                        :show-add-btn="false"
                         @change="handleChangeCertificate"
                     />
                 </div>

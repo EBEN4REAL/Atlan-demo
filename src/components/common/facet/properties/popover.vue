@@ -6,10 +6,14 @@
         <template #title>
             <div class="flex items-center justify-between gap-x-4">
                 <div class="flex flex-col">
-                    <span> {{ attribute.displayName }}</span>
-                    <span class="text-xs text-gray-500">
+                    <span>
+                        <Truncate
+                            :tooltipText="attribute.displayName"
+                            :rows="2"
+                    /></span>
+                    <!-- <span class="text-xs text-gray-500">
                         {{ attribute.description }}</span
-                    >
+                    > -->
                 </div>
 
                 <span
@@ -63,10 +67,11 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, PropType, toRefs, ref, computed } from 'vue'
     import Condition from './condition.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'PropertiesPopover',
-        components: { Condition },
+        components: { Condition, Truncate },
         props: {
             attribute: {
                 type: Object,

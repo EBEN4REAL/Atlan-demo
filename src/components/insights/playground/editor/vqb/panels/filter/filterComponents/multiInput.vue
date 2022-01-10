@@ -49,7 +49,21 @@
 
             const { updateVQB } = useVQB()
 
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
+            }
+
             const handleChange = () => {
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
                 // updateVQB(activeInlineTabKey, inlineTabs)
             }
             return {

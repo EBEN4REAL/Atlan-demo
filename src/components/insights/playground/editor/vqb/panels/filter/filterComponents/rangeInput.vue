@@ -118,6 +118,17 @@
                     : undefined
             }
 
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
+            }
+
             const onChange = (event, _pos, type) => {
                 if (type === 'text') {
                     if (_pos === 'first') {
@@ -145,6 +156,10 @@
                     ]
                 }
                 // updateVQB(activeInlineTabKey, inlineTabs)
+
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
             }
 
             return {

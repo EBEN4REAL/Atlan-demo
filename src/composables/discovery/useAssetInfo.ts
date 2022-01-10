@@ -39,6 +39,14 @@ export default function useAssetInfo() {
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
 
+    const parentWorkspace = (asset: assetInterface) =>
+        attributes(asset)?.workspace
+
+    const parentReport = (asset: assetInterface) => attributes(asset)?.report
+
+    const parentDashboard = (asset: assetInterface) =>
+        attributes(asset)?.dashboard
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -1052,5 +1060,8 @@ export default function useAssetInfo() {
         assetTypeRelations,
         externalLocation,
         externalLocationFormat,
+        parentWorkspace,
+        parentReport,
+        parentDashboard,
     }
 }

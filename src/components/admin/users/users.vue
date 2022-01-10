@@ -3,7 +3,7 @@
         <template #header>
             <div
                 v-if="userList.length > 0"
-                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
@@ -34,10 +34,17 @@
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow-none hover:shadow"
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow-none focus:border-primary focus:text-primary"
                         >
-                            <AtlanIcon icon="Filter" class="w-5 h-5" />
-                            <span>Filters</span>
+                            <AtlanIcon icon="FilterDot" class="w-5 h-5" />
+                            <span class="text-sm"
+                                >Filters
+                                {{
+                                    filtersLength > 0
+                                        ? `(${filtersLength})`
+                                        : ''
+                                }}</span
+                            >
                         </button>
                     </a-popover>
                 </div>
@@ -286,6 +293,8 @@
                     []
                 )
 
+                console.log('user filter', userListAPIParams)
+
                 userListAPIParams.offset = 0
                 getUserList()
             }
@@ -502,6 +511,26 @@
                 })
             }
 
+            const filtersLength = ref(0)
+            watch(
+                [statusFilter, filterRole],
+                ([newA, newB]) => {
+                    if (newA?.length > 0 && newB) {
+                        filtersLength.value = newA.length + 1
+                    } else if (newA?.length > 0) {
+                        filtersLength.value = newA?.length
+                    } else if (newB) {
+                        filtersLength.value = 1
+                    } else {
+                        filtersLength.value = 0
+                    }
+                },
+                {
+                    immediate: true,
+                    deep: true,
+                }
+            )
+
             return {
                 isReady,
                 tenantName,
@@ -553,6 +582,7 @@
                 numberOfActiveUser,
                 numberOfDisableUser,
                 numberOfInvitedUser,
+                filtersLength,
             }
         },
     })

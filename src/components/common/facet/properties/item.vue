@@ -8,7 +8,7 @@
         "
     >
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'">
-            {{ attribute.displayName }}
+            <Truncate :tooltipText="attribute.displayName" :rows="2" />
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">
             <AtlanIcon icon="CaretRight" class="h-3"></AtlanIcon>
@@ -19,9 +19,10 @@
 <script lang="ts">
     import { computed } from 'vue'
     import { defineComponent, toRefs } from 'vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: {},
+        components: { Truncate },
         props: {
             attribute: {
                 required: false,

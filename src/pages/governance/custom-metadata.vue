@@ -29,7 +29,7 @@
                     <div class="flex items-center px-4 mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
-                            :placeholder="`Search`"
+                            :placeholder="`Search from ${sortedSearchedBM.length} metadata`"
                             class="mt-0 bg-white"
                             :autofocus="true"
                             size="minimal"

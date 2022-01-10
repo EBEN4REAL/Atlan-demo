@@ -898,6 +898,9 @@
                 // console.log('selected table: ', item)
                 isTableSelected.value = true
                 tableSelected.value = item
+                queryText.value = ''
+                inputValue1.value = ''
+                inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()

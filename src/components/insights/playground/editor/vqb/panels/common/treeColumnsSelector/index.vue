@@ -734,10 +734,12 @@
             const onSelectTable = (item, event) => {
                 tableSelected.value = item
                 isTableSelected.value = true
+                queryText.value = ''
                 replaceBody(getColumnInitialBody(item))
                 event.stopPropagation()
                 event.preventDefault()
                 setFocusedCusror()
+
                 return false
             }
             const onUnselectTable = (event) => {
@@ -846,7 +848,7 @@
             })
 
             watch(queryText, () => {
-                if (tableSelected.value) {
+                if (selectedColumn.value?.label && isTableSelected?.value) {
                     replaceBody(getColumnInitialBody(tableSelected?.value))
                 } else {
                     replaceBody(getTableInitialBody())

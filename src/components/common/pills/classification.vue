@@ -16,23 +16,23 @@
             group
             `"
         :data-test-id="displayName"
-        @mouseover="() => {
-            shieldColour = 'White'
-        }"
-        @mouseleave="() => {
-            shieldColour = originalColour
-        }"
+        @mouseover="
+            () => {
+                shieldColour = 'White'
+            }
+        "
+        @mouseleave="
+            () => {
+                shieldColour = originalColour
+            }
+        "
     >
         <ClassificationIcon
             v-if="isPropagated"
             icon="ShieldFilled"
             :color="shieldColour"
         />
-        <ClassificationIcon
-            v-else
-            icon="Shield"
-            :color="shieldColour"
-        />
+        <ClassificationIcon v-else icon="Shield" :color="shieldColour" />
 
         <div class="ml-1">
             {{ displayName || name }}
@@ -48,10 +48,10 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, unref, ref } from 'vue'
+    import { toRefs, computed, unref, ref, defineComponent } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
-    export default {
+    export default defineComponent({
         props: {
             guid: {
                 type: String,
@@ -116,8 +116,8 @@
                 color,
                 bgHover,
                 originalColour,
-                shieldColour
+                shieldColour,
             }
         },
-    }
+    })
 </script>

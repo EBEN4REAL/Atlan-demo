@@ -383,11 +383,10 @@ export default function useEventGraph(
                 const graphNodes = graph.value.getNodes()
                 const node = graphNodes.find((x) => x.id === nodeId)
 
-                if (!chp.value.portId) {
-                    controlCaret(nodeId, x)
+                controlCaret(nodeId, x)
 
-                    if (node.getPorts().length === 1) getNodeColumnList([node])
-                }
+                if (!chp.value.portId && node.getPorts().length === 1)
+                    getNodeColumnList([node])
 
                 if (chp.value.portId) {
                     if (!activeNodesToggled.value[node.id]) {

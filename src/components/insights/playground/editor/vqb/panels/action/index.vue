@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="computedItems?.length > 0">
         <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
             <AtlanBtn
                 class="flex-none px-3.5 py-1 border-none border-r border-gray-300"

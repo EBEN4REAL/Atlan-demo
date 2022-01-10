@@ -103,21 +103,27 @@
             watch([data], () => {
                 if (data.value) {
                     // convert data from API in table format
-                    data.value.columns.forEach((col) => {
+                    data.value.columns.forEach((col, index) => {
                         const obj = {
-                            dataIndex: col.label,
+                            dataIndex: col.columnName + index,
                             title: col.columnName,
                             data_type: col.type.name,
                         }
                         tableColumns.value.push(obj)
                     })
-                    data.value.rows.forEach((val, index) => {
+                    data.value.rows.forEach((val) => {
                         let obj = {}
-                        data.value.columns.forEach((col, i) => {
-                            obj[col.columnName] = val[i] || '---'
+
+                        val.map((row, rowindex) => {
+                            obj = {
+                                ...obj,
+                                ...{
+                                    [tableColumns.value[rowindex].dataIndex]:
+                                        row || '---',
+                                },
+                            }
                         })
-                        // add key to object
-                        obj = { ...obj }
+
                         results.value.push(obj)
                     })
                 }

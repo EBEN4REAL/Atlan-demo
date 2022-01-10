@@ -138,6 +138,7 @@
         ref="addPropertyDrawer"
         :metadata="cleanLocalBm"
         @added-property="handlePropertyUpdate"
+        @openIndex="openIndex"
     />
 </template>
 <script lang="ts">
@@ -299,7 +300,17 @@
                 )
             }
 
+            const openIndex = (i) => {
+                if (i < 0 || i > addPropertyDrawer.value.length) return
+                console.log('openIndex', i)
+                addPropertyDrawer.value.open(
+                    cleanLocalBm.value.attributeDefs[i],
+                    true,
+                    i
+                )
+            }
             return {
+                openIndex,
                 selected,
                 openEdit,
                 allowDelete,

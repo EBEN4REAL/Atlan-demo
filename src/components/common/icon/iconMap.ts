@@ -314,6 +314,7 @@ import Policies from '~/assets/images/icons/Policies.svg'
 import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
 import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
 import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import OuterJoin from '~/assets/images/icons/OuterJoin.svg'
 import TableSwap from '~/assets/images/icons/swapTable.svg'
 import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
 import PublicCollection from '~/assets/images/icons/publicCollection.svg'
@@ -345,6 +346,11 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+
+import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
+import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
+import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
+import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 
 export default {
     GlowFlash,
@@ -681,4 +687,9 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    OuterJoin,
+    InnerJoinInfo,
+    LeftJoinInfo,
+    RightJoinInfo,
+    OuterJoinInfo
 }

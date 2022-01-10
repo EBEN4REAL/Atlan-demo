@@ -2,6 +2,7 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
+        style="height: 82vh"
     >
         <div
             v-if="!isComputeDone"

@@ -7,12 +7,15 @@
                 <div class="flex items-center gap-2 mb-2">
                     <AvatarUpdate :metadata="localBm" />
                     <div class="text-xl">
-                        {{ localBm.displayName }}
+                        <Truncate
+                            :tooltip-text="localBm.displayName"
+                            :rows="2"
+                        />
                     </div>
                 </div>
-                <div>
+                <!-- <div>
                     <p class="text-gray-500">{{ localBm.description }}</p>
-                </div>
+                </div> -->
             </div>
             <div class="flex items-center">
                 <MetadataHeaderButton
@@ -159,9 +162,11 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Button from '@/UI/button.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
+            Truncate,
             Button,
             CreateUpdateInfo,
             MetadataHeaderButton,

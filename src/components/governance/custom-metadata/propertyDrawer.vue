@@ -13,7 +13,12 @@
                 <div>
                     <p class="text-gray-500">Property</p>
                     <p class="text-xl">
-                        {{ isEdit ? form.displayName : 'Add new' }}
+                        <Truncate
+                            :tooltip-text="
+                                isEdit ? form.displayName : 'Add new'
+                            "
+                            :rows="2"
+                        />
                     </p>
                 </div>
 
@@ -396,12 +401,14 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
     import { onKeyStroke } from '@vueuse/core'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
             NewEnumForm,
+            Truncate,
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {

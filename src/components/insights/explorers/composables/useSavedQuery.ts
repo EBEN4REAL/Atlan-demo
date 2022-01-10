@@ -285,7 +285,13 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if (isVQB) {
+        // if (isVQB) {
+        //     visualBuilderSchemaBase64 = serializeQuery(
+        //         activeInlineTabCopy?.playground.vqb
+        //     )
+        //     isVisualQuery = true
+        // }
+        if (activeInlineTabCopy.playground.isVQB) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )

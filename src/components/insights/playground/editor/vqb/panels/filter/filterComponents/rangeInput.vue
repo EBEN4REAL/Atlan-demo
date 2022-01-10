@@ -7,24 +7,42 @@
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'first', type)"
-        />
-        <a-date-picker
-            v-else-if="type === 'date'"
-            v-model:value="firstvalue"
-            class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
-            @change="(event) => onChange(event, 'first', type)"
-            :show-time="{ format: 'HH:mm' }"
-            style="height: 32px !important"
-            place
-        />
-        <a-input-number
+        >
+            <template #suffix>
+                <CustomVariableTrigger />
+            </template>
+        </a-input>
+        <div v-else-if="type === 'date'" class="relative flex flex-1">
+            <a-date-picker
+                v-model:value="firstvalue"
+                class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+                @change="(event) => onChange(event, 'first', type)"
+                :show-time="{ format: 'HH:mm' }"
+                style="height: 32px !important"
+                place
+            >
+                <template #suffixIcon>
+                    <CustomVariableTrigger />
+                </template>
+            </a-date-picker>
+            <div class="absolute right-2.5 top-1">
+                <CustomVariableTrigger />
+            </div>
+        </div>
+        <a-input
             v-model:value="firstvalue"
             v-else-if="type === 'number'"
             placeholder="Enter numeric value"
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'first', type)"
-        />
+            type="number"
+            @keypress="isNumberKey(event)"
+        >
+            <template #suffix>
+                <CustomVariableTrigger />
+            </template>
+        </a-input>
         <a-input
             v-if="type === 'text'"
             v-model:value="secondValue"
@@ -32,23 +50,41 @@
             class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'second', type)"
-        />
-        <a-date-picker
-            v-else-if="type === 'date'"
-            v-model:value="secondValue"
-            class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
-            style="height: 32px !important"
-            :show-time="{ format: 'HH:mm' }"
-            @change="(event) => onChange(event, 'second', type)"
-        />
-        <a-input-number
+        >
+            <template #suffix>
+                <CustomVariableTrigger />
+            </template>
+        </a-input>
+        <div v-else-if="type === 'date'" class="relative flex flex-1">
+            <a-date-picker
+                v-model:value="secondValue"
+                class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
+                style="height: 32px !important"
+                :show-time="{ format: 'HH:mm' }"
+                @change="(event) => onChange(event, 'second', type)"
+            >
+                <template #suffixIcon>
+                    <CustomVariableTrigger />
+                </template>
+            </a-date-picker>
+            <div class="absolute right-2.5 top-1">
+                <CustomVariableTrigger />
+            </div>
+        </div>
+        <a-input
             v-else-if="type === 'number'"
             v-model:value="secondValue"
             placeholder="Enter numeric value"
             class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'second', type)"
-        />
+            type="number"
+            @keypress="isNumberKey(event)"
+        >
+            <template #suffix>
+                <CustomVariableTrigger />
+            </template>
+        </a-input>
     </div>
 </template>
 
@@ -56,10 +92,11 @@
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs, { Dayjs } from 'dayjs'
+    import CustomVariableTrigger from './customVariableTrigger.vue'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: {},
+        components: { CustomVariableTrigger },
         props: {
             inputValue: {
                 type: Array,
@@ -124,8 +161,15 @@
                     ]
                 }
             }
+            function isNumberKey(evt) {
+                const charCode = evt.which ? evt.which : evt.keyCode
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false
+                return true
+            }
 
             return {
+                isNumberKey,
                 firstvalue,
                 secondValue,
                 onChange,

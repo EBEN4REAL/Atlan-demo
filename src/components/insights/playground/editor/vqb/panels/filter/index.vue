@@ -39,9 +39,18 @@
                             ]"
                             style="z-index: 2"
                         >
-                            <span class="absolute text-sm -right-0.5 -top-1.5"
-                                >⚡️</span
-                            >
+                            <span class="absolute text-sm -right-1 -top-2">
+                                <AtlanIcon
+                                    v-if="
+                                        isFilterIsInteractive(
+                                            activeInlineTab.playground.vqb
+                                                .panels[index].subpanels
+                                        )
+                                    "
+                                    icon="GlowFlash"
+                                    class="w-4 h-4"
+                            /></span>
+
                             <AtlanIcon
                                 icon="FilterFunnel"
                                 :class="[
@@ -244,7 +253,8 @@
         setup(props, { emit }) {
             const STRING_CHECK = 'ksdghkjsdhfksdfhkjsdhfkjshfkjshfkjhsfkjh'
             const { index, panel } = toRefs(props)
-            const { totalFiledsMapWithInput } = useFilter()
+            const { totalFiledsMapWithInput, isFilterIsInteractive } =
+                useFilter()
             const editorInstanceRef = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
@@ -408,6 +418,7 @@
             )
 
             return {
+                isFilterIsInteractive,
                 STRING_CHECK,
                 toggleConfirmPopover,
                 getPopoverContent,

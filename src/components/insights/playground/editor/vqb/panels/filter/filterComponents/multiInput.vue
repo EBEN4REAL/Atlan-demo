@@ -8,16 +8,20 @@
         placeholder="Enter multi values 1,2,3"
         :token-separators="[',']"
     >
+        <template #suffixIcon>
+            <CustomVariableTrigger />
+        </template>
     </a-select>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import CustomVariableTrigger from './customVariableTrigger.vue'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: {},
+        components: { CustomVariableTrigger },
         props: {
             inputValue: {
                 type: String,

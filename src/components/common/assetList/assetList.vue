@@ -58,7 +58,12 @@
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>
-            <div v-else class="overflow-auto" :class="assetListClass">
+            <div
+                v-else
+                class="overflow-auto"
+                :class="assetListClass"
+                :style="assetListStyleObj"
+            >
                 <AssetList
                     :list="list"
                     :is-load-more="isLoadMore"
@@ -96,7 +101,7 @@
     import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useFetchAssetList from './usefetchAssetList'
+    import useFetchAssetList from './useFetchAssetList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
         AssetAttributes,
@@ -146,18 +151,25 @@
                 default: '95%',
                 required: false,
             },
-            attributes: {
-                type: Array,
-                default: () => [],
-            },
+            /** First cacheKey for assetList as we are using SWRV by default and we need a cacheKey, On subsequent fetching the key is replaced by timestamp. Try to pass this to according to your use case; shouldn't create much havoc in case you don't; Do pass it when using multiple instances of this component at the same place, though!  */
             initialCacheKey: {
                 type: String,
                 default: 'ASSET_LIST',
                 required: false,
             },
+            /** Asset attributes to be fetched; If you don't pass these, it'll use `defaultAttributes` 👇  */
+            attributes: {
+                type: Array,
+                default: () => [],
+            },
+            /** Style Props */
             assetListClass: {
                 type: String,
                 default: '',
+            },
+            assetListStyleObj: {
+                type: Object,
+                default: () => {},
             },
             aggregationTabClass: {
                 type: String,

@@ -97,14 +97,14 @@
                     <div class="flex flex-col">
                         <div class="flex items-center">
                             <span
-                                class="mr-2 text-base font-bold text-gray-700 truncate"
+                                class="mr-1 text-base font-bold text-gray-700 truncate"
                                 >{{
                                     selectedCollection?.attributes?.name
                                 }}</span
                             >
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="self-center h-4 text-gray-400"
+                                class="self-center h-4 text-gray-500"
                             ></AtlanIcon>
                         </div>
 

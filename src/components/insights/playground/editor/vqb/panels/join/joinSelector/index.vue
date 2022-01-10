@@ -82,9 +82,20 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, onMounted, onUnmounted } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        onMounted,
+        onUnmounted,
+        Ref,
+        ComputedRef,
+        inject,
+    } from 'vue'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -118,6 +129,16 @@
                 left: undefined,
             })
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const handleContainerBlur = (event) => {
                 if (!container.value?.contains(event?.relatedTarget)) {
                     isAreaFocused.value = false
@@ -147,6 +168,7 @@
                     name: checked.label,
                 }
                 isAreaFocused.value = false
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false

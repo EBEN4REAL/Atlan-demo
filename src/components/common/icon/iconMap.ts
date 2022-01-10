@@ -340,6 +340,10 @@ import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 
+import Vqb from '~/assets/images/icons/Vqb.svg'
+import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
+import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
+import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
 
 export default {
@@ -672,5 +676,9 @@ export default {
     Revoke,
     WarningIcon,
     SidebarSwitch,
+    Vqb,
+    VqbVerified,
+    VqbDeprecated,
+    VqbDraft,
     Clock,
 }

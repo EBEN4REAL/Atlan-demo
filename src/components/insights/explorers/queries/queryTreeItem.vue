@@ -107,6 +107,7 @@
                 <PopoverAsset
                     :item="item"
                     placement="right"
+                    mouseEnterDelay="0.6"
                     v-else-if="item.typeName === 'Query'"
                 >
                     <template #extraHeaders>
@@ -118,10 +119,20 @@
                             <div
                                 class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                             >
-                                <AtlanIcon icon="FolderClosed" class="h-6" />
+                                <AtlanIcon
+                                    :icon="
+                                        item?.attributes?.parent?.typeName ===
+                                        'Folder'
+                                            ? 'FolderClosed'
+                                            : 'CollectionIconSmall'
+                                    "
+                                    class="h-4 mb-2"
+                                />
                             </div>
 
-                            <span>{{ item?.parentTitle }}</span>
+                            <span>{{
+                                item?.attributes?.parent?.attributes?.name
+                            }}</span>
                         </div>
                     </template>
 
@@ -153,10 +164,15 @@
                         <div class="parent-ellipsis-container py-1.5">
                             <AtlanIcon
                                 :icon="
-                                    getEntityStatusIcon(
-                                        'query',
-                                        certificateStatus(item)
-                                    )
+                                    item?.attributes?.isVisualQuery
+                                        ? getEntityStatusIcon(
+                                              'vqb',
+                                              certificateStatus(item)
+                                          )
+                                        : getEntityStatusIcon(
+                                              'query',
+                                              certificateStatus(item)
+                                          )
                                 "
                                 class="w-4 h-4 my-auto mr-1"
                                 color="#5277D7"
@@ -238,6 +254,18 @@
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
+                                            >
+
+                                            <a-menu-item
+                                                key="edit"
+                                                @click="
+                                                    () =>
+                                                        actionClick(
+                                                            'info',
+                                                            item
+                                                        )
+                                                "
+                                                >Edit query</a-menu-item
                                             >
 
                                             <a-menu-item

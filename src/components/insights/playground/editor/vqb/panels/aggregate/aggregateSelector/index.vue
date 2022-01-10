@@ -112,6 +112,7 @@
     import { useAggregate } from '~/components/insights/playground/editor/vqb/composables/useAggregate'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     // import useBody from './useBody'
 
@@ -153,6 +154,16 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const inputRef = ref()
             const selectAll = ref(false)
             const topPosShift = ref(0)
@@ -184,6 +195,7 @@
                 const label = node?.dataRef?.name
                 const type = node?.dataRef?.dataType?.toLowerCase()
                 cols.value.push({ type, label })
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const inputChange = () => {
@@ -249,6 +261,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 emit('checkChange', selectedItems.value)
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false

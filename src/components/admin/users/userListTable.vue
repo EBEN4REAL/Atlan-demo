@@ -22,7 +22,7 @@
                     )
                 }}</template>
                 <div
-                    class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    class="flex justify-start font-normal tracking-wide  uppercase cursor-pointer group hover:text-gray-700"
                     :class="column.align === 'right' ? 'flex-row-reverse' : ''"
                 >
                     <div>

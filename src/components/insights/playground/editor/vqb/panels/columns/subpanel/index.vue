@@ -9,7 +9,7 @@
                     <TableSelector
                         typeName="Table"
                         class="flex-1"
-                        :class="[subpanel.tableQualfiedName ? 'width-50' : '']"
+                        :class="[subpanel.tableQualfiedName ? '' : '']"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         v-model:selectedTableData="subpanel.tableData"
@@ -18,38 +18,6 @@
                             (val) => hanldeTableQualifiedNameChange(val, index)
                         "
                     />
-
-                    <ColumnSelector
-                        class="flex-1 ml-6"
-                        style="min-height: 34px"
-                        v-if="subpanel.tableQualfiedName"
-                        v-model:selectedItems="subpanel.columns"
-                        v-model:selectedColumnsData="subpanel.columnsData"
-                        :tableQualfiedName="subpanel.tableQualfiedName"
-                        :selectedTableData="subpanel.tableData"
-                    >
-                        <template #chip="{ item }">
-                            <div
-                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-                            >
-                                <component
-                                    v-if="item.type !== 'Columns'"
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
-                                ></component>
-                                <AtlanIcon
-                                    v-else
-                                    icon="Columns"
-                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
-                                />
-                                <div
-                                    class="truncate ... overflow-ellipsis overflow-hidden"
-                                >
-                                    {{ item.label }}
-                                </div>
-                            </div>
-                        </template>
-                    </ColumnSelector>
                 </div>
             </template>
         </div>

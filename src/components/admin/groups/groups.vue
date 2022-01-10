@@ -211,7 +211,7 @@
                         </div>
                         <div
                             v-else-if="column.key === 'createdBy'"
-                            class="flex cursor-pointer"
+                            class="flex items-center cursor-pointer"
                             @click="handleUserPreview(value)"
                         >
                             <Avatar
@@ -223,7 +223,7 @@
                                 :avatar-shape="'circle'"
                                 class="mr-2 mt-0.5"
                             />
-                            <span>{{ value }}</span>
+                            <div class="mt-0.5">{{ value }}</div>
                         </div>
                         <div
                             v-else-if="column.key === 'actions'"

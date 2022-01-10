@@ -12,7 +12,7 @@
                     size="sm"
                     class="flex items-center justify-center w-8 h-8 p-0 mr-2 border-transparent rounded cursor-pointer hover:border-primary-focus"
                 >
-                    <AtlanIcon icon="AddUser" class="text-gray-500" />
+                    <AtlanIcon icon="AddUser" class="text-gray-700" />
                 </AtlanBtn>
             </template>
         </MemberPopover>

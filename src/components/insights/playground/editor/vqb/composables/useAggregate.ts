@@ -52,20 +52,27 @@ export function useAggregate() {
             {
                 key: 'count',
                 label: 'Count',
-                excludes: [...array, ...object, ...geography],
+                excludes: [...geography],
                 sort: 1,
             },
             {
                 key: 'unique',
                 label: 'Unique Count',
-                excludes: [...array, ...object, ...geography],
+                excludes: [...geography],
                 sort: 2,
             },
 
             {
                 key: 'sum',
                 label: 'Sum',
-                excludes: [...text, ...date, ...array, ...object, ...geography],
+                excludes: [
+                    ...text,
+                    ...date,
+                    ...array,
+                    ...object,
+                    ...geography,
+                    ...boolean,
+                ],
                 sort: 3,
             },
             {
@@ -97,7 +104,14 @@ export function useAggregate() {
             {
                 key: 'avg',
                 label: 'Average',
-                excludes: [...text, ...date, ...array, ...object, ...geography],
+                excludes: [
+                    ...text,
+                    ...date,
+                    ...array,
+                    ...object,
+                    ...geography,
+                    ...boolean,
+                ],
                 sort: 6,
             },
         ]

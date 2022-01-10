@@ -98,23 +98,40 @@ export function generateSQLQuery(
                         select.from(`"${tableName}"`)
                     }
                 }
-                if (!subpanel.columns.includes('all')) {
-                    subpanel.columnsData.forEach((column) => {
-                        const tableName = getTableNameFromTableQualifiedName(
-                            subpanel.tableQualfiedName
-                        )
-                        select.field(`"${tableName}"."${column.label}"`)
+
+                /* GROUP PANEL */
+                let _addAggregatorGroup = false
+
+                if (
+                    groupPanel?.subpanels[0]?.columnsData?.length > 0 &&
+                    groupPanel?.hide
+                ) {
+                    groupPanel?.subpanels[0]?.columnsData?.forEach(
+                        (columnData) => {
+                            _addAggregatorGroup = true
+                            const tableName = getTableName(
+                                columnData.columnsQualifiedName ??
+                                    columnData?.qualifiedName ??
+                                    columnData?.columnQualifiedName
+                            )
+                            select.field(`${tableName}."${columnData.label}"`)
+                        }
+                    )
+                }
+
+                /* AGGREGATE PANEL LOOPING for checking if there are aggregators for select field */
+                if (
+                    aggregatePanel?.subpanels?.length > 0 &&
+                    aggregatePanel?.hide
+                ) {
+                    aggregatePanel?.subpanels?.forEach((subpanel) => {
+                        subpanel?.aggregators?.forEach((aggregator) => {
+                            _addAggregatorGroup = true
+                        })
                     })
-                } else {
-                    if (
-                        aggregatePanel?.subpanels?.length > 0 &&
-                        aggregatePanel?.subpanels[0]?.column?.label &&
-                        aggregatePanel?.subpanels[0]?.aggregators?.length > 0 &&
-                        aggregatePanel?.subpanels[0]?.aggregators[0]
-                    ) {
-                    } else {
-                        select.field('*')
-                    }
+                }
+                if (!_addAggregatorGroup) {
+                    select.field('*')
                 }
             }
         })
@@ -194,7 +211,10 @@ export function generateSQLQuery(
                     }
                 }
             } else {
-                select.order(subpanel.aggregateORGroupColumn?.label, order)
+                select.order(
+                    `"${subpanel.aggregateORGroupColumn?.label}"`,
+                    order
+                )
             }
         })
         // console.log(select.toString(), 'select.toString()')

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="computedItems?.length > 0">
         <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
             <AtlanBtn
                 class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
@@ -17,7 +17,7 @@
                     style="width: 140px"
                 >
                     <template
-                        v-for="(item, index) in items"
+                        v-for="(item, index) in computedItems"
                         :key="item.label + index"
                     >
                         <a-menu-item
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ComputedRef, inject, toRefs } from 'vue'
+    import { defineComponent, ComputedRef, computed, inject, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -127,39 +127,74 @@
 
                 // emit('add', type)
             }
-            const items = [
-                {
-                    id: 'aggregate',
-                    icon: 'Trigger',
-                    label: 'Aggregate',
-                    class: 'mt-0.5 mr-2',
-                },
-                {
-                    id: 'join',
-                    icon: 'Union',
-                    label: 'Join data',
-                    class: 'mr-2',
-                },
-                {
-                    id: 'filter',
-                    icon: 'Filter',
-                    label: 'Filter',
-                    class: 'mr-2',
-                },
-                {
-                    id: 'group',
-                    icon: 'BuilderGroup',
-                    label: 'Group',
-                    class: 'mr-2',
-                },
 
-                {
-                    id: 'sort',
-                    icon: 'Sort',
-                    label: 'Sort',
-                    class: 'mr-2',
-                },
-            ]
+            const computedItems = computed(() => {
+                let _items: any = []
+
+                const aggregatePanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'aggregate'
+                    )
+
+                if (!aggregatePanel) {
+                    _items.push({
+                        id: 'aggregate',
+                        icon: 'Trigger',
+                        label: 'Aggregate',
+                        class: 'mt-0.5 mr-2',
+                    })
+                }
+
+                const join = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'join'
+                )
+                if (!join) {
+                    _items.push({
+                        id: 'join',
+                        icon: 'Union',
+                        label: 'Join data',
+                        class: 'mr-2',
+                    })
+                }
+                const filter = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'filter'
+                )
+                if (!filter) {
+                    _items.push({
+                        id: 'filter',
+                        icon: 'Filter',
+                        label: 'Filter',
+                        class: 'mr-2',
+                    })
+                }
+
+                const groupPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'group'
+                    )
+                if (!groupPanel) {
+                    _items.push({
+                        id: 'group',
+                        icon: 'BuilderGroup',
+                        label: 'Group',
+                        class: 'mr-2',
+                    })
+                }
+                const sortPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'sort'
+                    )
+                if (!sortPanel) {
+                    _items.push({
+                        id: 'sort',
+                        icon: 'Sort',
+                        label: 'Sort',
+                        class: 'mr-2',
+                    })
+                }
+
+                return _items
+            })
 
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
@@ -170,11 +205,11 @@
                 if (submenuHovered.value) submenuHovered.value = false
             }
             return {
+                computedItems,
                 activeInlineTab,
                 handleAdd,
                 handleMouseOut,
                 handleMouseOver,
-                items,
             }
         },
     })

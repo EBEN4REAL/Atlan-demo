@@ -108,8 +108,7 @@ export function generateSQLQuery(
             contextPrefix += `"${
                 getDatabaseName(qualifiedName ?? '') ?? ''
             }"."${getSchemaName(qualifiedName ?? '') ?? ''}"`
-        }
-        if (context.attributeName === 'databaseQualifiedName') {
+        } else if (context.attributeName === 'databaseQualifiedName') {
             contextPrefix += `"${getSchemaName(qualifiedName ?? '') ?? ''}"`
         }
         return contextPrefix
@@ -293,15 +292,15 @@ export function generateSQLQuery(
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
-            let contextPrefix = ''
-            contextPrefix = getContext(
-                subpanel.column?.qualifiedName ??
-                    subpanel.column?.columnsQualifiedName ??
-                    subpanel.column?.columnQualifiedName ??
-                    ''
-            )
 
             if (subpanel.aggregateORGroupColumn?.active === false) {
+                let contextPrefix = ''
+                contextPrefix = getContext(
+                    subpanel.column?.qualifiedName ??
+                        subpanel.column?.columnsQualifiedName ??
+                        subpanel.column?.columnQualifiedName ??
+                        ''
+                )
                 if (subpanel.column.label) {
                     const tableName = getTableName(
                         subpanel.column?.qualifiedName ??
@@ -324,16 +323,25 @@ export function generateSQLQuery(
                     }
                 }
             } else {
-                if (contextPrefix !== '') {
-                    select.order(
-                        `${contextPrefix}."${subpanel.aggregateORGroupColumn?.label}"`,
-                        order
-                    )
-                } else {
-                    select.order(
-                        `"${subpanel.aggregateORGroupColumn?.label}"`,
-                        order
-                    )
+                let contextPrefix = ''
+                contextPrefix = getContext(
+                    subpanel.aggregateORGroupColumn?.value ?? ''
+                )
+                const tableName = getTableName(
+                    subpanel.aggregateORGroupColumn?.value ?? ''
+                )
+                if (subpanel.aggregateORGroupColumn?.label) {
+                    if (contextPrefix !== '') {
+                        select.order(
+                            `${contextPrefix}.${tableName}."${subpanel.aggregateORGroupColumn?.label}"`,
+                            order
+                        )
+                    } else {
+                        select.order(
+                            `${tableName}."${subpanel.aggregateORGroupColumn?.label}"`,
+                            order
+                        )
+                    }
                 }
             }
         })
@@ -351,13 +359,24 @@ export function generateSQLQuery(
                         subpanel.column?.qualifiedName ??
                         subpanel.column?.columnQualifiedName
                 )
+                let contextPrefix = ''
+                contextPrefix = getContext(
+                    subpanel.column?.qualifiedName ??
+                        subpanel.column?.columnsQualifiedName ??
+                        subpanel.column?.columnQualifiedName ??
+                        ''
+                )
                 if (index == 0) res = ''
                 if (
                     tableName &&
                     subpanel?.column?.label &&
                     nameMap[subpanel?.filter?.name]
                 ) {
-                    res += `${tableName}."${subpanel?.column?.label}"`
+                    if (contextPrefix !== '') {
+                        res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                    } else {
+                        res += `${tableName}."${subpanel?.column?.label}"`
+                    }
                     res += `${nameMap[subpanel?.filter?.name]} `
                 }
 

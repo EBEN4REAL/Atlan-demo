@@ -23,32 +23,30 @@
                 title="Custom Metadata"
                 sidebar-class="bg-white"
             >
-                <template #action>
-                    <a-tooltip>
-                        <template #title>New Custom Metadata</template>
-                        <AtlanBtn
-                            v-auth="map.CREATE_BUSINESS_METADATA"
-                            class="flex-none"
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            @click="addMetaDataModal.open()"
-                        >
-                            <AtlanIcon
-                                icon="Add"
-                                class="-mx-1 text-gray"
-                            ></AtlanIcon>
-                        </AtlanBtn>
-                    </a-tooltip>
-                </template>
+                <template #action> </template>
 
                 <template #sidebar>
-                    <div class="px-4 pt-6 pb-4">
+                    <div class="flex items-center px-4 mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :placeholder="`Search`"
-                            class="bg-white"
+                            class="mt-0 bg-white"
+                            :autofocus="true"
+                            size="minimal"
                         />
+                        <a-tooltip>
+                            <template #title>New Custom Metadata</template>
+                            <AtlanBtn
+                                v-auth="map.CREATE_BUSINESS_METADATA"
+                                class="flex-none px-2 ml-4"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="addMetaDataModal.open()"
+                            >
+                                <AtlanIcon icon="Add" />
+                            </AtlanBtn>
+                        </a-tooltip>
                     </div>
 
                     <BusinessMetadataList

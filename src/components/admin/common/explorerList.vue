@@ -7,7 +7,7 @@
             v-for="(item, index) in list"
             :key="item[dataKey]"
             :class="[
-                item[dataKey] === selected ? 'bg-primary-light' : '',
+                item[dataKey] === selected ? 'bg-primary-menu' : '',
                 disabled ? 'cursor-not-allowed opacity-70' : '',
             ]"
             class="px-3 py-2 rounded cursor-pointer"

@@ -9,13 +9,17 @@
         <template #default="{ item, isSelected }">
             <div class="flex items-center">
                 <CustomMetadataAvatar
-                    class="mr-1"
+                    class="mr-2"
                     :metadata="item"
                     size="16px"
                 />
                 <p
-                    class="pr-2 m-0 overflow-hidden text-sm leading-none truncate"
-                    :class="isSelected ? 'text-primary' : 'text-gray'"
+                    class="pr-1 m-0 overflow-hidden text-sm leading-none truncate"
+                    :class="
+                        isSelected
+                            ? 'text-primary font-semibold'
+                            : 'text-gray hover:text-primary hover:font-semibold'
+                    "
                 >
                     {{ item.displayName || item.name }}
                 </p>

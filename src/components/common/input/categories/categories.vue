@@ -61,7 +61,11 @@
                         {{ category.label }}
                     </div>
 
-                    <div class="flex" @click="() => handleDelete(category)">
+                    <div
+                        v-if="allowDelete"
+                        class="flex"
+                        @click="() => handleDelete(category)"
+                    >
                         <AtlanIcon
                             icon="Cross"
                             class="h-3 ml-2 text-gray-500 group-hover:text-white"
@@ -71,7 +75,7 @@
             </template>
             <span
                 v-if="!editPermission && checkedKeys?.length < 1"
-                class="-ml-1 text-gray-500"
+                class="-ml-1 text-gray-600"
                 >This term does not belong to any category</span
             >
         </div>
@@ -112,7 +116,7 @@
             allowDelete: {
                 type: Boolean,
                 required: false,
-                default: null,
+                default: true,
             },
             disabled: {
                 type: Boolean,

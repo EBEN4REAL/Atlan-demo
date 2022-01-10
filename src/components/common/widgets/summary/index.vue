@@ -17,7 +17,23 @@
                         ?.components"
                     :key="index"
                 >
-                    <component :is="component" :asset="asset"></component>
+                    <div
+                        v-if="component === 'Categories'"
+                        class="flex flex-col"
+                    >
+                        <p class="mb-1 text-sm text-gray-500">Categories</p>
+                        <Categories
+                            v-model="localCategories"
+                            :selected-asset="asset"
+                            :edit-permission="false"
+                            :allow-delete="false"
+                        />
+                    </div>
+                    <component
+                        v-else
+                        :is="component"
+                        :asset="asset"
+                    ></component>
                 </div>
             </div>
             <div class="flex flex-col">
@@ -92,6 +108,9 @@
             Owners,
             Rows: defineAsyncComponent(() => import('./types/rows.vue')),
             Columns: defineAsyncComponent(() => import('./types/columns.vue')),
+            Categories: defineAsyncComponent(
+                () => import('@common/input/categories/categories.vue')
+            ),
             Definition: defineAsyncComponent(
                 () => import('./types/definition.vue')
             ),
@@ -156,6 +175,7 @@
                 handleChangeCertificate,
                 descriptionRef,
                 animationPoint,
+                localCategories,
             } = updateAssetAttributes(asset)
 
             return {
@@ -179,6 +199,7 @@
                 connectorName,
                 connectionName,
                 getConnectorImage,
+                localCategories,
             }
         },
     })

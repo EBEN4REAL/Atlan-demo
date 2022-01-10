@@ -47,7 +47,7 @@
                             size="default"
                             :allow-clear="true"
                             @change="handleSearch"
-                        ></a-input-search>
+                        />
                     </div>
                     <div class="mr-3">
                         <a-tooltip placement="bottom">
@@ -84,10 +84,10 @@
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination
-                    :totalPages="pagination.total"
-                    :loading="isLoading"
-                    :pageSize="size"
                     v-model:offset="from"
+                    :total-pages="pagination.total"
+                    :loading="isLoading"
+                    :page-size="size"
                     @mutate="refreshList"
                 />
             </div>

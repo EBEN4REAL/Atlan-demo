@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg query-access-logs-table"
+            class="overflow-hidden border rounded-lg query-access-logs-table query-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
@@ -13,6 +13,13 @@
             :custom-row="customRow"
             @change="handleTableChange"
         >
+            <template #headerCell="{ title, column }">
+                <div
+                    class="flex p-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                >
+                    {{ title }}
+                </div>
+            </template>
             <template #queryInfo="{ text: queryInfo }">
                 <div class="flex items-center h-full py-1">
                     <div
@@ -439,5 +446,17 @@
     }
     .selected-row {
         background: #f4f6fd;
+    }
+</style>
+
+<style lang="less">
+    .query-table {
+        .ant-table-thead {
+            height: 44px !important;
+            .ant-table-cell {
+                padding: 0 !important;
+                // padding-left: 20px !important;
+            }
+        }
     }
 </style>

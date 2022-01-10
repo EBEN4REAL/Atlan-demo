@@ -12,10 +12,8 @@
                     {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
                 >
                 <div class="flex font-medium text-gray-500">
-                    <span class="text-gray-500" @click="handleResetAll">
-                        <span class="text-sm cursor-pointer hover:text-primary"
-                            >Clear All</span
-                        >
+                    <span class="text-red-500" @click="handleResetAll">
+                        <span class="text-sm cursor-pointer">Clear All</span>
                     </span>
                 </div>
             </div>

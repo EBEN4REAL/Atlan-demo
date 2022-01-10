@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 rounded hover:bg-primary-menu"
+        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
         :class="isSelected ? 'outline-primary bg-primary-menu shadow-sm' : ''"
         @click="handlePreview(item)"
     >
@@ -467,7 +467,11 @@
                 </div>
             </div>
         </div>
-        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <hr
+            class="mx-2 text-gray-100 bg-gray-200"
+            :v-show="!isSelected"
+            :class="bulkSelectMode && isChecked ? 'hidden' : ''"
+        />
         <AssetDrawer
             :data="selectedAssetDrawerData"
             :show-drawer="showAssetSidebarDrawer"

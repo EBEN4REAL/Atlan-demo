@@ -5,13 +5,13 @@
                 v-if="userList.length > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
             >
-                <div v-auth="map.LIST_USERS" class="flex space-x-4 w-96">
+                <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
                             totalUserCount || ''
                         } users`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
@@ -34,7 +34,7 @@
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow hover:shadow-none"
+                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow-none hover:shadow"
                         >
                             <AtlanIcon icon="Filter" class="w-5 h-5" />
                             <span>Filters</span>
@@ -49,6 +49,7 @@
                         size="sm"
                         @click="handleInviteUsers"
                     >
+                        <AtlanIcon icon="AddUser" />
                         Invite Users
                     </AtlanButton>
                 </div>
@@ -224,6 +225,7 @@
             })
 
             const clearFilter = () => {
+                filterRole.value = ''
                 userListAPIParams.filter = {}
                 searchText.value = ''
                 statusFilter.value = []
@@ -559,6 +561,14 @@
 <style lang="less" scoped>
     .a-input-search-icon-left {
         .ant-input-suffix {
+        }
+    }
+</style>
+<style lang="less">
+    .filter-user-wrapper {
+        .input-filter {
+            width: 300px !important;
+            margin-right: 12px !important;
         }
     }
 </style>

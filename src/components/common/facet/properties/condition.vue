@@ -95,6 +95,12 @@
                             attribute.value?.options?.primitiveType
                         )
                     ) {
+                        if (
+                            ['users', 'groups'].includes(
+                                attribute.value?.options?.primitiveType
+                            )
+                        )
+                            return 'string_user'
                         return 'string'
                     }
                     return attribute.value.options.primitiveType
@@ -133,11 +139,16 @@
             }
 
             const handleValueChange = () => {
+                console.log(localCondition.value.value)
                 if (attribute.value?.typeName === 'boolean') {
                     condition.value.operator = 'boolean'
                     condition.value.value =
-                        localCondition.value.value === 'true'
+                        localCondition.value.value === 'true' ||
+                        localCondition.value.value === true
                     condition.value.operand = attribute.value.name
+                } else if (localCondition.value.value === null) {
+                    delete condition.value.operand
+                    delete condition.value.value
                 } else {
                     condition.value.operand = attribute.value.name
                     condition.value.value = localCondition.value.value

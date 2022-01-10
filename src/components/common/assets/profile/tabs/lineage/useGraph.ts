@@ -174,7 +174,7 @@ export default function useGraph() {
                 },
                 items: [
                     {
-                        id: `${guid}/index`,
+                        id: `${guid}-invisiblePort`,
                         group: 'invisiblePort',
                         zIndex: 0,
                     },

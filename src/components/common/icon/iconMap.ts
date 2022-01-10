@@ -151,6 +151,7 @@ import CaretLeft from '~/assets/images/icons/caret-left.svg'
 import CaretRight from '~/assets/images/icons/caret-right.svg'
 import CaretDown from '~/assets/images/icons/caret-down.svg'
 import Settings from '~/assets/images/icons/setings.svg'
+import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
@@ -211,6 +212,8 @@ import Trigger from '~/assets/images/icons/trigger.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
@@ -333,9 +336,16 @@ import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
 import primaryKey from '~/assets/images/icons/primaryKey.svg'
 import Revoke from '~/assets/images/icons/Revoke.svg'
+import Query24 from '~/assets/images/icons/query_24.svg'
+import Vqb24 from '~/assets/images/icons/vqb_24.svg'
+import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
+
+import Clock from '~/assets/images/icons/clock.svg'
 
 export default {
     GlowFlash,
+    Query24,
+    Vqb24,
     partitionKey,
     primaryKey,
     Array,
@@ -373,6 +383,7 @@ export default {
     QueryDeprecated,
     QueryDiscovery,
     QueryDraft,
+    CollapseControl,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -523,6 +534,7 @@ export default {
     AssetsInactive,
     CaretLeft,
     Settings,
+    SettingsOutlined,
     Delete,
     Slack,
     EmptySearchQuery,
@@ -659,4 +671,6 @@ export default {
     CollectionIconLargeActive,
     Revoke,
     WarningIcon,
+    SidebarSwitch,
+    Clock,
 }

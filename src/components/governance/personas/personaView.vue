@@ -16,17 +16,19 @@
                     size="minimal"
                 >
                 </SearchAndFilter>
-                <AtlanBtn
-                    :disabled="isEditing"
-                    class="flex-none ml-4"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                    data-test-id="add-persona"
-                    @click="() => (modalVisible = true)"
-                >
-                    New
-                </AtlanBtn>
+                <a-tooltip>
+                    <template #title>New Persona</template>
+                    <AtlanBtn
+                        :disabled="isEditing"
+                        class="flex-none px-2 ml-4"
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        data-test-id="add-persona"
+                        @click="() => (modalVisible = true)"
+                    >
+                        <AtlanIcon icon="Add" /> </AtlanBtn
+                ></a-tooltip>
             </div>
 
             <ExplorerList
@@ -46,8 +48,8 @@
                                 class="text-sm capitalize truncate"
                                 :class="
                                     isSelected
-                                        ? 'text-primary'
-                                        : 'text-gray hover:text-primary'
+                                        ? 'text-primary font-semibold'
+                                        : 'text-gray-700 hover:text-primary hover:font-semibold'
                                 "
                             >
                                 {{ item.displayName }}
@@ -55,13 +57,13 @@
                             <div class="flex gap-x-1">
                                 <span
                                     v-if="item.users?.length > 0"
-                                    class="text-xs text-gray-500"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{ item.users.length }} users
                                 </span>
                                 <span
                                     v-if="item.groups?.length > 0"
-                                    class="text-xs text-gray-500"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{ item.groups.length }} groups
                                 </span>
@@ -70,7 +72,7 @@
                                         item.metadataPolicies.length > 0 ||
                                         item.dataPolicies.length > 0
                                     "
-                                    class="text-xs text-gray-500"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{
                                         item.metadataPolicies.length +

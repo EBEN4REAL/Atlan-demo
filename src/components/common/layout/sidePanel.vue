@@ -21,11 +21,11 @@
             </router-link>
 
             <!-- workspaces -->
-            <div
+            <!-- <div
                 class="px-3 mt-4 mb-1 text-xs font-bold text-gray-500 uppercase"
             >
                 Workspace
-            </div>
+            </div> -->
             <!-- pages -->
 
             <template v-for="nav in workspaceList" :key="nav.label">
@@ -77,7 +77,7 @@
             </UserPersonalAvatar>
         </div> -->
         <div class="w-full px-3 my-3">
-            <div class="mx-3 flex">
+            <div class="flex mx-3">
                 <div class="flex items-center text-xs text-gray-500">
                     <span>with 💙 by</span>
                     <!-- FIXME: What is this URL??? -->
@@ -86,7 +86,7 @@
                         class="w-auto h-3 ml-1 mb-0.5"
                     />
                 </div>
-                <span class="flex items-center text-xs text-gray-500 ml-auto">
+                <span class="flex items-center ml-auto text-xs text-gray-500">
                     v{{ getVersion }}
                 </span>
             </div>
@@ -153,19 +153,19 @@
 
         &:hover {
             @apply text-primary !important;
-            @apply bg-primary-light !important;
+            @apply bg-primary-menu !important;
         }
         &:focus-visible {
             @apply border-primary-focus !important;
         }
         &.active {
             @apply text-primary;
-            @apply bg-primary-light;
+            @apply bg-primary-menu;
         }
 
         :global(.router-link-active) {
             @apply text-primary !important;
-            @apply bg-primary-light !important;
+            @apply bg-primary-menu !important;
             @apply font-semibold;
         }
     }

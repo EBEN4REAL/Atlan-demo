@@ -9,6 +9,7 @@ import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
 import { Entity } from '~/services/meta/entity/index'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -143,6 +144,30 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const isConfetti = ref(false)
     const shouldDrawerUpdate = ref(false)
 
+    // metadata analytics event
+    const sendMetadataTrackEvent = (action: string, props = {}) => {
+        const baseProps = {
+            asset_type: selectedAsset.value?.typeName,
+        }
+        const finalProps = {
+            ...baseProps,
+            ...props,
+        }
+        useAddEvent('discovery', 'metadata', action, finalProps)
+    }
+
+    // general analytics event
+    const sendTrackEvent = (objectName: string, action: string, props = {}) => {
+        const baseProps = {
+            asset_type: selectedAsset.value?.typeName,
+        }
+        const finalProps = {
+            ...baseProps,
+            ...props,
+        }
+        useAddEvent('discovery', objectName, action, finalProps)
+    }
+
     // Name Change
     const handleChangeName = () => {
         if (title(selectedAsset?.value) !== localName.value) {
@@ -150,6 +175,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             body.value.entities = [entity.value]
             currentMessage.value = 'Name has been updated'
             mutate()
+            sendMetadataTrackEvent('name_updated')
         }
     }
 
@@ -161,6 +187,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Description has been updated'
             mutate()
+            sendMetadataTrackEvent('description_updated')
         }
     }
 
@@ -200,6 +227,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Owners have been updated'
             mutate()
+            sendMetadataTrackEvent('owners_updated')
         }
     }
 
@@ -239,6 +267,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Admins have been updated'
             mutate()
+            sendMetadataTrackEvent('admins_updated')
         }
     }
 
@@ -265,11 +294,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Certificate has been updated'
             mutate()
+            sendMetadataTrackEvent('certification_updated', {
+                certificate: localCertificate.value.certificateStatus,
+                has_message: !!localCertificate.value.certificateStatusMessage,
+            })
         }
     }
 
     // Announcement Update
-    const handleAnnouncementUpdate = () => {
+    const handleAnnouncementUpdate = (isUpdating) => {
         entity.value.attributes.announcementTitle =
             localAnnouncement.value.announcementTitle
         entity.value.attributes.announcementMessage =
@@ -280,6 +313,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been updated'
         mutate()
+        const action = isUpdating ? 'updated' : 'created'
+        sendTrackEvent('announcement', action, {
+            announcement_type: localAnnouncement.value.announcementType,
+        })
     }
 
     // SQL Query Config Update
@@ -293,6 +330,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'SQL Query Config has been updated'
         mutate()
+        sendMetadataTrackEvent('query_config_updated', {
+            allow_query: localSQLQuery.value.allowQuery,
+            allow_query_preview: localSQLQuery.value.allowQueryPreview,
+            row_limit: localSQLQuery.value.connectionRowLimit,
+        })
     }
 
     const handleAnnouncementDelete = () => {
@@ -303,6 +345,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Announcement has been deleted'
         mutate()
+        sendTrackEvent('announcement', 'deleted')
     }
 
     const handleMeaningsUpdate = () => {
@@ -319,6 +362,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'Terms have been updated'
         mutate()
+        sendMetadataTrackEvent('terms_updated')
     }
 
     const handleAssignedEntitiesUpdate = ({
@@ -426,6 +470,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         currentMessage.value = 'A new resource has been added'
         mutate()
+        sendTrackEvent('resource', 'created', {
+            domain: localResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Update
@@ -447,6 +494,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             selectedAsset.value
         )} updated`
         mutate()
+        sendTrackEvent('resource', 'updated', {
+            domain: localLResource.value.link.split('/')[2],
+        })
     }
 
     // Resource Deletion
@@ -465,6 +515,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             guid.value = selectedAsset.value.guid
 
             mutateUpdate()
+            sendTrackEvent('resource', 'deleted')
         })
     }
 
@@ -490,6 +541,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
             currentMessage.value = 'Readme has been updated'
             mutate()
+            sendTrackEvent('readme', 'updated')
         }
     }
 
@@ -601,6 +653,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             }
             currentMessage.value = 'Classifications have been updated'
             mutateClassification()
+            sendMetadataTrackEvent('classifications_updated')
         }
     }
 

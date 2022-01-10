@@ -83,7 +83,7 @@
     } from '~/composables/workflow/useWorkflowList'
 
     // import WorkflowMixin from '~/mixins/workflow'
-    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useRunList from '~/composables/workflow/useRunList'
 
     export default defineComponent({
@@ -165,7 +165,7 @@
                 handleClickNode,
                 loadingGeneral,
                 handleRefresh,
-                ...useWorkFlowHelper(),
+                ...useWorkflowInfo(),
             }
         },
     })

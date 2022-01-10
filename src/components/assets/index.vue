@@ -79,11 +79,11 @@
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'px-4'"
+                    :class="page === 'admin' ? '' : 'px-6'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
-                        class="mt-3"
+                        class="mt-2 mb-1"
                         :list="assetTypeAggregationList"
                         :shortcut-enabled="true"
                         @change="handleAssetTypeChange"
@@ -170,7 +170,7 @@
                                         ? checkSelectedCriteriaFxn(item)
                                         : false
                                 "
-                                :class="page !== 'admin' ? 'mx-3' : ''"
+                                :class="page !== 'admin' ? 'mx-3' : 'mx-3'"
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
                                 @listItem:check="

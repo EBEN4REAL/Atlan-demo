@@ -1,31 +1,32 @@
 <template>
-    <ExplorerLayout
-        v-if="filteredClassificationList.length"
-        title="Classification"
-    >
-        <template #action>
-            <AtlanBtn
-                v-auth="map.CREATE_CLASSIFICATION"
-                class="flex-none px-2 ml-4"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="createClassificationModalVisible = true"
-            >
-                <AtlanIcon icon="Add" />
-            </AtlanBtn>
-        </template>
+    <ExplorerLayout v-if="classificationList.length" title="Classification">
+        <template #action> </template>
         <template #sidebar>
             <div v-auth="map.LIST_CLASSIFICATION" class="">
-                <div class="flex items-center px-4">
-                    <SearchAdvanced
+                <div class="flex items-center px-4 mb-3">
+                    <SearchAndFilter
                         v-model:value="searchQuery"
                         :placeholder="`Search from ${filteredClassificationList?.length} classification(s)`"
+                        class="mt-0 bg-white"
                         :autofocus="true"
                         size="minimal"
-                        class="px-2 my-3"
-                    />
+                    >
+                    </SearchAndFilter>
+
+                    <a-tooltip>
+                        <template #title>New Classification</template>
+                        <AtlanBtn
+                            v-auth="map.CREATE_CLASSIFICATION"
+                            class="flex-none px-2 ml-4"
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
+                            @click="createClassificationModalVisible = true"
+                        >
+                            <AtlanIcon icon="Add" /> </AtlanBtn
+                    ></a-tooltip>
                 </div>
+
                 <ExplorerList
                     :list="filteredClassificationList"
                     :selected="selectedClassificationName"

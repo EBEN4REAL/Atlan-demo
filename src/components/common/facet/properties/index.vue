@@ -103,6 +103,7 @@
             }
 
             const handleChange = () => {
+                console.log('handleChange')
                 Object.keys(localValue.value).forEach((key) => {
                     localValue.value[key] = localValue.value[key].filter(
                         (i) => {

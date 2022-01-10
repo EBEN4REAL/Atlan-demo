@@ -27,7 +27,9 @@
                     placeholder="Search categories"
                     ref="treeSelectRef"
                 >
-                    <template #suffixIcon><AtlanIcon icon="Search"  class="h-8 text-gray"/></template>
+                    <template #suffixIcon
+                        ><AtlanIcon icon="Search" class="h-8 text-gray"
+                    /></template>
                     <template #title="item"
                         ><AtlanIcon :icon="icon(item.node)" />
                         {{ item.title }}</template
@@ -92,6 +94,7 @@
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import useCategoriesWidget from './useCategoriesWidget'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'CategoriesWidget',
@@ -133,7 +136,7 @@
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
                     value: category.guid,
-                    attributes: category.attributes
+                    attributes: category.attributes,
                 }))
             )
             const checkedKeysSnapshot = ref(checkedKeys.value)
@@ -141,6 +144,7 @@
             const popoverVisible = ref(false)
             const hasBeenEdited = ref(false)
             const treeSelectRef = ref(null)
+            const { categories } = useAssetInfo()
             const getContainer = () => {
                 return document.getElementById('categoryWidget')
             }
@@ -148,14 +152,14 @@
             const { initCategories, treeData, onLoadData } =
                 useCategoriesWidget({
                     parentGlossaryQf:
-                        selectedAsset.value.attributes.anchor.uniqueAttributes
+                        selectedAsset.value.attributes.anchor?.uniqueAttributes
                             .qualifiedName ?? '',
                 })
 
             const onPopoverClose = async (visible) => {
                 popoverVisible.value = visible
 
-                if(visible) {
+                if (visible) {
                     await initCategories()
                 }
                 if (!visible && hasBeenEdited.value) {
@@ -164,7 +168,7 @@
                         typeName: 'AtlasGlossaryCategory',
                         attributes: {
                             name: cat.label,
-                            ...cat.attributes
+                            ...cat.attributes,
                         },
                     }))
                     emit('change', localValue.value)
@@ -173,14 +177,19 @@
                 hasBeenEdited.value = false
             }
 
-            const handleDelete = (category : { label: string; value: string}) => {
-                checkedKeys.value = checkedKeys.value.filter((cat) => cat.value !== category.value)
+            const handleDelete = (category: {
+                label: string
+                value: string
+            }) => {
+                checkedKeys.value = checkedKeys.value.filter(
+                    (cat) => cat.value !== category.value
+                )
                 modelValue.value = checkedKeys.value.map((cat) => ({
                     guid: cat.value,
                     typeName: 'AtlasGlossaryCategory',
                     attributes: {
                         name: cat.label,
-                        ...cat.attributes
+                        ...cat.attributes,
                     },
                 }))
                 emit('change', localValue.value)
@@ -215,24 +224,37 @@
                 checkedKeys.value = modelValue.value.map((category) => ({
                     label: category.attributes.name,
                     value: category.guid,
-                    attributes: category.attributes
+                    attributes: category.attributes,
                 }))
             })
 
             watch(checkedKeys, (newCheckedKeys) => {
-                if(checkedKeysSnapshot.value.length !== newCheckedKeys.length) {
+                if (
+                    checkedKeysSnapshot.value.length !== newCheckedKeys.length
+                ) {
                     hasBeenEdited.value = true
                 } else {
-                    if(newCheckedKeys.every((node) => checkedKeysSnapshot.value.some((oldNode) => oldNode.value === node.value)))
-                    {    
+                    if (
+                        newCheckedKeys.every((node) =>
+                            checkedKeysSnapshot.value.some(
+                                (oldNode) => oldNode.value === node.value
+                            )
+                        )
+                    ) {
                         hasBeenEdited.value = false
-                    }
-                    else {
+                    } else {
                         hasBeenEdited.value = true
                     }
                 }
             })
-
+            watch(selectedAsset, () => {
+                localValue.value = categories(selectedAsset.value)
+                checkedKeys.value = localValue.value.map((category) => ({
+                    label: category.attributes.name,
+                    value: category.guid,
+                    attributes: category.attributes,
+                }))
+            })
             return {
                 icon,
                 onPopoverClose,
@@ -245,7 +267,7 @@
                 getContainer,
                 treeSelectRef,
                 handleDelete,
-                popoverVisible
+                popoverVisible,
             }
         },
     })
@@ -256,7 +278,7 @@
         -moz-transition: border 500ms ease-out;
         -o-transition: border 500ms ease-out;
         transition: border 500ms ease-out;
-        
+
         :global(.ant-select-arrow) {
             position: absolute;
             left: 0;
@@ -264,17 +286,19 @@
         :global(.ant-select-selection-overflow) {
             @apply ml-4;
         }
-        :global( .ant-select-selection-placeholder) {
+        :global(.ant-select-selection-placeholder) {
             @apply ml-4;
         }
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;
             width: 350px !important;
         }
-        :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+        :global(.ant-select:not(.ant-select-customize-input)
+                .ant-select-selector) {
             @apply border-0 border-b border-t-0 border-l-0 border-r-0 border-gray-200 rounded-none;
         }
-        :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+        :global(.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+                .ant-select-selector) {
             @apply border-primary border-b border-solid border-t-0 border-l-0 border-r-0  !important;
             outline: 0 !important;
             box-shadow: none;
@@ -282,7 +306,6 @@
         :global(.ant-select-tree) {
             @apply -ml-2;
         }
-
     }
 
     .categoryWidget {

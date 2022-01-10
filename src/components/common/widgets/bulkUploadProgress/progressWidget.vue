@@ -248,7 +248,7 @@
         useArtifacts,
     } from `@/glossary/modal/useBulkUpload.ts`
     import { getRunList } from '~/composables/workflow/useWorkflowList'
-    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import { downloadFile } from '~/utils/library/download'
 
     export default defineComponent({
@@ -281,7 +281,7 @@
             const WFRunName=ref()
             const reInitTree=inject('reInitTree')
             let nIntervId
-            const { progressPercent, name, phase } = useWorkFlowHelper()
+            const { progressPercent, name, phase } = useWorkflowInfo()
 
             // methods
             // stop the interval to get progress

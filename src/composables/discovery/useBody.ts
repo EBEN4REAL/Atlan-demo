@@ -364,7 +364,6 @@ export function useBody(
                         q.orFilter('term', '__parentCategory', filterObject)
                         return q
                     })
-
                 }
                 break
             }
@@ -385,9 +384,9 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
-                    console.log({ filterObject })
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
+                            if (!element.operand) return
                             if (element.operator === 'isNull') {
                                 base.notFilter('exists', element.operand)
                             }
@@ -401,7 +400,10 @@ export function useBody(
                                 element.value
                                     ? base.filter('exists', element.operand)
                                     : base.notFilter('exists', element.operand)
-                            } else if (element.value) {
+                            } else if (
+                                element.value != null &&
+                                element.value !== ''
+                            ) {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -433,10 +435,9 @@ export function useBody(
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${
-                                            Array.isArray(element.value)
-                                                ? JSON.stringify(element.value)
-                                                : element.value
+                                        `*${Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                         }`
                                     )
                                 }
@@ -480,7 +481,11 @@ export function useBody(
                                 }
                                 if (element.operator === 'boolean') {
                                     if (element.operand === '__state') {
-                                        state.value = 'DELETED'
+                                        if (element.value) {
+                                            state.value = 'DELETED'
+                                        } else {
+                                            state.value = 'ACTIVE'
+                                        }
                                     } else {
                                         base.filter(
                                             'term',

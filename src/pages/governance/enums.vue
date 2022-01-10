@@ -1,91 +1,97 @@
 <template>
- <div v-if="isAccess">
-    <div v-auth="map.LIST_ENUM" class="h-full">
-        <div v-if="isLoading" class="flex items-center justify-center h-64">
-            <a-spin size="large" />
-        </div>
-        <div v-else-if="error">
-            <a-empty :image="null">
-                <template #description>
-                    <p class="text-2xl font-bold">Error loading your request</p>
-                    <p>Try reloading page</p>
-                </template>
+    <div v-if="isAccess">
+        <div v-auth="map.LIST_ENUM" class="h-full">
+            <div v-if="isLoading" class="flex items-center justify-center h-64">
+                <a-spin size="large" />
+            </div>
+            <div v-else-if="error">
+                <a-empty :image="null">
+                    <template #description>
+                        <p class="text-2xl font-bold">
+                            Error loading your request
+                        </p>
+                        <p>Try reloading page</p>
+                    </template>
 
-                <!-- <a-button type="danger" @click="refetchEnumList()"
+                    <!-- <a-button type="danger" @click="refetchEnumList()"
                     ><AtlanIcon icon="Add" class="inline" /> Try again
                 </a-button> -->
-            </a-empty>
-        </div>
-        <ExplorerLayout
-            v-else-if="enumList.length"
-            title="Enums"
-            sidebar-class="bg-white"
-        >
-            <template #action>
-                <AtlanBtn
-                    v-auth="map.CREATE_ENUM"
-                    class="flex-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    @click="toggleAddModal(true)"
-                >
-                    <AtlanIcon icon="Add" class="-mx-1 text-gray" />
-                </AtlanBtn>
-            </template>
-
-            <template #sidebar>
-                <div class="px-4 pt-6 pb-4">
-                    <SearchAndFilter
-                        v-model:value="searchText"
-                        :placeholder="`Search from ${enumList.length} enums`"
-                        class="bg-white"
-                    />
-                </div>
-                <EnumList
-                    v-model:selected="selectedId"
-                    :list="searchedEnumList"
-                />
-            </template>
-
-            <EnumDetails
-                v-if="selectedId"
-                :key="selectedId"
-                v-model:selectedEnum="selectedEnum"
-            />
-            <span v-else>No Enum Selected</span>
-        </ExplorerLayout>
-        <div v-else class="flex items-center justify-center h-full">
-            <a-empty
-                :image="noEnumImage"
-                :image-style="{
-                    height: '115px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                }"
+                </a-empty>
+            </div>
+            <ExplorerLayout
+                v-else-if="enumList.length"
+                title="Enums"
+                sidebar-class="bg-white"
             >
-                <template #description>
-                    <p class="text-2xl font-bold">Start adding enums</p>
+                <template #action> </template>
+
+                <template #sidebar>
+                    <div class="flex items-center px-4 mb-3">
+                        <SearchAndFilter
+                            v-model:value="searchText"
+                            :placeholder="`Search from ${enumList.length} enums`"
+                            class="mt-0 bg-white"
+                            :autofocus="true"
+                            size="minimal"
+                        />
+                        <a-tooltip>
+                            <template #title>New Enum</template>
+                            <AtlanBtn
+                                v-auth="map.CREATE_ENUM"
+                                class="flex-none px-2 ml-4"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="toggleAddModal(true)"
+                            >
+                                <AtlanIcon icon="Add" /> </AtlanBtn
+                        ></a-tooltip>
+                    </div>
+                    <EnumList
+                        v-model:selected="selectedId"
+                        :list="searchedEnumList"
+                    />
                 </template>
 
-                <a-button type="primary" @click="addModalVisible = true"
-                    ><AtlanIcon icon="Add" class="inline" /> Create new enum
-                </a-button>
-            </a-empty>
+                <EnumDetails
+                    v-if="selectedId"
+                    :key="selectedId"
+                    v-model:selectedEnum="selectedEnum"
+                />
+                <span v-else>No Enum Selected</span>
+            </ExplorerLayout>
+            <div v-else class="flex items-center justify-center h-full">
+                <a-empty
+                    :image="noEnumImage"
+                    :image-style="{
+                        height: '115px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }"
+                >
+                    <template #description>
+                        <p class="text-2xl font-bold">Start adding enums</p>
+                    </template>
+
+                    <a-button type="primary" @click="addModalVisible = true"
+                        ><AtlanIcon icon="Add" class="inline" /> Create new enum
+                    </a-button>
+                </a-empty>
+            </div>
         </div>
+        <AddEnumModal
+            v-if="addModalVisible"
+            @add="addToList"
+            @close="toggleAddModal(false)"
+        />
     </div>
-    <AddEnumModal
-        v-if="addModalVisible"
-        @add="addToList"
-        @close="toggleAddModal(false)"
-    />
- </div>
-  <NoAcces v-else />
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed } from 'vue'
+    import { defineComponent, ref, watch, onMounted } from 'vue'
     import { useHead } from '@vueuse/head'
+    import { useDebounceFn } from '@vueuse/core'
 
     import useEnums from '@/governance/enums/composables/useEnums'
     import EnumList from '@/governance/enums/enumList.vue'
@@ -98,6 +104,7 @@
     import noEnumImage from '~/assets/images/admin/no-metadata.png'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -129,6 +136,23 @@
                 addModalVisible.value = state
             }
             const { isAccess } = useAuth()
+
+            const sendPageEvent = useDebounceFn(() => {
+                if (selectedId.value) {
+                    useTrackPage('governance', 'enums')
+                }
+            }, 500)
+
+            onMounted(() => {
+                sendPageEvent()
+            })
+
+            watch(selectedId, () => {
+                if (selectedId.value) {
+                    sendPageEvent()
+                }
+            })
+
             return {
                 enumList,
                 addModalVisible,
@@ -141,7 +165,7 @@
                 searchText,
                 searchedEnumList,
                 map,
-                isAccess
+                isAccess,
             }
         },
         data() {

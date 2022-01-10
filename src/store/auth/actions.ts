@@ -10,6 +10,8 @@ export interface Actions extends State {
     setUserDetails(): void
     setRoles(value: any): void
     setDecentralizedRoles(value: any): void
+    setPersonas(value: any): void
+    setPurposes(value: any): void
 }
 
 export const actions: Actions = {
@@ -75,5 +77,11 @@ export const actions: Actions = {
     },
     setDecentralizedRoles(value) {
         this.decentralizedRole = value
+    },
+    setPersonas(value) {
+        this.personas = value
+    },
+    setPurposes(value) {
+        this.purposes = value
     },
 }

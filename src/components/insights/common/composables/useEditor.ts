@@ -164,15 +164,15 @@ export function useEditor(
             // 1. find cursor position done
             const pos = editorInstance?.getPosition()
 
-            console.log('position cursor: ', pos)
-            console.log('position editor: ', editorInstance)
+            // console.log('position cursor: ', pos)
+            // console.log('position editor: ', editorInstance)
 
             // let parsedQuery = getParsedQueryData(variables, query)
             // parsedQuery = parsedQuery.replace(/(\r\n|\n|\r)/gm, "")
-            console.log('position match query parsed: ', query)
+            // console.log('position match query parsed: ', query)
 
             const queryTextValues = query?.split(';')
-            console.log('position match query: ', queryTextValues)
+            // console.log('position match query: ', queryTextValues)
 
             const queryPositions = []
             if (queryTextValues && queryTextValues.length) {
@@ -189,12 +189,12 @@ export function useEditor(
                 })
             }
 
-            console.log('position match: ', queryPositions)
+            // console.log('position match: ', queryPositions)
 
             let semiColonMatchs = toRaw(editorInstance)
                 ?.getModel()
                 ?.findMatches(';')
-            console.log('position match semi: ', semiColonMatchs)
+            // console.log('position match semi: ', semiColonMatchs)
 
             let independentQueryMatches = semiColonMatchs.map(
                 (match, index) => {
@@ -218,7 +218,7 @@ export function useEditor(
                 }
             )
 
-            console.log('position match final: ', independentQueryMatches)
+            // console.log('position match final: ', independentQueryMatches)
 
             // let lineIndex = semiColonMatchs.findIndex((match)=> {
             //     if(match.range.endLineNumber>pos.lineNumber) {
@@ -231,14 +231,14 @@ export function useEditor(
 
             let lineIndex
             for (var i = 0; i < independentQueryMatches.length - 1; i++) {
-                console.log('position match: ', independentQueryMatches[i + 1])
+                // console.log('position match: ', independentQueryMatches[i + 1])
                 if (
                     pos.lineNumber <
                     independentQueryMatches[i + 1].range.startLineNumber
                 ) {
                     //different line, pick 1st query
                     lineIndex = independentQueryMatches[i]
-                    console.log('position match line less: ', lineIndex)
+                    // console.log('position match line less: ', lineIndex)
                     break
                 } else if (
                     pos.lineNumber ===
@@ -264,7 +264,7 @@ export function useEditor(
                     if (end === independentQueryMatches.length) {
                         end = end - 1
                     }
-                    console.log('position match here: ', { start, end })
+                    // console.log('position match here: ', { start, end })
                     lineIndex = independentQueryMatches[start]
                     for (var j = start; j + 1 <= end; j++) {
                         if (
@@ -279,10 +279,10 @@ export function useEditor(
                     pos.lineNumber ===
                     independentQueryMatches[i + 1].range.endLineNumber
                 ) {
-                    console.log('position match 2nd line')
+                    // console.log('position match 2nd line')
                     lineIndex = independentQueryMatches[i + 1]
                     // find all lines with starting point on this line
-                    console.log('position match 2nd line: ', lineIndex)
+                    // console.log('position match 2nd line: ', lineIndex)
                     var start = i + 2
                     var end = i + 2
 
@@ -300,7 +300,7 @@ export function useEditor(
                     if (end === independentQueryMatches.length) {
                         end = end - 1
                     }
-                    console.log('position match here: ', { start, end })
+                    // console.log('position match here: ', { start, end })
 
                     // lineIndex = independentQueryMatches[start]
                     for (var j = start; j <= end; j++) {
@@ -311,7 +311,7 @@ export function useEditor(
                             lineIndex = independentQueryMatches[j]
                         }
                     }
-                    console.log('position match 2nd line: ', lineIndex)
+                    // console.log('position match 2nd line: ', lineIndex)
                     break
                 } else {
                 }
@@ -321,7 +321,7 @@ export function useEditor(
                     independentQueryMatches[independentQueryMatches.length - 1]
             }
 
-            console.log('position match line: ', lineIndex)
+            // console.log('position match line: ', lineIndex)
 
             if (lineIndex) {
                 let queryStartLine
@@ -462,7 +462,7 @@ export function useEditor(
     ) => {
         const reg = /{{\s*[\w\.]+\s*}}/gm
         const v: string[] | null = editorText?.match(reg)
-        console.log('match: ', v)
+        // console.log('match: ', v)
         const matches = []
         if (editorInstance) {
             for (let i = 0; i < v?.length; i++) {

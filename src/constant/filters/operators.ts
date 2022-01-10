@@ -103,6 +103,32 @@ export const operators = {
             label: 'Less Than Equal(<=)',
         },
     ],
+    float: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'greaterThan',
+            label: 'Greater Than(>)',
+        },
+        {
+            id: 'greaterThanEqual',
+            label: 'Greater Than Equal(>=)',
+        },
+        {
+            id: 'lessThan',
+            label: 'Less Than(<)',
+        },
+        {
+            id: 'lessThanEqual',
+            label: 'Less Than Equal(<=)',
+        },
+    ],
     long: [
         {
             id: 'equals',

@@ -23,29 +23,30 @@
                 title="Custom Metadata"
                 sidebar-class="bg-white"
             >
-                <template #action>
-                    <AtlanBtn
-                        v-auth="map.CREATE_BUSINESS_METADATA"
-                        class="flex-none"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        @click="addMetaDataModal.open()"
-                    >
-                        <AtlanIcon
-                            icon="Add"
-                            class="-mx-1 text-gray"
-                        ></AtlanIcon>
-                    </AtlanBtn>
-                </template>
+                <template #action> </template>
 
                 <template #sidebar>
-                    <div class="px-4 pt-6 pb-4">
+                    <div class="flex items-center px-4 mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :placeholder="`Search`"
-                            class="bg-white"
+                            class="mt-0 bg-white"
+                            :autofocus="true"
+                            size="minimal"
                         />
+                        <a-tooltip>
+                            <template #title>New Custom Metadata</template>
+                            <AtlanBtn
+                                v-auth="map.CREATE_BUSINESS_METADATA"
+                                class="flex-none px-2 ml-4"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="addMetaDataModal.open()"
+                            >
+                                <AtlanIcon icon="Add" />
+                            </AtlanBtn>
+                        </a-tooltip>
                     </div>
 
                     <BusinessMetadataList
@@ -104,6 +105,7 @@
     import { defineComponent, computed, onMounted, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
+    import { useDebounceFn } from '@vueuse/core'
     import BusinessMetadataList from '@/governance/custom-metadata/businessMetadataList.vue'
     import BusinessMetadataProfile from '@/governance/custom-metadata/businessMetadataProfile.vue'
     import MetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
@@ -120,6 +122,7 @@
 
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
     import noMetadataImage from '~/assets/images/admin/no-metadata.png'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'BusinessMetadata',
@@ -153,7 +156,15 @@
                 sortedSearchedBM,
             } = useBusinessMetadata()
             const { isAccess, checkAccess } = useAuth()
+
+            const sendPageEvent = useDebounceFn(() => {
+                if (selectedId.value) {
+                    useTrackPage('governance', 'custom_metadata')
+                }
+            }, 500)
+
             onMounted(() => {
+                sendPageEvent()
                 const list = store.getCustomMetadataList
                 if (!route.params.id && list.length) {
                     const id = list[0].guid!
@@ -164,6 +175,7 @@
             const handleClickMetaData = (id) => {
                 router.replace(`/governance/custom-metadata/${id}`)
             }
+
             watch(store.getCustomMetadataList, () => {
                 const list = store.getCustomMetadataList
                 if (list.length) {
@@ -180,6 +192,11 @@
                     router.replace(`/governance/custom-metadata/${idMetaData}`)
                 }
             })
+
+            watch(selectedId, () => {
+                sendPageEvent()
+            })
+
             return {
                 selectedId,
                 error,

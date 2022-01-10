@@ -65,13 +65,14 @@
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
+        name: 'GovernancePage',
         setup() {
             const router = useRouter()
             const route = useRoute()
             const handleClick = ({ key }) => {
                 router.push(`/governance/${key}`)
             }
-            
+
             const initialRoute = route.params?.id
                 ? route.path.split('/').slice(-2, -1)
                 : route.path.split('/').slice(-1)

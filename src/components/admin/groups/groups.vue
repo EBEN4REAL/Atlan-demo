@@ -18,7 +18,7 @@
                         :placeholder="`Search ${totalGroupsCount} group${
                             totalGroupsCount > 1 ? 's' : ''
                         }`"
-                        class="h-8 mr-1"
+                        class="h-8 mr-1 shadow-none"
                         @change="onSearch"
                     />
                 </div>
@@ -30,6 +30,7 @@
                     type="primary"
                     @click="isGroupDrawerVisible = true"
                 >
+                    <AtlanIcon class="mr-2" icon="Add" />
                     Create Group
                 </AtlanButton>
             </div>
@@ -152,7 +153,7 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex px-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
                         <div class="pt-0.5">{{ title }}</div>
                     </div>
@@ -161,28 +162,37 @@
                 <template #bodyCell="{ text: value, record: group, column }">
                     <div
                         v-if="column.key === 'name'"
+                        class="flex items-center"
                         @click="
                             () => {
                                 handleGroupClick(group)
                             }
                         "
                     >
-                        <div
-                            class="flex capitalize truncate cursor-pointer text-primary"
-                        >
-                            <div class="mr-2 truncate max-w-3/4">
-                                {{ group.name }}
-                            </div>
+                        <Avatar
+                            :avatar-size="32"
+                            avatar-shape="circle"
+                            class="mr-3"
+                            :is-group="true"
+                        />
+                        <div>
                             <div
-                                v-show="group.isDefault === 'true'"
-                                class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
+                                class="flex capitalize truncate cursor-pointer text-primary"
                             >
-                                Default
+                                <div class="mr-2 truncate max-w-3/4">
+                                    {{ group.name }}
+                                </div>
+                                <div
+                                    v-show="group.isDefault === 'true'"
+                                    class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
+                                >
+                                    Default
+                                </div>
                             </div>
+                            <p class="mb-0 text-gray-500 truncate">
+                                {{ group.description }}
+                            </p>
                         </div>
-                        <p class="mb-0 text-gray-500 truncate">
-                            {{ group.description }}
-                        </p>
                     </div>
                     <div
                         v-else-if="column.key === 'memberCount'"
@@ -191,7 +201,11 @@
                         <div
                             class="cursor-pointer text-primary hover:underline"
                         >
-                            {{ value }}
+                            {{
+                                value >= 2
+                                    ? value + ' members'
+                                    : value + ' member'
+                            }}
                         </div>
                     </div>
                     <div
@@ -204,7 +218,7 @@
                             :image-url="imageUrl(value)"
                             :allow-upload="false"
                             :avatar-name="value"
-                            :avatar-size="16"
+                            :avatar-size="24"
                             :avatar-shape="'circle'"
                             class="mr-2 mt-0.5"
                         />
@@ -648,7 +662,13 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less">
+    .users-groups-table {
+        .ant-table-thead {
+            height: 44px !important;
+        }
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

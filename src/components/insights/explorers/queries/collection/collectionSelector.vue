@@ -87,35 +87,49 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center overflow-x-hidden">
-                <span class="w-5 h-5 mr-2 -mt-1.5 text-xl">{{
+                <span class="mr-2 -mt-2 w-7 h-7" style="font-size: 28px">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'
                 }}</span>
 
-                <div
-                    class="truncate group-hover:text-primary"
-                    style="width: 90%"
-                >
-                    <span
-                        class="mr-1 text-base font-bold text-gray-700 truncate"
-                        >{{ selectedCollection?.attributes?.name }}</span
-                    >
-                    <AtlanIcon
+                <div class="flex group-hover:text-primary" style="width: 90%">
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <span
+                                class="mr-2 text-base font-bold text-gray-700 truncate"
+                                >{{
+                                    selectedCollection?.attributes?.name
+                                }}</span
+                            >
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="self-center h-4 text-gray-400"
+                            ></AtlanIcon>
+                        </div>
+
+                        <span class="mr-1 text-xs text-gray-500 truncate">{{
+                            isCollectionPrivate(selectedCollection, username)
+                                ? 'Private'
+                                : hasCollectionWritePermission ||
+                                  isCollectionCreatedByCurrentUser
+                                ? 'Shared'
+                                : 'Shared, Read only'
+                        }}</span>
+                    </div>
+
+                    <!-- <AtlanIcon
                         v-if="isCollectionPrivate(selectedCollection, username)"
                         icon="PrivateCollection"
                         class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon>
-                    <AtlanIcon
-                        v-else
+                    ></AtlanIcon> -->
+                    <!-- <AtlanIcon
+                        v-if="
+                            !isCollectionPrivate(selectedCollection, username)
+                        "
                         icon="PublicCollection"
                         class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon>
-
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="self-center h-4 ml-1 -mt-1 text-gray-400"
-                    ></AtlanIcon>
+                    ></AtlanIcon> -->
                 </div>
             </div>
         </div>
@@ -189,9 +203,14 @@
 
             // computed
             const selectedCollection = computed(() => {
-                const collection = queryCollections.value?.find(
+                let collection = queryCollections.value?.find(
                     (coll) => coll.guid === selectedValue.value
                 )
+                if (!collection) {
+                    collection = queryCollections.value?.length
+                        ? queryCollections.value[0]
+                        : undefined
+                }
                 return collection
             })
 
@@ -222,6 +241,16 @@
                     return isCollectionPrivate(coll, username)
                 })
             )
+
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            )
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            )
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
 
             function handleChange(collectionId: string) {
                 isVisible.value = false
@@ -284,6 +313,9 @@
                 emit,
                 map,
                 createCollectionToggle,
+                hasCollectionWritePermission,
+                hasCollectionReadPermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

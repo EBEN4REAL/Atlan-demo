@@ -208,13 +208,13 @@
                                             >Open preview sidebar</template
                                         >
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="SidebarSwitch"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -247,30 +247,30 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <div
-                                                v-if="activeInlineTab?.queryId"
-                                                class="text-gray-700"
+
+                                            <a-menu-item
+                                                key="shareQuery"
+                                                @click="copyURL"
+                                                >Share query</a-menu-item
                                             >
+                                            <!-- <div class="text-gray-700">
                                                 <a-sub-menu
                                                     key="shareQuery"
                                                     style="min-width: 200px"
+                                                    @click="copyURL"
                                                 >
                                                     <template #title>
                                                         <div
-                                                            class="flex items-center justify-between w-full mr-2"
+                                                            class="flex items-center justify-between w-full text-gray-500 bg-red-500"
                                                         >
                                                             <div
-                                                                class="flex items-center justify-between w-full text-gray-500"
+                                                                class="text-gray-700"
                                                             >
-                                                                <span
-                                                                    class="text-gray-700"
-                                                                    >Share
-                                                                    query</span
-                                                                >
+                                                                Share query
                                                             </div>
                                                             <AtlanIcon
                                                                 icon="ChevronRight"
-                                                                class="ml-2 text-gray-500 -mt-0.5"
+                                                                class="bg-red-700 ml-auto text-gray-500 -mt-0.5"
                                                             />
                                                         </div>
                                                     </template>
@@ -295,7 +295,7 @@
                                                         </a-menu-item>
                                                     </div>
                                                 </a-sub-menu>
-                                            </div>
+                                            </div> -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -693,7 +693,7 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none py-0 px-1 rounded mx-0 my-0.5 w-full`
+                    `outline-none py-0 px-1 rounded mx-0 my-0.5 w-full bg-transparent`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
@@ -714,6 +714,10 @@
                 let querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
 
+                // console.log('icons: ', getEntityStatusIcon(
+                //     'query',
+                //     certificateStatus(item.value)
+                // ))
                 const folderSvgEl = new DOMParser().parseFromString(
                     item.value.typeName === 'Query' ? querySvg : folderSvg,
                     'text/html'
@@ -728,7 +732,10 @@
 
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        parentNode?.removeChild(div)
+                        // parentNode?.removeChild(div)
+                        try {
+                            parentNode?.removeChild(div)
+                        } catch {}
                         childNode?.classList?.remove('hidden')
                     }
                     if (e.key === 'Enter') {

@@ -16,17 +16,19 @@
                     size="minimal"
                 >
                 </SearchAndFilter>
-                <AtlanBtn
-                    :disabled="isEditing"
-                    class="flex-none ml-4"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                    data-test-id="add-purpose"
-                    @click="() => (modalVisible = true)"
-                >
-                    New
-                </AtlanBtn>
+                <a-tooltip>
+                    <template #title>New Purpose</template>
+                    <AtlanBtn
+                        :disabled="isEditing"
+                        class="flex-none px-2 ml-4"
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        data-test-id="add-purpose"
+                        @click="() => (modalVisible = true)"
+                    >
+                        <AtlanIcon icon="Add" /> </AtlanBtn
+                ></a-tooltip>
             </div>
 
             <ExplorerList
@@ -37,7 +39,10 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between"
+                        @click="handleSelectPurpose(item)"
+                    >
                         <div
                             class="flex flex-col"
                             :data-test-id="item.displayName"
@@ -46,27 +51,27 @@
                                 class="text-sm capitalize truncate"
                                 :class="
                                     isSelected
-                                        ? 'text-primary'
-                                        : 'text-gray hover:text-primary'
+                                        ? 'text-primary font-semibold'
+                                        : 'text-gray-700 hover:text-primary hover:font-semibold'
                                 "
                             >
                                 {{ item.displayName }}
                             </span>
                             <div class="flex gap-x-1">
                                 <span
-                                    class="text-xs text-gray-500"
                                     v-if="item.tags.length > 0"
+                                    class="text-sm text-gray-500"
                                 >
                                     {{ item.tags.length }}
                                     classifications</span
                                 >
 
                                 <span
-                                    class="text-xs text-gray-500"
                                     v-if="
                                         item.dataPolicies.length > 0 ||
                                         item.metadataPolicies.length > 0
                                     "
+                                    class="text-sm text-gray-500"
                                 >
                                     {{
                                         item.metadataPolicies.length +
@@ -79,9 +84,9 @@
                             <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
                         </div>
                         <a-tooltip
+                            v-if="item.description"
                             tabindex="-1"
                             :title="item.description"
-                            v-if="item.description"
                             placement="right"
                         >
                             <span
@@ -102,8 +107,8 @@
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <PurposeHeader
-                :persona="selectedPersona"
                 v-model:openEditModal="openEditModal"
+                :persona="selectedPersona"
             />
             <PurposeBody
                 v-model:persona="selectedPersona"
@@ -157,7 +162,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, onMounted } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import AtlanBtn from '@/UI/button.vue'
@@ -196,15 +202,14 @@
             AddPurpose,
         },
         setup() {
+            const router = useRouter()
+            const route = useRoute()
             const modalVisible = ref(false)
             const modalDetailPolicyVisible = ref(false)
             const selectedPolicy = ref({})
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
             const openEditModal = ref(false)
-            watch(searchTerm, () => {
-                console.log(searchTerm.value, 'searched')
-            })
 
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
@@ -214,6 +219,31 @@
                 modalDetailPolicyVisible.value = true
             }
             const whitelistedConnectionIds = ref([])
+
+            const handleSelectPurpose = (purpose) => {
+                router.replace(`/governance/purposes/${purpose.id}`)
+            }
+            watch(isPersonaListReady, () => {
+                const findedPurpose = personaList.value.find(
+                    (el) => el.id === route.params.id
+                )
+                if (findedPurpose) {
+                    selectedPersonaId.value = findedPurpose.id
+                } else {
+                    selectedPersonaId.value = personaList.value[0].id
+                    router.replace(
+                        `/governance/purposes/${personaList.value[0].id}`
+                    )
+                }
+            })
+            onMounted(() => {
+                if (isPersonaListReady.value) {
+                    selectedPersonaId.value = personaList.value[0].id
+                    router.replace(
+                        `/governance/purposes/${personaList.value[0].id}`
+                    )
+                }
+            })
             watch(
                 roles,
                 () => {
@@ -253,6 +283,7 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 openEditModal,
+                handleSelectPurpose,
             }
         },
     })

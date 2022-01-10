@@ -4,12 +4,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, onMounted } from 'vue'
     import { useHead } from '@vueuse/head'
     import GroupList from '@/admin/groups/groups.vue'
     import useAuth from '~/composables/auth/useAuth'
     import NoAccess from '@/common/secured/access.vue'
     import map from '~/constant/accessControl/map'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'GroupsPage',
@@ -22,6 +23,10 @@
                 title: 'Groups',
             })
             const { isAccess } = useAuth()
+
+            onMounted(() => {
+                useTrackPage('admin', 'groups')
+            })
 
             return { isAccess, map }
         },

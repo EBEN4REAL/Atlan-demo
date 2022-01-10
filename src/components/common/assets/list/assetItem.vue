@@ -1,17 +1,17 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 rounded hover:bg-primary-light"
-        :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
+        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        :class="isSelected ? 'outline-primary bg-primary-menu shadow-sm' : ''"
         @click="handlePreview(item)"
     >
         <div
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-light'
+                    ? 'border-primary bg-primary-menu'
                     : 'border-transparent',
-                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+                bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
@@ -40,10 +40,11 @@
                         </div>
 
                         <Tooltip
+                            :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
-                            :shouldOpenInNewTab="shouldOpenInNewTab"
+                            :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
 
@@ -442,20 +443,23 @@
                                 v-for="term in meaningRelationships(item)"
                                 :key="term.guid"
                             >
-                                <div
-                                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
-                                >
-                                    <AtlanIcon
-                                        :icon="termIcon(term)"
-                                        class="group-hover:text-white text-purple mb-0.5"
-                                    ></AtlanIcon>
-
-                                    <div class="ml-1 group-hover:text-white">
-                                        {{
-                                            term.attributes?.name ??
-                                            term.displayText
-                                        }}
-                                    </div>
+                                <div class="flex flex-wrap">
+                                    <TermPopover
+                                        :term="term"
+                                        :loading="termLoading"
+                                        :fetched-term="
+                                            getFetchedTerm(term.termGuid)
+                                        "
+                                        :error="termError"
+                                        trigger="hover"
+                                        :ready="isReady"
+                                        @visible="handleTermPopoverVisibility"
+                                    >
+                                        <TermPill
+                                            :term="term"
+                                            :allow-delete="false"
+                                        />
+                                    </TermPopover>
                                 </div>
                             </template>
                         </div>
@@ -463,7 +467,11 @@
                 </div>
             </div>
         </div>
-        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <hr
+            class="mx-2 text-gray-100 bg-gray-200"
+            :v-show="!isSelected"
+            :class="bulkSelectMode && isChecked ? 'hidden' : ''"
+        />
         <AssetDrawer
             :data="selectedAssetDrawerData"
             :show-drawer="showAssetSidebarDrawer"
@@ -474,14 +482,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        computed,
-        PropType,
-        inject,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -491,15 +492,22 @@
     import PopoverClassification from '@/common/popover/classification.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Truncate from '@/common/ellipsis/index.vue'
+    import TermPopover from '@/common/popover/term/term.vue'
+    import TermPill from '@/common/pills/term.vue'
+    import useTermPopover from '@/common/popover/term/useTermPopover'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
+            TermPill,
             CertificateBadge,
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
             Tooltip,
+            Truncate,
+            TermPopover,
         },
         props: {
             item: {
@@ -560,6 +568,15 @@
                 type: Number,
                 require: true,
             },
+            assetNameTruncatePercentage: {
+                type: String,
+                default: '95%',
+                required: false,
+            },
+            openAssetProfileInNewTab: {
+                type: Boolean,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -576,10 +593,6 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
-            // inject props for enabling open asset profile in new tab
-            const shouldOpenInNewTab = computed(
-                () => inject('shouldOpenInNewTab') || false
-            )
 
             const {
                 title,
@@ -687,7 +700,20 @@
                 return 'Term'
             }
 
+            const {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+            } = useTermPopover()
+
             return {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
                 isSelected,
                 title,
                 getConnectorImage,
@@ -730,7 +756,6 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
-                shouldOpenInNewTab,
             }
         },
     })

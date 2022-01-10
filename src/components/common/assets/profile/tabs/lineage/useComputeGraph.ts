@@ -6,7 +6,6 @@ export default async function useComputeGraph(
     graph,
     graphLayout,
     lineage,
-    lineageWithProcess,
     searchItems,
     currZoom,
     isComputeDone,
@@ -20,7 +19,6 @@ export default async function useComputeGraph(
     const nodes = ref([])
 
     const { relations, baseEntityGuid } = lineage.value
-    const { relations: relationsWithProcess } = lineageWithProcess.value
     const guidEntityMap = Object.values(lineage.value.guidEntityMap)
 
     searchItems.value = []
@@ -45,23 +43,17 @@ export default async function useComputeGraph(
 
     /* Edges */
     relations.forEach((x) => {
-        const { toEntityId } = x
-        const process = relationsWithProcess.find(
-            (y) => y.toEntityId === toEntityId
-        ).fromEntityId
-
-        if (process) {
-            const relation = {
-                id: `${process}/${x.fromEntityId}@${x.toEntityId}`,
-                sourceCell: x.fromEntityId,
-                sourcePort: `${x.fromEntityId}/index`,
-                targetCell: x.toEntityId,
-                targetPort: `${x.toEntityId}/index`,
-                stroke: '#C7C7C7',
-            }
-            const { edgeData } = createEdgeData(relation)
-            edges.value.push(edgeData)
+        const { fromEntityId, toEntityId, processId } = x
+        const relation = {
+            id: `${processId}/${fromEntityId}@${toEntityId}`,
+            sourceCell: fromEntityId,
+            sourcePort: `${fromEntityId}-invisiblePort`,
+            targetCell: toEntityId,
+            targetPort: `${toEntityId}-invisiblePort`,
+            stroke: '#C7C7C7',
         }
+        const { edgeData } = createEdgeData(relation)
+        edges.value.push(edgeData)
     })
 
     /* Render */

@@ -27,6 +27,7 @@
                                 :tableQualfiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
+                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
@@ -84,7 +85,10 @@
                             <!--  -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
-                                    v-if="isSubpanelClosable(subpanels)"
+                                    v-if="
+                                        isSubpanelClosable(subpanels) &&
+                                        !readOnly
+                                    "
                                     @click.stop="
                                         () => handleDelete(index, subpanel)
                                     "
@@ -100,6 +104,7 @@
         </div>
 
         <span
+            v-if="!readonly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -118,6 +123,8 @@
         toRaw,
         inject,
         ComputedRef,
+        computed,
+        toRefs,
         Ref,
     } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
@@ -166,12 +173,18 @@
                 required: true,
                 default: [],
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
             const { isSubpanelClosable } = useUtils()
+            const { disabled } = toRefs(props)
             const { getInputTypeFromColumnType, totalFiledsMapWithInput } =
                 useFilter()
 
@@ -435,7 +448,30 @@
 
             let hoverItem = ref(null)
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                disabled,
+                readOnly,
                 isSubpanelClosable,
                 activeInlineTab,
                 handleFilterChange,

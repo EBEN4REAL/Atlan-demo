@@ -13,6 +13,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -32,6 +33,7 @@
             v-if="selectedItem?.label && isAreaFocused"
             ref="inputRef"
             v-model:value="inputValue1"
+            :disabled="disabled"
             @focus="
                 () => {
                     isAreaFocused = true
@@ -48,6 +50,7 @@
             v-if="!selectedItem?.label"
             ref="initialRef"
             v-model:value="inputValue2"
+            :disabled="disabled"
             @change="input2Change"
             :placeholder="placeholder"
             :class="[
@@ -212,6 +215,11 @@
                 type: Object,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             mixedSubpanels: {
                 type: Object as PropType<{
                     mappedGroupSubpanels: SubpanelColumnData &
@@ -225,7 +233,7 @@
         },
 
         setup(props, { emit }) {
-            const { mixedSubpanels } = toRefs(props)
+            const { mixedSubpanels, disabled } = toRefs(props)
             const {
                 isPrimary,
                 dataTypeImageForColumn,
@@ -270,9 +278,10 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
+                if (disabled.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
-                    inputRef?.value?.focus()
+                    if (disabled.value) inputRef?.value?.focus()
                 })
             }
             const setFocusedCusror = () => {
@@ -284,7 +293,7 @@
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
+                if (!container.value.contains(event?.relatedTarget)) {
                     isAreaFocused.value = false
                     inputValue1.value = ''
                     inputValue2.value = ''
@@ -512,6 +521,7 @@
             }
 
             return {
+                disabled,
                 isTableSelected,
                 containerPosition,
                 initialRef,

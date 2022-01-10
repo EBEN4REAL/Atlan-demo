@@ -3,7 +3,9 @@
         ref="container"
         @click="
             () => {
-                isAreaFocused = true
+                if (!disabled) {
+                    isAreaFocused = true
+                }
             }
         "
         @mouseover="handleMouseOver"
@@ -15,6 +17,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container truncate',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
     >
         <div class="flex w-full">
@@ -58,7 +61,7 @@
         </span> -->
         </div>
 
-        <div class="absolute right-4">
+        <div class="absolute right-4" v-if="!disabled">
             <AtlanIcon
                 v-if="
                     findVisibility(
@@ -473,6 +476,11 @@
                 required: false,
                 default: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -481,6 +489,7 @@
                 panelIndex,
                 subIndex,
                 rowIndex,
+                disabled,
             } = toRefs(props)
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -864,6 +873,7 @@
             })
 
             return {
+                disabled,
                 isTableSelected,
                 queryText,
                 container,

@@ -14,6 +14,7 @@
                         <JoinSelector
                             class="w-full"
                             v-model:selectedJoinType="subpanel.joinType"
+                            :disabled="readOnly"
                         />
                     </div>
                     <div class="item-2">
@@ -23,6 +24,7 @@
                             :panelIndex="Number(panelIndex)"
                             :rowIndex="index"
                             :subIndex="0"
+                            :disabled="readOnly"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -48,6 +50,7 @@
                             :panelIndex="Number(panelIndex)"
                             :rowIndex="index"
                             :subIndex="1"
+                            :disabled="readOnly"
                             @change="
                                 (qualifiedName) =>
                                     handleColumnChange(
@@ -57,7 +60,7 @@
                             "
                         />
                         <AtlanIcon
-                            v-if="index !== 0"
+                            v-if="index !== 0 && !readOnly"
                             @click="() => handleDelete(index)"
                             icon="Close"
                             style="min-width: 26px"
@@ -73,6 +76,7 @@
         </div>
 
         <span
+            v-if="readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -92,6 +96,7 @@
         toRefs,
         inject,
         ComputedRef,
+        computed,
     } from 'vue'
     import JoinSelector from '../joinSelector/index.vue'
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
@@ -257,7 +262,26 @@
 
             let hoverItem = ref(null)
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                readOnly,
                 panelIndex,
                 activeInlineTab,
                 allowedTablesInJoinSelector,

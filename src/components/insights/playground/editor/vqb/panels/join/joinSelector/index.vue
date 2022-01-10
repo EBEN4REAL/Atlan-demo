@@ -11,6 +11,7 @@
             isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
             ,
             'flex flex-wrap items-center  rounded selector-height pl-3',
+            disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -82,7 +83,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, onMounted, onUnmounted } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        onMounted,
+        onUnmounted,
+        toRefs,
+    } from 'vue'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useVModels } from '@vueuse/core'
 
@@ -98,6 +106,7 @@
 
         setup(props, { emit }) {
             const { selectedJoinType } = useVModels(props)
+            const { disabled } = toRefs(props)
 
             const { list } = useJoin()
 
@@ -108,6 +117,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
+                if (disabled.value) return
                 isAreaFocused.value = true
             }
             const observer = ref()

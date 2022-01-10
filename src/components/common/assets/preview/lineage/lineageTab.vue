@@ -1,35 +1,46 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div v-if="selectedGuids.length > 0">
-            <div class="flex items-center justify-between px-5 pt-4">
-                <a-radio-group
-                    v-model:value="direction"
-                    button-style="solid"
-                    size="small"
-                    @change="handleChangeDirection"
+        <LineageImpactModal
+            v-if="guid"
+            v-model:visible="showImpactedAssets"
+            :guid="guid"
+            :asset-name="assetName"
+            style="z-index: 600"
+        />
+        <div class="flex items-center justify-between px-5 pt-4">
+            <a-radio-group
+                v-model:value="direction"
+                button-style="solid"
+                size="small"
+                @change="handleChangeDirection"
+            >
+                <a-radio-button value="BOTH" size="small">All</a-radio-button>
+                <a-radio-button value="UPSTREAM" size="small"
+                    >Upstream
+                    <span :class="$style.chip">{{
+                        upstreamGuids?.length
+                    }}</span>
+                </a-radio-button>
+                <a-radio-button value="DOWNSTREAM" size="small"
+                    >Downstream
+                    <span :class="$style.chip">{{
+                        downstreamGuids?.length
+                    }}</span></a-radio-button
                 >
-                    <a-radio-button value="BOTH" size="small"
-                        >All</a-radio-button
-                    >
-                    <a-radio-button value="UPSTREAM" size="small"
-                        >Upstream
-                        <span :class="$style.chip">{{
-                            upstreamGuids?.length
-                        }}</span>
-                    </a-radio-button>
-                    <a-radio-button value="DOWNSTREAM" size="small"
-                        >Downstream
-                        <span :class="$style.chip">{{
-                            downstreamGuids?.length
-                        }}</span></a-radio-button
-                    >
-                </a-radio-group>
-                <router-link :to="link" class="underline text-primary"
-                    >View Graph</router-link
-                >
-            </div>
-            <Assets :selectedGuids="selectedGuids" ref="assetList"></Assets>
+            </a-radio-group>
+            <AtlanButton
+                padding="compact"
+                size="sm"
+                color="light"
+                @click="showImpactedAssets = true"
+                >View Impact</AtlanButton
+            >
         </div>
+        <Assets
+            v-if="selectedGuids.length > 0"
+            :selectedGuids="selectedGuids"
+            ref="assetList"
+        ></Assets>
         <div v-else class="flex items-center justify-center h-full">
             <EmptyView
                 empty-screen="EmptyLineageTab"
@@ -52,7 +63,6 @@
         PropType,
     } from 'vue'
 
-    import Assets from './list/index.vue'
     // Components
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import AssetList from './LineagePreviewTabAssetList.vue'
@@ -65,6 +75,10 @@
     // import AssetFilters from '@/common/assets/filters/index.vue'
     // import AssetList from '@/common/assets/list/index.vue'
     // import AssetItem from '@/common/assets/list/assetItem.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import AtlanButton from '@/UI/button.vue'
+    import LineageImpactModal from './lineageImpactModal.vue'
+    import Assets from './list/index.vue'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -73,13 +87,14 @@
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import useLineage from '~/composables/discovery/useLineage'
     import { useRoute } from 'vue-router'
-    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: {
             Assets,
             EmptyView,
+            AtlanButton,
+            LineageImpactModal,
         },
         props: {
             selectedAsset: {
@@ -91,6 +106,7 @@
             /** DATA */
             const { selectedAsset } = toRefs(props)
             const activeKeys = ref([])
+            const showImpactedAssets = ref(false)
 
             const assetTypesLengthMap = ref({})
 
@@ -128,6 +144,11 @@
 
             /** COMPUTED */
             const guid = computed(() => selectedAsset.value.guid)
+            const assetName = computed(
+                () =>
+                    selectedAsset.value.displayText ||
+                    selectedAsset.value.attributes.name
+            )
 
             const { data, guidList, upstreamGuids, downstreamGuids } =
                 useLineage(
@@ -279,6 +300,7 @@
             /** LIFECYCLE */
             return {
                 guid,
+                assetName,
                 query,
                 filteredLineageList,
                 assetTypesLengthMap,
@@ -295,6 +317,7 @@
                 upstreamGuids,
                 downstreamGuids,
                 link,
+                showImpactedAssets,
             }
         },
     })

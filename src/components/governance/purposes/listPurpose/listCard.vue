@@ -1,20 +1,32 @@
 <template>
-    <div class="space-y-2.5" style="padding: 10px 8px">
+    <div class="space-y-1.5" style="padding: 10px 8px">
         <h1 class="font-bold text-primary">{{ p.displayName }}</h1>
-        <div class="flex items-center justify-between">
-            <Classification
-                v-model:modelValue="allClassifications"
-                :allow-delete="false"
-                :edit-permission="false"
-                class="max-w-lg space-x-1"
-            />
-            <div class="flex h-full space-x-1 text-gray-500">
-                <AtlanIcon icon="Policy" class="" />
-                <span class="text-sm">
-                    <b>{{ p.dataPolicies.length }}</b> Metadata,
-                    <b>{{ p.metadataPolicies.length }}</b> Data policies
-                </span>
-            </div>
+        <div v-if="p.description" class="">{{ p.description }}</div>
+        <div class="flex h-full space-x-2 text-gray-500">
+            <AtlanIcon icon="Policy" class="" />
+            <span class="text-sm">
+                <b>{{ p.dataPolicies.length }}</b> Metadata,
+                <b>{{ p.metadataPolicies.length }}</b> Data policies
+            </span>
+        </div>
+
+        <div
+            v-if="allClassifications?.length"
+            class="flex flex-wrap gap-1 text-sm itesm-center"
+        >
+            <template
+                v-for="classification in allClassifications"
+                :key="classification.guid"
+            >
+                <Popover :classification="classification">
+                    <ClassificationPill
+                        :name="classification.name"
+                        :display-name="classification?.displayName"
+                        :allow-delete="false"
+                        :color="classification.options?.color"
+                    />
+                </Popover>
+            </template>
         </div>
     </div>
 </template>
@@ -22,7 +34,8 @@
 <script setup lang="ts">
     import { PropType, Ref, ref, toRefs } from 'vue'
     import { ClassificationInterface as CF } from '~/types/classifications/classification.interface'
-    import Classification from '@common/input/classification/index.vue'
+    import ClassificationPill from '@/common/pills/classification.vue'
+    import Popover from '@/common/popover/classification.vue'
 
     const props = defineProps({
         p: {
@@ -43,6 +56,7 @@
                 classificationList.value.find((cf) => cf.name === c)
             if (classification)
                 allClassifications.value.push({
+                    ...classification,
                     typeName: classification.name,
                     entityGuid: classification.guid,
                     entityStatus: 'ACTIVE',

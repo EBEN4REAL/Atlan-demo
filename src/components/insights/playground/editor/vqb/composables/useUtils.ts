@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
 import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
@@ -5,6 +6,7 @@ import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
 import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { aggregatedAliasMap } from '../constants/aggregation'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -253,6 +255,81 @@ export function useUtils() {
         })
         return Array.from(distinctTableQualifiedNames)
     }
+    function isSubpanelClosable(subpanels: object[]) {
+        if (subpanels.length === 1) return false
+        if (subpanels.length > 1) return true
+    }
+
+    function collapseAllPanelsExceptCurrent(
+        currentPanel: any,
+        activeInlineTab: Ref<activeInlineTabInterface>
+    ) {
+        const copyPanels = JSON.parse(
+            JSON.stringify(activeInlineTab.value.playground.vqb.panels)
+        )
+        copyPanels.forEach((panel) => {
+            panel.expand = false
+        })
+        activeInlineTab.value.playground.vqb.panels = copyPanels
+    }
+
+    function isAggregationORGroupPanelColumnsAdded(
+        activeInlineTab: activeInlineTabInterface
+    ) {
+        const groupPanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'group'
+        )
+        const aggregatePanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'aggregate'
+        )
+        if (!groupPanel?.hide && !aggregatePanel?.hide) {
+            return false
+        }
+
+        if (groupPanel?.subpanels[0]?.columnsData?.length > 0) return true
+        if (aggregatePanel?.subpanels[0]?.aggregators?.length > 0) return true
+        return false
+    }
+    function getAggregationORGroupPanelColumns(
+        activeInlineTab: activeInlineTabInterface
+    ) {
+        const groupPanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'group'
+        )
+        const aggregatePanel = activeInlineTab.playground.vqb.panels.find(
+            (panel) => panel.id.toLowerCase() === 'aggregate'
+        )
+        let mappedGroupSubpanels: any[] = []
+        let mappedAggregateSubpanels: any[] = []
+
+        if (groupPanel?.hide) {
+            mappedGroupSubpanels = groupPanel?.subpanels[0]?.columnsData?.map(
+                (columnData) => {
+                    return {
+                        ...columnData,
+                        addedBy: 'group',
+                    }
+                }
+            )
+        }
+        if (aggregatePanel?.hide) {
+            mappedAggregateSubpanels = aggregatePanel?.subpanels?.map(
+                (subpanel) => {
+                    return {
+                        ...subpanel,
+                        addedBy: 'aggregate',
+                    }
+                }
+            )
+        }
+
+        return {
+            mappedGroupSubpanels: mappedGroupSubpanels ?? [],
+            mappedAggregateSubpanels: mappedAggregateSubpanels ?? [],
+            totalCount:
+                mappedGroupSubpanels?.length + mappedAggregateSubpanels?.length,
+        }
+    }
 
     return {
         getTableName,
@@ -265,5 +342,9 @@ export function useUtils() {
         getSummarisedInfoOfSortPanel,
         getTableNameFromTableQualifiedName,
         getTableNamesStringFromQualfieidNames,
+        isSubpanelClosable,
+        collapseAllPanelsExceptCurrent,
+        isAggregationORGroupPanelColumnsAdded,
+        getAggregationORGroupPanelColumns,
     }
 }

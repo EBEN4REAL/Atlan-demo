@@ -7,6 +7,7 @@ export const previewTabs = [
         tooltip: 'Overview',
         scrubbed: false,
         requiredInProfile: true,
+        analyticsKey: 'info',
     },
     {
         name: 'Columns',
@@ -16,6 +17,7 @@ export const previewTabs = [
         tooltip: 'Columns',
         scrubbed: false,
         requiredInProfile: true,
+        analyticsKey: 'columns',
     },
     {
         name: 'Lineage',
@@ -35,6 +37,7 @@ export const previewTabs = [
         tooltip: 'Lineage',
         scrubbed: true,
         requiredInProfile: false,
+        analyticsKey: 'lineage',
     },
     {
         name: 'Activity',
@@ -44,6 +47,7 @@ export const previewTabs = [
         tooltip: 'Activity',
         scrubbed: true,
         requiredInProfile: true,
+        analyticsKey: 'activity',
     },
     {
         name: 'Queries',
@@ -53,6 +57,7 @@ export const previewTabs = [
         tooltip: 'Queries',
         scrubbed: false,
         requiredInProfile: true,
+        analyticsKey: 'queries',
     },
     {
         name: 'Relations',
@@ -74,6 +79,7 @@ export const previewTabs = [
         tooltip: 'Relationships',
         scrubbed: true,
         requiredInProfile: false,
+        analyticsKey: 'relations',
     },
     {
         name: 'Resources',
@@ -83,6 +89,7 @@ export const previewTabs = [
         tooltip: 'Resources',
         scrubbed: true,
         requiredInProfile: true,
+        analyticsKey: 'resources',
     },
     {
         name: 'Property',
@@ -92,5 +99,6 @@ export const previewTabs = [
         tooltip: 'Property',
         scrubbed: false,
         requiredInProfile: true,
+        analyticsKey: 'property',
     },
 ]

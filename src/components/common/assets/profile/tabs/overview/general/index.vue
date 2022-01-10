@@ -4,11 +4,7 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
 
-        <Readme
-            v-if="readmeContent(selectedAsset) || readmeEditPermission"
-            :asset="selectedAsset"
-            :isEdit="readmeEditPermission"
-        />
+        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>
 
@@ -18,7 +14,6 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'BiOverview',
@@ -33,13 +28,6 @@
                 required: false,
                 default: false,
             },
-        },
-        setup() {
-            const { readmeContent } = useAssetInfo()
-
-            return {
-                readmeContent,
-            }
         },
     })
 </script>

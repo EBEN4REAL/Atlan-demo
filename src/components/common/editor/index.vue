@@ -39,6 +39,7 @@
 
     import SelectionMenu from './selectionMenu.vue'
     import SlashCommands from './extensions/slashCommands/commands'
+    import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
@@ -156,14 +157,16 @@
                     TextAlign.configure({
                         types: ['heading', 'paragraph'],
                     }),
-                    SlashCommands,
+                    SlashCommands.configure({
+                        suggestion
+                    }),
                     LinkPreview,
                     ImageUpload,
                     Highlight.configure({ multicolor: true }),
                     Placeholder.configure({
                         placeholder: ({ node }) => {
                             if (node.type.name === 'heading') {
-                                return 'Readme Title'
+                                return 'Heading 1/2/3'
                             }
 
                             return props.placeholder

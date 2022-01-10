@@ -20,6 +20,8 @@ export default function usePermissions() {
         authStore.setPermissions(data.value?.permissions)
         authStore.setRoles(data.value?.roles)
         authStore.setDecentralizedRoles(data.value?.decentralizedRole)
+        authStore.setPersonas(data.value?.personas)
+        authStore.setPurposes(data.value?.purposes)
     })
     return {
         data,

@@ -159,6 +159,12 @@
     import { message } from 'ant-design-vue'
     import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
+    import {
+        explorerPaneSize,
+        minExplorerSize,
+        maxExplorerSize,
+        currentNormalExplorerSize,
+    } from './common/composables/useSpiltPanes'
     export default defineComponent({
         components: {
             Playground,
@@ -187,13 +193,10 @@
                 MAX_EXPLORER_WIDTH,
                 ASSET_SIDEBAR_WIDTH,
                 EXPLORER_WIDTH,
-                explorerPaneSize,
                 assetSidebarPaneSize,
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
-            const minExplorerSize = ref(0)
-            const maxExplorerSize = ref(24.5)
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -423,7 +426,7 @@
                 }
             }
 
-            const getData = (dataList, columnList) => {
+            const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && tabsArray?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
@@ -498,10 +501,15 @@
                                         {
                                             id: '1',
                                             tableQualifiedName: undefined,
-                                            columns: [],
+                                            columns: ['all'],
+                                            tableData: {
+                                                certificateStatus: undefined,
+                                                assetType: undefined,
+                                            },
                                             columnsData: [],
                                         },
                                     ],
+                                    expand: true,
                                 },
                             ],
                         },
@@ -555,9 +563,11 @@
 
                 let newQuery
                 if (columnNameFromURL) {
-                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${tableNameFromURL} preview \nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
                 } else {
-                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${tableNameFromURL} preview \nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
                 }
 
                 const attributeName = 'schemaQualifiedName'
@@ -655,8 +665,13 @@
                 console.log('resize')
                 const offsetWidth = splitpaneRef?.value?.offsetWidth
                 if (offsetWidth > EXPLORER_WIDTH) {
-                    explorerPaneSize.value =
-                        (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    if (explorerPaneSize.value !== 0) {
+                        explorerPaneSize.value =
+                            (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
+                    }
+                    currentNormalExplorerSize.value =
+                        (EXPLORER_WIDTH / offsetWidth) * 100
+
                     minExplorerSize.value =
                         (MIN_EXPLORER_WIDTH / offsetWidth) * 100
                     maxExplorerSize.value =
@@ -673,6 +688,8 @@
                     splitpaneRef.value
                 )
                 if (offsetWidth > EXPLORER_WIDTH) {
+                    currentNormalExplorerSize.value =
+                        (EXPLORER_WIDTH / offsetWidth) * 100
                     explorerPaneSize.value =
                         (EXPLORER_WIDTH / offsetWidth) * 100 // calculating in percent for EXPLORER_WIDTH
                     minExplorerSize.value =
@@ -688,7 +705,11 @@
             onUpdated(() => {
                 nextTick(() => {
                     const offsetWidth = splitpaneRef?.value?.offsetWidth
-                    explorerPaneSize.value =
+                    if (explorerPaneSize.value !== 0) {
+                        explorerPaneSize.value =
+                            (EXPLORER_WIDTH / offsetWidth) * 100
+                    }
+                    currentNormalExplorerSize.value =
                         (EXPLORER_WIDTH / offsetWidth) * 100
                     minExplorerSize.value =
                         (MIN_EXPLORER_WIDTH / offsetWidth) * 100

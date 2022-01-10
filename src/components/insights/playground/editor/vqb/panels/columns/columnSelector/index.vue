@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center z-1"
+        class="relative flex items-center"
         :class="[
             isAreaFocused
                 ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
@@ -97,115 +97,129 @@
                 "
             />
         </div>
-
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px`"
-            :class="[
-                'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
-            ]"
-        >
-            <div class="border-b border-gray-300" v-if="showSelectAll">
-                <a-checkbox
-                    v-model:checked="selectAll"
-                    @change="onSelectAll"
-                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light"
-                >
-                    <div class="flex items-center">
-                        <span class="mb-0 ml-1 text-sm text-gray-700">
-                            Select All
-                        </span>
-                    </div>
-                </a-checkbox>
-            </div>
-
+        <teleport to="body">
             <div
-                :class="['flex  justify-center overflow-auto']"
-                style="height: 250px"
+                v-if="isAreaFocused"
+                @click.stop="() => {}"
+                @mousedown.stop="cancelEventBlur"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
+                :class="[
+                    'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
+                ]"
             >
-                <Loader
-                    v-if="isLoading"
-                    style="min-height: 250px !important"
-                ></Loader>
-                <div
-                    class="w-full px-3"
-                    v-if="dropdownOption.length !== 0 && !isLoading"
-                >
-                    <template
-                        v-for="(item, index) in dropdownOption"
-                        :key="item.value + index"
+                <div class="border-b border-gray-300" v-if="showSelectAll">
+                    <a-checkbox
+                        v-model:checked="selectAll"
+                        @mousedown.stop="cancelEventBlur"
+                        @change="onSelectAll"
+                        class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light"
                     >
-                        <a-checkbox
-                            :checked="map[item.value]"
-                            @change="
-                                (checked) =>
-                                    onCheckboxChange(checked, item.value)
-                            "
-                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
-                        >
-                            <div
-                                class="justify-between parent-ellipsis-container"
-                            >
-                                <div class="parent-ellipsis-container">
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div
-                                    class="relative h-full w-14 parent-ellipsis-container-extension"
-                                    v-if="item.isPrimary || item.isForeign"
-                                >
-                                    <div
-                                        class="absolute right-0 flex items-center -top-2.5"
-                                    >
-                                        <AtlanIcon
-                                            icon="PrimaryKey"
-                                            style="color: #3ca5bc"
-                                            class="w-4 h-4 mr-1"
-                                        ></AtlanIcon>
-                                        <span
-                                            style="color: #3ca5bc"
-                                            class="text-sm"
-                                            >Pkey</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="absolute flex items-center -top-2.5"
-                                        :class="
-                                            item.isPrimary
-                                                ? 'right-14'
-                                                : 'right-0'
-                                        "
-                                    >
-                                        <AtlanIcon
-                                            icon="ForeignKey"
-                                            class="w-4 h-4 mr-1 text-purple-700"
-                                        ></AtlanIcon>
-                                        <span class="text-sm text-purple-700"
-                                            >Fkey</span
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-                        </a-checkbox>
-                    </template>
+                        <div class="flex items-center">
+                            <span class="mb-0 ml-1 text-sm text-gray-700">
+                                Select All
+                            </span>
+                        </div>
+                    </a-checkbox>
                 </div>
 
-                <span
-                    class="w-full mt-4 text-sm text-center text-gray-400"
-                    v-if="dropdownOption.length == 0 && !isLoading"
+                <div
+                    :class="['flex  justify-center overflow-auto']"
+                    style="height: 250px"
                 >
-                    No Columns found!
-                </span>
+                    <Loader
+                        v-if="isLoading"
+                        style="min-height: 250px !important"
+                    ></Loader>
+                    <div
+                        class="w-full px-3"
+                        v-if="dropdownOption.length !== 0 && !isLoading"
+                    >
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.value + index"
+                        >
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="left"
+                                :mouseEnterDelay="0.85"
+                            >
+                                <template #button>
+                                    <AtlanBtn
+                                        class="flex-none px-0"
+                                        size="sm"
+                                        color="minimal"
+                                        padding="compact"
+                                        style="height: fit-content"
+                                        @mousedown.stop="
+                                            (e) => actionClick(e, item.item)
+                                        "
+                                    >
+                                        <span
+                                            class="cursor-pointer text-primary whitespace-nowrap"
+                                        >
+                                            Show Preview</span
+                                        >
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="text-primary"
+                                        />
+                                    </AtlanBtn>
+                                </template>
+
+                                <a-checkbox
+                                    :checked="map[item.value]"
+                                    @mousedown.stop="cancelEventBlur"
+                                    @change="
+                                        (checked) =>
+                                            onCheckboxChange(
+                                                checked,
+                                                item.value
+                                            )
+                                    "
+                                    class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                                >
+                                    <div
+                                        class="justify-between parent-ellipsis-container"
+                                    >
+                                        <div class="parent-ellipsis-container">
+                                            <component
+                                                :is="
+                                                    getDataTypeImage(item.type)
+                                                "
+                                                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                            ></component>
+                                            <span
+                                                class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            >
+                                                {{ item.label }}
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="relative h-full w-14 parent-ellipsis-container-extension"
+                                        >
+                                            <ColumnKeys
+                                                :isPrimary="item.isPrimary"
+                                                :isForeign="item.isForeign"
+                                                :isPartition="item.isPartition"
+                                            />
+                                        </div>
+                                    </div>
+                                </a-checkbox>
+                            </PopoverAsset>
+                        </template>
+                    </div>
+
+                    <span
+                        class="w-full mt-4 text-sm text-center text-gray-400"
+                        v-if="dropdownOption.length == 0 && !isLoading"
+                    >
+                        No Columns found!
+                    </span>
+                </div>
             </div>
-        </div>
+        </teleport>
     </div>
 </template>
 
@@ -217,10 +231,12 @@
         defineComponent,
         ref,
         nextTick,
+        Ref,
         onMounted,
         inject,
         PropType,
         ComputedRef,
+        onUnmounted,
         toRefs,
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
@@ -230,6 +246,17 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
     import Loader from '@common/loaders/page.vue'
+    import ColumnKeys from '~/components/insights/playground/editor/vqb/panels/common/ColumnKeys/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+
+    import {
+        InternalAttributes,
+        BasicSearchAttributes,
+    } from '~/constant/projection'
 
     import useBody from './useBody'
 
@@ -239,6 +266,8 @@
             Pill,
             Loader,
             TablesTree,
+            ColumnKeys,
+            PopoverAsset,
         },
         // emits: ['queryTextChange', 'checkboxChange'],
         props: {
@@ -265,25 +294,57 @@
                 required: false,
                 default: () => true,
             },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
+            },
         },
 
         setup(props, { emit }) {
-            const { tableQualfiedName, showSelectAll } = toRefs(props)
+            const { tableQualfiedName, showSelectAll, selectedTableData } =
+                toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
+
             const map = ref({})
             selectedItems.value.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
 
             const { getDataTypeImage } = useColumn()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const inputRef = ref()
             const initialRef = ref()
-            const selectAll = ref(false)
+            const selectAll = ref(selectedItems.value.includes('all'))
             const mouseOver = ref(false)
             const topPosShift = ref(0)
             const inputValue1 = ref('')
@@ -309,11 +370,11 @@
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
-                    isAreaFocused.value = false
+                if (event.relatedTarget == null) {
                     inputValue1.value = ''
                     inputValue2.value = ''
                     queryText.value = ''
+                    isAreaFocused.value = false
                 }
             }
 
@@ -330,6 +391,7 @@
                     dsl: useBody({
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
+                        assetType: selectedTableData.value?.assetType,
                     }),
                     attributes: [
                         'name',
@@ -337,6 +399,23 @@
                         'dataType',
                         'isPrimary',
                         'isForeign',
+                        'isPartition',
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'tableCount',
+                        'viewCount',
+                        'columnCount',
+                        'connectorName',
+                        ...InternalAttributes,
+                        ...BasicSearchAttributes,
                     ],
                 }
             }
@@ -355,10 +434,11 @@
             )
             watch(tableQualfiedName, () => {
                 map.value = {}
+                selectAll.value = true
             })
             const placeholder = computed(() => {
                 if (tableQualfiedName.value) {
-                    return `Search from ${totalCount.value} columns`
+                    return `Select from ${totalCount.value} columns`
                 }
                 return `Select a table first`
             })
@@ -369,13 +449,11 @@
                     type: ls.attributes?.dataType,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
+                    isPartition: ls.attributes?.isPartition,
                     value: ls.attributes?.qualifiedName,
+                    item: ls,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
+
                 return data
             })
 
@@ -430,6 +508,9 @@
                 } else {
                     delete map.value[id]
                 }
+                if (map.value?.all) {
+                    delete map.value['all']
+                }
                 selectedItems.value = [...Object.keys(map.value)]
 
                 console.log('columns: ', list.value)
@@ -449,12 +530,6 @@
 
                 selectedColumnsData.value = [...columns]
 
-                console.log(
-                    map.value,
-                    'selected columns: ',
-                    columns,
-                    selectedColumnsData.value
-                )
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }
@@ -512,17 +587,86 @@
                 console.log(map.value, 'destroy')
             }
             onMounted(() => {
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
                 topPosShift.value = container.value?.offsetHeight
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
             })
+
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
             onUpdated(() => {
                 nextTick(() => {
+                    const viewportOffset =
+                        container.value?.getBoundingClientRect()
+                    if (viewportOffset?.width)
+                        containerPosition.value.width = viewportOffset?.width
+                    if (viewportOffset?.top)
+                        containerPosition.value.top = viewportOffset?.top
+                    if (viewportOffset?.left)
+                        containerPosition.value.left = viewportOffset?.left
+                    if (viewportOffset?.height)
+                        containerPosition.value.height = viewportOffset?.height
                     if (topPosShift.value !== container.value?.offsetHeight) {
                         topPosShift.value = container.value?.offsetHeight
                     }
                 })
             })
 
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
+            })
+
+            const cancelEventBlur = (event) => {
+                // debugger
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
+            const actionClick = (event, t) => {
+                if (
+                    activeInlineTab?.value &&
+                    Object.keys(activeInlineTab?.value).length
+                ) {
+                    if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                        /* Close it if it is already opened */
+                        closeAssetSidebar(activeInlineTab.value)
+                    } else {
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = t
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                    }
+                }
+                event.stopPropagation()
+                event.preventDefault()
+                return false
+            }
+
             return {
+                cancelEventBlur,
+                containerPosition,
+                actionClick,
                 showSelectAll,
                 initialRef,
                 queryText,
@@ -555,6 +699,13 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
             }
         },
     })

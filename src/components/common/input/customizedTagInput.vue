@@ -1,14 +1,14 @@
 <template>
     <a-select
+        ref="inputRef"
         v-model:value="modelValue"
         mode="tags"
-        ref="inputRef"
         :placeholder="placeholder"
         :allow-clear="true"
         :open="dropdownOpen"
         style="width: 100%"
         :dropdown-style="{ display: 'none' }"
-        @keydown.tab="(e) => e.preventDefault()"
+        @keydown.e="(e) => e.preventDefault()"
         @change="change"
         @keyup.enter="dropdownOpen = false"
         @input-key-down="handleNumberKeyPress"
@@ -55,7 +55,7 @@
         const n = parseInt(v.key, 10)
         if (Number.isNaN(n)) {
             if (allowDecimal && v.key === '.') return
-            v.preventDefault()
+            if (v.key !== 'Tab') v.preventDefault()
         }
     }
 

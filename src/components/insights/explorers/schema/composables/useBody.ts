@@ -28,12 +28,12 @@ function addQueryTextFilter(base: any, queryText) {
     base.orQuery('wildcard', 'name.keyword', {
         value: `${queryText}*`,
     })
-    base.orQuery('match', 'description', {
-        query: queryText,
-    })
-    base.orQuery('match', 'userDescription', {
-        query: queryText,
-    })
+    // base.orQuery('match', 'description', {
+    //     query: queryText,
+    // })
+    // base.orQuery('match', 'userDescription', {
+    //     query: queryText,
+    // })
     base.orQuery('match', 'name.stemmed', { query: queryText })
     base.queryMinimumShouldMatch(1)
 }

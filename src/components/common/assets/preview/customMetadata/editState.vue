@@ -15,7 +15,9 @@
             ref="inputRef"
             v-model="localValue"
             class="flex-grow shadow-none"
-            placeholder="Press Enter to add"
+            :placeholder="`Press Enter to add multiple ${getHumanTypeName(
+                typeName
+            )}(s)`"
             :data-type="typeName"
             @change="handleChange"
         />
@@ -29,6 +31,7 @@
             type="number"
             placeholder="Enter an integer..."
             @change="handleChange"
+            @keydown.e="(e) => e.preventDefault()"
         />
         <a-input
             v-else-if="typeName === 'float'"
@@ -42,6 +45,7 @@
             max="10"
             placeholder="Enter decimal value..."
             @change="handleChange"
+            @keydown.e="(e) => e.preventDefault()"
         />
         <a-input
             v-else-if="typeName === 'url'"
@@ -69,7 +73,9 @@
             ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
+            format="YYYY-MM-DD HH:mm:ss"
             class="flex-grow w-100"
+            :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
             value-format="x"
             @change="handleChange"
         />
@@ -136,6 +142,7 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
+    import dayjs, { Dayjs } from 'dayjs'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
@@ -167,6 +174,7 @@
                 isLink,
                 formatDisplayValue,
                 getEnumOptions,
+                getHumanTypeName,
             } = useCustomMetadataHelpers()
             const typeName = computed(() =>
                 getDatatypeOfAttribute(props.attribute as CMA)
@@ -197,7 +205,19 @@
                     })
             })
 
+            // const getMultiInputPlaceholder = (t: string) => {
+            //     if (t === 'url') return 'Press Enter to add a new URL'
+            //     if (['number', 'int', 'long'].includes(t))
+            //         return 'Press Enter to add a new number'
+            //     if (['float'].includes(t))
+            //         return 'Press Enter to add a new decimal'
+            //     return 'Press Enter to add multiple values'
+            // }
+
             return {
+                dayjs,
+                getHumanTypeName,
+                // getMultiInputPlaceholder,
                 inputRef,
                 typeName,
                 isMultivalued,

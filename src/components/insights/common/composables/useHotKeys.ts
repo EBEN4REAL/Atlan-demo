@@ -1,12 +1,14 @@
 import { ref, Ref } from 'vue'
 import { useSpiltPanes } from './useSpiltPanes'
+import { currentNormalExplorerSize } from './useSpiltPanes'
+
 export function useHotKeys() {
-    const { explorerPaneSize, assetSidebarPaneSize, outputPaneSize } =
-        useSpiltPanes()
+    const { _t, assetSidebarPaneSize, outputPaneSize } = useSpiltPanes()
     function explorerPaneToggle(explorerPaneSizeParam: Ref<any>) {
         if (explorerPaneSizeParam.value == 0) {
             // setting original width
-            explorerPaneSizeParam.value = explorerPaneSize.value
+            explorerPaneSizeParam.value = currentNormalExplorerSize.value
+            debugger
         } else explorerPaneSizeParam.value = 0
     }
     function assetSidebarToggle(assetSidebarPaneSizeParam: Ref<any>) {

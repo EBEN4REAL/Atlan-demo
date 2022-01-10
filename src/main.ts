@@ -15,7 +15,11 @@ import { getBasePath, getEnv } from './modules/__env'
 import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
-import { useTenantStore } from '~/store/tenant'
+
+import {
+    identifyGroup,
+    identifyUser,
+} from './composables/eventTracking/useAddEvent'
 
 const app = createApp(App)
 //initialize store
@@ -81,31 +85,9 @@ keycloak
             })
             inputFocusDirective(app)
             authDirective(app)
-            if ((window as any).analytics) {
-                const tenantStore = useTenantStore()
-                const domain = window.location.host
-                const groupId = domain
-                // identify
-                if ((window as any).analytics.identify) {
-                    ;(window as any).analytics.identify(authStore?.id, {
-                        name: authStore.name || '',
-                        firstName: authStore.firstName,
-                        lastName: authStore.lastName,
-                        email: authStore.email || '',
-                        username: authStore.username || '',
-                        roles: authStore.roles || [],
-                    })
-                }
-                // group
-                if ((window as any).analytics.group) {
-                    ;(window as any).analytics.group(groupId, {
-                        tenant_domain: domain,
-                        tenant_name: tenantStore.displayName,
-                    })
-                }
-            }
-
             app.use(router).mount('#app')
+            identifyUser()
+            identifyGroup()
         }
     })
     .catch(() => {

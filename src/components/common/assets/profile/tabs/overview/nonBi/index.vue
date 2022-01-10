@@ -32,11 +32,7 @@
                 />
             </div>
         </Summary>
-        <Readme
-            v-if="readmeContent(selectedAsset) || readmeEditPermission"
-            :asset="selectedAsset"
-            :isEdit="readmeEditPermission"
-        />
+        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>
 
@@ -92,7 +88,7 @@
                 { key: 'table', label: 'Sample Data' },
             ]
 
-            const { assetType, readmeContent } = useAssetInfo()
+            const { assetType } = useAssetInfo()
 
             const showTablePreview = computed(
                 () =>
@@ -105,7 +101,6 @@
                 activePreviewTabKey,
                 tabConfig,
                 showTablePreview,
-                readmeContent,
             }
         },
     })

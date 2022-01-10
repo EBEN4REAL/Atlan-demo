@@ -10,51 +10,46 @@ import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import { message } from 'ant-design-vue'
 
 export default function useProject() {
     const {
         getParsedQuery,
         resetErrorDecorations,
+        resetLineDecorations,
         setErrorDecorations,
         getParsedQueryCursor,
     } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
-    const columnList: Ref<
-        [
-            {
-                title: string
-                dataIndex: string
-                width: string
-                key: any
-            }
-        ]
-    > = ref([])
-    const dataList = ref([])
-    const isQueryRunning = ref('')
-    const queryExecutionTime = ref(-1)
-    const queryErrorObj = ref()
+    // const columnList: Ref<
+    //     [
+    //         {
+    //             title: string
+    //             dataIndex: string
+    //             width: string
+    //             key: any
+    //         }
+    //     ]
+    // > = ref([])
+    // const dataList = ref([])
+    // const isQueryRunning = ref('')
+    // const queryExecutionTime = ref(-1)
+    // const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
             columnList.value = []
-            columns.map((col: any) => {
+            columns.map((col: any, index) => {
                 columnList.value.push({
                     title: col.columnName.split('_').join('_'),
-                    dataIndex: col.columnName,
+                    dataIndex: col.columnName + index,
                     key: col.columnName,
                     data_type: col.type.name,
                 })
             })
-
-            // columnList.value.unshift({
-            //     title: 'KEY',
-            //     dataIndex: 'key',
-            //     width: 'fit-content',
-            //     key: 'key',
-            // })
         }
     }
 
@@ -83,7 +78,7 @@ export default function useProject() {
 
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
-        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
         onQueryIdGeneration?: Function,
@@ -92,7 +87,26 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+
+        const columnList: Ref<
+            [
+                {
+                    title: string
+                    dataIndex: string
+                    width: string
+                    key: any
+                }
+            ]
+        > = ref([])
+        const dataList = ref([])
+        const isQueryRunning = ref('')
+        const queryExecutionTime = ref(-1)
+        const queryErrorObj = ref()
+        
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        if(editorInstance?.value) {
+            resetLineDecorations(editorInstance.value)
+        }
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -143,16 +157,16 @@ export default function useProject() {
                 var count = 0
                 let text = queryText
 
-                console.log('selected query text1: ', { queryText })
+                // console.log('selected query text1: ', { queryText })
 
                 while (text.startsWith('\n')) {
                     text = text.slice(1)
-                    console.log('selected query text: ', { text })
+                    // console.log('selected query text: ', { text })
                     count++
                 }
 
                 let selection = toRaw(editorInstance.value)?.getSelection()
-                console.log('selected query text3: ', selection)
+                // console.log('selected query text3: ', selection)
 
                 for (
                     var i = 0;
@@ -175,7 +189,7 @@ export default function useProject() {
             let newLines = '\n'.repeat(queryData.range.startLineNumber - 1)
             selectedQuery = newLines + selectedQuery
 
-            console.log('selected query: ', selectedQuery)
+            // console.log('selected query: ', selectedQuery)
 
             if (selectedQuery && selectedQuery.length) {
                 queryText = getParsedQuery(
@@ -191,10 +205,22 @@ export default function useProject() {
         } else {
             queryText = ''
         }
-        console.log('selected query: ', queryText)
+        // console.log('selected query: ', queryText)
 
         dataList.value = []
-        const query = encodeURIComponent(btoa(queryText))
+
+        let query = queryText;
+
+        try {
+            query = encodeURIComponent(btoa(queryText))
+        } catch(error) {
+            // console.log('query error: ', error)
+            if(error) {
+                activeInlineTab.value.playground.resultsPane.result.isQueryRunning = ''
+                message.error('Query format not supported')
+            }
+            return;
+        }
 
         const params = {
             sql: query,
@@ -255,18 +281,20 @@ export default function useProject() {
                                 message?.queryId
                             if (onQueryIdGeneration)
                                 onQueryIdGeneration(
+                                    activeInlineTab,
                                     message?.queryId,
                                     eventSource
                                 )
                         }
                         /* ---------------------------------- */
-                        // console.log(message, 'message')
+                        console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
                             setRows(dataList, columnList, message.rows)
                         if (message?.details.status === 'completed') {
                             getData(
+                                activeInlineTab,
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
                                 message?.details.executionTime
@@ -291,7 +319,7 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion('success')
+                            if (onCompletion) onCompletion(activeInlineTab, 'success')
 
                             /* ------------------- */
                         }
@@ -316,7 +344,7 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion('error')
+                            if (onCompletion) onCompletion(activeInlineTab, 'error')
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -367,7 +395,7 @@ export default function useProject() {
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined
                     /* Callback will be called when request completed */
-                    if (onCompletion) onCompletion('error')
+                    if (onCompletion) onCompletion(activeInlineTab, 'error')
                 }
             } catch (e) {
                 console.error(e)
@@ -488,11 +516,11 @@ export default function useProject() {
     return {
         onRunCompletion,
         abortQuery,
-        queryErrorObj,
-        queryExecutionTime,
-        isQueryRunning,
+        // queryErrorObj,
+        // queryExecutionTime,
+        // isQueryRunning,
         queryRun,
-        dataList,
-        columnList,
+        // dataList,
+        // columnList,
     }
 }

@@ -5,56 +5,19 @@
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div class="flex items-center w-full mb-3 pr-9">
+                <div class="flex items-start w-full mb-3 pr-9">
                     <TableSelector
                         typeName="Table"
                         class="flex-1"
+                        :class="[subpanel.tableQualfiedName ? '' : '']"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
+                        v-model:selectedTableData="subpanel.tableData"
+                        :selectedItem="{}"
                         @change="
                             (val) => hanldeTableQualifiedNameChange(val, index)
                         "
                     />
-                    <ColumnSelector
-                        class="flex-1 ml-6"
-                        style="min-height: 34px"
-                        v-if="subpanel.tableQualfiedName"
-                        v-model:selectedItems="subpanel.columns"
-                        v-model:selectedColumnsData="subpanel.columnsData"
-                        :tableQualfiedName="subpanel.tableQualfiedName"
-                    >
-                        <template #chip="{ item }">
-                            <div
-                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-                            >
-                                <component
-                                    v-if="item.type !== 'Columns'"
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
-                                ></component>
-                                <AtlanIcon
-                                    v-else
-                                    icon="Columns"
-                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
-                                />
-                                <div
-                                    class="truncate ... overflow-ellipsis overflow-hidden"
-                                >
-                                    {{ item.label }}
-                                </div>
-                            </div>
-                        </template>
-                    </ColumnSelector>
-                    <!-- <div
-                        v-if="subpanel.tableQualfiedName"
-                        class="text-gray-500 hover:text-primary"
-                        @click.stop="() => handleDelete(index)"
-                    >
-                        <AtlanIcon
-                            icon="Close"
-                            class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
-                        />
-                    </div> -->
                 </div>
             </template>
         </div>
@@ -85,13 +48,14 @@
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
-    import TableSelector from '../tableSelector/index.vue'
+    import TableSelector from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/index.vue'
     import ColumnSelector from '../columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -129,6 +93,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const { getDataTypeImage } = useColumn()
+            const { assetType, certificateStatus } = useAssetInfo()
             const tableQualfiedName = ref(undefined)
 
             const cols = ref([])
@@ -137,14 +102,19 @@
                     cols.value = []
                 }
             })
-            const hanldeTableQualifiedNameChange = (val, index) => {
-                if (!val) {
+            const hanldeTableQualifiedNameChange = (item, index) => {
+                if (!item.value) {
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
                     copySubPanel.columns = []
                     copySubPanel.columnsData = []
                     copySubPanel.tableQualfiedName = undefined
+                    copySubPanel.tableData = {
+                        certificateStatus: undefined,
+                        assetType: undefined,
+                    }
+
                     subpanels.value[index] = copySubPanel
                     console.log(subpanels.value)
                 } else {
@@ -164,8 +134,14 @@
                     const copySubPanel = JSON.parse(
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
-                    copySubPanel.columns = []
+                    // pre populate all columns selection
+                    copySubPanel.columns = ['all']
+
                     copySubPanel.columnsData = []
+                    copySubPanel.tableData.certificateStatus =
+                        certificateStatus(item)
+                    copySubPanel.tableData.assetType = assetType(item)
+
                     subpanels.value[index] = copySubPanel
                     selectedTables.value = copySelectedTables
                     console.log(subpanels.value)
@@ -221,5 +197,8 @@
     }
     .custom-shadow {
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+    .width-50 {
+        max-width: 50%;
     }
 </style>

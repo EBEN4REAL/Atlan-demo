@@ -16,6 +16,7 @@ export function useFilter() {
         'INT2',
         'NUMBER',
         'PRIMITIVE_DOUBLE',
+        'BOOLEAN',
     ]
 
     const nameMap = {
@@ -81,7 +82,60 @@ export function useFilter() {
                     {
                         key: 'equal',
                         type: 'input',
-                        name: 'Equal',
+                        name: 'Equal to',
+                    },
+                    {
+                        key: 'not_equal',
+                        type: 'input',
+                        name: 'Does not equal',
+                    },
+                    {
+                        key: 'after',
+                        type: 'input',
+                        name: 'Greater than',
+                    },
+                    {
+                        key: 'before',
+                        type: 'input',
+                        name: 'Smaller than',
+                    },
+
+                    {
+                        key: 'exists',
+                        type: 'none',
+                        name: 'Exists',
+                    },
+                    {
+                        key: 'does_not_exists',
+                        type: 'none',
+                        name: 'Does not exists',
+                    },
+
+                    {
+                        key: 'between',
+                        type: 'range_input',
+                        name: 'Between',
+                    },
+                    // {
+                    //     key: 'is_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is one of',
+                    // },
+                    // {
+                    //     key: 'is_not_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is not one of',
+                    // },
+                ],
+            },
+            {
+                key: 'boolean',
+                includes: [...numbers],
+                functions: [
+                    {
+                        key: 'equal',
+                        type: 'input',
+                        name: 'Equal to',
                     },
                     {
                         key: 'not_equal',
@@ -230,7 +284,7 @@ export function useFilter() {
         if (numbers.includes(columnType)) return 'number'
         if (text.includes(columnType)) return 'text'
         if (date.includes(columnType)) return 'date'
-        if (boolean.includes(columnType)) return 'boolean'
+        if (boolean.includes(columnType)) return 'number'
         if (array.includes(columnType)) return 'array'
         if (object.includes(columnType)) return 'object'
         if (geography.includes(columnType)) return 'geography'

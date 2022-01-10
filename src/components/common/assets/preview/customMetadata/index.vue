@@ -3,6 +3,7 @@
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
     <div v-else ref="target" class="flex flex-col pl-5 mb-3">
+        <!-- header starts here -->
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
@@ -13,7 +14,7 @@
                         </template>
                         <AtlanIcon
                             v-if="data?.description"
-                            class="h-3 text-gray-400 hover:text-gray-500"
+                            class="text-gray-400 hover:text-gray-500"
                             icon="Info"
                         />
                     </a-tooltip>
@@ -53,77 +54,130 @@
                 </div>
             </div>
         </div>
+        <!-- header ends here -->
+
         <div
-            class="flex flex-col flex-grow pr-5 overflow-auto transition-all scrollheight"
+            class="flex flex-col flex-grow pr-5 overflow-auto scrollheight"
+            :style="
+                isProfile || $route?.params?.id
+                    ? 'max-height: calc(100vh - 7rem)'
+                    : 'max-height: calc(100vh - 12rem)'
+            "
         >
-            <template
-                v-for="(a, x) in showMore &&
-                applicableList.filter((i) => hasValue(i)).length
-                    ? readOnly
-                        ? [...applicableList].sort(readOnlySort)
-                        : applicableList
-                    : readOnly
-                    ? applicableList.filter((i) => hasValue(i))
-                    : applicableList"
-                :key="x"
-            >
-                <div
-                    :class="{
-                        'border-b pb-6 mb-6':
-                            readOnly &&
-                            showMore &&
-                            applicableList.filter((i) => hasValue(i)).length &&
-                            hasValue(
-                                [...applicableList].sort(readOnlySort)[x]
-                            ) &&
-                            !hasValue(
-                                [...applicableList].sort(readOnlySort)[x + 1]
-                            ),
-                        'mb-5': !readOnly || (readOnly && hasValue(a)),
-                    }"
+            <template v-if="readOnly">
+                <template
+                    v-if="applicableList.filter((i) => hasValue(i)).length"
                 >
-                    <div class="mb-2 font-normal text-gray-500">
-                        <span class="">{{ a.displayName }}</span>
-                        <a-tooltip>
-                            <template #title>
-                                <span>{{ a.options.description }}</span>
+                    <template
+                        v-for="(a, x) in applicableList.filter((i) =>
+                            hasValue(i)
+                        )"
+                        :key="x"
+                    >
+                        <div class="mb-5">
+                            <div class="mb-2 font-normal text-gray-500">
+                                <span class="">{{ a.displayName }}</span>
+                                <a-tooltip>
+                                    <template #title>
+                                        <span>{{ a.options.description }}</span>
+                                    </template>
+                                    <AtlanIcon
+                                        v-if="a.options.description"
+                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                        icon="Info"
+                                    />
+                                </a-tooltip>
+                            </div>
+
+                            <ReadOnly :attribute="a" />
+                        </div>
+                    </template>
+                </template>
+                <!-- showing non empty ends here -->
+
+                <!-- showing empty starts here -->
+                <template
+                    v-if="applicableList.filter((i) => !hasValue(i)).length"
+                >
+                    <transition name="slide-fade">
+                        <div v-if="showMore" class="">
+                            <template
+                                v-for="(a, x) in applicableList.filter(
+                                    (i) => !hasValue(i)
+                                )"
+                                :key="x"
+                            >
+                                <div class="mb-2 font-normal text-gray-500">
+                                    <span class="">
+                                        {{ a.displayName }}
+                                        <template
+                                            v-if="
+                                                getHumanTypeName(
+                                                    getDatatypeOfAttribute(a)
+                                                ) !== 'Text'
+                                            "
+                                        >
+                                            ({{
+                                                getHumanTypeName(
+                                                    getDatatypeOfAttribute(a)
+                                                ).toLowerCase()
+                                            }})
+                                        </template>
+                                    </span>
+                                    <a-tooltip>
+                                        <template #title>
+                                            <span>{{
+                                                a.options.description
+                                            }}</span>
+                                        </template>
+                                        <AtlanIcon
+                                            v-if="a.options.description"
+                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                            icon="Info"
+                                        />
+                                    </a-tooltip>
+                                </div>
                             </template>
+                        </div>
+                    </transition>
+                    <div
+                        v-if="applicableList.filter((i) => hasValue(i)).length"
+                        class="mt-2 mb-2"
+                    >
+                        <span
+                            class="text-gray-500 bg-white border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                            :class="
+                                !applicableList.filter((i) => !hasValue(i))
+                                    .length
+                                    ? 'hidden'
+                                    : ''
+                            "
+                            @click="showMore = !showMore"
+                        >
                             <AtlanIcon
-                                v-if="a.options.description"
-                                class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                icon="Info"
+                                v-if="!showMore"
+                                icon="Add"
+                                class="h-3 mb-1"
                             />
-                        </a-tooltip>
+                            {{
+                                showMore
+                                    ? 'Hide empty properties'
+                                    : `Show ${
+                                          applicableList.filter(
+                                              (i) => !hasValue(i)
+                                          ).length
+                                      } empty properties`
+                            }}
+                        </span>
                     </div>
+                </template>
 
-                    <ReadOnly v-if="readOnly && hasValue(a)" :attribute="a" />
-
-                    <EditState
-                        v-else-if="!readOnly"
-                        v-model="a.value"
-                        :index="x"
-                        :attribute="a"
-                        @change="handleChange(x, a.value)"
-                    />
-                </div>
-            </template>
-            <div v-if="readOnly" :class="showMore ? 'mt-4' : ''">
-                <span
-                    v-if="[...applicableList].filter((i) => hasValue(i)).length"
-                    class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
-                    @click="showMore = !showMore"
+                <template
+                    v-if="
+                        applicableList.length ===
+                        applicableList.filter((i) => !hasValue(i)).length
+                    "
                 >
-                    <AtlanIcon v-if="!showMore" icon="Add" class="h-3 mb-1" />
-                    {{
-                        showMore
-                            ? 'Hide empty properties'
-                            : `Show ${
-                                  applicableList.filter((i) => !hasValue(i))
-                                      .length
-                              } empty properties`
-                    }}
-                </span>
-                <template v-else>
                     <EmptyView empty-screen="EmptyCM" class="h-24 mb-6" />
                     <div
                         class="flex flex-col items-center text-gray-500 gap-y-7"
@@ -234,7 +288,66 @@
                         </AtlanButton>
                     </div>
                 </template>
-            </div>
+                <!-- <div v-if="readOnly && false" :class="showMore ? 'mt-4' : ''">
+                    <span
+                        v-if="
+                            [...applicableList].filter((i) => hasValue(i))
+                                .length
+                        "
+                        class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
+                        :class="
+                            !applicableList.filter((i) => !hasValue(i)).length
+                                ? 'hidden'
+                                : ''
+                        "
+                        @click="showMore = !showMore"
+                    >
+                        <AtlanIcon
+                            v-if="!showMore"
+                            icon="Add"
+                            class="h-3 mb-1"
+                        />
+                        {{
+                            showMore
+                                ? 'Hide empty properties'
+                                : `Show ${
+                                      applicableList.filter((i) => !hasValue(i))
+                                          .length
+                                  } empty properties`
+                        }}
+                    </span>
+                    
+                </div> -->
+                <!-- showing empty ends here -->
+            </template>
+
+            <!-- if edit mode show everything as it is -->
+            <template v-if="!readOnly">
+                <template v-for="(a, x) in applicableList" :key="x">
+                    <div class="mb-5">
+                        <div class="mb-2 font-normal text-gray-500">
+                            <span class="">{{ a.displayName }}</span>
+                            <a-tooltip>
+                                <template #title>
+                                    <span>{{ a.options.description }}</span>
+                                </template>
+                                <AtlanIcon
+                                    v-if="a.options.description"
+                                    class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                    icon="Info"
+                                />
+                            </a-tooltip>
+                        </div>
+
+                        <EditState
+                            v-model="a.value"
+                            :index="x"
+                            :attribute="a"
+                            @change="handleChange(x, a.value)"
+                        />
+                    </div>
+                </template>
+            </template>
         </div>
     </div>
 </template>
@@ -305,6 +418,7 @@
                 formatDisplayValue,
                 getApplicableAttributes,
                 getEnumOptions,
+                getHumanTypeName,
             } = useCustomMetadataHelpers()
 
             const applicableList = ref(
@@ -508,8 +622,8 @@
 
             const hasValue = (a) => {
                 const isMultivalued =
-                    a.options.multiValueSelect === 'true' ||
-                    a.options.multiValueSelect === true
+                    a?.options?.multiValueSelect === 'true' ||
+                    a?.options?.multiValueSelect === true
                 const dataType = getDatatypeOfAttribute(a)
 
                 if (
@@ -535,6 +649,7 @@
                     return !!a.value
                 return !!formatDisplayValue(a.value?.toString() || '', dataType)
             }
+            const isProfile = inject('isProfile')
 
             const readOnlySort = (a, b) =>
                 hasValue(a) && !hasValue(b) ? -1 : 1
@@ -546,6 +661,8 @@
             })
 
             return {
+                getHumanTypeName,
+                isProfile,
                 getDataTypeIcon,
                 showMore,
                 readOnlySort,
@@ -567,7 +684,20 @@
     })
 </script>
 <style scoped>
-    .scrollheight {
-        max-height: calc(100vh - 7rem);
+    /* Enter and leave animations can use different */
+    /* durations and timing functions.              */
+    .slide-fade-enter-active {
+        transition: all 0.3s ease-out;
+        max-height: 500px;
+    }
+
+    .slide-fade-leave-active {
+        transition: all 0.3s ease-out;
+        max-height: 500px;
+    }
+
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+        max-height: 0;
     }
 </style>

@@ -119,6 +119,9 @@
                                         handleAddPanel(index, type, panel)
                                 "
                                 v-model:submenuHovered="submenuHovered"
+                                :panelInfo="
+                                    activeInlineTab.playground.vqb.panels[index]
+                                "
                                 v-model:containerHovered="containerHovered"
                             />
                             <!-- ------------------------------ -->
@@ -153,19 +156,23 @@
                     )}`"
                 ></div>
             </div>
+
             <!-- Show on expand -->
-            <GroupSubPanel
-                v-model:subpanels="
-                    activeInlineTab.playground.vqb.panels[index].subpanels
-                "
-                v-model:columnSubpanels="
-                    activeInlineTab.playground.vqb.panels[0].subpanels
-                "
-                :expand="expand"
-                v-if="expand"
-            />
+            <keep-alive>
+                <GroupSubPanel
+                    v-model:subpanels="
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    "
+                    v-model:columnSubpanels="
+                        activeInlineTab.playground.vqb.panels[0].subpanels
+                    "
+                    :expand="expand"
+                    v-if="expand"
+                />
+            </keep-alive>
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
+                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -239,7 +246,6 @@
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         .hide
             )
-            const expand = ref(true)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -250,6 +256,18 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const expand = ref(
+                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
+            )
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    expand.value =
+                        activeInlineTab.value.playground.vqb.panels[
+                            index.value
+                        ]?.expand
+                }
+            )
             const checkbox = ref(true)
             const { handleAdd, deletePanelsInVQB } = useVQB()
 
@@ -284,6 +302,11 @@
             }
             const toggleExpand = () => {
                 expand.value = !expand.value
+                activeInlineTab.value.playground.vqb.panels[
+                    index.value
+                ].expand =
+                    !activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             }
             const toggleActionPanel = () => {
                 actionPanel.value = !actionPanel.value

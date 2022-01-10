@@ -6,9 +6,9 @@
         width="489px"
         :destroyOnClose="true"
     >
-        <div class="w-full py-4 text-gray-500 bg-white rounded">
+        <div class="w-full py-4 bg-white rounded">
             <div
-                class="flex items-center justify-between px-4 mb-4 text-gray-500 flex-nowrap"
+                class="flex items-center justify-between px-4 mb-4 flex-nowrap"
             >
                 <span
                     v-if="isCreate"
@@ -17,7 +17,7 @@
                 >
                 <span
                     v-if="!isCreate"
-                    class="flex-none text-base font-bold text-gray"
+                    class="flex-none text-base font-bold text-gray-700"
                     >{{ isShare ? 'Invite to' : 'Edit ' }}
                     <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
@@ -30,7 +30,8 @@
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
-                    class="w-full mt-1 text-gray-700 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                    class="w-full mt-1 text-red-200 border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
+                    :class="$style.inputBox"
                     placeholder="Name"
                 >
                     <template #prefix>
@@ -86,11 +87,11 @@
                         v-model:value="description"
                         placeholder="Describe your collection"
                         style="min-height: 82px !important"
-                        class="w-full mt-1 text-sm text-gray-700 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                        class="w-full mt-1 text-sm border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
             </div>
-            <div class="px-4 mt-4">
+            <!-- <div class="px-4 mt-4">
                 <span class="text-sm font-normal text-gray-700"
                     >Visibility</span
                 >
@@ -107,13 +108,15 @@
                         </a-radio>
                     </a-radio-group>
                 </div>
-            </div>
-            <div
+            </div> -->
+            <!-- <div
                 class="p-3 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
                 v-if="isShareable === 'true'"
-            >
-                <span class="text-sm text-gray-700">Users and groups</span>
-
+            > -->
+            <!-- <div class="mx-4 mt-3 font-normal" v-if="isShareable === 'true'"> -->
+            <div class="mx-4 mt-3 font-normal">
+                <!-- <span class="text-sm text-gray-700">Users and groups</span> -->
+                <span class="text-sm text-gray-700">Share</span>
                 <div class="flex items-center mb-1.5">
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
@@ -148,7 +151,7 @@
                     >
                         <Owners
                             :showNone="false"
-                            select-group-key="alias"
+                            select-group-key="name"
                             select-user-key="username"
                             v-model:modelValue="userData[selectedType]"
                             :disabledModalValue="userData[otherType]"
@@ -189,7 +192,7 @@
                             class="flex items-center justify-end text-gray-700 cursor-pointer"
                             style="width: 104px"
                         >
-                            <span class="mr-1.5 pl-1 text-sm text-gray-500">
+                            <span class="pl-1 text-sm text-gray-500">
                                 Owner
                             </span>
                         </div>
@@ -690,12 +693,15 @@
     })
 </script>
 <style lang="less" scoped>
-    .placeholder {
-        background-color: #f4f4f4;
-    }
+    // .placeholder {
+    //     background-color: #f4f4f4;
+    // }
 
+    .placeholder-color {
+        @apply text-gray-700 !important;
+    }
     .placeholder-color::placeholder {
-        color: #6f7590 !important;
+        @apply text-gray-500 !important;
     }
     .text-area-padding {
         padding: 0px !important;
@@ -746,17 +752,14 @@
 </style>
 
 <style lang="less" module>
-    // .input {
-    //     :global(.ant-input:focus
-    //             .ant-input:hover
-    //             .ant-input::selection
-    //             .focus-visible) {
-    //         @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
-    //     }
-    //     :global(.ant-input) {
-    //         @apply shadow-none outline-none border-0 px-0 !important;
-    //     }
-    // }
+    .inputBox {
+        :global(.ant-input) {
+            @apply text-gray-700 !important;
+            &::placeholder {
+                @apply text-gray-500 !important;
+            }
+        }
+    }
 </style>
 
 <route lang="yaml">

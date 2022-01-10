@@ -43,51 +43,55 @@
         <div class="absolute right-2">
             <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            :style="`width: 100%;top:${topPosShift}px`"
-            :class="[
-                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
-            ]"
-        >
+        <teleport to="body">
             <div
-                :class="['flex  justify-center overflow-auto']"
-                style="max-height: 250px"
+                v-if="isAreaFocused"
+                @click.stop="() => {}"
+                :style="`width: ${containerPosition.width}px;top:${
+                    containerPosition.top + containerPosition.height
+                }px;left:${containerPosition.left}px`"
+                :class="[
+                    'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                ]"
             >
-                <div class="w-full">
-                    <template
-                        v-for="(item, index) in dropdownOption"
-                        :key="item.value + index"
-                        v-if="dropdownOption.length !== 0"
-                    >
-                        <div
-                            class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
-                            @click="onCheckChange(item)"
-                            :class="
-                                map[item.value]
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
-                        >
-                            <span>{{ item.label }}</span>
-                            <AtlanIcon
-                                icon="Check"
-                                class="text-primary"
-                                v-if="map[item.value]"
-                            />
-                        </div>
-                    </template>
-                </div>
-
-                <span
-                    class="w-full mt-4 text-sm text-center text-gray-400"
-                    v-if="dropdownOption.length == 0"
+                <div
+                    :class="['flex  justify-center overflow-auto']"
+                    style="max-height: 250px"
                 >
-                    No functions found!
-                </span>
+                    <div class="w-full">
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.value + index"
+                            v-if="dropdownOption.length !== 0"
+                        >
+                            <div
+                                class="flex items-center justify-between w-full px-4 h-9 hover:bg-primary-light"
+                                @mousedown.stop="(e) => onCheckChange(item, e)"
+                                :class="
+                                    map[item.value]
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <span>{{ item.label }}</span>
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="text-primary"
+                                    v-if="map[item.value]"
+                                />
+                            </div>
+                        </template>
+                    </div>
+
+                    <span
+                        class="w-full mt-4 text-sm text-center text-gray-400"
+                        v-if="dropdownOption.length == 0"
+                    >
+                        No functions found!
+                    </span>
+                </div>
             </div>
-        </div>
+        </teleport>
     </div>
 </template>
 
@@ -99,6 +103,7 @@
         ref,
         nextTick,
         onMounted,
+        onUnmounted,
         inject,
         PropType,
         ComputedRef,
@@ -136,6 +141,13 @@
             const map = ref({})
 
             const { aggregateList } = useAggregate()
+            const observer = ref()
+            const containerPosition = ref({
+                width: undefined,
+                height: undefined,
+                top: undefined,
+                left: undefined,
+            })
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -207,11 +219,6 @@
                     value: ls.key,
                     key: ls.key,
                 }))
-                data.sort((x, y) => {
-                    if (x.label < y.label) return -1
-                    if (x.label > y.label) return 1
-                    return 0
-                })
                 return data
             })
 
@@ -231,7 +238,7 @@
                 return data
             })
 
-            const onCheckChange = (checked) => {
+            const onCheckChange = (checked, event) => {
                 // inputChange()
                 console.log('options: ', { checked, map: map.value })
                 selectAll.value = false
@@ -242,11 +249,41 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 emit('checkChange', selectedItems.value)
+                event.stopPropagation()
+                event.preventDefault()
+                return false
             }
 
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
+                observer.value = new ResizeObserver(onResize).observe(
+                    container.value
+                )
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
                 console.log(container.value)
+            })
+            const onResize = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
             })
 
             const mouseOver = ref(false)
@@ -280,6 +317,7 @@
                 handleMouseOver,
                 handleMouseOut,
                 mouseOver,
+                containerPosition,
             }
         },
     })

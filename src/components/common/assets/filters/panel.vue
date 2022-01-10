@@ -188,6 +188,7 @@
             )
 
             const handleChange = () => {
+                console.log('discoveryFacet change')
                 modelValue.value = facetMap.value
                 emit('change', item.value)
             }

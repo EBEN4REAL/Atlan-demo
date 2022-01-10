@@ -8,6 +8,7 @@ import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
+import partitionKey from '~/assets/images/icons/partitionKey.svg'
 import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
 import MorningIcon from '~/assets/images/home/Morning.svg'
@@ -20,7 +21,6 @@ import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
-import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
@@ -151,6 +151,7 @@ import CaretLeft from '~/assets/images/icons/caret-left.svg'
 import CaretRight from '~/assets/images/icons/caret-right.svg'
 import CaretDown from '~/assets/images/icons/caret-down.svg'
 import Settings from '~/assets/images/icons/setings.svg'
+import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
@@ -211,6 +212,8 @@ import Trigger from '~/assets/images/icons/trigger.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
@@ -250,6 +253,7 @@ import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
+import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
@@ -329,8 +333,19 @@ import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
+import primaryKey from '~/assets/images/icons/primaryKey.svg'
+import Revoke from '~/assets/images/icons/Revoke.svg'
+import Query24 from '~/assets/images/icons/query_24.svg'
+import Vqb24 from '~/assets/images/icons/vqb_24.svg'
+import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
+
+import Clock from '~/assets/images/icons/clock.svg'
 
 export default {
+    Query24,
+    Vqb24,
+    partitionKey,
+    primaryKey,
     Array,
     Float,
     EnumType,
@@ -366,6 +381,7 @@ export default {
     QueryDeprecated,
     QueryDiscovery,
     QueryDraft,
+    CollapseControl,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -421,7 +437,6 @@ export default {
     WorkflowsIcon,
     GlossaryIcon,
     ForeignKey,
-    PrimaryKey,
     Share,
     NoAccess,
     Cancel,
@@ -517,6 +532,7 @@ export default {
     AssetsInactive,
     CaretLeft,
     Settings,
+    SettingsOutlined,
     Delete,
     Slack,
     EmptySearchQuery,
@@ -651,4 +667,8 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
+    Revoke,
+    WarningIcon,
+    SidebarSwitch,
+    Clock,
 }

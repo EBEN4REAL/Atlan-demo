@@ -23,7 +23,11 @@
                 </div>
             </div>
         </template>
-        <component :is="icon" class="inline-flex self-center w-auto h-4" />
+        <component
+            :is="icon"
+            class="inline-flex self-center w-4 h-4"
+            style="min-width: 1rem"
+        />
     </a-tooltip>
 </template>
 

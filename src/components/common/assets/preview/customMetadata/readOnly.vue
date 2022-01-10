@@ -1,5 +1,7 @@
 <template>
-    <div class="flex items-center self-start flex-grow break-all">
+    <div
+        class="flex items-center self-start flex-grow break-all whitespace-pre-line"
+    >
         <div
             v-if="getDatatypeOfAttribute(attribute) === 'url' && isMultivalued"
             class="flex flex-wrap gap-2"
@@ -7,19 +9,13 @@
             <span v-if="!attribute.value?.length">-</span>
             <template v-else>
                 <template v-for="v in attribute.value" :key="v">
-                    <a target="_blank" :href="`//${v}`">
-                        <div
-                            v-if="v"
-                            class="flex items-center text-primary gap-x-1"
-                        >
-                            <img
-                                :src="`https://www.google.com/s2/favicons?domain=${v}`"
-                                :alt="v"
-                                class="w-4 h-4"
-                            />
-                            {{ v }}
-                        </div>
-                    </a>
+                    <span v-linkified class="space-x-1">
+                        <img
+                            :src="`https://www.google.com/s2/favicons?domain=${v}`"
+                            :alt="v"
+                            class="inline-block w-4 h-4"
+                        />{{ v }}</span
+                    >
                 </template>
             </template>
         </div>

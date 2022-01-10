@@ -19,24 +19,111 @@ const keyMap = {
         asset_card: {
             clicked: {
                 action: 'discovery_asset_card_clicked',
-                properties: (props) => ({ click_index: props.click_index }),
+                properties: (props) => ({
+                    click_index: props.click_index,
+                    keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
+            },
+        },
+        asset_sidebar: {
+            tab_changed: {
+                action: 'discovery_asset_sidebar_tab_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    tab_name: props.tab_name,
+                }),
             },
         },
         metadata: {
+            name_updated: {
+                action: 'discovery_metadata_name_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
             description_updated: {
                 action: 'discovery_metadata_description_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             classifications_updated: {
                 action: 'discovery_metadata_classifications_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             certification_updated: {
                 action: 'discovery_metadata_certification_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    certificate: props.certificate,
+                    has_message: !!props.has_message,
+                }),
+            },
+            query_config_updated: {
+                action: 'discovery_metadata_query_config_updated',
+                properties: (props) => ({
+                    allow_query: props.allow_query,
+                    row_limit: props.row_limit,
+                    allow_query_preview: !!props.allow_query_preview,
+                }),
             },
             owners_updated: {
                 action: 'discovery_metadata_owners_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
+            admins_updated: {
+                action: 'discovery_metadata_admins_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
             },
             terms_updated: {
                 action: 'discovery_metadata_terms_updated',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
+        },
+        announcement: {
+            created: {
+                action: 'discovery_announcement_created',
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
+                }),
+            },
+            updated: {
+                action: 'discovery_announcement_updated',
+                properties: (props) => ({
+                    announcement_type: props.announcement_type,
+                    asset_type: props.asset_type,
+                }),
+            },
+            deleted: {
+                action: 'discovery_announcement_deleted',
+            },
+        },
+        resource: {
+            created: {
+                action: 'discovery_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            updated: {
+                action: 'discovery_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            deleted: {
+                action: 'discovery_resource_deleted',
             },
         },
         search: {
@@ -61,22 +148,10 @@ const keyMap = {
                 }),
             },
         },
-        saved_search: {
-            deleted: {
-                action: 'discovery_saved_search_deleted',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            clicked: {
-                action: 'discovery_saved_search_clicked',
-                properties: (props) => ({ facets: props.facets }),
-            },
+        readme: {
             updated: {
-                action: 'discovery_saved_search_updated',
-                properties: (props) => ({ facets: props.facets }),
-            },
-            created: {
-                action: 'discovery_saved_search_created',
-                properties: (props) => ({ facets: props.facets }),
+                action: 'discovery_readme_updated',
+                properties: (props) => ({ asset_type: props.asset_type }),
             },
         },
     },

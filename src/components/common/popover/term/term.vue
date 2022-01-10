@@ -1,7 +1,7 @@
 <template>
     <a-popover
         :placement="placement"
-        :trigger="'click'"
+        :trigger="trigger"
         @visibleChange="handleVisibleChange"
     >
         <template #content>
@@ -34,7 +34,7 @@
                     <div class="flex">
                         <div class="flex space-x-2 font-bold text-gray-700">
                             <Ellipsis
-                                :tooltipText="attributes?.localName"
+                                :tooltip-text="attributes?.localName"
                                 :rows="2"
                                 :classes="'max-w-xs'"
                             />
@@ -87,13 +87,35 @@
                     >
                         <div class="text-gray-500">Owned by</div>
                         <div
-                            class="leading-5 text-gray-700 truncate overflow-ellipsis"
+                            class="flex flex-wrap gap-1 leading-5 text-gray-700 truncate overflow-ellipsis"
                         >
-                            <Owners
-                                v-model="attributes.localOwners"
-                                :editPermission="false"
-                                :selected-asset="fetchedTerm"
-                            />
+                            <template
+                                v-for="username in attributes?.localOwners
+                                    ?.ownerUsers"
+                                :key="username"
+                            >
+                                <PopOverUser :item="username">
+                                    <UserPill
+                                        :username="username"
+                                        :allow-delete="false"
+                                        :enable-hover="true"
+                                    ></UserPill>
+                                </PopOverUser>
+                            </template>
+
+                            <template
+                                v-for="name in attributes?.localOwners
+                                    ?.ownerGroups"
+                                :key="name"
+                            >
+                                <PopOverGroup :item="name">
+                                    <GroupPill
+                                        :name="name"
+                                        :allow-delete="false"
+                                        :enable-hover="true"
+                                    ></GroupPill>
+                                </PopOverGroup>
+                            </template>
                         </div>
                     </div>
                     <div class="w-full pt-4">
@@ -129,7 +151,6 @@
     } from 'vue'
 
     // components
-    import Owners from '@/common/input/owner/index.vue'
     import Category from '@/common/input/categories/categories.vue'
     import AtlanButton from '@/UI/button.vue'
     import ErrorView from '@/common/error/index.vue'
@@ -137,7 +158,7 @@
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    //types
+    // types
     import { Term } from '~/types/glossary/glossary.interface'
 
     // import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -145,10 +166,18 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
+
     export default defineComponent({
         name: 'TermPopover',
         components: {
-            Owners,
+            UserPill,
+            GroupPill,
+            PopOverUser,
+            PopOverGroup,
             ErrorView,
             Category,
             Ellipsis,
@@ -165,11 +194,9 @@
                 required: true,
             },
             error: {
-                type: Error,
                 required: true,
             },
             fetchedTerm: {
-                type: Object,
                 required: true,
             },
             placement: {

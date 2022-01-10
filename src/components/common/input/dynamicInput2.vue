@@ -50,6 +50,7 @@
         v-model:value="localValue"
         :precision="0"
         @change="handleInputChange"
+        @keydown="handleNumberKeyPress"
     ></a-input-number>
     <a-switch
         v-else-if="dataType === 'switch'"
@@ -59,6 +60,8 @@
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        @change="handleInputChange"
+        @keydown="handleNumberKeyPress"
     ></a-input-number>
 
     <a-date-picker
@@ -66,7 +69,6 @@
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
         :allow-clear="true"
-        :disabled-date="disabledDate"
         :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
         @change="handleInputChange"
     />
@@ -78,10 +80,10 @@
         class="flex"
         @change="handleInputChange"
     >
-        <a-radio-button value="true" class="flex-1 text-center">
+        <a-radio-button :value="true" class="flex-1 text-center">
             Yes
         </a-radio-button>
-        <a-radio-button value="false" class="flex-1 text-center">
+        <a-radio-button :value="false" class="flex-1 text-center">
             No
         </a-radio-button>
     </a-radio-group>
@@ -111,6 +113,7 @@
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
+    import { isFloat } from '~/utils/checkType'
 
     dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
@@ -144,7 +147,7 @@
 
             // set proper default value
             if (multiple.value && !localValue.value) localValue.value = []
-            else if (!localValue.value) localValue.value = ''
+            else if (localValue.value == null) localValue.value = ''
 
             const handleInputChange = (v) => {
                 if (props.dataType.toLowerCase() === 'date') {
@@ -156,15 +159,52 @@
                 emit('change')
             }
 
-            const disabledDate = (current: Dayjs) =>
-                // Can not select days before today and today
-                current > dayjs().endOf('day')
+            // const disabledDate = (current: Dayjs) =>
+            //     // Can not select days before today and today
+            //     current > dayjs().endOf('day')
+
+            const handleNumberKeyPress = (v) => {
+                if (
+                    !['int', 'long', 'number', 'double', 'float'].includes(
+                        dataType.value.toLowerCase()
+                    )
+                )
+                    return
+                const allowDecimal = ['double', 'float', 'decimal'].includes(
+                    dataType.value.toLowerCase()
+                )
+                const n = parseInt(v.key, 10)
+                if (Number.isNaN(n)) {
+                    // * if dataType is decimal then allow '.' only one time
+                    if (
+                        allowDecimal &&
+                        typeof localValue.value === 'number' &&
+                        v.key === '.' &&
+                        !isFloat(localValue.value)
+                    )
+                        return
+                    if (
+                        ![
+                            'Tab',
+                            'Backspace',
+                            'ArrowDown',
+                            'ArrowUp',
+                            'ArrowRight',
+                            'ArrowLeft',
+                            'Enter',
+                        ].includes(v.key) &&
+                        !v.metaKey
+                    )
+                        v.preventDefault()
+                }
+            }
 
             return {
+                handleNumberKeyPress,
                 localValue,
                 handleInputChange,
                 dayjs,
-                disabledDate,
+                // disabledDate,
             }
         },
     })

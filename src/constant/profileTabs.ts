@@ -61,4 +61,21 @@ export const profileTabs = [
         tooltip: 'Terms and Categories',
         scrubbed: false,
     },
+    {
+        id: 'relatedAssets',
+        label: 'Related Assets',
+        component: 'relatedAssets',
+        includes: [
+            'PowerBIWorkspace',
+            'PowerBIDashboard',
+            'PowerBIReport',
+            'PowerBIDataset',
+            'PowerBIDataflow',
+            'PowerBITile',
+            'PowerBIPage',
+            'PowerBIDatasource',
+        ],
+        tooltip: 'Related Assets',
+        scrubbed: false,
+    },
 ]

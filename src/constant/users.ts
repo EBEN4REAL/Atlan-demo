@@ -54,28 +54,22 @@ export const userColumns = [
     {
         title: 'User',
         key: 'user',
-        sorter: true,
-        width: 400,
+        // sorter: true,
         slots: { customRender: 'name' },
         sortKey: 'firstName',
         align: 'left',
+        width: 350,
+        sortDirections: ['ASC', 'DESC'],
+        ascOrderString: `Sort by name (A-Z)`,
+        descOrderString: `Sort by name (Z-A)`,
+        sorter: true,
     },
     {
         title: 'Role',
         key: 'role',
         sorter: false,
-        width: 200,
         slots: { customRender: 'role' },
-        dataIndex: ['role_object', 'name'],
-    },
-    {
-        title: 'Groups',
-        key: 'group',
-        sorter: true,
-        width: 200,
-        slots: { customRender: 'group' },
-        sortKey: 'groupCount',
-        dataIndex: 'group_count_string',
+        // dataIndex: ['role_object', 'name'],
     },
     {
         title: 'Status',
@@ -88,18 +82,37 @@ export const userColumns = [
         //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
         // ],
         filterMultiple: false,
-        width: 200,
     },
     {
-        title: 'Actions',
+        title: 'Groups',
+        key: 'group',
+        sorter: true,
+        align: 'left',
+        slots: { customRender: 'group' },
+        sortKey: 'groupCount',
+        sortDirections: ['ASC', 'DESC'],
+        ascOrderString: `Sort by group count`,
+        descOrderString: `Sort by group count`,
+        // dataIndex: 'group_count_string',
+    },
+    {
+        title: 'Personas',
+        key: 'personas',
+        // sorter: true,
+        align: 'left',
+        slots: { customRender: 'persona' },
+    },
+    {
+        title: '',
         slots: { customRender: 'actions' },
+        align: 'right',
     },
 ]
 
 export const statusColorClass = {
-    Active: 'success-muted',
-    Disabled: 'error-muted',
-    Invited: 'alert-muted',
+    Active: 'success',
+    Disabled: 'error',
+    Invited: 'alert',
 }
 
 export const userStatusOptions = [
@@ -111,6 +124,21 @@ export const userStatusOptions = [
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
+    },
+]
+
+export const roleOptions = [
+    {
+        label: 'Members',
+        value: JSON.stringify({ roles: { $elemMatch: '$member' } }),
+    },
+    {
+        label: 'Admin',
+        value: JSON.stringify({ roles: { $elemMatch: '$admin' } }),
+    },
+    {
+        label: 'Guest',
+        value: JSON.stringify({ roles: { $elemMatch: '$guest' } }),
     },
 ]
 

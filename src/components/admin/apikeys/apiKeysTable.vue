@@ -102,7 +102,7 @@
                         :avatar-name="apikey.attributes.createdBy"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
-                        class="mr-1 mt-0.5"
+                        class="mr-2 mt-0.5"
                     />
                     <span
                         class="cursor-pointer"

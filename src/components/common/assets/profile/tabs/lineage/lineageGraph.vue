@@ -341,15 +341,22 @@
 
             &.header {
                 top: 1.5rem;
-                left: 1.5rem;
+                right: 1.5rem;
             }
             &.footer {
                 bottom: 1.5rem;
                 right: 1.5rem;
             }
             & > .controls {
-                @apply flex items-center flex-1;
-                padding: 0.4rem 0.6rem;
+                @apply flex items-center flex-1 gap-x-1;
+
+                & > .control-item {
+                    @apply px-2 py-1 cursor-pointer rounded text-gray-500;
+
+                    &:hover {
+                        @apply text-primary;
+                    }
+                }
             }
 
             & > .minimap {

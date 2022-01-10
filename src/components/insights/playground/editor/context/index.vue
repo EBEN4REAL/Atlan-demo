@@ -63,36 +63,43 @@
             </span>
 
             <span v-else>
-                <AtlanBtn
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
+                <Shortcut
                     v-if="activeInlineTab.queryId && !activeInlineTab.isSaved"
-                    class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
-                    :class="isUpdating ? 'px-4.5' : 'px-2'"
-                    :disabled="
-                        activeInlineTab.isSaved && activeInlineTab.queryId
-                    "
-                    @click="$emit('onClickSaveQuery')"
+                    shortcut-key="cmd+s"
+                    action="Update Query"
+                    placement="right"
+                    :edit-permission="true"
                 >
-                    <div
-                        class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
+                        :class="isUpdating ? 'px-4.5' : 'px-2'"
+                        :disabled="
+                            activeInlineTab.isSaved && activeInlineTab.queryId
+                        "
+                        @click="$emit('onClickSaveQuery')"
                     >
-                        <AtlanIcon
-                            v-if="!isUpdating"
-                            style="margin-right: 2.5px"
-                            icon="Save"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-else
-                            icon="CircleLoader"
-                            style="margin-right: 2.5px"
-                            class="w-4 h-4 animate-spin"
-                        ></AtlanIcon>
+                        <div
+                            class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                        >
+                            <AtlanIcon
+                                v-if="!isUpdating"
+                                style="margin-right: 2.5px"
+                                icon="Save"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-else
+                                icon="CircleLoader"
+                                style="margin-right: 2.5px"
+                                class="w-4 h-4 animate-spin"
+                            ></AtlanIcon>
 
-                        <span>Update</span>
-                    </div>
-                </AtlanBtn>
+                            <span>Update</span>
+                        </div>
+                    </AtlanBtn>
+                </Shortcut>
 
                 <div
                     v-else-if="
@@ -114,25 +121,32 @@
                     </a-tooltip>
                 </div>
 
-                <AtlanBtn
+                <Shortcut
                     v-else
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
-                    @click="$emit('onClickSaveQuery')"
+                    shortcut-key="cmd+s"
+                    action="Save Query"
+                    placement="right"
+                    :edit-permission="true"
                 >
-                    <div
-                        class="flex items-center transition duration-150 group-hover:text-primary"
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
+                        @click="$emit('onClickSaveQuery')"
                     >
-                        <AtlanIcon
-                            style="margin-right: 2.5px"
-                            icon="Save"
-                        ></AtlanIcon>
+                        <div
+                            class="flex items-center transition duration-150 group-hover:text-primary"
+                        >
+                            <AtlanIcon
+                                style="margin-right: 2.5px"
+                                icon="Save"
+                            ></AtlanIcon>
 
-                        <span>Save</span>
-                    </div>
-                </AtlanBtn>
+                            <span>Save</span>
+                        </div>
+                    </AtlanBtn>
+                </Shortcut>
             </span>
         </div>
 
@@ -304,7 +318,21 @@
                         >
                             <template #title>
                                 {{
-                                    editorContentSelectionState
+                                    activeInlineTab?.playground.resultsPane
+                                        ?.result?.runQueryId &&
+                                    !activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                        ? 'Abort Query'
+                                        : activeInlineTab?.playground
+                                              .resultsPane?.result
+                                              ?.runQueryId &&
+                                          activeInlineTab?.playground
+                                              ?.resultsPane?.result
+                                              ?.buttonDisable
+                                        ? 'Aborting query'
+                                        : isQueryRunning === 'loading'
+                                        ? 'Running query'
+                                        : editorContentSelectionState
                                         ? 'Run selected'
                                         : 'Run query'
                                 }}
@@ -408,7 +436,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
 
     import { useAuthStore } from '~/store/auth'
-    import { storeToRefs } from 'pinia'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'EditorContext',
@@ -419,6 +447,7 @@
             ThreeDotMenu,
             AtlanIcon,
             Tooltip,
+            Shortcut,
         },
         props: {
             isUpdating: {
@@ -430,7 +459,7 @@
                 default: '',
             },
         },
-        emits: ['onClickSaveQuery', 'onClickRun', 'toggleVQB'],
+        emits: ['onClickSaveQuery', 'onClickRunQuery', 'toggleVQB'],
         setup(props) {
             const {
                 getConnectionName,

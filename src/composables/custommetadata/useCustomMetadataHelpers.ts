@@ -87,7 +87,20 @@ export default function useCustomMetadataHelpers() {
         return []
     }
 
+    const getHumanTypeName = (tName) => {
+        const t = tName.toLowerCase()
+        if (t === 'url') return 'URL'
+        if (['number', 'int', 'long'].includes(t))
+            return 'Number'
+        if (['float'].includes(t))
+            return 'Decimal'
+        if (['text', 'string'].includes(t))
+            return 'Text'
+        return tName
+    }
+
     return {
+        getHumanTypeName,
         getDatatypeOfAttribute,
         isLink,
         formatDisplayValue,

@@ -1,13 +1,7 @@
 <template>
-    <div v-if="isLoading">
-        <a-spin size="small" />
-    </div>
-    <div
-        v-else
-        class="flex flex-wrap items-center gap-1 text-sm"
-        data-test-id="classification-popover"
-    >
+    <div data-test-id="classification-popover">
         <a-popover
+            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.classificationPopover"
@@ -25,34 +19,47 @@
                     ></ClassificationFacet>
                 </div>
             </template>
-            <a-button
-                v-if="editPermission"
-                shape="circle"
-                :disabled="disabled"
-                size="small"
-                class="text-center shadow hover:bg-primary-light hover:border-primary"
-            >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
         </a-popover>
 
-        <template v-for="classification in list" :key="classification.guid">
-            <Popover :classification="classification">
-                <ClassificationPill
-                    :name="classification.name"
-                    :display-name="classification?.displayName"
-                    :is-propagated="isPropagated(classification)"
-                    :allow-delete="allowDelete"
-                    :color="classification.options?.color"
-                    @delete="handleDeleteClassification"
-                />
-            </Popover>
-        </template>
-        <span
-            v-if="!editPermission && list?.length < 1"
-            class="-ml-1 text-gray-500"
-            >No linked classifications</span
-        >
+        <div class="flex flex-wrap items-center gap-1 text-sm">
+            <a-tooltip
+                placement="left"
+                :title="
+                    !editPermission
+                        ? `You don't have permission to link classifications to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
+            >
+                <a-button
+                    shape="circle"
+                    :disabled="!editPermission"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="() => (isEdit = true)"
+                >
+                    <span
+                        ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                    ></span> </a-button
+            ></a-tooltip>
+
+            <template v-for="classification in list" :key="classification.guid">
+                <Popover :classification="classification">
+                    <ClassificationPill
+                        :name="classification.name"
+                        :display-name="classification?.displayName"
+                        :is-propagated="isPropagated(classification)"
+                        :allow-delete="allowDelete"
+                        :color="classification.options?.color"
+                        @delete="handleDeleteClassification"
+                    />
+                </Popover>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -113,17 +120,12 @@
                 required: false,
                 default: null,
             },
-            isLoading: {
-                type: Boolean,
-                required: false,
-                default: false
-            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, editPermission, isLoading } = toRefs(props)
+            const { guid, editPermission } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -239,7 +241,7 @@
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,
-                handleDeleteClassification
+                handleDeleteClassification,
             }
         },
     })

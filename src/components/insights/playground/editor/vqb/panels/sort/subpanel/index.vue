@@ -6,11 +6,16 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="flex items-center w-full mb-3"
+                    class="flex items-center mb-3 container-width"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
                     <ColumnSelector
+                        v-if="
+                            !isAggregationORGroupPanelColumnsAdded(
+                                activeInlineTab
+                            )
+                        "
                         class="flex-1"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
@@ -20,6 +25,15 @@
                             activeInlineTab.playground.vqb.selectedTables
                         "
                         @change="(val) => handleColumnChange(val, index)"
+                    />
+                    <AggregatorGroupColumnsSelector
+                        class="flex-1"
+                        v-else
+                        :mixedSubpanels="
+                            getAggregationORGroupPanelColumns(activeInlineTab)
+                        "
+                        @change="(val) => handleColumnChange(val, index)"
+                        v-model:selectedItem="subpanel.aggregateORGroupColumn"
                     />
 
                     <span class="px-3 text-sm text-gray-500">order by</span>
@@ -31,6 +45,7 @@
                     />
 
                     <AtlanIcon
+                        v-if="isSubpanelClosable(subpanels)"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
@@ -38,6 +53,7 @@
                             hoverItem === subpanel.id ? 100 : 0
                         }`"
                     />
+                    <div style="width: 32px" v-else></div>
                 </div>
             </template>
         </div>
@@ -74,12 +90,15 @@
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import AggregatorGroupColumnsSelector from '../aggregateGroupSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             ColumnSelector,
             RaisedTab,
+            AggregatorGroupColumnsSelector,
         },
         props: {
             expand: {
@@ -101,6 +120,11 @@
 
         setup(props, { emit }) {
             const selectedAggregates = ref([])
+            const {
+                isSubpanelClosable,
+                getAggregationORGroupPanelColumns,
+                isAggregationORGroupPanelColumnsAdded,
+            } = useUtils()
             const selectedColumn = ref({})
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -141,6 +165,7 @@
                     id: generateUUID(),
                     column: {},
                     order: 'asc',
+                    aggregateORGroupColumn: {},
                 })
                 subpanels.value = copySubPanels
 
@@ -163,6 +188,9 @@
             // const selectedOrder = ref('asc')
 
             return {
+                getAggregationORGroupPanelColumns,
+                isAggregationORGroupPanelColumnsAdded,
+                isSubpanelClosable,
                 activeInlineTab,
                 selectedAggregates,
                 columnName,
@@ -187,5 +215,8 @@
     }
     .border-shift-minus {
         padding: 0px;
+    }
+    .container-width {
+        width: 75% !important;
     }
 </style>

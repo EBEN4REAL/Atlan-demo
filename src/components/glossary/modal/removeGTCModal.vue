@@ -22,8 +22,11 @@
 
         <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
             <a-button @click="handleCancel">Cancel</a-button>
-            <a-button type="danger" @click="handleDelete" :loading="isLoading"
-                >Delete</a-button
+            <a-button
+                class="text-white bg-error"
+                :loading="isLoading"
+                @click="handleDelete"
+                >Archive</a-button
             >
         </div>
     </a-modal>
@@ -51,6 +54,7 @@
     import useGlossaryStore from '~/store/glossary'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '~/components/glossary/constants/assetTypeLabel.ts'
 
     export default defineComponent({
         name: 'RemoveGtcModal',
@@ -159,23 +163,13 @@
                             )
                         } else emit('delete', 'root')
                     } else {
-                        if (props.redirect) {
-                            console.log('change select')
-                            handleSelectGlossary('')
-                        }
                         emit('delete', 'root')
                     }
                 }
                 isLoading.value = loading.value
                 visible.value = false
-                let eventCategory
-                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
-                    eventCategory = 'category'
-                } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
-                    eventCategory = 'term'
-                } else {
-                    eventCategory = 'glossary'
-                }
+                // delete entity event
+                const eventCategory = assetTypeLabel[props.entity?.typeName]
                 useAddEvent('gtc', eventCategory, 'deleted', {})
             }
             return {

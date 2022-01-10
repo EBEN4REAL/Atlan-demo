@@ -80,7 +80,7 @@ const useQueryCollection = () => {
         viewerGroups,
         icon,
         iconType,
-        createdBy
+        createdBy,
     }) => {
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const tenantId = tenantStore.tenantRaw.realm
@@ -99,7 +99,7 @@ const useQueryCollection = () => {
                     tenantId,
                     icon,
                     iconType,
-                    createdBy
+                    createdBy,
                 },
             },
         })
@@ -183,13 +183,39 @@ const useQueryCollection = () => {
         tabs: Ref<activeInlineTabInterface[]>
     ) => {
         if (collection?.length > 0) {
-            const col = collection[0]
             if (activeInlineTab.value?.key) {
+                let col = collection[0]
+
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
+
+                if (activeInlineTab.value?.queryId) {
+                    col = collection.find(
+                        (col) =>
+                            col?.attributes?.qualifiedName ===
+                            activeInlineTabCopy.explorer.queries.collection
+                                .qualifiedName
+                    )
+
+                    if(col) {
+
+                    } else {
+                        col=collection[0]
+                    }
+                } else if(activeInlineTabCopy.explorer.queries.collection.qualifiedName) {
+                    col = collection.find(
+                        (col) =>
+                            col?.attributes?.qualifiedName ===
+                            activeInlineTabCopy.explorer.queries.collection
+                                .qualifiedName
+                    )
+                }
+
                 activeInlineTabCopy.explorer.queries.collection.guid = col.guid
+
                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
                     col?.attributes?.qualifiedName
+
                 modifyActiveInlineTab(
                     activeInlineTabCopy,
                     tabs,

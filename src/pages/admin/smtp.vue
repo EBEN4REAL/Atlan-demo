@@ -4,12 +4,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, onMounted } from 'vue'
     import SmtpForm from '@/admin/smtp/index.vue'
     import { useHead } from '@vueuse/head'
 
     import useAuth from '~/composables/auth/useAuth'
     import NoAccess from '@/common/secured/access.vue'
+    import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -21,6 +22,9 @@
                 title: 'SMTP',
             })
             const { isAccess } = useAuth()
+            onMounted(() => {
+                useTrackPage('admin', 'smtp')
+            })
             return { isAccess }
         },
     })

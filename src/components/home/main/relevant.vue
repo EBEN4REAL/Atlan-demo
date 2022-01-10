@@ -3,12 +3,9 @@
     <div
         class="items-center justify-center border border-gray-200 rounded-lg"
         :class="isLoading ? `flex flex-grow` : `hidden`"
-        style="height: 350px;"
+        style="height: 350px"
     >
-        <AtlanIcon
-            icon="Loader"
-            class="w-auto h-10 animate-spin"
-        />
+        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin" />
     </div>
     <a-tabs
         v-model:activeKey="relevantTab"
@@ -20,7 +17,7 @@
             v-for="tab in relevantTabList"
             :key="tab.id"
             :tab="tab.name"
-            style="height: 350px;"
+            style="height: 350px"
             force-render
         >
             <component
@@ -39,7 +36,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, defineAsyncComponent, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        defineAsyncComponent,
+        computed,
+        watch,
+    } from 'vue'
     import whoami from '~/composables/user/whoami'
     import AssetList from '~/components/home/assets/index.vue'
 
@@ -70,7 +73,7 @@
                     emptyText: 'All your assets will appear here.',
                     preference: undefined,
                     dependentKey: 'DEFAULT_ASSET_LIST_HOME',
-                    assetCount: 0
+                    assetCount: 0,
                 },
                 {
                     id: '3',
@@ -79,15 +82,16 @@
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     filter: {
-                        certificateStatus: ['VERIFIED']
+                        certificateStatus: ['VERIFIED'],
                     },
-                    emptyText: 'The most recently verified assets will show up here.',
+                    emptyText:
+                        'The most recently verified assets will show up here.',
                     preference: {
-                        sort: 'certificateUpdatedAt-desc'
+                        sort: 'certificateUpdatedAt-desc',
                     },
                     dependentKey: 'DEFAULT_ASSET_LIST_RECENTLY_VERIFIED',
-                    assetCount: 0
-                }
+                    assetCount: 0,
+                },
             ])
 
             /**
@@ -96,7 +100,11 @@
              */
 
             // If we have been able to fetch the number of assets of each tab
-            const isLoading = computed(() => Object.keys(assetCounts.value).length !== relevantTabList.value.length)
+            const isLoading = computed(
+                () =>
+                    Object.keys(assetCounts.value).length !==
+                    relevantTabList.value.length
+            )
 
             /**
              * A utility function to select the active tab.
@@ -112,7 +120,9 @@
              * @param assetCount
              */
             const listLoaded = (tabId: string, assetCount: number) => {
-                const indexOfTab = relevantTabList.value.findIndex((tab) => tab.id === tabId)
+                const indexOfTab = relevantTabList.value.findIndex(
+                    (tab) => tab.id === tabId
+                )
                 relevantTabList.value[indexOfTab].assetCount = assetCount
                 assetCounts.value[tabId] = assetCount
             }
@@ -134,7 +144,7 @@
                 selectRelevantTab,
                 myUsername,
                 isLoading,
-                listLoaded
+                listLoaded,
             }
         },
     })

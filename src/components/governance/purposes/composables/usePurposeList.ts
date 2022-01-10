@@ -29,7 +29,7 @@ watch(
     [selectedPersonaId, personaList],
     () => {
         if (selectedPersonaId.value) {
-            let t = personaList.value?.find(
+            const t = personaList.value?.find(
                 (ps) => ps.id == selectedPersonaId.value
             )
             if (!t) selectedPersona.value = undefined
@@ -37,7 +37,7 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        return
+        
     },
     { immediate: true }
 )
@@ -54,8 +54,8 @@ export const filteredPersonas = computed(() => {
     return personaList.value
 })
 
-invoke(async () => {
-    await until(isPersonaListReady).toBe(true)
-    if (personaList.value?.length)
-        selectedPersonaId.value = personaList.value[0].id!
-})
+// invoke(async () => {
+//     await until(isPersonaListReady).toBe(true)
+//     if (personaList.value?.length)
+//         selectedPersonaId.value = personaList.value[0].id!
+// })

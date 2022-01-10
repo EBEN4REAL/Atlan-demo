@@ -10,4 +10,5 @@ export interface VQBPanelGroupsInterface {
     id: string
     hide: boolean
     subpanels: SubpanelGroupColumn[]
+    expand: boolean
 }

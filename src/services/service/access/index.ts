@@ -18,6 +18,8 @@ interface WhoAmIResponse {
         roleId: string
         privelage: string
     }[]
+    personas: string[]
+    purposes: string[]
 }
 
 const WhoAmI = (options?: useOptions) =>

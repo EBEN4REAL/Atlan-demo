@@ -124,6 +124,7 @@
 
                             <!-- format sql -->
                             <a-tooltip
+                                v-if="!showVQB"
                                 color="#363636"
                                 :mouseEnterDelay="
                                     lastTooltipPresence !== undefined
@@ -148,6 +149,7 @@
                                 placement="bottom"
                                 trigger="click"
                                 :overlayStyle="{ padding: '0px !important' }"
+                                :destroyTooltipOnHide="true"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {
@@ -483,7 +485,12 @@
             let defaultClassification = classificationList.value[0] ?? undefined
 
             // callback fxn
-            const getData = (dataList, columnList, executionTime) => {
+            const getData = (
+                activeInlineTab,
+                dataList,
+                columnList,
+                executionTime
+            ) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -502,7 +509,7 @@
                 }
             }
             /* sucess| error */
-            const onRunCompletion = (status: string) => {
+            const onRunCompletion = (activeInlineTab, status: string) => {
                 if (status === 'success') {
                     /* Resetting the red dot from the editor if it error is not line type */
                     resetErrorDecorations(
@@ -534,7 +541,11 @@
                     }
                 }
             }
-            const onQueryIdGeneration = (queryId: string, eventSource: any) => {
+            const onQueryIdGeneration = (
+                activeInlineTab,
+                queryId: string,
+                eventSource: any
+            ) => {
                 /* Setting the particular instance to this tab */
                 activeInlineTab.value.playground.resultsPane.result.runQueryId =
                     queryId
@@ -542,15 +553,20 @@
                     eventSource
             }
             function toggleRun() {
+                const activeInlineTabCopy = ref(activeInlineTab.value)
+
                 const queryId =
-                    activeInlineTab.value.playground.resultsPane.result
+                    activeInlineTabCopy.value.playground.resultsPane.result
                         .runQueryId
                 const currState = !queryId ? 'run' : 'abort'
                 if (currState === 'run') {
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
-                        selectedText = generateSQLQuery(activeInlineTab.value)
+                        selectedText = generateSQLQuery(
+                            activeInlineTabCopy.value,
+                            limitRows.value
+                        )
                     } else {
                         /* Get selected Text from editor */
                         selectedText = toRaw(editorInstance.value)
@@ -562,7 +578,7 @@
 
                     console.log('query selected: ', selectedText)
                     queryRun(
-                        activeInlineTab,
+                        activeInlineTabCopy,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -574,7 +590,7 @@
                     )
                 } else {
                     abortQuery(
-                        activeInlineTab,
+                        activeInlineTabCopy,
                         inlineTabs,
                         editorInstance,
                         monacoInstance
@@ -590,7 +606,10 @@
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
-                        selectedText = generateSQLQuery(activeInlineTab.value)
+                        selectedText = generateSQLQuery(
+                            activeInlineTab.value,
+                            limitRows.value
+                        )
                     } else {
                         /* Get selected Text from editor */
                         selectedText = toRaw(editorInstance.value)
@@ -725,6 +744,7 @@
                 runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
                 showcustomToolBar: showcustomToolBar,
+                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -749,15 +769,7 @@
                     : true
             )
 
-            //editor readonly state
             watch([activeInlineTab, editorInstance, readOnly], () => {
-                // console.log('change tab permission: ', {
-                //     isQueryCreatedByCurrentUser:
-                //         isQueryCreatedByCurrentUser.value,
-                //     hasQueryWritePermission: hasQueryWritePermission.value,
-                //     hasQueryReadPermission: hasQueryReadPermission.value,
-                // })
-                // console.log('change tab: ', readOnly.value)
                 if (toRaw(editorInstance.value)) {
                     toRaw(editorInstance.value).updateOptions({
                         readOnly: readOnly.value,

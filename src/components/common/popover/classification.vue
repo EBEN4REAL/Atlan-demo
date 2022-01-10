@@ -3,16 +3,16 @@
         <template #content>
             <div class="p-4 w-96">
                 <div class="flex mb-2">
+                    <ClassificationIcon
+                        :color="classification.options?.color"
+                        :class-names="'h-6 mb-1 mr-1'"
+                    />
                     <span class="text-lg font-bold">
                         {{
                             classification?.displayName ||
                             classification?.typeName
                         }}
                     </span>
-                    <ClassificationIcon
-                        :color="classification.options?.color"
-                        :class-names="'h-6 mb-1 ml-1'"
-                    />
                     <div v-if="classification?.propagate" class="text-primary ml-auto">
                         <span> Propagated </span>
                     </div>

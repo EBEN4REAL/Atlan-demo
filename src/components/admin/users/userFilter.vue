@@ -1,20 +1,159 @@
 <template>
     <!-- <a-dropdown v-model:visible="filterOpened"> -->
     <!-- <template #overlay> -->
-    <div
-        class="rounded p-4 w-36 justify-center bg-white"
+    <a-collapse
+        v-model="activeCollapse"
+        bordered
+        :default-active-key="['1', '2']"
+        @change="handleChange"
     >
-        <a-form layout="vertical" class="p-0">
-            <a-form-item label="USER STATUS" class="mb-0">
-                <a-checkbox-group
-                    v-model:value="statusFilter"
-                    class="grid gap-y-2"
-                    :options="userStatusOptions"
-                    @change="handleStatusFilterChange"
-                ></a-checkbox-group>
-            </a-form-item>
-        </a-form>
-    </div>
+        <div
+            class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
+        >
+            {{
+                statusFilter.length > 0 && role
+                    ? statusFilter.length + 1
+                    : statusFilter.length > 0
+                    ? statusFilter.length
+                    : role
+                    ? 1
+                    : ''
+            }}
+            filters
+            <span
+                v-if="role || statusFilter.length > 0"
+                class="capitalize cursor-pointer text-primary"
+                @click="handleClearFilter"
+            >
+                Clear All
+            </span>
+        </div>
+
+        <a-collapse-panel
+            :key="'1'"
+            class="border-t-0 group"
+            :show-arrow="false"
+        >
+            <template #header>
+                <div class="flex justify-between w-48 hover:text-primary">
+                    <span
+                        class="text-sm text-gray-500 uppercase hover:text-primary"
+                        :class="`${
+                            activeCollapse.includes('1') ? 'text-primary' : ''
+                        }`"
+                        >status</span
+                    >
+                    <AtlanIcon
+                        icon="CaretDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
+                        :class="`${
+                            activeCollapse.includes('1') ? 'blue-icon' : ''
+                        }`"
+                    />
+                </div>
+            </template>
+            <div
+                class="justify-center w-full bg-white border border-b-0 border-l-0 border-r-0 border-gray-200"
+            >
+                <a-form layout="vertical" class="p-2">
+                    <a-form-item class="mb-0">
+                        <a-checkbox-group
+                            v-model:value="statusFilter"
+                            @change="handleStatusFilterChange"
+                        >
+                            <div class="flex flex-col w-full">
+                                <template
+                                    v-for="item in userStatusOptions"
+                                    :key="item.id"
+                                >
+                                    <a-checkbox
+                                        class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
+                                        :value="item.value"
+                                    >
+                                        <div
+                                            class="inline-flex -mt-1 align-middle dot"
+                                            :class="`${
+                                                item.label.toLocaleLowerCase() ===
+                                                'active'
+                                                    ? 'bg-success'
+                                                    : item.label.toLocaleLowerCase() ===
+                                                      'disabled'
+                                                    ? 'bg-error'
+                                                    : 'bg-alert'
+                                            }`"
+                                        ></div>
+                                        <span class="mb-0 text-gray">
+                                            {{ item.label }}
+                                            <span class="text-sm text-gray-500"
+                                                >({{
+                                                    item.label.toLocaleLowerCase() ===
+                                                    'active'
+                                                        ? numberOfActiveUser
+                                                        : item.label.toLocaleLowerCase() ===
+                                                          'disabled'
+                                                        ? numberOfDisableUser
+                                                        : numberOfInvitedUser
+                                                }})</span
+                                            >
+                                        </span>
+                                    </a-checkbox>
+                                </template>
+                            </div>
+                        </a-checkbox-group>
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-collapse-panel>
+        <a-collapse-panel
+            :key="'2'"
+            class="border-t-0 group"
+            :show-arrow="false"
+        >
+            <template #header>
+                <div
+                    class="flex justify-between w-48 border-t-0 hover:text-primary"
+                >
+                    <span
+                        class="text-sm text-gray-500 uppercase border-t-0"
+                        :class="`${
+                            activeCollapse.includes('2') ? 'text-primary' : ''
+                        }`"
+                        >role</span
+                    >
+                    <AtlanIcon
+                        icon="CaretDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
+                        :class="`${
+                            activeCollapse.includes('2') ? 'blue-icon' : ''
+                        }`"
+                    />
+                </div>
+            </template>
+            <div class="w-48 p-2 pt-0 text-left bg-white rounded">
+                <a-radio-group
+                    v-model:value="role"
+                    class="grid w-full text-left gap-y-2"
+                    @change="handleChangeRoleFilter"
+                >
+                    <div class="flex flex-col w-full">
+                        <template v-for="item in rolesWithCount" :key="item.id">
+                            <a-radio
+                                class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
+                                :value="item.value"
+                            >
+                                <span class="mb-0 ml-1 text-gray">
+                                    {{ item.label }}
+                                    <span class="text-sm text-gray-500"
+                                        >({{ item?.memberCount }})</span
+                                    >
+                                </span>
+                            </a-radio>
+                        </template>
+                    </div>
+                </a-radio-group>
+            </div>
+        </a-collapse-panel>
+    </a-collapse>
     <!-- </template> -->
     <!-- <a-button size="default" class="px-2 text-gray-500 rounded-md">
             <AtlanIcon icon="FilterFunnel" />
@@ -27,8 +166,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
-    import { userStatusOptions } from '~/constant/users'
+    import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+    import { storeToRefs } from 'pinia'
+    import { userStatusOptions, roleOptions } from '~/constant/users'
+
+    import useUserStore from '~/store/users'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -37,11 +179,27 @@
                 type: Array,
                 default: () => null,
             },
+            numberOfActiveUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfDisableUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
+            numberOfInvitedUser: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:modelValue', 'change', 'changeRole'],
         setup(props, { emit }) {
-            const activeCollapse = ref<Array<String>>(['1'])
+            const activeCollapse = ref<Array<String>>(['1', '2'])
             const statusFilter = ref<Array<any>>(props.modelValue)
+            const role = ref('')
             const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
@@ -58,14 +216,76 @@
                     if (!props.modelValue?.length) statusFilter.value = []
                 }
             )
-
+            const handleChangeRoleFilter = () => {
+                emit('changeRole', role.value)
+            }
+            const handleClearFilter = () => {
+                role.value = ''
+                statusFilter.value = []
+                emit('update:modelValue', [])
+                emit('changeRole', role.value)
+            }
+            const storeUser = useUserStore()
+            const { roles } = storeToRefs(storeUser)
+            const rolesWithCount = computed(() =>
+                roleOptions.map((item, i) => ({ ...item, ...roles?.value[i] }))
+            )
+            const {
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
+            } = toRefs(props)
+            const handleChange = (collapse) => {
+                activeCollapse.value = collapse
+            }
             return {
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
                 activeCollapse,
                 filterOpened,
+                role,
+                handleChangeRoleFilter,
+                handleClearFilter,
+                roles,
+                rolesWithCount,
+                numberOfActiveUser,
+                numberOfDisableUser,
+                numberOfInvitedUser,
+                handleChange,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    :global(.atlan-reverse > span:nth-child(2)) {
+        @apply w-full pl-0;
+    }
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+</style>
+
+<style lang="less">
+    .group {
+        .ant-collapse-content {
+            border: 0 !important;
+        }
+        .ant-collapse-content-active {
+            border: 0 !important;
+        }
+        .ant-collapse-content-box {
+            padding-bottom: 0 !important;
+        }
+    }
+    .blue-icon {
+        transform: rotate(180deg) !important;
+        path {
+            stroke: rgb(82, 119, 215);
+        }
+    }
+</style>

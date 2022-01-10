@@ -19,10 +19,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div
-                    class="flex"
-                    :class="page === 'classifications' ? 'max-w-sm' : ''"
-                >
+                <div class="flex">
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
                         ref="searchBox"
@@ -381,20 +378,26 @@
             if (discoveryStore.activePostFacet && page.value === 'assets') {
                 postFacets.value = discoveryStore.activePostFacet
             }
-            if (discoveryStore.preferences && page.value !== 'admin') {
+            if (discoveryStore.preferences && page.value === 'assets') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =
                     discoveryStore.preferences.display ||
                     preference.value.display
             }
-            if (discoveryStore.activeFacetTab?.length > 0) {
+            if (
+                discoveryStore.activeFacetTab?.length > 0 &&
+                page.value === 'assets'
+            ) {
                 activeKey.value = discoveryStore.activeFacetTab
             } else {
                 activeKey.value = ['hierarchy']
             }
 
-            if (discoveryStore.globalState?.length > 0) {
+            if (
+                discoveryStore.globalState?.length > 0 &&
+                page.value === 'assets'
+            ) {
                 globalState.value = discoveryStore.globalState
             }
 
@@ -482,13 +485,17 @@
                 }
             }, 600)
 
+            // args[0]: asset, args[1]: index, args[2]: keyboard shortcut used
             const handleClickAssetItem = (...args) => {
                 if (allCheckboxAreaClick.value) {
                     updateBulkSelectedAssets(...args)
                 }
-                useAddEvent('discovery', 'asset_card', 'clicked', {
-                    click_index: args[1],
-                })
+                if (args[1] !== undefined) {
+                    useAddEvent('discovery', 'asset_card', 'clicked', {
+                        click_index: args[1],
+                        keyboard_shortcut: args[2],
+                    })
+                }
                 if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
@@ -501,6 +508,7 @@
             }, 100)
 
             const handleFilterChange = (filterItem) => {
+                console.log('handleFilterChange')
                 sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()
@@ -510,7 +518,7 @@
             const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
-                if (page.value !== 'admin')
+                if (page.value === 'assets')
                     discoveryStore.setActivePostFacet(postFacets.value)
                 useAddEvent('discovery', 'aggregate_tab', 'changed', {
                     name: tabName,
@@ -548,7 +556,7 @@
             const route = useRoute()
             const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
-                handleClickAssetItem(asset, index)
+                handleClickAssetItem(asset, index, true)
                 console.log('onKeyboardNavigate', {
                     isAssetProfile: isAssetProfile.value,
                     index,

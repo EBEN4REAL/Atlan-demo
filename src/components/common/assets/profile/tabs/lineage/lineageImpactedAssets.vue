@@ -176,7 +176,8 @@
     import { defineComponent, ref, onMounted, toRefs, watch } from 'vue'
 
     /** MODULES */
-    import XLSX from 'xlsx'
+    import { message } from 'ant-design-vue'
+    import { json2csv } from 'json-2-csv'
 
     /** COMPOSABLES */
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -188,6 +189,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import { downloadFile } from '~/utils/library/download'
 
     export default defineComponent({
         name: 'LineageImpactedAssets',
@@ -276,6 +278,7 @@
                                     entity.attributes.name,
                                 typeName:
                                     assetTypeLabel(entity) || entity.typeName,
+                                source: getSource(entity),
                                 sourceImg: getConnectorImage(entity),
                                 qfPath: entity.attributes?.qualifiedName
                                     ?.split('/')
@@ -288,6 +291,8 @@
                                 certificateUpdatedAt:
                                     certificateUpdatedAt(entity),
                             },
+                            db: getTable(entity),
+                            schema: getSchema(entity),
                             depth: 1,
                             owners: [
                                 ...ownerUsers(entity),
@@ -302,30 +307,36 @@
             }
 
             const downloadImpactedAssets = () => {
-                // const data = []
-                // columnsData.value.forEach((x) => {
-                //     data.push({
-                //         Name: x.name,
-                //         Type: x.type,
-                //         Source: x.source,
-                //         Database: x.database,
-                //         Schema: x.schema,
-                //     })
-                // })
-                // try {
-                //     const cell = getCell(guid.value)
-                //     const { entity } = cell.store.data
-                //     const fileName = `${entity.displayText}_lineage_impact`
-                //     const name = 'atlan'
-                //     const ws = XLSX.utils.json_to_sheet(data)
-                //     const wb = XLSX.utils.book_new()
-                //     XLSX.utils.book_append_sheet(wb, ws, name)
-                //     XLSX.writeFile(wb, `${fileName}.csv`, {
-                //         bookType: 'csv',
-                //     })
-                // } catch (error) {
-                //     console.error('downloadFileCsv', error)
-                // }
+                // const data: any[] = []
+                const data = columnsData.value.map((x) => {
+                    const y = JSON.parse(JSON.stringify(x))
+                    return {
+                        Name: y.details.name,
+                        Certification: y.details.certificateStatus,
+                        Depth: y.depth,
+                        Source: y.details.source,
+                        Type: y.details.typeName,
+                        Database: y.db,
+                        Schema: y.schema,
+                        Owners: y.owners,
+                        Classifications: y.classifications,
+                        Terms: y.terms.map((t) => t.termGuid),
+                    }
+                })
+
+                json2csv(data, (err, csv) => {
+                    if (err) {
+                        console.error(err)
+                        message.error(
+                            'Error downloading CSV, please try again.'
+                        )
+                    } else {
+                        const cell = getCell(guid.value)
+                        const { entity } = cell.store.data
+                        const fileName = `${entity.displayText}_lineage_impact`
+                        downloadFile(csv, fileName)
+                    }
+                })
             }
 
             watch(guid, () => {

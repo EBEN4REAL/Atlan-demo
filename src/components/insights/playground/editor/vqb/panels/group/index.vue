@@ -102,6 +102,7 @@
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
                                 "
+                                @change="handleCheckboxChange"
                             ></a-checkbox>
                         </div>
                         <div
@@ -279,7 +280,7 @@
             // )
 
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB } = useVQB()
+            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -339,6 +340,10 @@
                 { immediate: true }
             )
 
+            const handleCheckboxChange = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             return {
                 isChecked,
                 submenuHovered,
@@ -357,6 +362,7 @@
                 handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfGroupPanel,
+                handleCheckboxChange,
             }
         },
     })

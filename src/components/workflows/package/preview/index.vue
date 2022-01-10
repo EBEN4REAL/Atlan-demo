@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
-            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+            <div class="flex items-center" style="padding-bottom: 1px">
                 <div class="flex items-center justify-between">
                     <div
                         class="flex items-center flex-grow border-gray-200"
@@ -59,7 +59,7 @@
                         </div>
                         <div class="flex flex-col">
                             <div
-                                class="flex items-center text-base font-semibold truncate overflow-ellipsis"
+                                class="flex items-center text-base font-semibold leading-none truncate overflow-ellipsis"
                             >
                                 {{
                                     item?.metadata?.annotations[
@@ -121,7 +121,11 @@
                     />
                 </template>
 
-                <component :is="tab.component" :item="item"></component>
+                <component
+                    :is="tab.component"
+                    :item="item"
+                    :key="item?.metadata.name"
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -148,6 +152,9 @@
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
+            workflows: defineAsyncComponent(
+                () => import('./workflows/index.vue')
+            ),
         },
 
         props: {
@@ -155,21 +162,6 @@
                 type: Object,
                 required: false,
                 default: () => {},
-            },
-            tab: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            isDrawer: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            page: {
-                type: String,
-                required: false,
-                default: 'assets',
             },
         },
         emits: ['assetMutation', 'closeDrawer'],
@@ -182,6 +174,16 @@
                     icon: 'Property',
                     activeIcon: 'PropertyActive',
                     tooltip: 'Property',
+                    scrubbed: false,
+                    requiredInProfile: true,
+                    analyticsKey: 'property',
+                },
+                {
+                    name: 'Worfklows',
+                    component: 'workflows',
+                    icon: 'Property',
+                    activeIcon: 'PropertyActive',
+                    tooltip: 'Workflows',
                     scrubbed: false,
                     requiredInProfile: true,
                     analyticsKey: 'property',

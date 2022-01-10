@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import cronstrue from 'cronstrue'
 
 dayjs.extend(relativeTime)
 
@@ -62,6 +63,16 @@ export default function useWorkflowInfo() {
         return percentage
     }
 
+    const cron = (item) => {
+        return item?.metadata?.annotations['orchestration.atlan.com/schedule']
+    }
+
+    const cronString = (item) => {
+        if (cron(item)) {
+            return cronstrue.toString(cron(item))
+        }
+    }
+
     return {
         name,
         creationTimestamp,
@@ -73,5 +84,7 @@ export default function useWorkflowInfo() {
         duration,
         progress,
         progressPercent,
+        cronString,
+        cron,
     }
 }

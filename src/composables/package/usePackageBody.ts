@@ -124,6 +124,21 @@ export function usePackageBody(
                     }
                     break
                 }
+                case 'packageName': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.annotations.package.argoproj.io/name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
                 case 'packageNames': {
                     if (filterObject) {
                         base.filter('nested', {

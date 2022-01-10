@@ -8,6 +8,7 @@
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
+
             <div v-if="logoUrl && !logoNotFound" class="mb-1">
                 <router-link to="/">
                     <img
@@ -136,10 +137,7 @@
             })
 
             const logoUrl = computed(() => {
-                if (tenantStore.displayNameHtml) {
-                    return `${window.location.origin}/api/service/avatars/_logo_`
-                }
-                return ''
+                return `${window.location.origin}/api/service/avatars/_logo_`
             })
 
             const logoName = computed(() => tenantStore.displayName)

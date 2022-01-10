@@ -73,6 +73,62 @@ export default function useWorkflowInfo() {
         }
     }
 
+    const isCronRun = (item) => {
+        if (item?.metadata.ownerReferences?.length > 0) {
+            if (
+                item?.metadata.ownerReferences
+                    .map((i) => i.kind)
+                    .includes('CronWorkflow')
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    const getRunClass = (item) => {
+        const tempStatus = phase(item)
+        if (tempStatus === 'Succeeded') {
+            return 'bg-green-500 opacity-75'
+        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            return 'bg-red-500 opacity-75'
+        } else if (tempStatus === 'Running') {
+            return 'bg-primary opacity-75 animate-pulse'
+        } else {
+            return 'bg-gray-200'
+        }
+    }
+
+    // const getRunTimeContent = (item, relativeTime) => {
+    //     const tempStatus = phase(item)
+    //     if (tempStatus === 'Succeeded') {
+    //         return `${finishedAt(item, relativeTime)}`
+    //     } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+    //         return `${finishedAt(item, relativeTime)}`
+    //     } else if (tempStatus === 'Running') {
+    //         return `${startedAt(item, relativeTime)}`
+    //     }
+    //     return `${startedAt(item, relativeTime)}`
+    // }
+
+    const getRunTooltip = (item) => {
+        const tempStatus = phase(item)
+        if (tempStatus === 'Succeeded') {
+            return `${tempStatus}, ${finishedAt(item, true)} ago (${duration(
+                item
+            )})`
+        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            return `${tempStatus}, ${finishedAt(item, true)} ago (${duration(
+                item
+            )})`
+        } else if (tempStatus === 'Running') {
+            return `${tempStatus}, started ${startedAt(item, true)} ago`
+        }
+        return `${tempStatus}, ${finishedAt(item, true)} ago (${duration(
+            item
+        )})`
+    }
+
     return {
         name,
         creationTimestamp,
@@ -86,5 +142,8 @@ export default function useWorkflowInfo() {
         progressPercent,
         cronString,
         cron,
+        isCronRun,
+        getRunClass,
+        getRunTooltip,
     }
 }

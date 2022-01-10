@@ -104,6 +104,7 @@
             :class="$style.previewtab"
             tab-position="left"
             :destroy-inactive-tab-pane="true"
+            style="height: calc(100% - 74px)"
         >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
@@ -166,7 +167,7 @@
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const activeKey = ref(0)
+            const activeKey = ref(1)
             const filteredTabs = [
                 {
                     name: 'Property',

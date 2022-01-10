@@ -2,6 +2,7 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
+        style="height: 82vh"
     >
         <div
             v-if="!isComputeDone"
@@ -31,7 +32,6 @@
             :highlighted-node="highlightedNode"
             :is-cyclic="false"
             :graph="graph"
-            @show-impacted-assets="onShowImpactedAssets($event)"
             @show-add-lineage="onShowAddLineage($event)"
         />
 
@@ -53,16 +53,6 @@
                 class="minimap"
             ></div>
         </LineageFooter>
-
-        <!-- Impacted Assets -->
-        <LineageImpactedAssets
-            v-if="graph"
-            :visible="showImpactedAssets"
-            :graph="graph"
-            :guid="highlightedNode"
-            style="z-index: 600"
-            @cancel="showImpactedAssets = false"
-        />
 
         <!-- Add Lineage -->
         <LineageAdd
@@ -94,7 +84,6 @@
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
-    import LineageImpactedAssets from './lineageImpactedAssets.vue'
     import LineageAdd from './lineageAdd.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
@@ -108,7 +97,6 @@
         components: {
             LineageHeader,
             LineageFooter,
-            LineageImpactedAssets,
             LineageAdd,
             AssetDrawer,
         },
@@ -136,7 +124,6 @@
             const lineageContainer = ref(null)
             const graph = ref(null)
             const graphLayout = ref({})
-            const showImpactedAssets = ref(false)
             const showAddLineage = ref(false)
             const showMinimap = ref(false)
             const searchItems = ref([])
@@ -206,11 +193,6 @@
             provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
 
-            // onShowImpactedAssets
-            const onShowImpactedAssets = () => {
-                showImpactedAssets.value = true
-            }
-
             // onShowAddLineage
             const onShowAddLineage = () => {
                 showAddLineage.value = true
@@ -243,7 +225,6 @@
                 baseEntity,
                 graph,
                 showMinimap,
-                showImpactedAssets,
                 showAddLineage,
                 lineageContainer,
                 graphContainer,
@@ -254,7 +235,6 @@
                 loaderCords,
                 graphHeight,
                 graphWidth,
-                onShowImpactedAssets,
                 onShowAddLineage,
                 onCloseDrawer,
             }

@@ -26,9 +26,9 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed } from 'vue'
+    import { toRefs, computed, defineComponent } from 'vue'
 
-    export default {
+    export default defineComponent({
         props: {
             term: {
                 type: Object,
@@ -77,7 +77,7 @@
                 icon,
             }
         },
-    }
+    })
 </script>
 
 <style></style>

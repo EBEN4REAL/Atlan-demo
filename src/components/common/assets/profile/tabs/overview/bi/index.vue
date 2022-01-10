@@ -1,9 +1,12 @@
 <template>
     <div class="flex flex-col p-6 gap-y-4">
-        <AnnouncementWidget
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
-        <Summary :asset="selectedAsset" />
+        <Summary :asset="selectedAsset">
+            <template #announcement>
+                <AnnouncementWidget
+                    :selected-asset="selectedAsset"
+                    class="mb-4"
+                ></AnnouncementWidget> </template
+        ></Summary>
         <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>

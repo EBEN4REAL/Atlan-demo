@@ -58,11 +58,12 @@ export const userColumns = [
         slots: { customRender: 'name' },
         sortKey: 'firstName',
         align: 'left',
-        width: 350,
+        width: '30%',
         sortDirections: ['ASC', 'DESC'],
         ascOrderString: `Sort by name (A-Z)`,
         descOrderString: `Sort by name (Z-A)`,
         sorter: true,
+        fixed: 'left',
     },
     {
         title: 'Role',
@@ -70,6 +71,7 @@ export const userColumns = [
         sorter: false,
         slots: { customRender: 'role' },
         // dataIndex: ['role_object', 'name'],
+        width: '15%',
     },
     {
         title: 'Status',
@@ -82,6 +84,7 @@ export const userColumns = [
         //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
         // ],
         filterMultiple: false,
+        width: '15%',
     },
     {
         title: 'Groups',
@@ -94,6 +97,7 @@ export const userColumns = [
         ascOrderString: `Sort by group count`,
         descOrderString: `Sort by group count`,
         // dataIndex: 'group_count_string',
+        width: '15%',
     },
     {
         title: 'Personas',
@@ -101,11 +105,13 @@ export const userColumns = [
         // sorter: true,
         align: 'left',
         slots: { customRender: 'persona' },
+        width: '15%',
     },
     {
         title: '',
         slots: { customRender: 'actions' },
         align: 'right',
+        width: '15%',
     },
 ]
 

@@ -252,6 +252,8 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { selectedTables } from '~/types/insights/VQB.interface'
 
     import {
@@ -269,6 +271,7 @@
             TablesTree,
             ColumnKeys,
             PopoverAsset,
+            AtlanBtn,
         },
         // emits: ['queryTextChange', 'checkboxChange'],
         props: {
@@ -350,6 +353,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -496,6 +506,7 @@
                     selectedItems.value = []
                     // emit('checkboxChange', [])
                 }
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const input1Change = () => {
@@ -558,6 +569,7 @@
                 })
 
                 selectedColumnsData.value = [...columns]
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
@@ -614,6 +626,7 @@
                 map.value = {}
                 selectAll.value = false
                 selectedColumnsData.value = []
+                updateVQB(activeInlineTabKey, inlineTabs)
                 console.log(map.value, 'destroy')
             }
             onMounted(() => {

@@ -107,6 +107,7 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -152,6 +153,16 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -220,6 +231,8 @@
                     },
                 })
                 subpanels.value = copySubPanels
+
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }

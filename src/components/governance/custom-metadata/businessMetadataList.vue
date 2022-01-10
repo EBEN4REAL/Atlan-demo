@@ -14,15 +14,25 @@
                     size="16px"
                 />
                 <p
-                    class="pr-1 m-0 overflow-hidden text-sm leading-none truncate"
+                    class="w-full pr-1 m-0 overflow-hidden text-sm leading-none"
                     :class="
                         isSelected
                             ? 'text-primary font-semibold'
                             : 'text-gray hover:text-primary hover:font-semibold'
                     "
                 >
-                    {{ item.displayName || item.name }}
+                    <Truncate :tooltipText="item.displayName" />
                 </p>
+                <a-tooltip
+                    v-if="item.description"
+                    tabindex="-1"
+                    :title="item.description"
+                    placement="right"
+                >
+                    <span
+                        ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                    ></span>
+                </a-tooltip>
             </div>
         </template>
     </ExplorerList>
@@ -31,9 +41,10 @@
     import { defineComponent, toRefs } from 'vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { ExplorerList, CustomMetadataAvatar },
+        components: { ExplorerList, CustomMetadataAvatar, Truncate },
         props: {
             finalList: { type: Object, required: true },
             selectedBm: { type: [Object, null], required: true },

@@ -7,6 +7,7 @@
         style="height: 32px !important"
         placeholder="Enter multi values 1,2,3"
         :token-separators="[',']"
+        @change="handleChange"
     >
         <template #suffixIcon>
             <CustomVariableTrigger />
@@ -15,9 +16,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        inject,
+        ComputedRef,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import CustomVariableTrigger from './customVariableTrigger.vue'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -32,8 +43,36 @@
         setup(props, { emit }) {
             const { inputValue } = useVModels(props)
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
+            }
+
+            const handleChange = () => {
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
+                // updateVQB(activeInlineTabKey, inlineTabs)
+            }
             return {
                 inputValue,
+                handleChange,
             }
         },
     })

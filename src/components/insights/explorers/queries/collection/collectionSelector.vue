@@ -86,25 +86,25 @@
             </div>
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
-            <div class="flex items-center overflow-x-hidden">
+            <div class="flex items-center w-full">
                 <span class="mr-2 -mt-2 w-7 h-7" style="font-size: 28px">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'
                 }}</span>
 
-                <div class="flex group-hover:text-primary" style="width: 90%">
-                    <div class="flex flex-col">
-                        <div class="flex items-center">
-                            <span
-                                class="mr-2 text-base font-bold text-gray-700 truncate"
-                                >{{
-                                    selectedCollection?.attributes?.name
-                                }}</span
-                            >
+                <div class="flex w-full bg">
+                    <div class="flex flex-col w-full">
+                        <div class="flex items-center w-11/12">
+                            <Tooltip
+                                :tooltip-text="`${selectedCollection?.attributes?.name}`"
+                                :classes="'mr-1 text-base font-bold text-gray-700 '"
+                                tooltip-color="#363636"
+                            />
+
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="self-center h-4 text-gray-400"
+                                class="self-center w-4 h-4 text-gray-500"
                             ></AtlanIcon>
                         </div>
 
@@ -117,19 +117,6 @@
                                 : 'Shared, Read only'
                         }}</span>
                     </div>
-
-                    <!-- <AtlanIcon
-                        v-if="isCollectionPrivate(selectedCollection, username)"
-                        icon="PrivateCollection"
-                        class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon> -->
-                    <!-- <AtlanIcon
-                        v-if="
-                            !isCollectionPrivate(selectedCollection, username)
-                        "
-                        icon="PublicCollection"
-                        class="self-center w-4 h-4 -mt-1"
-                    ></AtlanIcon> -->
                 </div>
             </div>
         </div>
@@ -162,11 +149,12 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import CollectionItem from './collectionItem.vue'
     import map from '~/constant/accessControl/map'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'CollectionSelector',
         emits: ['update:data', 'toggleCollectionModal'],
-        components: { AtlanIcon, SearchAndFilter, CollectionItem },
+        components: { AtlanIcon, SearchAndFilter, CollectionItem, Tooltip },
         setup(props, { emit }) {
             // store
             const authStore = useAuthStore()
@@ -215,31 +203,63 @@
             })
 
             const sharedCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            !isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
-                    return !isCollectionPrivate(coll, username)
-                })
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                !isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
+                        return !isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
             const privateCollections = computed(() =>
-                queryCollections.value?.filter((coll) => {
-                    if (queryText) {
-                        return (
-                            isCollectionPrivate(coll, username) &&
-                            coll?.displayText
-                                ?.toLowerCase()
-                                .includes(queryText.value?.toLowerCase())
-                        )
-                    }
+                queryCollections.value
+                    ?.filter((coll) => {
+                        if (queryText) {
+                            return (
+                                isCollectionPrivate(coll, username) &&
+                                coll?.displayText
+                                    ?.toLowerCase()
+                                    .includes(queryText.value?.toLowerCase())
+                            )
+                        }
 
-                    return isCollectionPrivate(coll, username)
-                })
+                        return isCollectionPrivate(coll, username)
+                    })
+                    .sort((a, b) => {
+                        if (
+                            a.displayText?.toLocaleLowerCase() <
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return -1
+                        }
+                        if (
+                            a.displayText?.toLocaleLowerCase() >
+                            b.displayText?.toLocaleLowerCase()
+                        ) {
+                            return 1
+                        }
+                        return 0
+                    })
             )
 
             const hasCollectionReadPermission = inject(

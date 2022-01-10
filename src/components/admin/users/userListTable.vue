@@ -22,7 +22,7 @@
                     )
                 }}</template>
                 <div
-                    class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    class="flex justify-start font-normal tracking-wide  uppercase cursor-pointer group hover:text-gray-700"
                     :class="column.align === 'right' ? 'flex-row-reverse' : ''"
                 >
                     <div>
@@ -171,7 +171,7 @@
                 :destroy-tooltip-on-hide="true"
             >
                 <template #content>
-                    <div class="p-3 content-popover-group-persona">
+                    <div class="p-3 pb-4 content-popover-group-persona">
                         <div class="flex justify-between">
                             Personas
                             <!-- <div>
@@ -668,6 +668,8 @@
     }
     .content-popover-group-persona {
         width: 180px;
+        height: auto;
+        max-height: 170px;
     }
 </style>
 

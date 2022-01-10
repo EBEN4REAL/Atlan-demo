@@ -103,6 +103,7 @@
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
                                 "
+                                @change="handleCheckboxChange"
                             ></a-checkbox>
                         </div>
                         <div
@@ -270,8 +271,18 @@
                         ]?.expand
                 }
             )
+
+            // watch(
+            //     activeInlineTab.value.playground.vqb.panels[index.value]
+            //         .subpanels,
+            //     () => {
+            //         activeInlineTab.value.isSaved = false
+            //     },
+            //     { deep: true }
+            // )
+
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB } = useVQB()
+            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -348,6 +359,10 @@
                     : true
             )
 
+            const handleCheckboxChange = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             return {
                 readOnly,
                 isChecked,
@@ -367,6 +382,7 @@
                 handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfGroupPanel,
+                handleCheckboxChange,
             }
         },
     })

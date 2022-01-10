@@ -9,9 +9,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRa,
+        ComputedRef,
+        inject,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import RaisedTab from '@/UI/raisedTab.vue'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -32,10 +42,24 @@
 
         setup(props, { emit }) {
             const { filterType, disabled } = useVModels(props)
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const tabConfig = ref([
                 { key: 'and', label: 'AND' },
                 { key: 'or', label: 'OR' },
             ])
+
+            watch(filterType, () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            })
 
             return {
                 disabled,

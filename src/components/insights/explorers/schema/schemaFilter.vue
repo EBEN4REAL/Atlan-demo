@@ -66,6 +66,7 @@
                 @change-active-key="handleActiveKeyChange"
                 @reset="handleResetEvent"
                 :allow-custom-filters="false"
+                noFilterTitle="Filter tables"
             ></AssetFilters>
         </div>
     </div>

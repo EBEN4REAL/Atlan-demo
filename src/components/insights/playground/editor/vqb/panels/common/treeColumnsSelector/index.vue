@@ -439,8 +439,9 @@
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-
+    import AtlanBtn from '~/components/UI/button.vue'
     import useBody from './useBody'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Table Selector',
@@ -449,6 +450,7 @@
             Loader,
             ColumnKeys,
             PopoverAsset,
+            AtlanBtn,
             SearchAndFilter,
         },
         props: {
@@ -497,6 +499,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { allowedTablesInJoinSelector } = useJoin()
 
             const tableQualifiedNamesContraint: Ref<{
@@ -676,6 +685,7 @@
             }
             const clearAllSelected = () => {
                 emit('change', {})
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -689,7 +699,7 @@
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     columnCount: ls.attributes?.columnCount,
-                    qualifiedName: ls.attributes.qualifiedName,
+                    qualifiedName: ls.attributes?.qualifiedName,
                     attributes: ls.attributes,
                     typeName: ls.typeName,
                     item: ls,
@@ -703,10 +713,10 @@
             const columnDropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
-                    qualifiedName: ls.attributes.qualifiedName,
-                    type: ls.attributes.dataType,
+                    qualifiedName: ls.attributes?.qualifiedName,
+                    type: ls.attributes?.dataType,
                     attributes: ls.attributes,
-                    order: ls.attributes.order,
+                    order: ls.attributes?.order,
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
                     isPartition: ls.attributes?.isPartition,
@@ -746,6 +756,7 @@
                 isTableSelected.value = true
                 queryText.value = ''
                 replaceBody(getColumnInitialBody(item))
+                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 setFocusedCusror()
@@ -756,6 +767,7 @@
                 isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceBody(getTableInitialBody())
+                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 setFocusedCusror()
@@ -777,6 +789,7 @@
                             activeInlineTab.value.playground.vqb.selectedTables
                         )
                     )
+                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 isAreaFocused.value = false

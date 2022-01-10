@@ -73,11 +73,14 @@
         toRaw,
         ComputedRef,
         onUnmounted,
+        ComputedRef,
+        inject,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import dayjs from 'dayjs'
     import CustomVariableTrigger from './customVariableTrigger.vue'
     import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
@@ -122,6 +125,16 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             watch(
                 [selectedFilter],
                 () => {
@@ -138,6 +151,17 @@
             if (type.value === 'date' && inputValue.value)
                 localeValue.value = dayjs(inputValue.value)
 
+            let timeout = null
+
+            function createDebounce() {
+                return function (fnc, delayMs) {
+                    clearTimeout(timeout)
+                    timeout = setTimeout(() => {
+                        fnc()
+                    }, delayMs || 500)
+                }
+            }
+
             const onChange = (event, type) => {
                 if (type === 'text') {
                     inputValue.value = event.target.value
@@ -147,6 +171,11 @@
                 } else if (type == 'number') {
                     inputValue.value = event
                 }
+
+                createDebounce()(() => {
+                    updateVQB(activeInlineTabKey, inlineTabs)
+                }, 2000)
+                // updateVQB(activeInlineTabKey, inlineTabs)
             }
             function isNumberKey(evt) {
                 const charCode = evt.which ? evt.which : evt.keyCode

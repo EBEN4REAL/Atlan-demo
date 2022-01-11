@@ -285,6 +285,10 @@ import EmptyCollections from '~/assets/images/illustrations/empty-collections.sv
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
+import ClassificationShield from '~/assets/images/classifications/shield.svg'
+import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
+
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
@@ -671,4 +675,7 @@ export default {
     WarningIcon,
     SidebarSwitch,
     Clock,
+    ClassificationShield,
+    ClassificationAtlan,
+    ClassificationPropagated,
 }

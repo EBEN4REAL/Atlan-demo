@@ -76,7 +76,7 @@
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'ClassificationWidget',

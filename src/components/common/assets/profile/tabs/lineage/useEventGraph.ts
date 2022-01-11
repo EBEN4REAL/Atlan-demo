@@ -29,7 +29,6 @@ export default function useEventGraph(
     const che = ref('') // che -> currentHilightedEdge
     const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
     const nodesCaretClicked = ref([])
-    const isCaretClicked = ref(false)
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
 
@@ -155,10 +154,6 @@ export default function useEventGraph(
     // getPortNode
     const getPortNode = (id) =>
         graph.value.getNodes().find((x) => x.hasPort(id))
-
-    // isNodeExpanded
-    const isNodeExpanded = (id) =>
-        chp.value.expandedNodes.some((x) => x.id === id)
 
     // controlPorts
     const controlPorts = (node, columns, override = false) => {
@@ -315,7 +310,7 @@ export default function useEventGraph(
                 const caretElement = Array.from(
                     graphNodeElement.querySelectorAll('*')
                 ).find((y) => y.classList.contains('node-caret'))
-                controlCaret(x.id, caretElement)
+                controlCaret(x.id, caretElement, true)
             })
 
             getNodeColumnList(translateCandidates, data.value.relations)
@@ -359,7 +354,15 @@ export default function useEventGraph(
         return [target].concat(getParents(target), window)
     }
 
-    const controlCaret = (nodeId, caretEle) => {
+    const controlCaret = (nodeId, caretEle, override = false) => {
+        if (override) {
+            if (!nodesCaretClicked.value.includes(nodeId)) {
+                nodesCaretClicked.value.push(nodeId)
+            }
+            caretEle.classList.add('caret-expanded')
+            return
+        }
+
         if (nodesCaretClicked.value.includes(nodeId)) {
             const index = nodesCaretClicked.value.findIndex((x) => x === nodeId)
             nodesCaretClicked.value.splice(index, 1)

@@ -106,7 +106,7 @@
         </div>
 
         <span
-            v-if="!readonly"
+            v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >

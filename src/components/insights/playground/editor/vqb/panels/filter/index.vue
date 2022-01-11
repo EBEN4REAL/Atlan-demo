@@ -293,7 +293,7 @@
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
-            const { getSummarisedInfoOfFilterPanel } = useUtils()
+
             const { deleteVariable } = useCustomVariable(
                 editorInstance,
                 monacoInstance
@@ -316,8 +316,42 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const {
+                getSummarisedInfoOfFilterPanel,
+                getInitialPanelExpandedState,
+            } = useUtils()
+
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             const expand = ref(
-                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
+                getInitialPanelExpandedState(
+                    readOnly.value,
+                    panel.value.id,
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        ?.expand,
+
+                    isFilterIsInteractive(
+                        activeInlineTab.value?.playground?.vqb?.panels[
+                            index.value
+                        ]?.subpanels
+                    )
+                )
             )
             watch(
                 () => activeInlineTab.value.playground.vqb.panels,
@@ -450,24 +484,6 @@
                     handleDelete(_index)
                 }
             }
-
-            /* Accesss */
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser.value
-                    ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
-            )
 
             watch(
                 activeInlineTab,

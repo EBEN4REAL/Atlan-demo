@@ -184,7 +184,10 @@
             },
         },
         setup(props, { emit }) {
-            const { getTableNamesStringFromQualfieidNames } = useUtils()
+            const {
+                getTableNamesStringFromQualfieidNames,
+                getInitialPanelExpandedState,
+            } = useUtils()
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
@@ -204,15 +207,42 @@
                     activeInlineTab.value.playground.vqb?.panels?.length == 1
                 )
                     return true
-                if (
-                    activeInlineTab.value.playground.vqb.panels[index.value]
-                        .expand
-                )
-                    return true
+                // if (
+                //     activeInlineTab.value.playground.vqb.panels[index.value]
+                //         .expand
+                // )
+                //     return true
 
                 return false
             }
-            const expand = ref(getInitialExpandValue())
+
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            const expand = ref(
+                !getInitialExpandValue()
+                    ? getInitialPanelExpandedState(
+                          readOnly.value,
+                          panel.value.id,
+                          getInitialExpandValue()
+                      )
+                    : true
+            )
             watch(
                 () => activeInlineTab.value.playground.vqb.panels,
                 () => {
@@ -284,24 +314,6 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
-
-            /* Accesss */
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser.value
-                    ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
-            )
 
             return {
                 readOnly,

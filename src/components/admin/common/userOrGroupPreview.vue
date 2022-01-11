@@ -2,7 +2,7 @@
     <div class="relative h-full pb-6">
         <Shortcut
             shortcut-key="esc"
-            action="close preview"
+            action="close"
             placement="left"
             :delay="0.4"
             :edit-permission="true"

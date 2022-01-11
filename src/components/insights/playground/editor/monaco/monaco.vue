@@ -422,13 +422,12 @@
                         comments: false,
                         strings: true,
                     },
-                    // scrollbar: {
-                    //     useShadows: true,
-                    //     verticalHasArrows: false,
-                    //     vertical: 'visible',
-                    //     horizontal: 'hidden',
-                    //     verticalScrollbarSize: 25,
-                    // },
+                    scrollbar: {
+                        useShadows: false,
+                        verticalHasArrows: true,
+                        vertical: 'visible',
+                        verticalScrollbarSize: 8,
+                    },
                 })
 
                 editor.onDidChangeCursorSelection((e) => {

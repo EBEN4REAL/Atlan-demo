@@ -59,18 +59,21 @@ export default function useBusinessMetadata() {
     router.replace(`/governance/custom-metadata/${id}`)
   }
 
-  const selectedBm = computed(() => {
-    const bm = finalBusinessMetadataList.value?.find(
-      (cmObj) => cmObj.guid === selectedId.value
+  const resetSelection = () => {
+    if (
+      finalBusinessMetadataList.value?.length &&
+      finalBusinessMetadataList.value[0]?.guid
     )
-    if (!bm) {
-      const firstBM = finalBusinessMetadataList.value?.length && finalBusinessMetadataList.value[0]
-      if (firstBM?.guid)
-        select(firstBM.guid)
-      return firstBM
-    }
-    return bm
+      select(finalBusinessMetadataList.value[0].guid)
   }
+
+  const selectedBm = computed(
+    () => {
+      const bm = finalBusinessMetadataList.value?.find(
+        (cmObj) => cmObj.guid === selectedId.value
+      )
+      return bm
+    }
   )
 
 
@@ -197,6 +200,7 @@ export default function useBusinessMetadata() {
     searchText,
     searchedBusinessMetadataList,
     selectedBm,
+    resetSelection,
     validatePayload,
     sortedSearchedBM,
   }

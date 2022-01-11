@@ -64,6 +64,13 @@
                     :selected-bm="selectedBm"
                     @update="onUpdate"
                 />
+                <template v-else>
+                    <EmptyView
+                        empty-screen="Error"
+                        headline="Not Found"
+                        desc="The metadata you're looking for has been archived or doesn't exist."
+                    />
+                </template>
             </ExplorerLayout>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty
@@ -102,7 +109,14 @@
 </template>
 <script lang="ts">
     // ? components
-    import { defineComponent, computed, onMounted, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        onMounted,
+        ref,
+        watch,
+        provide,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
@@ -115,7 +129,7 @@
     import NoAccess from '@/admin/common/noAccessPage.vue'
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
-
+    import EmptyView from '@/common/empty/index.vue'
     // ? Composables
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import useAuth from '~/composables/auth/useAuth'
@@ -127,6 +141,7 @@
     export default defineComponent({
         name: 'BusinessMetadata',
         components: {
+            EmptyView,
             BusinessMetadataList,
             BusinessMetadataProfile,
             ExplorerLayout,
@@ -153,6 +168,7 @@
                 searchedBusinessMetadataList,
                 finalBusinessMetadataList,
                 sortedSearchedBM,
+                resetSelection,
             } = useBusinessMetadata()
             const { isAccess, checkAccess } = useAuth()
 
@@ -162,13 +178,6 @@
                 }
             }, 500)
 
-            const resetSelection = () => {
-                if (
-                    finalBusinessMetadataList.value?.length &&
-                    finalBusinessMetadataList.value[0]?.guid
-                )
-                    select(finalBusinessMetadataList.value[0].guid)
-            }
             onMounted(() => {
                 sendPageEvent()
                 if (route.params.id) {
@@ -179,6 +188,8 @@
             watch(selectedId, () => {
                 sendPageEvent()
             })
+
+            provide('resetSelection', resetSelection)
 
             return {
                 selectedId,

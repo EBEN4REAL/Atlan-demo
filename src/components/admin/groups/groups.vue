@@ -9,7 +9,7 @@
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div
-                v-if="groupList.length > 0"
+                v-if="groupList.length > 0 && !error"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div class="flex w-1/4">

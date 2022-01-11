@@ -1,6 +1,7 @@
 <template>
     <AssetList
         v-if="fetchAssets"
+        :key="selectedAsset?.guid"
         class="bg-white"
         :filters="tabFilter"
         :static-use="true"

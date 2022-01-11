@@ -118,7 +118,7 @@
                                         color="minimal"
                                         padding="compact"
                                         style="height: fit-content"
-                                        @click.stop="
+                                        @click="
                                             (e) => actionClick(e, item.item)
                                         "
                                     >
@@ -135,7 +135,7 @@
                                 </template>
                                 <div
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                    @click.stop="(e) => onSelectItem(item, e)"
+                                    @click="(e) => onSelectItem(item, e)"
                                     :class="
                                         selectedItem?.qualifiedName ===
                                         item.columnQualifiedName
@@ -247,7 +247,7 @@
                                             color="minimal"
                                             padding="compact"
                                             style="height: fit-content"
-                                            @click.stop="
+                                            @click="
                                                 (e) => actionClick(e, item.item)
                                             "
                                         >
@@ -265,9 +265,7 @@
 
                                     <div
                                         class="flex items-center justify-between w-full pl-4 pr-2 cursor-pointer h-9 hover:bg-primary-selected-focus"
-                                        @click.stop="
-                                            (e) => onSelectTable(item, e)
-                                        "
+                                        @click="(e) => onSelectTable(item, e)"
                                     >
                                         <div class="flex items-center truncate">
                                             <AtlanIcon
@@ -328,7 +326,7 @@
                                 <AtlanIcon
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5"
-                                    @click.stop="onUnselectTable"
+                                    @click="onUnselectTable"
                                 />
 
                                 <span
@@ -392,7 +390,7 @@
                                                 color="minimal"
                                                 padding="compact"
                                                 style="height: fit-content"
-                                                @click.stop="
+                                                @click="
                                                     (e) =>
                                                         actionClick(
                                                             e,
@@ -413,7 +411,7 @@
                                         </template>
                                         <div
                                             class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
-                                            @click.stop="
+                                            @click="
                                                 (e) => onSelectItem(item, e)
                                             "
                                             :class="

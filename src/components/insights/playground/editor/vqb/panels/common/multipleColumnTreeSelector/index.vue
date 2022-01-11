@@ -10,7 +10,6 @@
         "
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
-        tabindex="0"
         class="relative flex items-center w-full z-1"
         :class="[
             isAreaFocused
@@ -20,7 +19,6 @@
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
-        @click.stop="() => {}"
     >
         <template
             v-if="enrichedSelectedItems.length !== 0"
@@ -29,6 +27,9 @@
         >
             <slot name="chip" :item="item"> </slot>
         </template>
+        <span v-else class="text-gray-500">
+            {{ placeholder }}
+        </span>
 
         <div class="absolute right-2">
             <AtlanIcon
@@ -60,7 +61,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',
@@ -105,7 +106,7 @@
                             </div>
                         </div>
                         <div
-                            v-if="!tableSelected?.qualifiedName"
+                            v-if="!tableSelected?.qualifiedName && !isLoading"
                             style="height: 205px"
                             class="w-full overflow-y-auto dropdown-container"
                             :class="[
@@ -134,7 +135,7 @@
                                             color="minimal"
                                             padding="compact"
                                             style="height: fit-content"
-                                            @click.stop="
+                                            @click="
                                                 (e) => actionClick(e, item.item)
                                             "
                                         >
@@ -152,9 +153,7 @@
 
                                     <div
                                         class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
-                                        @click.stop="
-                                            (e) => onSelectTable(item, e)
-                                        "
+                                        @click="(e) => onSelectTable(item, e)"
                                     >
                                         <div class="flex items-center truncate">
                                             <AtlanIcon
@@ -209,7 +208,7 @@
                             class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                         >
                             <div
-                                class="flex items-center text-gray-700 truncate"
+                                class="flex items-center text-gray-700 truncate dropdown-container"
                             >
                                 <AtlanIcon
                                     icon="ChevronLeft"
@@ -243,6 +242,7 @@
                         </div>
 
                         <div
+                            v-if="!isLoading"
                             class="pl-2 pr-2 overflow-y-auto dropdown-container"
                             style="height: 205px"
                             :class="[
@@ -271,7 +271,7 @@
                                             color="minimal"
                                             padding="compact"
                                             style="height: fit-content"
-                                            @click.stop="
+                                            @click="
                                                 (e) => actionClick(e, item.item)
                                             "
                                         >

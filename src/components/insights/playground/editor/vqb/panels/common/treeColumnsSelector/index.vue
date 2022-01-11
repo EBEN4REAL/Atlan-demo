@@ -91,7 +91,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',

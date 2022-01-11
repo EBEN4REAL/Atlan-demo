@@ -25,19 +25,41 @@
         </template>
         <div class="h-32 p-4 space-y-2">
             <div class="flex items-center gap-x-1">
-                <a-popover :visibile="visibile" :trigger="['click']">
-                    <CustomMetadataAvatar
-                        class="hover:bg-gray-100"
-                        :metadata="form"
-                    />
+                <a-popover
+                    v-model:visible="emojiVisibility"
+                    :trigger="['click']"
+                >
+                    <div
+                        class="cursor-pointer"
+                        @click="emojiVisibility = !emojiVisibility"
+                    >
+                        <span
+                            v-if="form.options.logoType === 'emoji'"
+                            class="text-lg"
+                            >{{ form.options.emoji }}</span
+                        >
+                        <img
+                            v-else-if="form.options.logoType === 'image'"
+                            class="w-5 h-5"
+                            :src="my_photo"
+                            alt=""
+                        />
+                        <div
+                            v-else
+                            class="flex items-center justify-center w-full h-full"
+                        >
+                            <AtlanIcon icon="NoAvatar" class="h-auto" />
+                        </div>
+                    </div>
                     <template #content
                         ><EmojiPicker
+                            :emoji="form.options.emoji"
+                            :image="imageFile"
                             @select="emojiSelect"
                             @remove="emojiRemove"
                             @upload="handleUpload"
                     /></template>
                 </a-popover>
-                <!-- <AvatarUpdate :metadata="form" class="mb-1" /> -->
                 <a-input
                     id="name-input"
                     v-model:value="form.displayName"
@@ -48,7 +70,7 @@
             <a-textarea
                 v-model:value="form.description"
                 placeholder="Add description..."
-                class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none"
+                class="p-0 text-gray-700 border-0 shadow-none outline-none resize-none"
             ></a-textarea>
         </div>
     </a-modal>
@@ -66,10 +88,10 @@
     import AtlanButton from '@/UI/button.vue'
 
     import EmojiPicker from '@/common/avatar/emojiPicker.vue'
-    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
+    import useUploadImage from '~/composables/image/uploadImage'
 
     export default defineComponent({
-        components: { AtlanButton, EmojiPicker, CustomMetadataAvatar },
+        components: { AtlanButton, EmojiPicker },
         props: {
             isEdit: {
                 type: Boolean,
@@ -165,6 +187,44 @@
                 )
             }
 
+            const emojiVisibility = ref(false)
+            const imageFile = ref()
+            const my_photo = ref()
+
+            // image uploader ======================================================
+            const {
+                data: imageUploadData,
+                error: imageUploadError,
+                isLoading: isUploading,
+                upload,
+            } = useUploadImage()
+
+            const emojiSelect = ({ native }) => {
+                emojiVisibility.value = false
+                form.value.options.logoType = 'emoji'
+                form.value.options.emoji = native
+                form.value.options.imageId = null
+                my_photo.value = null
+                imageFile.value = null
+            }
+
+            const handleUpload = async (payload) => {
+                emojiVisibility.value = false
+                form.value.options.logoType = 'image'
+                form.value.options.emoji = null
+                console.log({ payload })
+                const { file } = payload
+                imageFile.value = file
+                const data = URL.createObjectURL(imageFile.value)
+                my_photo.value = data
+            }
+
+            const emojiRemove = () => {
+                form.value.options.logoType = ''
+                form.value.options.emoji = null
+                form.value.options.imageId = null
+            }
+
             const handleAddBusinessMetadata = async () => {
                 // error.value = null
                 const validatedBm = hasName(form.value.hasName)
@@ -188,33 +248,31 @@
                             },
                         }
                     )
-                else
+                else if (
+                    form.value.options.logoType === 'image' &&
+                    imageFile.value
+                ) {
+                    await upload(imageFile.value)
+                    console.log({ imageUploadData, imageUploadError })
+
+                    form.value.options.imageId = imageUploadData.value.id
+
                     apiResponse.value = Types.CreateTypedefs(
                         {
                             businessMetadataDefs: [form.value],
                         },
                         { options: { params: { type: 'BUSINESS_METADATA' } } }
                     )
-
+                }
                 handleUpdateBMResponse(apiResponse)
             }
 
-            const visibile = ref(false)
-
-            const emojiSelect = (emoji) => {
-                console.log({ emoji })
-            }
-            const handleUpload = (payload) => {
-                console.log({ payload })
-            }
-
-            const emojiRemove = () => {}
-
             return {
+                my_photo,
                 emojiRemove,
                 handleUpload,
                 emojiSelect,
-                visibile,
+                emojiVisibility,
                 // data
                 visible,
                 loading,

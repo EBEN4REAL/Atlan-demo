@@ -25,6 +25,7 @@
                             activeInlineTab.playground.vqb.selectedTables
                         "
                         @change="(val) => handleColumnChange(val, index)"
+                        :disabled="readOnly"
                     />
                     <AggregatorGroupColumnsSelector
                         class="flex-1"
@@ -34,6 +35,7 @@
                         "
                         @change="(val) => handleColumnChange(val, index)"
                         v-model:selectedItem="subpanel.aggregateORGroupColumn"
+                        :disabled="readOnly"
                     />
 
                     <span class="px-3 text-sm text-gray-500">order by</span>
@@ -42,10 +44,12 @@
                         v-model:active="subpanel.order"
                         class="mr-auto"
                         :data="tabConfig"
+                        :disabled="readOnly"
+                        @update:active="updateData"
                     />
 
                     <AtlanIcon
-                        v-if="isSubpanelClosable(subpanels)"
+                        v-if="isSubpanelClosable(subpanels) && !readOnly"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
@@ -57,9 +61,10 @@
                 </div>
             </template>
         </div>
-
+        {{ readonly }}
         <span>
             <div
+                v-if="!readonly"
                 class="items-center mt-3 cursor-pointer text-primary"
                 @click.stop="handleAddPanel"
             >
@@ -79,6 +84,7 @@
         toRaw,
         inject,
         ComputedRef,
+        computed,
     } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
@@ -92,6 +98,9 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import AggregatorGroupColumnsSelector from '../aggregateGroupSelector/index.vue'
+
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -133,6 +142,16 @@
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             watch(columnName, () => {
                 if (!columnName.value) {
                     selectedAggregates.value = []
@@ -168,11 +187,13 @@
                     aggregateORGroupColumn: {},
                 })
                 subpanels.value = copySubPanels
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const changeColumn = (column) => {
@@ -185,9 +206,42 @@
                 { key: 'desc', label: 'DESC' },
             ])
 
+            const updateData = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             // const selectedOrder = ref('asc')
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            watch(
+                activeInlineTab,
+                () => {
+                    console.log('updated data: ', activeInlineTab.value)
+                },
+                { immediate: true }
+            )
+
             return {
+                isQueryCreatedByCurrentUser,
+                hasQueryWritePermission,
+                readOnly,
                 getAggregationORGroupPanelColumns,
                 isAggregationORGroupPanelColumnsAdded,
                 isSubpanelClosable,
@@ -205,6 +259,7 @@
                 hoverItem,
                 // selectedOrder,
                 tabConfig,
+                updateData,
             }
         },
     })

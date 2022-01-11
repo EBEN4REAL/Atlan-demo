@@ -1,83 +1,43 @@
 <template>
     <div class="p-6 bg-white border border-gray-200 rounded">
-        <!-- <div class="flex items-center mb-4">
+        <div class="flex items-center mb-4">
             <AtlanIcon icon="TableSummary" class="w-auto h-8 mr-3" /><span
                 class="text-base font-bold text-gray"
                 >{{ getSummaryVariants(asset)?.label }} Summary</span
             >
-        </div> -->
+        </div>
         <slot name="announcement"></slot>
         <div class="flex flex-col gap-y-3">
-            <div class="grid grid-cols-2">
-                <div class="flex flex-col">
-                    <p class="text-gray-500">Name</p>
-                    <div class="flex items-center mb-0 overflow-hidden">
-                        <div
-                            v-if="
-                                ['column'].includes(
-                                    asset.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex mr-1"
-                        >
-                            <component
-                                :is="dataTypeCategoryImage(asset)"
-                                class="h-4 text-gray-500 mb-0.5"
-                            />
-                        </div>
-                        <div
-                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
-                        >
-                            {{ title(asset) }}
-                        </div>
-
-                        <CertificateBadge
-                            v-if="certificateStatus(asset)"
-                            :status="certificateStatus(asset)"
-                            :username="certificateUpdatedBy(asset)"
-                            :timestamp="certificateUpdatedAt(asset)"
-                            class="mb-1 ml-1"
-                        ></CertificateBadge>
-                        <a-tooltip placement="right"
-                            ><template #title>Limited Access</template>
-                            <AtlanIcon
-                                v-if="isScrubbed(asset)"
-                                icon="Lock"
-                                class="h-4 mb-1 ml-1"
-                            ></AtlanIcon
-                        ></a-tooltip>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-3">
+            <div
+                v-if="getSummaryVariants(asset)?.components?.length"
+                class="flex gap-x-16"
+            >
+                <div
+                    v-for="(component, index) in getSummaryVariants(asset)
+                        ?.components"
+                    :key="index"
+                >
                     <div
-                        v-if="
-                            !isGTC(asset) &&
-                            !['Connection', 'Process'].includes(asset.typeName)
-                        "
-                        class="flex flex-col text-sm"
+                        v-if="component === 'Categories'"
+                        class="flex flex-col"
                     >
-                        <span class="mb-1 text-gray-500">Connection</span>
-                        <div class="flex items-center">
-                            <img
-                                :src="getConnectorImage(asset)"
-                                class="h-4 mr-1"
-                            />
-                            <span>{{
-                                `${connectorName(asset)}/${connectionName(
-                                    asset
-                                )}`
-                            }}</span>
-                        </div>
+                        <p class="mb-1 text-sm text-gray-500">Categories</p>
+                        <Categories
+                            v-model="localCategories"
+                            :selected-asset="asset"
+                            :edit-permission="false"
+                            :allow-delete="false"
+                        />
                     </div>
-                    <!-- <div class="flex flex-col">
-                    <p class="text-gray-500">Asset Type</p>
-                    {{ asset.typeName }}
-                </div> -->
+                    <component
+                        v-else
+                        :is="component"
+                        :asset="asset"
+                    ></component>
                 </div>
             </div>
             <div class="flex flex-col">
-                <p class="text-gray-500">Description</p>
+                <p class="mb-1 text-gray-500">Description</p>
                 <Description
                     ref="descriptionRef"
                     v-model="localDescription"
@@ -87,6 +47,32 @@
                     class="-ml-1"
                     @change="handleChangeDescription"
                 />
+            </div>
+            <div class="flex gap-x-32">
+                <div ref="animationPoint" class="flex flex-col">
+                    <p class="mb-1 text-sm text-gray-500">Certificate</p>
+
+                    <Certificate
+                        v-model="localCertificate"
+                        :selected-asset="asset"
+                        :edit-permission="false"
+                        :in-profile="true"
+                        :show-add-btn="false"
+                        @change="handleChangeCertificate"
+                    />
+                </div>
+
+                <div v-if="asset.guid" class="flex flex-col max-w-sm">
+                    <p class="mb-1 text-sm text-gray-500">Owners</p>
+                    <Owners
+                        v-model="localOwners"
+                        :selected-asset="asset"
+                        :edit-permission="false"
+                        :in-profile="true"
+                        :show-add-btn="false"
+                        @change="handleOwnersChange"
+                    />
+                </div>
             </div>
         </div>
         <slot></slot>
@@ -122,6 +108,9 @@
             Owners,
             Rows: defineAsyncComponent(() => import('./types/rows.vue')),
             Columns: defineAsyncComponent(() => import('./types/columns.vue')),
+            Categories: defineAsyncComponent(
+                () => import('@common/input/categories/categories.vue')
+            ),
             Definition: defineAsyncComponent(
                 () => import('./types/definition.vue')
             ),
@@ -133,6 +122,18 @@
             ),
             ParentGlossary: defineAsyncComponent(
                 () => import('./types/parentGlossary.vue')
+            ),
+            ParentWorkspace: defineAsyncComponent(
+                () => import('./types/parentWorkspace.vue')
+            ),
+            ParentReport: defineAsyncComponent(
+                () => import('./types/parentReport.vue')
+            ),
+            ParentDashboard: defineAsyncComponent(
+                () => import('./types/parentDashboard.vue')
+            ),
+            Connection: defineAsyncComponent(
+                () => import('./types/connection.vue')
             ),
         },
 
@@ -174,6 +175,7 @@
                 handleChangeCertificate,
                 descriptionRef,
                 animationPoint,
+                localCategories,
             } = updateAssetAttributes(asset)
 
             return {
@@ -197,6 +199,7 @@
                 connectorName,
                 connectionName,
                 getConnectorImage,
+                localCategories,
             }
         },
     })

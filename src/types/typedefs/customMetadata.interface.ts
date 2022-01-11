@@ -25,3 +25,14 @@ export interface CUSTOM_METADATA_ATTRIBUTE {
     valuesMinCount: number,
     isNew: boolean,
 }
+
+export interface FileItem {
+    uid: string;
+    name?: string;
+    status?: string;
+    response?: string;
+    url?: string;
+    preview?: string;
+    originFileObj?: any;
+    file: string | Blob;
+}

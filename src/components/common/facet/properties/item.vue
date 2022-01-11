@@ -7,7 +7,10 @@
                 : ''
         "
     >
-        <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'">
+        <div
+            class="w-full"
+            :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'"
+        >
             <Truncate :tooltipText="attribute.displayName" :rows="2" />
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">

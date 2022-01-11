@@ -1,13 +1,27 @@
 <template>
     <div style="width: min-content !important">
-        <RaisedTab v-model:active="filterType" :data="tabConfig" />
+        <RaisedTab
+            v-model:active="filterType"
+            :disabled="disabled"
+            :data="tabConfig"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRa,
+        ComputedRef,
+        inject,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import RaisedTab from '@/UI/raisedTab.vue'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -19,16 +33,36 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { filterType } = useVModels(props)
+            const { filterType, disabled } = useVModels(props)
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const tabConfig = ref([
                 { key: 'and', label: 'AND' },
                 { key: 'or', label: 'OR' },
             ])
 
+            watch(filterType, () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            })
+
             return {
+                disabled,
                 tabConfig,
                 filterType,
             }

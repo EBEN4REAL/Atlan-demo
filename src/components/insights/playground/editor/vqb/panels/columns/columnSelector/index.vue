@@ -13,7 +13,7 @@
                 : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
-            !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
+            disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -28,7 +28,7 @@
         <a-input
             v-if="selectedItems.length > 0 && isAreaFocused"
             ref="inputRef"
-            :disabled="!tableQualfiedName"
+            :disabled="disabled"
             v-model:value="inputValue1"
             @focus="
                 () => {
@@ -40,19 +40,19 @@
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
                 'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <a-input
             v-if="selectedItems.length == 0"
             ref="initialRef"
-            :disabled="!tableQualfiedName"
+            :disabled="disabled"
             v-model:value="inputValue2"
             @change="input2Change"
             :placeholder="placeholder"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !tableQualfiedName ? $style.custom_input : '',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -64,7 +64,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
                 icon="Search"
                 class="w-4 h-4"
@@ -93,7 +93,7 @@
                         mouseOver,
                         tableQualfiedName,
                         selectedItems
-                    )
+                    ) && !disabled
                 "
             />
         </div>
@@ -252,6 +252,8 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { selectedTables } from '~/types/insights/VQB.interface'
 
     import {
@@ -269,6 +271,7 @@
             TablesTree,
             ColumnKeys,
             PopoverAsset,
+            AtlanBtn,
         },
         // emits: ['queryTextChange', 'checkboxChange'],
         props: {
@@ -304,6 +307,11 @@
                     assetType: string | undefined
                 }>,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
@@ -312,6 +320,7 @@
                 showSelectAll,
                 selectedTableData,
                 selectedTablesQualifiedNames,
+                disabled,
             } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
@@ -344,6 +353,13 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -361,17 +377,17 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
-                if (!tableQualfiedName.value) return
+                if (disabled?.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
                     console.log(inputRef?.value, 'he')
-                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                    inputRef?.value?.focus()
                 })
             }
             const setFocusedCusror = () => {
-                if (!tableQualfiedName.value) return
+                if (disabled?.value) return
                 nextTick(() => {
-                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                    inputRef?.value?.focus()
                 })
             }
 
@@ -490,6 +506,7 @@
                     selectedItems.value = []
                     // emit('checkboxChange', [])
                 }
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const input1Change = () => {
@@ -552,6 +569,7 @@
                 })
 
                 selectedColumnsData.value = [...columns]
+                updateVQB(activeInlineTabKey, inlineTabs)
 
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
@@ -580,6 +598,7 @@
                                 return true
                             if (selectedItems.length !== 0 && !mouseHover)
                                 return true
+                            if (disabled?.value) return true
                         }
                         break
                     }
@@ -607,6 +626,7 @@
                 map.value = {}
                 selectAll.value = false
                 selectedColumnsData.value = []
+                updateVQB(activeInlineTabKey, inlineTabs)
                 console.log(map.value, 'destroy')
             }
             onMounted(() => {
@@ -687,6 +707,7 @@
             }
 
             return {
+                disabled,
                 cancelEventBlur,
                 containerPosition,
                 actionClick,

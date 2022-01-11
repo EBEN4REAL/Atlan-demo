@@ -236,6 +236,7 @@ export default function useGraph() {
         const portData = {
             id: item.guid,
             group: 'columnList',
+            entity: item,
             attrs: {
                 portBody: {},
                 portNameLabel: {

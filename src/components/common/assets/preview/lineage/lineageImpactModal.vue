@@ -1,11 +1,10 @@
 <template>
     <a-modal
         :visible="visible"
-        :class="$style.input"
         :footer="null"
         width="85vw"
         style="z-index: 600"
-        @cancel="emit('cancel')"
+        @cancel="$emit('update:visible', false)"
     >
         <div class="w-full p-4 text-gray-500 bg-white rounded">
             <!-- Header -->
@@ -81,8 +80,8 @@
                                     {{ owner }}
                                 </span>
                                 <span
-                                    class="text-sm text-gray-500"
                                     v-if="text.length - 2 > 0"
+                                    class="text-sm text-gray-500"
                                 >
                                     +{{ text.length - 2 }}
                                 </span>
@@ -156,16 +155,25 @@
             </div>
 
             <!-- Footer CTA -->
-            <div class="flex justify-end w-full">
-                <a-button @click="emit('cancel')">Close</a-button>
-                <a-button
-                    :disabled="columnsData.length === 0"
-                    type="primary"
-                    class="flex items-center justify-between ml-4"
+            <div class="flex justify-end w-full gap-x-4">
+                <AtlanButton
+                    padding="compact"
+                    size="sm"
+                    color="secondary"
+                    @click="$emit('update:visible', false)"
+                >
+                    Close
+                </AtlanButton>
+
+                <AtlanButton
+                    padding="compact"
+                    size="sm"
+                    :disabled="columnsData.length === 0 || !isReady"
+                    :loading="isLoading"
                     @click="downloadImpactedAssets"
                 >
                     Download
-                </a-button>
+                </AtlanButton>
             </div>
         </div>
     </a-modal>
@@ -173,46 +181,59 @@
 
 <script lang="ts">
     /** VUE */
-    import { defineComponent, ref, onMounted, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        onMounted,
+        toRefs,
+        watch,
+        computed,
+        ref,
+    } from 'vue'
 
     /** MODULES */
     import { message } from 'ant-design-vue'
     import { json2csv } from 'json-2-csv'
+    import { whenever } from '@vueuse/core'
 
     /** COMPOSABLES */
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useGetNodes from './useGetNodes'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import useLineageService from '~/services/meta/lineage/lineage_service'
+    import { AssetAttributes } from '~/constant/projection'
 
     /** COMPONENTS */
     import TermPill from '@/common/pills/term.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import AtlanButton from '@/UI/button.vue'
     import { downloadFile } from '~/utils/library/download'
 
+    /** LINEAGE PARAMETERS */
+    const depth = 21
+    const direction = 'OUTPUT'
+
     export default defineComponent({
-        name: 'LineageImpactedAssets',
-        components: { TermPill, ClassificationPill, CertificateBadge, Tooltip },
+        name: 'LineageImpactModal',
+        components: {
+            TermPill,
+            ClassificationPill,
+            CertificateBadge,
+            Tooltip,
+            AtlanButton,
+        },
         props: {
-            graph: {
-                required: true,
-            },
-            guid: {
-                type: String,
-                required: true,
-            },
+            guid: { type: String, required: true },
+            assetName: { type: String, required: true },
             visible: {
                 type: Boolean,
                 required: true,
             },
         },
-        emits: ['cancel'],
-        setup(props, { emit }) {
-            const isLoading = ref(true)
-            const { graph, guid } = toRefs(props)
-            const columnsData = ref([])
-
+        emits: ['update:visible'],
+        setup(props) {
+            const { guid, assetName, visible } = toRefs(props)
+            const { useFetchLineage } = useLineageService()
             const {
                 ownerGroups,
                 ownerUsers,
@@ -220,7 +241,12 @@
                 getConnectorImage,
                 assetTypeLabel,
             } = useAssetInfo()
+
             const { classificationList } = useTypedefData()
+
+            /** This is a flag. We check if the guid has changed and
+             * only then fetch the impacted assets. */
+            const updateNeeded = ref(true)
 
             const getClassification = (ids: String[]) =>
                 classificationList.value.filter((clsf) =>
@@ -255,59 +281,61 @@
                 return item[3]
             }
 
-            const getCell = (guid) => graph.value.getCellById(guid)
+            const {
+                data: downstreamData,
+                isLoading,
+                isReady,
+                mutate: mutateDownstream,
+                error,
+            } = useFetchLineage(
+                computed(() => ({
+                    depth,
+                    direction,
+                    guid: guid.value,
+                    hideProcess: true,
+                    attributes: AssetAttributes,
+                }))
+            )
+
+            const downstreamAssets = computed(() =>
+                Object.values(downstreamData.value?.guidEntityMap || {}).filter(
+                    (asset) => asset.guid !== guid.value
+                )
+            )
+
+            const columnsData = computed(() =>
+                downstreamAssets.value.map((entity, idx) => ({
+                    key: idx,
+                    details: {
+                        name: entity.displayText || entity.attributes.name,
+                        typeName: assetTypeLabel(entity) || entity.typeName,
+                        source: getSource(entity),
+                        sourceImg: getConnectorImage(entity),
+                        qfPath: entity.attributes?.qualifiedName
+                            ?.split('/')
+                            .slice(3, -1)
+                            .join('/'),
+                        certificateStatus: entity.attributes?.certificateStatus,
+                        certificateUpdatedBy:
+                            entity.attributes?.certificateUpdatedBy,
+                        certificateUpdatedAt: certificateUpdatedAt(entity),
+                    },
+                    db: getTable(entity),
+                    schema: getSchema(entity),
+                    depth: 1,
+                    owners: [...ownerUsers(entity), ...ownerGroups(entity)],
+                    classifications: entity.classificationNames,
+                    terms: entity.meanings,
+                }))
+            )
 
             const getImpactedAssets = () => {
-                if (!guid.value) return
-                columnsData.value = []
-                const { successors } = useGetNodes(graph, guid.value, false)
-                successors.forEach((x) => {
-                    const cell = getCell(x)
-                    const { entity } = cell.store.data
-
-                    if (
-                        !['Process', 'AtlanProcess', 'ColumnProcess'].includes(
-                            entity.typeName
-                        )
-                    )
-                        columnsData.value.push({
-                            key: columnsData.value.length + 1,
-                            details: {
-                                name:
-                                    entity.displayText ||
-                                    entity.attributes.name,
-                                typeName:
-                                    assetTypeLabel(entity) || entity.typeName,
-                                source: getSource(entity),
-                                sourceImg: getConnectorImage(entity),
-                                qfPath: entity.attributes?.qualifiedName
-                                    ?.split('/')
-                                    .slice(3, -1)
-                                    .join('/'),
-                                certificateStatus:
-                                    entity.attributes?.certificateStatus,
-                                certificateUpdatedBy:
-                                    entity.attributes?.certificateUpdatedBy,
-                                certificateUpdatedAt:
-                                    certificateUpdatedAt(entity),
-                            },
-                            db: getTable(entity),
-                            schema: getSchema(entity),
-                            depth: 1,
-                            owners: [
-                                ...ownerUsers(entity),
-                                ...ownerGroups(entity),
-                            ],
-                            classifications: entity.classificationNames,
-                            terms: entity.meanings,
-                        })
-                })
-
-                isLoading.value = false
+                if (!guid.value || !updateNeeded.value) return
+                mutateDownstream()
+                updateNeeded.value = false
             }
 
             const downloadImpactedAssets = () => {
-                // const data: any[] = []
                 const data = columnsData.value.map((x) => {
                     const y = JSON.parse(JSON.stringify(x))
                     return {
@@ -325,36 +353,35 @@
                 })
 
                 json2csv(data, (err, csv) => {
-                    if (err) {
-                        console.error(err)
+                    if (err)
                         message.error(
                             'Error downloading CSV, please try again.'
                         )
-                    } else {
-                        const cell = getCell(guid.value)
-                        const { entity } = cell.store.data
-                        const fileName = `${entity.displayText}_lineage_impact`
-                        downloadFile(csv, fileName)
-                    }
+                    else downloadFile(csv, `${assetName.value}_lineage_impact`)
                 })
             }
 
             watch(guid, () => {
-                getImpactedAssets()
+                updateNeeded.value = true
             })
 
-            onMounted(() => {
-                getImpactedAssets()
+            whenever(error, () => {
+                if (error.value)
+                    message.error('There was an error fetching lineage.')
             })
+
+            /** We only trigger the re-fetch when the modal is opened */
+            whenever(visible, getImpactedAssets)
 
             return {
-                emit,
+                error,
                 downloadImpactedAssets,
                 getClassification,
                 isPropagated,
                 getConnectorImage,
                 assetTypeLabel,
                 isLoading,
+                isReady,
                 columnsData,
                 columns: [
                     {
@@ -393,17 +420,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .input {
-        :global(.ant-input:focus
-                .ant-input:hover
-                .ant-input::selection
-                .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none border-0 px-0 !important;
-        }
-    }
-</style>

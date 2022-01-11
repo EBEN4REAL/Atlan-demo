@@ -3,7 +3,7 @@
         <span class="mb-1 text-sm text-gray-500">Glossary</span>
         <router-link
             :to="getAnchorProfile(asset)"
-            class="text-primary hover:underline"
+            class="font-bold text-primary hover:underline"
             >{{ getAnchorName(asset) }}</router-link
         >
     </div>

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!showVQB">
+    <div v-if="(showVQB && activeInlineTab?.queryId) || !showVQB">
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
@@ -16,7 +16,7 @@
                     "
                     :class="$style.menu_class"
                 >
-                    <a-sub-menu key="themes">
+                    <a-sub-menu key="themes" v-if="!showVQB">
                         <template #title>
                             <div
                                 class="flex items-center justify-between w-full mr-2"
@@ -84,7 +84,11 @@
                         </div>
                     </a-sub-menu>
                     <!-- Tab Spacing -->
-                    <a-sub-menu key="Tab Spacing" style="min-width: 200px">
+                    <a-sub-menu
+                        key="Tab Spacing"
+                        style="min-width: 200px"
+                        v-if="!showVQB"
+                    >
                         <template #title>
                             <div
                                 class="flex items-center justify-between w-full mr-2"
@@ -178,7 +182,11 @@
                     </a-sub-menu>
                     <!-- ------------------------------- -->
                     <!-- Font size -->
-                    <a-sub-menu key="fontsize" class="text-gray-500">
+                    <a-sub-menu
+                        key="fontsize"
+                        class="text-gray-500"
+                        v-if="!showVQB"
+                    >
                         <template #title>
                             <div
                                 class="flex items-center justify-between w-full mr-2 text-gray-500"
@@ -295,7 +303,11 @@
                     <!-- ------------------------------- -->
 
                     <!-- Cursor style -->
-                    <a-sub-menu key="cursorStyle" class="text-gray-500">
+                    <a-sub-menu
+                        key="cursorStyle"
+                        class="text-gray-500"
+                        v-if="!showVQB"
+                    >
                         <template #title>
                             <div
                                 class="flex items-center justify-between w-full mr-2 text-gray-500"
@@ -420,12 +432,8 @@
                             </a-menu-item>
                         </div>
                     </a-sub-menu>
-                    <!-- ------------------------------- -->
-                    <!-- <a-sub-menu key="test" title="Font family">
-                        <a-menu-item>Fira code</a-menu-item>
-                        <a-menu-item>Sans serif</a-menu-item>
-                    </a-sub-menu>-->
-                    <hr />
+
+                    <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
                         <a-sub-menu key="shareQuery" style="min-width: 200px">
@@ -480,7 +488,10 @@
                         > -->
                         <hr />
                     </div>
-                    <a-menu-item @click="openCommandPallete" class="px-4 py-2"
+                    <a-menu-item
+                        @click="openCommandPallete"
+                        class="px-4 py-2"
+                        v-if="!showVQB"
                         >Open command palette</a-menu-item
                     >
                 </a-menu>

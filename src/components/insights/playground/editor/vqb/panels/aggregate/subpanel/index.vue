@@ -19,6 +19,7 @@
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
+                        :disabled="readOnly"
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
@@ -35,10 +36,11 @@
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         @checkChange="checkChange"
+                        :disabled="readOnly"
                     />
 
                     <AtlanIcon
-                        v-if="isSubpanelClosable(subpanels)"
+                        v-if="isSubpanelClosable(subpanels) && !readOnly"
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
@@ -52,6 +54,7 @@
         </div>
 
         <span
+            v-if="!readonly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -83,6 +86,8 @@
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { dataTypeCategoryList } from '~/constant/dataType'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -117,11 +122,22 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const columnName = ref('Hello World')
             const columnType = ref('char')
             const selectedTables = computed(() => {
                 return activeInlineTab.value.playground.vqb.selectedTables
             })
+
+            const { updateVQB } = useVQB()
 
             watch(columnName, () => {
                 if (!columnName.value) {
@@ -140,8 +156,32 @@
                 const copySubPanel = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value[index]))
                 )
+                /* Change only if types are different */
+
+                const _getDataType1 = () => {
+                    const found = dataTypeCategoryList.find((d) =>
+                        d.type.find(
+                            (type) =>
+                                type.toLowerCase() ===
+                                copySubPanel.column?.type?.toLowerCase()
+                        )
+                    )
+                    return found?.label
+                }
+                const _getDataType2 = () => {
+                    const found = dataTypeCategoryList.find((d) =>
+                        d.type.find(
+                            (type) =>
+                                type.toLowerCase() === val?.type?.toLowerCase()
+                        )
+                    )
+                    return found?.label
+                }
+                if (_getDataType1() !== _getDataType2()) {
+                    copySubPanel.aggregators = []
+                }
+
                 copySubPanel.column = val
-                copySubPanel.aggregators = []
 
                 subpanels.value[index] = copySubPanel
                 console.log(subpanels.value)
@@ -159,10 +199,13 @@
                 })
                 subpanels.value = copySubPanels
 
+                updateVQB(activeInlineTabKey, inlineTabs)
+
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const changeColumn = (column) => {
@@ -170,8 +213,27 @@
             }
 
             let hoverItem = ref(null)
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             return {
+                readOnly,
                 isSubpanelClosable,
                 activeInlineTab,
                 selectedTables,

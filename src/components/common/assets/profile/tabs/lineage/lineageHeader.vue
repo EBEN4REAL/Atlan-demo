@@ -16,29 +16,13 @@
                 </a-tooltip>
             </div>
             <LineageSearch v-if="showSearch" />
-            <div class="control-item" @click="onShowImpactedAssets()">
-                <a-tooltip placement="top">
-                    <template #title>
-                        <span> show impacted assets </span>
-                    </template>
-                    <AtlanIcon
-                        icon="ImpactedAssets"
-                        class="outline-none"
-                        :class="
-                            isLeafNode || !highlightedNode
-                                ? 'text-gray-500 cursor-not-allowed'
-                                : 'text-primary'
-                        "
-                    ></AtlanIcon>
-                </a-tooltip>
-            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, inject, computed, toRefs } from 'vue'
+    import { defineComponent, ref, computed, toRefs } from 'vue'
 
     // Components
     import LineageSearch from './lineageSearch.vue'
@@ -60,6 +44,7 @@
                 required: true,
             },
             graph: {
+                type: Object,
                 required: true,
             },
         },
@@ -75,19 +60,10 @@
                 return graph.value.isLeafNode(cell)
             })
 
-            /** METHODS */
-            // onShowImpactedAssets
-            const onShowImpactedAssets = () => {
-                if (!highlightedNode.value) return
-                if (isLeafNode.value) return
-                emit('show-impacted-assets')
-            }
-
             return {
                 isLeafNode,
                 emit,
                 showSearch,
-                onShowImpactedAssets,
             }
         },
     })

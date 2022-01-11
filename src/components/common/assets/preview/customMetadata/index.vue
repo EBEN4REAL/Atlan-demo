@@ -9,7 +9,7 @@
         >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
-                    <Truncate :tooltipText="data.label" :rows="2" />
+                    <Truncate :tooltip-text="data.label" :rows="2" />
 
                     <a-tooltip>
                         <template #title>
@@ -72,6 +72,7 @@
                     : 'max-height: calc(100vh - 12rem)'
             "
         >
+            <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
                     v-if="applicableList.filter((i) => hasValue(i)).length"
@@ -83,17 +84,22 @@
                         :key="x"
                     >
                         <div class="mb-5">
-                            <div class="mb-2 font-normal text-gray-500">
-                                <span class="">{{ a.displayName }}</span>
+                            <div class="flex mb-2 font-normal text-gray-500">
+                                <Truncate
+                                    :tooltipText="a.displayName"
+                                    :rows="1"
+                                />
                                 <a-tooltip>
                                     <template #title>
                                         <span>{{ a.options.description }}</span>
                                     </template>
-                                    <AtlanIcon
-                                        v-if="a.options.description"
-                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                        icon="Info"
-                                    />
+                                    <div class="">
+                                        <AtlanIcon
+                                            v-if="a.options.description"
+                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                            icon="Info"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
 
@@ -115,34 +121,42 @@
                                 )"
                                 :key="x"
                             >
-                                <div class="mb-2 font-normal text-gray-500">
-                                    <span class="">
-                                        {{ a.displayName }}
-                                        <template
-                                            v-if="
-                                                getHumanTypeName(
-                                                    getDatatypeOfAttribute(a)
-                                                ) !== 'Text'
-                                            "
-                                        >
+                                <div
+                                    class="flex mb-2 font-normal text-gray-500 gap-x-2"
+                                >
+                                    <Truncate
+                                        classes="text-gray-500"
+                                        clampPercentage="80%"
+                                        :tooltipText="a.displayName"
+                                    />
+                                    <template
+                                        v-if="
+                                            getHumanTypeName(
+                                                getDatatypeOfAttribute(a)
+                                            ) !== 'Text'
+                                        "
+                                    >
+                                        <div>
                                             ({{
                                                 getHumanTypeName(
                                                     getDatatypeOfAttribute(a)
                                                 ).toLowerCase()
                                             }})
-                                        </template>
-                                    </span>
+                                        </div>
+                                    </template>
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
                                                 a.options.description
                                             }}</span>
                                         </template>
-                                        <AtlanIcon
-                                            v-if="a.options.description"
-                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                            icon="Info"
-                                        />
+                                        <div class="">
+                                            <AtlanIcon
+                                                v-if="a.options.description"
+                                                class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                                icon="Info"
+                                            />
+                                        </div>
                                     </a-tooltip>
                                 </div>
                             </template>
@@ -210,16 +224,15 @@
                                                     <div
                                                         class="flex items-center w-full gap-x-1"
                                                     >
-                                                        <span
+                                                        <div
                                                             class="flex-grow text-gray-700"
                                                         >
                                                             <Truncate
-                                                                :tooltipText="
+                                                                :tooltip-text="
                                                                     p.displayName
                                                                 "
-                                                                :rows="2"
                                                             />
-                                                        </span>
+                                                        </div>
                                                         <a-tooltip>
                                                             <template #title>
                                                                 <span>{{
@@ -348,12 +361,7 @@
                 <template v-for="(a, x) in applicableList" :key="x">
                     <div class="mb-5">
                         <div class="flex mb-2 font-normal text-gray-500">
-                            <span class="">
-                                <Truncate
-                                    :tooltipText="a.displayName"
-                                    :rows="2"
-                                />
-                            </span>
+                            <Truncate :tooltip-text="a.displayName" />
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ a.options.description }}</span>

@@ -4,14 +4,13 @@ import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
-import { useConnectionStore } from '~/store/connection'
-
-import { Ref } from 'vue'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
     let res = ''
-    const type = getInputTypeFromColumnType(subpanel?.column?.type)
+    const type = getInputTypeFromColumnType(
+        subpanel?.column?.type
+    )?.toLocaleLowerCase()
     if (type === 'number') res += `${Number(value)}`
     else if (type === 'text') {
         if (subpanel?.filter?.name?.includes('like')) {
@@ -55,17 +54,6 @@ export function getTableName(columnQualifiedName: string) {
         return `"${spiltArray[5]}"`
     }
     return ''
-}
-const getConnectionName = (attributeValue) => {
-    let newValue = ''
-    let newValueArr = attributeValue.split('/')
-    // default/snowflake/1242
-    newValue = `${newValueArr[0]}/${newValueArr[1]}/${newValueArr[2]}`
-    const connStore = useConnectionStore()
-    const found = connStore.getList.find(
-        (conn) => conn.attributes.qualifiedName === newValue
-    )
-    return found?.attributes?.name || ''
 }
 
 export function generateSQLQuery(
@@ -352,7 +340,11 @@ export function generateSQLQuery(
     if (filter?.hide) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
-            if (subpanel?.column?.label && nameMap[subpanel?.filter?.name]) {
+            if (
+                subpanel?.column?.label &&
+                nameMap[subpanel?.filter?.name] &&
+                subpanel.filter?.value !== undefined
+            ) {
                 res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
                 const tableName = getTableName(
                     subpanel.column.columnQualifiedName ??
@@ -383,95 +375,26 @@ export function generateSQLQuery(
                 switch (subpanel?.filter?.type) {
                     case 'range_input': {
                         if (subpanel?.filter?.name === 'between') {
-                            if (subpanel.filter?.isVariable) {
-                                const variable1 =
-                                    activeInlineTab.playground.editor.variables.find(
-                                        (variable) =>
-                                            variable?.subpanelId === subpanel.id
-                                    )
-                                // inputNumField
-                                const variable2 =
-                                    activeInlineTab.playground.editor.variables.find(
-                                        (variable) =>
-                                            variable?.subpanelId ===
-                                            `${subpanel.id}2`
-                                    )
-
-                                let firstVal = getValueStringFromType(
+                            if (subpanel?.filter?.value?.length > 0) {
+                                const firstVal = getValueStringFromType(
                                     subpanel,
-                                    variable1?.value ?? ''
+                                    subpanel?.filter?.value[0] ?? ''
                                 )
-                                let secondVal = getValueStringFromType(
+                                const secondVal = getValueStringFromType(
                                     subpanel,
-                                    variable2?.value ?? ''
+                                    subpanel?.filter?.value[1] ?? ''
                                 )
-                                /* Check if the type is date */
-                                if (
-                                    subpanel?.column?.type?.toLowerCase() ===
-                                    'date'
-                                ) {
-                                    firstVal = getValueStringFromType(
-                                        subpanel,
-                                        variable1?.value?.format(
-                                            'YYYY-MM-DD HH:mm:ss'
-                                        )
-                                    )
-                                    secondVal = getValueStringFromType(
-                                        subpanel,
-                                        variable2?.value?.format(
-                                            'YYYY-MM-DD HH:mm:ss'
-                                        )
-                                    )
-                                }
                                 res += `${firstVal} AND ${secondVal}`
-                            } else {
-                                if (subpanel?.filter?.value?.length > 0) {
-                                    const firstVal = getValueStringFromType(
-                                        subpanel,
-                                        subpanel?.filter?.value[0] ?? ''
-                                    )
-                                    const secondVal = getValueStringFromType(
-                                        subpanel,
-                                        subpanel?.filter?.value[1] ?? ''
-                                    )
-                                    res += `${firstVal} AND ${secondVal}`
-                                }
                             }
                         }
                         break
                     }
                     case 'input': {
-                        if (subpanel.filter?.isVariable) {
-                            const variable =
-                                activeInlineTab.playground.editor.variables.find(
-                                    (variable) =>
-                                        variable?.subpanelId === subpanel.id
-                                )
+                        res += `${getValueStringFromType(
+                            subpanel,
+                            subpanel?.filter?.value ?? ''
+                        )}`
 
-                            /* Check if the type is date */
-                            if (
-                                subpanel?.column?.type?.toLowerCase() === 'date'
-                            ) {
-                                res += `
-                                    ${getValueStringFromType(
-                                        subpanel,
-                                        variable?.value.format(
-                                            'YYYY-MM-DD HH:mm:ss'
-                                        )
-                                    )}`
-                            } else {
-                                res += `
-                                      ${getValueStringFromType(
-                                          subpanel,
-                                          variable?.value ?? ''
-                                      )}`
-                            }
-                        } else {
-                            res += `${getValueStringFromType(
-                                subpanel,
-                                subpanel?.filter?.value ?? ''
-                            )}`
-                        }
                         break
                     }
                     case 'multi_input': {

@@ -11,30 +11,50 @@
             <a-radio-group
                 v-model:value="direction"
                 button-style="solid"
-                size="small"
                 @change="handleChangeDirection"
             >
-                <a-radio-button value="BOTH" size="small">All</a-radio-button>
-                <a-radio-button value="UPSTREAM" size="small"
-                    >Upstream
-                    <span :class="$style.chip">{{
-                        upstreamGuids?.length
-                    }}</span>
+                <a-radio-button value="BOTH">
+                    <a-tooltip title="All">
+                        <AtlanIcon icon="ArrowUpDown" />
+                    </a-tooltip>
                 </a-radio-button>
-                <a-radio-button value="DOWNSTREAM" size="small"
-                    >Downstream
-                    <span :class="$style.chip">{{
-                        downstreamGuids?.length
-                    }}</span></a-radio-button
-                >
+                <a-radio-button value="UPSTREAM">
+                    <a-tooltip title="Upstream">
+                        <AtlanIcon
+                            icon="ArrowDown"
+                            class="transform rotate-180"
+                        />
+                        <span :class="$style.chip">{{
+                            upstreamGuids?.length
+                        }}</span>
+                    </a-tooltip>
+                </a-radio-button>
+                <a-radio-button value="DOWNSTREAM">
+                    <a-tooltip title="Downstream">
+                        <AtlanIcon icon="ArrowDown" />
+                        <span :class="$style.chip">{{
+                            downstreamGuids?.length
+                        }}</span>
+                    </a-tooltip>
+                </a-radio-button>
             </a-radio-group>
-            <AtlanButton
-                padding="compact"
-                size="sm"
-                color="light"
-                @click="showImpactedAssets = true"
-                >View Impact</AtlanButton
-            >
+            <a-button-group>
+                <a-tooltip title="View Impact">
+                    <a-button
+                        class="flex items-center justify-center"
+                        @click="showImpactedAssets = true"
+                    >
+                        <AtlanIcon icon="ImpactedAssets" />
+                    </a-button>
+                </a-tooltip>
+                <a-tooltip title="View Graph">
+                    <a-button class="flex items-center justify-center">
+                        <router-link :to="link">
+                            <AtlanIcon icon="Minimap" />
+                        </router-link>
+                    </a-button>
+                </a-tooltip>
+            </a-button-group>
         </div>
         <Assets
             v-if="selectedGuids.length > 0"
@@ -325,9 +345,11 @@
 
 <style lang="less" module>
     .chip {
-        @apply self-center text-xs font-bold tracking-wide text-gray-400 ml-0;
+        @apply self-center text-xs font-bold tracking-wide ml-0;
     }
-
+    :global(.ant-radio-button-wrapper) {
+        @apply text-gray inline-flex items-center;
+    }
     :global(.ant-radio-button-wrapper-checked) {
         .chip {
             @apply text-white;

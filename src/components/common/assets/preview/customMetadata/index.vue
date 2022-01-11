@@ -72,6 +72,7 @@
                     : 'max-height: calc(100vh - 12rem)'
             "
         >
+            <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
                     v-if="applicableList.filter((i) => hasValue(i)).length"
@@ -120,42 +121,42 @@
                                 )"
                                 :key="x"
                             >
-                                <div class="mb-2 font-normal text-gray-500">
-                                    <div class="flex gap-x-2">
-                                        <Truncate
-                                            :tooltipText="a.displayName"
-                                        />
-                                        <template
-                                            v-if="
+                                <div
+                                    class="flex mb-2 font-normal text-gray-500 gap-x-2"
+                                >
+                                    <Truncate
+                                        classes="text-gray-500"
+                                        clampPercentage="80%"
+                                        :tooltipText="a.displayName"
+                                    />
+                                    <template
+                                        v-if="
+                                            getHumanTypeName(
+                                                getDatatypeOfAttribute(a)
+                                            ) !== 'Text'
+                                        "
+                                    >
+                                        <div>
+                                            ({{
                                                 getHumanTypeName(
                                                     getDatatypeOfAttribute(a)
-                                                ) !== 'Text'
-                                            "
-                                        >
-                                            <span>
-                                                ({{
-                                                    getHumanTypeName(
-                                                        getDatatypeOfAttribute(
-                                                            a
-                                                        )
-                                                    ).toLowerCase()
-                                                }})</span
-                                            >
-                                        </template>
-                                    </div>
+                                                ).toLowerCase()
+                                            }})
+                                        </div>
+                                    </template>
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
                                                 a.options.description
                                             }}</span>
                                         </template>
-                                        <span class="">
+                                        <div class="">
                                             <AtlanIcon
                                                 v-if="a.options.description"
                                                 class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                                 icon="Info"
                                             />
-                                        </span>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                             </template>

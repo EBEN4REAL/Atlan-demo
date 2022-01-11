@@ -115,13 +115,16 @@
                 localSelected.value = selectedAsset.value
             })
 
-            watch(route, () => {
-                dependentKey.value = fetchKey.value
-                facets.value = {
-                    guid: id.value,
+            watch(
+                () => id.value,
+                () => {
+                    dependentKey.value = fetchKey.value
+                    facets.value = {
+                        guid: id.value,
+                    }
+                    fetch()
                 }
-                fetch()
-            })
+            )
 
             watch(isLoading, async () => {
                 await nextTick()

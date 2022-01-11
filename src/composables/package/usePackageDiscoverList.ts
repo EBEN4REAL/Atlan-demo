@@ -72,7 +72,7 @@ export function usePackageDiscoverList({
     watch(
         hits,
         () => {
-            console.log('new data', data)
+            console.log('new data', offset.value)
             if (offset?.value > 0) {
                 if (data.value?.hits?.hits) {
                     data.value?.hits?.hits.forEach((item) => {
@@ -173,6 +173,13 @@ export function usePackageDiscoverList({
         return getAggregationList('by_type', packageType, false)
     })
 
+    const isLoadMore = computed(() => {
+        if (data.value?.hits?.total?.value > list?.value?.length) {
+            return true
+        }
+        return false
+    })
+
     return {
         queryText,
         limit,
@@ -190,5 +197,6 @@ export function usePackageDiscoverList({
         getAggregationList,
         getAggregationByType,
         hits,
+        isLoadMore,
     }
 }

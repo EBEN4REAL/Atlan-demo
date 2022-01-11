@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
+        class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
         :class="isSelected ? 'border-primary shadow-lg' : ''"
     >
         <div class="mb-3">
@@ -61,13 +61,16 @@
                     </div>
                     <div class="flex flex-col w-2/3">
                         <div
-                            class="flex items-center text-base font-semibold truncate overflow-ellipsis"
+                            class="flex items-center font-semibold truncate overflow-ellipsis"
                         >
-                            {{
-                                item.metadata?.annotations[
-                                    'orchestration.atlan.com/name'
-                                ]
-                            }}
+                            <span class="line-clamp-1">
+                                {{
+                                    item.metadata?.annotations[
+                                        'orchestration.atlan.com/name'
+                                    ]
+                                }}</span
+                            >
+
                             <a-tooltip
                                 placement="right"
                                 :title="
@@ -89,11 +92,6 @@
                                     'package.argoproj.io/name'
                                 ]
                             }}
-                            ({{
-                                item.metadata.labels[
-                                    'package.argoproj.io/version'
-                                ]
-                            }})
                         </div>
                     </div>
                 </div>
@@ -101,6 +99,10 @@
         </div>
 
         <div class="flex flex-col gap-y-2">
+            <div class="text-sm text-gray-700" v-if="workflowList.length > 0">
+                {{ workflowList.length }} workflows
+            </div>
+
             <template
                 v-for="(workflow, index) in workflowRestrictedList"
                 :key="workflow"
@@ -115,11 +117,14 @@
                     </div>
                 </div>
             </template>
+
             <div
-                class="text-primary decoration-dotted"
+                class="text-xs text-primary"
                 v-if="workflowList.length - 2 > 0"
             >
-                + {{ workflowList.length - 2 }} more workflows
+                +{{ workflowList.length - 2 }} more
+                <span v-if="workflowList.length - 2 === 1">workflow</span>
+                <span v-else>workflows</span>
             </div>
         </div>
     </div>
@@ -131,9 +136,10 @@
     import LastRun from './lastRun.vue'
     import cronstrue from 'cronstrue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { LastRun },
+        components: { LastRun, Ellipsis },
         props: {
             item: {
                 type: Object,

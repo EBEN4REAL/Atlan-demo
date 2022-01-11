@@ -1,5 +1,7 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
+    <div
+        class="grid w-full gap-4 md:grid-cols-3 sm:grid-cols-2 grid-flow-cols auto-rows-min"
+    >
         <Item
             v-for="item in list"
             :key="item.name"
@@ -45,7 +47,6 @@
             }
 
             const getPackage = (item) => {
-                console.log(item)
                 const packageName =
                     item.metadata.annotations['package.argoproj.io/name']
                 return packageList.value.find(

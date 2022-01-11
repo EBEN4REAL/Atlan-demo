@@ -257,8 +257,13 @@
             class="flex flex-col px-5 text-sm"
         >
             <div class="mb-1 text-sm text-gray-500">Collection</div>
+            <div class="text-sm tracking-wider text-gray-700">
+                {{
+                    selectedAsset?.collectionName || collectionInfo?.displayText
+                }}
+            </div>
 
-            <a-button
+            <!-- <a-button
                 block
                 class="flex items-center justify-between px-2"
                 @click="() => {}"
@@ -273,7 +278,7 @@
                     </span>
                 </div>
                 <AtlanIcon icon="External" />
-            </a-button>
+            </a-button> -->
         </div>
 
         <div

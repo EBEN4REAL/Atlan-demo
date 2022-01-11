@@ -12,7 +12,7 @@
         :class="[
             isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
             ,
-            'flex flex-wrap items-center  rounded selector-height pl-3',
+            'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         @click.stop="() => {}"
@@ -23,7 +23,11 @@
             <div
                 v-if="isAreaFocused"
                 @click.stop="() => {}"
-                :style="`width:${containerPosition?.width}px;top:${
+                :style="`${
+                    specifiedBodyWidth
+                        ? `width:${specifiedBodyWidth}px;`
+                        : `width:${containerPosition?.width}px;`
+                }top:${
                     containerPosition?.top + containerPosition?.height
                 }px;left:${containerPosition?.left}px`"
                 :class="[
@@ -61,10 +65,14 @@
                 required: true,
                 default: false,
             },
+            specifiedBodyWidth: {
+                type: Number,
+                required: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { disabled } = toRefs(props)
+            const { disabled, specifiedBodyWidth } = toRefs(props)
             const { isAreaFocused } = useVModels(props)
             const container = ref()
 
@@ -93,24 +101,14 @@
                         containerPosition.value.left = viewportOffset?.left
                     if (viewportOffset?.height)
                         containerPosition.value.height = viewportOffset?.height
+                    document.addEventListener('click', (event) => {
+                        const withinBoundaries = event
+                            .composedPath()
+                            .includes(container.value)
 
-                    document?.addEventListener('click', function (event) {
-                        let isClickInside = container.value?.contains(
-                            event.target
-                        )
-
-                        if (!isClickInside) {
-                            isClickInside =
-                                event?.target?.classList?.contains('ant-input')
-                        }
-                        if (!isClickInside) {
-                            isClickInside =
-                                event?.target?.classList?.contains(
-                                    'dropdown-container'
-                                )
-                        }
-
-                        if (!isClickInside) {
+                        if (withinBoundaries) {
+                            console.log('inside')
+                        } else {
                             isAreaFocused.value = false
                         }
                     })
@@ -134,6 +132,7 @@
             })
 
             return {
+                specifiedBodyWidth,
                 disabled,
                 container,
                 isAreaFocused,
@@ -159,7 +158,9 @@
         @apply right-0;
     }
     .box-shadow {
-        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+            0px 6px 16px rgba(0, 0, 0, 0.08),
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
     }
     .disable-bg {
         background-color: #fbfbfb;

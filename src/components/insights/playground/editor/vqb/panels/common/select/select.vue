@@ -89,24 +89,15 @@
                     if (viewportOffset?.height)
                         containerPosition.value.height = viewportOffset?.height
 
-                    document?.addEventListener('click', function (event) {
-                        let isClickInside = container.value?.contains(
-                            event.target
-                        )
+                    document.addEventListener('click', (event) => {
+                        const withinBoundaries = event
+                            .composedPath()
+                            .includes(container.value)
 
-                        if (!isClickInside) {
-                            isClickInside =
-                                event?.target?.classList?.contains('ant-input')
-                        }
-                        if (!isClickInside) {
-                            isClickInside =
-                                event?.target?.classList?.contains(
-                                    'dropdown-container'
-                                )
-                        }
-
-                        if (!isClickInside) {
-                            isAreaFocused.value = false
+                        if (withinBoundaries) {
+                            console.log('inside')
+                        } else {
+                            console.log('outside')
                         }
                     })
                 }

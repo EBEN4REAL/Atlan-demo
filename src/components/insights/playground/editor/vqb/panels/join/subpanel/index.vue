@@ -6,7 +6,7 @@
                 :key="subpanel?.id + index"
             >
                 <div
-                    class="w-full p-2 rounded grid-container"
+                    class="w-full p-2 pl-0 rounded grid-container"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
@@ -15,10 +15,16 @@
                             class="w-full"
                             :disabled="readOnly"
                             v-model:isAreaFocused="isAreaFocusedJoinSelector"
+                            :specifiedBodyWidth="161"
                         >
                             <template #head>
                                 <div
-                                    class="flex items-center cursor-pointer"
+                                    class="flex items-center cursor-pointer py-1.5 px-2 rounded hover:bg-gray-light"
+                                    :class="[
+                                        isAreaFocusedJoinSelector
+                                            ? 'bg-gray-light'
+                                            : '',
+                                    ]"
                                     v-if="subpanel?.joinType"
                                 >
                                     <AtlanIcon
@@ -30,11 +36,19 @@
                                         "
                                         class="text-primary"
                                     />
-                                    <span
+                                    <div
                                         class="mb-0 ml-1 text-sm text-gray-700"
                                     >
                                         {{ subpanel?.joinType.name }}
-                                    </span>
+                                    </div>
+                                    <AtlanIcon
+                                        :icon="
+                                            !isAreaFocusedJoinSelector
+                                                ? 'ChevronDown'
+                                                : 'ChevronUp'
+                                        "
+                                        class="h-4 pl-3"
+                                    />
                                 </div>
                             </template>
                             <template #body>
@@ -366,7 +380,6 @@
     .item-1 {
         grid-column-start: 1;
         grid-column-end: 2;
-        width: 126px;
     }
     .item-2 {
         flex: 0.5;
@@ -382,5 +395,14 @@
     }
     .item-4 {
         width: 16px;
+    }
+    .chevron {
+        transition: all ease 0.1s;
+    }
+    .rotate-90 {
+        transform: rotate(-180deg);
+    }
+    .rotate-0 {
+        transform: rotate(0deg);
     }
 </style>

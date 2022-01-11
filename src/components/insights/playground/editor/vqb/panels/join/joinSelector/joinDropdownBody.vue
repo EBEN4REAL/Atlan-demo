@@ -1,7 +1,6 @@
 <template>
     <div
         class=""
-        style="min-width: 161px"
         tabindex="-1"
         @keyup="
             () => {
@@ -13,11 +12,12 @@
             <div
                 class="flex items-center justify-between w-full px-4 cursor-pointer h-9 group-hover:bg-primary-light group"
                 @click="(e) => onCheckChange(item, e)"
-                :class="
+                :class="[
                     selectedJoinType.type === item.key
                         ? 'bg-primary-light'
-                        : 'bg-white'
-                "
+                        : 'bg-white',
+                    'hover:bg-primary-light',
+                ]"
             >
                 <div class="flex items-center">
                     <AtlanIcon :icon="item.icon" class="mr-1 text-primary" />

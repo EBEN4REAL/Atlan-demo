@@ -21,48 +21,18 @@
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
     >
-        <template v-if="selectedItem?.label">
-            <div class="flex items-center">
-                <component
-                    :is="getDataTypeImage(selectedItem?.type)"
-                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                ></component>
-                <span class="mb-0 ml-1 text-sm text-gray-700">
-                    {{ selectedItem?.label }}
-                </span>
-            </div>
-        </template>
-
-        <a-input
-            v-if="Object.keys(selectedItem).length > 0 && isAreaFocused"
-            ref="inputRef"
-            :disabled="disabled"
-            v-model:value="inputValue1"
-            @focus="
-                () => {
-                    isAreaFocused = true
-                }
-            "
-            @change="input1Change"
-            :placeholder="placeholder"
-            :style="`width:${placeholder.length + 2}ch;`"
-            :class="[
-                'p-0 pr-4 ml-2 text-sm border-none shadow-none outline-none  focus-none',
-                disabled ? $style.custom_input : '',
-            ]"
-        />
-        <a-input
-            v-if="Object.keys(selectedItem).length == 0"
-            :disabled="disabled"
-            ref="initialRef"
-            v-model:value="inputValue2"
-            @change="input2Change"
-            :placeholder="placeholder"
-            :class="[
-                'w-full p-0 ml-2  border-none shadow-none outline-none text-sm  focus-none',
-                disabled ? $style.custom_input : '',
-            ]"
-        />
+        <div class="flex items-center" v-if="selectedItem?.label">
+            <component
+                :is="getDataTypeImage(selectedItem?.type)"
+                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+            ></component>
+            <span class="mb-0 ml-1 text-sm text-gray-700">
+                {{ selectedItem?.label }}
+            </span>
+        </div>
+        <span v-else>
+            {{ placeholder }}
+        </span>
 
         <div class="absolute right-2">
             <AtlanIcon
@@ -114,22 +84,18 @@
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
                 :class="[
-                    'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10  pb-2  bg-white rounded custom-shadow position dropdown-container',
                 ]"
             >
                 <div
-                    :class="['flex  justify-center overflow-auto w-full']"
-                    style="height: 250px"
+                    :class="['w-full dropdown-container']"
+                    style="min-height: 180px"
                 >
-                    <Loader
-                        v-if="isLoading"
-                        style="min-height: 250px !important"
-                    ></Loader>
-
                     <!-- For single table select -->
 
                     <div
-                        class="w-full"
+                        class="w-full overflow-auto"
+                        style="height: 250px"
                         v-if="
                             dropdownOption.length !== 0 &&
                             !isLoading &&
@@ -227,26 +193,39 @@
                         No Columns found!
                     </span>
 
-                    <!-- -------------------------- -->
-
                     <!--  Multiple table column selection-->
+
                     <div
-                        class="w-full"
-                        v-if="
-                            !isTableSelected &&
-                            !isLoading &&
-                            selectedTablesQualifiedNames.length >= 2
-                        "
-                        style="height: 250px"
-                        :class="[
-                            tableDropdownOption.length === 0
-                                ? 'flex justify-center items-center'
-                                : '',
-                        ]"
+                        class="w-full dropdown-container"
+                        v-if="!isTableSelected"
                     >
                         <div
-                            class="overflow-auto"
-                            v-if="tableDropdownOption.length !== 0"
+                            class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                        >
+                            <div
+                                class="flex items-center justify-between w-full dropdown-container"
+                                style="min-width: 100%"
+                            >
+                                <CustomInput
+                                    v-model:queryText="queryText"
+                                    :placeholder="placeholder"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="w-full overflow-y-auto dropdown-container"
+                            v-if="
+                                !isTableSelected &&
+                                !isLoading &&
+                                selectedTablesQualifiedNames.length >= 2
+                            "
+                            style="height: 205px"
+                            :class="[
+                                tableDropdownOption.length === 0
+                                    ? 'flex justify-center items-center dropdown-container'
+                                    : '',
+                            ]"
                         >
                             <template
                                 v-if="
@@ -320,37 +299,40 @@
                                     </div>
                                 </PopoverAsset>
                             </template>
-                        </div>
-                        <div
-                            v-if="
-                                tableDropdownOption.length === 0 && !isLoading
-                            "
-                            class="flex items-center justify-center h-full text-sm text-center text-gray-400"
-                        >
-                            No tables found
+                            <div
+                                v-if="
+                                    tableDropdownOption.length === 0 &&
+                                    !isLoading
+                                "
+                                class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                            >
+                                No tables found
+                            </div>
                         </div>
                     </div>
                     <!-- For columns -->
+
                     <div
-                        class="w-full"
+                        class="w-full dropdown-container"
                         v-if="
                             isTableSelected &&
-                            !isLoading &&
                             selectedTablesQualifiedNames.length >= 2
                         "
                     >
                         <div
-                            class="flex items-center justify-between h-9 pl-2 pr-4 truncanimate-spin pt-0.5 border border-b bordery-gray-300"
+                            class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                         >
-                            <div class="flex items-center truncate">
+                            <div
+                                class="flex items-center text-gray-700 truncate"
+                            >
                                 <AtlanIcon
                                     icon="ChevronLeft"
-                                    class="w-4 h-4 -mt-0.5 text-gray-500"
+                                    class="w-4 h-4 -mt-0.5"
                                     @click.stop="onUnselectTable"
                                 />
 
                                 <span
-                                    class="ml-2 parent-ellipsis-container-base"
+                                    class="ml-2 text-sm parent-ellipsis-container-base"
                                     >{{ tableSelected?.label }}
                                 </span>
                             </div>
@@ -361,111 +343,155 @@
                             </div>
                         </div>
                         <div
-                            class="pl-2 pr-2 overflow-y-auto"
-                            style="height: 250px"
-                            :class="[
-                                columnDropdownOption.length === 0
-                                    ? 'flex justify-center items-center'
-                                    : '',
-                            ]"
+                            class="px-4 py-3 border-b border-gray-300 dropdown-container"
                         >
-                            <template
-                                v-for="(item, index) in columnDropdownOption"
-                                :key="item.value + index + item.qualifiedName"
+                            <div
+                                class="flex items-center justify-between w-full"
+                                style="min-width: 100%"
                             >
-                                <PopoverAsset
-                                    :item="item.item"
-                                    placement="right"
-                                    :mouseEnterDelay="0.85"
+                                <CustomInput
+                                    v-model:queryText="queryText"
+                                    :placeholder="placeholder"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            class="w-full dropdown-container"
+                            v-if="
+                                isTableSelected &&
+                                !isLoading &&
+                                selectedTablesQualifiedNames.length >= 2
+                            "
+                        >
+                            <div
+                                class="pl-2 pr-2 overflow-y-auto"
+                                style="height: 205px"
+                                :class="[
+                                    columnDropdownOption.length === 0
+                                        ? 'flex justify-center items-center'
+                                        : '',
+                                ]"
+                            >
+                                <template
+                                    v-for="(
+                                        item, index
+                                    ) in columnDropdownOption"
+                                    :key="
+                                        item.value + index + item.qualifiedName
+                                    "
                                 >
-                                    <template #button>
-                                        <AtlanBtn
-                                            class="flex-none px-0"
-                                            size="sm"
-                                            color="minimal"
-                                            padding="compact"
-                                            style="height: fit-content"
+                                    <PopoverAsset
+                                        :item="item.item"
+                                        placement="right"
+                                        :mouseEnterDelay="0.85"
+                                    >
+                                        <template #button>
+                                            <AtlanBtn
+                                                class="flex-none px-0"
+                                                size="sm"
+                                                color="minimal"
+                                                padding="compact"
+                                                style="height: fit-content"
+                                                @click.stop="
+                                                    (e) =>
+                                                        actionClick(
+                                                            e,
+                                                            item.item
+                                                        )
+                                                "
+                                            >
+                                                <span
+                                                    class="cursor-pointer text-primary whitespace-nowrap"
+                                                >
+                                                    Show Preview</span
+                                                >
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="text-primary"
+                                                />
+                                            </AtlanBtn>
+                                        </template>
+                                        <div
+                                            class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
                                             @click.stop="
-                                                (e) => actionClick(e, item.item)
+                                                (e) => onSelectItem(item, e)
+                                            "
+                                            :class="
+                                                selectedItem?.qualifiedName ===
+                                                item.qualifiedName
+                                                    ? 'bg-primary-light'
+                                                    : 'bg-white'
                                             "
                                         >
-                                            <span
-                                                class="cursor-pointer text-primary whitespace-nowrap"
-                                            >
-                                                Show Preview</span
-                                            >
-                                            <AtlanIcon
-                                                icon="ArrowRight"
-                                                class="text-primary"
-                                            />
-                                        </AtlanBtn>
-                                    </template>
-                                    <div
-                                        class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
-                                        @click.stop="
-                                            (e) => onSelectItem(item, e)
-                                        "
-                                        :class="
-                                            selectedItem?.qualifiedName ===
-                                            item.qualifiedName
-                                                ? 'bg-primary-light'
-                                                : 'bg-white'
-                                        "
-                                    >
-                                        <div
-                                            class="flex items-center parent-ellipsis-container"
-                                        >
-                                            <component
-                                                :is="
-                                                    getDataTypeImage(item.type)
-                                                "
-                                                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                            ></component>
-                                            <span
-                                                class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
-                                            >
-                                                {{ item.label }}
-                                            </span>
-                                        </div>
-                                        <div
-                                            class="flex items-center parent-ellipsis-container-extension"
-                                        >
                                             <div
-                                                class="relative h-full w-14 parent-ellipsis-container-extension"
+                                                class="flex items-center parent-ellipsis-container"
                                             >
-                                                <ColumnKeys
-                                                    :isPrimary="item.isPrimary"
-                                                    :isForeign="item.isForeign"
-                                                    :isPartition="
-                                                        item.isPartition
+                                                <component
+                                                    :is="
+                                                        getDataTypeImage(
+                                                            item.type
+                                                        )
+                                                    "
+                                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                                ></component>
+                                                <span
+                                                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                                >
+                                                    {{ item.label }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="flex items-center parent-ellipsis-container-extension"
+                                            >
+                                                <div
+                                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                                >
+                                                    <ColumnKeys
+                                                        :isPrimary="
+                                                            item.isPrimary
+                                                        "
+                                                        :isForeign="
+                                                            item.isForeign
+                                                        "
+                                                        :isPartition="
+                                                            item.isPartition
+                                                        "
+                                                    />
+                                                </div>
+                                                <AtlanIcon
+                                                    icon="Check"
+                                                    class="ml-2 text-primary parent-ellipsis-container-base"
+                                                    v-if="
+                                                        selectedItem?.qualifiedName ===
+                                                        item.qualifiedName
                                                     "
                                                 />
+                                                <div
+                                                    v-else
+                                                    class="w-4 ml-2"
+                                                ></div>
                                             </div>
-                                            <AtlanIcon
-                                                icon="Check"
-                                                class="ml-2 text-primary parent-ellipsis-container-base"
-                                                v-if="
-                                                    selectedItem?.qualifiedName ===
-                                                    item.qualifiedName
-                                                "
-                                            />
-                                            <div v-else class="w-4 ml-2"></div>
                                         </div>
-                                    </div>
-                                </PopoverAsset>
-                            </template>
+                                    </PopoverAsset>
+                                </template>
 
-                            <div
-                                v-if="
-                                    columnDropdownOption.length === 0 &&
-                                    !isLoading
-                                "
-                                class="flex items-center justify-center h-full text-sm text-center text-gray-400"
-                            >
-                                No columns found
+                                <div
+                                    v-if="
+                                        columnDropdownOption.length === 0 &&
+                                        !isLoading
+                                    "
+                                    class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                                >
+                                    No columns found
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <Loader
+                        v-if="isLoading"
+                        style="min-height: 205px !important"
+                    ></Loader>
+
                     <!--  -->
                 </div>
             </div>
@@ -508,6 +534,7 @@
 
     import useBody from './useBody'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import CustomInput from '../input/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -518,6 +545,7 @@
             ColumnKeys,
             PopoverAsset,
             AtlanBtn,
+            CustomInput,
         },
         emits: ['change'],
 
@@ -546,14 +574,7 @@
                 selectedTablesQualifiedNames,
                 disabled,
             } = toRefs(props)
-            const {
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
-                assetType,
-                certificateStatus,
-            } = useAssetInfo()
+            const { assetType, certificateStatus } = useAssetInfo()
 
             const observer = ref()
             const containerPosition = ref({
@@ -608,17 +629,6 @@
                 nextTick(() => {
                     if (disabled?.value) inputRef?.value?.focus()
                 })
-            }
-
-            const handleContainerBlur = (event) => {
-                // if the blur was because of outside focus
-                // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
-                    isAreaFocused.value = false
-                    inputValue1.value = ''
-                    inputValue2.value = ''
-                    queryText.value = ''
-                }
             }
 
             const inputChange = () => {
@@ -788,7 +798,7 @@
 
                     if (!isClickInside) {
                         isClickInside =
-                            event?.target?.classList?.contains('child_input')
+                            event?.target?.classList?.contains('ant-input')
                     }
                     if (!isClickInside) {
                         isClickInside =
@@ -991,10 +1001,7 @@
                     activeInlineTab.value.playground.vqb.selectedTables
                         ?.length > 1
                 ) {
-                    if (selectedItem.value?.label && tableSelected?.value) {
-                        // retain column view
-                        isTableSelected.value = true
-                        // debugger
+                    if (selectedItem.value?.label && isTableSelected?.value) {
                         replaceBody(getColumnInitialBody(tableSelected?.value))
                     } else {
                         replaceBody(
@@ -1104,7 +1111,6 @@
                 inputValue2,
                 clickPos,
                 container,
-                handleContainerBlur,
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,

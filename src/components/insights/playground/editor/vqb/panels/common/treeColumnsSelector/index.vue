@@ -549,8 +549,6 @@
             const inputRef = ref()
             const queryText = ref('')
             const mouseOver = ref(false)
-            const inputValue1 = ref('')
-            const inputValue2 = ref('')
             const isAreaFocused = ref(false)
             const container = ref()
 
@@ -883,6 +881,14 @@
                     } else {
                         replaceBody(getTableInitialBody())
                     }
+                    setFocusedCusror()
+                }
+            })
+            watch(isLoading, (newIsLoading) => {
+                if (newIsLoading) {
+                    nextTick(() => {
+                        inputRef?.value?.focus()
+                    })
                 }
             })
 
@@ -911,8 +917,6 @@
                 selectedColumn,
                 placeholder,
                 inputRef,
-                inputValue1,
-                inputValue2,
                 clearAllSelected,
                 handleMouseOver,
                 handleMouseOut,

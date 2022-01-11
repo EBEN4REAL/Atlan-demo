@@ -428,21 +428,13 @@
                     }
                 }
             }
-            & .node-title {
-                display: flex;
-                align-items: center;
 
-                & .node-cert {
-                    height: 16px;
-                    width: 16px;
-                }
-                & .node-text {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    text-transform: lowercase;
-                    color: #3e4359;
-                }
+            & .node-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-transform: lowercase;
+                color: #3e4359;
             }
 
             & .node-meta {

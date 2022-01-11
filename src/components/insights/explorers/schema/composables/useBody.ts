@@ -80,7 +80,7 @@ export function useBody(
             let sortData = sortOrderColumn.split('-')
             base.sort(`${sortData[0]}`, { order: sortData[1] })
         } else {
-            base.sort('order', { order: sort })
+            // base.sort('order', { order: sort })
 
         }
     } else {
@@ -456,6 +456,30 @@ export function useBody(
                         },
                         weight: 4,
                     },
+                    {
+                        filter: {
+                            match: {
+                                isPrimary: true,
+                            },
+                        },
+                        weight: 10,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                isForeign: true,
+                            },
+                        },
+                        weight: 9,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                isPartition: true,
+                            },
+                        },
+                        weight: 8,
+                    }
                 ],
                 boost_mode: 'sum',
                 score_mode: 'sum',

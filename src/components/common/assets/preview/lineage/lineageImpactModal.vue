@@ -231,7 +231,7 @@
             },
         },
         emits: ['update:visible'],
-        setup(props) {
+        setup(props, { emit }) {
             const { guid, assetName, visible } = toRefs(props)
             const { useFetchLineage } = useLineageService()
             const {
@@ -352,13 +352,24 @@
                     }
                 })
 
-                json2csv(data, (err, csv) => {
-                    if (err)
-                        message.error(
-                            'Error downloading CSV, please try again.'
-                        )
-                    else downloadFile(csv, `${assetName.value}_lineage_impact`)
-                })
+                json2csv(
+                    data,
+                    (err, csv) => {
+                        if (err)
+                            message.error(
+                                'Error downloading CSV, please try again.'
+                            )
+                        else {
+                            downloadFile(
+                                csv,
+                                `${assetName.value}_lineage_impact`
+                            )
+                            message.success('CSV exported successfully')
+                            emit('update:visible', false)
+                        }
+                    },
+                    { emptyFieldValue: '' }
+                )
             }
 
             watch(guid, () => {

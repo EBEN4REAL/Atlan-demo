@@ -28,7 +28,8 @@
                     }}</span></a-radio-button
                 >
             </a-radio-group>
-            <!-- <a-button-group>
+
+            <a-button-group v-if="isWithGraph">
                 <a-tooltip title="View Impact">
                     <a-button
                         class="flex items-center justify-center"
@@ -37,15 +38,16 @@
                         <AtlanIcon icon="ImpactedAssets" />
                     </a-button>
                 </a-tooltip>
-                <a-tooltip title="View Graph">
+                <!-- <a-tooltip title="View Graph">
                     <a-button class="flex items-center justify-center">
                         <router-link :to="link">
                             <AtlanIcon icon="Minimap" />
                         </router-link>
                     </a-button>
-                </a-tooltip>
-            </a-button-group> -->
-            <router-link :to="link" class="underline text-primary"
+                </a-tooltip> -->
+            </a-button-group>
+
+            <router-link v-else :to="link" class="underline text-primary"
                 >View Graph</router-link
             >
         </div>
@@ -290,6 +292,8 @@
                 // downstream: DownStreamLineage.isLoading.value,
             }))
 
+            const isWithGraph = computed(() => route.params?.tab === 'lineage')
+
             /** METHODS */
             const updateDepth = (val: number) => {
                 depth.value = val
@@ -331,6 +335,7 @@
                 downstreamGuids,
                 link,
                 showImpactedAssets,
+                isWithGraph,
             }
         },
     })

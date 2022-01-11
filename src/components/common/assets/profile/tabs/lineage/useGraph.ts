@@ -71,7 +71,7 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10"> ${iconCaretDown}</span>
                                         </span>
                                         <div class="truncate">${displayText}</div>
                                         
@@ -84,10 +84,10 @@ export default function useGraph() {
                                                 ? iconEllipse
                                                 : ''
                                         }
-                                       <div class="node-meta__text text-truncate ${
+                                       <div class="node-meta__text  truncate ${
                                            ['Table', 'View'].includes(typeName)
                                                ? ''
-                                               : 'd-none'
+                                               : 'hidden'
                                        }">${schemaName || ''}</div>
                                     </div>
                                 </div>       

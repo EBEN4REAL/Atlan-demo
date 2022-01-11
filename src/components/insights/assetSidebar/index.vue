@@ -5,7 +5,9 @@
     >
         <AssetPreview
             :selected-asset="
-                Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
+                Object.keys(assetInfo)?.length
+                    ? { ...assetInfo, collectionName: collectionName }
+                    : { ...selectedAsset, collectionName: collectionName }
             "
             class="w-full"
             page="insights"
@@ -38,6 +40,7 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { AssetPreview, AtlanIcon },
@@ -61,6 +64,22 @@
 
             const selectedAsset: Ref<any> = computed(() => {
                 return activeInlineTab.value?.assetSidebar?.assetInfo
+            })
+
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
+
+            const collectionName = computed(() => {
+                let col = queryCollections.value?.find(
+                    (col) =>
+                        col.attributes.qualifiedName ===
+                        selectedAsset.value?.attributes?.collectionQualifiedName
+                )
+                if (col) {
+                    return col?.displayText
+                }
+                return null
             })
 
             const fetchAsset = () => {
@@ -91,7 +110,7 @@
 
             watch(selectedAsset, () => {
                 assetInfo.value = {}
-                console.log('selected asset: ', selectedAsset.value)
+                // console.log('selected asset: ', selectedAsset.value)
                 fetchAsset()
             })
 
@@ -139,6 +158,7 @@
                 activeInlineTab,
                 closeAssetSidebar,
                 assetInfo,
+                collectionName,
             }
         },
     })

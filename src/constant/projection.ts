@@ -108,6 +108,7 @@ export const SQLAttributes = [
     'view',
     'workspace',
     'dashboard',
+    'dataset',
     'report',
 ]
 

@@ -79,11 +79,11 @@
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'px-4'"
+                    :class="page === 'admin' ? '' : 'px-6'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
-                        class="mt-3"
+                        class="mt-2 mb-1"
                         :list="assetTypeAggregationList"
                         :shortcut-enabled="true"
                         @change="handleAssetTypeChange"
@@ -170,7 +170,7 @@
                                         ? checkSelectedCriteriaFxn(item)
                                         : false
                                 "
-                                :class="page !== 'admin' ? 'mx-3' : ''"
+                                :class="page !== 'admin' ? 'mx-3' : 'mx-3'"
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
                                 @listItem:check="
@@ -378,26 +378,20 @@
             if (discoveryStore.activePostFacet && page.value === 'assets') {
                 postFacets.value = discoveryStore.activePostFacet
             }
-            if (discoveryStore.preferences && page.value === 'assets') {
+            if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =
                     discoveryStore.preferences.display ||
                     preference.value.display
             }
-            if (
-                discoveryStore.activeFacetTab?.length > 0 &&
-                page.value === 'assets'
-            ) {
+            if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
             } else {
                 activeKey.value = ['hierarchy']
             }
 
-            if (
-                discoveryStore.globalState?.length > 0 &&
-                page.value === 'assets'
-            ) {
+            if (discoveryStore.globalState?.length > 0) {
                 globalState.value = discoveryStore.globalState
             }
 
@@ -485,17 +479,13 @@
                 }
             }, 600)
 
-            // args[0]: asset, args[1]: index, args[2]: keyboard shortcut used
             const handleClickAssetItem = (...args) => {
                 if (allCheckboxAreaClick.value) {
                     updateBulkSelectedAssets(...args)
                 }
-                if (args[1] !== undefined) {
-                    useAddEvent('discovery', 'asset_card', 'clicked', {
-                        click_index: args[1],
-                        keyboard_shortcut: args[2],
-                    })
-                }
+                useAddEvent('discovery', 'asset_card', 'clicked', {
+                    click_index: args[1],
+                })
                 if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
@@ -508,7 +498,6 @@
             }, 100)
 
             const handleFilterChange = (filterItem) => {
-                console.log('handleFilterChange')
                 sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()
@@ -518,7 +507,7 @@
             const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
-                if (page.value === 'assets')
+                if (page.value !== 'admin')
                     discoveryStore.setActivePostFacet(postFacets.value)
                 useAddEvent('discovery', 'aggregate_tab', 'changed', {
                     name: tabName,
@@ -556,7 +545,7 @@
             const route = useRoute()
             const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
-                handleClickAssetItem(asset, index, true)
+                handleClickAssetItem(asset, index)
                 console.log('onKeyboardNavigate', {
                     isAssetProfile: isAssetProfile.value,
                     index,

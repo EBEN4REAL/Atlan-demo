@@ -8,6 +8,7 @@
         :width="420"
         :closable="false"
         class="drawer"
+        @close="handleCloseGroupPreview"
     >
         <UserOrGroupPreview
             previewType="group"
@@ -23,6 +24,7 @@
         :width="420"
         :closable="false"
         class="drawer"
+        @close="handleCloseUserPreview"
     >
         <UserOrGroupPreview
             previewType="user"

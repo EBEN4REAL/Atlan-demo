@@ -9,12 +9,12 @@ export default function useUploadImage() {
         asyncOptions: { immediate: false },
     })
 
-    const upload = (image: File, name?: string) => {
+    const upload = async (image: File, name?: string) => {
         const formDataObject = new FormData()
         formDataObject.append('file', image)
         formDataObject.append('name', name ?? 'image')
         formData.value = formDataObject
-        mutate()
+        await mutate()
     }
 
     return {

@@ -536,12 +536,17 @@ export default function useEventGraph(
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
-
         const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
 
-        if (chp.value.portId === portId) deselectPort(node)
-        else selectPort(node, e, portId)
+        if (chp.value.portId === portId) {
+            deselectPort(node)
+            onCloseDrawer()
+        } else {
+            selectPort(node, e, portId)
+            const port = node.getPort(portId)
+            onSelectAsset(port.entity)
+        }
     })
 
     // EDGE - CLICK
@@ -613,7 +618,6 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort(node)
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
-
         onSelectAsset(node.store.data.entity)
         highlight(node?.id)
         che.value = ''

@@ -83,7 +83,7 @@ export default function useCustomMetadataFacet() {
     const getList = (typeName, facet = false) => {
         const finalList: any = []
         customMetadataList.value.forEach((bm) => {
-            const attributeList = typeNameFiltering(bm.attributeDefs.filter(a => facet ? a.options?.allowFiltering !== 'true' : true), typeName)
+            const attributeList = typeNameFiltering(bm.attributeDefs.filter(a => facet ? a.options?.allowFiltering === 'true' : true), typeName)
             if (attributeList.length > 0) {
                 finalList.push({
                     description: bm.description,

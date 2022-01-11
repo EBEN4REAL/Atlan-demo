@@ -16,7 +16,7 @@
     import Readme from '@/common/widgets/readme/index.vue'
 
     export default defineComponent({
-        name: 'BiOverview',
+        name: 'GeneralOverview',
         components: { AnnouncementWidget, Readme },
         props: {
             selectedAsset: {

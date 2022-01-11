@@ -31,7 +31,63 @@
                     />
                 </div>
             </a-tooltip> -->
-            <div class="flex items-center" style="max-width: 16rem">
+            <PopoverAsset
+                :item="{
+                    typeName: 'Query',
+                    attributes: activeInlineTab?.attributes,
+                }"
+                mouseEnterDelay="0.6"
+                placement="bottomLeft"
+                v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
+            >
+                <template #extraHeaders>
+                    <div
+                        class="w-1 h-1 mx-2 rounded-full"
+                        style="background-color: #c4c4c4"
+                    ></div>
+                    <div class="flex items-center h-full">
+                        <div class="relative w-4 h-4 mb-1 mr-1 overflow-hidden">
+                            <AtlanIcon
+                                :icon="
+                                    activeInlineTab?.attributes?.parent
+                                        ?.typeName === 'Folder'
+                                        ? 'FolderClosed'
+                                        : 'CollectionIconSmall'
+                                "
+                                class="h-4 mb-2"
+                            />
+                        </div>
+
+                        <span>{{
+                            activeInlineTab?.attributes?.parent?.attributes
+                                ?.name
+                        }}</span>
+                    </div>
+                </template>
+
+                <template #button> </template>
+
+                <div class="flex items-center" style="max-width: 16rem">
+                    <div class="mt-1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    'query',
+                                    activeInlineTab?.status
+                                )
+                            "
+                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                        ></AtlanIcon>
+                    </div>
+                    <Tooltip
+                        :tooltip-text="`${activeInlineTab.label}`"
+                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                        tooltipColor="#363636"
+                    />
+                </div>
+            </PopoverAsset>
+
+            <div v-else class="flex items-center" style="max-width: 16rem">
                 <div class="mt-1">
                     <AtlanIcon
                         :icon="
@@ -43,11 +99,6 @@
                         class="w-4 h-4 my-auto mr-1 -mt-0.5"
                     ></AtlanIcon>
                 </div>
-                <!-- <span
-                    class="mt-1 mr-1 text-base text-gray-700 truncate overflow-ellipsis"
-                    >{{ activeInlineTab.label }}</span
-                > -->
-
                 <Tooltip
                     :tooltip-text="`${activeInlineTab.label}`"
                     :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
@@ -109,7 +160,7 @@
                 >
                     <a-tooltip
                         color="#363636"
-                        class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
+                        class="flex items-center h-6 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                     >
                         <template #title>
                             updated
@@ -337,66 +388,74 @@
                                         : 'Run query'
                                 }}
                             </template>
-                            <AtlanBtn
-                                class="flex items-center h-6 px-3 button-shadow bg-primary"
-                                size="sm"
-                                color="primary"
-                                padding="compact"
-                                :disabled="
-                                    activeInlineTab?.playground?.resultsPane
-                                        ?.result?.buttonDisable
-                                "
-                                @click="$emit('onClickRunQuery')"
+
+                            <Shortcut
+                                shortcut-key="cmd+enter"
+                                action="Run Query"
+                                placement="right"
+                                :edit-permission="isQueryRunning !== 'loading'"
                             >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="
-                                            isQueryRunning === 'loading'
-                                                ? false
-                                                : true
-                                        "
-                                        icon="Play"
-                                        class="mr-1 text-white rounded"
-                                    ></AtlanIcon>
-                                    <AtlanIcon
-                                        v-else
-                                        icon="CircleLoader"
-                                        class="w-4 h-4 mr-1 text-white animate-spin"
-                                    ></AtlanIcon>
-                                    <div>
-                                        <span
+                                <AtlanBtn
+                                    class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                    size="sm"
+                                    color="primary"
+                                    padding="compact"
+                                    :disabled="
+                                        activeInlineTab?.playground?.resultsPane
+                                            ?.result?.buttonDisable
+                                    "
+                                    @click="$emit('onClickRunQuery')"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
                                             v-if="
-                                                !activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId
+                                                isQueryRunning === 'loading'
+                                                    ? false
+                                                    : true
                                             "
-                                            class="text-white"
-                                            >Run</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId &&
-                                                !activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Abort</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Aborting</span
-                                        >
+                                            icon="Play"
+                                            class="mr-1 text-white rounded"
+                                        ></AtlanIcon>
+                                        <AtlanIcon
+                                            v-else
+                                            icon="CircleLoader"
+                                            class="w-4 h-4 mr-1 text-white animate-spin"
+                                        ></AtlanIcon>
+                                        <div>
+                                            <span
+                                                v-if="
+                                                    !activeInlineTab?.playground
+                                                        .resultsPane?.result
+                                                        ?.runQueryId
+                                                "
+                                                class="text-white"
+                                                >Run</span
+                                            >
+                                            <span
+                                                v-else-if="
+                                                    activeInlineTab?.playground
+                                                        .resultsPane?.result
+                                                        ?.runQueryId &&
+                                                    !activeInlineTab?.playground
+                                                        ?.resultsPane?.result
+                                                        ?.buttonDisable
+                                                "
+                                                class="text-white"
+                                                >Abort</span
+                                            >
+                                            <span
+                                                v-else-if="
+                                                    activeInlineTab?.playground
+                                                        ?.resultsPane?.result
+                                                        ?.buttonDisable
+                                                "
+                                                class="text-white"
+                                                >Aborting</span
+                                            >
+                                        </div>
                                     </div>
-                                </div>
-                            </AtlanBtn>
+                                </AtlanBtn>
+                            </Shortcut>
                         </a-tooltip>
                     </div>
                     <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
@@ -434,6 +493,7 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
 
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
@@ -448,6 +508,7 @@
             AtlanIcon,
             Tooltip,
             Shortcut,
+            PopoverAsset,
         },
         props: {
             isUpdating: {
@@ -587,6 +648,7 @@
                 },
                 { immediate: true }
             )
+
             return {
                 popoverVisible,
                 onPopoverVisibleChange,

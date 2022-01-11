@@ -4,23 +4,28 @@
     </div>
     <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <!-- header starts here -->
-        <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
-            <div class="font-semibold text-gray-500">
+        <div
+            class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2 gap-x-4"
+        >
+            <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
-                    <span>{{ data.label }}</span>
+                    <Truncate :tooltip-text="data.label" :rows="2" />
+
                     <a-tooltip>
                         <template #title>
                             <span>{{ data?.description }}</span>
                         </template>
-                        <AtlanIcon
-                            v-if="data?.description"
-                            class="text-gray-400 hover:text-gray-500"
-                            icon="Info"
-                        />
+                        <div class="">
+                            <AtlanIcon
+                                v-if="data?.description"
+                                class="text-gray-400 hover:text-gray-500"
+                                icon="Info"
+                            />
+                        </div>
                     </a-tooltip>
                 </div>
             </div>
-            <div
+            <template
                 v-if="
                     selectedAssetUpdatePermission(
                         selectedAsset,
@@ -28,15 +33,18 @@
                     )
                 "
             >
-                <a-button
-                    v-if="readOnly"
-                    v-show="applicableList.filter((i) => hasValue(i)).length"
-                    @click="() => (readOnly = false)"
+                <template
+                    v-if="
+                        readOnly &&
+                        applicableList.filter((i) => hasValue(i)).length
+                    "
                 >
-                    <AtlanIcon icon="Edit" />
-                    <span class="ml-1 text-gray-700">Edit</span>
-                </a-button>
-                <div v-else class="flex items-center gap-x-2">
+                    <a-button @click="() => (readOnly = false)">
+                        <AtlanIcon icon="Edit" />
+                        <span class="ml-1 text-gray-700">Edit</span>
+                    </a-button>
+                </template>
+                <div v-else-if="!readOnly" class="flex items-center gap-x-2">
                     <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
                         @click="handleCancel"
@@ -52,7 +60,7 @@
                         Update
                     </AtlanButton>
                 </div>
-            </div>
+            </template>
         </div>
         <!-- header ends here -->
 
@@ -64,6 +72,7 @@
                     : 'max-height: calc(100vh - 12rem)'
             "
         >
+            <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
                     v-if="applicableList.filter((i) => hasValue(i)).length"
@@ -75,17 +84,22 @@
                         :key="x"
                     >
                         <div class="mb-5">
-                            <div class="mb-2 font-normal text-gray-500">
-                                <span class="">{{ a.displayName }}</span>
+                            <div class="flex mb-2 font-normal text-gray-500">
+                                <Truncate
+                                    :tooltipText="a.displayName"
+                                    :rows="1"
+                                />
                                 <a-tooltip>
                                     <template #title>
                                         <span>{{ a.options.description }}</span>
                                     </template>
-                                    <AtlanIcon
-                                        v-if="a.options.description"
-                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                        icon="Info"
-                                    />
+                                    <div class="">
+                                        <AtlanIcon
+                                            v-if="a.options.description"
+                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                            icon="Info"
+                                        />
+                                    </div>
                                 </a-tooltip>
                             </div>
 
@@ -107,34 +121,42 @@
                                 )"
                                 :key="x"
                             >
-                                <div class="mb-2 font-normal text-gray-500">
-                                    <span class="">
-                                        {{ a.displayName }}
-                                        <template
-                                            v-if="
-                                                getHumanTypeName(
-                                                    getDatatypeOfAttribute(a)
-                                                ) !== 'Text'
-                                            "
-                                        >
+                                <div
+                                    class="flex mb-2 font-normal text-gray-500 gap-x-2"
+                                >
+                                    <Truncate
+                                        classes="text-gray-500"
+                                        clampPercentage="80%"
+                                        :tooltipText="a.displayName"
+                                    />
+                                    <template
+                                        v-if="
+                                            getHumanTypeName(
+                                                getDatatypeOfAttribute(a)
+                                            ) !== 'Text'
+                                        "
+                                    >
+                                        <div>
                                             ({{
                                                 getHumanTypeName(
                                                     getDatatypeOfAttribute(a)
                                                 ).toLowerCase()
                                             }})
-                                        </template>
-                                    </span>
+                                        </div>
+                                    </template>
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
                                                 a.options.description
                                             }}</span>
                                         </template>
-                                        <AtlanIcon
-                                            v-if="a.options.description"
-                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                            icon="Info"
-                                        />
+                                        <div class="">
+                                            <AtlanIcon
+                                                v-if="a.options.description"
+                                                class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                                icon="Info"
+                                            />
+                                        </div>
                                     </a-tooltip>
                                 </div>
                             </template>
@@ -186,6 +208,7 @@
                             <a-popover
                                 placement="bottom"
                                 :destroy-tooltip-on-hide="true"
+                                trigger="click"
                             >
                                 <template #content>
                                     <div
@@ -197,58 +220,70 @@
                                             :key="p.name"
                                         >
                                             <div class="flex flex-col">
-                                                <div
-                                                    class="flex items-center gap-x-1"
-                                                >
-                                                    <span class="text-gray-700">
-                                                        {{ p.displayName }}
-                                                    </span>
-                                                    <a-tooltip>
-                                                        <template #title>
-                                                            <span>{{
-                                                                p.options
-                                                                    .description
-                                                            }}</span>
-                                                        </template>
-                                                        <AtlanIcon
-                                                            v-if="
-                                                                p.options
-                                                                    .description
-                                                            "
-                                                            class="h-3 text-gray-400 hover:text-gray-500"
-                                                            icon="Info"
-                                                        />
-                                                    </a-tooltip>
-                                                </div>
-                                                <span
-                                                    class="flex items-center text-gray-500 capitalize gap-x-1"
-                                                >
-                                                    <div class="flex">
-                                                        <AtlanIcon
-                                                            v-if="
-                                                                p.options
-                                                                    .multiValueSelect ===
-                                                                'true'
-                                                            "
-                                                            icon="Array"
-                                                            class="h-3.5"
-                                                        />
-                                                        <AtlanIcon
-                                                            :icon="
-                                                                getDataTypeIcon(
-                                                                    p?.options
-                                                                        ?.primitiveType
-                                                                )
-                                                            "
-                                                            class="h-3.5"
-                                                        />
+                                                <div class="flex gap-x-2">
+                                                    <div
+                                                        class="flex items-center w-full gap-x-1"
+                                                    >
+                                                        <div
+                                                            class="flex-grow text-gray-700"
+                                                        >
+                                                            <Truncate
+                                                                :tooltip-text="
+                                                                    p.displayName
+                                                                "
+                                                            />
+                                                        </div>
+                                                        <a-tooltip>
+                                                            <template #title>
+                                                                <span>{{
+                                                                    p.options
+                                                                        .description
+                                                                }}</span>
+                                                            </template>
+                                                            <div class="">
+                                                                <AtlanIcon
+                                                                    v-if="
+                                                                        p
+                                                                            .options
+                                                                            .description
+                                                                    "
+                                                                    class="h-3 text-gray-400 hover:text-gray-500"
+                                                                    icon="Info"
+                                                                />
+                                                            </div>
+                                                        </a-tooltip>
                                                     </div>
-                                                    {{
-                                                        getDatatypeOfAttribute(
-                                                            p
-                                                        )
-                                                    }}
-                                                </span>
+                                                    <span
+                                                        class="flex items-center text-gray-500 capitalize gap-x-1"
+                                                    >
+                                                        <div class="flex">
+                                                            <AtlanIcon
+                                                                v-if="
+                                                                    p.options
+                                                                        .multiValueSelect ===
+                                                                    'true'
+                                                                "
+                                                                icon="Array"
+                                                                class="h-3"
+                                                            />
+                                                            <AtlanIcon
+                                                                :icon="
+                                                                    getDataTypeIcon(
+                                                                        p
+                                                                            ?.options
+                                                                            ?.primitiveType
+                                                                    )
+                                                                "
+                                                                class="h-3"
+                                                            />
+                                                        </div>
+                                                        <!-- {{
+                                                            getDatatypeOfAttribute(
+                                                                p
+                                                            )
+                                                        }} -->
+                                                    </span>
+                                                </div>
                                             </div>
                                         </template>
                                     </div>
@@ -325,17 +360,19 @@
             <template v-if="!readOnly">
                 <template v-for="(a, x) in applicableList" :key="x">
                     <div class="mb-5">
-                        <div class="mb-2 font-normal text-gray-500">
-                            <span class="">{{ a.displayName }}</span>
+                        <div class="flex mb-2 font-normal text-gray-500">
+                            <Truncate :tooltip-text="a.displayName" />
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ a.options.description }}</span>
                                 </template>
-                                <AtlanIcon
-                                    v-if="a.options.description"
-                                    class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                    icon="Info"
-                                />
+                                <div class="">
+                                    <AtlanIcon
+                                        v-if="a.options.description"
+                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                        icon="Info"
+                                    />
+                                </div>
                             </a-tooltip>
                         </div>
 
@@ -384,10 +421,13 @@
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
     import { getDataTypeIcon } from '~/utils/dataType'
+    import Truncate from '@/common/ellipsis/index.vue'
+    import { truncate } from '~/utils/string'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
             AtlanButton,
@@ -539,7 +579,10 @@
                     } else if (isReady?.value) {
                         loading.value = false
                         message.success(
-                            `${data.value?.label} attributes for ${title(
+                            `${truncate(
+                                data.value?.label,
+                                25
+                            )} attributes for ${title(
                                 selectedAsset.value
                             )} updated`
                         )

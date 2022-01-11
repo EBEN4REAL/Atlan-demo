@@ -106,6 +106,9 @@ export const SQLAttributes = [
     'isDist',
     'table',
     'view',
+    'workspace',
+    'dashboard',
+    'report',
 ]
 
 export const GlossaryAttributes = [
@@ -124,13 +127,6 @@ export const AssetRelationAttributes = [
     'description',
     'shortDescription',
     'link',
-    'tile',
-    'workspace',
-    'dataset',
-    'dashboard',
-    'dataflow',
-    'report',
-    'page',
     'qualifiedName',
     '__state',
     '__timestamp',

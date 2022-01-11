@@ -62,6 +62,30 @@
                         class: 'mt-0.5 mr-2',
                     })
                 }
+
+                const join = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'join'
+                )
+                if (!join) {
+                    _items.push({
+                        id: 'join',
+                        icon: 'Union',
+                        label: 'Join data',
+                        class: 'mr-2',
+                    })
+                }
+                const filter = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'filter'
+                )
+                if (!filter) {
+                    _items.push({
+                        id: 'filter',
+                        icon: 'Filter',
+                        label: 'Filter',
+                        class: 'mr-2',
+                    })
+                }
+
                 const groupPanel =
                     activeInlineTab.value.playground.vqb.panels.find(
                         (panel) => panel.id.toLowerCase() === 'group'
@@ -86,29 +110,7 @@
                         class: 'mr-2',
                     })
                 }
-                const filter = activeInlineTab.value.playground.vqb.panels.find(
-                    (panel) => panel.id.toLowerCase() === 'filter'
-                )
-                if (!filter) {
-                    _items.push({
-                        id: 'filter',
-                        icon: 'Filter',
-                        label: 'Filter',
-                        class: 'mr-2',
-                    })
-                }
 
-                const join = activeInlineTab.value.playground.vqb.panels.find(
-                    (panel) => panel.id.toLowerCase() === 'join'
-                )
-                if (!join) {
-                    _items.push({
-                        id: 'join',
-                        icon: 'Union',
-                        label: 'Join data',
-                        class: 'mr-2',
-                    })
-                }
                 return _items
             })
 

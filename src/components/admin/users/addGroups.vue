@@ -5,7 +5,7 @@
         :trigger="['click']"
         :destroy-tooltip-on-hide="true"
         :overlay-class-name="$style.addGroupPopover"
-        :align="{ offset: [-40, -40] }"
+        :align="{ offset: [-20, -10] }"
     >
         <template #content>
             <div class="popover-add-groups-user">
@@ -47,13 +47,12 @@
             </div>
         </template>
         <div
-            class="flex items-center px-1.5 py-1 cursor-pointer justify-between"
+            class="flex items-center justify-center w-8 h-8 mr-2 bg-white rounded cursor-pointer add-group"
         >
             <span>
-                <AtlanIcon class="mr-2" icon="Group" />
-                Add to group
+                <AtlanIcon icon="Group" />
             </span>
-            <AtlanIcon class="ml-3" icon="ChevronRight" />
+            <!-- <AtlanIcon class="ml-3" icon="ChevronRight" /> -->
         </div>
     </a-popover>
 </template>
@@ -138,6 +137,13 @@
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 250px !important;
+        }
+    }
+</style>
+<style lang="less">
+    .add-group {
+        &:hover {
+            border: 1px solid #e6e6eb;
         }
     }
 </style>

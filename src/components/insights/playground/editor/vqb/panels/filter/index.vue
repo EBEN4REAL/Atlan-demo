@@ -39,9 +39,18 @@
                             ]"
                             style="z-index: 2"
                         >
-                            <span class="absolute text-sm -right-0.5 -top-1.5"
-                                >⚡️</span
-                            >
+                            <span class="absolute text-sm -right-1 -top-2">
+                                <AtlanIcon
+                                    v-if="
+                                        isFilterIsInteractive(
+                                            activeInlineTab.playground.vqb
+                                                .panels[index].subpanels
+                                        )
+                                    "
+                                    icon="GlowFlash"
+                                    class="w-4 h-4"
+                            /></span>
+
                             <AtlanIcon
                                 icon="FilterFunnel"
                                 :class="[
@@ -70,7 +79,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <p
+
+                            <div
                                 :class="[
                                     isChecked
                                         ? 'text-gray-500'
@@ -79,19 +89,29 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                {{
-                                    getSummarisedInfoOfFilterPanel(
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].subpanels,
-                                        activeInlineTab
-                                    )
-                                }}
-                            </p>
+                                <p
+                                    :class="[
+                                        isChecked
+                                            ? 'text-gray-500'
+                                            : 'text-gray-400 line-through',
+                                        'text-xs truncate',
+                                    ]"
+                                    v-if="!expand"
+                                >
+                                    {{
+                                        getSummarisedInfoOfFilterPanel(
+                                            activeInlineTab.playground.vqb
+                                                .panels[index].subpanels,
+                                            activeInlineTab
+                                        )
+                                    }}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     <div
+                        v-if="!readOnly"
                         :class="[
                             containerHovered ? 'opacity-100' : 'opacity-0',
                             'flex border border-gray-300 rounded   items-strech',
@@ -101,12 +121,24 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox
-                                v-model:checked="
+                            <a-tooltip
+                                placement="top"
+                                :title="
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
+                                        ? 'Disable step'
+                                        : 'Enable step'
                                 "
-                            ></a-checkbox>
+                            >
+                                <a-checkbox
+                                    v-model:checked="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].hide
+                                    "
+                                    @change="handleCheckboxChange"
+                                ></a-checkbox>
+                            </a-tooltip>
                         </div>
                         <div
                             class="border-r border-gray-300"
@@ -117,32 +149,38 @@
                             "
                         >
                             <!-- Show dropdown except the last panel -->
-                            <Actions
-                                @add="
-                                    (type, panel) =>
-                                        handleAddPanel(index, type, panel)
-                                "
-                                v-model:submenuHovered="submenuHovered"
-                                v-model:containerHovered="containerHovered"
-                                :panelInfo="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                "
-                            />
+                            <a-tooltip placement="top" title="Add step">
+                                <Actions
+                                    @add="
+                                        (type, panel) =>
+                                            handleAddPanel(index, type, panel)
+                                    "
+                                    v-model:submenuHovered="submenuHovered"
+                                    v-model:containerHovered="containerHovered"
+                                    :panelInfo="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ]
+                                    "
+                                />
+                            </a-tooltip>
                             <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                            <a-tooltip placement="top" title="Delete step">
+                                <AtlanBtn
+                                    @click.stop="() => handleDelete(index)"
+                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                    size="sm"
+                                    color="secondary"
+                                    padding="compact"
+                                >
+                                    <AtlanIcon
+                                        icon="Delete"
+                                        class="-mx-1"
+                                    ></AtlanIcon>
+                                </AtlanBtn>
+                            </a-tooltip>
                         </div>
                     </div>
                 </div>
@@ -178,7 +216,8 @@
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index)
+                        Number(index) &&
+                    !readOnly
                 "
             />
         </div>
@@ -222,6 +261,7 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
+    import VariableRender from './variableRender/index.vue'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -230,6 +270,7 @@
             Actions,
             AtlanBtn,
             FilterSubPanel,
+            VariableRender,
         },
         props: {
             index: {
@@ -244,7 +285,8 @@
         setup(props, { emit }) {
             const STRING_CHECK = 'ksdghkjsdhfksdfhkjsdhfkjshfkjshfkjhsfkjh'
             const { index, panel } = toRefs(props)
-            const { totalFiledsMapWithInput } = useFilter()
+            const { totalFiledsMapWithInput, isFilterIsInteractive } =
+                useFilter()
             const editorInstanceRef = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
@@ -286,8 +328,18 @@
                         ]?.expand
                 }
             )
+
+            // watch(
+            //     activeInlineTab.value.playground.vqb.panels[index.value]
+            //         .subpanels,
+            //     () => {
+            //         activeInlineTab.value.isSaved = false
+            //     },
+            //     { deep: true }
+            // )
+
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB } = useVQB()
+            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -399,6 +451,24 @@
                 }
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             watch(
                 activeInlineTab,
                 () => {
@@ -407,7 +477,13 @@
                 { immediate: true }
             )
 
+            const handleCheckboxChange = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             return {
+                readOnly,
+                isFilterIsInteractive,
                 STRING_CHECK,
                 toggleConfirmPopover,
                 getPopoverContent,
@@ -429,6 +505,7 @@
                 handleDelete,
                 handleAddPanel,
                 findTimeLineHeight,
+                handleCheckboxChange,
             }
         },
     })

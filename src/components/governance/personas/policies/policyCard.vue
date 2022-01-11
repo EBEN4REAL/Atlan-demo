@@ -60,7 +60,7 @@
                         <span class="flex-none text-sm"> Query Access </span>
                     </div>
                 </div>
-                <span v-if="!policy.allow" class="denied-policy-pill">
+                <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
                     {{
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}

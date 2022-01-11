@@ -1,8 +1,17 @@
 <template>
     <div class="relative h-full pb-6">
-        <div class="close-btn-add-policy" @click="$emit('close')">
-            <AtlanIcon icon="Add" class="text-white" />
-        </div>
+        <Shortcut
+            shortcut-key="esc"
+            action="close preview"
+            placement="left"
+            :delay="0.4"
+            :edit-permission="true"
+        >
+            <div class="close-btn-add-policy" @click="$emit('close')">
+                <AtlanIcon icon="Add" class="text-white outline-none" />
+            </div>
+        </Shortcut>
+
         <div v-if="isLoading" class="flex items-center justify-center h-full">
             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
@@ -141,6 +150,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -174,6 +184,7 @@
             SidePanelTabHeaders,
             AtlanButton,
             SlackMessageCta,
+            Shortcut,
         },
         props: {
             previewType: {

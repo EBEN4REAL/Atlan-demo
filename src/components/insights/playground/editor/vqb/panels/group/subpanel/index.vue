@@ -12,6 +12,10 @@
                         v-model:selectedItems="subpanel.columns"
                         :showSelectAll="false"
                         v-model:selectedColumnsData="subpanel.columnsData"
+                        :selectedTablesQualifiedNames="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
+                        :disabled="readOnly"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
@@ -43,6 +47,7 @@
                         class="flex-1"
                         :showColumnWithTable="false"
                         style="max-width: 30%"
+                        :disabled="readOnly"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
@@ -87,7 +92,7 @@
                     </TreeColumnSelector>
 
                     <div
-                        v-if="subpanel.tableQualfiedName"
+                        v-if="subpanel.tableQualfiedName && !readOnly"
                         class="text-gray-500 hover:text-primary"
                         @click.stop="() => handleDelete(index)"
                     >
@@ -217,8 +222,26 @@
             }
 
             let hoverPill = ref(null)
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             return {
+                readOnly,
                 getTableName,
                 selectedTables,
                 filteredTablesValues,

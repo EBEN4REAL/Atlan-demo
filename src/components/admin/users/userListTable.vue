@@ -22,7 +22,7 @@
                     )
                 }}</template>
                 <div
-                    class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                    class="flex justify-start font-normal tracking-wide uppercase cursor-pointer group hover:text-gray-700"
                     :class="column.align === 'right' ? 'flex-row-reverse' : ''"
                 >
                     <div>
@@ -171,7 +171,7 @@
                 :destroy-tooltip-on-hide="true"
             >
                 <template #content>
-                    <div class="p-3 content-popover-group-persona">
+                    <div class="p-3 pb-4 content-popover-group-persona">
                         <div class="flex justify-between">
                             Personas
                             <!-- <div>
@@ -208,173 +208,186 @@
             <div v-else class="text-left text-primary">-</div>
         </template>
         <template #actions="{ text: user }">
-            <a-button-group v-auth="map.UPDATE_USERS">
-                <a-dropdown
-                    v-if="user.emailVerified && user.enabled"
-                    :trigger="['click']"
-                >
-                    <div
-                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
-                        @click="(e) => e.preventDefault()"
+            <div class="flex justify-end">
+                <AddGroups :user="user" @groupAdded="handleGroupUpdated" />
+
+                <a-button-group v-auth="map.UPDATE_USERS">
+                    <a-dropdown
+                        v-if="user.emailVerified && user.enabled"
+                        :trigger="['click']"
                     >
-                        <AtlanIcon icon="KebabMenu" />
-                    </div>
-                    <template #overlay>
-                        <a-menu class="drop-down-disabled">
-                            <a-menu-item key="verified-user-1">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
+                            @click="(e) => e.preventDefault()"
+                        >
+                            <AtlanIcon icon="KebabMenu" />
+                        </div>
+                        <template #overlay>
+                            <a-menu class="drop-down-disabled">
+                                <!-- <a-menu-item key="verified-user-1">
                                 <AddGroups
                                     :user="user"
                                     @groupAdded="handleGroupUpdated"
                                 />
-                            </a-menu-item>
-                            <!-- <a-menu-item key="verified-user-2"> -->
-                            <!-- <AddPersonas :user="user" /> -->
-                            <!-- </a-menu-item> -->
-                            <a-menu-item
-                                key="verified-user-3"
-                                class="border-t"
-                                @click="
-                                    emit('toggleDisableEnablePopover', user)
-                                "
-                            >
-                                <div
-                                    class="flex items-center px-1.5 py-1 cursor-pointer text-red-600"
-                                >
-                                    <AtlanIcon
-                                        class="mr-2 icon-disabled-user"
-                                        icon="DisableUser"
-                                    />
-                                    Disable user
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-                <a-dropdown
-                    v-if="user.emailVerified && !user.enabled"
-                    :trigger="['click']"
-                >
-                    <div
-                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
-                        @click="(e) => e.preventDefault()"
-                    >
-                        <AtlanIcon icon="KebabMenu" />
-                    </div>
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                key="verified-user-3"
-                                @click="
-                                    emit('toggleDisableEnablePopover', user)
-                                "
-                            >
-                                <div
-                                    class="flex items-center justify-center h-8 p-2 py-3 cursor-pointer"
-                                >
-                                    <AtlanIcon
-                                        class="mr-2"
-                                        icon="CheckCircled"
-                                    />
-                                    Enable user
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-                <a-popover
-                    placement="leftTop"
-                    trigger="click"
-                    :destroy-tooltip-on-hide="true"
-                    :visible="
-                        selectedUserId === user.id && showDisableEnablePopover
-                    "
-                >
-                    <template #content>
-                        <div class="p-4 w-60">
-                            <h3
-                                v-html="
-                                    getEnableDisablePopoverContent(
-                                        user,
-                                        user.enabled ? 'disable' : 'enable'
-                                    )
-                                "
-                            ></h3>
-                            <div
-                                class="flex items-center justify-between mt-3 gap-x-3"
-                            >
-                                <div class="flex-grow"></div>
-                                <AtlanButton
-                                    color="minimal"
-                                    size="sm"
-                                    padding="compact"
-                                    @click="$emit('toggleDisableEnablePopover')"
-                                    >Cancel
-                                </AtlanButton>
-                                <AtlanButton
-                                    :color="user.enabled ? 'danger' : 'primary'"
-                                    size="sm"
-                                    padding="compact"
+                            </a-menu-item> -->
+                                <!-- <a-menu-item key="verified-user-2"> -->
+                                <!-- <AddPersonas :user="user" /> -->
+                                <!-- </a-menu-item> -->
+                                <a-menu-item
+                                    key="verified-user-3"
+                                    class="border-t"
                                     @click="
-                                        emit(
-                                            'confirmEnableDisablePopover',
-                                            user
+                                        emit('toggleDisableEnablePopover', user)
+                                    "
+                                >
+                                    <div
+                                        class="flex items-center px-1.5 py-1 cursor-pointer text-red-600"
+                                    >
+                                        <AtlanIcon
+                                            class="mr-2 icon-disabled-user"
+                                            icon="DisableUser"
+                                        />
+                                        Disable user
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <a-dropdown
+                        v-if="user.emailVerified && !user.enabled"
+                        :trigger="['click']"
+                    >
+                        <div
+                            class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
+                            @click="(e) => e.preventDefault()"
+                        >
+                            <AtlanIcon icon="KebabMenu" />
+                        </div>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    key="verified-user-3"
+                                    @click="
+                                        emit('toggleDisableEnablePopover', user)
+                                    "
+                                >
+                                    <div
+                                        class="flex items-center justify-center h-8 p-2 py-3 cursor-pointer"
+                                    >
+                                        <AtlanIcon
+                                            class="mr-2"
+                                            icon="CheckCircled"
+                                        />
+                                        Enable user
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <a-popover
+                        placement="leftTop"
+                        trigger="click"
+                        :destroy-tooltip-on-hide="true"
+                        :visible="
+                            selectedUserId === user.id &&
+                            showDisableEnablePopover
+                        "
+                    >
+                        <template #content>
+                            <div class="p-4 w-60">
+                                <h3
+                                    v-html="
+                                        getEnableDisablePopoverContent(
+                                            user,
+                                            user.enabled ? 'disable' : 'enable'
                                         )
                                     "
-                                    >{{ user.enabled ? 'Disable' : 'Enable' }}
-                                </AtlanButton>
+                                ></h3>
+                                <div
+                                    class="flex items-center justify-between mt-3 gap-x-3"
+                                >
+                                    <div class="flex-grow"></div>
+                                    <AtlanButton
+                                        color="minimal"
+                                        size="sm"
+                                        padding="compact"
+                                        @click="
+                                            $emit('toggleDisableEnablePopover')
+                                        "
+                                        >Cancel
+                                    </AtlanButton>
+                                    <AtlanButton
+                                        :color="
+                                            user.enabled ? 'danger' : 'primary'
+                                        "
+                                        size="sm"
+                                        padding="compact"
+                                        @click="
+                                            emit(
+                                                'confirmEnableDisablePopover',
+                                                user
+                                            )
+                                        "
+                                        >{{
+                                            user.enabled ? 'Disable' : 'Enable'
+                                        }}
+                                    </AtlanButton>
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                </a-popover>
-                <a-popover
-                    placement="leftTop"
-                    trigger="click"
-                    :destroy-tooltip-on-hide="true"
-                    :visible="
-                        selectedUserId === user.id && showRevokeInvitePopover
-                    "
-                >
-                    <template #content>
-                        <div class="p-4 w-60">
-                            <h3>
-                                Revoke invitation for
-                                <b>{{
-                                    user.name ||
-                                    user.username ||
-                                    user.email ||
-                                    ''
-                                }}</b>
-                                ?
-                            </h3>
-                            <div
-                                class="flex items-center justify-between mt-3 gap-x-3"
-                            >
-                                <div class="flex-grow"></div>
-                                <AtlanButton
-                                    color="minimal"
-                                    size="sm"
-                                    padding="compact"
-                                    @click="$emit('handleRevokeInvite', false)"
-                                    >Cancel
-                                </AtlanButton>
-                                <AtlanButton
-                                    :color="'danger'"
-                                    size="sm"
-                                    padding="compact"
-                                    @click="
-                                        $emit('revokeInvite', {
-                                            email: user.email,
-                                            id: user.id,
-                                        })
-                                    "
-                                    >Revoke
-                                </AtlanButton>
+                        </template>
+                    </a-popover>
+                    <a-popover
+                        placement="leftTop"
+                        trigger="click"
+                        :destroy-tooltip-on-hide="true"
+                        :visible="
+                            selectedUserId === user.id &&
+                            showRevokeInvitePopover
+                        "
+                    >
+                        <template #content>
+                            <div class="p-4 w-60">
+                                <h3>
+                                    Revoke invitation for
+                                    <b>{{
+                                        user.name ||
+                                        user.username ||
+                                        user.email ||
+                                        ''
+                                    }}</b>
+                                    ?
+                                </h3>
+                                <div
+                                    class="flex items-center justify-between mt-3 gap-x-3"
+                                >
+                                    <div class="flex-grow"></div>
+                                    <AtlanButton
+                                        color="minimal"
+                                        size="sm"
+                                        padding="compact"
+                                        @click="
+                                            $emit('handleRevokeInvite', false)
+                                        "
+                                        >Cancel
+                                    </AtlanButton>
+                                    <AtlanButton
+                                        :color="'danger'"
+                                        size="sm"
+                                        padding="compact"
+                                        @click="
+                                            $emit('revokeInvite', {
+                                                email: user.email,
+                                                id: user.id,
+                                            })
+                                        "
+                                        >Revoke
+                                    </AtlanButton>
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                </a-popover>
-                <!-- enable/disable  -->
-                <!-- <a-tooltip v-if="user.emailVerified" placement="top">
+                        </template>
+                    </a-popover>
+                    <!-- enable/disable  -->
+                    <!-- <a-tooltip v-if="user.emailVerified" placement="top">
                     <template #title>
                         <span>
                             {{
@@ -383,8 +396,8 @@
                         >
                     </template>
                 </a-tooltip> -->
-                <!-- invitation -->
-                <!-- <a-tooltip
+                    <!-- invitation -->
+                    <!-- <a-tooltip
                     v-if="!user.emailVerified"
                     placement="top"
                     class="rounded mr-3.5"
@@ -404,48 +417,48 @@
                         <AtlanIcon icon="ResendInvite"></AtlanIcon>
                     </div>
                 </a-tooltip> -->
-                <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
-                        @click="(e) => e.preventDefault()"
-                    >
-                        <AtlanIcon icon="KebabMenu" />
-                    </div>
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item key="0">
-                                <div
-                                    class="flex items-center justify-center h-8 p-2 py-3 cursor-pointer"
-                                    @click="
-                                        emit('resendInvite', {
-                                            email: user.email,
-                                            id: user.id,
-                                        })
-                                    "
+                    <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 bg-white rounded cursor-pointer three-dot-wrapper"
+                            @click="(e) => e.preventDefault()"
+                        >
+                            <AtlanIcon icon="KebabMenu" />
+                        </div>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="0">
+                                    <div
+                                        class="flex items-center justify-center h-8 p-2 py-3 cursor-pointer"
+                                        @click="
+                                            emit('resendInvite', {
+                                                email: user.email,
+                                                id: user.id,
+                                            })
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            class="mr-2"
+                                            icon="ResendInvite"
+                                        />
+                                        Resend invitation
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item
+                                    key="revoke inviation"
+                                    @click="emit('handleRevokeInvite', user.id)"
                                 >
-                                    <AtlanIcon
-                                        class="mr-2"
-                                        icon="ResendInvite"
-                                    />
-                                    Resend invitation
-                                </div>
-                            </a-menu-item>
-                            <a-menu-item
-                                key="revoke inviation"
-                                @click="emit('handleRevokeInvite', user.id)"
-                            >
-                                <div
-                                    class="flex items-center justify-center h-8 p-2 py-3 text-red-600 cursor-pointer"
-                                >
-                                    <AtlanIcon
-                                        class="mr-2 text-red-600"
-                                        icon="Revoke"
-                                    />
-                                    Revoke Invitation
-                                </div>
-                            </a-menu-item>
+                                    <div
+                                        class="flex items-center justify-center h-8 p-2 py-3 text-red-600 cursor-pointer"
+                                    >
+                                        <AtlanIcon
+                                            class="mr-2 text-red-600"
+                                            icon="Revoke"
+                                        />
+                                        Revoke Invitation
+                                    </div>
+                                </a-menu-item>
 
-                            <!-- <a-popover
+                                <!-- <a-popover
                                 placement="leftTop"
                                 trigger="click"
                                 :destroy-tooltip-on-hide="true"
@@ -471,10 +484,11 @@
                                     >Change User Role
                                 </a-menu-item>
                             </a-popover> -->
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-            </a-button-group>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </a-button-group>
+            </div>
         </template>
     </a-table>
 </template>
@@ -668,6 +682,8 @@
     }
     .content-popover-group-persona {
         width: 180px;
+        height: auto;
+        max-height: 170px;
     }
 </style>
 

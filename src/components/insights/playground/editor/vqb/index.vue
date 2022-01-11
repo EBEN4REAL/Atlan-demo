@@ -25,6 +25,7 @@
         defineAsyncComponent,
         inject,
         ref,
+        watch,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     // import {
@@ -69,6 +70,13 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            // watch(
+            //     () => activeInlineTab.value.playground.vqb.panels,
+            //     () => {
+            //         console.log('vqb update:')
+            //     }
+            // )
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--

@@ -283,6 +283,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
 // source list
@@ -313,6 +314,7 @@ import Policies from '~/assets/images/icons/Policies.svg'
 import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
 import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
 import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import OuterJoin from '~/assets/images/icons/OuterJoin.svg'
 import TableSwap from '~/assets/images/icons/swapTable.svg'
 import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
 import PublicCollection from '~/assets/images/icons/publicCollection.svg'
@@ -338,10 +340,21 @@ import Revoke from '~/assets/images/icons/Revoke.svg'
 import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
+import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
 
+import Vqb from '~/assets/images/icons/Vqb.svg'
+import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
+import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
+import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
 
+import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
+import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
+import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
+import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
+
 export default {
+    GlowFlash,
     Query24,
     Vqb24,
     partitionKey,
@@ -667,8 +680,18 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
+    InteractiveVariableIllustration,
     Revoke,
     WarningIcon,
     SidebarSwitch,
+    Vqb,
+    VqbVerified,
+    VqbDeprecated,
+    VqbDraft,
     Clock,
+    OuterJoin,
+    InnerJoinInfo,
+    LeftJoinInfo,
+    RightJoinInfo,
+    OuterJoinInfo
 }

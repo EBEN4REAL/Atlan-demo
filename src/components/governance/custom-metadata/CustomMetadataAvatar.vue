@@ -20,7 +20,7 @@
                 </div>
                 <span
                     v-else
-                    class="self-center block leading-none"
+                    class="self-center block leading-none truncate"
                     :style="{ fontSize: `calc(${size} - 2px)` }"
                 >
                     {{ metadata?.options?.emoji }}
@@ -44,34 +44,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
 
-import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
+    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
-export default defineComponent({
-    props: {
-        metadata: {
-            required: true,
-            type: Object,
-            default: () => {},
+    export default defineComponent({
+        props: {
+            metadata: {
+                required: true,
+                type: Object,
+                default: () => {},
+            },
+            size: {
+                type: String,
+                default: '28px',
+            },
+            isUpdating: {
+                type: Boolean,
+                default: false,
+            },
         },
-        size: {
-            type: String,
-            default: '28px',
-        },
-        isUpdating: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    setup(props) {
-        const { metadata } = toRefs(props)
+        setup(props) {
+            const { metadata } = toRefs(props)
 
-        const { imageUrl } = useCustomMetadataAvatar(metadata)
+            const { imageUrl } = useCustomMetadataAvatar(metadata)
 
-        return {
-            imageUrl,
-        }
-    },
-})
+            return {
+                imageUrl,
+            }
+        },
+    })
 </script>

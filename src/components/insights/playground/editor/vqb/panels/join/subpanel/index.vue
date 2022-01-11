@@ -13,9 +13,39 @@
                     <div class="flex-none item-1">
                         <JoinSelector
                             class="w-full"
-                            v-model:selectedJoinType="subpanel.joinType"
                             :disabled="readOnly"
-                        />
+                            v-model:isAreaFocused="isAreaFocusedJoinSelector"
+                        >
+                            <template #head>
+                                <div
+                                    class="flex items-center cursor-pointer"
+                                    v-if="subpanel?.joinType"
+                                >
+                                    <AtlanIcon
+                                        :icon="
+                                            subpanel?.joinType.name.replace(
+                                                ' ',
+                                                ''
+                                            )
+                                        "
+                                        class="text-primary"
+                                    />
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700"
+                                    >
+                                        {{ subpanel?.joinType.name }}
+                                    </span>
+                                </div>
+                            </template>
+                            <template #body>
+                                <JoinSelectorDropdown
+                                    v-model:selectedJoinType="subpanel.joinType"
+                                    v-model:isAreaFocused="
+                                        isAreaFocusedJoinSelector
+                                    "
+                                />
+                            </template>
+                        </JoinSelector>
                     </div>
                     <div class="item-2">
                         <TreeColumnSelector
@@ -98,7 +128,10 @@
         ComputedRef,
         computed,
     } from 'vue'
-    import JoinSelector from '../joinSelector/index.vue'
+    import JoinSelector from '../joinSelector/_index.vue'
+    import JoinSelectorDropdown from '../joinSelector/joinDropdownBody.vue'
+    // import JoinSelector from '~/components/insights/playground/editor/vqb/panels/common/select/select.vue'
+
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
@@ -114,6 +147,7 @@
         components: {
             JoinSelector,
             TreeColumnSelector,
+            JoinSelectorDropdown,
         },
         props: {
             expand: {
@@ -144,6 +178,7 @@
             } = useUtils()
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const isAreaFocusedJoinSelector = ref(false)
             const { allowedTablesInJoinSelector } = useJoin()
 
             const { subpanels, selectedTables } = useVModels(props)
@@ -294,6 +329,7 @@
             )
 
             return {
+                isAreaFocusedJoinSelector,
                 readOnly,
                 panelIndex,
                 activeInlineTab,

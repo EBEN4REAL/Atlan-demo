@@ -1,3 +1,5 @@
+import { Editor } from '@tiptap/vue-3'
+
 export interface CommandItem {
     title: string
     key: string
@@ -5,6 +7,7 @@ export interface CommandItem {
     icon?: string
     level?: number
     border?: boolean
+    disabled?: any
     command?: any
 }
 
@@ -15,13 +18,16 @@ export const blockMenu: CommandItem[] = [
         level: 1,
         helpText: '',
         icon: 'HOne',
+        disabled: () => false,
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .toggleHeading({ level: 1 })
-                .run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleHeading({ level: 1 })
+                      .run()
+                : editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
         title: 'H2',
@@ -29,13 +35,16 @@ export const blockMenu: CommandItem[] = [
         level: 2,
         helpText: '',
         icon: 'HTwo',
+        disabled: () => false,
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .toggleHeading({ level: 2 })
-                .run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleHeading({ level: 2 })
+                      .run()
+                : editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
         title: 'H3',
@@ -44,13 +53,16 @@ export const blockMenu: CommandItem[] = [
         icon: 'HThree',
         border: true,
         helpText: '',
+        disabled: () => false,
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .toggleHeading({ level: 3 })
-                .run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleHeading({ level: 3 })
+                      .run()
+                : editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
 
     {
@@ -58,8 +70,17 @@ export const blockMenu: CommandItem[] = [
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',
+        disabled: (editor: Editor) =>
+            !editor.can().toggleList('bulletList', 'listItem'),
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleBulletList().run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleBulletList()
+                      .run()
+                : editor.chain().focus().toggleBulletList().run(),
     },
     {
         title: 'Ordered List',
@@ -67,25 +88,50 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'NumberedList',
         border: true,
+        disabled: (editor: Editor) =>
+            !editor.can().toggleList('orderedList', 'listItem'),
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleOrderedList()
+                      .run()
+                : editor.chain().focus().toggleOrderedList().run(),
     },
 
     {
         title: 'TaskList',
         key: 'taskList',
         helpText: '',
-        icon: 'CheckCircled',
+        icon: 'TaskList',
+        disabled: (editor: Editor) => !editor.can().toggleTaskList(),
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleTaskList().run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleTaskList()
+                      .run()
+                : editor.chain().focus().toggleTaskList().run(),
     },
     {
         title: 'Blockquote',
         key: 'blockquote',
         helpText: '',
         icon: 'Quotes',
+        disabled: () => false,
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleBlockquote()
+                      .run()
+                : editor.chain().focus().toggleBlockquote().run(),
     },
     {
         title: 'Code Block',
@@ -93,13 +139,16 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'Code',
         border: true,
+        disabled: () => false,
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .toggleCodeBlock({ language: 'json' })
-                .run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleCodeBlock({ language: 'json' })
+                      .run()
+                : editor.chain().focus().toggleImageBlock().run(),
     },
     {
         title: 'Image Block',
@@ -107,8 +156,16 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'ReadmeImage',
         border: true,
+        disabled: (editor: Editor) => !editor.can().toggleImageBlock(),
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleImageBlock().run(),
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleImageBlock()
+                      .run()
+                : editor.chain().focus().toggleImageBlock().run(),
     },
     /*   {
         title: 'Google doc',
@@ -127,7 +184,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'Bold',
         command: ({ editor, range }) => {
-            editor.chain().focus().deleteRange(range).toggleBold().run()
+            editor.chain().focus().toggleBold().run()
         },
     },
     {
@@ -136,7 +193,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'Italic',
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleItalic().run(),
+            editor.chain().focus().toggleItalic().run(),
     },
     {
         title: 'Underline',
@@ -144,7 +201,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'Underline',
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleUnderline().run(),
+            editor.chain().focus().toggleUnderline().run(),
     },
     {
         title: 'Strikethrough',
@@ -152,7 +209,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'Strike',
         command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).toggleStrike().run(),
+            editor.chain().focus().toggleStrike().run(),
     },
     {
         title: 'Align Center',
@@ -160,12 +217,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'TextCenter',
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .setTextAlign('center')
-                .run(),
+            editor.chain().focus().setTextAlign('center').run(),
     },
 
     {
@@ -174,12 +226,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'TextLeft',
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .setTextAlign('left')
-                .run(),
+            editor.chain().focus().setTextAlign('left').run(),
     },
     {
         title: 'Align Right',
@@ -187,12 +234,7 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'TextRight',
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .setTextAlign('right')
-                .run(),
+            editor.chain().focus().setTextAlign('right').run(),
     },
     {
         title: 'Justify Text',
@@ -200,28 +242,21 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'JustifyText',
         command: ({ editor, range }) =>
-            editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .setTextAlign('justify')
-                .run(),
+            editor.chain().focus().setTextAlign('justify').run(),
     },
     {
         title: 'Undo',
         key: 'undo',
         helpText: '',
         icon: 'Undo',
-        command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).undo().run(),
+        command: ({ editor, range }) => editor.chain().focus().undo().run(),
     },
     {
         title: 'Redo',
         key: 'redo',
         helpText: '',
         icon: 'Redo',
-        command: ({ editor, range }) =>
-            editor.chain().focus().deleteRange(range).redo().run(),
+        command: ({ editor, range }) => editor.chain().focus().redo().run(),
     },
     // table
 ]

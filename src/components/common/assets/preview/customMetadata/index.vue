@@ -13,6 +13,7 @@
                         :tooltip-text="data.label"
                         :rows="2"
                         width="500px"
+                        placement="left"
                     />
 
                     <a-tooltip>
@@ -93,6 +94,7 @@
                                     :tooltipText="a.displayName"
                                     :rows="1"
                                     width="500px"
+                                    placement="left"
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -134,6 +136,7 @@
                                         clampPercentage="80%"
                                         :tooltipText="a.displayName"
                                         width="500px"
+                                        placement="left"
                                     />
                                     <template
                                         v-if="
@@ -238,6 +241,7 @@
                                                                     p.displayName
                                                                 "
                                                                 width="500px"
+                                                                placement="left"
                                                             />
                                                         </div>
                                                         <a-tooltip>
@@ -371,6 +375,7 @@
                             <Truncate
                                 :tooltip-text="a.displayName"
                                 width="500px"
+                                placement="left"
                             />
                             <a-tooltip>
                                 <template #title>

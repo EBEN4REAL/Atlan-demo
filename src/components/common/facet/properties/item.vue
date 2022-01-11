@@ -15,6 +15,7 @@
                 :tooltipText="attribute.displayName"
                 :rows="2"
                 width="500px"
+                placement="right"
             />
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">

@@ -49,12 +49,12 @@
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
                 block
-                class="flex items-center justify-between"
+                class="flex items-center justify-between px-2"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
                     <img
                         :src="getConnectorImage(selectedAsset)"
-                        class="h-5 mr-1"
+                        class="h-4 mr-1"
                     />
                     {{
                         assetTypeLabel(selectedAsset) || selectedAsset.typeName
@@ -236,8 +236,52 @@
             </div>
         </div>
 
+        <!-- <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Collection'
+            "
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">
+                {{ attributes(selectedAsset)?.parent?.typeName }}
+            </div>
+            <div class="text-sm tracking-wider text-gray-700">
+                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+            </div>
+        </div> -->
+
         <div
-            v-if="selectedAsset?.guid && selectedAsset?.typeName === 'Query'"
+            v-if="selectedAsset?.typeName === 'Query'"
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">Collection</div>
+
+            <a-button
+                block
+                class="flex items-center justify-between px-2"
+                @click="() => {}"
+            >
+                <div class="flex items-center">
+                    <AtlanIcon icon="CollectionIconSmall" class="mr-1 mb-0.5" />
+                    <span>
+                        {{
+                            selectedAsset?.collectionName ||
+                            collectionInfo?.displayText
+                        }}
+                    </span>
+                </div>
+                <AtlanIcon icon="External" />
+            </a-button>
+        </div>
+
+        <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
             class="flex flex-col px-5 text-sm"
         >
             <div class="mb-1 text-sm text-gray-500">
@@ -247,6 +291,28 @@
                 {{ attributes(selectedAsset)?.parent?.attributes?.name }}
             </div>
         </div>
+
+        <!-- <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
+            class="flex flex-col gap-y-4"
+        >
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Collection</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ selectedAsset?.collectionName }}
+                </div>
+            </div>
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Folder</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+                </div>
+            </div>
+        </div> -->
 
         <div class="flex flex-col">
             <div
@@ -437,6 +503,7 @@
         inject,
         ref,
         toRefs,
+        watch,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -453,6 +520,7 @@
     import Categories from '@/common/input/categories/categories.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -498,6 +566,41 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const { fetchCollectionInfo } = useCollectionInfo()
+
+            const collectionInfo = ref([])
+
+            const fetchAsset = () => {
+                const { data, isLoading, error } =
+                    fetchCollectionInfo(selectedAsset)
+
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value === false) {
+                        if (error.value === undefined) {
+                            if (
+                                data?.value?.entities &&
+                                data?.value?.entities?.length > 0
+                            ) {
+                                collectionInfo.value = data?.value?.entities[0]
+                            }
+                        }
+                    }
+                })
+            }
+
+            // debugger
+
+            watch(
+                () => selectedAsset?.value?.attributes?.collectionQualifiedName,
+                () => {
+                    if (selectedAsset?.value?.typeName === 'Query') {
+                        fetchAsset()
+                    }
+                },
+
+                { deep: true, immediate: true }
+            )
 
             const { isDrawer } = toRefs(props)
 
@@ -630,6 +733,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                collectionInfo,
             }
         },
     })

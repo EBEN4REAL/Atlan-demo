@@ -160,7 +160,7 @@
                             <div
                                 class="flex items-center text-xs leading-5 text-gray-500"
                             >
-                                <div
+                                <!-- <div
                                     class="flex items-center"
                                     v-if="isPrimary(item)"
                                 >
@@ -173,8 +173,19 @@
                                             >Pkey</span
                                         >
                                     </div>
-                                </div>
-                                <span>{{ dataType(item) ?? '-' }}</span>
+                                </div> -->
+
+                                <ColumnKeys
+                                    v-if="
+                                        isPrimary(item) ||
+                                        isForeign(item) ||
+                                        isPartition(item)
+                                    "
+                                    :isPrimary="isPrimary(item)"
+                                    :isForeign="true"
+                                    :isPartition="isPartition(item)"
+                                />
+                                <span v-else>{{ dataType(item) ?? '-' }}</span>
                             </div>
                         </div>
                         <!--For Others: Table Item -->
@@ -660,9 +671,10 @@
     } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default defineComponent({
-        components: { StatusBadge, PopoverAsset, AtlanBtn },
+        components: { StatusBadge, PopoverAsset, AtlanBtn, ColumnKeys },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -699,6 +711,8 @@
             })
             const {
                 isPrimary,
+                isForeign,
+                isPartition,
                 dataTypeImageForColumn,
                 dataTypeImage,
                 dataType,
@@ -1485,6 +1499,8 @@
                 activeInlineTab,
                 certificateStatus,
                 isPrimary,
+                isForeign,
+                isPartition,
                 title,
                 assetType,
                 dataType,

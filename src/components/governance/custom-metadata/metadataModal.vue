@@ -102,7 +102,7 @@
                 default: () => {},
             },
         },
-        emits: ['update:selected'],
+        emits: ['select'],
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
@@ -141,7 +141,7 @@
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
                     message.success('Metadata created')
-                    emit('update:selected', serviceResponse[0].guid)
+                    emit('select', serviceResponse[0].guid)
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'

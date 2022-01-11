@@ -342,6 +342,9 @@
             })
 
             const { getAnchorQualifiedName } = useAssetInfo()
+            const changeSelectedGlossary = (val) => {
+                selectedGlossaryQf.value = val
+            }
 
             // handles selected glossary change
             const handleSelectGlossary = (val) => {
@@ -350,7 +353,7 @@
                     router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
                     glossaryStore.setSelectedGTC(getGlossaryByQF(val))
                 }
-                selectedGlossaryQf.value = val
+                changeSelectedGlossary(val)
                 glossaryStore.setActiveGlossaryQualifiedName(val)
 
                 // serach list to show results for selectedGlossary
@@ -525,6 +528,7 @@
                 onSearchItemCheck,
                 showCollapseAll,
                 map,
+                changeSelectedGlossary,
             }
         },
     })

@@ -12,7 +12,6 @@ import powerbi from '~/assets/images/source/powerbi.png'
 import deprecated from '~/assets/images/status/deprecated.svg?url'
 import verified from '~/assets/images/status/verified.svg?url'
 import draft from '~/assets/images/status/draft.svg?url'
-import noStatus from '~/assets/images/status/nostatus.svg?url'
 
 /**
  * Gets the mapped string for the Node type
@@ -59,5 +58,4 @@ export const getNodeCertificationImage = {
     deprecated,
     verified,
     draft,
-    noStatus,
 }

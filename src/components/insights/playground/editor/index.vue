@@ -180,6 +180,7 @@
                             <!-- Custom variables -->
                             <a-tooltip
                                 color="#363636"
+                                v-if="!showVQB"
                                 :mouseEnterDelay="
                                     lastTooltipPresence !== undefined
                                         ? ADJACENT_TOOLTIP_DELAY
@@ -223,7 +224,10 @@
                                     )
                                 "
                             >
-                                <a-popover placement="top">
+                                <a-popover
+                                    placement="top"
+                                    :mouseEnterDelay="0.5"
+                                >
                                     <template #content>
                                         <div
                                             class="flex flex-col justify-center p-2 rounded"
@@ -247,7 +251,7 @@
                                     </template>
 
                                     <div
-                                        class="px-2 py-1 align-middle rounded bg-pink-light"
+                                        class="px-2 py-1 align-middle rounded cursor-pointer bg-pink-light"
                                     >
                                         <AtlanIcon
                                             icon="GlowFlash"

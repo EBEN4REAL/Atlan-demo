@@ -63,7 +63,7 @@
                                 :class="[
                                     isChecked
                                         ? 'text-gray-500'
-                                        : 'text-gray-400',
+                                        : 'text-gray-400 line-through',
                                     'text-xs',
                                 ]"
                                 v-if="!expand"
@@ -288,24 +288,20 @@
                     ? false
                     : true
             )
-
-            const expand = ref(
+            activeInlineTab.value.playground.vqb.panels[index.value].expand =
                 getInitialPanelExpandedState(
                     readOnly.value,
-                    panel.value.id,
+                    panel.value,
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         ?.expand
                 )
+
+            const expand = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             )
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    expand.value =
-                        activeInlineTab.value.playground.vqb?.panels[
-                            index.value
-                        ]?.expand
-                }
-            )
+
             const checkbox = ref(true)
             const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
@@ -326,6 +322,7 @@
                 else return 'height:104%;;bottom:0'
             }
             const handleAddPanel = (index, type, panel) => {
+                containerHovered.value = false
                 handleAdd(
                     index,
                     type,
@@ -351,7 +348,6 @@
                 ]
             }
             const toggleExpand = () => {
-                expand.value = !expand.value
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
                 ].expand =

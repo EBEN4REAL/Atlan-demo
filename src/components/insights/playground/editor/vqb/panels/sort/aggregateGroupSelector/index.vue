@@ -1,8 +1,13 @@
 <template>
     <div
         ref="container"
-        @click="setFoucs"
-        @focusout="handleContainerBlur"
+        @click="
+            () => {
+                if (!disabled) {
+                    isAreaFocused = true
+                }
+            }
+        "
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
@@ -17,46 +22,18 @@
         ]"
         @click.stop="() => {}"
     >
-        <template v-if="selectedItem?.label">
-            <div class="flex items-center">
-                <component
-                    :is="getDataTypeImage(selectedItem?.type)"
-                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                ></component>
-                <span class="mb-0 ml-1 text-sm text-gray-700">
-                    {{ selectedItem?.label }}
-                </span>
-            </div>
-        </template>
-
-        <a-input
-            v-if="selectedItem?.label && isAreaFocused"
-            ref="inputRef"
-            v-model:value="inputValue1"
-            :disabled="disabled"
-            @focus="
-                () => {
-                    isAreaFocused = true
-                }
-            "
-            @change="input1Change"
-            :placeholder="placeholder"
-            :style="`width:${placeholder.length + 2}ch;`"
-            :class="[
-                'p-0 pr-4 ml-2 text-sm border-none shadow-none outline-none  focus-none',
-            ]"
-        />
-        <a-input
-            v-if="!selectedItem?.label"
-            ref="initialRef"
-            v-model:value="inputValue2"
-            :disabled="disabled"
-            @change="input2Change"
-            :placeholder="placeholder"
-            :class="[
-                'w-full p-0 ml-2  border-none shadow-none outline-none text-sm  focus-none',
-            ]"
-        />
+        <div class="flex items-center" v-if="selectedItem?.label">
+            <component
+                :is="getDataTypeImage(selectedItem?.type)"
+                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+            ></component>
+            <span class="mb-0 ml-1 text-sm text-gray-700">
+                {{ selectedItem?.label }}
+            </span>
+        </div>
+        <span v-else class="text-gray-500 truncate">
+            {{ placeholder }}
+        </span>
 
         <div class="absolute right-2">
             <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
@@ -64,26 +41,39 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
                 :class="[
-                    'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position dropdown-container',
                 ]"
             >
-                <div
-                    :class="['flex  justify-center overflow-auto w-full']"
-                    style="height: 250px"
-                >
-                    <div class="w-full" v-if="dropdownOption.length !== 0">
+                <div :class="['w-full dropdown-container']">
+                    <div
+                        class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                    >
+                        <div
+                            class="flex items-center justify-between w-full dropdown-container"
+                            style="min-width: 100%"
+                        >
+                            <CustomInput
+                                v-model:queryText="queryText"
+                                :placeholder="placeholder"
+                            />
+                        </div>
+                    </div>
+                    <div
+                        class="w-full overflow-auto dropdown-container"
+                        v-if="dropdownOption.length !== 0"
+                        style="height: 205px"
+                    >
                         <template
                             v-for="(item, index) in dropdownOption"
                             :key="item.value + index"
                         >
                             <div
-                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                @mousedown.stop="(e) => onSelectItem(item, e)"
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light dropdown-container"
+                                @click="(e) => onSelectItem(item, e)"
                                 :class="
                                     selectedItem?.label === item.label
                                         ? 'bg-primary-light'
@@ -117,12 +107,13 @@
                         </template>
                     </div>
 
-                    <span
-                        class="w-full mt-4 text-sm text-center text-gray-400"
-                        v-if="dropdownOption.length == 0"
+                    <div
+                        class="flex items-center justify-center w-full mt-4 text-sm text-center text-gray-400"
+                        style="height: 205px"
+                        v-if="dropdownOption.length == 0 && !isLoading"
                     >
-                        Please add columns in Group/Aggregate
-                    </span>
+                        <span>No Columns found!</span>
+                    </div>
 
                     <!-- -------------------------- -->
                 </div>
@@ -161,6 +152,7 @@
     import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
     import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
     import { aggregatedAliasMap } from '~/components/insights/playground/editor/vqb/constants/aggregation'
+    import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -168,6 +160,7 @@
             Pill,
             TablesTree,
             ColumnKeys,
+            CustomInput,
         },
         emits: ['change'],
 
@@ -251,17 +244,6 @@
                 })
             }
 
-            const handleContainerBlur = (event) => {
-                // if the blur was because of outside focus
-                // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event?.relatedTarget)) {
-                    isAreaFocused.value = false
-                    inputValue1.value = ''
-                    inputValue2.value = ''
-                    queryText.value = ''
-                }
-            }
-
             const inputChange = () => {
                 nextTick(() => {
                     if (topPosShift.value !== container.value?.offsetHeight) {
@@ -334,6 +316,7 @@
                 setFocusedCusror()
                 event.stopPropagation()
                 event.preventDefault()
+                isAreaFocused.value = false
                 return false
             }
 
@@ -367,6 +350,25 @@
                     containerPosition.value.left = viewportOffset?.left
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
+
+                document?.addEventListener('click', function (event) {
+                    let isClickInside = container.value?.contains(event.target)
+
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains('ant-input')
+                    }
+                    if (!isClickInside) {
+                        isClickInside =
+                            event?.target?.classList?.contains(
+                                'dropdown-container'
+                            )
+                    }
+
+                    if (!isClickInside) {
+                        isAreaFocused.value = false
+                    }
+                })
                 nextTick(() => {
                     initialRef.value?.focus()
                 })
@@ -462,7 +464,6 @@
                 inputValue2,
                 clickPos,
                 container,
-                handleContainerBlur,
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,

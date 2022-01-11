@@ -782,10 +782,11 @@
                 showQueryPreview.value = !showQueryPreview.value
             }
 
-            const VQBfilterPanel =
-                activeInlineTab.value?.playground?.vqb?.panels?.find(
+            const VQBfilterPanel = computed(() => {
+                return activeInlineTab.value?.playground?.vqb?.panels?.find(
                     (panel) => panel.id.toLowerCase() === 'filter'
                 )
+            })
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--

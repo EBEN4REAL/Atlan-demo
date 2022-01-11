@@ -256,7 +256,10 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
-            const { getSummarisedInfoOfSortPanel } = useUtils()
+            const {
+                getSummarisedInfoOfSortPanel,
+                getInitialPanelExpandedState,
+            } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -274,8 +277,31 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             const expand = ref(
-                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
+                getInitialPanelExpandedState(
+                    readOnly.value,
+                    panel.value.id,
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        ?.expand
+                )
             )
             watch(
                 () => activeInlineTab.value.playground.vqb.panels,
@@ -339,23 +365,6 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            /* Accesss */
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser.value
-                    ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
-            )
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTabKey, inlineTabs)
             }

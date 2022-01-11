@@ -61,6 +61,7 @@
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Custom Icon trigger',
@@ -83,12 +84,16 @@
         },
         setup(props, { emit }) {
             const { subpanel, index } = toRefs(props)
+            const { updateVQB } = useVQB()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
             const showcustomVariablesToolBar = inject(
                 'showcustomToolBar'
             ) as Ref<Boolean>
@@ -125,6 +130,7 @@
             const toggleVariableType = (currVal, index, subpanel) => {
                 if (readOnly.value) return
                 subpanels.value[index].filter.isVariable = !currVal
+                updateVQB(activeInlineTabKey, tabs)
             }
             return {
                 toggleVariableType,

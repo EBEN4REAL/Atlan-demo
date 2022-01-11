@@ -47,10 +47,10 @@
             </div>
         </template>
         <div
-            class="flex items-center px-1.5 py-1 cursor-pointer justify-between"
+            class="flex items-center justify-center w-8 h-8 mr-2 bg-white rounded cursor-pointer add-group"
         >
             <span>
-                <AtlanIcon class="mr-2" icon="Group" />
+                <AtlanIcon icon="Group" />
             </span>
             <!-- <AtlanIcon class="ml-3" icon="ChevronRight" /> -->
         </div>
@@ -137,6 +137,13 @@
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 250px !important;
+        }
+    }
+</style>
+<style lang="less">
+    .add-group {
+        &:hover {
+            border: 1px solid #e6e6eb;
         }
     }
 </style>

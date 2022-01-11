@@ -979,6 +979,9 @@
         -ms-box-sizing: border-box !important;
         box-sizing: border-box !important;
     }
+    .container {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
 </style>
 <style lang="less" module>
     .custom_input {

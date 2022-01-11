@@ -52,7 +52,7 @@
                             :key="item.key"
                         >
                             <div
-                                class="flex items-center justify-between w-full px-4 h-9 group-hover:bg-primary-light group"
+                                class="flex items-center justify-between w-full px-4 cursor-pointer h-9 group-hover:bg-primary-light group"
                                 @mousedown.stop="(e) => onCheckChange(item, e)"
                                 :class="
                                     selectedJoinType.type === item.key

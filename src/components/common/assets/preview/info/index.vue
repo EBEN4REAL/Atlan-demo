@@ -237,14 +237,44 @@
         </div>
 
         <div
-            v-if="selectedAsset?.guid && selectedAsset?.typeName === 'Query'"
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Collection'
+            "
             class="flex flex-col px-5 text-sm"
         >
+            blah:{{ collectionInfo }}
+
             <div class="mb-1 text-sm text-gray-500">
                 {{ attributes(selectedAsset)?.parent?.typeName }}
             </div>
             <div class="text-sm tracking-wider text-gray-700">
                 {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+            </div>
+        </div>
+
+        <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
+            class="flex flex-col gap-y-4"
+        >
+            blah:{{ collectionInfo }}
+
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Collection</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ selectedAsset?.collectionName }}
+                </div>
+            </div>
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Folder</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+                </div>
             </div>
         </div>
 
@@ -437,6 +467,7 @@
         inject,
         ref,
         toRefs,
+        watch,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -453,6 +484,7 @@
     import Categories from '@/common/input/categories/categories.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -498,6 +530,59 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const { fetchCollectionInfo } = useCollectionInfo()
+
+            const collectionInfo = ref([])
+
+            const fetchAsset = () => {
+                const { data, isLoading, error } =
+                    fetchCollectionInfo(selectedAsset)
+
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value === false) {
+                        if (error.value === undefined) {
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length > 0
+                            ) {
+                                console.log('collection data: ', data?.value)
+                                console.log(
+                                    'collection data2: ',
+                                    JSON.parse(JSON.stringify(data?.value))
+                                )
+                                debugger
+                                collectionInfo.value = data.value.entities
+                                debugger
+                            }
+                        }
+                    }
+                })
+            }
+
+            debugger
+
+            watch(
+                () => selectedAsset?.value?.attributes?.collectionQualifiedName,
+                () => {
+                    if (selectedAsset?.value?.typeName === 'Query') {
+                        fetchAsset()
+                    }
+                },
+                { deep: true }
+            )
+
+            watch(
+                collectionInfo,
+                () => {
+                    debugger
+                    console.log('collectionInfo: ', collectionInfo.value)
+                    debugger
+                },
+                {
+                    deep: true,
+                }
+            )
 
             const { isDrawer } = toRefs(props)
 
@@ -630,6 +715,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                collectionInfo,
             }
         },
     })

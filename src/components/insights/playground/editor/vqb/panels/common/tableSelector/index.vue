@@ -204,7 +204,7 @@
 
                         <div
                             class="flex items-center justify-center w-full mt-4 text-sm text-center text-gray-400"
-                            style="height: 250px"
+                            style="height: 205px"
                             v-if="dropdownOption.length == 0 && !isLoading"
                         >
                             <span>No Tables found!</span>

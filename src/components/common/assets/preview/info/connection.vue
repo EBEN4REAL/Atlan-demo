@@ -10,7 +10,11 @@
         </div>
     </div>
 
-    <div class="flex flex-col" @click="handleOpenModal">
+    <div
+        v-if="!qualifiedName(selectedAsset).includes('powerbi')"
+        class="flex flex-col"
+        @click="handleOpenModal"
+    >
         <p
             class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
@@ -176,6 +180,7 @@
                 connectionRowLimit,
                 allowQuery,
                 allowQueryPreview,
+                qualifiedName,
             } = useAssetInfo()
 
             const queryConfigJSON = computed(() => {
@@ -224,6 +229,7 @@
                 queryConfigJSON,
                 editPermission,
                 handleOpenModal,
+                qualifiedName,
                 visible,
                 handleCancel,
                 handleUpdate,

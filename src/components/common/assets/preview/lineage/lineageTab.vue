@@ -28,12 +28,25 @@
                     }}</span></a-radio-button
                 >
             </a-radio-group>
-            <AtlanButton
-                padding="compact"
-                size="sm"
-                color="light"
-                @click="showImpactedAssets = true"
-                >View Impact</AtlanButton
+            <!-- <a-button-group>
+                <a-tooltip title="View Impact">
+                    <a-button
+                        class="flex items-center justify-center"
+                        @click="showImpactedAssets = true"
+                    >
+                        <AtlanIcon icon="ImpactedAssets" />
+                    </a-button>
+                </a-tooltip>
+                <a-tooltip title="View Graph">
+                    <a-button class="flex items-center justify-center">
+                        <router-link :to="link">
+                            <AtlanIcon icon="Minimap" />
+                        </router-link>
+                    </a-button>
+                </a-tooltip>
+            </a-button-group> -->
+            <router-link :to="link" class="underline text-primary"
+                >View Graph</router-link
             >
         </div>
         <Assets
@@ -325,9 +338,11 @@
 
 <style lang="less" module>
     .chip {
-        @apply self-center text-xs font-bold tracking-wide text-gray-400 ml-0;
+        @apply self-center text-xs font-bold tracking-wide ml-0;
     }
-
+    :global(.ant-radio-button-wrapper) {
+        @apply text-gray-500 inline-flex items-center;
+    }
     :global(.ant-radio-button-wrapper-checked) {
         .chip {
             @apply text-white;

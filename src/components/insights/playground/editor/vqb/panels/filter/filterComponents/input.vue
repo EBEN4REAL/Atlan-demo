@@ -148,8 +148,14 @@
                 { immediate: true }
             )
 
-            if (type.value === 'date' && inputValue.value)
-                localeValue.value = dayjs(inputValue.value)
+            if (type.value === 'date' && inputValue.value) {
+                if (Array.isArray(inputValue.value)) {
+                    if (inputValue.value[0])
+                        localeValue.value = dayjs(inputValue.value[0])
+                } else {
+                    localeValue.value = dayjs(inputValue.value)
+                }
+            }
 
             let timeout = null
 

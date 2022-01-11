@@ -9,13 +9,18 @@
         >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
-                    <Truncate :tooltip-text="data.label" :rows="2" />
+                    <Truncate
+                        :tooltip-text="data.label"
+                        :rows="2"
+                        width="500px"
+                        placement="left"
+                    />
 
                     <a-tooltip>
                         <template #title>
                             <span>{{ data?.description }}</span>
                         </template>
-                        <div class="">
+                        <div class="flex items-center">
                             <AtlanIcon
                                 v-if="data?.description"
                                 class="text-gray-400 hover:text-gray-500"
@@ -88,6 +93,8 @@
                                 <Truncate
                                     :tooltipText="a.displayName"
                                     :rows="1"
+                                    width="500px"
+                                    placement="left"
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -128,6 +135,8 @@
                                         classes="text-gray-500"
                                         clampPercentage="80%"
                                         :tooltipText="a.displayName"
+                                        width="500px"
+                                        placement="left"
                                     />
                                     <template
                                         v-if="
@@ -231,6 +240,8 @@
                                                                 :tooltip-text="
                                                                     p.displayName
                                                                 "
+                                                                width="500px"
+                                                                placement="left"
                                                             />
                                                         </div>
                                                         <a-tooltip>
@@ -277,11 +288,6 @@
                                                                 class="h-3"
                                                             />
                                                         </div>
-                                                        <!-- {{
-                                                            getDatatypeOfAttribute(
-                                                                p
-                                                            )
-                                                        }} -->
                                                     </span>
                                                 </div>
                                             </div>
@@ -323,36 +329,6 @@
                         </AtlanButton>
                     </div>
                 </template>
-                <!-- <div v-if="readOnly && false" :class="showMore ? 'mt-4' : ''">
-                    <span
-                        v-if="
-                            [...applicableList].filter((i) => hasValue(i))
-                                .length
-                        "
-                        class="text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
-                        :class="
-                            !applicableList.filter((i) => !hasValue(i)).length
-                                ? 'hidden'
-                                : ''
-                        "
-                        @click="showMore = !showMore"
-                    >
-                        <AtlanIcon
-                            v-if="!showMore"
-                            icon="Add"
-                            class="h-3 mb-1"
-                        />
-                        {{
-                            showMore
-                                ? 'Hide empty properties'
-                                : `Show ${
-                                      applicableList.filter((i) => !hasValue(i))
-                                          .length
-                                  } empty properties`
-                        }}
-                    </span>
-                    
-                </div> -->
                 <!-- showing empty ends here -->
             </template>
 
@@ -361,7 +337,11 @@
                 <template v-for="(a, x) in applicableList" :key="x">
                     <div class="mb-5">
                         <div class="flex mb-2 font-normal text-gray-500">
-                            <Truncate :tooltip-text="a.displayName" />
+                            <Truncate
+                                :tooltip-text="a.displayName"
+                                width="500px"
+                                placement="left"
+                            />
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ a.options.description }}</span>

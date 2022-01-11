@@ -1,5 +1,6 @@
 import { Editor, Extension, Range } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
+import { $ } from 'vue/macros'
 
 interface commandsProps {
     editor: Editor
@@ -25,6 +26,12 @@ export default Extension.create({
             Suggestion({
                 editor: this.editor,
                 ...this.options.suggestion,
+                allow({ editor }) {
+                    return (
+                        editor.state.selection.$anchor.parent.type.name !==
+                        'codeBlock'
+                    )
+                },
             }),
         ]
     },

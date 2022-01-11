@@ -25,7 +25,7 @@
                         <!-- Asset Details -->
                         <template v-if="column.key === 'details'">
                             <div class="flex flex-col">
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1 pr-2">
                                     <Tooltip
                                         :tooltip-text="text.name"
                                         classes="text-sm text-primary mb-0"
@@ -322,7 +322,7 @@
                     },
                     db: getTable(entity),
                     schema: getSchema(entity),
-                    depth: 1,
+                    depth: 'N/A',
                     owners: [...ownerUsers(entity), ...ownerGroups(entity)],
                     classifications: entity.classificationNames,
                     terms: entity.meanings,

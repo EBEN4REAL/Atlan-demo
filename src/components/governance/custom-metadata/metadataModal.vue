@@ -30,8 +30,8 @@
                     :trigger="['click']"
                 >
                     <div
-                        @click="emojiVisibility = !emojiVisibility"
                         class="cursor-pointer"
+                        @click="emojiVisibility = !emojiVisibility"
                     >
                         <span
                             v-if="form.options.logoType === 'emoji'"
@@ -53,6 +53,8 @@
                     </div>
                     <template #content
                         ><EmojiPicker
+                            :emoji="form.options.emoji"
+                            :image="imageFile"
                             @select="emojiSelect"
                             @remove="emojiRemove"
                             @upload="handleUpload"
@@ -202,6 +204,8 @@
                 form.value.options.logoType = 'emoji'
                 form.value.options.emoji = native
                 form.value.options.imageId = null
+                my_photo.value = null
+                imageFile.value = null
             }
 
             const handleUpload = async (payload) => {

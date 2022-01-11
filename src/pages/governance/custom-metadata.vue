@@ -54,7 +54,7 @@
                         class="overflow-y-auto"
                         :final-list="sortedSearchedBM"
                         :selected-bm="selectedBm"
-                        @clickMetaData="handleClickMetaData"
+                        @select="select"
                     />
                 </template>
 
@@ -96,7 +96,7 @@
                 </a-empty>
             </div>
         </div>
-        <MetadataModal ref="addMetaDataModal" v-model:selected="selectedId" />
+        <MetadataModal ref="addMetaDataModal" @select="select" />
     </div>
     <NoAccess v-else />
 </template>
@@ -137,13 +137,12 @@
         },
         setup() {
             const addMetaDataModal = ref(null)
-            const store = useTypedefStore()
-            const router = useRouter()
             const route = useRoute()
             useHead({
                 title: computed(() => 'Custom Metadata'),
             })
             const {
+                select,
                 selectedId,
                 selectedBm,
                 searchText,
@@ -163,34 +162,18 @@
                 }
             }, 500)
 
+            const resetSelection = () => {
+                if (
+                    finalBusinessMetadataList.value?.length &&
+                    finalBusinessMetadataList.value[0]?.guid
+                )
+                    select(finalBusinessMetadataList.value[0].guid)
+            }
             onMounted(() => {
                 sendPageEvent()
-                const list = store.getCustomMetadataList
-                if (!route.params.id && list.length) {
-                    const id = list[0].guid!
-                    selectedId.value = id
-                    router.replace(`/governance/custom-metadata/${id}`)
-                }
-            })
-            const handleClickMetaData = (id) => {
-                router.replace(`/governance/custom-metadata/${id}`)
-            }
-
-            watch(store.getCustomMetadataList, () => {
-                const list = store.getCustomMetadataList
-                if (list.length) {
-                    let idMetaData = list[0].guid!
-                    if (route.params.id) {
-                        const find = list.find(
-                            (el) => el.guid === route.params.id
-                        )
-                        if (find) {
-                            idMetaData = route.params.id
-                        }
-                    }
-                    selectedId.value = idMetaData
-                    router.replace(`/governance/custom-metadata/${idMetaData}`)
-                }
+                if (route.params.id) {
+                    select(route.params.id)
+                } else resetSelection()
             })
 
             watch(selectedId, () => {
@@ -212,7 +195,7 @@
                 map,
                 isAccess,
                 checkAccess,
-                handleClickMetaData,
+                select,
             }
         },
         data() {

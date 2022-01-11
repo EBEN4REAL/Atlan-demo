@@ -410,9 +410,9 @@
                 window.open(webURL(item.value), '_blank').focus()
             }
 
-            whenever(and(Escape, notUsingInput), (v) => {
+            /*  whenever(and(Escape, notUsingInput), (v) => {
                 if (v) back()
-            })
+            }) */
             const { checkAccess } = useAuth()
 
             return {

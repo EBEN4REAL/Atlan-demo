@@ -326,6 +326,7 @@
                                 <AtlanIcon
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5"
+                                    style="min-width: 16px"
                                     @click="onUnselectTable"
                                 />
 
@@ -353,6 +354,7 @@
                                 />
                             </div>
                         </div>
+
                         <div
                             class="w-full dropdown-container"
                             v-if="

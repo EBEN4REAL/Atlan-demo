@@ -112,43 +112,36 @@
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
                 :class="[
-                    'absolute z-10  py-4 overflow-auto bg-white rounded custom-shadow position dropdown-container',
+                    'absolute z-10  overflow-auto bg-white rounded custom-shadow position dropdown-container',
                 ]"
             >
-                <div>
-                    <div class="px-4">
-                        <div
-                            class="flex items-center justify-between flex-grow py-1 border-b bordery-gray-300"
-                        >
-                            <AtlanIcon
-                                icon="Search"
-                                class="flex-none pr-1 text-gray-500"
-                            />
-                            <input
-                                ref="inputRef"
-                                v-model="queryText"
-                                :placeholder="placeholder"
-                                type="text"
-                                class="flex-1 text-xs bg-transparent focus:outline-none child_input"
-                                style="z-index: 10 !important"
-                            />
-                        </div>
-                    </div>
-
+                <div
+                    tabindex="-1"
+                    :class="['dropdown-container  w-full']"
+                    style="min-height: 180px"
+                >
+                    <!--  Multiple table column selection-->
                     <div
-                        tabindex="-1"
-                        :class="['flex  justify-center  overflow-auto w-full']"
-                        style="height: 250px"
+                        class="w-full dropdown-container"
+                        v-if="!isTableSelected"
                     >
-                        <Loader
-                            v-if="isLoading"
-                            style="min-height: 250px !important"
-                        ></Loader>
-
-                        <!--  Multiple table column selection-->
                         <div
-                            class="w-full dropdown-container"
-                            style="height: 250px"
+                            class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                        >
+                            <div
+                                class="flex items-center justify-between w-full dropdown-container"
+                                style="min-width: 100%"
+                            >
+                                <CustomInput
+                                    v-model:queryText="queryText"
+                                    :placeholder="placeholder"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="w-full overflow-auto dropdown-container"
+                            style="height: 205px"
                             tabindex="-1"
                             :class="[
                                 tableDropdownOption.length === 0
@@ -161,84 +154,72 @@
                                 !isLoading
                             "
                         >
-                            <div class="overflow-auto">
-                                <template
-                                    v-for="(item, index) in tableDropdownOption"
-                                    :key="item?.label + index"
+                            <template
+                                v-for="(item, index) in tableDropdownOption"
+                                :key="item?.label + index"
+                            >
+                                <PopoverAsset
+                                    :item="item.item"
+                                    placement="right"
+                                    :mouseEnterDelay="0.85"
                                 >
-                                    <PopoverAsset
-                                        :item="item.item"
-                                        placement="right"
-                                        :mouseEnterDelay="0.85"
-                                    >
-                                        <template #button>
-                                            <AtlanBtn
-                                                class="flex-none px-0"
-                                                size="sm"
-                                                color="minimal"
-                                                padding="compact"
-                                                style="height: fit-content"
-                                                @click="
-                                                    (e) =>
-                                                        actionClick(
-                                                            e,
-                                                            item.item
-                                                        )
-                                                "
-                                            >
-                                                <span
-                                                    class="cursor-pointer text-primary whitespace-nowrap"
-                                                >
-                                                    Show Preview</span
-                                                >
-                                                <AtlanIcon
-                                                    icon="ArrowRight"
-                                                    class="text-primary"
-                                                />
-                                            </AtlanBtn>
-                                        </template>
-
-                                        <div
-                                            class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                    <template #button>
+                                        <AtlanBtn
+                                            class="flex-none px-0"
+                                            size="sm"
+                                            color="minimal"
+                                            padding="compact"
+                                            style="height: fit-content"
                                             @click="
-                                                (e) => onSelectTable(item, e)
+                                                (e) => actionClick(e, item.item)
                                             "
                                         >
-                                            <div
-                                                class="flex items-center truncate"
+                                            <span
+                                                class="cursor-pointer text-primary whitespace-nowrap"
                                             >
-                                                <AtlanIcon
-                                                    :icon="
-                                                        getEntityStatusIcon(
-                                                            assetType(item),
-                                                            certificateStatus(
-                                                                item
-                                                            )
-                                                        )
-                                                    "
-                                                    class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
-                                                    style="min-width: 16px"
-                                                ></AtlanIcon>
-
-                                                <span
-                                                    class="ml-2 parent-ellipsis-container-base"
-                                                    >{{ item?.label }}
-                                                </span>
-                                            </div>
-                                            <div
-                                                class="flex items-center justify-between text-gray-500"
+                                                Show Preview</span
                                             >
-                                                {{ item?.columnCount }}
+                                            <AtlanIcon
+                                                icon="ArrowRight"
+                                                class="text-primary"
+                                            />
+                                        </AtlanBtn>
+                                    </template>
 
-                                                <AtlanIcon
-                                                    icon="ChevronRight"
-                                                    class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
-                                                />
-                                            </div>
+                                    <div
+                                        class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                        @click="(e) => onSelectTable(item, e)"
+                                    >
+                                        <div class="flex items-center truncate">
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        assetType(item),
+                                                        certificateStatus(item)
+                                                    )
+                                                "
+                                                class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                                style="min-width: 16px"
+                                            ></AtlanIcon>
+
+                                            <span
+                                                class="ml-2 parent-ellipsis-container-base"
+                                                >{{ item?.label }}
+                                            </span>
                                         </div>
-                                    </PopoverAsset>
-                                </template>
-                            </div>
+                                        <div
+                                            class="flex items-center justify-between text-gray-500"
+                                        >
+                                            {{ item?.columnCount }}
+
+                                            <AtlanIcon
+                                                icon="ChevronRight"
+                                                class="w-4 h-4 ml-1 -mt-0.5 text-gray-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </PopoverAsset>
+                            </template>
                             <div
                                 v-if="
                                     tableDropdownOption.length === 0 &&
@@ -249,37 +230,58 @@
                                 No tables found
                             </div>
                         </div>
-                        <!-- For columns -->
-                        <div
-                            class="w-full"
-                            v-if="isTableSelected && !isLoading"
-                        >
-                            <div class="px-4">
-                                <div
-                                    class="flex items-center justify-between h-9 truncanimate-spin pt-0.5 border-b border-gray-300"
-                                >
-                                    <div class="flex items-center truncate">
-                                        <AtlanIcon
-                                            icon="ChevronLeft"
-                                            class="w-4 h-4 -mt-0.5 text-gray-500"
-                                            @click="onUnselectTable"
-                                        />
+                    </div>
 
-                                        <span
-                                            class="ml-2 parent-ellipsis-container-base"
-                                            >{{ tableSelected?.label }}
-                                        </span>
-                                    </div>
-                                    <div
-                                        class="flex items-center justify-between mr-2 text-gray-500"
-                                    >
-                                        {{ tableSelected?.columnCount }}
-                                    </div>
-                                </div>
+                    <div
+                        class="w-full dropdown-container"
+                        v-if="isTableSelected"
+                    >
+                        <div
+                            class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
+                            @click.stop="() => {}"
+                        >
+                            <div
+                                class="flex items-center text-gray-700 truncate dropdown-container"
+                            >
+                                <AtlanIcon
+                                    icon="ChevronLeft"
+                                    class="w-4 h-4 -mt-0.5"
+                                    style="min-width: 16px"
+                                    @click="onUnselectTable"
+                                />
+
+                                <span
+                                    class="ml-2 text-sm parent-ellipsis-container-base"
+                                    >{{ tableSelected?.label }}
+                                </span>
                             </div>
                             <div
+                                class="flex items-center justify-between text-gray-500 dropdown-container"
+                            >
+                                {{ tableSelected?.columnCount }}
+                            </div>
+                        </div>
+                        <div
+                            class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                        >
+                            <div
+                                class="flex items-center justify-between w-full"
+                                style="min-width: 100%"
+                            >
+                                <CustomInput
+                                    v-model:queryText="queryText"
+                                    :placeholder="placeholder"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="w-full dropdown-container"
+                            v-if="isTableSelected && !isLoading"
+                        >
+                            <div
                                 class="overflow-y-auto"
-                                style="height: 250px"
+                                style="height: 180px"
                                 :class="[
                                     columnDropdownOption.length === 0
                                         ? 'flex justify-center items-center'
@@ -400,8 +402,13 @@
                                 </div>
                             </div>
                         </div>
-                        <!--  -->
                     </div>
+
+                    <Loader
+                        v-if="isLoading"
+                        style="min-height: 180px !important"
+                    ></Loader>
+                    <!--  -->
                 </div>
             </div>
         </teleport>
@@ -442,6 +449,7 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import useBody from './useBody'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import CustomInput from '../input/index.vue'
 
     export default defineComponent({
         name: 'Table Selector',
@@ -452,6 +460,7 @@
             PopoverAsset,
             AtlanBtn,
             SearchAndFilter,
+            CustomInput,
         },
         props: {
             selectedColumn: {
@@ -617,11 +626,12 @@
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
                 document?.addEventListener('click', function (event) {
+                    // debugger
                     let isClickInside = container.value?.contains(event.target)
 
                     if (!isClickInside) {
                         isClickInside =
-                            event?.target?.classList?.contains('child_input')
+                            event?.target?.classList?.contains('ant-input')
                     }
                     if (!isClickInside) {
                         isClickInside =

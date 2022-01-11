@@ -62,6 +62,9 @@ export default function useAssetInfo() {
     const tileCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.tileCount)
 
+    const pageCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.pageCount)
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -1083,5 +1086,6 @@ export default function useAssetInfo() {
         datasetCount,
         dataflowCount,
         tileCount,
+        pageCount,
     }
 }

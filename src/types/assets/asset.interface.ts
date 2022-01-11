@@ -55,6 +55,7 @@ export interface assetInterface {
         datasetCount: number
         dataflowCount: number
         tileCount: number
+        pageCount: number
         link: string
         table?: {
             guid: string

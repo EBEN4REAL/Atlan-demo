@@ -223,7 +223,7 @@
                             style="height: 205px"
                             :class="[
                                 tableDropdownOption.length === 0
-                                    ? 'flex justify-center items-center dropdown-container'
+                                    ? 'flex justify-center items-center'
                                     : '',
                             ]"
                         >
@@ -480,7 +480,7 @@
                                         columnDropdownOption.length === 0 &&
                                         !isLoading
                                     "
-                                    class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                                    class="flex items-center justify-center h-full text-sm text-center text-gray-400 dropdown-container"
                                 >
                                     No columns found
                                 </div>

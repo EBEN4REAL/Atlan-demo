@@ -131,6 +131,9 @@
             const updateTreeNode = (asset) => {
                 glossaryDiscovery?.value?.updateTreeNode(asset)
             }
+            const handleSelectGlossary = (val) => {
+                glossaryDiscovery?.value?.changeSelectedGlossary(val)
+            }
             const handleAddGlossary = (asset) => {
                 glossaryStore.addGlossary(asset)
                 glossaryStore.setSelectedGTC(asset)
@@ -185,6 +188,7 @@
             provide('updateList', updateList)
             provide('preview', handlePreview)
             provide('reInitTree', reInitTree)
+            provide('handleSelectGlossary', handleSelectGlossary)
             return {
                 isItem,
                 selectedGlossary,

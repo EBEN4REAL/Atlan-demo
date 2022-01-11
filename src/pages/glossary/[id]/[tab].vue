@@ -25,6 +25,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+    import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
         name: 'GlossaryIdPage',
@@ -49,6 +50,9 @@
             const handlePreview = inject('preview')
             const limit = ref(1)
             const offset = ref(0)
+            const glossaryStore = useGlossaryStore()
+            const handleSelectGlossary = inject('handleSelectGlossary')
+            console.log(handleSelectGlossary)
             const facets = ref({
                 guid: id.value,
             })
@@ -56,7 +60,6 @@
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
-
             const fetchKey = computed(() => {
                 if (selectedAsset.value.guid === id.value) {
                     return null
@@ -98,11 +101,29 @@
                 }
                 useTrackPage('gtc', name)
             }
+            const setActiveGlossary = (asset) => {
+                const parentGlossaryQF =
+                    asset.value?.attributes?.anchor?.uniqueAttributes
+                        ?.qualifiedName
 
+                console.log(parentGlossaryQF)
+                if (
+                    glossaryStore?.activeGlossaryQualifiedName !== '' &&
+                    glossaryStore?.activeGlossaryQualifiedName !==
+                        parentGlossaryQF &&
+                    asset.value?.guid
+                ) {
+                    if (asset.value?.typeName !== 'AtlasGlossary') {
+                        console.log('change QF')
+                        handleSelectGlossary(parentGlossaryQF)
+                    }
+                }
+            }
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
                     handlePreview(list.value[0])
+                    setActiveGlossary(localSelected)
                 }
             })
             watch(id, () => {
@@ -111,6 +132,7 @@
                     facets.value.guid = id.value
                     fetch()
                 }
+                setActiveGlossary(selectedAsset)
             })
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value

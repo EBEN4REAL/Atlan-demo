@@ -54,7 +54,7 @@
                         class="overflow-y-auto"
                         :final-list="sortedSearchedBM"
                         :selected-bm="selectedBm"
-                        @clickMetaData="handleClickMetaData"
+                        @select="select"
                     />
                 </template>
 
@@ -64,6 +64,13 @@
                     :selected-bm="selectedBm"
                     @update="onUpdate"
                 />
+                <template v-else>
+                    <EmptyView
+                        empty-screen="Error"
+                        headline="Not Found"
+                        desc="The metadata you're looking for has been archived or doesn't exist."
+                    />
+                </template>
             </ExplorerLayout>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty
@@ -96,13 +103,20 @@
                 </a-empty>
             </div>
         </div>
-        <MetadataModal ref="addMetaDataModal" v-model:selected="selectedId" />
+        <MetadataModal ref="addMetaDataModal" @select="select" />
     </div>
     <NoAccess v-else />
 </template>
 <script lang="ts">
     // ? components
-    import { defineComponent, computed, onMounted, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        onMounted,
+        ref,
+        watch,
+        provide,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
@@ -115,7 +129,7 @@
     import NoAccess from '@/admin/common/noAccessPage.vue'
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
-
+    import EmptyView from '@/common/empty/index.vue'
     // ? Composables
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import useAuth from '~/composables/auth/useAuth'
@@ -127,6 +141,7 @@
     export default defineComponent({
         name: 'BusinessMetadata',
         components: {
+            EmptyView,
             BusinessMetadataList,
             BusinessMetadataProfile,
             ExplorerLayout,
@@ -137,13 +152,12 @@
         },
         setup() {
             const addMetaDataModal = ref(null)
-            const store = useTypedefStore()
-            const router = useRouter()
             const route = useRoute()
             useHead({
                 title: computed(() => 'Custom Metadata'),
             })
             const {
+                select,
                 selectedId,
                 selectedBm,
                 searchText,
@@ -154,6 +168,7 @@
                 searchedBusinessMetadataList,
                 finalBusinessMetadataList,
                 sortedSearchedBM,
+                resetSelection,
             } = useBusinessMetadata()
             const { isAccess, checkAccess } = useAuth()
 
@@ -165,37 +180,16 @@
 
             onMounted(() => {
                 sendPageEvent()
-                const list = store.getCustomMetadataList
-                if (!route.params.id && list.length) {
-                    const id = list[0].guid!
-                    selectedId.value = id
-                    router.replace(`/governance/custom-metadata/${id}`)
-                }
-            })
-            const handleClickMetaData = (id) => {
-                router.replace(`/governance/custom-metadata/${id}`)
-            }
-
-            watch(store.getCustomMetadataList, () => {
-                const list = store.getCustomMetadataList
-                if (list.length) {
-                    let idMetaData = list[0].guid!
-                    if (route.params.id) {
-                        const find = list.find(
-                            (el) => el.guid === route.params.id
-                        )
-                        if (find) {
-                            idMetaData = route.params.id
-                        }
-                    }
-                    selectedId.value = idMetaData
-                    router.replace(`/governance/custom-metadata/${idMetaData}`)
-                }
+                if (route.params.id) {
+                    select(route.params.id)
+                } else resetSelection()
             })
 
             watch(selectedId, () => {
                 sendPageEvent()
             })
+
+            provide('resetSelection', resetSelection)
 
             return {
                 selectedId,
@@ -212,7 +206,7 @@
                 map,
                 isAccess,
                 checkAccess,
-                handleClickMetaData,
+                select,
             }
         },
         data() {

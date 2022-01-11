@@ -30,6 +30,23 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
+                <a-form-item prop="slack">
+                    <template #label> Slack </template>
+                    <a-input
+                        v-model:value="formData.slack"
+                        class="mt-2"
+                        :loading="isRequestLoading"
+                        placeholder="Add Slack channel name or channel ID"
+                    >
+                        <template #prefix>
+                            <span
+                                class="pr-2 border-r border-gray-300 border-solid"
+                            >
+                                <AtlanIcon icon="Slack" />
+                            </span>
+                        </template>
+                    </a-input>
+                </a-form-item>
             </div>
         </a-form>
         <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
@@ -62,7 +79,7 @@
 
     export default {
         name: 'EditGroup',
-        components: {},
+
         props: {
             selectedGroup: {
                 type: Object,
@@ -82,10 +99,31 @@
 
             // const { selectedGroup } = toRefs(props)
             const { selectedGroup } = useVModels(props, emit)
+            const groupChannels = computed(
+                () => selectedGroup.value?.attributes?.channels
+            )
+            const slackProfile = computed(() => {
+                if (groupChannels.value?.length > 0) {
+                    const firstChannel = JSON.parse(groupChannels.value[0])
+                    if (
+                        firstChannel &&
+                        firstChannel.length > 0 &&
+                        firstChannel[0].hasOwnProperty('slack')
+                    ) {
+                        return firstChannel[0].slack
+                    }
+                }
+                return ''
+            })
+            const slackEnabled = computed(() => slackProfile.value)
+            const slackUrl = computed(() =>
+                slackEnabled.value ? slackEnabled.value : ''
+            )
             const formData = ref({
                 name: selectedGroup.value.name,
                 alias: selectedGroup.value.alias,
                 description: selectedGroup.value.description || '',
+                slack: slackUrl.value,
             })
             const rules = {
                 alias: [
@@ -110,6 +148,10 @@
                     description: [formData.value.description],
                     alias: [formData.value.name],
                 }
+                attributes.channels =
+                    formData.value.slack.length > 0
+                        ? [`[{"slack": "${formData.value.slack}"}]`]
+                        : []
                 requestPayload.value = {
                     name: formData.value.alias,
                 }
@@ -141,11 +183,25 @@
                                 selectedGroup.value.attributes.description = [
                                     formData.value.description,
                                 ]
+                                if (formData.value.slack.length > 0) {
+                                    selectedGroup.value.attributes.channels = [
+                                        `[{"slack": "${formData.value.slack}"}]`,
+                                    ]
+                                } else {
+                                    selectedGroup.value.attributes.channels = []
+                                }
                             } else {
                                 selectedGroup.value.attributes = {
                                     designation: formData?.value?.description
                                         ? [formData?.value?.description]
                                         : [],
+                                    channels:
+                                        formData.value.slack &&
+                                        formData.value.slack.length > 0
+                                            ? [
+                                                  `[{"slack": "${formData.value.slack}"}]`,
+                                              ]
+                                            : [],
                                 }
                             }
 

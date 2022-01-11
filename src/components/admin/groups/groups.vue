@@ -38,9 +38,10 @@
         <a-drawer
             :visible="isGroupDrawerVisible"
             :mask="false"
-            :width="350"
+            :width="450"
             :closable="false"
             :destroy-on-close="true"
+            @close="isGroupDrawerVisible = false"
         >
             <AddGroup
                 @closeDrawer="isGroupDrawerVisible = false"

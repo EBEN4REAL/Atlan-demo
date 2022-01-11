@@ -7,7 +7,9 @@
             :icon="'Slack'"
             class="overflow-visible slack-icon"
         ></AtlanIcon>
-        <span class="pr-1 ml-1 text-sm text-gray-600 cta-text">Say Hi 👋</span>
+        <span class="pr-1 ml-1 text-sm text-gray-600 cta-text">{{
+            ctaText
+        }}</span>
     </div>
 </template>
 
@@ -23,6 +25,11 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            ctaText: {
+                type: String,
+                default: 'Say Hi 👋',
+                required: false,
             },
         },
         emits: [],

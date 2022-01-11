@@ -38,10 +38,10 @@
                     </span>
                 </div>
                 <div v-else-if="subIndex == 0" class="text-gray-700">
-                    LEFT TABLE
+                    SELECT LEFT TABLE
                 </div>
                 <div v-else-if="subIndex == 1" class="text-gray-700">
-                    RIGHT TABLE
+                    SELECT RIGHT TABLE
                 </div>
 
                 <div
@@ -806,7 +806,7 @@
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value
-                    ? `Select from ${totalCount.value} tables`
+                    ? `${totalCount.value} tables available`
                     : `Select from ${totalCount.value} columns`
 
                 return data

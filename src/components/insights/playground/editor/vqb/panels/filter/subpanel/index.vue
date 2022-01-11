@@ -72,12 +72,20 @@
                             <MultiInput
                                 v-if="subpanel?.filter?.type === 'multi_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
                             <RangeInput
                                 v-if="subpanel?.filter?.type === 'range_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 :type="
                                     getInputTypeFromColumnType(
                                         subpanel?.column?.type

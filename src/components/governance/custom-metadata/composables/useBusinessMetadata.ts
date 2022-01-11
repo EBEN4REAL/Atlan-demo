@@ -4,6 +4,7 @@ import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/businessMetadataTempla
 // import { generateUUID } from '~/utils/helper/generator'
 import { useTypedefStore } from '~/store/typedef'
 import { Types } from '~/services/meta/types'
+import { useRoute, useRouter } from 'vue-router'
 
 
 // Types
@@ -32,6 +33,7 @@ interface BMObject {
 export default function useBusinessMetadata() {
   // * Get all available BMs and save on store
   const store = useTypedefStore()
+  const router = useRouter()
 
 
   // * Data
@@ -43,27 +45,38 @@ export default function useBusinessMetadata() {
   const error = computed(() => store.error)
 
   const selectedId = computed<string>({
-    get: () => currentBmId.value || finalBusinessMetadataList.value?.[0]?.guid,
+    get: () => currentBmId.value,
     set: (val) => {
-      console.log("check");
+      console.trace("check");
 
       currentBmId.value = val
     },
   })
 
-
-  const selectedBm = computed(() => {
-    const bm = finalBusinessMetadataList.value?.find(
-      (cmObj) => cmObj.guid === selectedId.value
-    )
-    if (!bm) {
-      const firstBM = finalBusinessMetadataList.value?.length && finalBusinessMetadataList.value[0]
-      selectedId.value = firstBM?.guid ?? ''
-      return firstBM
-    }
-    return bm
+  const select = (id) => {
+    console.trace('select')
+    selectedId.value = id
+    router.replace(`/governance/custom-metadata/${id}`)
   }
+
+  const resetSelection = () => {
+    if (
+      finalBusinessMetadataList.value?.length &&
+      finalBusinessMetadataList.value[0]?.guid
+    )
+      select(finalBusinessMetadataList.value[0].guid)
+  }
+
+  const selectedBm = computed(
+    () => {
+      const bm = finalBusinessMetadataList.value?.find(
+        (cmObj) => cmObj.guid === selectedId.value
+      )
+      return bm
+    }
   )
+
+
 
   const handleSelectBm = (item: any) => {
     selectedBm.value = item
@@ -175,6 +188,7 @@ export default function useBusinessMetadata() {
 
 
   return {
+    select,
     selectedId,
     error,
     isLoading,
@@ -186,6 +200,7 @@ export default function useBusinessMetadata() {
     searchText,
     searchedBusinessMetadataList,
     selectedBm,
+    resetSelection,
     validatePayload,
     sortedSearchedBM,
   }

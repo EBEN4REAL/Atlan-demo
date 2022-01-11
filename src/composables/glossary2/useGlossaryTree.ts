@@ -85,6 +85,7 @@ const useGlossaryTree = ({
     const selectedKeys = ref<string[]>([])
     const checkedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
+    const allKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
     const defaultBody = ref({})
@@ -145,6 +146,9 @@ const useGlossaryTree = ({
                     }))
                     if (data.value && map) {
                         map?.forEach((el) => {
+                            allKeys.value.push(
+                                `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                            )
                             if (el.typeName === 'AtlasGlossaryTerm') {
                                 const currentParentList =
                                     nodeToParentKeyMap[el.guid]
@@ -252,6 +256,10 @@ const useGlossaryTree = ({
                         }))
                         if (map) {
                             map?.forEach((el) => {
+                                allKeys.value.push(
+                                    `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                )
+
                                 if (el.typeName === 'AtlasGlossaryTerm') {
                                     const currentParentList =
                                         nodeToParentKeyMap[el.guid]
@@ -396,7 +404,19 @@ const useGlossaryTree = ({
         if (!event.node.isLeaf) {
             expandNode([], event)
         }
-        selectedKeys.value = selected
+        selectedKeys.value = []
+        selectedKeys.value.push(event?.node?.key)
+        const selectedTerm = selectedKeys.value[0]?.split('_')[1]
+
+        allKeys.value?.forEach((el) => {
+            if (
+                el?.endsWith(selectedTerm) &&
+                !selectedKeys.value?.includes(el)
+            ) {
+                selectedKeys.value.push(el)
+            }
+        })
+
         emit('select', event.node.dataRef)
     }
 
@@ -432,6 +452,9 @@ const useGlossaryTree = ({
                     if (data.value?.entities) {
                         data.value?.entities?.forEach((el) => {
                             nodeToParentKeyMap[el.guid] = 'root'
+                            allKeys.value.push(
+                                `${defaultGlossaryQf}_${el.attributes?.qualifiedName}`
+                            )
                         })
                         treeData.value = data.value?.entities.map((i) => ({
                             ...i,
@@ -462,6 +485,10 @@ const useGlossaryTree = ({
         } else {
             treeData.value = glossaryList.value.map((i) => {
                 nodeToParentKeyMap[i?.guid] = 'root'
+                allKeys.value.push(
+                    `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`
+                )
+
                 return {
                     ...i,
                     id: i.attributes?.qualifiedName,
@@ -1175,6 +1202,8 @@ const useGlossaryTree = ({
         deleteNode,
         updateNode,
         dragAndDropNode,
+        nodeToParentKeyMap,
+        allKeys,
     }
 }
 

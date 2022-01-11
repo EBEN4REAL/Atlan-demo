@@ -1,8 +1,9 @@
-import { ref, Ref, watch } from 'vue'
+import { computed, ref, Ref, watch } from 'vue'
 
 import { usePackageBody } from './usePackageBody'
 
 import usePackageIndexSearch from './usePackageIndexSearch'
+import { packageType } from '~/constant/packageType'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -40,8 +41,8 @@ export function usePackageDiscoverList({
             limit?.value,
             facets?.value,
             postFacets?.value,
-            aggregations?.value,
-            preference?.value
+            preference?.value,
+            aggregations?.value
         )
         defaultBody.value = {
             ...dsl,
@@ -52,37 +53,125 @@ export function usePackageDiscoverList({
     const localKey = ref(dependentKey?.value)
     generateBody()
 
-    const { data, refresh, isLoading, isValidating, cancelRequest, error } =
-        usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
+    const {
+        data,
+        refresh,
+        isLoading,
+        isValidating,
+        cancelRequest,
+        error,
+        aggregationMap,
+    } = usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
 
     const list = ref([])
 
-    watch(data, () => {
-        if (offset?.value > 0) {
-            data.value?.hits?.hits.forEach((item) => {
-                list.value.push(item._source)
-            })
-        } else if (data.value?.hits?.hits) {
-            const temp = []
-            data.value?.hits?.hits.forEach((item) => {
-                temp.push(item._source)
-            })
-            list.value = temp
-        } else {
-            list.value = []
-        }
+    const hits = computed(() => {
+        return data.value?.hits
     })
+
+    watch(
+        hits,
+        () => {
+            console.log('new data', data)
+            if (offset?.value > 0) {
+                if (data.value?.hits?.hits) {
+                    data.value?.hits?.hits.forEach((item) => {
+                        list.value.push(item._source)
+                    })
+                }
+            } else {
+                if (data.value?.hits?.hits) {
+                    const temp = []
+                    data.value?.hits?.hits.forEach((item) => {
+                        temp.push(item._source)
+                    })
+                    list.value = temp
+                } else {
+                    list.value = []
+                }
+            }
+        },
+        { deep: true }
+    )
 
     const quickChange = () => {
         generateBody()
-        refresh()
-        // cancelRequest()
-        // if (localKey.value) {
-        //     localKey.value = `dirty_${Date.now().toString()}`
-        // } else {
-        //     refresh()
-        // }
+        cancelRequest()
+        if (localKey.value) {
+            localKey.value = `dirty_${Date.now().toString()}`
+        } else {
+            if (!localKey.value) {
+                localKey.value = `dirty_${Date.now().toString()}`
+            }
+            refresh()
+        }
     }
+
+    const getAggregationList = (
+        aggregationKey: string,
+        labelList?: any,
+        includeWithoutLabel?: Boolean
+    ) => {
+        const temp = []
+        if (labelList.length === 0) {
+            aggregationMap(aggregationKey).forEach((element) => {
+                temp.push({
+                    id: element.key,
+                    label: element.key,
+                    count: element.doc_count,
+                })
+            })
+            return temp
+        }
+
+        const listMap = aggregationMap(aggregationKey).map((i) =>
+            i.key.toLowerCase()
+        )
+
+        const defaultListMap = labelList.map((i) => i.id.toLowerCase())
+
+        const diff = defaultListMap.filter((d) => listMap.includes(d) === false)
+        const overlap = defaultListMap.filter((d) => listMap.includes(d))
+
+        overlap.forEach((item) => {
+            const found = labelList.find(
+                (t) => t.id.toLowerCase() === item.toLowerCase()
+            )
+
+            if (found) {
+                found.count = aggregationMap(aggregationKey).find(
+                    (i) => i.key.toLowerCase() === item.toLowerCase()
+                )?.doc_count
+                temp.push(found)
+            }
+        })
+        if (includeWithoutLabel) {
+            if (diff)
+                diff.forEach((item) => {
+                    temp.push({
+                        id: item,
+                        label: item,
+                        count: aggregationMap(aggregationKey).find(
+                            (i) => i.key.toLowerCase() === item.toLowerCase()
+                        )?.doc_count,
+                    })
+                })
+        }
+        temp.sort((a, b) => {
+            if (a.count > b.count) {
+                return -1
+            }
+            if (a.count < b.count) {
+                return 1
+            }
+            return 0
+        })
+        return temp
+    }
+
+    const getAggregationByType = computed(() => {
+        return getAggregationList('by_type', packageType, false)
+    })
 
     return {
         queryText,
@@ -98,5 +187,8 @@ export function usePackageDiscoverList({
         error,
         quickChange,
         refresh,
+        getAggregationList,
+        getAggregationByType,
+        hits,
     }
 }

@@ -9,7 +9,7 @@
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div
-                v-if="groupList.length > 0 && !error"
+                v-if="totalGroupsCount > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div class="flex w-1/4">
@@ -48,12 +48,15 @@
             />
         </a-drawer>
 
-        <div v-if="isLoading" class="flex items-center justify-center h-full">
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center h-full border border-gray-300 rounded-lg"
+        >
             <AtlanIcon icon="Loader" class="h-7 animate-spin" />
         </div>
         <div
             v-else-if="error"
-            class="flex flex-col items-center h-full align-middle bg-white"
+            class="flex flex-col items-center h-full align-middle bg-white border border-gray-300 rounded-lg"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -242,7 +245,6 @@
                     </div>
                 </template>
             </a-table>
-
             <div
                 v-if="pagination.total > 1 || isLoading"
                 class="flex justify-end max-w-full mt-4"
@@ -261,6 +263,8 @@
             empty-screen="NoGroups"
             desc="Oops… we didn’t find any groups that match this search"
             button-text="Clear search"
+            class="min-h-full border border-gray-300 rounded-b-lg"
+            image-class="h-36"
             @event="clearFilter"
         />
     </DefaultLayout>

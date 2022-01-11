@@ -88,6 +88,7 @@
                     </div>
 
                     <div
+                        v-if="!readOnly"
                         :class="[
                             containerHovered ? 'opacity-100' : 'opacity-0',
                             'flex border border-gray-300 rounded   items-strech',
@@ -102,6 +103,7 @@
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
                                 "
+                                @change="handleCheckboxChange"
                             ></a-checkbox>
                         </div>
                         <div
@@ -176,7 +178,8 @@
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index)
+                        Number(index) &&
+                    !readOnly
                 "
             />
         </div>
@@ -268,8 +271,18 @@
                         ]?.expand
                 }
             )
+
+            // watch(
+            //     activeInlineTab.value.playground.vqb.panels[index.value]
+            //         .subpanels,
+            //     () => {
+            //         activeInlineTab.value.isSaved = false
+            //     },
+            //     { deep: true }
+            // )
+
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB } = useVQB()
+            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -328,8 +341,30 @@
                 },
                 { immediate: true }
             )
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            const handleCheckboxChange = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
 
             return {
+                readOnly,
                 isChecked,
                 submenuHovered,
                 handleMouseOver,
@@ -347,6 +382,7 @@
                 handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfGroupPanel,
+                handleCheckboxChange,
             }
         },
     })

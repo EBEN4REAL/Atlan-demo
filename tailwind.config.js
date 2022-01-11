@@ -36,6 +36,10 @@ module.exports = {
                     300: '#E6E6EB',
                     100: '#FAFAFA',
                 },
+                pink: {
+                    light: '#FEF5F8',
+                    default: '#F34D77',
+                },
                 success: {
                     DEFAULT: '#00a680',
                     muted: '#c9f9ee',

@@ -205,9 +205,14 @@ export default function useAssetInfo() {
 
     const ownerUsers = (asset: assetInterface) => attributes(asset)?.ownerUsers
 
-    const certificateStatus = (asset: assetInterface) => {
-        return attributes(asset)?.certificateStatus
-    }
+    const certificateStatus = (asset: assetInterface) =>
+        attributes(asset)?.certificateStatus
+
+    const classifications = (asset: assetInterface) =>
+        asset.classifications ?? []
+
+    const meanings = (asset: assetInterface) =>
+        attributes(asset)?.meanings ?? []
 
     const getHierarchy = (asset: assetInterface) => {
         const assetType = assetTypeList.find((a) => a.id == asset?.typeName)
@@ -525,6 +530,8 @@ export default function useAssetInfo() {
         ownerGroups,
         ownerUsers,
         certificateStatus,
+        classifications,
+        meanings,
         getHierarchy,
         getTableauProperties,
         getTableauHierarchy,

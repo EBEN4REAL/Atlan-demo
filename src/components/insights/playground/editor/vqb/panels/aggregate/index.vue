@@ -97,6 +97,7 @@
                     </div>
 
                     <div
+                        v-if="!readOnly"
                         :class="[
                             containerHovered ? 'opacity-100' : 'opacity-0',
                             'flex border border-gray-300 rounded   items-strech',
@@ -111,6 +112,7 @@
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
                                 "
+                                @change="handleCheckboxChange"
                             ></a-checkbox>
                         </div>
                         <div
@@ -184,7 +186,8 @@
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index)
+                        Number(index) &&
+                    !readOnly
                 "
             />
         </div>
@@ -277,7 +280,7 @@
                 }
             )
             const checkbox = ref(true)
-            const { deletePanelsInVQB, handleAdd } = useVQB()
+            const { deletePanelsInVQB, handleAdd, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -328,16 +331,41 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
 
-            watch(
-                activeInlineTab,
-                () => {
-                    console.log('updated data: ', activeInlineTab.value)
-                },
-                { immediate: true }
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
             )
 
+            // watch(
+            //     activeInlineTab.value.playground.vqb?.panels[index.value]
+            //         ?.subpanels,
+            //     (state, prev) => {
+            //         activeInlineTab.value.isSaved = false
+            //         console.log('vqb update: ')
+            //     },
+            //     { deep: true }
+            // )
+
+            const handleCheckboxChange = () => {
+                updateVQB(activeInlineTabKey, inlineTabs)
+            }
+
             return {
+                readOnly,
                 isChecked,
                 submenuHovered,
                 handleMouseOver,
@@ -355,6 +383,7 @@
                 handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfAggregationPanel,
+                handleCheckboxChange,
             }
         },
     })
@@ -371,7 +400,7 @@
     }
     .dead-center {
         transform: translate(-39%, -45%);
-        top: 50%;
-        left: 50%;
+        top: 45%;
+        left: 40%;
     }
 </style>

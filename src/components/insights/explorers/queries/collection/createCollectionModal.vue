@@ -364,6 +364,10 @@
                 isCreate.value ? null : item?.value?.attributes?.iconType
             )
 
+            const isCollectionCreated = inject(
+                'isCollectionCreated'
+            ) as Ref<Boolean>
+
             const isShared = computed(() => {
                 if (isCreate.value) {
                     return 'true'
@@ -488,6 +492,7 @@
                             if (isReady && !error.value && !isLoading.value) {
                                 /* IMP: Don't remove it, otherwise update collections will appear buggy */
                                 setTimeout(() => {
+                                    isCollectionCreated.value = true
                                     refetchQueryCollection.value()
                                 }, 1000)
                             }
@@ -534,6 +539,7 @@
                         ) {
                             closeModal()
                             if (isReady && !error.value && !isLoading.value) {
+                                isCollectionCreated.value = true
                                 refetchQueryCollection.value()
                             }
                         }

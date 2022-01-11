@@ -1,10 +1,11 @@
 <template>
     <a-popover
         v-model:visible="showPopover"
-        placement="bottom"
+        placement="bottomLeft"
         :trigger="['click']"
         :destroy-tooltip-on-hide="true"
         :overlay-class-name="$style.ownerPopover"
+        :align="{ offset: [0, -6] }"
     >
         <template #content>
             <div class="">
@@ -12,8 +13,8 @@
                     v-model:modelValue="selectedUserIds"
                     :show-none="false"
                     :enable-tabs="['users']"
-                    :hide-disabled-tabs='true'
-                    select-user-key='id'
+                    :hide-disabled-tabs="true"
+                    select-user-key="id"
                     :group-id="selectedGroup.id"
                 />
             </div>

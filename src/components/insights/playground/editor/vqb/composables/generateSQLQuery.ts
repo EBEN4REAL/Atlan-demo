@@ -4,14 +4,13 @@ import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
-import { useConnectionStore } from '~/store/connection'
-
-import { Ref } from 'vue'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
     let res = ''
-    const type = getInputTypeFromColumnType(subpanel?.column?.type)
+    const type = getInputTypeFromColumnType(
+        subpanel?.column?.type
+    )?.toLocaleLowerCase()
     if (type === 'number') res += `${Number(value)}`
     else if (type === 'text') {
         if (subpanel?.filter?.name?.includes('like')) {
@@ -55,17 +54,6 @@ export function getTableName(columnQualifiedName: string) {
         return `"${spiltArray[5]}"`
     }
     return ''
-}
-const getConnectionName = (attributeValue) => {
-    let newValue = ''
-    let newValueArr = attributeValue.split('/')
-    // default/snowflake/1242
-    newValue = `${newValueArr[0]}/${newValueArr[1]}/${newValueArr[2]}`
-    const connStore = useConnectionStore()
-    const found = connStore.getList.find(
-        (conn) => conn.attributes.qualifiedName === newValue
-    )
-    return found?.attributes?.name || ''
 }
 
 export function generateSQLQuery(
@@ -352,7 +340,11 @@ export function generateSQLQuery(
     if (filter?.hide) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
-            if (subpanel?.column?.label && nameMap[subpanel?.filter?.name]) {
+            if (
+                subpanel?.column?.label &&
+                nameMap[subpanel?.filter?.name] &&
+                subpanel.filter?.value !== undefined
+            ) {
                 res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
                 const tableName = getTableName(
                     subpanel.column.columnQualifiedName ??

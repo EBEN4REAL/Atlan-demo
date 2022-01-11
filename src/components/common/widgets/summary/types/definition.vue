@@ -1,7 +1,7 @@
 <template>
     <SQL :sql="definition(asset)">
         <div class="flex flex-col text-sm cursor-pointer">
-            <span class="mb-2 text-sm text-gray-500">Definition</span>
+            <span class="mb-1 text-sm text-gray-500">Definition</span>
             <span class="text-primary">SQL</span>
         </div>
     </SQL>

@@ -259,7 +259,7 @@
                         col.data_type.toLowerCase() === 'object' ||
                         col.data_type.toLowerCase() === 'struct'
                     ) {
-                        variantTypeIndexes.value.push(col.title)
+                        variantTypeIndexes.value.push(col.dataIndex.toString())
                     }
                 })
             })

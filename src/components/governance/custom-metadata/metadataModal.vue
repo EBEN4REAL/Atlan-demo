@@ -25,7 +25,19 @@
         </template>
         <div class="h-32 p-4 space-y-2">
             <div class="flex items-center gap-x-1">
-                <AvatarUpdate :metadata="form" class="mb-1" />
+                <a-popover :visibile="visibile" :trigger="['click']">
+                    <CustomMetadataAvatar
+                        class="hover:bg-gray-100"
+                        :metadata="form"
+                    />
+                    <template #content
+                        ><EmojiPicker
+                            @select="emojiSelect"
+                            @remove="emojiRemove"
+                            @upload="handleUpload"
+                    /></template>
+                </a-popover>
+                <!-- <AvatarUpdate :metadata="form" class="mb-1" /> -->
                 <a-input
                     id="name-input"
                     v-model:value="form.displayName"
@@ -52,10 +64,12 @@
     import { useTypedefStore } from '~/store/typedef'
 
     import AtlanButton from '@/UI/button.vue'
-    import AvatarUpdate from './avatarUpdate.vue'
+
+    import EmojiPicker from '@/common/avatar/emojiPicker.vue'
+    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
 
     export default defineComponent({
-        components: { AtlanButton, AvatarUpdate },
+        components: { AtlanButton, EmojiPicker, CustomMetadataAvatar },
         props: {
             isEdit: {
                 type: Boolean,
@@ -185,7 +199,22 @@
                 handleUpdateBMResponse(apiResponse)
             }
 
+            const visibile = ref(false)
+
+            const emojiSelect = (emoji) => {
+                console.log({ emoji })
+            }
+            const handleUpload = (payload) => {
+                console.log({ payload })
+            }
+
+            const emojiRemove = () => {}
+
             return {
+                emojiRemove,
+                handleUpload,
+                emojiSelect,
+                visibile,
                 // data
                 visible,
                 loading,

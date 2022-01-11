@@ -1,31 +1,39 @@
 <template>
-    <div
-        class="flex flex-col px-1 rounded"
-        :class="{
-            'bg-primary-light': isEdit,
-            'hover:bg-primary-light': editPermission,
-        }"
+    <Shortcut
+        shortcut-key="n"
+        action="set name"
+        placement="left"
+        :edit-permission="editPermission && !isEdit"
     >
         <div
-            class="text-sm text-gray-700"
-            :class="$style.editable"
-            @click="handleEdit"
+            class="flex flex-col px-1 rounded"
+            :class="{
+                'bg-primary-light': isEdit,
+                'hover:bg-primary-light': editPermission,
+            }"
         >
-            <span v-if="!isEdit && localValue">{{ localValue }}</span>
-            <span v-else-if="!isEdit && localValue === ''" class="text-gray-700"
-                >No name available</span
+            <div
+                class="text-sm text-gray-700"
+                :class="$style.editable"
+                @click="handleEdit"
             >
-            <a-input
-                v-else
-                ref="nameRef"
-                v-model:value="localValue"
-                tabindex="0"
-                :rows="4"
-                @blur="handleBlur"
-                @keyup.esc="handleCancel"
-            ></a-input>
-        </div>
-    </div>
+                <span v-if="!isEdit && localValue">{{ localValue }}</span>
+                <span
+                    v-else-if="!isEdit && localValue === ''"
+                    class="text-gray-700"
+                    >No name available</span
+                >
+                <a-input
+                    v-else
+                    ref="nameRef"
+                    v-model:value="localValue"
+                    tabindex="0"
+                    :rows="4"
+                    @blur="handleBlur"
+                    @keyup.esc="handleCancel"
+                ></a-input>
+            </div></div
+    ></Shortcut>
 </template>
 
 <script lang="ts">
@@ -45,9 +53,11 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
-        name: 'DescriptionWidget',
+        name: 'NameWidget',
+        components: { Shortcut },
         props: {
             modelValue: {
                 type: String,

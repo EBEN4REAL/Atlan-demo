@@ -11,7 +11,11 @@
             class="w-full"
             :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'"
         >
-            <Truncate :tooltipText="attribute.displayName" :rows="2" />
+            <Truncate
+                :tooltipText="attribute.displayName"
+                :rows="2"
+                width="500px"
+            />
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">
             <AtlanIcon icon="CaretRight" class="h-3"></AtlanIcon>

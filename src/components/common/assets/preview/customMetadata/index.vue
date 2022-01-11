@@ -9,13 +9,17 @@
         >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
-                    <Truncate :tooltip-text="data.label" :rows="2" />
+                    <Truncate
+                        :tooltip-text="data.label"
+                        :rows="2"
+                        width="500px"
+                    />
 
                     <a-tooltip>
                         <template #title>
                             <span>{{ data?.description }}</span>
                         </template>
-                        <div class="">
+                        <div class="flex items-center">
                             <AtlanIcon
                                 v-if="data?.description"
                                 class="text-gray-400 hover:text-gray-500"
@@ -88,6 +92,7 @@
                                 <Truncate
                                     :tooltipText="a.displayName"
                                     :rows="1"
+                                    width="500px"
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -128,6 +133,7 @@
                                         classes="text-gray-500"
                                         clampPercentage="80%"
                                         :tooltipText="a.displayName"
+                                        width="500px"
                                     />
                                     <template
                                         v-if="
@@ -231,6 +237,7 @@
                                                                 :tooltip-text="
                                                                     p.displayName
                                                                 "
+                                                                width="500px"
                                                             />
                                                         </div>
                                                         <a-tooltip>
@@ -361,7 +368,10 @@
                 <template v-for="(a, x) in applicableList" :key="x">
                     <div class="mb-5">
                         <div class="flex mb-2 font-normal text-gray-500">
-                            <Truncate :tooltip-text="a.displayName" />
+                            <Truncate
+                                :tooltip-text="a.displayName"
+                                width="500px"
+                            />
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ a.options.description }}</span>

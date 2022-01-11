@@ -22,7 +22,7 @@
             class="px-0.5 rounded cursor-pointer"
             :class="
                 !subpanel?.filter?.isVariable
-                    ? 'hover:bg-gray-light'
+                    ? 'hover:bg-gray-light bg-white'
                     : 'bg-pink-light'
             "
         >

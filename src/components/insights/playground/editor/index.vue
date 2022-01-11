@@ -163,19 +163,33 @@
                                         <VQBSQLPreview />
                                     </div>
                                 </template>
-                                <div
+                                <a-tooltip
+                                    color="#363636"
                                     v-if="showVQB"
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                    :class="
-                                        showQueryPreview ? 'bg-gray-300' : ''
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
                                     "
-                                    @click="toggleQueryPreviewPopover"
                                 >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
-                                </div>
+                                    <template #title>Preview SQL</template>
+                                    <div
+                                        v-if="showVQB"
+                                        class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                        :class="
+                                            showQueryPreview
+                                                ? 'bg-gray-300'
+                                                : ''
+                                        "
+                                        @click="toggleQueryPreviewPopover"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="Info"
+                                            class="w-4 h-4 text-gray-500"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </a-popover>
                             <!-- Custom variables -->
                             <a-tooltip

@@ -400,7 +400,7 @@
     }
     .dead-center {
         transform: translate(-39%, -45%);
-        top: 50%;
-        left: 50%;
+        top: 45%;
+        left: 40%;
     }
 </style>

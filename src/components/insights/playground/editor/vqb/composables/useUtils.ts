@@ -203,7 +203,8 @@ export function useUtils() {
             }
             if (subpanels?.length > 1 && i !== subpanels.length - 1) res += ', '
 
-            if (res === ' ') res = 'No Columns Added for filter'
+            if (res === ' ' || res === ' , ')
+                res = 'No Columns Added for filter'
         })
         return res
     }

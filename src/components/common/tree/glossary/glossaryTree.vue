@@ -253,7 +253,7 @@
                 const selectedTerm = selectedKeys.value[0]?.split('_')[1]
                 allKeys.value?.forEach((el) => {
                     if (
-                        el?.includes(selectedTerm) &&
+                        el?.endsWith(selectedTerm) &&
                         !selectedKeys.value?.includes(el)
                     ) {
                         selectedKeys.value.push(el)

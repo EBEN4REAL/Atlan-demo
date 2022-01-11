@@ -49,12 +49,11 @@
             finalList: { type: Object, required: true },
             selectedBm: { type: [Object, null], required: true },
         },
-        emits: ['update:selected', 'clickMetaData'],
+        emits: ['select'],
         setup(props, { emit }) {
             // * Methods
             const selectBm = (id: string) => {
-                emit('update:selected', id)
-                emit('clickMetaData', id)
+                emit('select', id)
             }
 
             return {

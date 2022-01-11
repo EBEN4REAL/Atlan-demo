@@ -19,7 +19,10 @@
                 </div>
             </template>
         </a-popover>
-        <div class="flex flex-wrap items-center gap-1 text-sm">
+        <div
+            class="flex flex-wrap items-center gap-1 text-sm"
+            :class="{ '-ml-1': !showAddBtn }"
+        >
             <a-tooltip
                 placement="left"
                 :title="
@@ -89,7 +92,7 @@
                     localValue?.ownerGroups?.length < 1 &&
                     localValue?.ownerUsers?.length < 1
                 "
-                class="-ml-1 text-gray-600"
+                class="text-gray-600"
                 >No owners assigned</span
             >
         </div>

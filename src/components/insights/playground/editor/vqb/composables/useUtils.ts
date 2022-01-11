@@ -101,96 +101,26 @@ export function useUtils() {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel.filter?.isVariable) {
-                            let firstVal = ''
-                            let secondVal = ''
-                            const variable1 =
-                                activeInlineTab.playground.editor.variables.find(
-                                    (variable) =>
-                                        variable?.subpanelId === subpanel.id
-                                )
-                            // inputNumField
-                            const variable2 =
-                                activeInlineTab.playground.editor.variables.find(
-                                    (variable) =>
-                                        variable?.subpanelId ===
-                                        `${subpanel.id}2`
-                                )
-
-                            firstVal = getValueStringFromType(
+                        if (subpanel?.filter?.value?.length > 0) {
+                            let firstVal = getValueStringFromType(
                                 subpanel,
-                                variable1?.value ?? ''
+                                subpanel?.filter?.value[0] ?? ''
                             )
-                            secondVal = getValueStringFromType(
+                            let secondVal = getValueStringFromType(
                                 subpanel,
-                                variable2?.value ?? ''
+                                subpanel?.filter?.value[1] ?? ''
                             )
-
-                            /* Check if the type is date */
-                            if (
-                                subpanel?.column?.type?.toLowerCase() === 'date'
-                            ) {
-                                firstVal = getValueStringFromType(
-                                    subpanel,
-                                    variable1?.value?.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )
-                                secondVal = getValueStringFromType(
-                                    subpanel,
-                                    variable2?.value?.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )
-                            }
-
                             res += ` ${firstVal} AND ${secondVal}`
-                        } else {
-                            if (subpanel?.filter?.value?.length > 0) {
-                                let firstVal = getValueStringFromType(
-                                    subpanel,
-                                    subpanel?.filter?.value[0] ?? ''
-                                )
-                                let secondVal = getValueStringFromType(
-                                    subpanel,
-                                    subpanel?.filter?.value[1] ?? ''
-                                )
-                                res += ` ${firstVal} AND ${secondVal}`
-                            }
                         }
                     }
                     break
                 }
                 case 'input': {
-                    if (subpanel.filter?.isVariable) {
-                        const variable =
-                            activeInlineTab.playground.editor.variables.find(
-                                (variable) =>
-                                    variable?.subpanelId === subpanel.id
-                            )
+                    res += ` ${getValueStringFromType(
+                        subpanel,
+                        subpanel?.filter?.value ?? ''
+                    )}`
 
-                        /* Check if the type is date */
-                        if (subpanel?.column?.type?.toLowerCase() === 'date') {
-                            res += `
-                                ${getValueStringFromType(
-                                    subpanel,
-                                    variable?.value.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )}`
-                        } else {
-                            res += `
-                                  ${getValueStringFromType(
-                                      subpanel,
-                                      variable?.value ?? ''
-                                  )}`
-                        }
-                    } else {
-                        res += ` ${getValueStringFromType(
-                            subpanel,
-                            subpanel?.filter?.value ?? ''
-                        )}`
-                    }
                     break
                 }
                 case 'multi_input': {
@@ -332,6 +262,32 @@ export function useUtils() {
         }
     }
 
+    function getInitialPanelExpandedState(
+        readOnly: boolean,
+        panel: Object,
+        localExpandedState: boolean,
+        isCustomVariable?: boolean
+    ) {
+        if (localExpandedState) return true
+        if (readOnly) {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        } else {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        }
+
+        return false
+    }
+
     return {
         getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
@@ -347,5 +303,6 @@ export function useUtils() {
         collapseAllPanelsExceptCurrent,
         isAggregationORGroupPanelColumnsAdded,
         getAggregationORGroupPanelColumns,
+        getInitialPanelExpandedState,
     }
 }

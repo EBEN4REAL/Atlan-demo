@@ -197,7 +197,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             ownerUsers(selectedAsset.value).length === 0 &&
-            Object.keys(localOwners.value?.ownerUsers).length === 0
+            (!localOwners.value?.ownerUsers ||
+                localOwners.value?.ownerUsers.length === 0) &&
+            ownerGroups(selectedAsset.value).length === 0 &&
+            (!localOwners.value?.ownerGroups ||
+                localOwners.value?.ownerGroups.length === 0)
         ) {
             isChanged = false
         } else {
@@ -237,7 +241,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             adminUsers(selectedAsset.value).length === 0 &&
-            Object.keys(localAdmins.value?.adminUsers).length === 0
+            (!localAdmins.value?.adminUsers ||
+                localAdmins.value?.adminUsers.length === 0) &&
+            adminGroups(selectedAsset.value).length === 0 &&
+            (!localAdmins.value?.adminGroups ||
+                localAdmins.value?.adminGroups.length === 0)
         ) {
             isChanged = false
         } else {

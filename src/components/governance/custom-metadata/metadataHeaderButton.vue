@@ -111,7 +111,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, h } from 'vue'
+    import { defineComponent, ref, watch, h, inject } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import addMetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -154,6 +154,8 @@
             const { data, isReady, error, isLoading, mutate } =
                 useDeleteTypedefs(props.metadata.name)
 
+            const resetSelection: Function = inject('resetSelection')
+
             watch([data, isReady, error, isLoading], () => {
                 if (isReady && !error.value && !isLoading.value) {
                     message.success({
@@ -161,6 +163,7 @@
                         content: 'deleted.',
                         duration: 2,
                     } as any)
+                    resetSelection()
                     useAddEvent('governance', 'custom_metadata', 'deleted')
                     // reloadTable()
                     store.removeCustomMetadataByName(props.metadata.name)

@@ -135,6 +135,11 @@
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
             ),
+            WorkspaceRelationsCount: defineAsyncComponent(
+                () => import('./types/workspaceRelationsCount.vue')
+            ),
+            Pages: defineAsyncComponent(() => import('./types/pageCount.vue')),
+            Tiles: defineAsyncComponent(() => import('./types/tileCount.vue')),
         },
 
         props: {

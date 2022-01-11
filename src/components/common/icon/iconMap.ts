@@ -242,6 +242,7 @@ import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
 import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
 import TextRight from '~/assets/images/readme/TextAlignRight.svg'
 import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+import TaskList from '~/assets/images/readme/TaskList.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -693,5 +694,6 @@ export default {
     InnerJoinInfo,
     LeftJoinInfo,
     RightJoinInfo,
-    OuterJoinInfo
+    OuterJoinInfo,
+    TaskList,
 }

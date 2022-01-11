@@ -32,7 +32,7 @@
                             v-if="!imageSrc || isEditMode"
                             accept="image/png, image/gif, image/jpeg"
                             :custom-request="handleUploadImage"
-                            class="flex w-full"
+                            class="flex w-full text-center"
                             :show-upload-list="true"
                             name="avatar"
                         >

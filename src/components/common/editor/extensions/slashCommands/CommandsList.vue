@@ -5,7 +5,7 @@
     >
         <div class="items">
             <button
-                v-for="(menuItem, index) in items"
+                v-for="(menuItem, index) in items.filter((item) => !item.disabled(editor))"
                 :key="menuItem.key"
                 class="item"
                 :class="{ 'is-selected': index === selectedIndex }"
@@ -20,6 +20,7 @@
 
 <script>
     import { defineComponent } from 'vue'
+    import { Editor } from '@tiptap/vue-3'
 
     export default defineComponent({
         props: {
@@ -27,11 +28,14 @@
                 type: Array,
                 required: true,
             },
-
             command: {
                 type: Function,
                 required: true,
             },
+            editor: {
+                type: Editor,
+                required: true
+            }
         },
 
         data() {

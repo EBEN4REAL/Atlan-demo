@@ -46,7 +46,9 @@
                                 :columnName="subpanel?.column?.label"
                                 :columnType="subpanel?.column?.type"
                                 v-model:selectedFilter="subpanel.filter"
-                                :disabled="readOnly"
+                                :disabled="
+                                    readOnly && !subpanel?.filter?.isVariable
+                                "
                                 @change="() => handleFilterChange(subpanel)"
                             />
                         </div>
@@ -70,12 +72,20 @@
                             <MultiInput
                                 v-if="subpanel?.filter?.type === 'multi_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
                             <RangeInput
                                 v-if="subpanel?.filter?.type === 'range_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 :type="
                                     getInputTypeFromColumnType(
                                         subpanel?.column?.type
@@ -106,7 +116,7 @@
         </div>
 
         <span
-            v-if="readonly"
+            v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -304,70 +314,6 @@
             }
             const handleDelete = (index, subpanel) => {
                 subpanels.value.splice(index, 1)
-                updateVQB(activeInlineTabKey, inlineTabs)
-                /* FIXME: This needed an improvment when variable is used more than one place
-                right now it assuems that it present in only one place */
-                const subpanelIds = [subpanel.id]
-                let variables: any = []
-                activeInlineTab.value.playground.editor.variables.map(
-                    (_variable) => {
-                        subpanelIds.forEach((subpanelId) => {
-                            if (_variable?.subpanelId?.includes(subpanelId)) {
-                                variables.push(_variable)
-                            }
-                        })
-                    }
-                )
-                try {
-                    const forceDelete = true
-                    // delete all the custom variables
-                    variables.forEach((variable) => {
-                        if (variable !== undefined)
-                            deleteVariable(
-                                activeInlineTab,
-                                tabs,
-                                variable,
-                                forceDelete
-                            )
-                    })
-                } catch (e) {
-                    console.error('Failed to delete custom variable')
-                }
-            }
-            const toggleVariableType = (currVal, index, subpanel) => {
-                /* Check if variable already exists */
-                const Varindex =
-                    activeInlineTab.value.playground.editor.variables.findIndex(
-                        (variable) => variable?.subpanelId === subpanel.id
-                    )
-
-                const Varindex2 =
-                    activeInlineTab.value.playground.editor.variables.findIndex(
-                        (variable) =>
-                            variable?.subpanelId === `${subpanel.id}${2}`
-                    )
-                if (Varindex < 0) {
-                    addVariableFromVQB(activeInlineTab, tabs, {
-                        vqbPanelId: subpanel.id,
-                        subpanelId: subpanel.id,
-                        type: subpanel?.column?.type?.toLowerCase(),
-                    })
-
-                    /* If fileds are more than one, then it will have inputFiledValue 2 */
-                    if (Varindex2 < 0) {
-                        if (
-                            totalFiledsMapWithInput[subpanel?.filter?.type] > 1
-                        ) {
-                            addVariableFromVQB(activeInlineTab, tabs, {
-                                vqbPanelId: `${subpanel.id}${2}`,
-                                subpanelId: `${subpanel.id}${2}`,
-                                type: subpanel?.column?.type.toLowerCase(),
-                            })
-                        }
-                    }
-                }
-                subpanels.value[index].filter.isVariable = !currVal
-                showcustomVariablesToolBar.value = !currVal
             }
 
             const changeColumn = (column) => {
@@ -411,56 +357,7 @@
                 )
             }
 
-            const handleFilterChange = (subpanel) => {
-                /* If user moves from 1 field to 2 */
-                if (
-                    totalFiledsMapWithInput[subpanel?.filter?.type] > 1 &&
-                    subpanel?.filter?.isVariable
-                ) {
-                    /* Check if 2nd field is there, if there then don't create otherwise create it */
-                    /* Check if variable already exists */
-                    /* If fileds are more than one, then it will have inputFiledValue 2 */
-                    const Varindex2 =
-                        activeInlineTab.value.playground.editor.variables.findIndex(
-                            (variable) =>
-                                variable?.subpanelId === `${subpanel.id}${2}`
-                        )
-                    if (Varindex2 < 0) {
-                        addVariableFromVQB(activeInlineTab, tabs, {
-                            vqbPanelId: `${subpanel.id}${2}`,
-                            subpanelId: `${subpanel.id}${2}`,
-                            type: subpanel?.column?.type.toLowerCase(),
-                        })
-                    }
-                }
-
-                /* FIXME: Delete only if there are no instance used in other subpanels */
-                /* If user moves from 2 field to 1 then kill the 2nd variable */
-                if (
-                    totalFiledsMapWithInput[subpanel?.filter?.type] < 2 &&
-                    subpanel?.filter?.isVariable
-                ) {
-                    /* Check if 2nd field is there*/
-                    const Varindex2 =
-                        activeInlineTab.value.playground.editor.variables.findIndex(
-                            (variable) =>
-                                variable?.subpanelId === `${subpanel.id}${2}`
-                        )
-                    if (Varindex2 > -1) {
-                        let forceDelete = true
-                        const variable = {
-                            ...activeInlineTab.value.playground.editor
-                                .variables[Varindex2],
-                        }
-                        deleteVariable(
-                            activeInlineTab,
-                            tabs,
-                            variable,
-                            forceDelete
-                        )
-                    }
-                }
-            }
+            const handleFilterChange = (subpanel) => {}
 
             let hoverItem = ref(null)
 
@@ -491,7 +388,6 @@
                 totalFiledsMapWithInput,
                 getCustomVariable,
                 getCustomVariableText,
-                toggleVariableType,
                 getInputTypeFromColumnType,
                 selectedAggregates,
                 columnName,

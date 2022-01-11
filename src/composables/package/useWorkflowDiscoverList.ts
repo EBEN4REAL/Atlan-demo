@@ -39,6 +39,7 @@ export function useWorkflowDiscoverList({
             offset?.value,
             limit?.value,
             facets?.value,
+            postFacets?.value,
             preference?.value,
             aggregations?.value
         )

@@ -64,6 +64,15 @@ export default function usePackageIndexSearch(
         mutate()
     }
 
+    const aggregationMap = (key) => {
+        if (data?.value?.aggregations) {
+            if (data?.value?.aggregations[key]) {
+                return data?.value?.aggregations[key][key].buckets
+            }
+        }
+        return []
+    }
+
     return {
         data,
         options,
@@ -74,7 +83,7 @@ export default function usePackageIndexSearch(
         error,
         isLoading,
         isValidating,
-
+        aggregationMap,
         cancelRequest,
     }
 }

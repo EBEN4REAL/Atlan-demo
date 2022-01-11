@@ -107,14 +107,26 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox
-                                v-model:checked="
+                            <a-tooltip
+                                placement="top"
+                                :title="
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
+                                        ? 'Disable step'
+                                        : 'Enable step'
                                 "
-                                @change="handleCheckboxChange"
-                            ></a-checkbox>
+                            >
+                                <a-checkbox
+                                    v-model:checked="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].hide
+                                    "
+                                    @change="handleCheckboxChange"
+                                ></a-checkbox>
+                            </a-tooltip>
                         </div>
+
                         <div
                             class="border-r border-gray-300"
                             v-if="
@@ -123,34 +135,41 @@
                                 Number(index)
                             "
                         >
-                            <!-- Show dropdown except the last panel -->
-                            <Actions
-                                @add="
-                                    (type, panel) =>
-                                        handleAddPanel(index, type, panel)
-                                "
-                                v-model:submenuHovered="submenuHovered"
-                                v-model:containerHovered="containerHovered"
-                                :panelInfo="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                "
-                            />
+                            <a-tooltip placement="top" title="Add step">
+                                <!-- Show dropdown except the last panel -->
+                                <Actions
+                                    @add="
+                                        (type, panel) =>
+                                            handleAddPanel(index, type, panel)
+                                    "
+                                    v-model:submenuHovered="submenuHovered"
+                                    v-model:containerHovered="containerHovered"
+                                    :panelInfo="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ]
+                                    "
+                                />
+                            </a-tooltip>
                             <!-- ------------------------------ -->
                         </div>
+
                         <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                :disabled="Number(index) === 0"
-                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                            <a-tooltip placement="top" title="Delete step">
+                                <AtlanBtn
+                                    @click.stop="() => handleDelete(index)"
+                                    :disabled="Number(index) === 0"
+                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                    size="sm"
+                                    color="secondary"
+                                    padding="compact"
+                                >
+                                    <AtlanIcon
+                                        icon="Delete"
+                                        class="-mx-1"
+                                    ></AtlanIcon>
+                                </AtlanBtn>
+                            </a-tooltip>
                         </div>
                     </div>
                 </div>
@@ -248,7 +267,10 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
-            const { getSummarisedInfoOfAggregationPanel } = useUtils()
+            const {
+                getSummarisedInfoOfAggregationPanel,
+                getInitialPanelExpandedState,
+            } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -267,18 +289,38 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const expand = ref(
-                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
             )
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
-                            index.value
-                        ]?.expand
-                }
+
+            activeInlineTab.value.playground.vqb.panels[index.value].expand =
+                getInitialPanelExpandedState(
+                    readOnly.value,
+                    panel.value,
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        ?.expand
+                )
+
+            const expand = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             )
+
             const checkbox = ref(true)
             const { deletePanelsInVQB, handleAdd, updateVQB } = useVQB()
 
@@ -312,7 +354,6 @@
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
             }
             const toggleExpand = () => {
-                expand.value = !expand.value
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
                 ].expand =
@@ -331,24 +372,6 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
-            /* Accesss */
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser.value
-                    ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
-            )
 
             // watch(
             //     activeInlineTab.value.playground.vqb?.panels[index.value]

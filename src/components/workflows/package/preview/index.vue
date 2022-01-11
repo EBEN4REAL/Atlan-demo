@@ -170,20 +170,20 @@
             const activeKey = ref(1)
             const filteredTabs = [
                 {
-                    name: 'Property',
+                    name: 'Details',
                     component: 'property',
                     icon: 'Property',
                     activeIcon: 'PropertyActive',
-                    tooltip: 'Property',
+                    tooltip: 'Details',
                     scrubbed: false,
                     requiredInProfile: true,
                     analyticsKey: 'property',
                 },
                 {
-                    name: 'Worfklows',
+                    name: 'Workflows',
                     component: 'workflows',
-                    icon: 'Property',
-                    activeIcon: 'PropertyActive',
+                    icon: 'Relation',
+
                     tooltip: 'Workflows',
                     scrubbed: false,
                     requiredInProfile: true,

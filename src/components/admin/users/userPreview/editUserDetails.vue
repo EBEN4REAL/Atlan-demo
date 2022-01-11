@@ -123,7 +123,6 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import { Users } from '~/services/service/users'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
-    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
     export default {
         name: 'EditUser',

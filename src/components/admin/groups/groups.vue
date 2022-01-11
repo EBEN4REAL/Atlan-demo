@@ -264,6 +264,7 @@
             desc="Oops… we didn’t find any groups that match this search"
             button-text="Clear search"
             class="min-h-full border border-gray-300 rounded-b-lg"
+            image-class="h-36"
             @event="clearFilter"
         />
     </DefaultLayout>

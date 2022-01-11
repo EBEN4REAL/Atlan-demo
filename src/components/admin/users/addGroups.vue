@@ -5,7 +5,7 @@
         :trigger="['click']"
         :destroy-tooltip-on-hide="true"
         :overlay-class-name="$style.addGroupPopover"
-        :align="{ offset: [-40, -40] }"
+        :align="{ offset: [-20, -10] }"
     >
         <template #content>
             <div class="popover-add-groups-user">
@@ -51,9 +51,8 @@
         >
             <span>
                 <AtlanIcon class="mr-2" icon="Group" />
-                Add to group
             </span>
-            <AtlanIcon class="ml-3" icon="ChevronRight" />
+            <!-- <AtlanIcon class="ml-3" icon="ChevronRight" /> -->
         </div>
     </a-popover>
 </template>

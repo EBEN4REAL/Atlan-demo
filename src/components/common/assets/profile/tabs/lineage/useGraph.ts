@@ -95,10 +95,10 @@ export default function useGraph() {
                                                 ? iconEllipse
                                                 : ''
                                         }
-                                       <div class="node-meta__text text-truncate ${
+                                       <div class="node-meta__text  truncate ${
                                            ['Table', 'View'].includes(typeName)
                                                ? ''
-                                               : 'd-none'
+                                               : 'hidden'
                                        }">${schemaName || ''}</div>
                                     </div>
                                 </div>       

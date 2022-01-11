@@ -14,42 +14,42 @@ export function useError() {
         },
         '400': {
             '001': {
-                action: null,
+                action: 'copy',
                 msg: 'Bad request',
             },
             '002': {
-                action: null,
+                action: 'copy',
                 msg: 'Missing information in the request',
             },
             '003': {
-                action: null,
+                action: 'copy',
                 msg: 'Missing a mandatory attribute in the request body/parameter',
             },
             '004': {
-                action: null,
+                action: 'copy',
                 msg: null,
             },
         },
         '401': {
             '001': {
-                action: null,
+                action: 'copy',
                 msg: 'User Unauthorized',
             },
         },
         '403': {
             '001': {
-                action: null,
+                action: 'copy',
                 msg: 'User is not allowed to access the asset',
                 data: true,
             },
         },
         '500': {
             '001': {
-                action: null,
+                action: 'copy',
                 msg: 'Something went wrong with the system',
             },
             '002': {
-                action: null,
+                action: 'copy',
                 msg: 'Errors while query execution at source',
             },
             '003': {
@@ -65,15 +65,15 @@ export function useError() {
         },
         '503': {
             '001': {
-                action: null,
+                action: 'copy',
                 msg: 'Something went wrong with the system',
             },
             '002': {
-                action: null,
+                action: 'copy',
                 msg: 'Something went wrong with the system',
             },
             '003': {
-                action: null,
+                action: 'copy',
                 msg: 'Something went wrong with the system',
             },
         },

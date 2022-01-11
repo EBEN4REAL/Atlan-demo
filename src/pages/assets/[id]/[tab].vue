@@ -86,7 +86,7 @@
                 ...GlossaryAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
-            const { list, isLoading } = useDiscoverList({
+            const { list, isLoading, fetch } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -114,6 +114,17 @@
             watch(selectedAsset, () => {
                 localSelected.value = selectedAsset.value
             })
+
+            watch(
+                () => id.value,
+                () => {
+                    dependentKey.value = fetchKey.value
+                    facets.value = {
+                        guid: id.value,
+                    }
+                    fetch()
+                }
+            )
 
             watch(isLoading, async () => {
                 await nextTick()

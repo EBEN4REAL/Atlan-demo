@@ -264,15 +264,24 @@ export function useUtils() {
 
     function getInitialPanelExpandedState(
         readOnly: boolean,
-        panelid: string,
+        panel: Object,
         localExpandedState: boolean,
         isCustomVariable?: boolean
     ) {
+        if (localExpandedState) return true
         if (readOnly) {
-            if (panelid?.toLocaleLowerCase() === 'filter' && isCustomVariable)
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
                 return true
         } else {
-            if (panelid?.toLocaleLowerCase() === 'filter' && isCustomVariable)
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
                 return true
         }
 

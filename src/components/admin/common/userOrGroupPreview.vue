@@ -2,7 +2,7 @@
     <div class="relative h-full pb-6">
         <Shortcut
             shortcut-key="esc"
-            action="close preview"
+            action="close"
             placement="left"
             :delay="0.4"
             :edit-permission="true"
@@ -67,6 +67,9 @@
                                 <SlackMessageCta
                                     v-if="slackEnabled"
                                     :slack-link="slackUrl"
+                                    :cta-text="
+                                        isValidUser ? 'Say Hi 👋' : 'Say Hi 👋'
+                                    "
                                 />
                                 <span
                                     v-if="
@@ -276,6 +279,12 @@
                 }
                 return []
             })
+            const groupChannels = computed(() => {
+                if (isValidGroup.value) {
+                    return selectedGroup.value?.attributes?.channels
+                }
+                return []
+            })
             const slackProfile = computed(() => {
                 if (userProfiles.value?.length > 0) {
                     const firstProfile = JSON.parse(userProfiles.value[0])
@@ -289,12 +298,27 @@
                 }
                 return ''
             })
+            const slackChannel = computed(() => {
+                if (groupChannels.value?.length > 0) {
+                    const firstChannel = JSON.parse(groupChannels.value[0])
+                    if (
+                        firstChannel &&
+                        firstChannel.length > 0 &&
+                        firstChannel[0].hasOwnProperty('slack')
+                    ) {
+                        return firstChannel[0].slack
+                    }
+                }
+                return ''
+            })
 
             const handleImageUpdate = (newImageUrl) => {
                 updatedImageUrl.value = newImageUrl.value
             }
 
-            const slackEnabled = computed(() => slackProfile.value)
+            const slackEnabled = computed(
+                () => slackProfile.value || slackChannel.value
+            )
             const slackUrl = computed(() =>
                 slackEnabled.value
                     ? getDeepLinkFromUserDmLink(slackEnabled.value)
@@ -326,6 +350,8 @@
                 updatedImageUrl,
                 userUpdated,
                 handleChangeTab,
+                groupChannels,
+                slackChannel,
             }
         },
     })

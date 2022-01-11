@@ -5,7 +5,10 @@
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
-        ><div :class="classes" :style="{ maxWidth: clampPercentage }">
+        ><div
+            :class="classes"
+            :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
+        >
             <template v-if="routeTo">
                 <router-link
                     :to="routeTo"
@@ -73,11 +76,11 @@
                 required: false,
                 default: false,
             },
-            clampPercentage:{
+            clampPercentage: {
                 type: String,
                 required: false,
-                default:'95%'
-            }
+                default: '95%',
+            },
         },
         setup(props) {
             const truncated = ref<boolean>(false)

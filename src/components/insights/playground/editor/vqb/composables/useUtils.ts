@@ -262,6 +262,32 @@ export function useUtils() {
         }
     }
 
+    function getInitialPanelExpandedState(
+        readOnly: boolean,
+        panel: Object,
+        localExpandedState: boolean,
+        isCustomVariable?: boolean
+    ) {
+        if (localExpandedState) return true
+        if (readOnly) {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        } else {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        }
+
+        return false
+    }
+
     return {
         getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
@@ -277,5 +303,6 @@ export function useUtils() {
         collapseAllPanelsExceptCurrent,
         isAggregationORGroupPanelColumnsAdded,
         getAggregationORGroupPanelColumns,
+        getInitialPanelExpandedState,
     }
 }

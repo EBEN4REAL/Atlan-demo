@@ -23,7 +23,7 @@
                                 menuItem
                             ),
                         }"
-                        @click="() => menuItem.command(editor)"
+                        @click="() => menuItem.command({ editor })"
                     >
                         <AtlanIcon
                             :icon="menuItem.icon"
@@ -110,7 +110,7 @@
                                     textAlign: menuItem.key.split('-')[1],
                                 })),
                     }"
-                    @click="() => menuItem.command(editor)"
+                    @click="() => menuItem.command({ editor })"
                 >
                     <AtlanIcon :icon="menuItem.icon" class="w-auto h-4" />
                 </div>
@@ -140,6 +140,7 @@
         props: {
             editor: {
                 required: true,
+                type: Editor
             },
             editable: {
                 type: Boolean,

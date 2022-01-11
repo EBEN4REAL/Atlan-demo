@@ -47,7 +47,10 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <div class="flex flex-wrap gap-1 text-sm">
+        <div
+            class="flex flex-wrap gap-1 text-sm"
+            :class="{ '-ml-1': !editPermission }"
+        >
             <template v-for="category in checkedKeys" :key="category.value">
                 <div
                     class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
@@ -75,7 +78,7 @@
             </template>
             <span
                 v-if="!editPermission && checkedKeys?.length < 1"
-                class="-ml-1 text-gray-600"
+                class="text-gray-600"
                 >This term does not belong to any category</span
             >
         </div>

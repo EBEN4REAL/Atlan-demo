@@ -234,11 +234,21 @@
             const onCheckChange = (event, checked) => {
                 // inputChange()
                 // console.log(checked)
-                selectedFilter.value = {
-                    ...selectedFilter.value,
-                    name: checked.key,
-                    type: checked.type,
-                    title: checked.name,
+                if (checked.type === 'range_input') {
+                    selectedFilter.value = {
+                        ...selectedFilter.value,
+                        name: checked.key,
+                        type: checked.type,
+                        title: checked.name,
+                        value: [undefined, undefined],
+                    }
+                } else {
+                    selectedFilter.value = {
+                        ...selectedFilter.value,
+                        name: checked.key,
+                        type: checked.type,
+                        title: checked.name,
+                    }
                 }
                 emit('change')
                 updateVQB(activeInlineTabKey, inlineTabs)

@@ -10,7 +10,7 @@
                 />
                 <SearchAndFilter
                     v-model:value="searchText"
-                    :placeholder="`Search ${total} users`"
+                    :placeholder="`Search ${filteredUserCount} users`"
                     class="mr-1"
                     size="minimal"
                     @change="handleSearch"
@@ -57,20 +57,61 @@
             <EmptyView desc="No Results found." />
         </div>
         <template v-else>
-            <div class="pl-4 mt-2 overflow-auto">
-                <a-checkbox-group v-if="userList?.length" class="w-full">
-                    <div class="flex flex-col w-full" :style="userListStyle">
-                        <template v-for="user in userList" :key="user.id">
-                            <a-checkbox
-                                :value="user.id"
-                                class="flex items-center w-full py-2 border-b border-gray-100"
-                                @change="handleChange"
+            <div
+                class="flex flex-col mt-2 overflow-auto"
+                :style="userListStyle"
+            >
+                <div>
+                    <div v-if="userList?.length" class="w-full">
+                        <div class="flex flex-col w-full">
+                            <template v-for="user in userList" :key="user.id">
+                                <a-checkbox
+                                    :value="user.id"
+                                    class="flex flex-row-reverse items-center justify-end w-full py-2 pr-4 border-b border-gray-100 atlanReverse hover:bg-primary-light"
+                                    @change="handleChange"
+                                >
+                                    <UserCard
+                                        :user="{ ...user }"
+                                        :minimal="true"
+                                    />
+                                </a-checkbox>
+                            </template>
+                        </div>
+                        <div
+                            v-if="showLoadMore"
+                            class="flex justify-end w-full mt-3"
+                        >
+                            <button
+                                :disabled="isLoading"
+                                class="flex items-center justify-between py-2 bg-white rounded-full text-primary"
+                                :class="isLoading ? 'px-2 w-9' : ''"
+                                @click="handleLoadMore"
                             >
-                                <UserCard :user="user" :minimal="true" />
-                            </a-checkbox>
-                        </template>
+                                <template v-if="!isLoading">
+                                    <p
+                                        class="m-0 mr-1 overflow-hidden transition-all duration-300 cursor-pointer overflow-ellipsis whitespace-nowrap hover:underline"
+                                    >
+                                        Load more...
+                                    </p>
+                                </template>
+                                <div
+                                    v-else
+                                    class="flex justify-center ml-auto mr-5"
+                                >
+                                    <AtlanIcon
+                                        icon="CircleLoader"
+                                        class="text-primary animate-spin"
+                                    />
+                                </div>
+                                <!-- <AtlanIcon
+                                    v-else
+                                    icon="CircleLoader"
+                                    class="w-auto animate-spin"
+                                ></AtlanIcon> -->
+                            </button>
+                        </div>
                     </div>
-                </a-checkbox-group>
+                </div>
 
                 <div
                     v-if="isLoading && !userList.length"
@@ -79,27 +120,11 @@
                     <AtlanIcon icon="Loader" class="h-10 animate-spin" />
                 </div>
             </div>
-            <div v-if="showLoadMore" class="flex justify-center w-full mt-3">
-                <button
-                    :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="isLoading ? 'px-2 w-9' : ''"
-                    @click="handleLoadMore"
-                >
-                    <template v-if="!isLoading">
-                        <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                        >
-                            Load more
-                        </p>
-                        <AtlanIcon icon="ArrowDown" />
-                    </template>
-                    <AtlanIcon
-                        icon="Loader"
-                        v-else
-                        class="w-auto h-10 animate-spin"
-                    ></AtlanIcon>
-                </button>
+
+            <div class="pl-4">
+                <p class="text-gray-500">
+                    {{ userList?.length }} of {{ filteredUserCount }} users
+                </p>
             </div>
         </template>
     </div>
@@ -247,7 +272,7 @@
 </script>
 
 <style lang="less" scoped>
-    .userlist-height {
-        max-height: calc(100vh - 35rem);
+    .list {
+        max-height: calc(100% - 35rem);
     }
 </style>

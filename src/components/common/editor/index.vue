@@ -32,10 +32,7 @@
     import TextAlign from '@tiptap/extension-text-align'
     import Placeholder from '@tiptap/extension-placeholder'
     import Image from '@tiptap/extension-image'
-
     import Highlight from '@tiptap/extension-highlight'
-
-    import Document from '@tiptap/extension-document'
 
     import SelectionMenu from './selectionMenu.vue'
     import SlashCommands from './extensions/slashCommands/commands'
@@ -43,10 +40,6 @@
     import ImageUpload from './extensions/imageUpload/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
-
-    const CustomDocument = Document.extend({
-        content: 'heading block*',
-    })
 
     export default defineComponent({
         components: {
@@ -80,7 +73,6 @@
             const localModelValue = ref(modelValue.value)
 
             const debouncedEmit = useDebounceFn((content: string) => {
-                console.log(content)
                 modelValue.value = content
                 emit('change')
             }, 500)
@@ -149,7 +141,6 @@
                 autofocus: true,
                 extensions: [
                     StarterKit,
-                    CustomDocument,
                     Underline,
                     Link,
                     TaskList,
@@ -164,20 +155,12 @@
                     ImageUpload,
                     Highlight.configure({ multicolor: true }),
                     Placeholder.configure({
-                        placeholder: ({ node }) => {
-                            if (node.type.name === 'heading') {
-                                return 'Heading 1/2/3'
-                            }
-
-                            return props.placeholder
-                        },
-                        showOnlyWhenEditable: true,
+                        placeholder: ({ node }) => node.type.name === 'codeBlock' ? "Go ahead. Type some geek..." : props.placeholder,
+                        showOnlyWhenEditable: true
                     }),
                 ],
                 onUpdate({ editor }) {
                     const content = editor.getHTML()
-                    const json = editor.getJSON()
-
                     debouncedEmit(content)
                 },
             })
@@ -212,7 +195,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .editor {
         position: relative;
         min-width: inherit;

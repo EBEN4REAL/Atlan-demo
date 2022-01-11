@@ -2,7 +2,7 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div
-                v-if="userList.length > 0"
+                v-if="totalUserCount > 0"
                 class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
@@ -23,10 +23,10 @@
                         </template> -->
                     </SearchAndFilter>
                     <a-popover
+                        v-model="visible"
                         trigger="click"
                         placement="bottomLeft"
                         @visibleChange="handleClickFilter"
-                        v-model="visible"
                     >
                         <template #content>
                             <UserFilter
@@ -79,7 +79,7 @@
 
         <div
             v-if="error && userList.length === 0"
-            class="flex flex-col items-center h-full align-middle bg-white"
+            class="flex flex-col items-center h-full align-middle bg-white border border-gray-300 rounded-lg"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -104,6 +104,7 @@
                 empty-screen="NoUsers"
                 desc="Oops… we didn’t find any users that match this search"
                 button-text="Clear search"
+                class="border border-gray-300 rounded-b-lg"
                 @event="clearFilter"
             />
             <template v-else>

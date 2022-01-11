@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col py-5" v-auth="map.CREATE_GROUP">
+    <div v-auth="map.CREATE_GROUP" class="flex flex-col py-5">
         <div
             class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
@@ -22,8 +22,8 @@
                 <a-form-item label="Name" name="name">
                     <a-input
                         v-model:value="group.name"
-                        @input="setGroupAlias"
                         class="w-full"
+                        @input="setGroupAlias"
                     />
                 </a-form-item>
                 <a-form-item label="Alias" name="alias">
@@ -35,6 +35,22 @@
                 <a-form-item label="Description" name="description">
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
+                <a-form-item prop="slack">
+                    <template #label> Slack </template>
+                    <a-input
+                        v-model:value="group.slack"
+                        class="mt-2"
+                        placeholder="Add Slack channel name or channel ID"
+                    >
+                        <template #prefix>
+                            <span
+                                class="pr-2 border-r border-gray-300 border-solid"
+                            >
+                                <AtlanIcon icon="Slack" />
+                            </span>
+                        </template>
+                    </a-input>
+                </a-form-item>
 
                 <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
@@ -43,7 +59,7 @@
                     <UserList
                         user-list-header-class="min-w-full"
                         :user-list-style="{
-                            maxHeight: 'calc(100vh - 33.5rem)',
+                            maxHeight: 'calc(100vh - 37.5rem)',
                         }"
                         :minimal="true"
                         @updateSelectedUsers="updateUserList"
@@ -52,7 +68,7 @@
             </a-form>
         </div>
         <div
-            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 border-t"
+            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 bg-white border-t"
         >
             <div class="flex items-center mt-3 gap-x-1">
                 <a-checkbox v-model:checked="isDefault">
@@ -74,7 +90,7 @@
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
-                :isLoading="createGroupLoading"
+                :is-loading="createGroupLoading"
                 @click="handleSubmit"
             >
                 Create Group
@@ -106,6 +122,7 @@
         name: String
         alias: String
         description: String
+        slack: String
     }
     export default defineComponent({
         name: 'AddGroup',
@@ -122,6 +139,7 @@
                 name: '',
                 description: '',
                 alias: '',
+                slack: '',
             })
             const validations = {
                 name: [
@@ -154,8 +172,6 @@
                 userIds.value = list
             }
             const handleSubmit = () => {
-                const currentDate = new Date().toISOString()
-                const createdBy = username.value
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
                 const requestPayload = ref({
                     group: {
@@ -164,6 +180,10 @@
                             description: [group.description],
                             alias: [group.name],
                             isDefault: [`${isDefault.value}`],
+                            channels:
+                                group.slack.length > 0
+                                    ? [`[{"slack": "${group.slack}"}]`]
+                                    : [],
                         },
                     },
                     users: userIds.value,

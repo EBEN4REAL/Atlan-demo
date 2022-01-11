@@ -77,6 +77,7 @@
                 class="empty-state-wrapper"
             >
                 <EmptyState
+                    image-class="h-36"
                     empty-screen="NoGroups"
                     :desc="`No member with name ${searchText} found.`"
                     button-text="Clear search"

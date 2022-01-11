@@ -48,6 +48,8 @@ export function useFilter() {
         'BPCHAR',
         'VARCHAR',
         'ANY',
+        'VARIANT',
+        'OBJECT',
     ]
 
     let date = [
@@ -274,7 +276,10 @@ export function useFilter() {
         ]
 
         let filtersList = all.filter((el) => {
-            return el?.includes.find((el) => el === type?.toUpperCase())
+            let t = el?.includes.find(
+                (el) => el?.toUpperCase() === type?.toUpperCase()
+            )
+            return t
             // return true
         })
 
@@ -287,7 +292,7 @@ export function useFilter() {
         else if (date.includes(columnType)) return 'date'
         else if (boolean.includes(columnType)) return 'number'
         else if (array.includes(columnType)) return 'array'
-        else if (object.includes(columnType)) return 'object'
+        else if (object.includes(columnType)) return 'text'
         else if (geography.includes(columnType)) return 'geography'
         return 'text'
     }

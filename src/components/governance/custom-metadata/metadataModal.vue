@@ -7,7 +7,12 @@
         :width="632"
     >
         <template #footer>
-            <div class="flex items-center justify-end space-x-3">
+            <div class="flex items-center justify-between space-x-3">
+                <div v-if="!isEdit" class="flex items-center space-x-2">
+                    <a-switch v-model:checked="createMore" size="small" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex-grow"></div>
                 <a-button class="border-0" @click="visible = false"
                     >Cancel</a-button
                 >
@@ -102,7 +107,7 @@
                 default: () => {},
             },
         },
-        emits: ['update:selected'],
+        emits: ['select'],
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
@@ -113,6 +118,7 @@
             })
             const visible = ref(false)
             const loading = ref(false)
+            const createMore = ref(false)
             const error = ref(null)
             const form = ref(initializeForm())
 
@@ -141,7 +147,7 @@
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
                     message.success('Metadata created')
-                    emit('update:selected', serviceResponse[0].guid)
+                    emit('select', serviceResponse[0].guid)
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
@@ -155,7 +161,8 @@
                         if (
                             apiResponse.value?.data?.businessMetadataDefs.length
                         ) {
-                            visible.value = false
+                            if (!createMore.value) visible.value = false
+                            else form.value = initializeForm()
                             handleBmUpdateSuccess(
                                 apiResponse.value.data.businessMetadataDefs
                             )
@@ -269,6 +276,7 @@
             }
 
             return {
+                createMore,
                 my_photo,
                 emojiRemove,
                 handleUpload,

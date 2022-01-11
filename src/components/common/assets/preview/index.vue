@@ -111,7 +111,7 @@
                                 >
                                     <AtlanIcon
                                         :icon="action.icon"
-                                        class="mb-0.5"
+                                        class="mb-0.5 h-4 w-auto"
                                     />
                                 </a-button>
                             </a-tooltip>

@@ -11,14 +11,14 @@
             </p>
         </div>
         <div class="flex flex-col items-center w-full">
-            <img :src="Body" alt="" class="w-9/12 mt-7" />
+            <img :src="Body" alt="" class="w-7/12 mt-7" />
 
             <p style="max-width: 18rem" class="text-sm font-bold text-center">
                 Enrich your collection with Folders and Queries
             </p>
         </div>
         <div class="flex flex-col items-center w-full">
-            <img :src="Footer" alt="" class="w-9/12 mt-6" />
+            <img :src="Footer" alt="" class="w-7/12 mt-6" />
 
             <p style="max-width: 18rem" class="text-sm font-bold text-center">
                 Share collections with your team
@@ -26,7 +26,7 @@
         </div>
 
         <AtlanButton
-            class="mt-16 font-bold w-36"
+            class="mt-6 font-bold w-36"
             size="lg"
             color="primary"
             padding="compact"

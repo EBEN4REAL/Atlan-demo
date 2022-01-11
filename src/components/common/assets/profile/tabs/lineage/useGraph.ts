@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getNodeSourceImage } from './util.js'
+import { getNodeSourceImage, getNodeCertificationImage } from './util.js'
 import { iconProcess, iconEllipse, iconCaretDown } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 
@@ -21,6 +21,11 @@ export default function useGraph() {
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
+        const certificateIcon =
+            getNodeCertificationImage[
+                attributes?.certificateStatus?.toLowerCase()
+            ]
+
         const isBase = guid === baseEntityGuid
         const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
 
@@ -69,12 +74,18 @@ export default function useGraph() {
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
-                                    <div class="node-text group-hover:underline">
-                                        <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                    <div class="node-title">
+                                        <span class="node-text group-hover:underline truncate">
+                                            ${displayText}
                                         </span>
-                                        <div class="truncate">${displayText}</div>
-                                        
+                                        ${
+                                            certificateIcon
+                                                ? '<img class="node-cert mb-1.5 mx-1" src="' +
+                                                  certificateIcon +
+                                                  '" />'
+                                                : ''
+                                        }
+                                        <span class="caret-bg text-white ml-auto">${iconCaretDown}</span>
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -84,10 +95,10 @@ export default function useGraph() {
                                                 ? iconEllipse
                                                 : ''
                                         }
-                                       <div class="node-meta__text text-truncate ${
+                                       <div class="node-meta__text  truncate ${
                                            ['Table', 'View'].includes(typeName)
                                                ? ''
-                                               : 'd-none'
+                                               : 'hidden'
                                        }">${schemaName || ''}</div>
                                     </div>
                                 </div>       

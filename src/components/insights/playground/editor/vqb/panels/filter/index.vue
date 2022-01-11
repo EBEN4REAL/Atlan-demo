@@ -121,13 +121,24 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox
-                                v-model:checked="
+                            <a-tooltip
+                                placement="top"
+                                :title="
                                     activeInlineTab.playground.vqb.panels[index]
                                         .hide
+                                        ? 'Disable step'
+                                        : 'Enable step'
                                 "
-                                @change="handleCheckboxChange"
-                            ></a-checkbox>
+                            >
+                                <a-checkbox
+                                    v-model:checked="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].hide
+                                    "
+                                    @change="handleCheckboxChange"
+                                ></a-checkbox>
+                            </a-tooltip>
                         </div>
                         <div
                             class="border-r border-gray-300"
@@ -138,32 +149,38 @@
                             "
                         >
                             <!-- Show dropdown except the last panel -->
-                            <Actions
-                                @add="
-                                    (type, panel) =>
-                                        handleAddPanel(index, type, panel)
-                                "
-                                v-model:submenuHovered="submenuHovered"
-                                v-model:containerHovered="containerHovered"
-                                :panelInfo="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                "
-                            />
+                            <a-tooltip placement="top" title="Add step">
+                                <Actions
+                                    @add="
+                                        (type, panel) =>
+                                            handleAddPanel(index, type, panel)
+                                    "
+                                    v-model:submenuHovered="submenuHovered"
+                                    v-model:containerHovered="containerHovered"
+                                    :panelInfo="
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ]
+                                    "
+                                />
+                            </a-tooltip>
                             <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                            <a-tooltip placement="top" title="Delete step">
+                                <AtlanBtn
+                                    @click.stop="() => handleDelete(index)"
+                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                    size="sm"
+                                    color="secondary"
+                                    padding="compact"
+                                >
+                                    <AtlanIcon
+                                        icon="Delete"
+                                        class="-mx-1"
+                                    ></AtlanIcon>
+                                </AtlanBtn>
+                            </a-tooltip>
                         </div>
                     </div>
                 </div>

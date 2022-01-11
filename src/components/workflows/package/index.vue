@@ -6,12 +6,67 @@
             @change="handlePackageTypeChange"
         ></AggregationTabs>
     </div>
-    <div class="flex h-full overflow-y-auto">
+    <div class="flex flex-col h-full overflow-y-auto">
+        <div
+            v-if="isLoading || isLoadingPackage"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
+        </div>
+
+        <div
+            v-else-if="list.length === 0 && !isLoading && !isLoadingPackage"
+            class="flex-grow"
+        >
+            <EmptyView
+                empty-screen="EmptyDiscover"
+                desc="No packages found"
+                class="mb-10"
+            ></EmptyView>
+        </div>
+        <div
+            v-else-if="
+                !isLoading && !isLoadingPackage && (error || errorPackage)
+            "
+            class="flex items-center justify-center flex-grow"
+        >
+            <ErrorView></ErrorView>
+        </div>
+
         <WorkflowList
+            v-else
             :list="list"
             class="px-6 mb-4"
             @select="handleSelect"
         ></WorkflowList>
+        <div
+            v-if="(isLoadMore || isLoadingPackage) && list.length > 0"
+            class="flex items-center justify-center"
+        >
+            <button
+                :disabled="isLoadingPackage"
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                :class="isLoadingPackage ? 'px-2 w-9' : 'px-2'"
+                @click="handleLoadMore"
+            >
+                <template v-if="!isLoadingPackage">
+                    <p
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                    >
+                        Load more
+                    </p>
+                    <AtlanIcon icon="ArrowDown" />
+                </template>
+                <AtlanIcon
+                    icon="Loader"
+                    v-else
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -26,6 +81,9 @@
         toRefs,
     } from 'vue'
 
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
+
     import WorkflowList from './list/index.vue'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
@@ -38,6 +96,8 @@
         components: {
             WorkflowList,
             AggregationTabs,
+            EmptyView,
+            ErrorView,
         },
         emits: ['setup', 'sandbox', 'select'],
         props: {
@@ -95,13 +155,13 @@
             const packageList = ref([])
             const dependentKeyPackage = ref('')
             const facetPackage = ref({})
-            const packageLimit = ref(20)
+            const packageLimit = ref(10)
             const packageOffset = ref(0)
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
             })
             const postFacets = ref({
-                typeName: '__all',
+                typeName: 'connector',
             })
             const aggregationPackage = ref(['by_type'])
             watch(packageListFromWorkflows, () => {
@@ -126,9 +186,12 @@
             const handlePreview = inject('preview')
 
             const {
+                isLoading: isLoadingPackage,
+                error: errorPackage,
                 quickChange: quickChangePackage,
                 list,
                 getAggregationByType,
+                isLoadMore,
             } = usePackageDiscoverList({
                 isCache: true,
                 dependentKey: dependentKeyPackage,
@@ -217,8 +280,15 @@
             }
 
             const handlePackageTypeChange = (tabName) => {
-                offset.value = 0
+                packageOffset.value = 0
                 quickChangePackage()
+            }
+
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    packageOffset.value += packageLimit.value
+                    quickChangePackage()
+                }
             }
 
             return {
@@ -258,6 +328,10 @@
                 postFacets,
                 getAggregationByType,
                 handlePackageTypeChange,
+                isLoadingPackage,
+                errorPackage,
+                isLoadMore,
+                handleLoadMore,
             }
         },
     })

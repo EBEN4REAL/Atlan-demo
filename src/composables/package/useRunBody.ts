@@ -472,6 +472,7 @@ export function useRunBody(
                                 by_status: {
                                     terms: {
                                         field: 'spec.workflowTemplateRef.name.keyword',
+                                        size: 200,
                                     },
                                     aggs: {
                                         by_status: {

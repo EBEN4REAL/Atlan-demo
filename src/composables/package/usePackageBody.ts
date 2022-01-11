@@ -254,8 +254,6 @@ export function usePackageBody(
     })
     base.rawOption('post_filter', postFilter.build().query)
 
-    console.log('aggregation', aggregations)
-
     if (aggregations) {
         aggregations?.forEach((mkey) => {
             switch (mkey) {

@@ -1,17 +1,18 @@
 <template>
-    <div class="flex-col w-full">
-        <span class="text-gray-700">{{ workflow }}</span>
+    <div class="flex-col w-full gap-y-1">
+        <span class="text-gray-700 line-clamp-1">
+            <Ellipsis
+                :tooltip-text="workflow"
+                classes="text-gray-500"
+            ></Ellipsis>
+        </span>
 
         <div class="flex items-center justify-between w-full">
-            <div class="mr-1 font-normal text-gray-500">last three runs</div>
             <RunWidget
                 :item="item"
                 :workflow="workflow"
                 :runs="runs"
             ></RunWidget>
-        </div>
-        <div class="flex items-center w-full gap-x-2">
-            <div class="flex items-center justify-between"></div>
         </div>
     </div>
 </template>
@@ -21,10 +22,12 @@
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import cronstrue from 'cronstrue'
     import RunWidget from './run.vue'
+    import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             RunWidget,
+            Ellipsis,
         },
         props: {
             item: {

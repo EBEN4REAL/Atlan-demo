@@ -1,14 +1,10 @@
 <template>
     <div
-        class="flex items-center justify-between px-2 py-1 mb-1 rounded hover:border-primary hover:bg-primary-menu"
-        :class="
-            activeProperty === attribute.name
-                ? 'outline-primary bg-primary-menu'
-                : ''
-        "
+        class="flex items-center justify-between px-2 py-1 mb-1 border-0 rounded border-primary hover:bg-primary-menu hover:border-1"
+        :class="selectedClass"
     >
         <div
-            class="w-full"
+            class="w-full cursor-default"
             :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'"
         >
             <Truncate
@@ -60,11 +56,28 @@
                 )
             })
 
+            const selectedClass = computed(() => {
+                if (activeProperty.value === attribute.value.name)
+                    return 'outline-primary bg-primary-menu'
+                if (isApplied.value) return 'bg-primary-menu'
+                return ''
+            })
+            const appliedClasses = computed(() => {
+                if (
+                    isApplied.value ||
+                    activeProperty.value === attribute.value.name
+                )
+                    return 'text-primary font-semibold'
+                return ''
+            })
+
             return {
                 attribute,
                 activeProperty,
                 condition,
                 isApplied,
+                selectedClass,
+                appliedClasses,
             }
         },
     })

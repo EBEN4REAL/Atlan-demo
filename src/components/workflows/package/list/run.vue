@@ -4,7 +4,7 @@
             <template v-for="index in 3" :key="index">
                 <a-tooltip :title="tooltipContent(index)">
                     <div
-                        class="w-3 h-3 p-1 bg-gray-200 rounded shadow"
+                        class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
                         :class="getRunClass(index)"
                     ></div>
                 </a-tooltip>
@@ -87,6 +87,10 @@
 
             const tooltipContent = (index) => {
                 const tempStatus = getRunStatus(index)
+
+                if (tempStatus) {
+                    return ''
+                }
                 if (tempStatus === 'Succeeded') {
                     return `${tempStatus}, ${getRunTime(
                         index,

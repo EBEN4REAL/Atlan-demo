@@ -1,27 +1,55 @@
 <template>
-    <WorkflowList
-        :list="list"
-        class="px-6 mb-4"
-        @select="handleSelect"
-    ></WorkflowList>
+    <div class="px-6 py-2">
+        <AggregationTabs
+            :list="getAggregationByType"
+            v-model="postFacets.typeName"
+            @change="handlePackageTypeChange"
+        ></AggregationTabs>
+    </div>
+    <div class="flex h-full overflow-y-auto">
+        <WorkflowList
+            :list="list"
+            class="px-6 mb-4"
+            @select="handleSelect"
+        ></WorkflowList>
+    </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, provide, inject } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        watch,
+        provide,
+        inject,
+        toRefs,
+    } from 'vue'
 
     import WorkflowList from './list/index.vue'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { useDebounceFn } from '@vueuse/core'
+    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
         components: {
             WorkflowList,
+            AggregationTabs,
         },
         emits: ['setup', 'sandbox', 'select'],
+        props: {
+            queryText: {
+                type: String,
+                required: false,
+                default: () => {},
+            },
+        },
         setup(props, { emit }) {
+            const { queryText } = toRefs(props)
+
             const activeKey = ref(['sourceCategory_0'])
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
@@ -34,9 +62,11 @@
                 emit('sandbox', selectedPackage.value)
             }
 
+            const queryInput = ref(queryText.value)
+
             const limit = ref(0)
             const offset = ref(0)
-            const queryText = ref('')
+
             const facets = ref({
                 ui: true,
             })
@@ -55,7 +85,7 @@
                 facets,
                 limit,
                 offset,
-                queryText,
+
                 source: ref({
                     excludes: ['spec'],
                 }),
@@ -70,7 +100,10 @@
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
             })
-
+            const postFacets = ref({
+                typeName: '__all',
+            })
+            const aggregationPackage = ref(['by_type'])
             watch(packageListFromWorkflows, () => {
                 const map = Object.keys(packageListFromWorkflows.value)
 
@@ -78,6 +111,7 @@
                 facetPackage.value = {
                     packageNames: map,
                 }
+                dependentKeyPackage.value = `DEFAULT_PACKAGES_SEARCH`
                 quickChangePackage()
 
                 console.log('workflowDistinct', workflowDistinctList.value)
@@ -91,14 +125,29 @@
 
             const handlePreview = inject('preview')
 
-            const { quickChange: quickChangePackage, list } =
-                usePackageDiscoverList({
-                    isCache: false,
-                    dependentKey: dependentKeyPackage,
-                    facets: facetPackage,
-                    limit: packageLimit,
-                    offset: packageOffset,
-                })
+            const {
+                quickChange: quickChangePackage,
+                list,
+                getAggregationByType,
+            } = usePackageDiscoverList({
+                isCache: true,
+                dependentKey: dependentKeyPackage,
+                facets: facetPackage,
+                postFacets,
+                limit: packageLimit,
+                offset: packageOffset,
+                queryText: queryInput,
+                aggregations: aggregationPackage,
+            })
+
+            debouncedWatch(
+                queryText,
+                () => {
+                    queryInput.value = queryText.value
+                    quickChangePackage()
+                },
+                { debounce: 100 }
+            )
 
             // watch(packageFetchList, () => {
             //     packageList.value = packageList.value.concat(
@@ -167,6 +216,11 @@
                 searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
+            const handlePackageTypeChange = (tabName) => {
+                offset.value = 0
+                quickChangePackage()
+            }
+
             return {
                 placeholder,
                 dirtyTimestamp,
@@ -200,6 +254,10 @@
                 workflowDistinctList,
                 workflowMapByPackage,
                 handlePreview,
+                aggregationPackage,
+                postFacets,
+                getAggregationByType,
+                handlePackageTypeChange,
             }
         },
     })

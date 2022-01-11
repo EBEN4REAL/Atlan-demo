@@ -250,6 +250,7 @@
                                     ? 'flex justify-center items-center '
                                     : '',
                             ]"
+                            @click.stop="() => {}"
                         >
                             <template
                                 v-if="
@@ -263,6 +264,7 @@
                                     :item="item.item"
                                     placement="left"
                                     :mouseEnterDelay="0.85"
+                                    class="dropdown-container"
                                 >
                                     <template #button>
                                         <AtlanBtn
@@ -293,10 +295,10 @@
                                             (checked) =>
                                                 onCheckboxChange(checked, item)
                                         "
-                                        class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light"
+                                        class="inline-flex flex-row-reverse items-center w-full px-2 py-1 rounded atlanReverse hover:bg-primary-light dropdown-container"
                                     >
                                         <div
-                                            class="justify-between parent-ellipsis-container"
+                                            class="justify-between parent-ellipsis-container dropdown-container"
                                         >
                                             <div
                                                 class="parent-ellipsis-container"

@@ -26,11 +26,11 @@
                 :is="getDataTypeImage(selectedItem?.type)"
                 class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
             ></component>
-            <span class="mb-0 ml-1 text-sm text-gray-700">
+            <span class="mb-0 ml-1 text-sm text-gray-700 truncate">
                 {{ selectedItem?.label }}
             </span>
         </div>
-        <span v-else>
+        <span v-else class="text-gray-500">
             {{ placeholder }}
         </span>
 
@@ -197,7 +197,10 @@
 
                     <div
                         class="w-full dropdown-container"
-                        v-if="!isTableSelected"
+                        v-if="
+                            !isTableSelected &&
+                            selectedTablesQualifiedNames.length >= 2
+                        "
                     >
                         <div
                             class="px-4 py-3 border-b border-gray-300 dropdown-container"

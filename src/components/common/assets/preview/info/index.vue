@@ -49,12 +49,12 @@
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
                 block
-                class="flex items-center justify-between"
+                class="flex items-center justify-between px-2"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
                     <img
                         :src="getConnectorImage(selectedAsset)"
-                        class="h-5 mr-1"
+                        class="h-4 mr-1"
                     />
                     {{
                         assetTypeLabel(selectedAsset) || selectedAsset.typeName
@@ -236,7 +236,7 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             v-if="
                 selectedAsset?.guid &&
                 selectedAsset?.typeName === 'Query' &&
@@ -244,14 +244,36 @@
             "
             class="flex flex-col px-5 text-sm"
         >
-            blah:{{ collectionInfo }}
-
             <div class="mb-1 text-sm text-gray-500">
                 {{ attributes(selectedAsset)?.parent?.typeName }}
             </div>
             <div class="text-sm tracking-wider text-gray-700">
                 {{ attributes(selectedAsset)?.parent?.attributes?.name }}
             </div>
+        </div> -->
+
+        <div
+            v-if="selectedAsset?.typeName === 'Query'"
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">Collection</div>
+
+            <a-button
+                block
+                class="flex items-center justify-between px-2"
+                @click="() => {}"
+            >
+                <div class="flex items-center">
+                    <AtlanIcon icon="CollectionIconSmall" class="mr-1 mb-0.5" />
+                    <span>
+                        {{
+                            selectedAsset?.collectionName ||
+                            collectionInfo?.displayText
+                        }}
+                    </span>
+                </div>
+                <AtlanIcon icon="External" />
+            </a-button>
         </div>
 
         <div
@@ -260,10 +282,24 @@
                 selectedAsset?.typeName === 'Query' &&
                 attributes(selectedAsset)?.parent?.typeName === 'Folder'
             "
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">
+                {{ attributes(selectedAsset)?.parent?.typeName }}
+            </div>
+            <div class="text-sm tracking-wider text-gray-700">
+                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+            </div>
+        </div>
+
+        <!-- <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
             class="flex flex-col gap-y-4"
         >
-            blah:{{ collectionInfo }}
-
             <div class="flex flex-col px-5 text-sm">
                 <div class="mb-1 text-sm text-gray-500">Collection</div>
                 <div class="text-sm tracking-wider text-gray-700">
@@ -276,7 +312,7 @@
                     {{ attributes(selectedAsset)?.parent?.attributes?.name }}
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="flex flex-col">
             <div
@@ -543,24 +579,17 @@
                     if (isLoading.value === false) {
                         if (error.value === undefined) {
                             if (
-                                data.value?.entities &&
-                                data.value?.entities?.length > 0
+                                data?.value?.entities &&
+                                data?.value?.entities?.length > 0
                             ) {
-                                console.log('collection data: ', data?.value)
-                                console.log(
-                                    'collection data2: ',
-                                    JSON.parse(JSON.stringify(data?.value))
-                                )
-                                debugger
-                                collectionInfo.value = data.value.entities
-                                debugger
+                                collectionInfo.value = data?.value?.entities[0]
                             }
                         }
                     }
                 })
             }
 
-            debugger
+            // debugger
 
             watch(
                 () => selectedAsset?.value?.attributes?.collectionQualifiedName,
@@ -569,19 +598,8 @@
                         fetchAsset()
                     }
                 },
-                { deep: true }
-            )
 
-            watch(
-                collectionInfo,
-                () => {
-                    debugger
-                    console.log('collectionInfo: ', collectionInfo.value)
-                    debugger
-                },
-                {
-                    deep: true,
-                }
+                { deep: true, immediate: true }
             )
 
             const { isDrawer } = toRefs(props)

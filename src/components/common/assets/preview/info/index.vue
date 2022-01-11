@@ -229,7 +229,7 @@
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">Table</div>
+                <div class="mb-2 text-sm text-gray-500">View</div>
                 <div class="text-sm tracking-wider text-gray-700">
                     {{ viewName(selectedAsset) }}
                 </div>

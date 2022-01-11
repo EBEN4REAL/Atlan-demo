@@ -163,19 +163,33 @@
                                         <VQBSQLPreview />
                                     </div>
                                 </template>
-                                <div
+                                <a-tooltip
+                                    color="#363636"
                                     v-if="showVQB"
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                    :class="
-                                        showQueryPreview ? 'bg-gray-300' : ''
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
                                     "
-                                    @click="toggleQueryPreviewPopover"
                                 >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
-                                </div>
+                                    <template #title>Preview SQL</template>
+                                    <div
+                                        v-if="showVQB"
+                                        class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                        :class="
+                                            showQueryPreview
+                                                ? 'bg-gray-300'
+                                                : ''
+                                        "
+                                        @click="toggleQueryPreviewPopover"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="Info"
+                                            class="w-4 h-4 text-gray-500"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </a-popover>
                             <!-- Custom variables -->
                             <a-tooltip
@@ -285,30 +299,15 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                                <a-tooltip
-                                    color="#363636"
-                                    :mouseEnterDelay="
-                                        lastTooltipPresence !== undefined
-                                            ? 0.1
-                                            : 0.5
-                                    "
-                                    placement="topRight"
+                                <div
+                                    class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @mouseout="recordTooltipPresence"
                                 >
-                                    <template #title
-                                        >Toggle output pane ( ctrl + j
-                                        )</template
-                                    >
-
-                                    <div
-                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
-                                        @mouseout="recordTooltipPresence"
-                                    >
-                                        <AtlanIcon
-                                            icon="OutputpaneTrigger"
-                                            class="w-4 h-4 text-gray-500 outline-none"
-                                        />
-                                    </div>
-                                </a-tooltip>
+                                    <AtlanIcon
+                                        icon="OutputpaneTrigger"
+                                        class="w-4 h-4 text-gray-500 outline-none"
+                                    />
+                                </div>
                             </div>
                             <div
                                 class="ml-2"

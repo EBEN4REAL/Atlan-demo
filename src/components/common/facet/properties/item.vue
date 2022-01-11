@@ -10,7 +10,8 @@
             <Truncate
                 :tooltipText="attribute.displayName"
                 :rows="2"
-                :classes="appliedClasses"
+                width="500px"
+                placement="right"
             />
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">

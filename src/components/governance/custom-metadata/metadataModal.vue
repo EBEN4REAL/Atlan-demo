@@ -248,11 +248,12 @@
                             },
                         }
                     )
-                else if (
-                    form.value.options.logoType === 'image' &&
-                    imageFile.value
-                ) {
-                    await upload(imageFile.value)
+                else {
+                    if (
+                        form.value.options.logoType === 'image' &&
+                        imageFile.value
+                    )
+                        await upload(imageFile.value)
                     console.log({ imageUploadData, imageUploadError })
 
                     form.value.options.imageId = imageUploadData.value.id

@@ -26,7 +26,6 @@
         style="height: 32px !important"
         @change="(event) => onChange(event, type)"
         type="number"
-        @keypress="isNumberKey(event)"
     >
         <template #suffix>
             <CustomVariableTrigger
@@ -165,12 +164,12 @@
 
             const onChange = (event, type) => {
                 if (type === 'text') {
-                    inputValue.value = event.target.value
+                    inputValue.value = localeValue.value
                 } else if (type == 'date') {
                     // event -> date in YYYY-MM-DD HH:mm:ss format in string
                     inputValue.value = localeValue.value?.format(dateFormat)
                 } else if (type == 'number') {
-                    inputValue.value = event
+                    inputValue.value = localeValue.value
                 }
 
                 createDebounce()(() => {

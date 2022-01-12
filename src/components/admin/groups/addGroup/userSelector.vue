@@ -1,6 +1,17 @@
 <template>
     <div class="">
-        <a-popover
+        <Owners
+            v-model:modelValue="selectedIds"
+            v-model:selectedRecords="selectedRecordsModel"
+            :show-none="false"
+            :enable-tabs="['users']"
+            :hide-disabled-tabs="true"
+            select-user-key="id"
+            :show-logged-in-user="true"
+            :dropdown-style-object="{ width: '430px' }"
+            search-placeholder="Search users"
+        />
+        <!-- <a-popover
             :placement="'bottomLeft'"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
@@ -19,7 +30,7 @@
 
             <template #content>
                 <div>
-                    <OwnerFacets
+                    <Owners
                         v-model:modelValue="selectedIds"
                         v-model:selectedRecords="selectedRecordsModel"
                         :show-none="false"
@@ -29,7 +40,7 @@
                     />
                 </div>
             </template>
-        </a-popover>
+        </a-popover> -->
 
         <div
             v-if="selectedRecordsModel?.length"
@@ -68,6 +79,7 @@
     import { getUserName } from '~/composables/user/useUsers'
     import UserCard from '../common/userCard.vue'
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
+    import Owners from '@/insights/explorers/queries/collection/owner.vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -76,6 +88,7 @@
             UserCard,
             OwnerFacets,
             AtlanBtn,
+            Owners,
         },
         props: {
             userListStyle: {

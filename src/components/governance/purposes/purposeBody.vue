@@ -98,7 +98,12 @@
                     </template>
                 </a-dropdown>
             </div>
-            <div class="flex flex-col flex-grow overflow-y-auto gap-y-3">
+            <div
+                v-if="
+                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
+                "
+                class="flex flex-col flex-grow overflow-y-auto gap-y-3"
+            >
                 <template v-for="(policy, idx) in metaDataComputed" :key="idx">
                     <!-- Render it if the policy is being edited -->
                     <!-- <MetadataPolicy
@@ -147,11 +152,12 @@
             </div>
             <div
                 v-if="
-                    metaDataComputed.length === 0 &&
-                    dataPolicyComputed.length === 0 &&
-                    searchPersona
+                    (activeTabFilter === 'meta' &&
+                        metaDataComputed.length === 0) ||
+                    (activeTabFilter === 'data' &&
+                        dataPolicyComputed.length === 0)
                 "
-                class="flex flex-col items-center justify-center mt-8"
+                class="flex flex-col items-center justify-center h-full"
             >
                 <component :is="NoResultIllustration"></component>
                 <span class="text-sm font-bold text-gray">
@@ -164,7 +170,7 @@
                     !selectedPersonaDirty.metadataPolicies?.length &&
                     !selectedPersonaDirty.dataPolicies?.length
                 "
-                class="flex flex-col items-center justify-center mt-8"
+                class="flex flex-col items-center justify-center h-full"
             >
                 <component :is="NewPolicyIllustration"></component>
                 <span class="text-2xl font-bold text-gray">
@@ -173,7 +179,10 @@
             </div>
         </div>
 
-        <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white px-7 h-full">
+        <div
+            v-else-if="activeTabKey === 'linked_assets'"
+            class="h-full bg-white px-7"
+        >
             <div class="wrapper-height">
                 <AssetList
                     :filters="filterConfig"

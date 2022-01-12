@@ -156,21 +156,32 @@
             groupId: {
                 type: String,
                 required: false,
-                default: ""
+                default: '',
             },
             userId: {
                 type: String,
                 required: false,
-                default: ""
-            }
+                default: '',
+            },
+            activeTab: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNone, enableTabs, selectUserKey, selectGroupKey, groupId } =
-                toRefs(props)
-            const componentType = ref('users')
+            const {
+                showNone,
+                enableTabs,
+                selectUserKey,
+                selectGroupKey,
+                groupId,
+                activeTab,
+            } = toRefs(props)
+            const componentType = ref(activeTab.value || 'users')
 
             const usersRef = ref()
             const groupRef = ref()
@@ -256,7 +267,7 @@
                 ownerSearchRef,
                 forceFocus,
                 handleChange,
-                groupId
+                groupId,
             }
         },
     })

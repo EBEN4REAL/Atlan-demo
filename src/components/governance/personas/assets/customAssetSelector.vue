@@ -8,7 +8,11 @@
             <a-input
                 v-model:value="regexes[idx]"
                 class="flex-grow"
-                :placeholder="connectionQfName.includes('tableau') ? 'database/schema/table/column' : ''"
+                :placeholder="
+                    connectionQfName.includes('tableau')
+                        ? 'database/schema/table/column'
+                        : 'Qualified name'
+                "
                 data-test-id="custom-asset-input"
                 @change="updateAssets"
                 @keyup.enter="addExpr"
@@ -18,12 +22,11 @@
                         :src="getImage(connectionQfName.split('/')[1])"
                         class="w-auto h-3 mr-2"
                     />
-                    <span class="text-sm text-gray">
-                        {{ connName }}/
-                    </span>
+                    <span class="text-sm text-gray"> {{ connName }}/ </span>
                 </template>
             </a-input>
             <AtlanIcon
+                v-if="regexes[idx]"
                 icon="Cross"
                 data-test-id="remove-expression"
                 class="flex-none text-gray-500 cursor-pointer hover:text-gray"
@@ -60,13 +63,14 @@
         },
         emits: ['update:assets'],
         setup(props, { emit }) {
-             const { connectionQfName } = toRefs(props)
+            const { connectionQfName } = toRefs(props)
             const connStore = useConnectionStore()
-             const connName = computed(() => {
+            const connName = computed(() => {
                 const found = connStore.getList.find(
-                    (conn) => conn.attributes.qualifiedName === connectionQfName.value
+                    (conn) =>
+                        conn.attributes.qualifiedName === connectionQfName.value
                 )
-                return  found?.attributes?.name || ''
+                return found?.attributes?.name || ''
             })
             const regexes = ref([''] as String[])
             function addExpr() {
@@ -88,7 +92,14 @@
             }
             const getImage = (id: string) => connStore.getImage(id)
 
-            return { regexes, addExpr, removeExpr, getImage, updateAssets, connName }
+            return {
+                regexes,
+                addExpr,
+                removeExpr,
+                getImage,
+                updateAssets,
+                connName,
+            }
         },
     })
 </script>

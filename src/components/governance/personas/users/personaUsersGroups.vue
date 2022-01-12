@@ -95,6 +95,11 @@
                                     select-group-key="id"
                                     select-user-key="id"
                                     :hide-disabled-tabs="true"
+                                    :active-tab="
+                                        listType === 'groups'
+                                            ? 'groups'
+                                            : 'users'
+                                    "
                                 />
                                 <div class="w-full">
                                     <div class="flex justify-around">
@@ -142,8 +147,8 @@
                 />
             </div>
             <div
-                class="flex-grow px-6 overflow-y-auto"
                 v-if="filteredList && filteredList.length"
+                class="flex-grow px-6 overflow-y-auto"
             >
                 <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
                     <div

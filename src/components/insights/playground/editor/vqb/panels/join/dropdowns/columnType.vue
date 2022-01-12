@@ -466,6 +466,7 @@
                 dirtyIsTableSelected.value = false
                 dirtyTableSelected.value = null
                 columnDropdownOption.value = []
+                columnQueryText.value = ''
                 replaceTableBody(getTableInitialBody())
                 event.stopPropagation()
                 event.preventDefault()
@@ -506,10 +507,18 @@
 
             watch(
                 () => activeInlineTab.value.playground.editor.context,
-                () => {
-                    replaceTableBody(getTableInitialBody())
-                    dirtyIsTableSelected.value = false
-                    dirtyTableSelected.value = null
+                (newContext) => {
+                    if (
+                        !dirtyTableSelected.value?.attributes?.qualifiedName?.includes(
+                            newContext.attributeValue
+                        )
+                    ) {
+                        dirtyIsTableSelected.value = false
+                        dirtyTableSelected.value = null
+                        isTableSelected.value = false
+                        tableSelected.value = null
+                        replaceTableBody(getTableInitialBody())
+                    }
                 },
                 {
                     immediate: true,
@@ -558,7 +567,7 @@
             watch(columnQueryText, () => {
                 if (dirtyIsTableSelected?.value) {
                     replaceColumnBody(
-                        getColumnInitialBody(tableSelected?.value)
+                        getColumnInitialBody(dirtyTableSelected.value)
                     )
                 }
             })

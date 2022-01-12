@@ -35,7 +35,7 @@
                     :selectable="true"
                     :openAssetProfileInNewTab="true"
                     :selectedItems="checkedGuids"
-                    assetListClass="px-6"
+                    assetListClass="px-6 mt-2"
                     aggregationTabClass="px-6"
                     searchBarClass="px-6"
                     @listItem:check="handleAssetItemCheck"
@@ -44,25 +44,27 @@
             </div>
         </div>
         <a-divider />
-        <div class="flex items-center justify-end mx-6 gap-x-2">
-            <span class="text-base font-bold text-gray-500"
+        <div class="flex items-center justify-between mx-6 gap-x-2">
+            <span class="text-base font-bold text-gray-500 justify-self-start"
                 >{{ selectedAssetCount || 'No' }} items selected</span
             >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                color="secondary"
-                @click="closeDrawer"
-                data-test-id="cancel"
-                >Cancel</AtlanBtn
-            >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                data-test-id="save"
-                @click="saveAssets"
-                >Link asset(s)</AtlanBtn
-            >
+            <div class="flex items-center gap-x-2">
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    color="secondary"
+                    @click="closeDrawer"
+                    data-test-id="cancel"
+                    >Cancel</AtlanBtn
+                >
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    data-test-id="save"
+                    @click="saveAssets"
+                    >Link asset(s)</AtlanBtn
+                >
+            </div>
         </div>
 
         <a-drawer

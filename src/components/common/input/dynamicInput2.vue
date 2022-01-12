@@ -67,9 +67,8 @@
     <a-date-picker
         v-else-if="['date'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
-        format="YYYY-MM-DD HH:mm:ss"
+        format="YYYY-MM-DD"
         :allow-clear="true"
-        :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
         @change="handleInputChange"
     />
 

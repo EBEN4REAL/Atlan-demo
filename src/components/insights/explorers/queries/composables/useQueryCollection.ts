@@ -235,7 +235,7 @@ const useQueryCollection = () => {
                     }
                 }
 
-                activeInlineTabCopy.explorer.queries.collection.guid = col.guid
+                activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
 
                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
                     col?.attributes?.qualifiedName

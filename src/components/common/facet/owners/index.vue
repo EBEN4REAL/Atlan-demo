@@ -64,6 +64,7 @@
                 v-if="componentType == 'users'"
                 ref="usersRef"
                 v-model="localValue.ownerUsers"
+                v-model:selectedRecords="selectedRecords"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
@@ -163,6 +164,11 @@
                 required: false,
                 default: '',
             },
+            selectedRecords: {
+                type: Object,
+                default: null,
+                required: false
+            },
             activeTab: {
                 type: String,
                 required: false,
@@ -171,7 +177,7 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const {
                 showNone,
@@ -182,7 +188,6 @@
                 activeTab,
             } = toRefs(props)
             const componentType = ref(activeTab.value || 'users')
-
             const usersRef = ref()
             const groupRef = ref()
 
@@ -268,6 +273,7 @@
                 forceFocus,
                 handleChange,
                 groupId,
+                selectedRecords,
             }
         },
     })

@@ -67,9 +67,6 @@
                                 <SlackMessageCta
                                     v-if="slackEnabled"
                                     :slack-link="slackUrl"
-                                    :cta-text="
-                                        isValidUser ? 'Say Hi 👋' : 'Say Hi 👋'
-                                    "
                                 />
                                 <span
                                     v-if="

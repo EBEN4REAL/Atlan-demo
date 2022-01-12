@@ -63,8 +63,8 @@
                 </p> -->
                 <template v-if="userList?.length < filterTotal">
                     <div
-                        class="flex justify-center ml-auto"
                         v-if="isLoading || isEnriching"
+                        class="flex justify-center ml-auto"
                     >
                         <AtlanIcon
                             icon="CircleLoader"
@@ -72,9 +72,9 @@
                         />
                     </div>
                     <div
+                        v-else
                         class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
-                        v-else
                     >
                         load more...
                     </div>
@@ -152,16 +152,25 @@
                 required: false,
                 default: true,
             },
+            // to get complete records and not an array of selected ids or usernames
+            selectedRecords: {
+                type: Object,
+                default: null,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue, disabledKeys } = useVModels(props, emit)
+            const { modelValue, disabledKeys, selectedRecords } = useVModels(
+                props,
+                emit
+            )
             const { selectUserKey, queryText, groupId, showLoggedInUser } =
                 toRefs(props)
             const localValue = ref(modelValue.value)
 
             const map = computed(() => {
-                let data = {}
+                const data = {}
                 modelValue?.value?.forEach((key) => {
                     data[key] = true
                 })
@@ -190,27 +199,25 @@
             const { username } = whoami()
 
             // to filter out loggedIn user if needed from list based on showLoggedInUser
-            let userList = computed(() => {
+            const userList = computed(() => {
                 if (showLoggedInUser.value) {
                     return users.value
-                } else {
-                    return users.value.filter(
-                        (user) => user['username'] !== username.value
-                    )
                 }
+                return users.value.filter(
+                    (user) => user.username !== username.value
+                )
             })
 
             // to decrease the total users count if loggedIn user is removed from list based on showLoggedInUser
-            let filterTotal = computed(() => {
+            const filterTotal = computed(() => {
                 if (showLoggedInUser.value) {
                     return totalUsers.value
-                } else {
-                    return totalUsers.value - 1
                 }
+                return totalUsers.value - 1
             })
 
             const disabledKeyMap = computed(() => {
-                let data = {}
+                const data = {}
                 disabledKeys?.value?.forEach((key) => {
                     data[key] = true
                 })
@@ -236,6 +243,13 @@
                     delete map.value[id]
                 }
                 modelValue.value = [...Object.keys(map.value)]
+
+                if (selectedRecords)
+                    selectedRecords.value = userList?.value?.filter((user) =>
+                        [...Object.keys(map.value)].includes(
+                            user?.[selectUserKey.value]
+                        )
+                    )
                 emit('change')
             }
 
@@ -246,7 +260,7 @@
                     if (userList.value.length === 1) {
                         // console.log('enter pressed')
 
-                        let id = userList.value[0][selectUserKey.value]
+                        const id = userList.value[0][selectUserKey.value]
                         if (!disabledKeyMap.value[id]) {
                             if (map.value[id]) {
                                 delete map.value[id]

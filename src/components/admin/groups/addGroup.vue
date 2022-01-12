@@ -35,33 +35,18 @@
                 <a-form-item label="Description" name="description">
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
-                <a-form-item prop="slack">
-                    <template #label> Slack </template>
-                    <a-input
-                        v-model:value="group.slack"
-                        class="mt-2"
-                        placeholder="Add Slack channel name or channel ID"
-                    >
-                        <template #prefix>
-                            <span
-                                class="pr-2 border-r border-gray-300 border-solid"
-                            >
-                                <AtlanIcon icon="Slack" />
-                            </span>
-                        </template>
-                    </a-input>
-                </a-form-item>
-
+                <SlackInput
+                    v-model="group.slack"
+                    placeholder="Add Slack channel name or channel ID"
+                />
                 <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
-                        <span class="mr-2 font-bold">Members</span>
+                        <span class="mr-2 font-bold">Users</span>
                     </div>
-                    <UserList
-                        user-list-header-class="min-w-full"
+                    <UserSelector
                         :user-list-style="{
                             maxHeight: 'calc(100vh - 37.5rem)',
                         }"
-                        :minimal="true"
                         @updateSelectedUsers="updateUserList"
                     />
                 </div>
@@ -117,6 +102,8 @@
     import AtlanButton from '@/UI/button.vue'
     import map from '~/constant/accessControl/map'
     import NoAcces from '@/common/secured/access.vue'
+    import SlackInput from '@/admin/common/slackInput.vue'
+    import UserSelector from '@/admin/groups/addGroup/userSelector.vue'
 
     interface Group {
         name: String
@@ -126,13 +113,19 @@
     }
     export default defineComponent({
         name: 'AddGroup',
-        components: { UserList, DefaultLayout, NoAcces, AtlanButton },
+        components: {
+            UserList,
+            DefaultLayout,
+            NoAcces,
+            AtlanButton,
+            SlackInput,
+            UserSelector,
+        },
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
             const createGroupLoading = ref(false)
             const isDefault = ref(false)
-
             const listPermission = true
             const createPermission = true
             const group: UnwrapRef<Group> = reactive({
@@ -173,6 +166,12 @@
             }
             const handleSubmit = () => {
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
+
+                // check for #
+                let slackLink = group.slack
+                if (slackLink.startsWith('#'))
+                    slackLink = slackLink.substring(1)
+
                 const requestPayload = ref({
                     group: {
                         name: group.alias,
@@ -181,8 +180,8 @@
                             alias: [group.name],
                             isDefault: [`${isDefault.value}`],
                             channels:
-                                group.slack.length > 0
-                                    ? [`[{"slack": "${group.slack}"}]`]
+                                slackLink.length > 0
+                                    ? [`[{"slack": "${slackLink}"}]`]
                                     : [],
                         },
                     },

@@ -1,6 +1,6 @@
 <template>
     <div class="flex-col w-full gap-y-1">
-        <span class="text-gray-700 line-clamp-1">
+        <span class="mb-1 text-gray-700 line-clamp-1">
             <Ellipsis
                 :tooltip-text="workflow"
                 classes="text-gray-500"

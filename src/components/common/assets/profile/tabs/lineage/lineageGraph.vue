@@ -231,6 +231,7 @@
                 minimapContainer,
                 currZoom,
                 highlightedNode,
+                assetGuidToHighlight,
                 isComputeDone,
                 loaderCords,
                 graphHeight,

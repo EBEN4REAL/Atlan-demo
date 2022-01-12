@@ -62,39 +62,15 @@
             <div class="pt-6">
                 <p class="text-sm text-gray-500 uppercase">Contact Details</p>
                 <div class="mt-2">
-                    <a-form-item prop="slack">
-                        <template #label>
-                            Slack
-                            <a-popover>
-                                <template #content>
-                                    <div class="p-3 text-gray-500 w-52">
-                                        <PopOverContent
-                                            content="You can find the member ID in your slack profile's More menu. Make sure you are in the correct slack workspace."
-                                        />
-                                    </div>
-                                </template>
-                                <AtlanIcon icon="Info" class="w-3 h-3 ml-1" />
-                            </a-popover>
-                        </template>
-                        <a-input
-                            v-model:value="formData.slack"
-                            class="mt-2"
-                            :loading="isRequestLoading"
-                            placeholder="Add your slack workspace's member ID"
-                        >
-                            <template #prefix>
-                                <span
-                                    class="pr-2 border-r border-gray-300 border-solid"
-                                >
-                                    <AtlanIcon icon="Slack" />
-                                </span>
-                            </template>
-                        </a-input>
-                    </a-form-item>
+                    <SlackInput
+                        v-model="formData.slack"
+                        placeholder="Add your slack workspace's member ID"
+                        pop-over-content="Go to your slack profile, after clicking on more menu you'll see the member ID. Make sure you're in right slack workspace."
+                    />
                 </div>
             </div>
         </a-form>
-        <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
+        <div class="absolute bottom-0 flex justify-end w-full py-2 bg-white">
             <a-button
                 class="mr-2 border-0 shadow-none"
                 type="minimal"
@@ -120,16 +96,14 @@
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import Avatar from '@common/avatar/avatar.vue'
     import { message } from 'ant-design-vue'
-    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import { Users } from '~/services/service/users'
-    import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
+    import SlackInput from '@/admin/common/slackInput.vue'
 
     export default {
         name: 'EditUser',
         components: {
             Avatar,
-            UpdateSkills,
-            PopOverContent,
+            SlackInput,
         },
         props: {
             selectedUser: {

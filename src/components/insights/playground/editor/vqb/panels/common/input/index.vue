@@ -2,7 +2,7 @@
     <a-input
         ref="searchBar"
         v-model:value="queryText"
-        class="bg-gray-100 border border-gray-300 rounded child_input"
+        class="border rounded light-bg child_input"
         :placeholder="placeholder"
         :class="$style.custom_input_style"
         style="z-index: 10 !important"
@@ -61,7 +61,12 @@
 <style lang="less" module>
     .custom_input_style {
         :global(.ant-input) {
-            @apply bg-gray-100 !important;
+            background-color: rgba(250, 250, 250, var(40));
         }
+    }
+</style>
+<style lang="less" scoped>
+    .light-bg {
+        background-color: rgba(250, 250, 250, var(40));
     }
 </style>

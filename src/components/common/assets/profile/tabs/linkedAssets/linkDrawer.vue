@@ -5,7 +5,7 @@
         :visible="isVisible"
         :get-container="false"
         :closable="false"
-        :keyboard="true"
+        :keyboard="false"
         :maskClosable="true"
         :mask="true"
         :class="$style.drawerStyle"
@@ -15,9 +15,13 @@
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
             <div class="absolute w-full h-full pt-4 bg-white">
                 <div class="flex items-center mx-5 mt-2">
+                    <span class="text-base font-bold text-gray-500"
+                        >Select and link assets to
+                    </span>
                     <Tooltip
-                        :tooltip-text="`Select and link assets to ${selectedAsset?.displayText}`"
-                        classes="text-base font-bold text-gray-500"
+                        :tooltip-text="`${selectedAsset?.displayText}`"
+                        classes="text-base font-bold ml-0.5
+                    text-gray-700 "
                     />
                     <CertificateBadge
                         v-if="certificateStatus(selectedAsset)"
@@ -79,29 +83,6 @@
             ></AssetPreview>
         </a-drawer>
     </a-drawer>
-    <a-modal
-        v-model:visible="isModalVisible"
-        width="25%"
-        :closable="false"
-        okText="Save"
-        cancelText=""
-        :footer="null"
-    >
-        <div class="p-3">
-            <p class="mb-1 font-bold text-md">Discard linked asset changes?</p>
-            <p class="text-md">
-                Your changes haven’t been saved yet. Are you sure you want to
-                discard?
-            </p>
-        </div>
-
-        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
-            <a-button @click="handleCancel">Cancel</a-button>
-            <a-button class="text-white bg-error" @click="handleConfirmCancel"
-                >Confirm</a-button
-            >
-        </div>
-    </a-modal>
 </template>
 
 <script lang="ts">
@@ -121,6 +102,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'LinkedAssetsDrawer',
@@ -163,13 +145,15 @@
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
-            const isModalVisible = ref(false)
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
+            // shortcut keys for save linked assets
+            const keys = useMagicKeys()
+            const { meta, Enter, Escape } = keys
+
             const closeDrawer = () => {
-                isModalVisible.value = true
-                // emit('closeDrawer')
+                emit('closeDrawer')
             }
             const saveAssets = () => {
                 emit('saveAssets')
@@ -180,13 +164,6 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
             } = useAssetInfo()
-            const handleCancel = () => {
-                isModalVisible.value = false
-            }
-            const handleConfirmCancel = () => {
-                isModalVisible.value = false
-                emit('closeDrawer')
-            }
             const checkedGuids = computed(() =>
                 selectedItems.value.map((item: any) => item.guid)
             )
@@ -212,6 +189,17 @@
                 drawerAsset.value = item
                 AssetListRef.value?.updateList(item)
             }
+            whenever(Enter, () => {
+                if (meta.value && Enter.value) {
+                    Enter.value = false
+                    meta.value = false
+                    saveAssets()
+                }
+            })
+            whenever(Escape, () => {
+                closeDrawer()
+            })
+
             provide('updateDrawerList', updateDrawerList)
             return {
                 certificateStatus,
@@ -220,10 +208,7 @@
                 certificateStatusMessage,
                 closeDrawer,
                 saveAssets,
-                isModalVisible,
                 checkedGuids,
-                handleCancel,
-                handleConfirmCancel,
                 handleAssetItemCheck,
                 childrenDrawer,
                 handleAssetCardClick,

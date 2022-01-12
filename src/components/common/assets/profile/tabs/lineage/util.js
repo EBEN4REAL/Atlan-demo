@@ -44,3 +44,14 @@ export const getNodeSourceImage = {
     glue,
     powerbi,
 }
+
+export const getSource = (entity) => {
+    const item = entity.attributes.qualifiedName.split('/')
+    if (item[0] === 'default') return item[1]
+    return item[0]
+}
+export const getSchema = (entity) => {
+    const item = entity.attributes.qualifiedName.split('/')
+    if (item[0] === 'default') return item[4]
+    return item[3]
+}

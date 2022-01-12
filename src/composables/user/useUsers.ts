@@ -15,8 +15,12 @@ import { useOptions } from '~/services/api/common'
 export const getUserName = (user: any) => {
     const { firstName } = user
     const { lastName } = user
+    /** remove ` (me) string if present from last name`; we add it here @see {@link src/composables/user/useFacetUsers.ts} */
+    const lastNameArray = lastName?.split(' ') || []
     if (firstName) {
-        return `${firstName} ${lastName || ''}`
+        return `${firstName} ${
+            lastNameArray.length ? lastNameArray[0] || '' : lastName
+        }`
     }
     return user.username
 }
@@ -118,7 +122,10 @@ export const getFormattedUser = (user: any) => {
         ...user,
         name: getUserName(user),
         group_count_string: pluralizeString('group', user.groupCount || 0),
-        persona_count_string: pluralizeString('persona', user?.personas?.length || 0),
+        persona_count_string: pluralizeString(
+            'persona',
+            user?.personas?.length || 0
+        ),
         status_object: getUserStatus(user),
         role_object: getUserRole(user),
         workspaceRole: getWorkspaceRole(user),
@@ -161,8 +168,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                    getFormattedUser(user)
-                )
+                      getFormattedUser(user)
+                  )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 

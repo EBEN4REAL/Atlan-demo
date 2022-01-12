@@ -36,19 +36,6 @@
 
         <div class="absolute right-2">
             <AtlanIcon
-                v-if="
-                    findVisibility(
-                        'search',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    ) && !disabled
-                "
-                icon="Search"
-                class="w-4 h-4"
-            />
-            <AtlanIcon
                 icon="ChevronDown"
                 class="w-4 h-4"
                 v-if="
@@ -59,20 +46,6 @@
                         tableQualfiedName,
                         selectedItem
                     )
-                "
-            />
-            <AtlanIcon
-                icon="Cross"
-                class="w-4 h-4 cursor-pointer"
-                @click="clearAllSelected"
-                v-if="
-                    findVisibility(
-                        'cross',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    ) && !disabled
                 "
             />
         </div>
@@ -960,7 +933,7 @@
                 inputValue1.value = ''
                 inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
-                updateVQB(activeInlineTabKey, inlineTabs)
+                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -1066,10 +1039,9 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                             ?.length > 1
                     ) {
-                        if (selectedItem.value?.label && tableSelected?.value) {
-                            // retain column view
+                        if (selectedItem.value?.label && tableSelected.value) {
                             isTableSelected.value = true
-                            // debugger
+
                             replaceBody(
                                 getColumnInitialBody(tableSelected?.value)
                             )
@@ -1082,6 +1054,7 @@
                             )
                         }
                     }
+                    updateVQB(activeInlineTabKey, inlineTabs)
                 }
             })
 

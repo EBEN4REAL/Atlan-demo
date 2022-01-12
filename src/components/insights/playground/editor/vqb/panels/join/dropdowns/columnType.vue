@@ -480,7 +480,7 @@
                             activeInlineTab.value.playground.vqb.selectedTables
                         )
                     )
-                updateVQB(activeInlineTabKey, inlineTabs)
+
                 event.stopPropagation()
                 event.preventDefault()
                 isAreaFocused.value = false
@@ -524,7 +524,7 @@
                 }
             )
 
-            watch(isAreaFocused, () => {
+            watch(isAreaFocused, (newIsAreaFocused) => {
                 if (selectedColumn.value?.label && tableSelected?.value) {
                     // retain column view
                     isTableSelected.value = true
@@ -533,6 +533,9 @@
                     tableSelected.value
                 ) {
                     isTableSelected.value = false
+                }
+                if (!newIsAreaFocused) {
+                    updateVQB(activeInlineTabKey, inlineTabs)
                 }
             })
 

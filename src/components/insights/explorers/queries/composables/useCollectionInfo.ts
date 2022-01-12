@@ -5,7 +5,8 @@ import { map } from '~/services/meta/search/key'
 import whoami from '~/composables/user/whoami'
 
 const useCollectionInfo = (
-    selectedAsset
+    selectedAsset,
+    collectionGuid
 ) => {
 
     const selectedCollectionLoading = ref(false)
@@ -47,23 +48,44 @@ const useCollectionInfo = (
     let body = ref({})
 
     const refreshBody = () => {
-        body.value = {
-            dsl: {
-                query: {
-                    bool: {
-                        must: [
-                            {
-                                term: {
-                                    qualifiedName:
-                                    selectedAsset?.value?.attributes?.collectionQualifiedName
+        if(collectionGuid?.value) {
+            body.value = {
+                dsl: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        "__guid":
+                                        collectionGuid?.value
+                                    },
                                 },
-                            },
-                        ],
+                            ],
+                        },
                     },
                 },
-            },
-            attributes,
+                attributes,
+            }
+        } else {
+            body.value = {
+                dsl: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        qualifiedName:
+                                        selectedAsset?.value?.attributes?.collectionQualifiedName
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+                attributes,
+            }
         }
+        
     }
 
     const getSelectedCollectionData = () => {
@@ -180,7 +202,7 @@ const useCollectionInfo = (
     watch(
         ()=>selectedAsset?.value?.attributes?.collectionQualifiedName,
         async () => {
-            if(selectedAsset?.value?.typeName==='Query')
+            if(selectedAsset?.value?.typeName==='Query' || collectionGuid?.value)
             await fetchCollectionInfo()
         },
         { deep: true, immediate: true }

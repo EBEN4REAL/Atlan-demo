@@ -209,7 +209,7 @@ const useQueryCollection = () => {
                             //     `Either collection does not exist or you don't have the access to it`
                             // )
                         }
-                        collectionGuid.value = null
+                        // collectionGuid.value = null
                     } else if (activeInlineTab.value?.queryId) {
                         col = collection.find(
                             (col) =>

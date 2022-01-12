@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { Ref, ComputedRef } from 'vue'
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
 import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
@@ -7,6 +7,8 @@ import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { aggregatedAliasMap } from '../constants/aggregation'
+import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -287,6 +289,36 @@ export function useUtils() {
 
         return false
     }
+    const openAssetInSidebar = (
+        event,
+        t,
+        activeInlineTab: ComputedRef<activeInlineTabInterface>,
+        inlineTabs: Ref<activeInlineTabInterface[]>
+    ) => {
+        const { isSameNodeOpenedInSidebar } = useSchema()
+        const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+            inlineTabs,
+            activeInlineTab
+        )
+        if (
+            activeInlineTab?.value &&
+            Object.keys(activeInlineTab?.value).length
+        ) {
+            if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                /* Close it if it is already opened */
+                closeAssetSidebar(activeInlineTab.value)
+            } else {
+                let activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.assetSidebar.assetInfo = t
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
+        }
+        event.stopPropagation()
+        event.preventDefault()
+        return false
+    }
 
     return {
         getTableName,
@@ -304,5 +336,6 @@ export function useUtils() {
         isAggregationORGroupPanelColumnsAdded,
         getAggregationORGroupPanelColumns,
         getInitialPanelExpandedState,
+        openAssetInSidebar,
     }
 }

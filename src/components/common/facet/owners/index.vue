@@ -24,7 +24,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'users'
-                                            ? 'text-primary font-bold '
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="User"
@@ -46,7 +46,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'groups'
-                                            ? 'text-primary font-bold'
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="GroupStatic"

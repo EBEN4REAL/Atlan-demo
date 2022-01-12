@@ -747,7 +747,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = null
+                form.value.options.enumType = 'New Enum'
                 newEnumMode.value = true
             }
 

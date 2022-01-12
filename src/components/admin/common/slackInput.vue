@@ -13,7 +13,6 @@
         </template>
         <a-input
             v-model:value="modelValue"
-            class="mt-2"
             :placeholder="placeholder"
             @blur="handleSlackInputBlur"
         >

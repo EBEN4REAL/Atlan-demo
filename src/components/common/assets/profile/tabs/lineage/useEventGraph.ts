@@ -161,6 +161,27 @@ export default function useEventGraph(
     const getPortNode = (id) =>
         graph.value.getNodes().find((x) => x.hasPort(id))
 
+    // getAllExpandedNodes
+    const getAllExpandedNodes = () => {
+        const chpNode = getPortNode(chp.value.portId)
+        const chpExpandedNodes = chp.value.expandedNodes
+        const res = chpExpandedNodes
+        if (chpNode) res.push(chpNode)
+        return res
+    }
+
+    // isExpandedNode
+    const isExpandedNode = (nodeId) => {
+        const node = getAllExpandedNodes().find((x) => x.id === nodeId)
+        return !!node
+    }
+
+    // isCHPExpandedNode
+    const isCHPExpandedNode = (nodeId) => {
+        const node = chp.value.expandedNodes.find((x) => x.id === nodeId)
+        return !!node
+    }
+
     // controlPorts
     const controlPorts = (node, columns, override = false) => {
         if (node.getPorts().length === 1 || override) {
@@ -461,15 +482,11 @@ export default function useEventGraph(
 
                 controlCaret(nodeId, x)
 
-                const chpNode = getPortNode(chp.value.portId)
-                const isCHPExpandedNode = chp.value.expandedNodes.find(
-                    (x) => x.id === nodeId
-                )
-
-                if (!isCHPExpandedNode && chpNode?.id !== nodeId)
+                if (!isExpandedNode(nodeId)) {
                     getNodeColumnList([node])
+                }
 
-                if (isCHPExpandedNode || chpNode?.id === nodeId) {
+                if (isExpandedNode(nodeId)) {
                     if (!activeNodesToggled.value[node.id]) {
                         handleToggleOfActiveNode(node)
                         const ports = node.getPorts()

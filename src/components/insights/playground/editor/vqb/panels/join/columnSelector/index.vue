@@ -449,7 +449,7 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import useBody from './useBody'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
-    import CustomInput from '../input/index.vue'
+    import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
 
     export default defineComponent({
         name: 'Table Selector',

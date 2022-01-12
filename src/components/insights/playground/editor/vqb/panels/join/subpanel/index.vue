@@ -64,10 +64,13 @@
                         </JoinSelector>
                     </div>
                     <div class="item-2">
-                        <TreeColumnSelector
+                        <JoinColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataLeft"
                             :panelIndex="Number(panelIndex)"
+                            v-model:isAreaFocused="
+                                isAreaFocusedLeftJoinColumnSelector
+                            "
                             :rowIndex="index"
                             :subIndex="0"
                             :disabled="readOnly"
@@ -78,7 +81,60 @@
                                         subpanel?.id + index + 1
                                     )
                             "
-                        />
+                        >
+                            <template #head>
+                                <JoinColumnSelectorHead
+                                    :rowIndex="index"
+                                    :subIndex="0"
+                                    :disabled="readOnly"
+                                    :isTableSelected="
+                                        isJoinColumnSelectorLeftTableSlected
+                                    "
+                                    v-model:selectedColumn="
+                                        subpanel.columnsDataLeft
+                                    "
+                                    :isAreaFocused="
+                                        isAreaFocusedLeftJoinColumnSelector
+                                    "
+                                    :totalTablesCount="
+                                        JoinColumnSelectorLeftTotalTablesCount
+                                    "
+                                    :totalCoumnsCount="
+                                        JoinColumnSelectorLeftTotalColumnsCount
+                                    "
+                                />
+                            </template>
+                            <template #body>
+                                <JoinColumnSelectorDropdown
+                                    v-model:selectedColumn="
+                                        subpanel.columnsDataLeft
+                                    "
+                                    v-model:isTableSelected="
+                                        isJoinColumnSelectorLeftTableSlected
+                                    "
+                                    v-model:isAreaFocused="
+                                        isAreaFocusedLeftJoinColumnSelector
+                                    "
+                                    :panelIndex="Number(panelIndex)"
+                                    v-model:totalTablesCount="
+                                        JoinColumnSelectorLeftTotalTablesCount
+                                    "
+                                    v-model:totalCoumnsCount="
+                                        JoinColumnSelectorLeftTotalColumnsCount
+                                    "
+                                    :rowIndex="index"
+                                    :subIndex="0"
+                                    :disabled="readOnly"
+                                    @change="
+                                        (qualifiedName) =>
+                                            handleColumnChange(
+                                                qualifiedName,
+                                                subpanel?.id + index + 1
+                                            )
+                                    "
+                                />
+                            </template>
+                        </JoinColumnSelector>
                     </div>
                     <div
                         class="flex items-center justify-center flex-none item-4"
@@ -88,9 +144,9 @@
                             >=</span
                         >
                     </div>
-                    <div class="flex items-center item-3">
-                        <!-- subpanel?.id + index + 2 works as a unique string -->
-                        <TreeColumnSelector
+                    <!-- <div class="flex items-center item-3">
+                      
+                        <JoinColumnSelector
                             class="flex-1"
                             v-model:selectedColumn="subpanel.columnsDataRight"
                             :panelIndex="Number(panelIndex)"
@@ -116,7 +172,7 @@
                             }`"
                         />
                         <div style="width: 34px" v-else></div>
-                    </div>
+                    </div> -->
                 </div>
             </template>
         </div>
@@ -144,14 +200,14 @@
         ComputedRef,
         computed,
     } from 'vue'
-    import JoinSelector from '../joinSelector/index.vue'
-    import JoinSelectorDropdown from '../joinSelector/joinDropdownBody.vue'
-    // import JoinSelector from '~/components/insights/playground/editor/vqb/panels/common/select/select.vue'
-
+    import JoinSelector from '../joinTypeSelector/index.vue'
+    import JoinSelectorDropdown from '../dropdowns/joinType.vue'
+    import JoinColumnSelectorDropdown from '../dropdowns/columnType.vue'
+    import JoinColumnSelectorHead from '../columnSelector/head.vue'
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
-    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
+    import JoinColumnSelector from '../columnSelector/_index.vue'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
@@ -162,8 +218,10 @@
         name: 'Sub panel',
         components: {
             JoinSelector,
-            TreeColumnSelector,
+            JoinColumnSelector,
             JoinSelectorDropdown,
+            JoinColumnSelectorDropdown,
+            JoinColumnSelectorHead,
         },
         props: {
             expand: {
@@ -204,6 +262,14 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const isAreaFocusedLeftJoinColumnSelector = ref(false)
+            const isJoinColumnSelectorLeftTableSlected = ref(false)
+            const JoinColumnSelectorLeftTotalTablesCount = ref(0)
+            const JoinColumnSelectorLeftTotalCoulmnsCount = ref(0)
+
+            const isJoinColumnSelectorRightTableSlected = ref(false)
+            const JoinColumnSelectorRightTotalTablesCount = ref(0)
+            const JoinColumnSelectorRightTotalCoulmnsCount = ref(0)
 
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -345,6 +411,13 @@
             )
 
             return {
+                isAreaFocusedLeftJoinColumnSelector,
+                JoinColumnSelectorLeftTotalTablesCount,
+                JoinColumnSelectorLeftTotalCoulmnsCount,
+                JoinColumnSelectorRightTotalTablesCount,
+                JoinColumnSelectorRightTotalCoulmnsCount,
+                isJoinColumnSelectorLeftTableSlected,
+                isJoinColumnSelectorRightTableSlected,
                 isAreaFocusedJoinSelector,
                 readOnly,
                 panelIndex,

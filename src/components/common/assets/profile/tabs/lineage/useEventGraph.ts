@@ -37,6 +37,7 @@ export default function useEventGraph(
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
     const activeNodesToggled = ref({})
+    const baseNode = ref()
 
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
@@ -52,6 +53,16 @@ export default function useEventGraph(
             resetSelections.value = false
         }
     })
+
+    watch(
+        baseEntity,
+        () => {
+            baseNode.value = graph.value
+                .getNodes()
+                .find((x) => x.id === baseEntity.value.guid)
+        },
+        { immediate: true }
+    )
 
     /** METHODS */
     // getHighlights
@@ -184,9 +195,18 @@ export default function useEventGraph(
         return !!node
     }
 
+    // control Bounding box
+    const controlBoundingBox = (node: any, expand: boolean) => {
+        const element = document.getElementById(`${node.id}-wrapper`)
+        if (element)
+            element.style.height = expand
+                ? `${65 + (node.getPorts().length - 1) * 41}px`
+                : '64px'
+    }
+
     // controlPorts
     const controlPorts = (node, columns, override = false) => {
-        if (node.getPorts().length === 2 || override) {
+        if (node.getPorts().length === 1 || override) {
             const ports = columns.map((x) => {
                 const { portData } = createPortData(x)
                 return portData
@@ -195,15 +215,19 @@ export default function useEventGraph(
                 if (portExist(x.id)) {
                     const parentNode = getPortNode(x.id)
                     parentNode.removePort(x.id)
+                    controlBoundingBox(parentNode, false)
                 }
             })
             node.addPorts(ports)
+            controlBoundingBox(node, true)
+
             if (!lineageStore.hasPortList(node.id))
                 lineageStore.setNodesPortList(node.id, ports)
             translateSubsequentNodes(node)
         } else {
-            const ports = node.getPorts().slice(2)
+            const ports = node.getPorts().slice(1)
             node.removePorts(ports)
+            controlBoundingBox(node, false)
             translateExpandedNodesToDefault(node)
         }
     }
@@ -490,14 +514,16 @@ export default function useEventGraph(
                 if (isExpandedNode(nodeId)) {
                     if (!activeNodesToggled.value[node.id]) {
                         handleToggleOfActiveNode(node)
-                        const ports = node.getPorts().slice(2)
+                        const ports = node.getPorts().slice(1)
                         node.removePorts(ports)
+                        controlBoundingBox(node, false)
                         translateExpandedNodesToDefault(node)
                         loaderCords.value = {}
                     } else {
                         const { edges, ports } =
                             activeNodesToggled.value[node.id]
                         node.addPorts(ports)
+                        controlBoundingBox(node, true)
                         edges.forEach((edge) => {
                             const [_, processId, sourceTarget] =
                                 edge.id.split('/')
@@ -525,14 +551,40 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
+    const setPortStyle = (
+        node: any,
+        portId: string,
+        isHighlighted: boolean
+    ) => {
+        let attrs = {}
+        if (isHighlighted) {
+            if (baseNode.value?.hasPort(portId))
+                attrs = {
+                    fill: '#F4F6FD',
+                    stroke: '#5277D7',
+                    'stroke-dasharray': '269 40',
+                }
+            else
+                attrs = {
+                    fill: '#F4F6FD',
+                    stroke: '#5277D7',
+                    'stroke-dasharray': 'none',
+                }
+        } else
+            attrs = {
+                fill: '#ffffff',
+                stroke: '#e6e6eb',
+                'stroke-dasharray': '269 40 0 269 0 40',
+            }
+
+        node.setPortProp(portId, 'attrs/portBody', attrs)
+    }
+
     const selectPort = (node, e, portId) => {
         const chpNode = getPortNode(chp.value.portId)
         if (chpNode) {
             chp.value.expandedNodes.push(chpNode)
-            chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
-                fill: '#ffffff',
-                stroke: '#e6e6eb',
-            })
+            setPortStyle(chpNode, chp.value.portId, false)
         }
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
@@ -540,14 +592,13 @@ export default function useEventGraph(
             ports.shift()
             const portsToRemove = ports.filter((x) => x.id !== portId)
             x.removePorts(portsToRemove)
+            controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
         chp.value.portId = portId
         chp.value.expandedNodes = []
-        node.setPortProp(portId, 'attrs/portBody', {
-            fill: '#F4F6FD',
-            stroke: '#5277D7',
-        })
+
+        setPortStyle(node, portId, true)
         loaderCords.value = { x: e.clientX, y: e.clientY }
         getColumnLineage(portId)
     }
@@ -555,9 +606,8 @@ export default function useEventGraph(
     // deselectPort
     const deselectPort = (node) => {
         const chpNode = getPortNode(chp.value.portId)
-        chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
-            fill: '#ffffff',
-        })
+
+        setPortStyle(chpNode, chp.value.portId, false)
         chp.value.expandedNodes.forEach((x) => {
             // remove ports of all interlinked nodes
             const graphNodeElement = document.querySelectorAll(
@@ -570,6 +620,7 @@ export default function useEventGraph(
             const portsToRemove = x.getPorts()
             portsToRemove.shift()
             x.removePorts(portsToRemove)
+            controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
         chp.value.portId = ''

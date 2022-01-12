@@ -73,7 +73,7 @@ export default function useGraph() {
                           }
                           ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
-                          ">
+                          " id="${data?.id}-wrapper">
                                 
                                 
                                 <span class=" ${isBase ? 'inscr' : 'hidden'}">
@@ -140,25 +140,6 @@ export default function useGraph() {
                             },
                         },
                     },
-                    boundingPort: {
-                        markup: [
-                            {
-                                tagName: 'rect',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                width: 270,
-                                height: 65,
-                                strokeWidth: 1,
-                                stroke: 'red',
-                                fill: 'transparent',
-                                event: 'nop',
-                                y: -32,
-                            },
-                        },
-                    },
                     columnList: {
                         markup: [
                             {
@@ -176,14 +157,14 @@ export default function useGraph() {
                         ],
                         attrs: {
                             portBody: {
-                                width: 269,
+                                width: 268,
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
-                                fill: '#ffffff',
+                                'stroke-dasharray': '269 40 0 269 0 40',
+                                fill: '#fff',
                                 event: 'port:click',
                                 y: -17,
-                                x: -0.5,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
@@ -208,11 +189,6 @@ export default function useGraph() {
                         id: `${guid}-invisiblePort`,
                         group: 'invisiblePort',
                         zIndex: 0,
-                    },
-                    {
-                        id: `${guid}-bounding`,
-                        group: 'boundingPort',
-                        zIndex: -20,
                     },
                 ],
             },

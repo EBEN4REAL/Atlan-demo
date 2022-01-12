@@ -388,11 +388,17 @@
             padding: 10px 8px;
             font-size: 16px;
             border: 1px solid #e6e6eb;
+            background-color: #ffffff;
             border-radius: 4px;
             width: 270px;
             height: 64px;
             cursor: pointer;
             outline: 0 !important;
+            @apply transition-all duration-300;
+
+            &:hover {
+                @apply shadow-lg;
+            }
 
             &__content {
                 display: flex;
@@ -402,7 +408,7 @@
             &.isBase {
                 border-top-left-radius: 0;
                 border: 1px solid #5277d7 !important;
-
+                background-color: #ffffff !important;
                 &.isHighlightedNode {
                     border: 1px solid #5277d7 !important;
                 }

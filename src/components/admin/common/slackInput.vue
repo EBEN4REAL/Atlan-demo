@@ -28,7 +28,7 @@
         :class="
             showSlackTestLink && modelValue
                 ? 'opacity-100 cursor-pointer'
-                : 'opacity-0 cursor-default'
+                : 'opacity-0 cursor-default pointer-events-none'
         "
     >
         <div

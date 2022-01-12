@@ -131,12 +131,31 @@ export default function useGraph() {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 69,
+                                height: 64,
                                 strokeWidth: 1,
-                                stroke: '#e6e6eb',
-                                fill: '#ffffff',
+                                stroke: 'none',
+                                fill: 'transparent',
                                 event: 'port:click',
-                                y: -34,
+                                y: -29,
+                            },
+                        },
+                    },
+                    boundingPort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 270,
+                                height: 65,
+                                strokeWidth: 1,
+                                stroke: 'red',
+                                fill: 'transparent',
+                                event: 'nop',
+                                y: -32,
                             },
                         },
                     },
@@ -157,13 +176,14 @@ export default function useGraph() {
                         ],
                         attrs: {
                             portBody: {
-                                width: 268,
+                                width: 269,
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -9.5,
+                                y: -17,
+                                x: -0.5,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
@@ -188,6 +208,11 @@ export default function useGraph() {
                         id: `${guid}-invisiblePort`,
                         group: 'invisiblePort',
                         zIndex: 0,
+                    },
+                    {
+                        id: `${guid}-bounding`,
+                        group: 'boundingPort',
+                        zIndex: -20,
                     },
                 ],
             },

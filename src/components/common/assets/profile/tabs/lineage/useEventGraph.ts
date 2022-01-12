@@ -159,7 +159,7 @@ export default function useEventGraph(
 
     // controlPorts
     const controlPorts = (node, columns, override = false) => {
-        if (node.getPorts().length === 1 || override) {
+        if (node.getPorts().length === 2 || override) {
             const ports = columns.map((x) => {
                 const { portData } = createPortData(x)
                 return portData
@@ -173,8 +173,7 @@ export default function useEventGraph(
             node.addPorts(ports)
             translateSubsequentNodes(node)
         } else {
-            const ports = node.getPorts()
-            ports.shift()
+            const ports = node.getPorts().slice(2)
             node.removePorts(ports)
             translateExpandedNodesToDefault(node)
         }
@@ -431,14 +430,13 @@ export default function useEventGraph(
 
                 controlCaret(nodeId, x)
 
-                if (!chp.value.portId && node.getPorts().length === 1)
+                if (!chp.value.portId && node.getPorts().length === 2)
                     getNodeColumnList([node])
 
                 if (chp.value.portId) {
                     if (!activeNodesToggled.value[node.id]) {
                         handleToggleOfActiveNode(node)
-                        const ports = node.getPorts()
-                        ports.shift()
+                        const ports = node.getPorts().slice(2)
                         node.removePorts(ports)
                         translateExpandedNodesToDefault(node)
                         loaderCords.value = {}
@@ -471,11 +469,10 @@ export default function useEventGraph(
                 }
 
                 if (
-                    node.getPorts().length > 1 &&
+                    node.getPorts().length > 2 &&
                     !nodesCaretClicked.value.includes(node.id)
                 ) {
-                    const ports = node.getPorts()
-                    ports.shift()
+                    const ports = node.getPorts().slice(2)
                     node.removePorts(ports)
                     translateExpandedNodesToDefault(node)
                     loaderCords.value = {}
@@ -491,6 +488,7 @@ export default function useEventGraph(
             chp.value.expandedNodes.push(chpNode)
             chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
                 fill: '#ffffff',
+                stroke: '#e6e6eb',
             })
         }
         chp.value.expandedNodes.forEach((x) => {
@@ -504,7 +502,8 @@ export default function useEventGraph(
         chp.value.portId = portId
         chp.value.expandedNodes = []
         node.setPortProp(portId, 'attrs/portBody', {
-            fill: '#e5ecff',
+            fill: '#F4F6FD',
+            stroke: '#5277D7',
         })
         loaderCords.value = { x: e.clientX, y: e.clientY }
         getColumnLineage(portId)

@@ -27,6 +27,7 @@
                     initialCacheKey="LINK_ASSETS_DEFAULT"
                     class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
+                    customPlaceholder="Search linked assets"
                     assetListClass="px-8"
                     aggregationTabClass="px-8"
                     searchBarClass="px-8"

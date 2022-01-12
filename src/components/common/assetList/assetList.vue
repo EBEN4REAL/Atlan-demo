@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-col w-full h-full">
-            <div class="w-full flex">
+            <div class="flex w-full">
                 <SearchAdvanced
                     :key="searchDirtyTimestamp"
                     v-model="queryText"
@@ -22,7 +22,6 @@
                     </template>
                 </SearchAdvanced>
                 <slot name="searchAction"></slot>
-
             </div>
             <div :class="aggregationTabClass">
                 <AggregationTabs
@@ -81,8 +80,7 @@
                                 openAssetProfileInNewTab
                             "
                             :bulk-select-mode="
-                                selectedItems &&
-                                selectedItems.length
+                                selectedItems && selectedItems.length
                                     ? true
                                     : false
                             "
@@ -93,7 +91,9 @@
                             :is-checked="checkIfSelected(item.guid)"
                             @updateDrawer="updateList"
                             @preview="$emit('handleAssetCardClick', item)"
-                            @listItem:check="(e, item) => $emit('listItem:check', item)"
+                            @listItem:check="
+                                (e, item) => $emit('listItem:check', item)
+                            "
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -103,7 +103,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs, watch, PropType } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        toRefs,
+        watch,
+        PropType,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -183,8 +190,15 @@
             selectedItems: {
                 type: Array as PropType<Array<string>>,
                 required: false,
-                default: () => []
+                default: () => [],
             },
+            // custom placeholder for searchbar : will be given priority over computed placeholder
+            customPlaceholder: {
+                type: String,
+                required: false,
+                default: '',
+            },
+
             /** Style Props */
             assetListClass: {
                 type: String,
@@ -234,7 +248,8 @@
                 ...customMetadataProjections,
             ])
 
-            const { filters, attributes, selectable, selectedItems } = toRefs(props)
+            const { filters, attributes, selectable, selectedItems } =
+                toRefs(props)
 
             const {
                 list,
@@ -282,6 +297,9 @@
             }
 
             const placeholder = computed(() => {
+                if (props.customPlaceholder) {
+                    return props.customPlaceholder
+                }
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFilters.value.typeName
                 )
@@ -293,7 +311,7 @@
             })
 
             const checkIfSelected = (guid: string) => {
-                if(!selectable.value) return false
+                if (!selectable.value) return false
                 return selectedItems.value.includes(guid)
             }
 
@@ -325,7 +343,7 @@
                 handleSearchChange,
                 handleClearSearch,
                 checkIfSelected,
-                quickChange
+                quickChange,
             }
         },
     })

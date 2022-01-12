@@ -7,7 +7,7 @@
             :delay="0.4"
             :edit-permission="true"
         >
-            <div class="close-btn-add-policy" @click="$emit('close')">
+            <div class="close-btn-sidebar" @click="$emit('close')">
                 <AtlanIcon icon="Add" class="text-white outline-none" />
             </div>
         </Shortcut>
@@ -67,9 +67,6 @@
                                 <SlackMessageCta
                                     v-if="slackEnabled"
                                     :slack-link="slackUrl"
-                                    :cta-text="
-                                        isValidUser ? 'Say Hi 👋' : 'Say Hi 👋'
-                                    "
                                 />
                                 <span
                                     v-if="
@@ -356,23 +353,6 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .close-btn-add-policy {
-        // padding: 10px;
-        height: 32px;
-        width: 32px;
-        background: #3e4359cc;
-        position: fixed;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        transform: rotate(45deg);
-        left: -40px;
-        top: 20px;
-        cursor: pointer;
-    }
-</style>
-
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-left) {

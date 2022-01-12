@@ -1,5 +1,5 @@
 <template>
-    <div class="flex">
+    <div class="flex items-center">
         <a-popover
             :visible="popOverVisible"
             :trigger="['click']"

@@ -24,7 +24,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'users'
-                                            ? 'text-primary font-bold '
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="User"
@@ -46,7 +46,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'groups'
-                                            ? 'text-primary font-bold'
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="GroupStatic"
@@ -64,6 +64,7 @@
                 v-if="componentType == 'users'"
                 ref="usersRef"
                 v-model="localValue.ownerUsers"
+                v-model:selectedRecords="selectedRecords"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
@@ -156,22 +157,37 @@
             groupId: {
                 type: String,
                 required: false,
-                default: ""
+                default: '',
             },
             userId: {
                 type: String,
                 required: false,
-                default: ""
-            }
+                default: '',
+            },
+            selectedRecords: {
+                type: Object,
+                default: null,
+                required: false
+            },
+            activeTab: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNone, enableTabs, selectUserKey, selectGroupKey, groupId } =
-                toRefs(props)
-            const componentType = ref('users')
-
+            const {
+                showNone,
+                enableTabs,
+                selectUserKey,
+                selectGroupKey,
+                groupId,
+                activeTab,
+            } = toRefs(props)
+            const componentType = ref(activeTab.value || 'users')
             const usersRef = ref()
             const groupRef = ref()
 
@@ -256,7 +272,8 @@
                 ownerSearchRef,
                 forceFocus,
                 handleChange,
-                groupId
+                groupId,
+                selectedRecords,
             }
         },
     })

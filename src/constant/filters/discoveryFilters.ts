@@ -102,7 +102,7 @@ export const discoveryFilters = [
             {
                 name: '__modificationTimestamp.date',
                 displayName: 'Last updated at',
-                typeName: 'date',
+                typeName: 'dateTime',
                 description: 'Last updated timestamp of the asset on Atlan',
                 isMandatory: true,
             },

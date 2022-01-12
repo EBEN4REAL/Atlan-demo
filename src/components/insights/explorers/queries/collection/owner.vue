@@ -70,7 +70,7 @@
 
             <template #overlay>
                 <div
-                    style="width: 330px"
+                    :style="dropdownStyleObject"
                     class="pb-2 -mt-1 bg-white rounded-b shadow-2xl"
                     @mouseleave="() => showPopover(false)"
                 >
@@ -87,7 +87,8 @@
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
-                            :showLoggedInUser="false"
+                            :showLoggedInUser="showLoggedInUser"
+                            v-model:selectedRecords="selectedRecords"
                         ></Users>
 
                         <Groups
@@ -182,10 +183,29 @@
                 required: false,
                 default: () => ({}),
             },
+             selectedRecords: {
+                type: Object,
+                default: null,
+                required: false
+            },
+            showLoggedInUser:{
+                type: Boolean,
+                default: false,
+                required: false
+            },
+            dropdownStyleObject:{
+                type: Object,
+                default:{ width: '330px' },
+                required: false
+            },
+            searchPlaceholder:{
+                type: String,
+                default: ''
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const { showNone, enableTabs, selectUserKey, selectGroupKey } =
                 toRefs(props)
@@ -227,7 +247,7 @@
 
             const placeholder = computed(() => {
                 if (!popoverVisible.value) {
-                    return 'Search users and groups'
+                    return props?.searchPlaceholder || 'Search users and groups' 
                 }
                 if (componentType.value === 'groups') {
                     return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
@@ -274,6 +294,7 @@
                 showPopover,
                 popoverVisible,
                 target,
+                selectedRecords
                 // handleUserChange,
             }
         },

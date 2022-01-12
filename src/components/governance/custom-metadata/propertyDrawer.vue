@@ -142,7 +142,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full"
+                                    class="mb-1 lowercase border-0 rounded-full bg-gray-light"
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -361,6 +361,12 @@
             </div>
 
             <div class="flex justify-end p-3 border-t">
+                <div v-if="!isEdit" class="flex items-center space-x-2">
+                    <a-switch v-model:checked="createMore" size="small" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex-grow"></div>
+
                 <a-button :style="{ marginRight: '8px' }" @click="handleClose">
                     Cancel
                 </a-button>
@@ -424,6 +430,7 @@
             })
             // data
             const visible = ref<boolean>(false)
+            const createMore = ref<boolean>(false)
             const form = ref<CMA>(initializeForm())
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
@@ -609,7 +616,8 @@
                                 'addedProperty',
                                 data.value.businessMetadataDefs[0].attributeDefs
                             )
-                            visible.value = false
+                            if (createMore.value) form.value = initializeForm()
+                            else visible.value = false
                             console.log('CM create', tempForm)
                             useAddEvent(
                                 'governance',
@@ -747,7 +755,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = null
+                form.value.options.enumType = 'New Enum'
                 newEnumMode.value = true
             }
 
@@ -813,6 +821,7 @@
             })
 
             return {
+                createMore,
                 refetchTypedef,
                 handleEnumSelect,
                 isMultiValuedSupport,

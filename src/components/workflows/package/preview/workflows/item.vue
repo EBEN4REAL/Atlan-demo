@@ -1,6 +1,9 @@
 <template>
-    <div class="p-2 border rounded">
-        <div class="flex flex-col font-semibold cursor-pointer text-primary">
+    <div class="p-2 border rounded cursor-pointer">
+        <div
+            class="flex flex-col font-semibold cursor-pointer text-primary"
+            @click="handleClick"
+        >
             {{ item.metadata.name }}
         </div>
         <div class="text-gray-500">
@@ -15,6 +18,7 @@
 
 <script lang="ts">
     import { defineComponent, toRefs } from 'vue'
+    import { useRouter } from 'vue-router'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
@@ -29,8 +33,13 @@
             const { item } = toRefs(props)
 
             const { creationTimestamp, cronString } = useWorkflowInfo()
+            const router = useRouter()
 
-            return { item, creationTimestamp, cronString }
+            const handleClick = () => {
+                router.push(`/workflows/${item.value?.metadata?.name}`)
+            }
+
+            return { item, creationTimestamp, cronString, handleClick }
         },
     })
 </script>

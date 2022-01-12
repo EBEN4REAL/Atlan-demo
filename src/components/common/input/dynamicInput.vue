@@ -29,13 +29,13 @@
         :placeholder="placeholder"
         :disabled-date="disabledDate"
         format="YYYY-MM-DD"
-        value-format="X"
+        value-format="x"
         @change="handleChange"
     ></component>
     <a-time-picker
         v-if="dataType === 'time'"
         :default-value="modelValue"
-        value-format="X"
+        value-format="x"
         :placeholder="placeholder"
         @change="handleChange"
     ></a-time-picker>

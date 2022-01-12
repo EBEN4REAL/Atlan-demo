@@ -506,7 +506,7 @@
                     selectedItems.value = []
                     // emit('checkboxChange', [])
                 }
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const input1Change = () => {
@@ -569,7 +569,7 @@
                 })
 
                 selectedColumnsData.value = [...columns]
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
 
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
@@ -626,7 +626,7 @@
                 map.value = {}
                 selectAll.value = false
                 selectedColumnsData.value = []
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 console.log(map.value, 'destroy')
             }
             onMounted(() => {

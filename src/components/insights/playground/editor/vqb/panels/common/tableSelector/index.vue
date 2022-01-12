@@ -458,7 +458,7 @@
                 copySelectedTableData.item = item
                 emit('update:selectedTableData', copySelectedTableData)
                 isAreaFocused.value = false
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -522,7 +522,7 @@
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             onMounted(() => {

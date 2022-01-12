@@ -95,9 +95,8 @@
 
             const handleChange = () => {
                 createDebounce()(() => {
-                    updateVQB(activeInlineTabKey, inlineTabs)
+                    updateVQB(activeInlineTab, inlineTabs)
                 }, 2000)
-                // updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             /* Accesss */

@@ -11,7 +11,7 @@
 
         <div
             class="relative hidden bg-white asset-preview-container md:block"
-            v-if="!isSetup"
+            v-if="!isItem"
         >
             <WorfklowPreview :item="localSelected"></WorfklowPreview>
         </div>

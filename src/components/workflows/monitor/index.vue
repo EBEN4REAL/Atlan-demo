@@ -1,11 +1,14 @@
 <template>
-    <div class="flex flex-grow">
-        <div class="h-full border-r" style="min-width: 250px">
-            <RunsList :workflowName="workflowName" v-model="selectedRunName">
-            </RunsList>
-        </div>
-        <div class="flex-grow w-2/3 bg-primary-light">
-            <MonitorGraph :graph-data="selectedRun" />
+    <div class="flex flex-grow overflow-hidden">
+        <RunsList
+            :workflowName="workflowName"
+            v-model="selectedRunName"
+            class="h-full border-r"
+            style="min-width: 250px"
+        >
+        </RunsList>
+        <div class="relative flex-grow w-2/3 bg-primary-light">
+            <MonitorGraph :graph-data="selectedRun" class="" />
         </div>
     </div>
 

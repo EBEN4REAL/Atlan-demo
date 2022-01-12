@@ -17,7 +17,15 @@ export default function useCreateGraph(
         autoResize: true,
         interacting: false,
         container: graphContainer.value,
-        grid: true,
+        grid: {
+            size: 40,
+            visible: true,
+            type: 'fixedDot', // 'dot' | 'fixedDot' | 'mesh'
+            args: {
+                color: '#5278d7', // 网格线/点颜色
+                thickness: 2, // 网格线宽度/网格点大小
+            },
+        },
         background: { color: '#ffffff' },
         scroller: {
             enabled: true,
@@ -26,7 +34,7 @@ export default function useCreateGraph(
             pannable: true,
         },
         mousewheel: {
-            minScale: 0.5,
+            minScale: 0.1,
             zoomAtMousePosition: true,
             maxScale: 1.2,
             enabled: true,
@@ -54,8 +62,8 @@ export default function useCreateGraph(
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
-        ranksep: 35,
-        nodesep: 60,
+        ranksep: 25,
+        nodesep: 55,
     })
 
     return {

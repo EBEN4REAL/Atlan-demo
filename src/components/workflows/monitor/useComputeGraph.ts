@@ -30,8 +30,8 @@ export default function useComputeGraph(
                     v
 
                 let displayNameTrunc
-                if (displayName.length > 14)
-                    displayNameTrunc = `${displayName.slice(0, 14)}...`
+                if (displayName.length > 12)
+                    displayNameTrunc = `${displayName.slice(0, 12)}...`
                 else displayNameTrunc = displayName
 
                 const isBase = baseEntity === id
@@ -47,7 +47,7 @@ export default function useComputeGraph(
                     displayName,
                     isBase,
                     type,
-                    width: 190,
+                    width: 160,
                     height: [
                         'Running',
                         'Omitted',
@@ -55,7 +55,7 @@ export default function useComputeGraph(
                         'Skipped',
                     ].includes(phase)
                         ? 39
-                        : 55,
+                        : 45,
                     shape: 'html',
                     data: {
                         id,
@@ -71,7 +71,7 @@ export default function useComputeGraph(
                                     : ''
                             } ${phase}">
                                 <div>
-                                    <svg width="30" height="30" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 animate-spin ${
+                                    <svg width="30" height="30" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 animate-spin ${
                                         phase === 'Running' ? 'block' : 'hidden'
                                     }">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M9 15C12.3137 15 15 12.3137 15 9C15 5.68629 12.3137 3 9 3C5.68629 3 3 5.68629 3 9C3 12.3137 5.68629 15 9 15ZM9 13C11.2091 13 13 11.2091 13 9C13 6.79086 11.2091 5 9 5C6.79086 5 5 6.79086 5 9C5 11.2091 6.79086 13 9 13Z" fill="#BDCDF4"/>
@@ -79,7 +79,7 @@ export default function useComputeGraph(
                                     </svg>
     
     
-                                    <svg width="22" height="22" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
+                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
                                         phase === 'Succeeded'
                                             ? 'block'
                                             : 'hidden'
@@ -89,7 +89,7 @@ export default function useComputeGraph(
                                     </svg>
     
     
-                                    <svg width="22" height="22" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
+                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
                                         ['Failed', 'Error'].includes(phase)
                                             ? 'block'
                                             : 'hidden'
@@ -99,7 +99,7 @@ export default function useComputeGraph(
                                         <path d="M5.49988 5.5L12.4999 12.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
     
-                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
+                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
                                         ['Omitted', 'Skipped'].includes(phase)
                                             ? 'block'
                                             : 'hidden'
@@ -108,7 +108,7 @@ export default function useComputeGraph(
                                         <path d="M9.43112 8.03763C10.1719 8.46535 10.1719 9.53465 9.43112 9.96237L4.43052 12.8495C3.68969 13.2772 2.76365 12.7425 2.76365 11.8871L2.76365 6.1129C2.76365 5.25747 3.68969 4.72282 4.43052 5.15054L9.43112 8.03763Z" fill="#6F7590"/>
                                     </svg>
     
-                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
+                                    <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
                                         phase === 'Pending' ? 'block' : 'hidden'
                                     }">
                                         <path d="M11.5993 2.28946H6.32862C5.48759 2.28946 4.94747 3.18287 5.33827 3.92758L7.7274 8.4803C7.89817 8.80573 7.89817 9.19428 7.7274 9.51971L5.33827 14.0724C4.94747 14.8171 5.48759 15.7106 6.32862 15.7106H11.6714C12.5125 15.7106 13.0526 14.8172 12.6618 14.0725L10.2691 9.51263C10.1004 9.19114 10.0983 8.80777 10.2633 8.48441L12.5954 3.91643C12.9753 3.17228 12.4348 2.28946 11.5993 2.28946Z" stroke="#EFAC00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -118,8 +118,8 @@ export default function useComputeGraph(
     
                                 </div>
                                 <div>
-                                    <div>${displayNameTrunc}</div>
-                                    <div class="text-gray-500 ${
+                                    <div class="leading-none text-gray-700 mb-1">${displayNameTrunc}</div>
+                                    <div class="text-gray-500 leading-none text-xs ${
                                         [
                                             'Running',
                                             'Omitted',

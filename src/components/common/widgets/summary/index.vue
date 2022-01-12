@@ -48,8 +48,17 @@
                     @change="handleChangeDescription"
                 />
             </div>
-            <div class="flex gap-x-32">
-                <div ref="animationPoint" class="flex flex-col">
+            <div
+                class="flex"
+                :class="
+                    localCertificate.certificateStatus ? 'gap-x-16' : 'gap-x-32'
+                "
+            >
+                <div
+                    ref="animationPoint"
+                    class="flex flex-col max-w-sm"
+                    style="min-width: 12rem"
+                >
                     <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
                     <Certificate
@@ -62,7 +71,7 @@
                     />
                 </div>
 
-                <div v-if="asset.guid" class="flex flex-col max-w-sm">
+                <div v-if="asset.guid" class="flex flex-col">
                     <p class="mb-1 text-sm text-gray-500">Owners</p>
                     <Owners
                         v-model="localOwners"

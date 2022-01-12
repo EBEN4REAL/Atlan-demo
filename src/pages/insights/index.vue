@@ -37,6 +37,7 @@
             const route = useRoute()
             const router = useRouter()
             const savedQueryGuidFromURL = computed(() => route.query?.id)
+            const collectionGuidFromURL = computed(() => route.query?.col_id)
             const runQuery = ref(route.query?.runQuery)
             const isVisualQuery = computed(() => route.query?.vqb === 'true')
 
@@ -102,6 +103,7 @@
             provide('refetchQueryCollection', refetchQueryCollection)
             provide('isCollectionCreated', isCollectionCreated)
             provide('permissions', permissions)
+            provide('collectionGuidFromURL', collectionGuidFromURL)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
 

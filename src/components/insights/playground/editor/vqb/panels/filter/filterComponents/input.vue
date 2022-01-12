@@ -179,9 +179,8 @@
                 }
 
                 createDebounce()(() => {
-                    updateVQB(activeInlineTabKey, inlineTabs)
+                    updateVQB(activeInlineTab, inlineTabs)
                 }, 2000)
-                // updateVQB(activeInlineTabKey, inlineTabs)
             }
             function isNumberKey(evt) {
                 const charCode = evt.which ? evt.which : evt.keyCode

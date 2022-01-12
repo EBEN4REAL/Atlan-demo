@@ -30,23 +30,10 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
-                <a-form-item prop="slack">
-                    <template #label> Slack </template>
-                    <a-input
-                        v-model:value="formData.slack"
-                        class="mt-2"
-                        :loading="isRequestLoading"
-                        placeholder="Add Slack channel name or channel ID"
-                    >
-                        <template #prefix>
-                            <span
-                                class="pr-2 border-r border-gray-300 border-solid"
-                            >
-                                <AtlanIcon icon="Slack" />
-                            </span>
-                        </template>
-                    </a-input>
-                </a-form-item>
+                <SlackInput
+                    v-model="formData.slack"
+                    placeholder="Add Slack channel name or channel ID"
+                />
             </div>
         </a-form>
         <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
@@ -76,9 +63,11 @@
     import { message } from 'ant-design-vue'
     import { useVModels } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
+    import SlackInput from '@/admin/common/slackInput.vue'
 
     export default {
         name: 'EditGroup',
+        components: { SlackInput },
 
         props: {
             selectedGroup: {
@@ -148,10 +137,13 @@
                     description: [formData.value.description],
                     alias: [formData.value.name],
                 }
+                // check for #
+                let slackLink = formData.value.slack
+                if (slackLink.startsWith('#'))
+                    slackLink = slackLink.substring(1)
+
                 attributes.channels =
-                    formData.value.slack.length > 0
-                        ? [`[{"slack": "${formData.value.slack}"}]`]
-                        : []
+                    slackLink.length > 0 ? [`[{"slack": "${slackLink}"}]`] : []
                 requestPayload.value = {
                     name: formData.value.alias,
                 }
@@ -183,9 +175,9 @@
                                 selectedGroup.value.attributes.description = [
                                     formData.value.description,
                                 ]
-                                if (formData.value.slack.length > 0) {
+                                if (slackLink.length > 0) {
                                     selectedGroup.value.attributes.channels = [
-                                        `[{"slack": "${formData.value.slack}"}]`,
+                                        `[{"slack": "${slackLink}"}]`,
                                     ]
                                 } else {
                                     selectedGroup.value.attributes.channels = []
@@ -196,11 +188,8 @@
                                         ? [formData?.value?.description]
                                         : [],
                                     channels:
-                                        formData.value.slack &&
-                                        formData.value.slack.length > 0
-                                            ? [
-                                                  `[{"slack": "${formData.value.slack}"}]`,
-                                              ]
+                                        slackLink && slackLink.length > 0
+                                            ? [`[{"slack": "${slackLink}"}]`]
                                             : [],
                                 }
                             }

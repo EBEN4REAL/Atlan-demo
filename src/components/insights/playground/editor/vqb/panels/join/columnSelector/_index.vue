@@ -112,14 +112,14 @@
             const tableQualifiedNamesContraint: Ref<{
                 allowed: string[]
                 notAllowed: string[]
-            }> = ref(
-                allowedTablesInJoinSelector(
+            }> = computed(() => {
+                return allowedTablesInJoinSelector(
                     panelIndex.value,
                     rowIndex.value,
                     subIndex.value,
                     activeInlineTab.value
                 )
-            )
+            })
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)

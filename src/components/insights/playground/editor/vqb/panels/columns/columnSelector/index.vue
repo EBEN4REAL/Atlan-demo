@@ -15,7 +15,6 @@
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
             disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
-        @click.stop="() => {}"
     >
         <template
             v-if="enrichedSelectedItems.length !== 0"
@@ -85,7 +84,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',
@@ -100,7 +99,7 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
+                @click="() => {}"
                 @mousedown.stop="cancelEventBlur"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height

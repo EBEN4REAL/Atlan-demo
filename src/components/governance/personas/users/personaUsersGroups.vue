@@ -59,7 +59,7 @@
                 <div>
                     <a-popover
                         v-model:visible="popoverVisible"
-                        :placement="`${emptyStateCTA ? 'bottom' : 'left'}`"
+                        placement="left"
                         trigger="click"
                         :destroy-tooltip-on-hide="true"
                     >
@@ -425,18 +425,6 @@
                 class="mt-4"
                 empty-screen="NoResultIllustration"
                 :desc="`Whoops! couldn't find anyone with '${queryText}' in persona Add the missing user or group`"
-                :button-text="`${
-                    listType === 'groups'
-                        ? '+ Add Group'
-                        : listType === 'users'
-                        ? '+ Add User'
-                        : '+ Add'
-                }`"
-                @event="
-                    () => {
-                        setPopoverState(!popoverVisible), setEmptyStateCTA(true)
-                    }
-                "
             >
             </EmptyView>
             <EmptyState
@@ -450,18 +438,6 @@
                         ? 'Add users in the persona.'
                         : 'Add users and groups in the persona.'
                 }`"
-                :button-text="`${
-                    listType === 'groups'
-                        ? '+ Add Group'
-                        : listType === 'users'
-                        ? '+ Add User'
-                        : '+ Add'
-                }`"
-                @event="
-                    () => {
-                        setPopoverState(!popoverVisible), setEmptyStateCTA(true)
-                    }
-                "
             />
         </div>
         <!-- END List -->
@@ -525,7 +501,6 @@
 
             const queryText = ref('')
             const popoverVisible = ref(false)
-            const emptyStateCTA = ref(false)
             const addUsersLoading = ref(false)
 
             const { usePersonaUserList, userColumns } = usePersonaUsers
@@ -704,10 +679,6 @@
                 popoverVisible.value = state
             }
 
-            const setEmptyStateCTA = (state: boolean) => {
-                emptyStateCTA.value = state
-            }
-
             const userGroupData: Ref<{
                 ownerUsers: string[]
                 ownerGroups: string[]
@@ -847,8 +818,6 @@
                 groupsError,
                 showRemoveUserPopover,
                 errorUsersGroups,
-                emptyStateCTA,
-                setEmptyStateCTA,
             }
         },
     })

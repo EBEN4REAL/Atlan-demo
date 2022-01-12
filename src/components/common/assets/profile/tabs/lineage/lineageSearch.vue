@@ -86,9 +86,9 @@
             }
 
             const onBlur = () => {
-                // setTimeout(() => {
-                //     showResults.value = false
-                // }, 500)
+                setTimeout(() => {
+                    showResults.value = false
+                }, 500)
             }
 
             const onFocus = () => {

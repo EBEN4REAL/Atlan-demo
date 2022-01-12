@@ -424,7 +424,7 @@
                 v-else-if="!filteredList.length && queryText"
                 class="mt-4"
                 empty-screen="NoResultIllustration"
-                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona Add the missing user or group`"
+                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona`"
             >
             </EmptyView>
             <EmptyState
@@ -433,10 +433,10 @@
                 empty-screen="CreateGroups"
                 :desc="`${
                     listType === 'groups'
-                        ? 'Add groups in the persona.'
+                        ? 'No groups added in the persona.'
                         : listType === 'users'
-                        ? 'Add users in the persona.'
-                        : 'Add users and groups in the persona.'
+                        ? 'No users added in the persona'
+                        : 'No users or groups added in the persona.'
                 }`"
             />
         </div>

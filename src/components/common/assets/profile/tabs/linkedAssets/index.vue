@@ -28,13 +28,13 @@
                     class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
-                    assetListClass="px-8"
-                    aggregationTabClass="px-8"
-                    searchBarClass="px-8"
+                    assetListClass="pl-8 pr-6"
+                    aggregationTabClass="pl-8 pr-6 pb-1"
+                    searchBarClass="pl-8"
                 >
                     <template #searchAction>
                         <AtlanBtn
-                            class="mt-2 ml-4 mr-8"
+                            class="mt-2 ml-4 mr-6"
                             size="sm"
                             padding="compact"
                             data-test-id="save"

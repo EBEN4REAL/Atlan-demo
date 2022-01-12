@@ -75,7 +75,7 @@
             :allow-clear="true"
             format="YYYY-MM-DD"
             class="flex-grow w-100"
-            value-format="x"
+            value-format="X"
             @change="handleChange"
         />
         <a-textarea

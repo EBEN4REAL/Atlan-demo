@@ -65,10 +65,16 @@
     ></a-input-number>
 
     <a-date-picker
-        v-else-if="['date'].includes(dataType.toLowerCase())"
+        v-else-if="['date', 'datetime'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
-        format="YYYY-MM-DD"
+        :format="
+            dataType.toLowerCase() === 'datetime'
+                ? 'YYYY-MM-DD HH:mm:ss'
+                : 'YYYY-MM-DD'
+        "
+        :show-time="dataType.toLowerCase() === 'datetime'"
         :allow-clear="true"
+        value-format="X"
         @change="handleInputChange"
     />
 

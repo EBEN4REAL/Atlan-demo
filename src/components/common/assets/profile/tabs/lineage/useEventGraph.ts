@@ -182,6 +182,37 @@ export default function useEventGraph(
         return !!node
     }
 
+    // getCaretElement
+    const getCaretElement = (nodeId) => {
+        const graphNodeElement = document.querySelectorAll(
+            `[data-cell-id="${nodeId}"]`
+        )[0]
+        const caretElement = Array.from(
+            graphNodeElement.querySelectorAll('*')
+        ).find((y) => y.classList.contains('node-caret'))
+        return caretElement
+    }
+
+    // controlCaret
+    const controlCaret = (nodeId, caretEle, override = false) => {
+        if (override) {
+            if (!nodesCaretClicked.value.includes(nodeId)) {
+                nodesCaretClicked.value.push(nodeId)
+            }
+            caretEle.classList.add('caret-expanded')
+            return
+        }
+
+        if (nodesCaretClicked.value.includes(nodeId)) {
+            const index = nodesCaretClicked.value.findIndex((x) => x === nodeId)
+            nodesCaretClicked.value.splice(index, 1)
+            caretEle.classList.remove('caret-expanded')
+        } else {
+            nodesCaretClicked.value.push(nodeId)
+            caretEle.classList.add('caret-expanded')
+        }
+    }
+
     // controlPorts
     const controlPorts = (node, columns, override = false) => {
         if (node.getPorts().length === 1 || override) {
@@ -278,6 +309,14 @@ export default function useEventGraph(
         watch(
             list,
             () => {
+                if (!list.value) {
+                    const node = nodes[0]
+                    const caretElement = getCaretElement(node.id)
+                    controlCaret(node.id, caretElement)
+                    loaderCords.value = {}
+                    message.info('No column with lineage found for this node')
+                    return
+                }
                 nodes.forEach((node) => {
                     const asset = node.store.data.entity
                     const guid = node.id
@@ -331,12 +370,7 @@ export default function useEventGraph(
         )
 
         translateCandidates.forEach((x) => {
-            const graphNodeElement = document.querySelectorAll(
-                `[data-cell-id="${x.id}"]`
-            )[0]
-            const caretElement = Array.from(
-                graphNodeElement.querySelectorAll('*')
-            ).find((y) => y.classList.contains('node-caret'))
+            const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement, true)
         })
 
@@ -406,26 +440,6 @@ export default function useEventGraph(
         }
 
         return [target].concat(getParents(target), window)
-    }
-
-    // controlCaret
-    const controlCaret = (nodeId, caretEle, override = false) => {
-        if (override) {
-            if (!nodesCaretClicked.value.includes(nodeId)) {
-                nodesCaretClicked.value.push(nodeId)
-            }
-            caretEle.classList.add('caret-expanded')
-            return
-        }
-
-        if (nodesCaretClicked.value.includes(nodeId)) {
-            const index = nodesCaretClicked.value.findIndex((x) => x === nodeId)
-            nodesCaretClicked.value.splice(index, 1)
-            caretEle.classList.remove('caret-expanded')
-        } else {
-            nodesCaretClicked.value.push(nodeId)
-            caretEle.classList.add('caret-expanded')
-        }
     }
 
     // handleToggleOfActiveNode
@@ -525,6 +539,7 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
+    // selectPort
     const selectPort = (node, e, portId) => {
         const chpNode = getPortNode(chp.value.portId)
         if (chpNode) {
@@ -557,13 +572,7 @@ export default function useEventGraph(
             fill: '#ffffff',
         })
         chp.value.expandedNodes.forEach((x) => {
-            // remove ports of all interlinked nodes
-            const graphNodeElement = document.querySelectorAll(
-                `[data-cell-id="${x.id}"]`
-            )[0]
-            const caretElement = Array.from(
-                graphNodeElement.querySelectorAll('*')
-            ).find((y) => y.classList.contains('node-caret'))
+            const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
             const portsToRemove = x.getPorts()
             portsToRemove.shift()

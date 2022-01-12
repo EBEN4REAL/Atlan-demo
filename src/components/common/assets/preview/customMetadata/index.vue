@@ -14,6 +14,8 @@
                         :rows="2"
                         width="500px"
                         placement="left"
+                        classes="text-primary hover:underline"
+                        :routeTo="`/governance/custom-metadata/${data.guid}`"
                     />
 
                     <a-tooltip>

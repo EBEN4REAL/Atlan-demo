@@ -25,7 +25,7 @@
                         <!-- Asset Details -->
                         <template v-if="column.key === 'details'">
                             <div class="flex flex-col">
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1 pr-2">
                                     <Tooltip
                                         :tooltip-text="text.name"
                                         classes="text-sm text-primary mb-0"
@@ -231,7 +231,7 @@
             },
         },
         emits: ['update:visible'],
-        setup(props) {
+        setup(props, { emit }) {
             const { guid, assetName, visible } = toRefs(props)
             const { useFetchLineage } = useLineageService()
             const {
@@ -322,7 +322,7 @@
                     },
                     db: getTable(entity),
                     schema: getSchema(entity),
-                    depth: 1,
+                    depth: 'N/A',
                     owners: [...ownerUsers(entity), ...ownerGroups(entity)],
                     classifications: entity.classificationNames,
                     terms: entity.meanings,
@@ -352,13 +352,24 @@
                     }
                 })
 
-                json2csv(data, (err, csv) => {
-                    if (err)
-                        message.error(
-                            'Error downloading CSV, please try again.'
-                        )
-                    else downloadFile(csv, `${assetName.value}_lineage_impact`)
-                })
+                json2csv(
+                    data,
+                    (err, csv) => {
+                        if (err)
+                            message.error(
+                                'Error downloading CSV, please try again.'
+                            )
+                        else {
+                            downloadFile(
+                                csv,
+                                `${assetName.value}_lineage_impact`
+                            )
+                            message.success('CSV exported successfully')
+                            emit('update:visible', false)
+                        }
+                    },
+                    { emptyFieldValue: '' }
+                )
             }
 
             watch(guid, () => {

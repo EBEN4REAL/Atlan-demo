@@ -309,22 +309,6 @@ const refreshBody = () => {
         dsl: {
             from: 0,
             size: 100,
-            // sort: [
-            //     {
-            //         'name.keyword': {
-            //             order: 'asc',
-            //         },
-            //     },
-            // ],
-            // query: {
-            //     bool: {
-            //         filter: {
-            //             bool: {
-            //                 must: [],
-            //             },
-            //         },
-            //     },
-            // },
             query: {
                 function_score: {
                     query: {
@@ -386,6 +370,30 @@ const refreshBody = () => {
                             },
                             weight: 4,
                         },
+                        {
+                            filter: {
+                                match: {
+                                    isPrimary: true,
+                                },
+                            },
+                            weight: 10,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    isForeign: true,
+                                },
+                            },
+                            weight: 9,
+                        },
+                        {
+                            filter: {
+                                match: {
+                                    isPartition: true,
+                                },
+                            },
+                            weight: 8,
+                        }
                     ],
                     boost_mode: 'sum',
                     score_mode: 'sum',

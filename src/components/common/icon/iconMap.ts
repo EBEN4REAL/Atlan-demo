@@ -28,6 +28,7 @@ import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
 import ArrowRight from '~/assets/images/icons/arrow-right.svg'
+import ArrowUpDown from '~/assets/images/icons/arrow_up_down.svg'
 import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
@@ -242,6 +243,7 @@ import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
 import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
 import TextRight from '~/assets/images/readme/TextAlignRight.svg'
 import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+import TaskList from '~/assets/images/readme/TaskList.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -457,6 +459,7 @@ export default {
     Reload,
     FilterDot,
     ArrowRight,
+    ArrowUpDown,
     Search,
     Database,
     Schema,
@@ -693,5 +696,6 @@ export default {
     InnerJoinInfo,
     LeftJoinInfo,
     RightJoinInfo,
-    OuterJoinInfo
+    OuterJoinInfo,
+    TaskList,
 }

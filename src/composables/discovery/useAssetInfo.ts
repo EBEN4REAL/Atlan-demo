@@ -44,8 +44,28 @@ export default function useAssetInfo() {
 
     const parentReport = (asset: assetInterface) => attributes(asset)?.report
 
+    const parentDataset = (asset: assetInterface) => attributes(asset)?.dataset
+
     const parentDashboard = (asset: assetInterface) =>
         attributes(asset)?.dashboard
+
+    const reportCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.reportCount)
+
+    const dashboardCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.dashboardCount)
+
+    const datasetCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.datasetCount)
+
+    const dataflowCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.dataflowCount)
+
+    const tileCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.tileCount)
+
+    const pageCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.pageCount)
 
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
@@ -1063,5 +1083,12 @@ export default function useAssetInfo() {
         parentWorkspace,
         parentReport,
         parentDashboard,
+        parentDataset,
+        reportCount,
+        dashboardCount,
+        datasetCount,
+        dataflowCount,
+        tileCount,
+        pageCount,
     }
 }

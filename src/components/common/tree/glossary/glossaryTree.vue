@@ -36,7 +36,6 @@
         :auto-expand-parent="false"
         @expand="expandNode"
         :height="height"
-        :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
         :checked-keys="checkedKeys"
@@ -45,6 +44,7 @@
         @check="onCheck"
         :blockNode="true"
         @drop="dragAndDropNode"
+        :multiple="true"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -161,6 +161,8 @@
                 updateNode,
                 checkedKeys,
                 dragAndDropNode,
+                nodeToParentKeyMap,
+                allKeys,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -246,14 +248,28 @@
                 } else selectNode(selected, event)
             }
             const handleAddSelectedKey = (key) => {
-                selectedKeys.value = [key]
+                selectedKeys.value = []
+                selectedKeys.value.push(key)
+                const selectedTerm = selectedKeys.value[0]?.split('_')[1]
+                allKeys.value?.forEach((el) => {
+                    if (
+                        el?.endsWith(selectedTerm) &&
+                        !selectedKeys.value?.includes(el)
+                    ) {
+                        selectedKeys.value.push(el)
+                    }
+                })
             }
 
             watch(checkedGuids, (newCheckedGuids) => {
-                localCheckedNodes.value = localCheckedNodes.value.filter((localNode: any) => newCheckedGuids?.includes(localNode.guid))
-                checkedKeys.value = localCheckedNodes.value.map((localNode: any) => localNode.key)
+                localCheckedNodes.value = localCheckedNodes.value.filter(
+                    (localNode: any) =>
+                        newCheckedGuids?.includes(localNode.guid)
+                )
+                checkedKeys.value = localCheckedNodes.value.map(
+                    (localNode: any) => localNode.key
+                )
             })
-
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {

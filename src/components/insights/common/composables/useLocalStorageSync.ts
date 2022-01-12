@@ -26,6 +26,12 @@ export function useLocalStorageSync() {
                 t.playground.resultsPane.result.runQueryId = undefined
                 t.playground.resultsPane.result.eventSourceInstance = undefined
                 t.assetSidebar.isVisible = false
+                t.playground.vqb.panels = t.playground.vqb.panels.map((x) => {
+                    return {
+                        ...x,
+                        expand: false,
+                    }
+                })
                 return t
             })
 
@@ -60,16 +66,18 @@ export function useLocalStorageSync() {
             const alteredTabsArray = parsedInlineTabs?.map((tab) => {
                 const t = JSON.parse(JSON.stringify(tab))
                 // console.log('type of: ', Array.isArray(t?.playground?.editor?.variables))
-                if(Array.isArray(t?.playground?.editor?.variables)) {
+                if (Array.isArray(t?.playground?.editor?.variables)) {
                     t.playground.editor.variables =
-                    t?.playground?.editor?.variables?.map((_variable) => {
-                        const copy__variable = { ..._variable }
-                        if (copy__variable.type === 'date')
-                            copy__variable.value = dayjs(copy__variable.value)
-                        return copy__variable
-                    })
+                        t?.playground?.editor?.variables?.map((_variable) => {
+                            const copy__variable = { ..._variable }
+                            if (copy__variable.type === 'date')
+                                copy__variable.value = dayjs(
+                                    copy__variable.value
+                                )
+                            return copy__variable
+                        })
                 }
-                
+
                 return t
             })
             return alteredTabsArray

@@ -38,10 +38,10 @@
                     </span>
                 </div>
                 <div v-else-if="subIndex == 0" class="text-gray-700">
-                    SELECT LEFT TABLE
+                    Select left table
                 </div>
                 <div v-else-if="subIndex == 1" class="text-gray-700">
-                    SELECT RIGHT TABLE
+                    Select right table
                 </div>
 
                 <div

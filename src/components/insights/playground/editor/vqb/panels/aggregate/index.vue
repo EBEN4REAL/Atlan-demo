@@ -307,23 +307,20 @@
                     : true
             )
 
-            const expand = ref(
+            activeInlineTab.value.playground.vqb.panels[index.value].expand =
                 getInitialPanelExpandedState(
                     readOnly.value,
-                    panel.value.id,
+                    panel.value,
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         ?.expand
                 )
+
+            const expand = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             )
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
-                            index.value
-                        ]?.expand
-                }
-            )
+
             const checkbox = ref(true)
             const { deletePanelsInVQB, handleAdd, updateVQB } = useVQB()
 
@@ -357,7 +354,6 @@
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
             }
             const toggleExpand = () => {
-                expand.value = !expand.value
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
                 ].expand =

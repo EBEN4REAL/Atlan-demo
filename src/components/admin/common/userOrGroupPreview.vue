@@ -1,8 +1,17 @@
 <template>
     <div class="relative h-full pb-6">
-        <div class="close-btn-add-policy" @click="$emit('close')">
-            <AtlanIcon icon="Add" class="text-white" />
-        </div>
+        <Shortcut
+            shortcut-key="esc"
+            action="close"
+            placement="left"
+            :delay="0.4"
+            :edit-permission="true"
+        >
+            <div class="close-btn-add-policy" @click="$emit('close')">
+                <AtlanIcon icon="Add" class="text-white outline-none" />
+            </div>
+        </Shortcut>
+
         <div v-if="isLoading" class="flex items-center justify-center h-full">
             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
@@ -58,6 +67,9 @@
                                 <SlackMessageCta
                                     v-if="slackEnabled"
                                     :slack-link="slackUrl"
+                                    :cta-text="
+                                        isValidUser ? 'Say Hi 👋' : 'Say Hi 👋'
+                                    "
                                 />
                                 <span
                                     v-if="
@@ -141,6 +153,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -174,6 +187,7 @@
             SidePanelTabHeaders,
             AtlanButton,
             SlackMessageCta,
+            Shortcut,
         },
         props: {
             previewType: {
@@ -265,6 +279,12 @@
                 }
                 return []
             })
+            const groupChannels = computed(() => {
+                if (isValidGroup.value) {
+                    return selectedGroup.value?.attributes?.channels
+                }
+                return []
+            })
             const slackProfile = computed(() => {
                 if (userProfiles.value?.length > 0) {
                     const firstProfile = JSON.parse(userProfiles.value[0])
@@ -278,12 +298,27 @@
                 }
                 return ''
             })
+            const slackChannel = computed(() => {
+                if (groupChannels.value?.length > 0) {
+                    const firstChannel = JSON.parse(groupChannels.value[0])
+                    if (
+                        firstChannel &&
+                        firstChannel.length > 0 &&
+                        firstChannel[0].hasOwnProperty('slack')
+                    ) {
+                        return firstChannel[0].slack
+                    }
+                }
+                return ''
+            })
 
             const handleImageUpdate = (newImageUrl) => {
                 updatedImageUrl.value = newImageUrl.value
             }
 
-            const slackEnabled = computed(() => slackProfile.value)
+            const slackEnabled = computed(
+                () => slackProfile.value || slackChannel.value
+            )
             const slackUrl = computed(() =>
                 slackEnabled.value
                     ? getDeepLinkFromUserDmLink(slackEnabled.value)
@@ -315,6 +350,8 @@
                 updatedImageUrl,
                 userUpdated,
                 handleChangeTab,
+                groupChannels,
+                slackChannel,
             }
         },
     })

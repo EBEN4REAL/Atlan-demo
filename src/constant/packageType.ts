@@ -1,12 +1,12 @@
 export const packageType = [
     {
-        id: 'crawlers',
-        label: 'Crawlers',
-        description: 'Verified',
+        id: 'connector',
+        label: 'Connectors',
+        description: 'Connectors',
     },
     {
-        id: 'mining',
-        label: 'Query Mining',
+        id: 'utility',
+        label: 'Utility',
         description: 'Draft',
     },
     {

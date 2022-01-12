@@ -1,14 +1,15 @@
 <template>
     <AssetList
         v-if="fetchAssets"
+        :key="selectedAsset?.guid"
         class="bg-white"
         :filters="tabFilter"
         :static-use="true"
         emptyViewText="No related assets found"
         :enableSidebarDrawer="true"
-        aggregationTabClass="px-4"
-        searchBarClass="px-4 my-1"
-        asset-list-class="mx-4 mt-1"
+        aggregationTabClass="px-8"
+        searchBarClass="px-8 my-1"
+        asset-list-class="mx-8 mt-1"
     />
 </template>
 

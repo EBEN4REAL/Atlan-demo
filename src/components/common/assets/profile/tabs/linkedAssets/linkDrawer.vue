@@ -27,17 +27,17 @@
                         class="mb-1 ml-1"
                     ></CertificateBadge>
                 </div>
-                <Assets
-                    :show-filters="false"
-                    :static-use="true"
-                    :show-aggrs="true"
-                    :showCheckBox="true"
-                    :preference="preference"
-                    :allCheckboxAreaClick="true"
-                    :disableHandlePreview="true"
+                <AssetList 
+                    initialCacheKey="LINK_ASSETS_DRAWER"
                     class="pb-6 mt-2 asset-list-height"
-                    key="all-assets"
-                    page="glossary"
+                    :enableSidebarDrawer="false"
+                    :selectable="true"
+                    :selectedItems="checkedGuids"
+                    assetListClass="px-6"
+                    aggregationTabClass="px-6"
+                    searchBarClass="px-6"
+                    @listItem:check="handleAssetItemCheck"
+                    @handleAssetCardClick="handleAssetItemCheck"
                 />
             </div>
         </div>
@@ -86,8 +86,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, computed } from 'vue'
+    import { useVModels } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
     import Assets from '@/assets/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -100,6 +102,7 @@
             AtlanBtn,
             Tooltip,
             CertificateBadge,
+            AssetList
         },
         props: {
             isVisible: {
@@ -119,9 +122,16 @@
                 type: Object,
                 required: true,
             },
+            selectedItems: {
+                type: Object as PropType<Array<any>>,
+                required: true,
+                default: () => [],
+            },
         },
         emits: ['closeDrawer', 'saveAssets'],
         setup(props, { emit }) {
+            const { selectedItems } = useVModels(props, emit)
+
             const isModalVisible = ref(false)
             const closeDrawer = () => {
                 isModalVisible.value = true
@@ -143,6 +153,14 @@
                 isModalVisible.value = false
                 emit('closeDrawer')
             }
+            const checkedGuids = computed(() => selectedItems.value.map((item: any) => item.guid))
+            const handleAssetItemCheck = (item) => {
+                if(selectedItems.value.find((selectedItem: any) => selectedItem.guid === item.guid )){
+                    selectedItems.value = selectedItems.value.filter((selectedItem) => selectedItem.guid !== item.guid)
+                } else {
+                    selectedItems.value.push(item)
+                }
+            }
             return {
                 certificateStatus,
                 certificateUpdatedAt,
@@ -151,8 +169,10 @@
                 closeDrawer,
                 saveAssets,
                 isModalVisible,
+                checkedGuids,
                 handleCancel,
                 handleConfirmCancel,
+                handleAssetItemCheck
             }
         },
     })

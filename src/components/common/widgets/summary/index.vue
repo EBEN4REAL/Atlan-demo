@@ -132,6 +132,9 @@
             ParentDashboard: defineAsyncComponent(
                 () => import('./types/parentDashboard.vue')
             ),
+            ParentDataset: defineAsyncComponent(
+                () => import('./types/parentDataset.vue')
+            ),
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
             ),

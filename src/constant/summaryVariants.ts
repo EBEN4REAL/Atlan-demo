@@ -38,7 +38,7 @@ export const summaryVariants = [
     {
         id: 'datasource',
         label: 'Datasource',
-        components: ['ParentWorkspace', 'Connection'],
+        components: ['ParentDataset', 'Connection'],
         includes: ['PowerBIDatasource'],
     },
     {

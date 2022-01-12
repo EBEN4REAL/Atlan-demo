@@ -62,7 +62,7 @@ export const profileTabs = [
         scrubbed: false,
     },
     {
-        id: 'relatedAssets',
+        id: 'related',
         label: 'Related Assets',
         component: 'relatedAssets',
         includes: [

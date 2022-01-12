@@ -4,7 +4,10 @@
             v-for="item in data"
             :key="item.key"
             class="tab-btn"
-            :class="{ active: item.key === active }"
+            :class="{
+                active: item.key === active,
+                'fake-bold': item.key === active,
+            }"
             :disabled="disabled"
             :data-test-id="item?.key ?? 'atlan-btn'"
             @click="$emit('update:active', item.key)"
@@ -70,7 +73,7 @@
         }
 
         &.active {
-            @apply bg-white text-primary font-bold;
+            @apply bg-white text-primary;
             @apply shadow;
         }
     }

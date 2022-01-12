@@ -21,20 +21,15 @@
                 >
             </div>
             <div :class="localAssignedEntities.length ? '' : 'hidden'">
-                <AssetsWrapper
+                <AssetList 
                     ref="linkedAssetsWrapperRef"
-                    :show-filters="false"
-                    :initial-filters="tabFilter"
-                    :static-use="true"
-                    :show-aggrs="true"
-                    :showCheckBox="false"
-                    cacheKey="LINKED_ASSET_LIST"
-                    :preference="preference"
+                    :filters="tabFilter"
+                    initialCacheKey="LINK_ASSETS_DEFAULT"
+                    class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
-                    :checkableItems="false"
-                    key="linked-assets"
-                    class="asset-list-height"
-                    page="glossary"
+                    assetListClass="px-6"
+                    aggregationTabClass="px-6"
+                    searchBarClass="px-6"
                 >
                     <template #searchAction>
                         <AtlanBtn
@@ -46,7 +41,7 @@
                             >Link assets</AtlanBtn
                         >
                     </template>
-                </AssetsWrapper>
+                </AssetList>
             </div>
         </div>
     </div>
@@ -57,6 +52,7 @@
         @closeDrawer="closeDrawer"
         @saveAssets="saveAssets"
         :selected-asset="selectedAsset"
+        v-model:selected-items="selectedItems"
     />
 </template>
 
@@ -77,10 +73,9 @@
     import AssetBrowserTree from '@/governance/personas/assets/assetBrowserTree.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import AssetsWrapper from '@/assets/index.vue'
-    import useBulkUpdateStore from '~/store/bulkUpdate'
-    import AssetList from '~/components/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
 
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import LinkAssetsDrawer from './linkDrawer.vue'
@@ -107,9 +102,9 @@
             // data
             const { qualifiedName } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            const linkedAssets = ref<assetInterface[]>([])
-            const unlinkedAssets = ref<assetInterface[]>([])
-            const bulkStore = useBulkUpdateStore()
+            const linkedAssets = ref<assetInterface[]>([]) // assets which need to be linked in current api call
+            const unlinkedAssets = ref<assetInterface[]>([]) // assets which need to be unlinked in the current api call
+            const selectedItems = ref([]) // assets which have been checked in the drawer
             const preference = ref({
                 sort: 'default',
                 display: [],
@@ -130,27 +125,25 @@
                 isVisible.value = false
                 linkedAssets.value = []
                 unlinkedAssets.value = []
-                bulkStore.setBulkSelectedAssets([])
+                selectedItems.value = []
             }
-            const selectedAssetCount = computed(() => {
-                const s = new Set([...bulkStore.bulkSelectedAssets])
-                return s.size
-            })
 
             const { localAssignedEntities, handleAssignedEntitiesUpdate } =
                 updateAssetAttributes(selectedAsset)
 
+            const selectedAssetCount = computed(() => selectedItems.value.length)
+
             const handleCancel = () => {
                 linkedAssets.value = []
                 unlinkedAssets.value = []
-                bulkStore.setBulkSelectedAssets([])
+                selectedItems.value = []
             }
             const openLinkDrawer = () => {
-                bulkStore.setBulkSelectedAssets(localAssignedEntities.value)
+                selectedItems.value = [ ...localAssignedEntities.value ]
                 isVisible.value = true
             }
             const saveAssets = () => {
-                const assetSet = new Set([...bulkStore.bulkSelectedAssets])
+                const assetSet = new Set([...selectedItems.value])
                 const currentCheckedAssets = [...assetSet]
 
                 linkedAssets.value = [...assetSet].filter(
@@ -173,7 +166,6 @@
                     term: selectedAsset.value,
                 })
 
-                bulkStore.setBulkSelectedAssets([])
                 closeDrawer()
             }
 
@@ -196,6 +188,7 @@
                 selectedAssetCount,
                 tabFilter,
                 linkedAssetsWrapperRef,
+                selectedItems
             }
         },
     })

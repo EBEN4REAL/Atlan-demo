@@ -65,7 +65,12 @@
                     >
                         <a-button
                             type="primary"
-                            @click="() => setPopoverState(!popoverVisible)"
+                            @click="
+                                () => {
+                                    setPopoverState(!popoverVisible),
+                                        setEmptyStateCTA(false)
+                                }
+                            "
                             >Add User/Group</a-button
                         >
                         <!-- <AtlanBtn
@@ -416,11 +421,24 @@
                 </div>
             </div>
             <EmptyView
-                v-else-if="!filteredList.length"
+                v-else-if="!filteredList.length && queryText"
+                class="mt-4"
                 empty-screen="NoResultIllustration"
-                desc="No results found"
+                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona`"
             >
             </EmptyView>
+            <EmptyState
+                v-else-if="!filteredList.length && !queryText"
+                image-class="h-36"
+                empty-screen="CreateGroups"
+                :desc="`${
+                    listType === 'groups'
+                        ? 'No groups added in the persona.'
+                        : listType === 'users'
+                        ? 'No users added in the persona'
+                        : 'No users or groups added in the persona.'
+                }`"
+            />
         </div>
         <!-- END List -->
     </div>
@@ -443,6 +461,7 @@
     import Loader from '@common/loaders/page.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -466,6 +485,7 @@
             EmptyView,
             AggregationTabs,
             Loader,
+            EmptyState,
         },
         props: {
             persona: {

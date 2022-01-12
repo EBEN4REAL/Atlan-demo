@@ -788,7 +788,12 @@
             watch(
                 [collectionGuidFromURL, queryCollections],
                 () => {
-                    onDetectCollection()
+                    if (
+                        collectionGuidFromURL.value ||
+                        savedQueryGuidFromURL.value
+                    ) {
+                        onDetectCollection()
+                    }
                 },
                 { immediate: true }
             )

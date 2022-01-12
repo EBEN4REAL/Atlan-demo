@@ -73,9 +73,8 @@
             ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
-            format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD"
             class="flex-grow w-100"
-            :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
             value-format="x"
             @change="handleChange"
         />

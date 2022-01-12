@@ -33,7 +33,7 @@
             <a-textarea
                 v-model:value="description"
                 :placeholder="descriptionPlaceholder"
-                class="text-gray-500 border-0 shadow-none outline-none placeholder-color"
+                class="text-gray-700 border-0 shadow-none outline-none placeholder-color"
                 :class="descriptionClass"
                 :maxlength="descriptionWordLimit"
                 :rows="3"

@@ -33,7 +33,7 @@
             <splitpanes
                 :class="[
                     $style.splitpane__styles,
-                    activeInlineTab.assetSidebar.isVisible
+                    activeInlineTab?.assetSidebar?.isVisible
                         ? 'show-assetsidebar'
                         : 'hide-assetsidebar',
                 ]"
@@ -216,7 +216,7 @@
                 queryCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
-                selectCollectionFromUrl,
+                // selectCollectionFromUrl,
             } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
             const { fullSreenState } = useFullScreen()
@@ -270,6 +270,7 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
             watch(activeInlineTab, () => {})
@@ -376,6 +377,7 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                activeTabCollection,
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
@@ -400,12 +402,6 @@
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    // const savedQueryInlineTab =
-                    //     transformSavedQueryResponseInfoToInlineTab(
-                    //         savedQueryInfo as Ref<SavedQuery>
-                    //     )
-                    // openSavedQueryInNewTab(savedQueryInfo.value)
-
                     openSavedQueryInNewTab({
                         ...savedQueryInfo.value,
                         parentTitle:

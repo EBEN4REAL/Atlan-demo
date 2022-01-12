@@ -50,7 +50,7 @@
         >
             <div class="flex items-center justify-between mb-3">
                 <div class="w-1/2">
-                    <div class="container-tabs">
+                    <div v-if="totalPolicy !== 0" class="container-tabs">
                         <a-radio-group
                             v-model:value="activeTabFilter"
                             class="flex flex-grow"

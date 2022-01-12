@@ -44,6 +44,8 @@ export default function useAssetInfo() {
 
     const parentReport = (asset: assetInterface) => attributes(asset)?.report
 
+    const parentDataset = (asset: assetInterface) => attributes(asset)?.dataset
+
     const parentDashboard = (asset: assetInterface) =>
         attributes(asset)?.dashboard
 
@@ -1081,6 +1083,7 @@ export default function useAssetInfo() {
         parentWorkspace,
         parentReport,
         parentDashboard,
+        parentDataset,
         reportCount,
         dashboardCount,
         datasetCount,

@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-col w-full h-full">
-            <div class="w-full">
+            <div class="w-full flex">
                 <SearchAdvanced
                     :key="searchDirtyTimestamp"
                     v-model="queryText"
@@ -21,6 +21,8 @@
                         </div>
                     </template>
                 </SearchAdvanced>
+                <slot name="searchAction"></slot>
+
             </div>
             <div :class="aggregationTabClass">
                 <AggregationTabs
@@ -78,11 +80,20 @@
                             :open-asset-profile-in-new-tab="
                                 openAssetProfileInNewTab
                             "
+                            :bulk-select-mode="
+                                selectedItems &&
+                                selectedItems.length
+                                    ? true
+                                    : false
+                            "
                             :enable-sidebar-drawer="enableSidebarDrawer"
                             :preference="preference"
                             :item="item"
+                            :show-check-box="selectable"
+                            :is-checked="checkIfSelected(item.guid)"
                             @updateDrawer="updateList"
-                            @preview="$emit('handleAssetCardClick')"
+                            @preview="$emit('handleAssetCardClick', item)"
+                            @listItem:check="(e, item) => $emit('listItem:check', item)"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -92,7 +103,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
+    import { defineComponent, ref, computed, toRefs, watch, PropType } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -162,6 +173,18 @@
                 type: Array,
                 default: () => [],
             },
+            /** Whether the list items are selectable are not. Pass true to show checkboxes */
+            selectable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            /** List of GUIDs for the selected items */
+            selectedItems: {
+                type: Array as PropType<Array<string>>,
+                required: false,
+                default: () => []
+            },
             /** Style Props */
             assetListClass: {
                 type: String,
@@ -180,7 +203,7 @@
                 default: '',
             },
         },
-        emits: ['handleAssetCardClick'],
+        emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
             const limit = ref(20)
             const offset = ref(0)
@@ -211,7 +234,7 @@
                 ...customMetadataProjections,
             ])
 
-            const { filters, attributes } = toRefs(props)
+            const { filters, attributes, selectable, selectedItems } = toRefs(props)
 
             const {
                 list,
@@ -269,6 +292,11 @@
                 return 'Search all assets'
             })
 
+            const checkIfSelected = (guid: string) => {
+                if(!selectable.value) return false
+                return selectedItems.value.includes(guid)
+            }
+
             watch(
                 [filters, postFilters, aggregations],
                 () => {
@@ -296,6 +324,8 @@
                 handleLoadMore,
                 handleSearchChange,
                 handleClearSearch,
+                checkIfSelected,
+                quickChange
             }
         },
     })

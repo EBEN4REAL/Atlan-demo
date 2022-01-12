@@ -137,7 +137,8 @@ meta:
         }
 
         :global(.ant-tabs-tab-active) {
-            @apply font-bold !important;
+            -webkit-text-stroke: 0.65px !important;
+            -moz-text-stroke: 0.65px !important;
         }
 
         :global(.ant-tabs-nav) {

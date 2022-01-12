@@ -71,8 +71,8 @@
                             icon="Lock"
                             class="text-gray-300"
                         ></AtlanIcon> -->
-                        <span v-if="maskCpmputed" class="flex-none text-sm">
-                            {{ maskCpmputed }}
+                        <span v-if="maskComputed" class="flex-none text-sm">
+                            {{ maskComputed }}
                         </span>
                     </div>
                 </div>
@@ -245,7 +245,7 @@
                     policy?.value?.connectionId
                 )
             )
-            const maskCpmputed = computed(
+            const maskComputed = computed(
                 () =>
                     maskPersona.find((el) => el.value === policy.value.type)
                         ?.label
@@ -266,7 +266,7 @@
                 canDelete,
                 visibleDelete,
                 isAddAll,
-                maskCpmputed,
+                maskComputed,
             }
         },
     })

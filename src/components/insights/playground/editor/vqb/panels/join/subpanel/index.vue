@@ -18,37 +18,39 @@
                             :specifiedBodyWidth="161"
                         >
                             <template #head>
-                                <div
-                                    class="flex items-center cursor-pointer py-1.5 px-2 rounded hover:bg-gray-light"
-                                    :class="[
-                                        isAreaFocusedJoinSelector
-                                            ? 'bg-gray-light'
-                                            : '',
-                                    ]"
-                                    v-if="subpanel?.joinType"
-                                >
-                                    <AtlanIcon
-                                        :icon="
-                                            subpanel?.joinType.name.replace(
-                                                ' ',
-                                                ''
-                                            )
-                                        "
-                                        class="text-primary"
-                                    />
+                                <div style="width: 132px">
                                     <div
-                                        class="mb-0 ml-1 text-sm text-gray-700"
+                                        class="inline-flex items-center cursor-pointer py-1.5 px-2 rounded hover:bg-gray-light"
+                                        :class="[
+                                            isAreaFocusedJoinSelector
+                                                ? 'bg-gray-light'
+                                                : '',
+                                        ]"
+                                        v-if="subpanel?.joinType"
                                     >
-                                        {{ subpanel?.joinType.name }}
+                                        <AtlanIcon
+                                            :icon="
+                                                subpanel?.joinType.name.replace(
+                                                    ' ',
+                                                    ''
+                                                )
+                                            "
+                                            class="text-primary"
+                                        />
+                                        <div
+                                            class="mb-0 ml-1 text-sm text-gray-700"
+                                        >
+                                            {{ subpanel?.joinType.name }}
+                                        </div>
+                                        <AtlanIcon
+                                            :icon="
+                                                !isAreaFocusedJoinSelector
+                                                    ? 'ChevronDown'
+                                                    : 'ChevronUp'
+                                            "
+                                            class="h-4 pl-3"
+                                        />
                                     </div>
-                                    <AtlanIcon
-                                        :icon="
-                                            !isAreaFocusedJoinSelector
-                                                ? 'ChevronDown'
-                                                : 'ChevronUp'
-                                        "
-                                        class="h-4 pl-3"
-                                    />
                                 </div>
                             </template>
                             <template #body>
@@ -142,7 +144,7 @@
         ComputedRef,
         computed,
     } from 'vue'
-    import JoinSelector from '../joinSelector/_index.vue'
+    import JoinSelector from '../joinSelector/index.vue'
     import JoinSelectorDropdown from '../joinSelector/joinDropdownBody.vue'
     // import JoinSelector from '~/components/insights/playground/editor/vqb/panels/common/select/select.vue'
 

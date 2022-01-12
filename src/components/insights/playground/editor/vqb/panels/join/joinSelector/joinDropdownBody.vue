@@ -10,7 +10,7 @@
     >
         <template v-for="(item, index) in dropdownOption" :key="item.key">
             <div
-                class="flex items-center justify-between w-full px-4 cursor-pointer h-9 group-hover:bg-primary-light group"
+                class="relative flex items-center justify-between w-full px-4 cursor-pointer h-9 group-hover:bg-primary-light group"
                 @click="(e) => onCheckChange(item, e)"
                 :class="[
                     selectedJoinType.type === item.key
@@ -25,14 +25,14 @@
                 </div>
                 <AtlanIcon
                     icon="Check"
-                    class="text-primary"
+                    class="absolute text-primary group-hover:opacity-0 right-4"
                     v-if="selectedJoinType.type === item.key"
                 />
 
-                <a-popover :trigger="'hover'" placement="right" v-else>
+                <a-popover :trigger="'hover'" placement="right">
                     <AtlanIcon
                         icon="Info"
-                        class="transition opacity-0 cursor-pointer delay-50 text-primary group-hover:opacity-100"
+                        class="absolute transition opacity-0 cursor-pointer right-4 delay-50 text-primary group-hover:opacity-100"
                     />
                     <template #content>
                         <div class="infoPopover">

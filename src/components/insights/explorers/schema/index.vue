@@ -135,7 +135,7 @@
             const storeDiscovery = useAssetStore()
             const { selectedAsset } = ref()
             const isSchemaInitialized = ref(true)
-            const { getFirstQueryConnection } = useUtils()
+            const { getFirstQueryConnection, checkConnection } = useUtils()
             const tables: tableInterface[] = tablesData
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const activeInlineTab = inject(
@@ -337,6 +337,9 @@
             watch(
                 activeInlineTab,
                 () => {
+                    checkConnection(
+                        activeInlineTab?.value?.explorer?.schema?.connectors
+                    )
                     if (activeInlineTab.value) {
                         // console.log(
                         //     'location activeTab: ',
@@ -346,8 +349,40 @@
                             activeInlineTab?.value?.explorer?.schema?.connectors
                                 ?.attributeName
                         ) {
-                            connectorsData.value =
-                                activeInlineTab?.value?.explorer?.schema?.connectors
+                            if (
+                                checkConnection(
+                                    activeInlineTab?.value?.explorer?.schema
+                                        ?.connectors
+                                )
+                            ) {
+                                connectorsData.value =
+                                    activeInlineTab?.value?.explorer?.schema?.connectors
+                            } else {
+                                const activeInlineTabCopy: activeInlineTabInterface =
+                                    { ...activeInlineTab.value }
+
+                                const firstConnection =
+                                    getFirstQueryConnection()
+                                if (
+                                    firstConnection &&
+                                    firstConnection?.attributes?.name
+                                ) {
+                                    activeInlineTabCopy.explorer.schema.connectors.attributeName =
+                                        'connectionQualifiedName'
+                                    activeInlineTabCopy.explorer.schema.connectors.attributeValue =
+                                        firstConnection?.attributes?.qualifiedName
+
+                                    activeInlineTabCopy.playground.editor.context.attributeName =
+                                        'connectionQualifiedName'
+                                    activeInlineTabCopy.playground.editor.context.attributeValue =
+                                        firstConnection?.attributes?.qualifiedName
+                                    modifyActiveInlineTab(
+                                        activeInlineTabCopy,
+                                        tabs,
+                                        activeInlineTabCopy.isSaved
+                                    )
+                                }
+                            }
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 { ...activeInlineTab.value }

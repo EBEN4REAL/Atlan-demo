@@ -142,7 +142,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full"
+                                    class="mb-1 lowercase border-0 rounded-full bg-gray-light"
                                     >{{ e.title }}</a-tag
                                 >
                             </p>

@@ -59,13 +59,18 @@
                 <div>
                     <a-popover
                         v-model:visible="popoverVisible"
-                        placement="left"
+                        :placement="`${emptyStateCTA ? 'bottom' : 'left'}`"
                         trigger="click"
                         :destroy-tooltip-on-hide="true"
                     >
                         <a-button
                             type="primary"
-                            @click="() => setPopoverState(!popoverVisible)"
+                            @click="
+                                () => {
+                                    setPopoverState(!popoverVisible),
+                                        setEmptyStateCTA(false)
+                                }
+                            "
                             >Add User/Group</a-button
                         >
                         <!-- <AtlanBtn
@@ -416,11 +421,48 @@
                 </div>
             </div>
             <EmptyView
-                v-else-if="!filteredList.length"
+                v-else-if="!filteredList.length && queryText"
+                class="mt-4"
                 empty-screen="NoResultIllustration"
-                desc="No results found"
+                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona Add the missing user or group`"
+                :button-text="`${
+                    listType === 'groups'
+                        ? '+ Add Group'
+                        : listType === 'users'
+                        ? '+ Add User'
+                        : '+ Add'
+                }`"
+                @event="
+                    () => {
+                        setPopoverState(!popoverVisible), setEmptyStateCTA(true)
+                    }
+                "
             >
             </EmptyView>
+            <EmptyState
+                v-else-if="!filteredList.length && !queryText"
+                image-class="h-36"
+                empty-screen="CreateGroups"
+                :desc="`${
+                    listType === 'groups'
+                        ? 'Add groups in the persona.'
+                        : listType === 'users'
+                        ? 'Add users in the persona.'
+                        : 'Add users and groups in the persona.'
+                }`"
+                :button-text="`${
+                    listType === 'groups'
+                        ? '+ Add Group'
+                        : listType === 'users'
+                        ? '+ Add User'
+                        : '+ Add'
+                }`"
+                @event="
+                    () => {
+                        setPopoverState(!popoverVisible), setEmptyStateCTA(true)
+                    }
+                "
+            />
         </div>
         <!-- END List -->
     </div>
@@ -443,6 +485,7 @@
     import Loader from '@common/loaders/page.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -466,6 +509,7 @@
             EmptyView,
             AggregationTabs,
             Loader,
+            EmptyState,
         },
         props: {
             persona: {
@@ -481,6 +525,7 @@
 
             const queryText = ref('')
             const popoverVisible = ref(false)
+            const emptyStateCTA = ref(false)
             const addUsersLoading = ref(false)
 
             const { usePersonaUserList, userColumns } = usePersonaUsers
@@ -659,6 +704,10 @@
                 popoverVisible.value = state
             }
 
+            const setEmptyStateCTA = (state: boolean) => {
+                emptyStateCTA.value = state
+            }
+
             const userGroupData: Ref<{
                 ownerUsers: string[]
                 ownerGroups: string[]
@@ -798,6 +847,8 @@
                 groupsError,
                 showRemoveUserPopover,
                 errorUsersGroups,
+                emptyStateCTA,
+                setEmptyStateCTA,
             }
         },
     })

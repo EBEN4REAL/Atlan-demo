@@ -44,7 +44,7 @@
             </div>
         </div>
         <a-divider />
-        <div class="flex items-center justify-end mx-4 gap-x-2">
+        <div class="flex items-center justify-end mx-6 gap-x-2">
             <span class="text-base font-bold text-gray-500"
                 >{{ selectedAssetCount || 'No' }} items selected</span
             >

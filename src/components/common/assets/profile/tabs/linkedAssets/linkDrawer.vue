@@ -5,7 +5,7 @@
         :visible="isVisible"
         :get-container="false"
         :closable="false"
-        :keyboard="true"
+        :keyboard="false"
         :maskClosable="true"
         :mask="true"
         :class="$style.drawerStyle"
@@ -150,7 +150,7 @@
             const AssetListRef = ref()
             // shortcut keys for save linked assets
             const keys = useMagicKeys()
-            const { meta, Enter } = keys
+            const { meta, Enter, Escape } = keys
 
             const closeDrawer = () => {
                 emit('closeDrawer')
@@ -195,6 +195,9 @@
                     meta.value = false
                     saveAssets()
                 }
+            })
+            whenever(Escape, () => {
+                closeDrawer()
             })
 
             provide('updateDrawerList', updateDrawerList)

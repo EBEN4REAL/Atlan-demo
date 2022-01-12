@@ -1,15 +1,12 @@
+<template>
+    <div class="flex w-full h-full">dsadasd</div>
+</template>
+
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
+    import { defineComponent } from 'vue'
 
     export default defineComponent({
-        setup() {
-            const route = useRoute()
-            const router = useRouter()
-            const id = computed(() => route?.params?.id || '')
-            if (id.value !== 'new')
-                router.replace(`/workflows/${id.value}/setup`)
-        },
+        setup() {},
     })
 </script>
 

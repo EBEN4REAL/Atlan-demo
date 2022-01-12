@@ -469,8 +469,9 @@
         </div>
         <hr
             class="mx-2 text-gray-100 bg-gray-200"
-            :v-show="!isSelected"
-            :class="bulkSelectMode && isChecked ? 'hidden' : ''"
+            :class="
+                (bulkSelectMode && isChecked) || isSelected ? 'invisible' : ''
+            "
         />
         <AssetDrawer
             :data="selectedAssetDrawerData"

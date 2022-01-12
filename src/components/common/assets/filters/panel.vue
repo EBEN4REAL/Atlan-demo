@@ -12,13 +12,19 @@
                     >
                         <div class="flex items-center w-full">
                             <img
-                                v-if="item?.options?.logoType === 'image'"
+                                v-if="
+                                    item?.options?.logoType === 'image' &&
+                                    item.options?.imageId
+                                "
                                 class="float-left w-auto h-4 mr-2"
                                 :src="imageUrl(item.options?.imageId)"
                             />
 
                             <span
-                                v-else-if="item?.options?.logoType === 'emoji'"
+                                v-else-if="
+                                    item?.options?.logoType === 'emoji' &&
+                                    item?.options?.emoji
+                                "
                                 class="self-center float-left mr-2 text-base"
                             >
                                 {{ item?.options?.emoji }}

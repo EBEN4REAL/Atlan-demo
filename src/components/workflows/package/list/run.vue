@@ -2,12 +2,19 @@
     <div class="flex-col">
         <div class="flex items-center gap-x-1">
             <template v-for="index in 3" :key="index">
-                <a-tooltip :title="tooltipContent(index)">
-                    <div
-                        class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
-                        :class="getRunClass(index)"
-                    ></div>
-                </a-tooltip>
+                <template v-if="getRunStatus(index)">
+                    <a-tooltip :title="tooltipContent(index)">
+                        <div
+                            class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
+                            :class="getRunClass(index)"
+                        ></div>
+                    </a-tooltip>
+                </template>
+                <div
+                    class="w-3 h-3 p-1 bg-gray-200 rounded-sm cursor-default"
+                    :class="getRunClass(index)"
+                    v-else
+                ></div>
             </template>
         </div>
     </div>
@@ -88,7 +95,7 @@
             const tooltipContent = (index) => {
                 const tempStatus = getRunStatus(index)
 
-                if (tempStatus) {
+                if (!tempStatus) {
                     return ''
                 }
                 if (tempStatus === 'Succeeded') {

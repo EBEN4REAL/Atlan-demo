@@ -78,7 +78,7 @@
                                     ></AtlanIcon>
 
                                     <span
-                                        class="ml-2 parent-ellipsis-container-base"
+                                        class="ml-2 truncate parent-ellipsis-container-base"
                                         >{{ item?.label }}
                                     </span>
                                 </div>
@@ -205,7 +205,7 @@
                                     </AtlanBtn>
                                 </template>
                                 <div
-                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
+                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectColumn(item, e)"
                                     :class="
                                         selectedColumn?.columnQualifiedName ===
@@ -219,29 +219,26 @@
                                     >
                                         <component
                                             :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
                                         ></component>
                                         <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
                                         >
                                             {{ item.label }}
                                         </span>
                                     </div>
                                     <div
-                                        class="flex items-center parent-ellipsis-container-extension"
+                                        class="relative flex items-center h-full"
                                     >
-                                        <div
-                                            class="relative h-full w-14 parent-ellipsis-container-extension"
-                                        >
-                                            <ColumnKeys
-                                                :isPrimary="item.isPrimary"
-                                                :isForeign="item.isForeign"
-                                                :isPartition="item.isPartition"
-                                            />
-                                        </div>
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
+
                                         <AtlanIcon
                                             icon="Check"
-                                            class="ml-2 text-primary parent-ellipsis-container-base"
+                                            class="ml-2 text-primary"
                                             v-if="
                                                 selectedColumn?.columnQualifiedName ===
                                                 item.qualifiedName
@@ -611,6 +608,11 @@
 
     .disable-bg {
         background-color: #fbfbfb;
+    }
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
     }
     .parent-ellipsis-container-base {
         white-space: nowrap;

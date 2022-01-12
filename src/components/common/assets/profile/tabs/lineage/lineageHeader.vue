@@ -15,7 +15,7 @@
                     ></AtlanIcon>
                 </a-tooltip>
             </div>
-            <LineageSearch v-if="showSearch" />
+            <LineageSearch v-if="showSearch" @select="fit" />
         </div>
     </div>
 </template>
@@ -26,6 +26,7 @@
 
     // Components
     import LineageSearch from './lineageSearch.vue'
+    import useTransformGraph from './useTransformGraph'
 
     export default defineComponent({
         name: 'LineageHeader',
@@ -53,6 +54,7 @@
             /** DATA */
             const { highlightedNode, baseEntityGuid, graph } = toRefs(props)
             const showSearch = ref(false)
+            const { fit } = useTransformGraph(graph, emit)
 
             const isLeafNode = computed(() => {
                 const id = highlightedNode.value || baseEntityGuid.value
@@ -64,6 +66,7 @@
                 isLeafNode,
                 emit,
                 showSearch,
+                fit,
             }
         },
     })

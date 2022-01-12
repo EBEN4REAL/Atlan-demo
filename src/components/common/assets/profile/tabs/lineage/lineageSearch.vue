@@ -54,7 +54,8 @@
 
     export default defineComponent({
         components: { SearchAndFilter },
-        setup() {
+        emits: ['select'],
+        setup(_, { emit }) {
             /** DATA */
             const query = ref('')
             const searchItem = ref('')
@@ -83,6 +84,7 @@
             const setSearchItem = (item) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
+                emit('select', item.guid)
             }
 
             const onBlur = () => {

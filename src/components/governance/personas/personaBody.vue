@@ -272,7 +272,7 @@
         emits: ['selectPolicy'],
         setup(prop, { emit }) {
             const searchPersona = ref('')
-            const activeTabFilter = ref('')
+            const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
@@ -286,7 +286,7 @@
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
-                    icon: 'Settings',
+                    icon: 'Policies',
                     handleClick: () => handleAddPolicy('meta'),
                 },
                 {

@@ -491,18 +491,11 @@
                 if (selectedColumn.value?.label && tableSelected?.value) {
                     // retain column view
                     isTableSelected.value = true
-                    // debugger
-                    replaceColumnBody(
-                        getColumnInitialBody(tableSelected?.value)
-                    )
                 } else if (
                     !selectedColumn.value?.label &&
                     tableSelected.value
                 ) {
                     isTableSelected.value = false
-                    replaceTableBody(getTableInitialBody())
-                } else {
-                    replaceTableBody(getTableInitialBody())
                 }
             })
 

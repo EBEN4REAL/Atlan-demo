@@ -45,17 +45,18 @@
                 <a-form-item label="Skills" prop="skills">
                     <a-select
                         v-model:value="formData.skills"
-                        placeholder="Please choose a skill or enter one"
+                        placeholder="Tell everyone what are you great at"
                         :loading="isRequestLoading"
                         mode="tags"
+                        :open="false"
                     >
-                        <a-select-option
+                        <!-- <a-select-option
                             v-for="(skill, index) in formData.skills"
                             :key="index"
                             :value="skill"
                         >
                             {{ skill }}
-                        </a-select-option>
+                        </a-select-option> -->
                     </a-select>
                 </a-form-item>
             </div>

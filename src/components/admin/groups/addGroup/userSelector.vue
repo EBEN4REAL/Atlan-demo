@@ -1,6 +1,17 @@
 <template>
     <div class="">
-        <a-popover
+        <Owners
+            v-model:modelValue="selectedIds"
+            v-model:selectedRecords="selectedRecordsModel"
+            :show-none="false"
+            :enable-tabs="['users']"
+            :hide-disabled-tabs="true"
+            select-user-key="id"
+            :show-logged-in-user="true"
+            :dropdown-style-object="{ width: '430px' }"
+            search-placeholder="Search users"
+        />
+        <!-- <a-popover
             :placement="'bottomLeft'"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
@@ -19,9 +30,9 @@
 
             <template #content>
                 <div>
-                    <OwnerFacets
+                    <Owners
                         v-model:modelValue="selectedIds"
-                        v-model:selectedRecords="selectedRecords"
+                        v-model:selectedRecords="selectedRecordsModel"
                         :show-none="false"
                         :enable-tabs="['users']"
                         :hide-disabled-tabs="true"
@@ -29,9 +40,10 @@
                     />
                 </div>
             </template>
-        </a-popover>
+        </a-popover> -->
+
         <div
-            v-if="selectedRecords?.length"
+            v-if="selectedRecordsModel?.length"
             class="flex flex-col mt-2 overflow-auto"
             :style="userListStyle"
         >
@@ -39,7 +51,7 @@
                 <div class="w-full">
                     <div class="flex flex-col w-full">
                         <template
-                            v-for="user in selectedRecords"
+                            v-for="user in selectedRecordsModel"
                             :key="user.id"
                         >
                             <a-checkbox
@@ -67,6 +79,7 @@
     import { getUserName } from '~/composables/user/useUsers'
     import UserCard from '../common/userCard.vue'
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
+    import Owners from '@/insights/explorers/queries/collection/owner.vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -75,6 +88,7 @@
             UserCard,
             OwnerFacets,
             AtlanBtn,
+            Owners,
         },
         props: {
             userListStyle: {
@@ -85,21 +99,21 @@
         emits: ['updateSelectedUsers'],
         setup(props, { emit }) {
             const selectedIds = ref({})
-            const selectedRecords = ref([])
+            const selectedRecordsModel = ref([])
 
             const handleChange = (event) => {
                 if (!event.target.checked) {
                     const index = selectedIds.value.ownerUsers.indexOf(
                         event.target.value
                     )
-                    const recordIndex = selectedRecords.value.findIndex(
+                    const recordIndex = selectedRecordsModel.value.findIndex(
                         (user) => user.id === event.target.value
                     )
                     if (index > -1) {
                         selectedIds.value.ownerUsers.splice(index, 1)
                     }
                     if (recordIndex > -1) {
-                        selectedRecords.value.splice(recordIndex, 1)
+                        selectedRecordsModel.value.splice(recordIndex, 1)
                     }
                 }
             }
@@ -114,7 +128,7 @@
             return {
                 handleChange,
                 selectedIds,
-                selectedRecords,
+                selectedRecordsModel,
                 getUserName,
             }
         },

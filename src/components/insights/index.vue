@@ -1,5 +1,5 @@
 <template>
-    <div id="fullScreenId" class="flex h-full">
+    <div id="fullScreenId" class="flex h-full overflow-x-hidden">
         <!--Sidebar navigation pane start -->
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
@@ -159,6 +159,8 @@
     import { message } from 'ant-design-vue'
     import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
+    import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
+
     import {
         explorerPaneSize,
         minExplorerSize,
@@ -286,6 +288,30 @@
             const monacoInstance: Ref<any> = ref()
 
             const editorContentSelectionState: Ref<boolean> = ref(false)
+
+            const { dataResponse, renderResponse, totalRenderTime } =
+                useTimeEvent()
+
+            watch([dataResponse, renderResponse], () => {
+                console.log(
+                    'time dataResponse(in sec): ',
+                    dataResponse.value / 1000
+                )
+                console.log(
+                    'time renderResponse(in sec): ',
+                    renderResponse.value / 1000
+                )
+
+                console.log(
+                    'time totalRenderTime(in sec): ',
+                    totalRenderTime.value / 1000
+                )
+                // console.log('time: ', {
+                //     startTime,
+                //     responseTime,
+                //     renderTime,
+                // })
+            })
 
             const setEditorInstance = (
                 editorInstanceParam: any,

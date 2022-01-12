@@ -286,7 +286,7 @@
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
-                    icon: 'Settings',
+                    icon: 'Policies',
                     handleClick: () => handleAddPolicy('meta'),
                 },
                 {

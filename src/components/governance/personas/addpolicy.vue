@@ -10,7 +10,7 @@
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex items-center">
-                    <AtlanIcon v-if="type === 'meta'" icon="Settings" />
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
                     <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
                     <span class="ml-1 font-semibold"
                         >{{
@@ -367,7 +367,7 @@
                     class="drawerAddAsset"
                     :get-container="'body'"
                     @update:assets="handleChangeAssets"
-                    @close="assetSelectorVisible=false"
+                    @close="assetSelectorVisible = false"
                 />
 
                 <a-drawer
@@ -396,7 +396,7 @@
                 class="btn-submit"
                 @click="handleClose"
             >
-                Cancel 
+                Cancel
             </AtlanBtn>
             <AtlanBtn
                 size="sm"

@@ -98,6 +98,29 @@ export default function useWorkflowInfo() {
             return 'bg-gray-200'
         }
     }
+    const getRunBorderClass = (item) => {
+        const tempStatus = phase(item)
+        if (tempStatus === 'Succeeded') {
+            return 'border-green-500 opacity-75'
+        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            return 'border-red-500 opacity-75'
+        } else if (tempStatus === 'Running') {
+            return 'border-blue-500 opacity-75 animate-pulse'
+        }
+        return 'border-gray-200'
+    }
+
+    const getRunTextClass = (item) => {
+        const tempStatus = phase(item)
+        if (tempStatus === 'Succeeded') {
+            return 'text-green-500'
+        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            return 'text-red-500'
+        } else if (tempStatus === 'Running') {
+            return 'text-blue-500 animate-pulse'
+        }
+        return 'bg-gray-200'
+    }
 
     // const getRunTimeContent = (item, relativeTime) => {
     //     const tempStatus = phase(item)
@@ -145,5 +168,7 @@ export default function useWorkflowInfo() {
         isCronRun,
         getRunClass,
         getRunTooltip,
+        getRunBorderClass,
+        getRunTextClass,
     }
 }

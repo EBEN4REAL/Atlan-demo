@@ -105,6 +105,12 @@
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
+            const dirtyTableSelected = inject(
+                'dirtyTableSelected'
+            ) as Ref<Object>
+            const dirtyIsTableSelected = inject(
+                'dirtyIsTableSelected'
+            ) as Ref<Object>
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value

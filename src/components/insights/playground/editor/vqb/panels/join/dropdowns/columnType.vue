@@ -5,7 +5,7 @@
     >
         <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
             <!--  Multiple table column selection-->
-            <div class="w-full dropdown-container" v-if="!isTableSelected">
+            <div class="w-full dropdown-container" v-if="!dirtyIsTableSelected">
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                 >
@@ -29,7 +29,7 @@
                             ? 'flex justify-center items-center'
                             : '',
                     ]"
-                    v-if="!isTableSelected && !isTableLoading"
+                    v-if="!dirtyIsTableSelected && !isTableLoading"
                 >
                     <template
                         v-for="(item, index) in tableDropdownOption"
@@ -107,7 +107,7 @@
                 </div>
             </div>
 
-            <div class="w-full dropdown-container" v-if="isTableSelected">
+            <div class="w-full dropdown-container" v-if="dirtyIsTableSelected">
                 <div
                     class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                     @click.stop="() => {}"
@@ -128,21 +128,21 @@
                             <AtlanIcon
                                 :icon="
                                     getEntityStatusIcon(
-                                        assetType(tableSelected),
-                                        certificateStatus(tableSelected)
+                                        assetType(dirtyTableSelected),
+                                        certificateStatus(dirtyTableSelected)
                                     )
                                 "
                                 class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
                                 style="min-width: 16px"
                             ></AtlanIcon>
 
-                            {{ tableSelected?.label }}
+                            {{ dirtyTableSelected?.label }}
                         </span>
                     </div>
                     <div
                         class="flex items-center justify-between text-gray-500 dropdown-container"
                     >
-                        {{ tableSelected?.columnCount }}
+                        {{ dirtyTableSelected?.columnCount }}
                     </div>
                 </div>
                 <div
@@ -162,7 +162,7 @@
 
                 <div
                     class="w-full dropdown-container"
-                    v-if="isTableSelected && !isColumnLoading"
+                    v-if="dirtyIsTableSelected && !isColumnLoading"
                 >
                     <div
                         class="overflow-y-auto"
@@ -265,13 +265,12 @@
                     </div>
                 </div>
             </div>
-
             <Loader
-                v-if="isColumnLoading && isTableSelected"
+                v-if="isColumnLoading && dirtyIsTableSelected"
                 style="min-height: 100px !important"
             ></Loader>
             <Loader
-                v-if="isTableLoading && !isTableSelected"
+                v-if="isTableLoading && !dirtyIsTableSelected"
                 style="min-height: 100px !important"
             ></Loader>
             <!--  -->
@@ -287,6 +286,7 @@
         defineComponent,
         Ref,
         toRefs,
+        toRaw,
         ref,
     } from 'vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
@@ -327,6 +327,7 @@
             selectedColumn: {
                 type: Object,
                 required: true,
+                default: () => {},
             },
         },
 
@@ -342,6 +343,15 @@
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
             const tableSelected = inject('tableSelected') as Ref<Object>
+            const dirtyTableSelected = inject(
+                'dirtyTableSelected'
+            ) as Ref<Object>
+            const dirtyIsTableSelected = inject(
+                'dirtyIsTableSelected'
+            ) as Ref<Object>
+
+            dirtyTableSelected.value = tableSelected.value
+            dirtyIsTableSelected.value = isTableSelected.value
 
             const TableList = inject('TableList') as Ref<any[]>
             const ColumnList = inject('ColumnList') as Ref<any[]>
@@ -388,7 +398,7 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                if (isTableSelected.value) {
+                if (dirtyIsTableSelected.value) {
                     if (isColumnLoading.value) {
                         data = 'Loading...'
                     } else {
@@ -445,10 +455,10 @@
             })
 
             const onSelectTable = (item, event) => {
-                tableSelected.value = item
-                isTableSelected.value = true
                 tableQueryText.value = ''
                 replaceColumnBody(getColumnInitialBody(item))
+                dirtyIsTableSelected.value = true
+                dirtyTableSelected.value = item
 
                 event.stopPropagation()
                 event.preventDefault()
@@ -456,7 +466,8 @@
                 return false
             }
             const onUnselectTable = (event) => {
-                isTableSelected.value = false
+                dirtyIsTableSelected.value = false
+                dirtyTableSelected.value = null
                 columnDropdownOption.value = []
                 replaceTableBody(getTableInitialBody())
                 event.stopPropagation()
@@ -465,6 +476,8 @@
             }
 
             const onSelectColumn = (item, event) => {
+                tableSelected.value = dirtyTableSelected.value
+                isTableSelected.value = true
                 selectedColumn.value = {
                     label: item.label,
                     type: item.type,
@@ -472,6 +485,7 @@
                     columnQualifiedName: item.qualifiedName,
                     tableName: item.item.attributes.tableName,
                 }
+
                 emit('change', item.qualifiedName)
                 activeInlineTab.value.playground.vqb.selectedTables =
                     JSON.parse(
@@ -496,10 +510,9 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 () => {
-                    if (selectedColumn.value?.label && tableSelected?.value) {
-                    } else {
-                        replaceTableBody(getTableInitialBody())
-                    }
+                    replaceTableBody(getTableInitialBody())
+                    dirtyIsTableSelected.value = false
+                    dirtyTableSelected.value = null
                 },
                 {
                     immediate: true,
@@ -524,25 +537,29 @@
                 }
             )
 
-            watch(isAreaFocused, (newIsAreaFocused) => {
-                if (selectedColumn.value?.label && tableSelected?.value) {
-                    // retain column view
-                    isTableSelected.value = true
-                } else if (
-                    !selectedColumn.value?.label &&
-                    tableSelected.value
-                ) {
-                    isTableSelected.value = false
-                }
-            })
+            watch(
+                isAreaFocused,
+                (newIsAreaFocused) => {
+                    if (newIsAreaFocused) {
+                        dirtyTableSelected.value = toRaw(tableSelected.value)
+                        dirtyIsTableSelected.value = toRaw(
+                            isTableSelected.value
+                        )
+                    } else {
+                        dirtyTableSelected.value = null
+                        dirtyIsTableSelected.value = false
+                    }
+                },
+                { immediate: true }
+            )
 
             watch(tableQueryText, () => {
-                if (!isTableSelected?.value) {
+                if (!dirtyIsTableSelected?.value) {
                     replaceTableBody(getTableInitialBody())
                 }
             })
             watch(columnQueryText, () => {
-                if (isTableSelected?.value) {
+                if (dirtyIsTableSelected?.value) {
                     replaceColumnBody(
                         getColumnInitialBody(tableSelected?.value)
                     )
@@ -574,6 +591,8 @@
                 assetType,
                 certificateStatus,
                 getTableInitialBody,
+                dirtyTableSelected,
+                dirtyIsTableSelected,
             }
         },
     })

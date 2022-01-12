@@ -69,7 +69,14 @@
     </div>
 </template>
 <script lang="ts">
-    import { computed, ComputedRef, inject, defineComponent, toRefs } from 'vue'
+    import {
+        computed,
+        ComputedRef,
+        inject,
+        defineComponent,
+        toRefs,
+        Ref,
+    } from 'vue'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -97,7 +104,8 @@
 
         setup(props, { emit }) {
             const { disabled } = toRefs(props)
-            const { isAreaFocused, selectedJoinType } = useVModels(props)
+            const { selectedJoinType } = useVModels(props)
+            const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const { updateVQB } = useVQB()
             const { list } = useJoin()
             const activeInlineTabKey = inject(

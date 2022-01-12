@@ -1032,27 +1032,15 @@
                 },
                 { immediate: true }
             )
-            watch(isAreaFocused, () => {
-                if (!isAreaFocused.value) {
-                    if (
-                        activeInlineTab.value.playground.vqb.selectedTables
-                            ?.length > 1
-                    ) {
-                        if (selectedItem.value?.label && tableSelected.value) {
-                            isTableSelected.value = true
-
-                            replaceBody(
-                                getColumnInitialBody(tableSelected?.value)
-                            )
-                        } else {
-                            replaceBody(
-                                getTableInitialBody(
-                                    activeInlineTab.value.playground.vqb
-                                        .selectedTables
-                                )
-                            )
-                        }
-                    }
+            watch(isAreaFocused, (newAreadFocused) => {
+                if (!newAreadFocused) {
+                    isTableSelected.value = false
+                    tableSelected.value = null
+                    replaceBody(
+                        getTableInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                 }
             })
 

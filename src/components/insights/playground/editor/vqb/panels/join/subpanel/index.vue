@@ -14,15 +14,14 @@
                         <JoinSelector
                             class="w-full"
                             :disabled="readOnly"
-                            v-model:isAreaFocused="isAreaFocusedJoinSelector"
                             :specifiedBodyWidth="161"
                         >
-                            <template #head>
+                            <template #head="{ data }">
                                 <div style="width: 132px">
                                     <div
                                         class="inline-flex items-center cursor-pointer py-1.5 px-2 rounded hover:bg-gray-light"
                                         :class="[
-                                            isAreaFocusedJoinSelector
+                                            data.isAreaFocused
                                                 ? 'bg-gray-light'
                                                 : '',
                                         ]"
@@ -44,7 +43,7 @@
                                         </div>
                                         <AtlanIcon
                                             :icon="
-                                                !isAreaFocusedJoinSelector
+                                                !data.isAreaFocused
                                                     ? 'ChevronDown'
                                                     : 'ChevronUp'
                                             "
@@ -56,9 +55,6 @@
                             <template #body>
                                 <JoinSelectorDropdown
                                     v-model:selectedJoinType="subpanel.joinType"
-                                    v-model:isAreaFocused="
-                                        isAreaFocusedJoinSelector
-                                    "
                                 />
                             </template>
                         </JoinSelector>
@@ -79,7 +75,7 @@
                             (qualifiedName) =>
                                 handleColumnChange(
                                     qualifiedName,
-                                    subpanel?.id + index + 0
+                                    subpanel?.id + index + 1
                                 )
                         "
                     >
@@ -106,7 +102,7 @@
                                     (qualifiedName) =>
                                         handleColumnChange(
                                             qualifiedName,
-                                            subpanel?.id + index + 0
+                                            subpanel?.id + index + 1
                                         )
                                 "
                             />
@@ -136,7 +132,7 @@
                             (qualifiedName) =>
                                 handleColumnChange(
                                     qualifiedName,
-                                    subpanel?.id + index + 1
+                                    subpanel?.id + index + 2
                                 )
                         "
                     >
@@ -187,7 +183,7 @@
                                     (qualifiedName) =>
                                         handleColumnChange(
                                             qualifiedName,
-                                            subpanel?.id + index + 1
+                                            subpanel?.id + index + 2
                                         )
                                 "
                             />

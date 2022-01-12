@@ -50,7 +50,7 @@
         >
             <div class="flex items-center justify-between mb-3">
                 <div class="w-1/2">
-                    <div class="container-tabs">
+                    <div v-if="totalPolicy !== 0" class="container-tabs">
                         <a-radio-group
                             v-model:value="activeTabFilter"
                             class="flex flex-grow"
@@ -288,7 +288,7 @@
             const { persona } = toRefs(props)
             const userId = computed(() => persona.value.createdBy)
             const searchPersona = ref('')
-            const activeTabFilter = ref('')
+            const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
@@ -302,7 +302,7 @@
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
-                    icon: 'Settings',
+                    icon: 'Policies',
                     handleClick: () => handleAddPolicy('meta'),
                 },
                 {

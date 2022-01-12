@@ -1,30 +1,26 @@
 <template>
     <div
-        class="relative flex items-center justify-center rounded cursor-pointer"
+        class="relative flex items-center justify-center rounded cursor-pointer text-0"
         :style="{ width: size, height: size }"
     >
         <a-spin v-if="isUpdating" />
-        <div v-else class="w-full h-full">
+        <template v-else>
             <div
                 v-if="metadata?.options?.imageId || metadata?.options?.emoji"
-                class="flex items-center justify-center w-full h-full"
+                class=""
                 @click="popOverVisible = !popOverVisible"
             >
-                <div v-if="metadata?.options?.logoType === 'image'">
+                <template v-if="metadata?.options?.logoType === 'image'">
                     <img
                         :src="imageUrl"
                         alt=""
                         class="object-cover w-full"
                         :style="{ height: size }"
                     />
-                </div>
-                <span
-                    v-else
-                    class="self-center block leading-none truncate"
-                    :style="{ fontSize: `calc(${size} - 2px)` }"
-                >
+                </template>
+                <template v-else class="">
                     {{ metadata?.options?.emoji }}
-                </span>
+                </template>
             </div>
             <div
                 v-else
@@ -39,7 +35,7 @@
                     }"
                 />
             </div>
-        </div>
+        </template>
     </div>
 </template>
 

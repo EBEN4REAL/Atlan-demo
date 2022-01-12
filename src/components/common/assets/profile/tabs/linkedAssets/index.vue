@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8">
+    <div class="h-full p-0 bg-white">
         <div class="flex flex-col pt-1 bg-white">
             <div
                 class="flex flex-col items-center justify-center pt-12 pb-20"
@@ -21,19 +21,19 @@
                 >
             </div>
             <div :class="localAssignedEntities.length ? '' : 'hidden'">
-                <AssetList 
+                <AssetList
                     ref="linkedAssetsWrapperRef"
                     :filters="tabFilter"
                     initialCacheKey="LINK_ASSETS_DEFAULT"
                     class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
-                    assetListClass="px-6"
-                    aggregationTabClass="px-6"
-                    searchBarClass="px-6"
+                    assetListClass="px-8"
+                    aggregationTabClass="px-8"
+                    searchBarClass="px-8"
                 >
                     <template #searchAction>
                         <AtlanBtn
-                            class="mx-4 mt-2"
+                            class="mt-2 ml-4 mr-8"
                             size="sm"
                             padding="compact"
                             data-test-id="save"
@@ -131,7 +131,9 @@
             const { localAssignedEntities, handleAssignedEntitiesUpdate } =
                 updateAssetAttributes(selectedAsset)
 
-            const selectedAssetCount = computed(() => selectedItems.value.length)
+            const selectedAssetCount = computed(
+                () => selectedItems.value.length
+            )
 
             const handleCancel = () => {
                 linkedAssets.value = []
@@ -139,7 +141,7 @@
                 selectedItems.value = []
             }
             const openLinkDrawer = () => {
-                selectedItems.value = [ ...localAssignedEntities.value ]
+                selectedItems.value = [...localAssignedEntities.value]
                 isVisible.value = true
             }
             const saveAssets = () => {
@@ -188,7 +190,7 @@
                 selectedAssetCount,
                 tabFilter,
                 linkedAssetsWrapperRef,
-                selectedItems
+                selectedItems,
             }
         },
     })

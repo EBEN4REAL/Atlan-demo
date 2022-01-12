@@ -18,11 +18,8 @@
                 class="flex-1 text-sm bg-transparent focus:outline-none"
                 @keyup.esc="$event.target.blur()"
             />
-            <div class="flex-none h-7 w-7">
-                <button
-                    v-if="value?.length"
-                    class="text-gray-500 hover:text-gray"
-                >
+            <div v-if="value?.length" class="flex-none h-7 w-7">
+                <button class="text-gray-500 hover:text-gray">
                     <AtlanIcon
                         icon="Cancel"
                         class="h-3 m-2"

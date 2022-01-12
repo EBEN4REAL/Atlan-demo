@@ -86,6 +86,7 @@
                         :whitelisted-connections="
                             isEdit ? null : whitelistedConnectionIds
                         "
+                        :hide-power-bi="isEdit ? false : type === 'data' ? true : false"
                         :show-empty-parents="isEdit ? true : false"
                         class="mb-6"
                         :class="isEdit ? 'edit-connector' : ''"

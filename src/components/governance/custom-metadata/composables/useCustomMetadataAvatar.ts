@@ -23,7 +23,7 @@ export default function useCustomMetadataAvatar(metadata, immediate = true) {
 
   const store = useTypedefStore()
   const initializeForm = () => ({
-    logoType: 'image',
+    logoType: '',
     imageId: null,
     emoji: null,
   })

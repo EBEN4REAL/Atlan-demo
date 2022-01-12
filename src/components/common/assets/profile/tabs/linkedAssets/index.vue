@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8">
+    <div class="h-full p-0 bg-white">
         <div class="flex flex-col pt-1 bg-white">
             <div
                 class="flex flex-col items-center justify-center pt-12 pb-20"
@@ -21,24 +21,20 @@
                 >
             </div>
             <div :class="localAssignedEntities.length ? '' : 'hidden'">
-                <AssetsWrapper
+                <AssetList
                     ref="linkedAssetsWrapperRef"
-                    :show-filters="false"
-                    :initial-filters="tabFilter"
-                    :static-use="true"
-                    :show-aggrs="true"
-                    :showCheckBox="false"
-                    cacheKey="LINKED_ASSET_LIST"
-                    :preference="preference"
+                    :filters="tabFilter"
+                    initialCacheKey="LINK_ASSETS_DEFAULT"
+                    class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
-                    :checkableItems="false"
-                    key="linked-assets"
-                    class="asset-list-height"
-                    page="glossary"
+                    customPlaceholder="Search linked assets"
+                    assetListClass="pl-8 pr-6"
+                    aggregationTabClass="pl-8 pr-6 pb-1"
+                    searchBarClass="pl-8"
                 >
                     <template #searchAction>
                         <AtlanBtn
-                            class="mx-4 mt-2"
+                            class="mt-2 ml-4 mr-6"
                             size="sm"
                             padding="compact"
                             data-test-id="save"
@@ -46,17 +42,42 @@
                             >Link assets</AtlanBtn
                         >
                     </template>
-                </AssetsWrapper>
+                </AssetList>
             </div>
         </div>
     </div>
+    <a-modal
+        v-model:visible="isModalVisible"
+        width="25%"
+        :closable="false"
+        okText="Save"
+        cancelText=""
+        :footer="null"
+    >
+        <div class="p-3">
+            <p class="mb-1 font-bold text-md">Discard linked asset changes?</p>
+            <p class="text-md">
+                Your changes haven’t been saved yet. Are you sure you want to
+                discard?
+            </p>
+        </div>
+
+        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
+            <a-button @click="handleModalCancel">Cancel</a-button>
+            <a-button class="text-white bg-error" @click="handleConfirmCancel"
+                >Confirm</a-button
+            >
+        </div>
+    </a-modal>
+
     <LinkAssetsDrawer
         :isVisible="isVisible"
         :preference="preference"
         :selectedAssetCount="selectedAssetCount"
-        @closeDrawer="closeDrawer"
+        @closeDrawer="handleCancel"
         @saveAssets="saveAssets"
         :selected-asset="selectedAsset"
+        v-model:selected-items="selectedItems"
     />
 </template>
 
@@ -77,10 +98,9 @@
     import AssetBrowserTree from '@/governance/personas/assets/assetBrowserTree.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import AssetsWrapper from '@/assets/index.vue'
-    import useBulkUpdateStore from '~/store/bulkUpdate'
-    import AssetList from '~/components/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
 
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import LinkAssetsDrawer from './linkDrawer.vue'
@@ -107,9 +127,10 @@
             // data
             const { qualifiedName } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            const linkedAssets = ref<assetInterface[]>([])
-            const unlinkedAssets = ref<assetInterface[]>([])
-            const bulkStore = useBulkUpdateStore()
+            const linkedAssets = ref<assetInterface[]>([]) // assets which need to be linked in current api call
+            const unlinkedAssets = ref<assetInterface[]>([]) // assets which need to be unlinked in the current api call
+            const selectedItems = ref([]) // assets which have been checked in the drawer
+            const isModalVisible = ref(false)
             const preference = ref({
                 sort: 'default',
                 display: [],
@@ -130,27 +151,22 @@
                 isVisible.value = false
                 linkedAssets.value = []
                 unlinkedAssets.value = []
-                bulkStore.setBulkSelectedAssets([])
+                selectedItems.value = []
             }
-            const selectedAssetCount = computed(() => {
-                const s = new Set([...bulkStore.bulkSelectedAssets])
-                return s.size
-            })
 
             const { localAssignedEntities, handleAssignedEntitiesUpdate } =
                 updateAssetAttributes(selectedAsset)
 
-            const handleCancel = () => {
-                linkedAssets.value = []
-                unlinkedAssets.value = []
-                bulkStore.setBulkSelectedAssets([])
-            }
+            const selectedAssetCount = computed(
+                () => selectedItems.value.length
+            )
+
             const openLinkDrawer = () => {
-                bulkStore.setBulkSelectedAssets(localAssignedEntities.value)
+                selectedItems.value = [...localAssignedEntities.value]
                 isVisible.value = true
             }
-            const saveAssets = () => {
-                const assetSet = new Set([...bulkStore.bulkSelectedAssets])
+            const constructPayload = () => {
+                const assetSet = new Set([...selectedItems.value])
                 const currentCheckedAssets = [...assetSet]
 
                 linkedAssets.value = [...assetSet].filter(
@@ -167,13 +183,33 @@
                                     current.guid === assignedEntity.guid
                             )
                     ) ?? []
+            }
+            const handleCancel = () => {
+                constructPayload()
+                if (linkedAssets.value?.length || unlinkedAssets.value?.length)
+                    isModalVisible.value = true
+                else closeDrawer()
+            }
+
+            const saveAssets = () => {
+                constructPayload()
                 handleAssignedEntitiesUpdate({
                     linkedAssets: linkedAssets.value,
                     unlinkedAssets: unlinkedAssets.value,
                     term: selectedAsset.value,
                 })
 
-                bulkStore.setBulkSelectedAssets([])
+                closeDrawer()
+            }
+            const handleModalCancel = () => {
+                isModalVisible.value = false
+            }
+
+            const handleConfirmCancel = () => {
+                isModalVisible.value = false
+                linkedAssets.value = []
+                unlinkedAssets.value = []
+                selectedItems.value = []
                 closeDrawer()
             }
 
@@ -196,6 +232,10 @@
                 selectedAssetCount,
                 tabFilter,
                 linkedAssetsWrapperRef,
+                selectedItems,
+                isModalVisible,
+                handleModalCancel,
+                handleConfirmCancel,
             }
         },
     })

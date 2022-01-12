@@ -55,7 +55,6 @@
             style="height: 32px !important"
             @change="(event) => onChange(event, 'first', type)"
             type="number"
-            @keypress="isNumberKey(event)"
         >
             <template #suffix>
                 <CustomVariableTrigger
@@ -120,7 +119,6 @@
             style="height: 32px !important"
             @change="(event) => onChange(event, 'second', type)"
             type="number"
-            @keypress="isNumberKey(event)"
         >
             <template #suffix>
                 <CustomVariableTrigger
@@ -220,6 +218,8 @@
                 secondValue.value = inputValue.value
                     ? dayjs(inputValue.value[1])
                     : undefined
+                inputValue.value[0] = firstvalue.value
+                inputValue.value[1] = secondValue.value
             }
 
             let timeout = null
@@ -236,21 +236,15 @@
             const onChange = (event, _pos, type) => {
                 if (type === 'text') {
                     if (_pos === 'first') {
-                        inputValue.value = [
-                            event.target.value,
-                            secondValue.value,
-                        ]
+                        inputValue.value = [firstvalue.value, secondValue.value]
                     } else {
-                        inputValue.value = [
-                            firstvalue.value,
-                            event.target.value,
-                        ]
+                        inputValue.value = [firstvalue.value, firstvalue.value]
                     }
                 } else if (type === 'number') {
                     if (_pos === 'first') {
-                        inputValue.value = [event, secondValue.value]
+                        inputValue.value = [firstvalue.value, secondValue.value]
                     } else {
-                        inputValue.value = [firstvalue.value, event]
+                        inputValue.value = [firstvalue.value, secondValue.value]
                     }
                 } else if (type === 'date') {
                     // event -> date in YYYY-MM-DD HH:mm:ss format in string

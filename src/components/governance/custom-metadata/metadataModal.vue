@@ -7,7 +7,12 @@
         :width="632"
     >
         <template #footer>
-            <div class="flex items-center justify-end space-x-3">
+            <div class="flex items-center justify-between space-x-3">
+                <div v-if="!isEdit" class="flex items-center space-x-2">
+                    <a-switch v-model:checked="createMore" size="small" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex-grow"></div>
                 <a-button class="border-0" @click="visible = false"
                     >Cancel</a-button
                 >
@@ -38,12 +43,20 @@
                             class="text-lg"
                             >{{ form.options.emoji }}</span
                         >
-                        <img
-                            v-else-if="form.options.logoType === 'image'"
-                            class="w-5 h-5"
-                            :src="my_photo"
-                            alt=""
-                        />
+                        <template v-if="form.options.logoType === 'image'">
+                            <img
+                                v-if="my_photo"
+                                class="w-5 h-5"
+                                :src="my_photo"
+                                alt="IMG"
+                            />
+                            <img
+                                v-else-if="imageUrl"
+                                class="w-5 h-5"
+                                :src="imageUrl"
+                                alt="IMG"
+                            />
+                        </template>
                         <div
                             v-else
                             class="flex items-center justify-center w-full h-full"
@@ -89,6 +102,7 @@
 
     import EmojiPicker from '@/common/avatar/emojiPicker.vue'
     import useUploadImage from '~/composables/image/uploadImage'
+    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     export default defineComponent({
         components: { AtlanButton, EmojiPicker },
@@ -102,7 +116,7 @@
                 default: () => {},
             },
         },
-        emits: ['update:selected'],
+        emits: ['select'],
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
@@ -113,6 +127,7 @@
             })
             const visible = ref(false)
             const loading = ref(false)
+            const createMore = ref(false)
             const error = ref(null)
             const form = ref(initializeForm())
 
@@ -141,7 +156,7 @@
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
                     message.success('Metadata created')
-                    emit('update:selected', serviceResponse[0].guid)
+                    emit('select', serviceResponse[0].guid)
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
@@ -155,7 +170,8 @@
                         if (
                             apiResponse.value?.data?.businessMetadataDefs.length
                         ) {
-                            visible.value = false
+                            if (!createMore.value) visible.value = false
+                            else form.value = initializeForm()
                             handleBmUpdateSuccess(
                                 apiResponse.value.data.businessMetadataDefs
                             )
@@ -190,6 +206,7 @@
             const emojiVisibility = ref(false)
             const imageFile = ref()
             const my_photo = ref()
+            const { imageUrl } = useCustomMetadataAvatar(form)
 
             // image uploader ======================================================
             const {
@@ -269,6 +286,8 @@
             }
 
             return {
+                imageUrl,
+                createMore,
                 my_photo,
                 emojiRemove,
                 handleUpload,

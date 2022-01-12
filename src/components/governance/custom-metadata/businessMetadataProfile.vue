@@ -3,11 +3,12 @@
         <div
             class="flex items-start justify-between px-4 pb-4 bg-white border-b pt-7"
         >
-            <div class="w-full">
-                <div class="flex items-center gap-2 mb-2">
+            <div class="w-full text-xl">
+                <div class="flex gap-2 mb-2">
                     <AvatarUpdate :metadata="localBm" />
-                    <div class="w-full text-xl">
+                    <div class="w-full">
                         <Truncate
+                            class="mt-0.5"
                             :tooltip-text="localBm.displayName"
                             :rows="2"
                         />

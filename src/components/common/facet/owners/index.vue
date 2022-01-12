@@ -24,7 +24,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'users'
-                                            ? 'text-primary font-bold '
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="User"
@@ -46,7 +46,7 @@
                                 <AtlanIcon
                                     :class="
                                         componentType === 'groups'
-                                            ? 'text-primary font-bold'
+                                            ? 'text-primary font-bold bg-primary-light rounded'
                                             : ''
                                     "
                                     icon="GroupStatic"
@@ -167,7 +167,12 @@
             selectedRecords: {
                 type: Object,
                 default: null,
+                required: false
+            },
+            activeTab: {
+                type: String,
                 required: false,
+                default: '',
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -180,9 +185,9 @@
                 selectUserKey,
                 selectGroupKey,
                 groupId,
+                activeTab,
             } = toRefs(props)
-            const componentType = ref('users')
-
+            const componentType = ref(activeTab.value || 'users')
             const usersRef = ref()
             const groupRef = ref()
 

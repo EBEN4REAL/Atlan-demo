@@ -18,7 +18,17 @@
         <div class="w-full p-2 mt-3 bg-gray-100 rounded error-lines-area">
             <template v-for="(item, i) in renderedLines" :key="i">
                 <div class="flex">
-                    <span class="mr-2" style="color: #a5a5a5">{{
+                    <span
+                        v-if="item?.index === queryErrorObj?.details?.line"
+                        class="w-1.5 h-1.5 rounded-full mt-1.5"
+                        style="background-color: #cf592e"
+                    ></span>
+                    <span
+                        v-if="item.index !== queryErrorObj?.details?.line"
+                        class="w-1.5 h-1.5 rounded-full mt-1.5"
+                        style="background: transparent"
+                    ></span>
+                    <span class="ml-1 mr-2" style="color: #a5a5a5">{{
                         item.index
                     }}</span>
                     <!-- :style="`color:${getTokenColor(kt)}`" -->

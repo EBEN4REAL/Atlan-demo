@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-center w-full px-8 pt-3">
+    <div
+        class="flex items-center w-full px-8 pt-3"
+        :class="{ 'pr-6': isGTC(item) }"
+    >
         <a-button class="px-1" @click="back">
             <atlan-icon
                 icon="ArrowRight"
@@ -410,9 +413,9 @@
                 window.open(webURL(item.value), '_blank').focus()
             }
 
-            whenever(and(Escape, notUsingInput), (v) => {
+            /*  whenever(and(Escape, notUsingInput), (v) => {
                 if (v) back()
-            })
+            }) */
             const { checkAccess } = useAuth()
 
             return {

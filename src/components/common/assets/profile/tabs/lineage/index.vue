@@ -47,7 +47,7 @@
         provide,
         onMounted,
     } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
+    import { useRoute } from 'vue-router'
     import { whenever } from '@vueuse/core'
 
     // Libs
@@ -75,7 +75,6 @@
         emits: ['preview'],
         setup(_, { emit }) {
             const route = useRoute()
-            const router = useRouter()
 
             /** DATA */
             const lineage = ref({})
@@ -149,17 +148,6 @@
                 isFirstLoad.value = false
             })
 
-            // updateRouterQuery
-            const updateRouterQuery = () => {
-                router.replace({
-                    query: {
-                        depth: depth.value,
-                        direction: direction.value,
-                        select: selectedAssetGuid.value,
-                    },
-                })
-            }
-
             // Control
             const control = (type, item = null) => {
                 if (type === 'depth') {
@@ -177,25 +165,10 @@
                 if (type === 'selectedAsset') selectedAsset.value = item
                 if (type === 'selectedAssetGuid') selectedAssetGuid.value = item
                 if (['depth', 'direction'].includes(type)) mutate()
-
-                updateRouterQuery()
             }
 
             /** LIFECYCLES */
             onMounted(() => {
-                const { depth: de, direction: di, select: se } = route.query
-                if (de)
-                    depth.value = [1, 2, 3, 21].includes(Number(de))
-                        ? Number(de)
-                        : depth.value
-                if (di)
-                    direction.value = ['both', 'input', 'output'].includes(
-                        di.toLowerCase()
-                    )
-                        ? di
-                        : direction.value
-                if (se) selectedAssetGuid.value = se
-                updateRouterQuery()
                 mutate()
             })
 

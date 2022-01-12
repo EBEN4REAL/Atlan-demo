@@ -256,7 +256,10 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
-            const { getSummarisedInfoOfSortPanel } = useUtils()
+            const {
+                getSummarisedInfoOfSortPanel,
+                getInitialPanelExpandedState,
+            } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -274,18 +277,38 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const expand = ref(
-                activeInlineTab.value.playground.vqb.panels[index.value]?.expand
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
             )
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
-                            index.value
-                        ]?.expand
-                }
+
+            activeInlineTab.value.playground.vqb.panels[index.value].expand =
+                getInitialPanelExpandedState(
+                    readOnly.value,
+                    panel.value,
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        ?.expand
+                )
+
+            const expand = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             )
+
             const checkbox = ref(true)
             const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
@@ -306,6 +329,7 @@
                 else return 'height:104%;;bottom:0'
             }
             const handleAddPanel = (index, type, panel) => {
+                containerHovered.value = false
                 handleAdd(
                     index,
                     type,
@@ -319,7 +343,6 @@
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
             }
             const toggleExpand = () => {
-                expand.value = !expand.value
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
                 ].expand =
@@ -339,23 +362,6 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            /* Accesss */
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser.value
-                    ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
-            )
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTabKey, inlineTabs)
             }

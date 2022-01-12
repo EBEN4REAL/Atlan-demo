@@ -12,6 +12,7 @@ export function usePackageBody(
     offset?: any,
     limit?: any,
     facets?: Record<string, any>,
+    postFacets?: Record<string, any>,
     preference?: Record<string, any>,
     aggregations?: string[]
 ) {
@@ -227,6 +228,32 @@ export function usePackageBody(
         }
     })
 
+    //post filters
+    const postFilter = bodybuilder()
+    Object.keys(postFacets ?? {}).forEach((mkey) => {
+        const filterObject = postFacets[mkey]
+        switch (mkey) {
+            case 'typeName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.labels.orchestration.atlan.com/type.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                }
+                break
+            }
+        }
+    })
+    base.rawOption('post_filter', postFilter.build().query)
+
     if (aggregations) {
         aggregations?.forEach((mkey) => {
             switch (mkey) {
@@ -254,7 +281,24 @@ export function usePackageBody(
                             },
                         },
                     })
-
+                    break
+                }
+                case 'by_type': {
+                    base.rawOption('aggs', {
+                        by_type: {
+                            nested: {
+                                path: 'metadata',
+                            },
+                            aggs: {
+                                by_type: {
+                                    terms: {
+                                        field: 'metadata.labels.orchestration.atlan.com/type.keyword',
+                                        size: 200,
+                                    },
+                                },
+                            },
+                        },
+                    })
                     break
                 }
             }

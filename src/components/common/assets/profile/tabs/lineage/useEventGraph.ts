@@ -63,7 +63,10 @@ export default function useEventGraph(
 
     // highlight
     const highlight = (guid, styleHighlightedNode = true) => {
-        if (guid === highlightedNode.value) onCloseDrawer()
+        if (guid === highlightedNode.value) {
+            onCloseDrawer()
+            assetGuidToHighlight.value = ''
+        }
 
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
@@ -74,7 +77,6 @@ export default function useEventGraph(
             styleHighlightedNode ? highlightedNode : '',
             nodesToHighlight
         )
-        assetGuidToHighlight.value = ''
         loaderCords.value = {}
     }
 
@@ -373,10 +375,51 @@ export default function useEventGraph(
         }
     }
 
+    const activeNodesToggled = ref({})
+
+    // handleToggleOfActiveNode
+    const handleToggleOfActiveNode = (node) => {
+        const ports = node.getPorts()
+        ports.shift()
+        activeNodesToggled.value[node.id] = { ports, newEdgesId: [], edges: [] }
+
+        const graphEdges = graph.value.getEdges()
+        const newEdgesIdSet = new Set()
+
+        ports.forEach((port) => {
+            const edges = graphEdges.filter((edge) => edge.id.includes(port.id))
+
+            edges.forEach((edge) => {
+                const [_, processId, sourceTarget] = edge.id.split('/')
+                const [source, target] = sourceTarget.split('@')
+                const invisiblePort = `${node.id}-invisiblePort`
+                let newSource = source
+                let newTarget = target
+                if (source === port.id) newSource = invisiblePort
+                if (target === port.id) newTarget = invisiblePort
+                const newEdgeId = `port/${processId}/${newSource}@${newTarget}`
+
+                newEdgesIdSet.add(newEdgeId)
+
+                const newRelation = {
+                    fromEntityId: newSource,
+                    toEntityId: newTarget,
+                    processId,
+                }
+                createRelations([newRelation])
+            })
+            activeNodesToggled.value[node.id].edges.push(...edges)
+        })
+
+        activeNodesToggled.value[node.id].newEdgesId = Array.from(newEdgesIdSet)
+    }
+
     // registerCaretListeners
     const registerCaretListeners = () => {
         caretsArray.forEach((x) => {
-            x.addEventListener('mousedown', function nodeCaretFxn(e) {
+            x.addEventListener('mousedown', (e) => {
+                e.stopPropagation()
+
                 loaderCords.value = { x: e.clientX, y: e.clientY }
 
                 const ele = getEventPath(e).find((x) =>
@@ -418,12 +461,13 @@ export default function useEventGraph(
                         activeNodesToggled.value[node.id].newEdgesId.forEach(
                             (edgeId) => {
                                 const cell = graph.value.getCellById(edgeId)
-                                cell.remove()
+                                if (cell) cell.remove()
                             }
                         )
                         delete activeNodesToggled.value[node.id]
                         loaderCords.value = {}
                     }
+                    return
                 }
 
                 if (
@@ -436,56 +480,13 @@ export default function useEventGraph(
                     translateExpandedNodesToDefault(node)
                     loaderCords.value = {}
                 }
-
-                e.stopPropagation()
             })
         })
     }
     registerCaretListeners()
 
-    const activeNodesToggled = ref({})
-
-    // handleToggleOfActiveNode
-    const handleToggleOfActiveNode = (node) => {
-        const ports = node.getPorts()
-        ports.shift()
-        activeNodesToggled.value[node.id] = { ports, newEdgesId: [], edges: [] }
-
-        const graphEdges = graph.value.getEdges()
-        const newEdgesIdArr = []
-
-        ports.forEach((port) => {
-            const edges = graphEdges.filter((edge) => edge.id.includes(port.id))
-
-            edges.forEach((edge) => {
-                const [_, processId, sourceTarget] = edge.id.split('/')
-                const [source, target] = sourceTarget.split('@')
-                const invisiblePort = `${node.id}-invisiblePort`
-                let newSource = source
-                let newTarget = target
-                if (source === port.id) newSource = invisiblePort
-                if (target === port.id) newTarget = invisiblePort
-                const newEdgeId = `port/${processId}/${newSource}@${newTarget}`
-
-                newEdgesIdArr.push(newEdgeId)
-
-                const newRelation = {
-                    fromEntityId: newSource,
-                    toEntityId: newTarget,
-                    processId,
-                }
-                createRelations([newRelation])
-            })
-            activeNodesToggled.value[node.id].edges.push(...edges)
-        })
-
-        activeNodesToggled.value[node.id].newEdgesId = newEdgesIdArr
-    }
-
     const selectPort = (node, e, portId) => {
-        const chpNode = graph.value
-            .getNodes()
-            .find((x) => x.hasPort(chp.value.portId))
+        const chpNode = getPortNode(chp.value.portId)
         if (chpNode) {
             chp.value.expandedNodes.push(chpNode)
             chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
@@ -509,8 +510,10 @@ export default function useEventGraph(
         getColumnLineage(portId)
     }
 
+    // deselectPort
     const deselectPort = (node) => {
-        node.setPortProp(chp.value.portId, 'attrs/portBody', {
+        const chpNode = getPortNode(chp.value.portId)
+        chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
             fill: '#ffffff',
         })
         chp.value.expandedNodes.forEach((x) => {

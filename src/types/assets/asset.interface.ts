@@ -50,6 +50,12 @@ export interface assetInterface {
         announcementType: string
         announcementUpdatedAt: number
         announcementUpdatedBy: string
+        reportCount: number
+        dashboardCount: number
+        datasetCount: number
+        dataflowCount: number
+        tileCount: number
+        pageCount: number
         link: string
         table?: {
             guid: string

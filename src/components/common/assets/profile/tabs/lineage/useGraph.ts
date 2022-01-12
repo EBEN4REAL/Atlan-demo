@@ -1,28 +1,39 @@
 import { ref } from 'vue'
-import { getNodeSourceImage } from './util.js'
-import { iconProcess, iconEllipse, iconCaretDown } from './icons'
+import { getNodeSourceImage, getSource, getSchema } from './util.js'
+import {
+    iconProcess,
+    iconEllipse,
+    iconCaretDown,
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+} from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
-
-const getSource = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[1]
-    return item[0]
-}
-const getSchema = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[4]
-    return item[3]
-}
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
         const { guid, typeName, attributes } = entity
+        const { certificateStatus } = attributes
+        let status = ''
         let { displayText } = entity
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
+
+        if (certificateStatus) {
+            switch (certificateStatus) {
+                case 'VERIFIED':
+                    status = iconVerified
+                    break
+                case 'DRAFT':
+                    status = iconDraft
+                    break
+                default:
+                    status = iconDeprecated
+            }
+        }
 
         if (!displayText) displayText = attributes.name
 
@@ -71,7 +82,7 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-16">${status} ${iconCaretDown}</span>
                                         </span>
                                         <div class="truncate">${displayText}</div>
                                         
@@ -84,10 +95,10 @@ export default function useGraph() {
                                                 ? iconEllipse
                                                 : ''
                                         }
-                                       <div class="node-meta__text text-truncate ${
+                                       <div class="node-meta__text  truncate ${
                                            ['Table', 'View'].includes(typeName)
                                                ? ''
-                                               : 'd-none'
+                                               : 'hidden'
                                        }">${schemaName || ''}</div>
                                     </div>
                                 </div>       

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
         <SearchAdvanced
             ref="searchBox"
             v-model="queryText"

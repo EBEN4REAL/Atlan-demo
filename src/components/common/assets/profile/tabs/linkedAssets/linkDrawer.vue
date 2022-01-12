@@ -200,7 +200,6 @@
             }
             const handleAssetCardClick = (item) => {
                 childrenDrawer.value = true
-                handleAssetItemCheck(item)
                 drawerAsset.value = item
             }
 

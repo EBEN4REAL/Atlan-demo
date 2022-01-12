@@ -102,6 +102,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'LinkedAssetsDrawer',
@@ -147,8 +148,11 @@
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
+            // shortcut keys for save linked assets
+            const keys = useMagicKeys()
+            const { meta, Enter } = keys
+
             const closeDrawer = () => {
-                // isModalVisible.value = true
                 emit('closeDrawer')
             }
             const saveAssets = () => {
@@ -185,6 +189,14 @@
                 drawerAsset.value = item
                 AssetListRef.value?.updateList(item)
             }
+            whenever(Enter, () => {
+                if (meta.value && Enter.value) {
+                    Enter.value = false
+                    meta.value = false
+                    saveAssets()
+                }
+            })
+
             provide('updateDrawerList', updateDrawerList)
             return {
                 certificateStatus,

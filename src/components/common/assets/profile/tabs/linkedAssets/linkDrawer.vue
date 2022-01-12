@@ -83,29 +83,6 @@
             ></AssetPreview>
         </a-drawer>
     </a-drawer>
-    <a-modal
-        v-model:visible="isModalVisible"
-        width="25%"
-        :closable="false"
-        okText="Save"
-        cancelText=""
-        :footer="null"
-    >
-        <div class="p-3">
-            <p class="mb-1 font-bold text-md">Discard linked asset changes?</p>
-            <p class="text-md">
-                Your changes haven’t been saved yet. Are you sure you want to
-                discard?
-            </p>
-        </div>
-
-        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
-            <a-button @click="handleCancel">Cancel</a-button>
-            <a-button class="text-white bg-error" @click="handleConfirmCancel"
-                >Confirm</a-button
-            >
-        </div>
-    </a-modal>
 </template>
 
 <script lang="ts">
@@ -167,13 +144,12 @@
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
-            const isModalVisible = ref(false)
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
             const closeDrawer = () => {
-                isModalVisible.value = true
-                // emit('closeDrawer')
+                // isModalVisible.value = true
+                emit('closeDrawer')
             }
             const saveAssets = () => {
                 emit('saveAssets')
@@ -184,13 +160,6 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
             } = useAssetInfo()
-            const handleCancel = () => {
-                isModalVisible.value = false
-            }
-            const handleConfirmCancel = () => {
-                isModalVisible.value = false
-                emit('closeDrawer')
-            }
             const checkedGuids = computed(() =>
                 selectedItems.value.map((item: any) => item.guid)
             )
@@ -224,10 +193,7 @@
                 certificateStatusMessage,
                 closeDrawer,
                 saveAssets,
-                isModalVisible,
                 checkedGuids,
-                handleCancel,
-                handleConfirmCancel,
                 handleAssetItemCheck,
                 childrenDrawer,
                 handleAssetCardClick,

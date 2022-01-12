@@ -14,8 +14,18 @@
                         :rows="2"
                         width="500px"
                         placement="left"
-                        classes="text-primary hover:underline"
-                        :routeTo="`/governance/custom-metadata/${data.guid}`"
+                        :classes="
+                            checkAccess(page.PAGE_GOVERNANCE)
+                                ? 'text-primary hover:underline'
+                                : ''
+                        "
+                        v-bind="
+                            checkAccess(page.PAGE_GOVERNANCE)
+                                ? {
+                                      routeTo: `/governance/custom-metadata/${data.guid}`,
+                                  }
+                                : {}
+                        "
                     />
 
                     <a-tooltip>
@@ -405,6 +415,8 @@
     import { getDataTypeIcon } from '~/utils/dataType'
     import Truncate from '@/common/ellipsis/index.vue'
     import { truncate } from '~/utils/string'
+    import page from '~/constant/accessControl/page'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -432,6 +444,7 @@
             const loading = ref(false)
             const showMore = ref(false)
             const guid = ref()
+            const { checkAccess } = useAuth()
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
@@ -686,6 +699,8 @@
             })
 
             return {
+                checkAccess,
+                page,
                 getHumanTypeName,
                 isProfile,
                 getDataTypeIcon,

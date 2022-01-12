@@ -74,7 +74,7 @@
         "
         :show-time="dataType.toLowerCase() === 'datetime'"
         :allow-clear="true"
-        value-format="X"
+        value-format="x"
         @change="handleInputChange"
     />
 

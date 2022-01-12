@@ -617,20 +617,25 @@
                 },
             ])
             const placeholder = computed(() => {
+                const usersPlaceholder =
+                    userList.value.length > 1 ? 'users' : 'user'
+                const groupsPlaceholder =
+                    groupList.value.length > 1 ? 'groups' : 'group'
                 if (listType.value !== 'all')
                     return `Search from ${
                         listType.value === 'users'
-                            ? userList.value.length
-                            : groupList.value.length
-                    } ${listType.value}`
+                            ? `${userList.value.length} ${usersPlaceholder}`
+                            : `${groupList.value.length} ${groupsPlaceholder}`
+                    }`
 
                 if (userList.value.length && groupList.value.length)
-                    return `Search from ${userList.value.length} users and ${groupList.value.length} groups`
+                    return `Search from ${userList.value.length} ${usersPlaceholder} and ${groupList.value.length} ${groupsPlaceholder}`
                 if (userList.value.length)
-                    return `Search from ${userList.value.length} users`
+                    return `Search from ${userList.value.length} ${usersPlaceholder} `
                 if (groupList.value.length)
-                    return `Search from ${groupList.value.length} groups`
-
+                    return `Search from ${groupList.value.length} ${groupsPlaceholder}`
+                if (!userList.value.length && !groupList.value.length)
+                    return `Search from ${userList.value.length} user and ${groupList.value.length} group`
                 return ''
             })
 

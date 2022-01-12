@@ -10,34 +10,32 @@
             <div class="flex items-center mb-1">
                 <AtlanIcon
                     v-if="type === 'meta'"
-                    icon="Settings"
-                    class="-mt-0.5"
+                    icon="Policies"
+                    class="-mt-1"
                 />
                 <AtlanIcon
                     v-if="type === 'data'"
                     icon="QueryGrey"
                     class="-mt-1"
                 />
-                <span
-                    class="ml-1 text-gray-500 uppercase"
-                    data-test-id="policy-type"
-                    >{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span
-                >
-                <span class="text-gray-500">/{{ policy?.name }}</span>
+                <span class="ml-1 text-gray-500" data-test-id="policy-type">{{
+                    type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                }}</span>
+                <span class="mx-1 text-gray-500">/</span>
+                <span class="text-gray-500">{{ policy?.name }}</span>
                 <div class=""></div>
             </div>
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-x-3">
+                <div class="flex items-center">
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
-                            class="w-auto h-4 pr-1 -mt-1 rounded-tl rounded-bl"
+                            class="w-auto h-4 pr-1 rounded-tl rounded-bl"
                         />
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
+                        <span class="text-gray-300 mx-1.5">•</span>
                         <span v-if="!isAddAll" class="flex-none text-sm">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
@@ -47,6 +45,7 @@
                         </span>
                     </div>
                     <div v-if="policy.actions.length > 0 && type === 'meta'">
+                        <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm">
                             {{ policy.actions.length }}
                             {{
@@ -57,7 +56,24 @@
                         </span>
                     </div>
                     <div v-if="type === 'data'">
+                        <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm"> Query Access </span>
+                    </div>
+                    <div
+                        v-if="
+                            type === 'data' &&
+                            policy?.type &&
+                            policy?.type != 'null'
+                        "
+                    >
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <!-- <AtlanIcon
+                            icon="Lock"
+                            class="text-gray-300"
+                        ></AtlanIcon> -->
+                        <span class="flex-none text-sm">
+                            {{ policy?.type }}
+                        </span>
                     </div>
                 </div>
                 <span v-if="!policy.allow" class="mr-5 denied-policy-pill">

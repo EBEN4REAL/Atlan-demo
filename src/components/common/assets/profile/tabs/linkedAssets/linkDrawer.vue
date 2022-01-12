@@ -14,7 +14,7 @@
     >
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
             <div class="absolute w-full h-full pt-4 bg-white">
-                <div class="flex items-center mx-4 mt-2">
+                <div class="flex items-center mx-6 mt-2">
                     <Tooltip
                         :tooltip-text="`Select and link assets to ${selectedAsset?.displayText}`"
                         classes="text-base font-bold text-gray-500"
@@ -35,7 +35,7 @@
                     :selectable="true"
                     :openAssetProfileInNewTab="true"
                     :selectedItems="checkedGuids"
-                    assetListClass="px-6"
+                    assetListClass="px-6 mt-2"
                     aggregationTabClass="px-6"
                     searchBarClass="px-6"
                     @listItem:check="handleAssetItemCheck"
@@ -44,25 +44,27 @@
             </div>
         </div>
         <a-divider />
-        <div class="flex items-center justify-end mx-4 gap-x-2">
-            <span class="text-base font-bold text-gray-500"
+        <div class="flex items-center justify-between mx-6 gap-x-2">
+            <span class="text-base font-bold text-gray-500 justify-self-start"
                 >{{ selectedAssetCount || 'No' }} items selected</span
             >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                color="secondary"
-                @click="closeDrawer"
-                data-test-id="cancel"
-                >Cancel</AtlanBtn
-            >
-            <AtlanBtn
-                size="sm"
-                padding="compact"
-                data-test-id="save"
-                @click="saveAssets"
-                >Link asset(s)</AtlanBtn
-            >
+            <div class="flex items-center gap-x-2">
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    color="secondary"
+                    @click="closeDrawer"
+                    data-test-id="cancel"
+                    >Cancel</AtlanBtn
+                >
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    data-test-id="save"
+                    @click="saveAssets"
+                    >Link asset(s)</AtlanBtn
+                >
+            </div>
         </div>
 
         <a-drawer
@@ -200,7 +202,6 @@
             }
             const handleAssetCardClick = (item) => {
                 childrenDrawer.value = true
-                handleAssetItemCheck(item)
                 drawerAsset.value = item
             }
 

@@ -43,12 +43,20 @@
                             class="text-lg"
                             >{{ form.options.emoji }}</span
                         >
-                        <img
-                            v-else-if="form.options.logoType === 'image'"
-                            class="w-5 h-5"
-                            :src="my_photo"
-                            alt=""
-                        />
+                        <template v-if="form.options.logoType === 'image'">
+                            <img
+                                v-if="my_photo"
+                                class="w-5 h-5"
+                                :src="my_photo"
+                                alt="IMG"
+                            />
+                            <img
+                                v-else-if="imageUrl"
+                                class="w-5 h-5"
+                                :src="imageUrl"
+                                alt="IMG"
+                            />
+                        </template>
                         <div
                             v-else
                             class="flex items-center justify-center w-full h-full"
@@ -94,6 +102,7 @@
 
     import EmojiPicker from '@/common/avatar/emojiPicker.vue'
     import useUploadImage from '~/composables/image/uploadImage'
+    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     export default defineComponent({
         components: { AtlanButton, EmojiPicker },
@@ -197,6 +206,7 @@
             const emojiVisibility = ref(false)
             const imageFile = ref()
             const my_photo = ref()
+            const { imageUrl } = useCustomMetadataAvatar(form)
 
             // image uploader ======================================================
             const {
@@ -276,6 +286,7 @@
             }
 
             return {
+                imageUrl,
                 createMore,
                 my_photo,
                 emojiRemove,

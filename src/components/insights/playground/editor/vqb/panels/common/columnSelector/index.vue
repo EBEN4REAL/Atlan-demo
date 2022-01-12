@@ -686,7 +686,7 @@
                 } else {
                     setFocusedCusror()
                 }
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -751,7 +751,7 @@
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             onMounted(() => {
@@ -933,7 +933,6 @@
                 inputValue1.value = ''
                 inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
-                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -1054,7 +1053,6 @@
                             )
                         }
                     }
-                    updateVQB(activeInlineTabKey, inlineTabs)
                 }
             })
 

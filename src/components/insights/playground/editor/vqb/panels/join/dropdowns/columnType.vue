@@ -449,7 +449,7 @@
                 isTableSelected.value = true
                 tableQueryText.value = ''
                 replaceColumnBody(getColumnInitialBody(item))
-                // updateVQB(activeInlineTabKey, inlineTabs)
+
                 event.stopPropagation()
                 event.preventDefault()
 
@@ -459,7 +459,6 @@
                 isTableSelected.value = false
                 columnDropdownOption.value = []
                 replaceTableBody(getTableInitialBody())
-                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -483,6 +482,7 @@
 
                 event.stopPropagation()
                 event.preventDefault()
+                updateVQB(activeInlineTab, inlineTabs)
                 isAreaFocused.value = false
                 return false
             }
@@ -533,9 +533,6 @@
                     tableSelected.value
                 ) {
                     isTableSelected.value = false
-                }
-                if (!newIsAreaFocused) {
-                    updateVQB(activeInlineTabKey, inlineTabs)
                 }
             })
 

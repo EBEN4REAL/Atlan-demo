@@ -382,7 +382,7 @@
                 })
                 subpanels.value = copySubPanels
 
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }

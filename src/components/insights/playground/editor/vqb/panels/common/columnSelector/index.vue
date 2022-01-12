@@ -52,7 +52,6 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"

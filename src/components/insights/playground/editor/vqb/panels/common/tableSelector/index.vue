@@ -21,7 +21,6 @@
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
         style="min-height: 34px"
-        @click.stop="() => {}"
     >
         <div
             class="flex items-center truncate parent-ellipsis-container"
@@ -75,7 +74,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',
@@ -90,7 +89,6 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"

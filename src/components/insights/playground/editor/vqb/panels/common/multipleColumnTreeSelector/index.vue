@@ -214,7 +214,7 @@
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5"
                                     style="min-width: 16px"
-                                    @click.stop="onUnselectTable"
+                                    @click="onUnselectTable"
                                 />
 
                                 <span
@@ -251,7 +251,7 @@
                                     ? 'flex justify-center items-center '
                                     : '',
                             ]"
-                            @click.stop="() => {}"
+                            @click="() => {}"
                         >
                             <template
                                 v-if="

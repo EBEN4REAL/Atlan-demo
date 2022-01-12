@@ -14,6 +14,8 @@
                         :rows="2"
                         width="500px"
                         placement="left"
+                        classes="text-primary hover:underline"
+                        :routeTo="`/governance/custom-metadata/${data.guid}`"
                     />
 
                     <a-tooltip>
@@ -209,7 +211,7 @@
                         applicableList.filter((i) => !hasValue(i)).length
                     "
                 >
-                    <EmptyView empty-screen="EmptyCM" class="h-24 mb-6" />
+                    <EmptyView empty-screen="EmptyCM" class="h-24 mt-8 mb-6" />
                     <div
                         class="flex flex-col items-center text-gray-500 gap-y-7"
                     >

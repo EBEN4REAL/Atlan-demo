@@ -2,7 +2,10 @@
 <template>
     <div
         class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
-        :class="isSelected ? 'outline-primary bg-primary-menu shadow-sm' : ''"
+        :class="{
+            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'cursor-pointer': enableSidebarDrawer,
+        }"
         @click="handlePreview(item)"
     >
         <div

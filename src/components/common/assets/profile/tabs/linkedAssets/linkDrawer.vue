@@ -88,8 +88,11 @@
         :footer="null"
     >
         <div class="p-3">
-            <p class="mb-1 font-bold text-md">Cancel linking assets</p>
-            <p class="text-md">This action will clear your selection.</p>
+            <p class="mb-1 font-bold text-md">Discard linked asset changes?</p>
+            <p class="text-md">
+                Your changes haven’t been saved yet. Are you sure you want to
+                discard?
+            </p>
         </div>
 
         <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">

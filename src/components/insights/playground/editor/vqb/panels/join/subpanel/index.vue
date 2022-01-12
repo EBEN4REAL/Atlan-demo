@@ -65,7 +65,7 @@
                     </div>
 
                     <JoinColumnSelector
-                        class="flex-1"
+                        class="flex-1 item-2"
                         style="flex: 0.5"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
                         :panelIndex="Number(panelIndex)"
@@ -79,7 +79,7 @@
                             (qualifiedName) =>
                                 handleColumnChange(
                                     qualifiedName,
-                                    subpanel?.id + index + 1
+                                    subpanel?.id + index + 0
                                 )
                         "
                     >
@@ -88,20 +88,8 @@
                                 :rowIndex="index"
                                 :subIndex="0"
                                 :disabled="readOnly"
-                                :isTableSelected="
-                                    isJoinColumnSelectorLeftTableSlected
-                                "
                                 v-model:selectedColumn="
                                     subpanel.columnsDataLeft
-                                "
-                                :isAreaFocused="
-                                    isAreaFocusedLeftJoinColumnSelector
-                                "
-                                :totalTablesCount="
-                                    JoinColumnSelectorLeftTotalTablesCount
-                                "
-                                :totalColumnsCount="
-                                    JoinColumnSelectorLeftTotalColumnsCount
                                 "
                             />
                         </template>
@@ -110,19 +98,7 @@
                                 v-model:selectedColumn="
                                     subpanel.columnsDataLeft
                                 "
-                                v-model:isTableSelected="
-                                    isJoinColumnSelectorLeftTableSlected
-                                "
-                                v-model:isAreaFocused="
-                                    isAreaFocusedLeftJoinColumnSelector
-                                "
                                 :panelIndex="Number(panelIndex)"
-                                v-model:totalTablesCount="
-                                    JoinColumnSelectorLeftTotalTablesCount
-                                "
-                                v-model:totalColumnsCount="
-                                    JoinColumnSelectorLeftTotalColumnsCount
-                                "
                                 :rowIndex="index"
                                 :subIndex="0"
                                 :disabled="readOnly"
@@ -130,7 +106,7 @@
                                     (qualifiedName) =>
                                         handleColumnChange(
                                             qualifiedName,
-                                            subpanel?.id + index + 1
+                                            subpanel?.id + index + 0
                                         )
                                 "
                             />
@@ -145,35 +121,90 @@
                             >=</span
                         >
                     </div>
-                    <!-- <div class="flex items-center item-3">
-                      
-                        <JoinColumnSelector
-                            class="flex-1"
-                            v-model:selectedColumn="subpanel.columnsDataRight"
-                            :panelIndex="Number(panelIndex)"
-                            :rowIndex="index"
-                            :subIndex="1"
-                            :disabled="readOnly"
-                            @change="
-                                (qualifiedName) =>
-                                    handleColumnChange(
-                                        qualifiedName,
-                                        subpanel?.id + index + 2
-                                    )
-                            "
-                        />
-                        <AtlanIcon
-                            v-if="index !== 0 && !readOnly"
-                            @click="() => handleDelete(index)"
-                            icon="Close"
-                            style="min-width: 26px"
-                            class="w-6 h-6 text-gray-500 ml-2 mt-0.5 cursor-pointer"
-                            :class="`opacity-${
-                                hoverItem === subpanel.id ? 100 : 0
-                            }`"
-                        />
-                        <div style="width: 34px" v-else></div>
-                    </div> -->
+
+                    <JoinColumnSelector
+                        class="flex-1"
+                        v-model:selectedColumn="subpanel.columnsDataRight"
+                        :panelIndex="Number(panelIndex)"
+                        v-model:isAreaFocused="
+                            isAreaFocusedRightJoinColumnSelector
+                        "
+                        :rowIndex="index"
+                        :subIndex="1"
+                        :disabled="readOnly"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index + 1
+                                )
+                        "
+                    >
+                        <template #head>
+                            <JoinColumnSelectorHead
+                                :rowIndex="index"
+                                :subIndex="1"
+                                :disabled="readOnly"
+                                :isTableSelected="
+                                    isJoinColumnSelectorRightTableSlected
+                                "
+                                v-model:selectedColumn="
+                                    subpanel.columnsDataRight
+                                "
+                                :isAreaFocused="
+                                    isAreaFocusedRightJoinColumnSelector
+                                "
+                                :totalTablesCount="
+                                    JoinColumnSelectorRightTotalTablesCount
+                                "
+                                :totalColumnsCount="
+                                    JoinColumnSelectorRightTotalColumnsCount
+                                "
+                            />
+                        </template>
+                        <template #body>
+                            <JoinColumnSelectorDropdown
+                                v-model:selectedColumn="
+                                    subpanel.columnsDataRight
+                                "
+                                v-model:isTableSelected="
+                                    isJoinColumnSelectorRightTableSlected
+                                "
+                                v-model:isAreaFocused="
+                                    isAreaFocusedRightJoinColumnSelector
+                                "
+                                :panelIndex="Number(panelIndex)"
+                                v-model:totalTablesCount="
+                                    JoinColumnSelectorRightTotalTablesCount
+                                "
+                                v-model:totalColumnsCount="
+                                    JoinColumnSelectorRightTotalColumnsCount
+                                "
+                                :rowIndex="index"
+                                :subIndex="1"
+                                :disabled="readOnly"
+                                @change="
+                                    (qualifiedName) =>
+                                        handleColumnChange(
+                                            qualifiedName,
+                                            subpanel?.id + index + 1
+                                        )
+                                "
+                            />
+                        </template>
+                    </JoinColumnSelector>
+
+                    <AtlanIcon
+                        v-if="index !== 0 && !readOnly"
+                        @click="() => handleDelete(index)"
+                        icon="Close"
+                        style="min-width: 26px"
+                        class="w-6 h-6 text-gray-500 ml-2 mt-0.5 cursor-pointer"
+                        :class="`opacity-${
+                            hoverItem === subpanel.id ? 100 : 0
+                        }`"
+                    />
+                    <div style="width: 34px" v-else></div>
                 </div>
             </template>
         </div>
@@ -268,9 +299,10 @@
             const JoinColumnSelectorLeftTotalTablesCount = ref(0)
             const JoinColumnSelectorLeftTotalColumnsCount = ref(0)
 
+            const isAreaFocusedRightJoinColumnSelector = ref(false)
             const isJoinColumnSelectorRightTableSlected = ref(false)
             const JoinColumnSelectorRightTotalTablesCount = ref(0)
-            const JoinColumnSelectorRightTotalCoulmnsCount = ref(0)
+            const JoinColumnSelectorRightTotalColumnsCount = ref(0)
 
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -412,11 +444,12 @@
             )
 
             return {
+                isAreaFocusedRightJoinColumnSelector,
                 isAreaFocusedLeftJoinColumnSelector,
                 JoinColumnSelectorLeftTotalTablesCount,
                 JoinColumnSelectorLeftTotalColumnsCount,
                 JoinColumnSelectorRightTotalTablesCount,
-                JoinColumnSelectorRightTotalCoulmnsCount,
+                JoinColumnSelectorRightTotalColumnsCount,
                 isJoinColumnSelectorLeftTableSlected,
                 isJoinColumnSelectorRightTableSlected,
                 isAreaFocusedJoinSelector,

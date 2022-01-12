@@ -8,7 +8,7 @@
                 }
             }
         "
-        class="relative flex items-center w-full border group"
+        class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
                 ? ' container-box-shadow-focus'
@@ -17,7 +17,6 @@
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
-        @click.stop="() => {}"
     >
         <slot name="head"> </slot>
 
@@ -49,12 +48,22 @@
         inject,
         computed,
         defineComponent,
+        ComputedRef,
         ref,
         onMounted,
         onUnmounted,
         toRefs,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
+    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+
+    import useBody from './useBody'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -65,23 +74,35 @@
                 required: false,
                 default: false,
             },
-            isAreaFocused: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
             specifiedBodyWidth: {
                 type: Number,
                 required: false,
             },
+            panelIndex: {
+                type: Number,
+                required: true,
+            },
+            rowIndex: {
+                type: Number,
+                required: true,
+            },
+            subIndex: {
+                type: Number,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
-            const { disabled, specifiedBodyWidth } = toRefs(props)
-            const { isAreaFocused } = useVModels(props)
+            const {
+                disabled,
+                specifiedBodyWidth,
+                panelIndex,
+                subIndex,
+                rowIndex,
+            } = toRefs(props)
+            const { allowedTablesInJoinSelector } = useJoin()
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
-
             const observer = ref()
             const containerPosition = ref({
                 width: undefined,
@@ -89,6 +110,84 @@
                 top: undefined,
                 left: undefined,
             })
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const tableQualifiedNamesContraint: Ref<{
+                allowed: string[]
+                notAllowed: string[]
+            }> = ref(
+                allowedTablesInJoinSelector(
+                    panelIndex.value,
+                    rowIndex.value,
+                    subIndex.value,
+                    activeInlineTab.value
+                )
+            )
+            const isAreaFocused = ref(false)
+            const isTableSelected = ref(false)
+            const queryText = ref('')
+            const TotalTablesCount = computed(
+                () => tablesData.value?.approximateCount || 0
+            )
+            const TotalColumnsCount = computed(
+                () => ColumnsData.value?.approximateCount || 0
+            )
+
+            const {
+                list: TableList,
+                replaceBody: replaceTableBody,
+                data: tablesData,
+                isLoading: isTableLoading,
+            } = useAssetListing('', false)
+            const {
+                list: ColumnList,
+                replaceBody: replaceColumnBody,
+                data: ColumnsData,
+                isLoading: isColumnLoading,
+            } = useAssetListing('', false)
+
+            const getColumnInitialBody = (item) => {
+                let data = {}
+                if (item.typeName === 'Table') {
+                    data = {
+                        tableQualifiedName: item?.qualifiedName,
+                        searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
+                    }
+                } else if (item.typeName === 'View') {
+                    data = {
+                        viewQualifiedName: item?.qualifiedName,
+                        searchText: queryText.value,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
+                    }
+                }
+                return {
+                    dsl: useBody(data),
+                    attributes: attributes,
+                }
+            }
+
+            const getTableInitialBody = () => {
+                return {
+                    dsl: useBody({
+                        schemaQualifiedName:
+                            activeInlineTab.value.playground.editor.context
+                                .attributeValue,
+                        context:
+                            activeInlineTab.value.playground.editor.context,
+
+                        searchText: queryText.value,
+                        tableQualifiedNamesContraint:
+                            tableQualifiedNamesContraint.value,
+                    }),
+                    attributes: attributes,
+                }
+            }
 
             onMounted(() => {
                 // const _container = document.getElementById('_container')
@@ -136,6 +235,28 @@
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
             })
+
+            /* ---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+
+            const provideData: provideDataInterface = {
+                getTableInitialBody: getTableInitialBody,
+                getColumnInitialBody: getColumnInitialBody,
+                replaceTableBody: replaceTableBody,
+                replaceColumnBody: replaceColumnBody,
+                queryText: queryText,
+                TableList: TableList,
+                ColumnList: ColumnList,
+                isAreaFocused: isAreaFocused,
+                isTableSelected: isTableSelected,
+                totalTablesCount: TotalTablesCount,
+                totalColumnsCount: TotalColumnsCount,
+                isTableLoading: isTableLoading,
+                isColumnLoading: isColumnLoading,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
 
             return {
                 specifiedBodyWidth,

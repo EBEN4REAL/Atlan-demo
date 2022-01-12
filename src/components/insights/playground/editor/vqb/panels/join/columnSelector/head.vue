@@ -39,7 +39,10 @@
         </div>
 
         <div class="absolute right-4 top-3.5">
-            <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
+            <AtlanIcon
+                :icon="isAreaFocused ? 'ChevronUp' : 'ChevronDown'"
+                class="w-4 h-4"
+            />
         </div>
     </div>
 </template>
@@ -73,11 +76,6 @@
                 type: Number,
                 required: true,
             },
-            isAreaFocused: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
             selectedColumn: {
                 type: Object,
                 required: true,
@@ -98,20 +96,13 @@
         },
 
         setup(props, { emit }) {
-            const { disabled, totalColumnsCount, isTableSelected, subIndex } =
-                toRefs(props)
-            const { isAreaFocused, selectedColumn } = useVModels(props)
+            const { disabled, subIndex } = toRefs(props)
+            const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
-
-            const {
-                list: TableList,
-                replaceBody: replaceTableBody,
-                data: tablesData,
-                isLoading: isTableLoading,
-            } = useAssetListing('', false)
-            const totalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
+            const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
+            const totalTablesCount = inject('totalTablesCount') as Ref<Number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const isTableSelected = inject('isTableSelected') as Ref<Boolean>
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value

@@ -281,8 +281,6 @@
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
-    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
-    import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
@@ -292,8 +290,6 @@
     import Loader from '@common/loaders/page.vue'
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
 
-    import useBody from './useColumnBody'
-
     export default defineComponent({
         name: 'Sub panel',
         components: { PopoverAsset, Loader, CustomInput },
@@ -301,16 +297,6 @@
             disabled: {
                 type: Boolean,
                 required: false,
-                default: false,
-            },
-            isAreaFocused: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
-            isTableSelected: {
-                type: Boolean,
-                required: true,
                 default: false,
             },
             panelIndex: {
@@ -329,25 +315,27 @@
                 type: Object,
                 required: true,
             },
-            totalTablesCount: {
-                type: Number,
-                required: true,
-            },
-            totalColumnsCount: {
-                type: Number,
-                required: true,
-            },
         },
 
         setup(props, { emit }) {
             const { panelIndex, subIndex, rowIndex, disabled } = toRefs(props)
-            const {
-                isAreaFocused,
-                selectedColumn,
-                totalTablesCount,
-                isTableSelected,
-                totalColumnsCount,
-            } = useVModels(props)
+            const { selectedColumn } = useVModels(props)
+            const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
+            const isTableSelected = inject('isTableSelected') as Ref<Boolean>
+            const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
+            const isTableLoading = inject('isTableLoading') as Ref<Boolean>
+            const totalTablesCount = inject('totalTablesCount') as Ref<Number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const TableList = inject('TableList') as Ref<any[]>
+            const ColumnList = inject('ColumnList') as Ref<any[]>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const getColumnInitialBody = inject(
+                'getColumnInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
+            const replaceColumnBody = inject('replaceColumnBody') as Function
             const { allowedTablesInJoinSelector } = useJoin()
             const { openAssetInSidebar } = useUtils()
             const { updateVQB } = useVQB()
@@ -381,29 +369,8 @@
                 )
             )
 
-            const {
-                list: TableList,
-                replaceBody: replaceTableBody,
-                data: tablesData,
-                isLoading: isTableLoading,
-            } = useAssetListing('', false)
-            const {
-                list: ColumnList,
-                replaceBody: replaceColumnBody,
-                data: ColumnsData,
-                isLoading: isColumnLoading,
-            } = useAssetListing('', false)
-
             let tableSelected = ref(null)
             const queryText = ref('')
-
-            watch(tablesData, () => {
-                totalTablesCount.value = tablesData.value?.approximateCount || 0
-            })
-            watch(ColumnsData, () => {
-                totalColumnsCount.value =
-                    ColumnsData.value?.approximateCount || 0
-            })
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value
@@ -439,46 +406,6 @@
                 }))
                 return data
             })
-
-            const getColumnInitialBody = (item) => {
-                let data = {}
-                if (item.typeName === 'Table') {
-                    data = {
-                        tableQualifiedName: item?.qualifiedName,
-                        searchText: queryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-                    }
-                } else if (item.typeName === 'View') {
-                    data = {
-                        viewQualifiedName: item?.qualifiedName,
-                        searchText: queryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-                    }
-                }
-                return {
-                    dsl: useBody(data),
-                    attributes: attributes,
-                }
-            }
-
-            const getTableInitialBody = () => {
-                return {
-                    dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-
-                        searchText: queryText.value,
-                        tableQualifiedNamesContraint:
-                            tableQualifiedNamesContraint.value,
-                    }),
-                    attributes: attributes,
-                }
-            }
 
             const onSelectTable = (item, event) => {
                 tableSelected.value = item

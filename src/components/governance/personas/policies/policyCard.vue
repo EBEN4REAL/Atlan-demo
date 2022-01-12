@@ -71,12 +71,12 @@
                             icon="Lock"
                             class="text-gray-300"
                         ></AtlanIcon> -->
-                        <span class="flex-none text-sm">
-                            {{ policy?.type }}
+                        <span v-if="maskComputed" class="flex-none text-sm">
+                            {{ maskComputed }}
                         </span>
                     </div>
                 </div>
-                <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
+                <span v-if="!policy.allow" class="mr-6 denied-policy-pill">
                     {{
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}
@@ -147,6 +147,7 @@
     import { useUtils } from '../assets/useUtils'
     import useScopeService from '../composables/useScopeService'
     import { splitArray } from '~/utils/string'
+    import { maskPersona } from '~/constant/policy'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -175,7 +176,7 @@
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
             const visibleDelete = ref(false)
-            const { policy, type, width } = toRefs(props)
+            const { policy, type } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
             const showAll = ref(false)
@@ -244,6 +245,11 @@
                     policy?.value?.connectionId
                 )
             )
+            const maskComputed = computed(
+                () =>
+                    maskPersona.find((el) => el.value === policy.value.type)
+                        ?.label
+            )
             return {
                 getPopoverContent,
                 removePolicy,
@@ -260,6 +266,7 @@
                 canDelete,
                 visibleDelete,
                 isAddAll,
+                maskComputed,
             }
         },
     })

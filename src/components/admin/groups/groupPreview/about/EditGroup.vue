@@ -82,7 +82,6 @@
         emits: ['updatedGroup', 'toggleEdit', 'success'],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
-            const updateError = ref('')
             const formRef = ref(null)
             const nameRef = ref(null)
 
@@ -162,10 +161,8 @@
                     [data, isReady, error, isLoading],
                     () => {
                         isRequestLoading.value = isLoading.value
-                        updateError.value = error.value
                         if (isReady && !error.value && !isLoading.value) {
                             updateSuccess.value = true
-                            updateError.value = ''
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
@@ -198,15 +195,21 @@
                             emit('updatedGroup')
                             emit('toggleEdit')
                         } else if (error && error.value) {
-                            updateError.value =
-                                'Unable to update group details. Please try again.'
-                            message.error('Failed to update details.')
+                            if (
+                                error.value?.response?.data?.message.includes(
+                                    '409 Conflict:'
+                                )
+                            )
+                                message.error({
+                                    content: `A group with alias ${formData.value.alias} already exists, please change the alias and try again.`,
+                                    duration: 3.5,
+                                })
+                            else message.error('Failed to update details.')
                             formRef.value.resetFields()
                         }
                     },
                     { immediate: true }
                 )
-                updateError.value = ''
             }
             const onCancel = () => {
                 formRef.value.resetFields()
@@ -221,7 +224,6 @@
                 formRef,
                 formData,
                 isRequestLoading,
-                updateError,
                 nameRef,
             }
         },

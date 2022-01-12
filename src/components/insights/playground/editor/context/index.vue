@@ -277,7 +277,7 @@
                     <div class="p-4" style="width: 332px">
                         <Connector
                             class=""
-                            :filterSourceIds="['powerBI', 'tableau']"
+                            :filterSourceIds="BItypes"
                             :isLeafNodeSelectable="false"
                             v-model:data="connectorsData"
                             :item="{
@@ -557,6 +557,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
@@ -620,6 +621,8 @@
             // })
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
+
+            const BItypes = getBISourceTypes()
 
             let userHasPermission = computed(() => {
                 permissions.value.indexOf('CREATE_COLLECTION') >= 0
@@ -749,6 +752,7 @@
                 userHasPermission,
                 editorContentSelectionState,
                 collectionName,
+                BItypes,
             }
         },
     })

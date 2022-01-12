@@ -5,7 +5,8 @@ export function getBISourceTypes() {
     const BItypes = new Set()
     store.getList.forEach((item) => {
         if (item?.attributes) {
-            if (item.attributes?.category === 'BI')
+            // console.log('bi: ', item)
+            if (item.attributes?.category === 'BI' || item.attributes?.category === 'bi')
                 BItypes.add(item.attributes?.connectorName)
         }
     })

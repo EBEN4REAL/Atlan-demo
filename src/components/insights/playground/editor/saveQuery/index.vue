@@ -101,7 +101,7 @@
                         class="w-4 h-4 text-white animate-spin"
                     ></AtlanIcon>
 
-                    <span>Create</span>
+                    <span>Save</span>
                 </div>
             </AtlanBtn>
         </template>

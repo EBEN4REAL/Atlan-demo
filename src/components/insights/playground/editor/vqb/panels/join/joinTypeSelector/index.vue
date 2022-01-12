@@ -15,14 +15,12 @@
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
-        @click.stop="() => {}"
     >
         <slot name="head"> </slot>
 
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
                 :style="`${
                     specifiedBodyWidth
                         ? `width:${specifiedBodyWidth}px;`

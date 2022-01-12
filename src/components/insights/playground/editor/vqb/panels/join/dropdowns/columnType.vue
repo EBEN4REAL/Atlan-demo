@@ -14,8 +14,9 @@
                         style="min-width: 100%"
                     >
                         <CustomInput
-                            v-model:queryText="queryText"
+                            v-model:queryText="tableQueryText"
                             :placeholder="placeholder"
+                            :autofocus="true"
                         />
                     </div>
                 </div>
@@ -28,11 +29,7 @@
                             ? 'flex justify-center items-center'
                             : '',
                     ]"
-                    v-if="
-                        !isTableSelected &&
-                        tableDropdownOption.length !== 0 &&
-                        !isTableLoading
-                    "
+                    v-if="!isTableSelected && !isTableLoading"
                 >
                     <template
                         v-for="(item, index) in tableDropdownOption"
@@ -65,7 +62,7 @@
                             </template>
 
                             <div
-                                class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-selected-focus"
+                                class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-light"
                                 @click="(e) => onSelectTable(item, e)"
                             >
                                 <div class="flex items-center truncate">
@@ -98,13 +95,14 @@
                             </div>
                         </PopoverAsset>
                     </template>
+
                     <div
                         v-if="
                             tableDropdownOption.length === 0 && !isTableLoading
                         "
-                        class="flex items-center justify-center h-full text-sm text-center text-gray-400"
+                        class="flex items-center justify-center h-full pt-4 text-sm text-center text-gray-400"
                     >
-                        No tables found
+                        No tables found!
                     </div>
                 </div>
             </div>
@@ -119,14 +117,26 @@
                     >
                         <AtlanIcon
                             icon="ChevronLeft"
-                            class="w-4 h-4 -mt-0.5"
+                            class="w-4 h-4 -mt-0.5 ml-1"
                             style="min-width: 16px"
                             @click="onUnselectTable"
                         />
 
                         <span
-                            class="ml-2 text-sm parent-ellipsis-container-base"
-                            >{{ tableSelected?.label }}
+                            class="ml-2 text-sm font-bold text-gray-600 parent-ellipsis-container-base"
+                        >
+                            <AtlanIcon
+                                :icon="
+                                    getEntityStatusIcon(
+                                        assetType(tableSelected),
+                                        certificateStatus(tableSelected)
+                                    )
+                                "
+                                class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
+                                style="min-width: 16px"
+                            ></AtlanIcon>
+
+                            {{ tableSelected?.label }}
                         </span>
                     </div>
                     <div
@@ -143,8 +153,9 @@
                         style="min-width: 100%"
                     >
                         <CustomInput
-                            v-model:queryText="queryText"
+                            v-model:queryText="columnQueryText"
                             :placeholder="placeholder"
+                            :autofocus="true"
                         />
                     </div>
                 </div>
@@ -289,10 +300,12 @@
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import Loader from '@common/loaders/page.vue'
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { pluralizeString } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: { PopoverAsset, Loader, CustomInput },
+        components: { PopoverAsset, Loader, CustomInput, ColumnKeys },
         props: {
             disabled: {
                 type: Boolean,
@@ -324,8 +337,12 @@
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
-            const totalTablesCount = inject('totalTablesCount') as Ref<Number>
-            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
+            const columnQueryText = inject('columnQueryText') as Ref<String>
+            const tableQueryText = inject('tableQueryText') as Ref<String>
+            const tableSelected = inject('tableSelected') as Ref<Object>
+
             const TableList = inject('TableList') as Ref<any[]>
             const ColumnList = inject('ColumnList') as Ref<any[]>
             const getTableInitialBody = inject(
@@ -369,13 +386,33 @@
                 )
             )
 
-            let tableSelected = ref(null)
-            const queryText = ref('')
-
             const placeholder = computed(() => {
-                let data = !isTableSelected.value
-                    ? `${totalTablesCount.value} tables available`
-                    : `Select from ${totalColumnsCount.value} columns`
+                let data = ''
+                if (isTableSelected.value) {
+                    if (isColumnLoading.value) {
+                        data = 'Loading...'
+                    } else {
+                        data = `Search from ${
+                            totalColumnsCount.value
+                        } ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
+                    }
+                } else {
+                    if (isTableLoading.value) {
+                        data = 'Loading...'
+                    } else {
+                        data = `Search from ${
+                            totalTablesCount.value
+                        } ${pluralizeString(
+                            'table',
+                            totalTablesCount.value,
+                            false
+                        )}`
+                    }
+                }
 
                 return data
             })
@@ -410,7 +447,7 @@
             const onSelectTable = (item, event) => {
                 tableSelected.value = item
                 isTableSelected.value = true
-                queryText.value = ''
+                tableQueryText.value = ''
                 replaceColumnBody(getColumnInitialBody(item))
                 // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
@@ -487,7 +524,7 @@
                 }
             )
 
-            watch(isAreaFocused, (newIsAreaFocused) => {
+            watch(isAreaFocused, () => {
                 if (selectedColumn.value?.label && tableSelected?.value) {
                     // retain column view
                     isTableSelected.value = true
@@ -499,15 +536,16 @@
                 }
             })
 
-            watch(queryText, (newQueryText) => {
-                if (newQueryText !== '') {
-                    if (selectedColumn.value?.label && isTableSelected?.value) {
-                        replaceColumnBody(
-                            getColumnInitialBody(tableSelected?.value)
-                        )
-                    } else {
-                        replaceTableBody(getTableInitialBody())
-                    }
+            watch(tableQueryText, () => {
+                if (!isTableSelected?.value) {
+                    replaceTableBody(getTableInitialBody())
+                }
+            })
+            watch(columnQueryText, () => {
+                if (isTableSelected?.value) {
+                    replaceColumnBody(
+                        getColumnInitialBody(tableSelected?.value)
+                    )
                 }
             })
 
@@ -520,7 +558,8 @@
                 isColumnLoading,
                 isTableLoading,
                 placeholder,
-                queryText,
+                columnQueryText,
+                tableQueryText,
                 isTableSelected,
                 tableSelected,
                 isAreaFocused,

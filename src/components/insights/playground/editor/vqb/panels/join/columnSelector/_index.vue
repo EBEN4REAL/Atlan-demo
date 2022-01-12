@@ -127,8 +127,11 @@
                 )
             )
             const isAreaFocused = ref(false)
+
+            let tableSelected = ref(null)
             const isTableSelected = ref(false)
-            const queryText = ref('')
+            const columnQueryText = ref('')
+            const tableQueryText = ref('')
             const TotalTablesCount = computed(
                 () => tablesData.value?.approximateCount || 0
             )
@@ -154,14 +157,14 @@
                 if (item.typeName === 'Table') {
                     data = {
                         tableQualifiedName: item?.qualifiedName,
-                        searchText: queryText.value,
+                        searchText: columnQueryText.value,
                         context:
                             activeInlineTab.value.playground.editor.context,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
-                        searchText: queryText.value,
+                        searchText: columnQueryText.value,
                         context:
                             activeInlineTab.value.playground.editor.context,
                     }
@@ -181,7 +184,7 @@
                         context:
                             activeInlineTab.value.playground.editor.context,
 
-                        searchText: queryText.value,
+                        searchText: tableQueryText.value,
                         tableQualifiedNamesContraint:
                             tableQualifiedNamesContraint.value,
                     }),
@@ -232,6 +235,9 @@
                     containerPosition.value.height = viewportOffset?.height
             }
 
+            // for initial call
+            replaceTableBody(getTableInitialBody({ tableQueryText: '' }))
+
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
             })
@@ -245,7 +251,8 @@
                 getColumnInitialBody: getColumnInitialBody,
                 replaceTableBody: replaceTableBody,
                 replaceColumnBody: replaceColumnBody,
-                queryText: queryText,
+                columnQueryText: columnQueryText,
+                tableQueryText: tableQueryText,
                 TableList: TableList,
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,
@@ -254,6 +261,7 @@
                 totalColumnsCount: TotalColumnsCount,
                 isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,
+                tableSelected: tableSelected,
             }
             useProvide(provideData)
             /*-------------------------------------*/

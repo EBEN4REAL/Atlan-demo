@@ -102,11 +102,17 @@
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
+            const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value
-                    ? `${totalTablesCount.value} tables available`
+                    ? isTableLoading.value
+                        ? 'Loading...'
+                        : `${totalTablesCount.value} tables available`
+                    : isColumnLoading.value
+                    ? 'Loading...'
                     : `Select from ${totalColumnsCount.value} columns`
 
                 return data
@@ -130,6 +136,8 @@
             // }
 
             return {
+                isColumnLoading,
+                isTableLoading,
                 subIndex,
                 selectedColumn,
                 disabled,

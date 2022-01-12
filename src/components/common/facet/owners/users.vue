@@ -168,6 +168,7 @@
             const { selectUserKey, queryText, groupId, showLoggedInUser } =
                 toRefs(props)
             const localValue = ref(modelValue.value)
+            const allUsers = ref({}) // map of all users (userId: userRecord)
 
             const map = computed(() => {
                 const data = {}
@@ -195,7 +196,6 @@
                     handleSearch(queryText.value)
                 }
             )
-
             const { username } = whoami()
 
             // to filter out loggedIn user if needed from list based on showLoggedInUser
@@ -208,6 +208,22 @@
                 )
             })
 
+            // Populating allUsers
+            watch(
+                users,
+                () => {
+                    if (users && users.value.length) {
+                        users.value.forEach((user) => {
+                            if (!allUsers.value[user.id])
+                                allUsers.value[user.id] = { ...user }
+                        })
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
             // to decrease the total users count if loggedIn user is removed from list based on showLoggedInUser
             const filterTotal = computed(() => {
                 if (showLoggedInUser.value) {
@@ -237,20 +253,20 @@
                 return `${item.username}`
             }
             const handleChange = (checked, id) => {
-                if (checked.target.checked) {
+                 if (checked.target.checked) {
                     map.value[id] = true
                 } else {
                     delete map.value[id]
                 }
                 modelValue.value = [...Object.keys(map.value)]
-
-                if (selectedRecords)
-                    selectedRecords.value = userList?.value?.filter((user) =>
-                        [...Object.keys(map.value)].includes(
-                            user?.[selectUserKey.value]
-                        )
-                    )
-                emit('change')
+                if (selectedRecords) {
+                    selectedRecords.value = [
+                        ...Object.keys(map.value).map(
+                            (userId) => allUsers.value[userId]
+                        ),
+                    ]
+                    emit('change')
+                }
             }
 
             onKeyStroke(['Enter'], (e) => {

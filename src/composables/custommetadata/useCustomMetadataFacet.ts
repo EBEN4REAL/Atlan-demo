@@ -16,6 +16,7 @@ export default function useCustomMetadataFacet() {
                     bm.attributeDefs.some((a) => a.options?.isFacet === 'true')
                 )
                 .map((bm) => ({
+                    guid: bm.guid,
                     description: bm.description,
                     id: bm.name,
                     label: bm.displayName,
@@ -86,6 +87,7 @@ export default function useCustomMetadataFacet() {
             const attributeList = typeNameFiltering(bm.attributeDefs.filter(a => facet ? a.options?.allowFiltering === 'true' : true), typeName)
             if (attributeList.length > 0) {
                 finalList.push({
+                    guid: bm.guid,
                     description: bm.description,
                     id: bm.name,
                     label: bm.displayName,

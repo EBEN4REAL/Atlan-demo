@@ -66,7 +66,6 @@
                         v-model="formData.slack"
                         placeholder="Add your slack workspace's member ID"
                         pop-over-content="Go to your slack profile, after clicking on more menu you'll see the member ID. Make sure you're in right slack workspace."
-                        warning-text="See if people can reach you"
                     />
                 </div>
             </div>

@@ -25,18 +25,21 @@
         </a-input>
     </a-form-item>
     <div
-        class="mb-4 -mt-6 transition-opacity"
+        class="pt-1 mb-4 -mt-6 transition-opacity"
         :class="
             showSlackTestLink && modelValue
                 ? 'opacity-100 cursor-pointer'
                 : 'opacity-0 cursor-default'
         "
     >
-        <span
-            class="text-alert hover:underline"
+        <div
+            class="flex items-center hover:underline text-primary"
             @click="handleTestSlackLink(modelValue)"
-            >{{ warningText }}</span
         >
+            <span class="mr-1.5">👋</span>
+            Test your slack link
+            <AtlanIcon icon="ArrowRight"></AtlanIcon>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -62,10 +65,6 @@
             popOverContent: {
                 type: String,
                 default: '',
-            },
-            warningText: {
-                type: String,
-                default: 'See if people can reach this channel',
             },
         },
         setup(props, { emit }) {

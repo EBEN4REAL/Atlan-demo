@@ -28,13 +28,13 @@
                     class="pb-6 mt-2 asset-list-height"
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
-                    assetListClass="px-8"
-                    aggregationTabClass="px-8"
-                    searchBarClass="px-8"
+                    assetListClass="pl-8 pr-6"
+                    aggregationTabClass="pl-8 pr-6 pb-1"
+                    searchBarClass="pl-8"
                 >
                     <template #searchAction>
                         <AtlanBtn
-                            class="mt-2 ml-4 mr-8"
+                            class="mt-2 ml-4 mr-6"
                             size="sm"
                             padding="compact"
                             data-test-id="save"
@@ -46,11 +46,35 @@
             </div>
         </div>
     </div>
+    <a-modal
+        v-model:visible="isModalVisible"
+        width="25%"
+        :closable="false"
+        okText="Save"
+        cancelText=""
+        :footer="null"
+    >
+        <div class="p-3">
+            <p class="mb-1 font-bold text-md">Discard linked asset changes?</p>
+            <p class="text-md">
+                Your changes haven’t been saved yet. Are you sure you want to
+                discard?
+            </p>
+        </div>
+
+        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
+            <a-button @click="handleModalCancel">Cancel</a-button>
+            <a-button class="text-white bg-error" @click="handleConfirmCancel"
+                >Confirm</a-button
+            >
+        </div>
+    </a-modal>
+
     <LinkAssetsDrawer
         :isVisible="isVisible"
         :preference="preference"
         :selectedAssetCount="selectedAssetCount"
-        @closeDrawer="closeDrawer"
+        @closeDrawer="handleCancel"
         @saveAssets="saveAssets"
         :selected-asset="selectedAsset"
         v-model:selected-items="selectedItems"
@@ -106,6 +130,7 @@
             const linkedAssets = ref<assetInterface[]>([]) // assets which need to be linked in current api call
             const unlinkedAssets = ref<assetInterface[]>([]) // assets which need to be unlinked in the current api call
             const selectedItems = ref([]) // assets which have been checked in the drawer
+            const isModalVisible = ref(false)
             const preference = ref({
                 sort: 'default',
                 display: [],
@@ -136,16 +161,11 @@
                 () => selectedItems.value.length
             )
 
-            const handleCancel = () => {
-                linkedAssets.value = []
-                unlinkedAssets.value = []
-                selectedItems.value = []
-            }
             const openLinkDrawer = () => {
                 selectedItems.value = [...localAssignedEntities.value]
                 isVisible.value = true
             }
-            const saveAssets = () => {
+            const constructPayload = () => {
                 const assetSet = new Set([...selectedItems.value])
                 const currentCheckedAssets = [...assetSet]
 
@@ -163,12 +183,33 @@
                                     current.guid === assignedEntity.guid
                             )
                     ) ?? []
+            }
+            const handleCancel = () => {
+                constructPayload()
+                if (linkedAssets.value?.length || unlinkedAssets.value?.length)
+                    isModalVisible.value = true
+                else closeDrawer()
+            }
+
+            const saveAssets = () => {
+                constructPayload()
                 handleAssignedEntitiesUpdate({
                     linkedAssets: linkedAssets.value,
                     unlinkedAssets: unlinkedAssets.value,
                     term: selectedAsset.value,
                 })
 
+                closeDrawer()
+            }
+            const handleModalCancel = () => {
+                isModalVisible.value = false
+            }
+
+            const handleConfirmCancel = () => {
+                isModalVisible.value = false
+                linkedAssets.value = []
+                unlinkedAssets.value = []
+                selectedItems.value = []
                 closeDrawer()
             }
 
@@ -192,6 +233,9 @@
                 tabFilter,
                 linkedAssetsWrapperRef,
                 selectedItems,
+                isModalVisible,
+                handleModalCancel,
+                handleConfirmCancel,
             }
         },
     })

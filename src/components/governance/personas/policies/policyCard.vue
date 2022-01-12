@@ -59,6 +59,22 @@
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm"> Query Access </span>
                     </div>
+                    <div
+                        v-if="
+                            type === 'data' &&
+                            policy?.type &&
+                            policy?.type != 'null'
+                        "
+                    >
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <!-- <AtlanIcon
+                            icon="Lock"
+                            class="text-gray-300"
+                        ></AtlanIcon> -->
+                        <span class="flex-none text-sm">
+                            {{ policy?.type }}
+                        </span>
+                    </div>
                 </div>
                 <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
                     {{

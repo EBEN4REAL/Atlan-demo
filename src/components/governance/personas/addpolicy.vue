@@ -40,7 +40,7 @@
             <div class="px-4">
                 <div class="relative">
                     <div class="relative mb-2 text-sm text-gray-500 required">
-                        Name of the Policy<span class="text-red-500">*</span>
+                        Name<span class="text-red-500">*</span>
                     </div>
                     <div v-if="isEdit ? canEdit : true">
                         <a-input

@@ -1,16 +1,20 @@
 <template>
     <div v-auth="map.CREATE_GROUP" class="flex flex-col py-5">
+        <Shortcut
+            shortcut-key="esc"
+            action="close"
+            placement="left"
+            :delay="0.4"
+            :edit-permission="true"
+        >
+            <div class="close-btn-sidebar" @click="$emit('closeDrawer')">
+                <AtlanIcon icon="Add" class="text-white outline-none" />
+            </div>
+        </Shortcut>
         <div
             class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
             <div class="text-lg font-bold">Create Group</div>
-            <div class="top-0 p-1 rounded cursor-pointer right-2">
-                <AtlanIcon
-                    icon="Cross"
-                    class="r"
-                    @click="$emit('closeDrawer')"
-                />
-            </div>
         </div>
         <div class="flex flex-col px-4 py-3">
             <a-form
@@ -41,7 +45,7 @@
                 />
                 <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
-                        <span class="mr-2 font-bold">Users</span>
+                        <span class="mr-2">Users</span>
                     </div>
                     <UserSelector
                         :user-list-style="{
@@ -199,9 +203,19 @@
                             emit('refresh')
                             emit('closeDrawer')
                         } else if (error && error.value) {
-                            message.error(
-                                'Unable to create group, please try again.'
+                            if (
+                                error.value?.response?.data?.message.includes(
+                                    '409 Conflict:'
+                                )
                             )
+                                message.error({
+                                    content: `A group with alias ${group.alias} already exists, please change the alias and try again.`,
+                                    duration: 3.5,
+                                })
+                            else
+                                message.error(
+                                    'Unable to create group, please try again.'
+                                )
                             createGroupLoading.value = false
                         }
                     },
@@ -230,9 +244,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .form:deep(.ant-form-item-label) {
-        @apply font-bold;
-    }
-</style>

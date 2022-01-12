@@ -110,6 +110,12 @@ export const SQLAttributes = [
     'dashboard',
     'dataset',
     'report',
+    'reportCount',
+    'dashboardCount',
+    'datasetCount',
+    'dataflowCount',
+    'tileCount',
+    'pageCount',
 ]
 
 export const GlossaryAttributes = [

@@ -13,7 +13,6 @@ export default function useTenantData() {
     }
     const {
         displayName: name,
-        displayNameHtml,
         identityProviders,
         identityMappers,
         smtpServer,
@@ -27,7 +26,6 @@ export default function useTenantData() {
     } = storeToRefs(tenantStore)
     return {
         name,
-        displayNameHtml,
         identityProviders,
         identityMappers,
         smtpServer,

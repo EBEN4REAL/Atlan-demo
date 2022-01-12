@@ -272,7 +272,7 @@
         emits: ['selectPolicy'],
         setup(prop, { emit }) {
             const searchPersona = ref('')
-            const activeTabFilter = ref('')
+            const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)

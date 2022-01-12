@@ -18,14 +18,11 @@
                     icon="QueryGrey"
                     class="-mt-1"
                 />
-                <span
-                    class="ml-1 text-gray-500 uppercase"
-                    data-test-id="policy-type"
-                    >{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span
-                >
-                <span class="text-gray-500">/{{ policy?.name }}</span>
+                <span class="ml-1 text-gray-500" data-test-id="policy-type">{{
+                    type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                }}</span>
+                <span class="mx-1 text-gray-500">/</span>
+                <span class="text-gray-500">{{ policy?.name }}</span>
                 <div class=""></div>
             </div>
             <div class="flex items-center justify-between">

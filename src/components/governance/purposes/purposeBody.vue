@@ -288,7 +288,7 @@
             const { persona } = toRefs(props)
             const userId = computed(() => persona.value.createdBy)
             const searchPersona = ref('')
-            const activeTabFilter = ref('')
+            const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)

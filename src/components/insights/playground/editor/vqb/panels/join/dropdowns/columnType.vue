@@ -1,15 +1,9 @@
 <template>
     <div
         tabindex="-1"
-        :class="[
-            'absolute z-10  overflow-auto bg-white rounded custom-shadow position dropdown-container',
-        ]"
+        :class="['  bg-white rounded custom-shadow  dropdown-container']"
     >
-        <div
-            tabindex="-1"
-            :class="['dropdown-container  w-full']"
-            style="min-height: 180px"
-        >
+        <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
             <!--  Multiple table column selection-->
             <div class="w-full dropdown-container" v-if="!isTableSelected">
                 <div
@@ -27,8 +21,7 @@
                 </div>
 
                 <div
-                    class="w-full overflow-auto dropdown-container"
-                    style="height: 205px"
+                    class="w-full h-full overflow-auto dropdown-container"
                     tabindex="-1"
                     :class="[
                         tableDropdownOption.length === 0
@@ -263,8 +256,12 @@
             </div>
 
             <Loader
-                v-if="isColumnLoading || isTableLoading"
-                style="min-height: 180px !important"
+                v-if="isColumnLoading && isTableSelected"
+                style="min-height: 100px !important"
+            ></Loader>
+            <Loader
+                v-if="isTableLoading && !isTableSelected"
+                style="min-height: 100px !important"
             ></Loader>
             <!--  -->
         </div>
@@ -293,12 +290,13 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import Loader from '@common/loaders/page.vue'
+    import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
 
     import useBody from './useColumnBody'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: { PopoverAsset, Loader },
+        components: { PopoverAsset, Loader, CustomInput },
         props: {
             disabled: {
                 type: Boolean,
@@ -621,4 +619,43 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .border-plus {
+        padding: 1px;
+    }
+    .border-minus {
+        padding: 0px;
+    }
+
+    .selector-height {
+        min-height: 32px;
+    }
+
+    .disable-bg {
+        background-color: #fbfbfb;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
+    }
+
+    .input_styles {
+        width: 100% !important;
+        // padding: 5px;
+        // margin: 0;
+        -webkit-box-sizing: border-box !important;
+        -moz-box-sizing: border-box !important;
+        -o-box-sizing: border-box !important;
+        -ms-box-sizing: border-box !important;
+        box-sizing: border-box !important;
+    }
+</style>
+<style lang="less" module>
+    .custom_input {
+        background-color: #fbfbfb !important;
+    }
+</style>

@@ -63,79 +63,80 @@
                             </template>
                         </JoinSelector>
                     </div>
-                    <div class="item-2">
-                        <JoinColumnSelector
-                            class="flex-1"
-                            v-model:selectedColumn="subpanel.columnsDataLeft"
-                            :panelIndex="Number(panelIndex)"
-                            v-model:isAreaFocused="
-                                isAreaFocusedLeftJoinColumnSelector
-                            "
-                            :rowIndex="index"
-                            :subIndex="0"
-                            :disabled="readOnly"
-                            @change="
-                                (qualifiedName) =>
-                                    handleColumnChange(
-                                        qualifiedName,
-                                        subpanel?.id + index + 1
-                                    )
-                            "
-                        >
-                            <template #head>
-                                <JoinColumnSelectorHead
-                                    :rowIndex="index"
-                                    :subIndex="0"
-                                    :disabled="readOnly"
-                                    :isTableSelected="
-                                        isJoinColumnSelectorLeftTableSlected
-                                    "
-                                    v-model:selectedColumn="
-                                        subpanel.columnsDataLeft
-                                    "
-                                    :isAreaFocused="
-                                        isAreaFocusedLeftJoinColumnSelector
-                                    "
-                                    :totalTablesCount="
-                                        JoinColumnSelectorLeftTotalTablesCount
-                                    "
-                                    :totalCoumnsCount="
-                                        JoinColumnSelectorLeftTotalColumnsCount
-                                    "
-                                />
-                            </template>
-                            <template #body>
-                                <JoinColumnSelectorDropdown
-                                    v-model:selectedColumn="
-                                        subpanel.columnsDataLeft
-                                    "
-                                    v-model:isTableSelected="
-                                        isJoinColumnSelectorLeftTableSlected
-                                    "
-                                    v-model:isAreaFocused="
-                                        isAreaFocusedLeftJoinColumnSelector
-                                    "
-                                    :panelIndex="Number(panelIndex)"
-                                    v-model:totalTablesCount="
-                                        JoinColumnSelectorLeftTotalTablesCount
-                                    "
-                                    v-model:totalCoumnsCount="
-                                        JoinColumnSelectorLeftTotalColumnsCount
-                                    "
-                                    :rowIndex="index"
-                                    :subIndex="0"
-                                    :disabled="readOnly"
-                                    @change="
-                                        (qualifiedName) =>
-                                            handleColumnChange(
-                                                qualifiedName,
-                                                subpanel?.id + index + 1
-                                            )
-                                    "
-                                />
-                            </template>
-                        </JoinColumnSelector>
-                    </div>
+
+                    <JoinColumnSelector
+                        class="flex-1"
+                        style="flex: 0.5"
+                        v-model:selectedColumn="subpanel.columnsDataLeft"
+                        :panelIndex="Number(panelIndex)"
+                        v-model:isAreaFocused="
+                            isAreaFocusedLeftJoinColumnSelector
+                        "
+                        :rowIndex="index"
+                        :subIndex="0"
+                        :disabled="readOnly"
+                        @change="
+                            (qualifiedName) =>
+                                handleColumnChange(
+                                    qualifiedName,
+                                    subpanel?.id + index + 1
+                                )
+                        "
+                    >
+                        <template #head>
+                            <JoinColumnSelectorHead
+                                :rowIndex="index"
+                                :subIndex="0"
+                                :disabled="readOnly"
+                                :isTableSelected="
+                                    isJoinColumnSelectorLeftTableSlected
+                                "
+                                v-model:selectedColumn="
+                                    subpanel.columnsDataLeft
+                                "
+                                :isAreaFocused="
+                                    isAreaFocusedLeftJoinColumnSelector
+                                "
+                                :totalTablesCount="
+                                    JoinColumnSelectorLeftTotalTablesCount
+                                "
+                                :totalColumnsCount="
+                                    JoinColumnSelectorLeftTotalColumnsCount
+                                "
+                            />
+                        </template>
+                        <template #body>
+                            <JoinColumnSelectorDropdown
+                                v-model:selectedColumn="
+                                    subpanel.columnsDataLeft
+                                "
+                                v-model:isTableSelected="
+                                    isJoinColumnSelectorLeftTableSlected
+                                "
+                                v-model:isAreaFocused="
+                                    isAreaFocusedLeftJoinColumnSelector
+                                "
+                                :panelIndex="Number(panelIndex)"
+                                v-model:totalTablesCount="
+                                    JoinColumnSelectorLeftTotalTablesCount
+                                "
+                                v-model:totalColumnsCount="
+                                    JoinColumnSelectorLeftTotalColumnsCount
+                                "
+                                :rowIndex="index"
+                                :subIndex="0"
+                                :disabled="readOnly"
+                                @change="
+                                    (qualifiedName) =>
+                                        handleColumnChange(
+                                            qualifiedName,
+                                            subpanel?.id + index + 1
+                                        )
+                                "
+                            />
+                        </template>
+                    </JoinColumnSelector>
+
                     <div
                         class="flex items-center justify-center flex-none item-4"
                     >
@@ -265,7 +266,7 @@
             const isAreaFocusedLeftJoinColumnSelector = ref(false)
             const isJoinColumnSelectorLeftTableSlected = ref(false)
             const JoinColumnSelectorLeftTotalTablesCount = ref(0)
-            const JoinColumnSelectorLeftTotalCoulmnsCount = ref(0)
+            const JoinColumnSelectorLeftTotalColumnsCount = ref(0)
 
             const isJoinColumnSelectorRightTableSlected = ref(false)
             const JoinColumnSelectorRightTotalTablesCount = ref(0)
@@ -413,7 +414,7 @@
             return {
                 isAreaFocusedLeftJoinColumnSelector,
                 JoinColumnSelectorLeftTotalTablesCount,
-                JoinColumnSelectorLeftTotalCoulmnsCount,
+                JoinColumnSelectorLeftTotalColumnsCount,
                 JoinColumnSelectorRightTotalTablesCount,
                 JoinColumnSelectorRightTotalCoulmnsCount,
                 isJoinColumnSelectorLeftTableSlected,

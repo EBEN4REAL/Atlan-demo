@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="relative w-full px-3 py-1">
         <div class="flex w-full">
             <component
                 :is="getDataTypeImage(selectedColumn?.type)"
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="absolute right-4">
+        <div class="absolute right-4 top-3.5">
             <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
         </div>
     </div>
@@ -58,6 +58,7 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -97,15 +98,20 @@
         },
 
         setup(props, { emit }) {
-            const {
-                disabled,
-                totalTablesCount,
-                totalColumnsCount,
-                isTableSelected,
-                subIndex,
-            } = toRefs(props)
+            const { disabled, totalColumnsCount, isTableSelected, subIndex } =
+                toRefs(props)
             const { isAreaFocused, selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
+
+            const {
+                list: TableList,
+                replaceBody: replaceTableBody,
+                data: tablesData,
+                isLoading: isTableLoading,
+            } = useAssetListing('', false)
+            const totalTablesCount = computed(
+                () => tablesData.value?.approximateCount || 0
+            )
 
             const placeholder = computed(() => {
                 let data = !isTableSelected.value
@@ -114,6 +120,23 @@
 
                 return data
             })
+
+            // const getTableInitialBody = () => {
+            //     return {
+            //         dsl: useBody({
+            //             schemaQualifiedName:
+            //                 activeInlineTab.value.playground.editor.context
+            //                     .attributeValue,
+            //             context:
+            //                 activeInlineTab.value.playground.editor.context,
+
+            //             searchText: queryText.value,
+            //             tableQualifiedNamesContraint:
+            //                 tableQualifiedNamesContraint.value,
+            //         }),
+            //         attributes: attributes,
+            //     }
+            // }
 
             return {
                 subIndex,

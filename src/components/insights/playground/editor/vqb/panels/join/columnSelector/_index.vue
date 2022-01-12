@@ -10,7 +10,9 @@
         "
         class="relative flex items-center w-full border group"
         :class="[
-            isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
+            isAreaFocused
+                ? ' container-box-shadow-focus'
+                : 'border-gray-300 container-box-shadow',
             ,
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
@@ -131,14 +133,6 @@
                     containerPosition.value.height = viewportOffset?.height
             }
 
-            // watch(isAreaFocused, (newIsAreaFocused) => {
-            //     if (newIsAreaFocused) {
-            //         lockVQBScroll.value = true
-            //     } else {
-            //         lockVQBScroll.value = false
-            //     }
-            // })
-
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
             })
@@ -154,14 +148,15 @@
     })
 </script>
 <style lang="less" scoped>
-    .border-plus {
-        padding: 1px;
-    }
-    .border-minus {
-        padding: 0px;
-    }
     .custom-shadow {
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    }
+
+    .container-box-shadow {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .container-box-shadow-focus {
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
     }
     .selector-height {
         min-height: 32px;

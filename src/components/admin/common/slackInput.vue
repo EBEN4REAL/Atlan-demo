@@ -1,7 +1,7 @@
 <template>
     <a-form-item name="slack">
         <template #label>
-            Slack
+            {{ label }}
             <a-popover v-if="popOverContent">
                 <template #content>
                     <div class="p-3 text-gray-500 w-52">
@@ -24,11 +24,11 @@
         </a-input>
     </a-form-item>
     <div
-        class="pt-1 mb-4 -mt-6 transition-opacity"
+        class="pt-1 -mt-6 transition-opacity"
         :class="
             showSlackTestLink && modelValue
-                ? 'opacity-100 cursor-pointer'
-                : 'opacity-0 cursor-default pointer-events-none'
+                ? 'opacity-100 cursor-pointer mb-4'
+                : 'opacity-0 cursor-default pointer-events-none '
         "
     >
         <div
@@ -64,6 +64,10 @@
             popOverContent: {
                 type: String,
                 default: '',
+            },
+            label: {
+                type: String,
+                default: 'Slack',
             },
         },
         setup(props, { emit }) {

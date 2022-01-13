@@ -10,6 +10,7 @@
             :show-logged-in-user="true"
             :dropdown-style-object="{ width: '430px' }"
             search-placeholder="Search users"
+            :hideTabs="true"
         />
         <!-- <a-popover
             :placement="'bottomLeft'"
@@ -54,23 +55,31 @@
                             v-for="user in selectedRecordsModel"
                             :key="user.id"
                         >
-                            <a-checkbox
-                                :checked="
-                                    selectedIds.ownerUsers.includes(user.id)
-                                "
-                                :value="user.id"
-                                class="flex flex-row-reverse items-center justify-end w-full py-2 pr-4 border-b border-gray-100 atlanReverse hover:bg-primary-light"
-                                @change="handleChange"
+                            <div
+                                class="flex justify-between w-full py-2 border-b border-gray-100"
                             >
                                 <UserCard
                                     :user="{ ...user, name: getUserName(user) }"
                                     :minimal="true"
+                                    wrapper-class="ml-0"
                                 />
-                            </a-checkbox>
+                                <a-checkbox
+                                    :checked="
+                                        selectedIds.ownerUsers.includes(user.id)
+                                    "
+                                    :value="user.id"
+                                    class="mr-2"
+                                    @change="handleChange"
+                                >
+                                </a-checkbox>
+                            </div>
                         </template>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="mt-1 text-xs text-gray-500">
+            {{ selectedRecordsModel.length }} users selected
         </div>
     </div>
 </template>

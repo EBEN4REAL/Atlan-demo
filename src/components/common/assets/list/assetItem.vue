@@ -45,7 +45,14 @@
                         <Tooltip
                             :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
-                            :route-to="getProfilePath(item)"
+                            :route-to="
+                                getProfilePath(
+                                    item,
+                                    !hasCollectionReadPermission &&
+                                        !hasCollectionWritePermission &&
+                                        !isCollectionCreatedByCurrentUser
+                                )
+                            "
                             classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
@@ -500,6 +507,7 @@
     import TermPopover from '@/common/popover/term/term.vue'
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -597,6 +605,13 @@
 
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
+
+            const {
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
+            } = useCollectionInfo(item)
 
             const {
                 title,
@@ -760,6 +775,10 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
+
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

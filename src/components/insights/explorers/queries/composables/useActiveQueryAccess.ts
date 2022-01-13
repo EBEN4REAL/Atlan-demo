@@ -234,7 +234,7 @@ const useActiveQueryAccess = (
         () => {
             fetchSelectedCollectionData()
         },
-        // { deep: true }
+        { deep: true }
     )
 
     return {

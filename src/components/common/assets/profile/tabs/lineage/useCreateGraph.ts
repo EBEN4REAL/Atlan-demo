@@ -15,12 +15,15 @@ export default function useCreateGraph(
     Graph.registerConnector(
         'beiz',
         (s, t) => {
-            const control = 65
-            const v1 = { x: s.x + control, y: s.y }
-            const v2 = { x: t.x - control, y: t.y }
+            const control = 60
+            const offset = 20
+            const v1 = { x: s.x + control + offset, y: s.y }
+            const v2 = { x: t.x - control - offset, y: t.y }
 
             return `M ${s.x} ${s.y}
-             C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x} ${t.y}
+                L ${s.x + offset} ${s.y}
+                C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x - offset} ${t.y}
+                L ${t.x} ${t.y}
             `
         },
         true
@@ -72,7 +75,7 @@ export default function useCreateGraph(
             portsPositionArgs.map((_, index) => ({
                 position: {
                     x: 1,
-                    y: (index + 1) * 40 + 40,
+                    y: (index + 1) * 41 + 40,
                 },
                 angle: 0,
             })),

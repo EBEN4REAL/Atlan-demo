@@ -46,71 +46,74 @@
 </template>
 
 <script lang="ts">
-// Vue
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
+    // Vue
+    import dayjs from 'dayjs'
+    import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { defineComponent, computed, toRefs } from 'vue'
+    import { defineComponent, computed, toRefs } from 'vue'
 
-import integrationStore from '~/store/integrations/index'
-import { getChannelAndMessageIdFromSlackLink } from '~/composables/integrations/useSlack'
-import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
+    import integrationStore from '~/store/integrations/index'
+    import { getChannelAndMessageIdFromSlackLink } from '~/composables/integrations/useSlack'
+    import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
 
-dayjs.extend(relativeTime)
+    dayjs.extend(relativeTime)
 
-export default defineComponent({
-    components: {},
-    props: {
-        item: {
-            type: Object,
-            required: true,
-        },
-    },
-    setup(props) {
-        const timeAgo = (time: string) => dayjs().from(time, true)
-
-        const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
-        const { item } = toRefs(props)
-        const { link } = item.value.attributes
-        const { channelId, messageId } =
-            getChannelAndMessageIdFromSlackLink(link)
-        const { data, isLoading, error } = UnfurlSlackMessage(
-            pV,
-            {
-                conversationId: channelId,
-                messageId,
+    export default defineComponent({
+        components: {},
+        props: {
+            item: {
+                type: Object,
+                required: true,
             },
-            {
-                immediate: true,
+        },
+        setup(props) {
+            const timeAgo = (time: string) => dayjs().from(time, true)
+
+            // todo
+            // todo add loading state whenever missing
+            // todo add simmer effecr
+            const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
+            const { item } = toRefs(props)
+            const { link } = item.value.attributes
+            const { channelId, messageId } =
+                getChannelAndMessageIdFromSlackLink(link)
+            const { data, isLoading, error } = UnfurlSlackMessage(
+                pV,
+                {
+                    conversationId: channelId,
+                    messageId,
+                },
+                {
+                    immediate: true,
+                }
+            )
+            function openLink(url) {
+                if (!url) {
+                    return
+                }
+                window.open(url)
             }
-        )
-        function openLink(url) {
-            if (!url) {
-                return
+            return {
+                data,
+                isLoading,
+                error,
+                timeAgo,
+                openLink,
             }
-            window.open(url)
-        }
-        return {
-            data,
-            isLoading,
-            error,
-            timeAgo,
-            openLink,
-        }
-    },
-})
+        },
+    })
 </script>
 <style lang="less" scoped>
-.slack-icon-avatar-overlay {
-    height: 1rem;
-    bottom: -3px;
-    right: -6px;
-    border-radius: 100px;
-    /* box-shadow: -1px 1px 4px white; */
-    background: white;
-    padding: 0.9px;
-}
-.min-w-link-left-col {
-    min-width: 2rem;
-}
+    .slack-icon-avatar-overlay {
+        height: 1rem;
+        bottom: -3px;
+        right: -6px;
+        border-radius: 100px;
+        /* box-shadow: -1px 1px 4px white; */
+        background: white;
+        padding: 0.9px;
+    }
+    .min-w-link-left-col {
+        min-width: 2rem;
+    }
 </style>

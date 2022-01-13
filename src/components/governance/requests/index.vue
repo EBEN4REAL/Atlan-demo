@@ -107,14 +107,14 @@
                     @mouseleave="mouseLeaveContainer"
                 >
                     <template #default="{ item, index }">
-                        <!-- :active="index === selectedIndex"
-                            @select="selectRequest(item.id, index)" -->
                         <RequestListItem
                             :request="item"
                             :selected="isSelected(item.id)"
                             :active-hover="activeHover"
+                            :active="index === selectedIndex"
                             @mouseenter="handleMouseEnter(item.id)"
                             @action="handleRequestAction($event, index)"
+                            @select="selectRequest(item.id, index)"
                         />
                     </template>
                 </VirtualList>

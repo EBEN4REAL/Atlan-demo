@@ -38,7 +38,12 @@
                 </a-menu>
             </template>
             <!-- @click.stop="$emit('reject')" -->
-            <AtlanButton color="secondary" padding="compact" size="sm">
+            <AtlanButton
+                color="secondary"
+                padding="compact"
+                size="sm"
+                @click.stop="isVisibleReject = !isVisibleReject"
+            >
                 <template #suffix>
                     <AtlanIcon class="mr-1" icon="ChevronDown" />
                 </template>

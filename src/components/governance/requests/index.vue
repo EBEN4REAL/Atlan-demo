@@ -60,7 +60,12 @@
     </a-drawer>
     <DefaultLayout title="Manage Requests">
         <template #header> </template>
-        <div class="border rounded">
+        <div class="relative border rounded">
+            <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
+            <div
+                class="wrapper-scoll right"
+                @mouseenter="mouseEnterContainer"
+            />
             <SearchAndFilter
                 v-model:value="searchTerm"
                 class="max-w-xl m-4 mb-0"
@@ -399,6 +404,9 @@
 </script>
 
 <style lang="less">
+    .container-content {
+        overflow: visible !important;
+    }
     .container-scroll {
         max-height: 500px;
     }
@@ -416,6 +424,17 @@
     }
 </style>
 <style lang="less" scoped>
+    .wrapper-scoll {
+        position: absolute;
+        width: 16px;
+        height: 100%;
+        &.left {
+            left: -16px;
+        }
+        &.right {
+            right: -16px;
+        }
+    }
     .close-icon {
         &.closed {
             display: none;

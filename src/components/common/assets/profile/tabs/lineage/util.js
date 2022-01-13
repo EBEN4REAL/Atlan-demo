@@ -6,6 +6,7 @@ import athena from '~/assets/images/source/athena.png'
 import mysql from '~/assets/images/source/mysql.png'
 import glue from '~/assets/images/source/glue.png'
 import powerbi from '~/assets/images/source/powerbi.png'
+import databricks from '~/assets/images/source/databricks.png'
 
 /**
  * Gets the mapped string for the Node type
@@ -43,6 +44,7 @@ export const getNodeSourceImage = {
     mysql,
     glue,
     powerbi,
+    databricks,
 }
 
 export const getSource = (entity) => {

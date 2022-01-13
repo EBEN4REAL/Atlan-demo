@@ -112,10 +112,12 @@
                 isVisibleReject.value = false
             }
             const handleClickRejectWithComment = () => {
+                emit('reject')
+                isVisibleReject.value = false
                 // isVisibleRejectWithComment.value = true
-                setTimeout(() => {
-                    isVisibleReject.value = false
-                }, 300)
+                // setTimeout(() => {
+                //     isVisibleReject.value = false
+                // }, 300)
             }
             return {
                 isVisibleReject,

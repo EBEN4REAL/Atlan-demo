@@ -58,7 +58,7 @@
             </div>
         </div>
     </a-drawer>
-    <DefaultLayout title="Manage Requests">
+    <DefaultLayout title="Manage Requests" class="governance-request">
         <template #header> </template>
         <div class="relative border rounded">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
@@ -144,9 +144,11 @@
                         >Clear search</a-button
                     >
                 </div>
-                <div v-else class="flex flex-col">
+                <div v-else class="flex flex-col mb-12">
                     <atlan-icon icon="NoLinkedAssets" class="h-40" />
-                    <span class="mt-4 text-xl">No requests available</span>
+                    <span class="mt-4 text-xl font-semibold"
+                        >All pending requests have been resolved</span
+                    >
                 </div>
             </div>
         </div>
@@ -404,8 +406,10 @@
 </script>
 
 <style lang="less">
-    .container-content {
-        overflow: visible !important;
+    .governance-request {
+        .container-content {
+            overflow: visible !important;
+        }
     }
     .container-scroll {
         max-height: 500px;

@@ -3,6 +3,7 @@ import tableau from '~/assets/images/source/tableau.png'
 import redshift from '~/assets/images/source/redshift.png'
 import postgres from '~/assets/images/source/postgres.png'
 import athena from '~/assets/images/source/athena.png'
+import databricks from '~/assets/images/source/databricks.png'
 import database from '~/assets/images/assetType/Database.svg'
 import schema from '~/assets/images/assetType/Schema.svg'
 import powerbi from '~/assets/images/source/powerbi.png'
@@ -80,6 +81,55 @@ export const SourceList = [
         image: redshift,
         hierarchy: [],
         connectionCount: 0,
+    },
+    {
+        id: 'databricks',
+        label: 'Databricks',
+        image: databricks,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: database,
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: schema,
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            }
+        ],
+        connectionCount: 0,
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
+            'Query',
+            'Folder',
+        ],
     },
     {
         id: 'postgres',

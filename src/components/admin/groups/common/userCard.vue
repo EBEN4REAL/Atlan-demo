@@ -1,5 +1,5 @@
 <template>
-    <span class="flex justify-between ml-3">
+    <span class="flex justify-between" :class="wrapperClass">
         <div class="flex items-center">
             <Avatar
                 avatar-shape="circle"
@@ -33,6 +33,7 @@
         props: {
             minimal: { type: Boolean, required: false, default: false },
             user: { type: Object, required: true },
+            wrapperClass: { type: String, default: 'ml-3', required: false },
         },
         setup() {
             const imageUrl = (username: any) =>

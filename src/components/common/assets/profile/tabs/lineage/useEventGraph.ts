@@ -32,26 +32,14 @@ export default function useEventGraph(
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
     const che = ref('') // che -> currentHilightedEdge
-    const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
+    const chp = ref({ portId: '', node: null, expandedNodes: [] }) // chp -> currentHilightedPort
     const nodesCaretClicked = ref([])
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
     const activeNodesToggled = ref({})
+    const baseNode = ref()
 
     /** WATCHERS */
-    watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) highlight(null)
-        else highlight(newVal)
-    })
-
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            highlight(null)
-            resetSelections.value = false
-        }
-    })
 
     /** METHODS */
     // getHighlights
@@ -153,7 +141,6 @@ export default function useEventGraph(
 
             nodeToTranslate.position(x1, newY)
         })
-        nodesTranslated.value[x.id] = []
     }
 
     // portExist
@@ -165,10 +152,9 @@ export default function useEventGraph(
 
     // getAllExpandedNodes
     const getAllExpandedNodes = () => {
-        const chpNode = getPortNode(chp.value.portId)
-        const chpExpandedNodes = chp.value.expandedNodes
+        const chpExpandedNodes = [...chp.value.expandedNodes]
         const res = chpExpandedNodes
-        if (chpNode) res.push(chpNode)
+        if (chp.value.node) res.push(chp.value.node)
         return res
     }
 
@@ -182,6 +168,15 @@ export default function useEventGraph(
     const isCHPExpandedNode = (nodeId) => {
         const node = chp.value.expandedNodes.find((x) => x.id === nodeId)
         return !!node
+    }
+
+    // control Bounding box
+    const controlBoundingBox = (node: any, expand: boolean) => {
+        const element = document.getElementById(`${node.id}-wrapper`)
+        if (element)
+            element.style.height = expand
+                ? `${65 + (node.getPorts().length - 1) * 41}px`
+                : '64px'
     }
 
     // getCaretElement
@@ -226,16 +221,19 @@ export default function useEventGraph(
                 if (portExist(x.id)) {
                     const parentNode = getPortNode(x.id)
                     parentNode.removePort(x.id)
+                    controlBoundingBox(parentNode, false)
                 }
             })
             node.addPorts(ports)
+            controlBoundingBox(node, true)
+
             if (!lineageStore.hasPortList(node.id))
                 lineageStore.setNodesPortList(node.id, ports)
             translateSubsequentNodes(node)
         } else {
-            const ports = node.getPorts()
-            ports.shift()
+            const ports = node.getPorts().slice(1)
             node.removePorts(ports)
+            controlBoundingBox(node, false)
             translateExpandedNodesToDefault(node)
         }
     }
@@ -345,7 +343,6 @@ export default function useEventGraph(
         const translateCandidatesSet = new Set()
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
-                toggleNodesEdges(graph, false)
                 const qn = v.attributes.qualifiedName.split('/')
                 const parentName = qn[qn.length - 2]
                 const graphNodes = graph.value.getNodes()
@@ -355,6 +352,7 @@ export default function useEventGraph(
                 if (parentNode) translateCandidatesSet.add(parentNode)
             }
         })
+        toggleNodesEdges(graph, false)
 
         const translateCandidates = Array.from(translateCandidatesSet)
 
@@ -505,15 +503,14 @@ export default function useEventGraph(
                 if (isExpandedNode(nodeId)) {
                     if (!activeNodesToggled.value[node.id]) {
                         handleToggleOfActiveNode(node)
-                        const ports = node.getPorts()
-                        ports.shift()
+                        const ports = node.getPorts().slice(1)
                         node.removePorts(ports)
-                        translateExpandedNodesToDefault(node)
-                        loaderCords.value = {}
+                        controlBoundingBox(node, false)
                     } else {
                         const { edges, ports } =
                             activeNodesToggled.value[node.id]
                         node.addPorts(ports)
+                        controlBoundingBox(node, true)
                         edges.forEach((edge) => {
                             const [_, processId, sourceTarget] =
                                 edge.id.split('/')
@@ -533,54 +530,80 @@ export default function useEventGraph(
                             }
                         )
                         delete activeNodesToggled.value[node.id]
-                        loaderCords.value = {}
                     }
+                    translateExpandedNodesToDefault(node)
+                    loaderCords.value = {}
                 }
             })
         })
     }
     registerCaretListeners()
 
-    // selectPort
-    const selectPort = (node, e, portId) => {
-        const chpNode = getPortNode(chp.value.portId)
-        if (chpNode) {
-            chp.value.expandedNodes.push(chpNode)
-            chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
+    const setPortStyle = (
+        node: any,
+        portId: string,
+        isHighlighted: boolean
+    ) => {
+        let attrs = {}
+        if (isHighlighted) {
+            if (baseNode.value?.hasPort(portId))
+                attrs = {
+                    fill: '#F4F6FD',
+                    stroke: '#5277D7',
+                    'stroke-dasharray': '269 40',
+                }
+            else
+                attrs = {
+                    fill: '#F4F6FD',
+                    stroke: '#5277D7',
+                    'stroke-dasharray': 'none',
+                }
+        } else
+            attrs = {
                 fill: '#ffffff',
-            })
-        }
+                stroke: '#e6e6eb',
+                'stroke-dasharray': '269 40 0 269 0 40',
+            }
+
+        node.setPortProp(portId, 'attrs/portBody', attrs)
+    }
+
+    const selectPort = (node, e, portId) => {
+        if (chp.value.node)
+            setPortStyle(chp.value.node, chp.value.portId, false)
+
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
             ports.shift()
             const portsToRemove = ports.filter((x) => x.id !== portId)
             x.removePorts(portsToRemove)
+            controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
-        node.setPortProp(portId, 'attrs/portBody', {
-            fill: '#e5ecff',
-        })
+
+        setPortStyle(node, portId, true)
         loaderCords.value = { x: e.clientX, y: e.clientY }
         getColumnLineage(portId)
     }
 
     // deselectPort
-    const deselectPort = (node) => {
-        const chpNode = getPortNode(chp.value.portId)
-        chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
-            fill: '#ffffff',
-        })
+    const deselectPort = () => {
+        if (chp.value.node) setPortStyle(chpNode, chp.value.portId, false)
+
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
             const portsToRemove = x.getPorts()
             portsToRemove.shift()
             x.removePorts(portsToRemove)
+            controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = null
         chp.value.portId = ''
         chp.value.expandedNodes = []
         toggleNodesEdges(graph, true)
@@ -594,7 +617,7 @@ export default function useEventGraph(
         const portId = ele.getAttribute('port')
 
         if (chp.value.portId === portId) {
-            deselectPort(node)
+            deselectPort()
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
@@ -606,6 +629,7 @@ export default function useEventGraph(
     // EDGE - CLICK
     const cheCell = graph.value.getCellById(che.value)
     graph.value.on('edge:click', ({ e, edge, cell }) => {
+        if (chp.value.portId) return
         loaderCords.value = { x: e.clientX, y: e.clientY }
 
         if (edge.id.includes('port')) {
@@ -669,7 +693,7 @@ export default function useEventGraph(
 
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
-        if (chp.value.portId) deselectPort(node)
+        if (chp.value.portId) deselectPort()
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
@@ -695,4 +719,29 @@ export default function useEventGraph(
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
+
+    /** WATCHERS */
+    watch(assetGuidToHighlight, (newVal) => {
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            if (highlightedNode.value) highlight(null)
+            resetSelections.value = false
+        }
+    })
+
+    watch(
+        baseEntity,
+        () => {
+            baseNode.value = graph.value
+                .getNodes()
+                .find((x) => x.id === baseEntity.value.guid)
+        },
+        { immediate: true }
+    )
 }

@@ -65,6 +65,7 @@
                 <div class="mt-2">
                     <SlackInput
                         v-model="formData.slack"
+                        label="Slack member ID"
                         placeholder="Add your slack workspace's member ID"
                         pop-over-content="Go to your slack profile, after clicking on more menu you'll see the member ID. Make sure you're in right slack workspace."
                     />

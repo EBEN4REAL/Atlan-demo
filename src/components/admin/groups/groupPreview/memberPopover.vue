@@ -16,6 +16,7 @@
                     :hide-disabled-tabs="true"
                     select-user-key="id"
                     :group-id="selectedGroup.id"
+                    :hideTabs="true"
                 />
             </div>
             <div class="flex justify-end mr-3">

@@ -1,23 +1,20 @@
 <template>
-    <div ref="monitorContainer" class="relative monitor">
+    <div ref="monitorContainer" class="monitor">
         <!-- Parent Container for Graph and Spinner -->
-        <div class="flex">
+        <div class="relative">
             <!-- Graph Container -->
-            <div
-                ref="graphContainer"
-                style="width: calc(100vw + 45px); height: 1000px"
-            ></div>
+            <div ref="graphContainer" style="width: 100%; height: 1000px"></div>
             <!-- Spinner -->
-            <div
-                v-if="!isGraphRendered"
-                class="absolute top-0 left-0 flex items-center justify-center bg-gray-100 bg-opacity-50"
-            >
-                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
-            </div>
+        </div>
+        <div
+            v-if="!isGraphRendered"
+            class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
+        >
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
         </div>
 
         <!-- Monitor Controls -->
-        <div class="absolute p-2 bg-white border top-4 left-4">
+        <div class="monitor-control" :class="isFullscreen ? 'top-7' : 'top-4'">
             <!-- Minimap Container -->
             <div
                 v-show="showMinimap"
@@ -232,6 +229,8 @@
                     currZoomDec,
                     reload
                 )
+
+                console.log('nodes', nodes)
                 firstNode.value = nodes.value[0]
                 // useHighlight
                 useHighlight(
@@ -306,7 +305,7 @@
         // Control
         &-control {
             @apply absolute bg-white;
-            right: 1rem;
+            right: 1.5rem;
             z-index: 9;
             border: unset;
             box-shadow: 0px 9px 32px rgb(0 0 0 / 12%);
@@ -327,17 +326,15 @@
         }
 
         &-node {
-            @apply shadow;
-            border-radius: 6px;
-            height: 45px;
-            width: 160px;
+            border-radius: 10px;
+            height: 55px;
+            width: 190px;
             display: inline-flex;
             align-items: center;
             font-size: 16px;
             color: #3e4359;
             padding: 0 0.5rem;
             cursor: pointer;
-            white-space: nowrap;
 
             &.Succeeded {
                 background-color: #f2ffe7;

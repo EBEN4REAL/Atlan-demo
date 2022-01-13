@@ -131,7 +131,7 @@
                 debugger
                 if (readOnly.value) return
                 subpanels.value[index].filter.isVariable = !currVal
-                updateVQB(activeInlineTabKey, tabs)
+                updateVQB(activeInlineTab, tabs)
             }
             return {
                 toggleVariableType,

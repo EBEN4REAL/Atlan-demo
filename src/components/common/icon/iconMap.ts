@@ -298,6 +298,7 @@ import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
 import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Databricks from '~/assets/images/source/svg/Databricks.svg'
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
@@ -354,6 +355,8 @@ import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
 import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
 import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
 import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
+
+import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 
 export default {
     GlowFlash,
@@ -698,4 +701,6 @@ export default {
     RightJoinInfo,
     OuterJoinInfo,
     TaskList,
+    LockedFile,
+    Databricks
 }

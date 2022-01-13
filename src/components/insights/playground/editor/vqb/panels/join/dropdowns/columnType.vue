@@ -5,7 +5,7 @@
     >
         <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
             <!--  Multiple table column selection-->
-            <div class="w-full dropdown-container" v-if="!isTableSelected">
+            <div class="w-full dropdown-container" v-if="!dirtyIsTableSelected">
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                 >
@@ -29,7 +29,7 @@
                             ? 'flex justify-center items-center'
                             : '',
                     ]"
-                    v-if="!isTableSelected && !isTableLoading"
+                    v-if="!dirtyIsTableSelected && !isTableLoading"
                 >
                     <template
                         v-for="(item, index) in tableDropdownOption"
@@ -78,7 +78,7 @@
                                     ></AtlanIcon>
 
                                     <span
-                                        class="ml-2 parent-ellipsis-container-base"
+                                        class="ml-2 truncate parent-ellipsis-container-base"
                                         >{{ item?.label }}
                                     </span>
                                 </div>
@@ -107,7 +107,7 @@
                 </div>
             </div>
 
-            <div class="w-full dropdown-container" v-if="isTableSelected">
+            <div class="w-full dropdown-container" v-if="dirtyIsTableSelected">
                 <div
                     class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                     @click.stop="() => {}"
@@ -128,21 +128,21 @@
                             <AtlanIcon
                                 :icon="
                                     getEntityStatusIcon(
-                                        assetType(tableSelected),
-                                        certificateStatus(tableSelected)
+                                        assetType(dirtyTableSelected),
+                                        certificateStatus(dirtyTableSelected)
                                     )
                                 "
                                 class="w-4 h-4 -mt-0.5 parent-ellipsis-container-extension"
                                 style="min-width: 16px"
                             ></AtlanIcon>
 
-                            {{ tableSelected?.label }}
+                            {{ dirtyTableSelected?.label }}
                         </span>
                     </div>
                     <div
                         class="flex items-center justify-between text-gray-500 dropdown-container"
                     >
-                        {{ tableSelected?.columnCount }}
+                        {{ dirtyTableSelected?.columnCount }}
                     </div>
                 </div>
                 <div
@@ -162,7 +162,7 @@
 
                 <div
                     class="w-full dropdown-container"
-                    v-if="isTableSelected && !isColumnLoading"
+                    v-if="dirtyIsTableSelected && !isColumnLoading"
                 >
                     <div
                         class="overflow-y-auto"
@@ -205,7 +205,7 @@
                                     </AtlanBtn>
                                 </template>
                                 <div
-                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 parent-ellipsis-container hover:bg-primary-light"
+                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectColumn(item, e)"
                                     :class="
                                         selectedColumn?.columnQualifiedName ===
@@ -219,29 +219,26 @@
                                     >
                                         <component
                                             :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
                                         ></component>
                                         <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
                                         >
                                             {{ item.label }}
                                         </span>
                                     </div>
                                     <div
-                                        class="flex items-center parent-ellipsis-container-extension"
+                                        class="relative flex items-center h-full"
                                     >
-                                        <div
-                                            class="relative h-full w-14 parent-ellipsis-container-extension"
-                                        >
-                                            <ColumnKeys
-                                                :isPrimary="item.isPrimary"
-                                                :isForeign="item.isForeign"
-                                                :isPartition="item.isPartition"
-                                            />
-                                        </div>
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
+
                                         <AtlanIcon
                                             icon="Check"
-                                            class="ml-2 text-primary parent-ellipsis-container-base"
+                                            class="ml-2 text-primary"
                                             v-if="
                                                 selectedColumn?.columnQualifiedName ===
                                                 item.qualifiedName
@@ -265,13 +262,12 @@
                     </div>
                 </div>
             </div>
-
             <Loader
-                v-if="isColumnLoading && isTableSelected"
+                v-if="isColumnLoading && dirtyIsTableSelected"
                 style="min-height: 100px !important"
             ></Loader>
             <Loader
-                v-if="isTableLoading && !isTableSelected"
+                v-if="isTableLoading && !dirtyIsTableSelected"
                 style="min-height: 100px !important"
             ></Loader>
             <!--  -->
@@ -287,6 +283,7 @@
         defineComponent,
         Ref,
         toRefs,
+        toRaw,
         ref,
     } from 'vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
@@ -327,6 +324,7 @@
             selectedColumn: {
                 type: Object,
                 required: true,
+                default: () => {},
             },
         },
 
@@ -342,6 +340,15 @@
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
             const tableSelected = inject('tableSelected') as Ref<Object>
+            const dirtyTableSelected = inject(
+                'dirtyTableSelected'
+            ) as Ref<Object>
+            const dirtyIsTableSelected = inject(
+                'dirtyIsTableSelected'
+            ) as Ref<Object>
+
+            dirtyTableSelected.value = tableSelected.value
+            dirtyIsTableSelected.value = isTableSelected.value
 
             const TableList = inject('TableList') as Ref<any[]>
             const ColumnList = inject('ColumnList') as Ref<any[]>
@@ -388,7 +395,7 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                if (isTableSelected.value) {
+                if (dirtyIsTableSelected.value) {
                     if (isColumnLoading.value) {
                         data = 'Loading...'
                     } else {
@@ -445,27 +452,30 @@
             })
 
             const onSelectTable = (item, event) => {
-                tableSelected.value = item
-                isTableSelected.value = true
                 tableQueryText.value = ''
                 replaceColumnBody(getColumnInitialBody(item))
-                // updateVQB(activeInlineTabKey, inlineTabs)
+                dirtyIsTableSelected.value = true
+                dirtyTableSelected.value = item
+
                 event.stopPropagation()
                 event.preventDefault()
 
                 return false
             }
             const onUnselectTable = (event) => {
-                isTableSelected.value = false
+                dirtyIsTableSelected.value = false
+                dirtyTableSelected.value = null
                 columnDropdownOption.value = []
+                columnQueryText.value = ''
                 replaceTableBody(getTableInitialBody())
-                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
             }
 
             const onSelectColumn = (item, event) => {
+                tableSelected.value = dirtyTableSelected.value
+                isTableSelected.value = true
                 selectedColumn.value = {
                     label: item.label,
                     type: item.type,
@@ -473,6 +483,7 @@
                     columnQualifiedName: item.qualifiedName,
                     tableName: item.item.attributes.tableName,
                 }
+
                 emit('change', item.qualifiedName)
                 activeInlineTab.value.playground.vqb.selectedTables =
                     JSON.parse(
@@ -480,9 +491,10 @@
                             activeInlineTab.value.playground.vqb.selectedTables
                         )
                     )
-                updateVQB(activeInlineTabKey, inlineTabs)
+
                 event.stopPropagation()
                 event.preventDefault()
+                updateVQB(activeInlineTab, inlineTabs)
                 isAreaFocused.value = false
                 return false
             }
@@ -495,9 +507,16 @@
 
             watch(
                 () => activeInlineTab.value.playground.editor.context,
-                () => {
-                    if (selectedColumn.value?.label && tableSelected?.value) {
-                    } else {
+                (newContext) => {
+                    if (
+                        !dirtyTableSelected.value?.attributes?.qualifiedName?.includes(
+                            newContext.attributeValue
+                        )
+                    ) {
+                        dirtyIsTableSelected.value = false
+                        dirtyTableSelected.value = null
+                        isTableSelected.value = false
+                        tableSelected.value = null
                         replaceTableBody(getTableInitialBody())
                     }
                 },
@@ -524,27 +543,31 @@
                 }
             )
 
-            watch(isAreaFocused, () => {
-                if (selectedColumn.value?.label && tableSelected?.value) {
-                    // retain column view
-                    isTableSelected.value = true
-                } else if (
-                    !selectedColumn.value?.label &&
-                    tableSelected.value
-                ) {
-                    isTableSelected.value = false
-                }
-            })
+            watch(
+                isAreaFocused,
+                (newIsAreaFocused) => {
+                    if (newIsAreaFocused) {
+                        dirtyTableSelected.value = toRaw(tableSelected.value)
+                        dirtyIsTableSelected.value = toRaw(
+                            isTableSelected.value
+                        )
+                    } else {
+                        dirtyTableSelected.value = null
+                        dirtyIsTableSelected.value = false
+                    }
+                },
+                { immediate: true }
+            )
 
             watch(tableQueryText, () => {
-                if (!isTableSelected?.value) {
+                if (!dirtyIsTableSelected?.value) {
                     replaceTableBody(getTableInitialBody())
                 }
             })
             watch(columnQueryText, () => {
-                if (isTableSelected?.value) {
+                if (dirtyIsTableSelected?.value) {
                     replaceColumnBody(
-                        getColumnInitialBody(tableSelected?.value)
+                        getColumnInitialBody(dirtyTableSelected.value)
                     )
                 }
             })
@@ -574,6 +597,8 @@
                 assetType,
                 certificateStatus,
                 getTableInitialBody,
+                dirtyTableSelected,
+                dirtyIsTableSelected,
             }
         },
     })
@@ -592,6 +617,11 @@
 
     .disable-bg {
         background-color: #fbfbfb;
+    }
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
     }
     .parent-ellipsis-container-base {
         white-space: nowrap;

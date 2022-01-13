@@ -470,14 +470,7 @@
                             </div>
                         </a-sub-menu>
 
-                        <a-menu-item
-                            @click="duplicateQuery"
-                            class="px-4 py-2"
-                            :class="
-                                readOnly
-                                    ? 'pointer-events-none bg-gray-100'
-                                    : ''
-                            "
+                        <a-menu-item @click="duplicateQuery" class="px-4 py-2"
                             >Duplicate query</a-menu-item
                         >
                         <!-- <a-menu-item class="px-4 py-2"
@@ -697,6 +690,8 @@
                 activeInlineTabCopy.key = String(new Date().getTime())
                 activeInlineTabCopy.isSaved = false
                 activeInlineTabCopy.queryId = undefined
+                activeInlineTabCopy.qualifiedName = ''
+                activeInlineTabCopy.attributes = undefined
 
                 /* CAREFUL:-------Order is important here------ */
                 inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)

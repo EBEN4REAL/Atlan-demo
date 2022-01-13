@@ -253,10 +253,9 @@
                         secondValue.value?.format(dateFormat),
                     ]
                 }
-                // updateVQB(activeInlineTabKey, inlineTabs)
 
                 createDebounce()(() => {
-                    updateVQB(activeInlineTabKey, inlineTabs)
+                    updateVQB(activeInlineTab, inlineTabs)
                 }, 2000)
             }
             function isNumberKey(evt) {

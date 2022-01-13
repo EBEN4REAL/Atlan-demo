@@ -382,7 +382,7 @@
             )
 
             const handleCheckboxChange = () => {
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             return {

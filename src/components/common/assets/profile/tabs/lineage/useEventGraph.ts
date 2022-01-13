@@ -32,7 +32,7 @@ export default function useEventGraph(
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
     const che = ref('') // che -> currentHilightedEdge
-    const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
+    const chp = ref({ portId: '', node: null, expandedNodes: [] }) // chp -> currentHilightedPort
     const nodesCaretClicked = ref([])
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
@@ -40,29 +40,6 @@ export default function useEventGraph(
     const baseNode = ref()
 
     /** WATCHERS */
-    watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) highlight(null)
-        else highlight(newVal)
-    })
-
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            highlight(null)
-            resetSelections.value = false
-        }
-    })
-
-    watch(
-        baseEntity,
-        () => {
-            baseNode.value = graph.value
-                .getNodes()
-                .find((x) => x.id === baseEntity.value.guid)
-        },
-        { immediate: true }
-    )
 
     /** METHODS */
     // getHighlights
@@ -164,7 +141,6 @@ export default function useEventGraph(
 
             nodeToTranslate.position(x1, newY)
         })
-        nodesTranslated.value[x.id] = []
     }
 
     // portExist
@@ -176,10 +152,9 @@ export default function useEventGraph(
 
     // getAllExpandedNodes
     const getAllExpandedNodes = () => {
-        const chpNode = getPortNode(chp.value.portId)
-        const chpExpandedNodes = chp.value.expandedNodes
+        const chpExpandedNodes = [...chp.value.expandedNodes]
         const res = chpExpandedNodes
-        if (chpNode) res.push(chpNode)
+        if (chp.value.node) res.push(chp.value.node)
         return res
     }
 
@@ -202,6 +177,37 @@ export default function useEventGraph(
             element.style.height = expand
                 ? `${65 + (node.getPorts().length - 1) * 41}px`
                 : '64px'
+    }
+
+    // getCaretElement
+    const getCaretElement = (nodeId) => {
+        const graphNodeElement = document.querySelectorAll(
+            `[data-cell-id="${nodeId}"]`
+        )[0]
+        const caretElement = Array.from(
+            graphNodeElement.querySelectorAll('*')
+        ).find((y) => y.classList.contains('node-caret'))
+        return caretElement
+    }
+
+    // controlCaret
+    const controlCaret = (nodeId, caretEle, override = false) => {
+        if (override) {
+            if (!nodesCaretClicked.value.includes(nodeId)) {
+                nodesCaretClicked.value.push(nodeId)
+            }
+            caretEle.classList.add('caret-expanded')
+            return
+        }
+
+        if (nodesCaretClicked.value.includes(nodeId)) {
+            const index = nodesCaretClicked.value.findIndex((x) => x === nodeId)
+            nodesCaretClicked.value.splice(index, 1)
+            caretEle.classList.remove('caret-expanded')
+        } else {
+            nodesCaretClicked.value.push(nodeId)
+            caretEle.classList.add('caret-expanded')
+        }
     }
 
     // controlPorts
@@ -303,6 +309,14 @@ export default function useEventGraph(
         watch(
             list,
             () => {
+                if (!list.value) {
+                    const node = nodes[0]
+                    const caretElement = getCaretElement(node.id)
+                    controlCaret(node.id, caretElement)
+                    loaderCords.value = {}
+                    message.info('No column with lineage found for this node')
+                    return
+                }
                 nodes.forEach((node) => {
                     const asset = node.store.data.entity
                     const guid = node.id
@@ -329,7 +343,6 @@ export default function useEventGraph(
         const translateCandidatesSet = new Set()
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
-                toggleNodesEdges(graph, false)
                 const qn = v.attributes.qualifiedName.split('/')
                 const parentName = qn[qn.length - 2]
                 const graphNodes = graph.value.getNodes()
@@ -339,6 +352,7 @@ export default function useEventGraph(
                 if (parentNode) translateCandidatesSet.add(parentNode)
             }
         })
+        toggleNodesEdges(graph, false)
 
         const translateCandidates = Array.from(translateCandidatesSet)
 
@@ -356,12 +370,7 @@ export default function useEventGraph(
         )
 
         translateCandidates.forEach((x) => {
-            const graphNodeElement = document.querySelectorAll(
-                `[data-cell-id="${x.id}"]`
-            )[0]
-            const caretElement = Array.from(
-                graphNodeElement.querySelectorAll('*')
-            ).find((y) => y.classList.contains('node-caret'))
+            const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement, true)
         })
 
@@ -433,26 +442,6 @@ export default function useEventGraph(
         return [target].concat(getParents(target), window)
     }
 
-    // controlCaret
-    const controlCaret = (nodeId, caretEle, override = false) => {
-        if (override) {
-            if (!nodesCaretClicked.value.includes(nodeId)) {
-                nodesCaretClicked.value.push(nodeId)
-            }
-            caretEle.classList.add('caret-expanded')
-            return
-        }
-
-        if (nodesCaretClicked.value.includes(nodeId)) {
-            const index = nodesCaretClicked.value.findIndex((x) => x === nodeId)
-            nodesCaretClicked.value.splice(index, 1)
-            caretEle.classList.remove('caret-expanded')
-        } else {
-            nodesCaretClicked.value.push(nodeId)
-            caretEle.classList.add('caret-expanded')
-        }
-    }
-
     // handleToggleOfActiveNode
     const handleToggleOfActiveNode = (node) => {
         const ports = node.getPorts()
@@ -517,8 +506,6 @@ export default function useEventGraph(
                         const ports = node.getPorts().slice(1)
                         node.removePorts(ports)
                         controlBoundingBox(node, false)
-                        translateExpandedNodesToDefault(node)
-                        loaderCords.value = {}
                     } else {
                         const { edges, ports } =
                             activeNodesToggled.value[node.id]
@@ -543,8 +530,9 @@ export default function useEventGraph(
                             }
                         )
                         delete activeNodesToggled.value[node.id]
-                        loaderCords.value = {}
                     }
+                    translateExpandedNodesToDefault(node)
+                    loaderCords.value = {}
                 }
             })
         })
@@ -581,11 +569,9 @@ export default function useEventGraph(
     }
 
     const selectPort = (node, e, portId) => {
-        const chpNode = getPortNode(chp.value.portId)
-        if (chpNode) {
-            chp.value.expandedNodes.push(chpNode)
-            setPortStyle(chpNode, chp.value.portId, false)
-        }
+        if (chp.value.node)
+            setPortStyle(chp.value.node, chp.value.portId, false)
+
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
@@ -595,6 +581,7 @@ export default function useEventGraph(
             controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
 
@@ -604,18 +591,11 @@ export default function useEventGraph(
     }
 
     // deselectPort
-    const deselectPort = (node) => {
-        const chpNode = getPortNode(chp.value.portId)
+    const deselectPort = () => {
+        if (chp.value.node) setPortStyle(chpNode, chp.value.portId, false)
 
-        setPortStyle(chpNode, chp.value.portId, false)
         chp.value.expandedNodes.forEach((x) => {
-            // remove ports of all interlinked nodes
-            const graphNodeElement = document.querySelectorAll(
-                `[data-cell-id="${x.id}"]`
-            )[0]
-            const caretElement = Array.from(
-                graphNodeElement.querySelectorAll('*')
-            ).find((y) => y.classList.contains('node-caret'))
+            const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
             const portsToRemove = x.getPorts()
             portsToRemove.shift()
@@ -623,6 +603,7 @@ export default function useEventGraph(
             controlBoundingBox(x, false)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = null
         chp.value.portId = ''
         chp.value.expandedNodes = []
         toggleNodesEdges(graph, true)
@@ -636,7 +617,7 @@ export default function useEventGraph(
         const portId = ele.getAttribute('port')
 
         if (chp.value.portId === portId) {
-            deselectPort(node)
+            deselectPort()
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
@@ -648,6 +629,7 @@ export default function useEventGraph(
     // EDGE - CLICK
     const cheCell = graph.value.getCellById(che.value)
     graph.value.on('edge:click', ({ e, edge, cell }) => {
+        if (chp.value.portId) return
         loaderCords.value = { x: e.clientX, y: e.clientY }
 
         if (edge.id.includes('port')) {
@@ -711,7 +693,7 @@ export default function useEventGraph(
 
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
-        if (chp.value.portId) deselectPort(node)
+        if (chp.value.portId) deselectPort()
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
@@ -737,4 +719,29 @@ export default function useEventGraph(
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
+
+    /** WATCHERS */
+    watch(assetGuidToHighlight, (newVal) => {
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            if (highlightedNode.value) highlight(null)
+            resetSelections.value = false
+        }
+    })
+
+    watch(
+        baseEntity,
+        () => {
+            baseNode.value = graph.value
+                .getNodes()
+                .find((x) => x.id === baseEntity.value.guid)
+        },
+        { immediate: true }
+    )
 }

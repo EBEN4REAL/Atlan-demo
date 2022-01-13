@@ -154,6 +154,10 @@
                 'activeInlineTabKey'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const inlineTabs = inject(
                 'inlineTabs'
             ) as ComputedRef<activeInlineTabInterface>
@@ -251,7 +255,7 @@
                     }
                 }
                 emit('change')
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 isAreaFocused.value = false
                 // filterName.value = checked.name
                 event.stopPropagation()

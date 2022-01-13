@@ -100,6 +100,7 @@
                         :avatar-name="request.created_by_user?.username"
                         avatar-size="24"
                         :avatar-shape="'circle'"
+                        :image-url="atlanLogo"
                     />
 
                     <div class="flex flex-col">
@@ -120,10 +121,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs, inject } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
-    import { useMagicKeys, whenever } from '@vueuse/core'
-
+    // import { useMagicKeys, whenever } from '@vueuse/core'
+    import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     import RequestActions from './requestActions.vue'
@@ -230,6 +231,7 @@
                 primaryText,
                 requestTypeIcon,
                 state,
+                atlanLogo,
             }
         },
     })

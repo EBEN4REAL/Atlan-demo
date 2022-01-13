@@ -3,10 +3,21 @@
         <a-dropdown v-model:visible="isVisibleReject" placement="bottomRight">
             <template #overlay>
                 <a-menu>
-                    <a-menu-item key="1" @click="$emit('reject')">
+                    <a-menu-item key="1" @click="handleClickReject">
                         Reject
                     </a-menu-item>
-                    <a-menu-item key="2"> Reject with comment </a-menu-item>
+                    <a-popover>
+                        <a-menu-item
+                            key="2"
+                            @click="handleClickRejectWithComment"
+                        >
+                            Reject with comment
+                            <template #content>
+                                <p>Content</p>
+                                <p>Content</p>
+                            </template>
+                        </a-menu-item>
+                    </a-popover>
                 </a-menu>
             </template>
             <!-- @click.stop="$emit('reject')" -->
@@ -46,9 +57,21 @@
         components: { AtlanButton },
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
-            const isVisibleReject = ref(true)
+            const isVisibleReject = ref(false)
+            const isVisibleRejectWithComment = ref(true)
+            const handleClickReject = () => {
+                emit('reject')
+                isVisibleReject.value = false
+            }
+            const handleClickRejectWithComment = () => {
+                isVisibleRejectWithComment.value = true
+                // isVisibleReject.value = false
+            }
             return {
                 isVisibleReject,
+                handleClickReject,
+                handleClickRejectWithComment,
+                isVisibleRejectWithComment,
             }
         },
     })

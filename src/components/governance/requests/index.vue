@@ -63,7 +63,7 @@
         <div class="border rounded">
             <SearchAndFilter
                 v-model:value="searchTerm"
-                class="max-w-xl m-4 mb-6"
+                class="max-w-xl m-4 mb-0"
                 size="default"
             >
                 <template #categoryFilter>
@@ -94,10 +94,11 @@
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
                 />
+                <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"
                     data-key="id"
-                    class="mt-4 container-scroll"
+                    class="container-scroll"
                     @mouseleave="mouseLeaveContainer"
                 >
                     <template #default="{ item, index }">
@@ -112,6 +113,7 @@
                         />
                     </template>
                 </VirtualList>
+                <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <div class="flex justify-end p-4 bg-white">
                     <Pagination
                         v-model:offset="pagination.offset"
@@ -358,8 +360,8 @@
                     activeHover.value = itemId
                 }
             }
-            const mouseLeaveContainer = () => {
-                // activeHover.value = ''
+            const mouseEnterContainer = () => {
+                activeHover.value = ''
             }
             return {
                 mutate,
@@ -389,7 +391,7 @@
                 connectorsData,
                 handleMouseEnter,
                 activeHover,
-                mouseLeaveContainer,
+                mouseEnterContainer,
                 // listPermission
             }
         },

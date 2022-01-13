@@ -8,7 +8,7 @@
                     :autofocus="true"
                     :allow-clear="true"
                     :class="searchBarClass"
-                    size="large"
+                    :size="searchBarSize"
                     :placeholder="placeholder"
                     @change="handleSearchChange"
                 >
@@ -222,6 +222,11 @@
             suppressLogs: {
                 type: Boolean,
                 default: true,
+                required: false
+            },
+            searchBarSize:{
+                type: String,
+                default:'large',
                 required: false
             }
         },

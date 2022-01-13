@@ -239,6 +239,9 @@
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),
+            linkedAssets: defineAsyncComponent(
+                () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
         },
 
         props: {

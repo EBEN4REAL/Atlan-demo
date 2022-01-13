@@ -437,7 +437,7 @@
             }
 
             & .node-text {
-                @apply text-gray font-bold truncate text-base leading-5;
+                @apply text-gray-500 font-bold truncate text-base leading-5;
             }
 
             & .node-meta {

@@ -82,10 +82,12 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-16">${status} ${iconCaretDown}</span>
+                                            <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${iconCaretDown}</span>
                                         </span>
-                                        <div class="node-title truncate group-hover:underline">${displayText}</div>
-                                        
+                                        <div class="flex items-center gap-x-1">
+                                            <span class="node-title truncate group-hover:underline">${displayText}</span>
+                                            <span class="flex-none mr-1">${status}</span>
+                                        </div>
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -288,8 +290,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 8,
-                        height: 8,
+                        width: 0.1,
+                        height: 0.1,
                     },
                 },
             },

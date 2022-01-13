@@ -682,13 +682,6 @@
     })
 </script>
 <style lang="less">
-    .fix-background {
-        @apply bg-primary-light !important;
-    }
-
-    .fix-background > td {
-        @apply bg-transparent !important;
-    }
     .users-groups-table {
         .ant-table-thead {
             height: 44px !important;

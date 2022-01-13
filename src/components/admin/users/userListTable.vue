@@ -651,18 +651,7 @@
                 emit('change', sortValue)
             }
 
-            const rowClass = (_record, index) => {
-                console.log(
-                    _record.id,
-                    index,
-                    selectedUserId.value === _record.id
-                )
-                return selectedUserId.value === _record.id
-                    ? 'bg-primary-light'
-                    : ''
-            }
             return {
-                rowClass,
                 roleList,
                 userColumns,
                 nameCase,

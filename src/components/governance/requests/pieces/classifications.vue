@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-col">
-        <span class="pb-1 pr-2 text-gray-500">CLASSIFICATION</span>
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
@@ -21,6 +20,7 @@
                 <ClassificationInfoCard :classification="item" class="w-32"
             /></template>
         </PillGroup>
+        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>
 </template>
 
@@ -30,7 +30,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
-    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default defineComponent({
         props: {

@@ -1,6 +1,11 @@
 <template>
     <div class="flex flex-col">
-        <div class="flex items-center mb-1 text-xs">
+        <span
+            class="mb-1 overflow-hidden text-sm overflow-ellipsis text-primary"
+        >
+            {{ assetText[0] }}
+        </span>
+        <div class="flex items-center text-xs">
             <AssetLogo :selected="selected" :asset="assetWrappper" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
@@ -16,9 +21,6 @@
                 {{ assetText[1] }}</span
             >
         </div>
-        <span class="overflow-hidden text-sm overflow-ellipsis text-gray">
-            {{ assetText[0] }}
-        </span>
     </div>
 </template>
 
@@ -27,6 +29,7 @@
     import AssetLogo from '@/common/icon/assetIcon.vue'
 
     export default defineComponent({
+        components: { AssetLogo },
         props: {
             assetQfName: { type: String, required: true },
             selected: {
@@ -39,7 +42,6 @@
                 required: true,
             },
         },
-        components: { AssetLogo },
         setup(props) {
             const { assetQfName } = toRefs(props)
             const assetWrappper = computed(() => ({

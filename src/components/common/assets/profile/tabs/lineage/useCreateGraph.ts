@@ -12,6 +12,20 @@ export default function useCreateGraph(
     const { Graph } = window.X6
     const { DagreLayout } = window.layout
 
+    Graph.registerConnector(
+        'beiz',
+        (s, t) => {
+            const control = 65
+            const v1 = { x: s.x + control, y: s.y }
+            const v2 = { x: t.x - control, y: t.y }
+
+            return `M ${s.x} ${s.y}
+             C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x} ${t.y}
+            `
+        },
+        true
+    )
+
     graph.value = new Graph({
         autoResize: true,
         interacting: false,
@@ -76,7 +90,7 @@ export default function useCreateGraph(
         },
         ranksepFunc() {
             // horizontal spacing btw nodes
-            return 125
+            return 130
         },
     })
 

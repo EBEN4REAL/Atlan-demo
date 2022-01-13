@@ -21,7 +21,7 @@ export const iconProcess = `<svg class="process-icon" width="20" height="20" vie
     <path d="M6.25 1.5625L3.75 8.4375" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
 
-export const iconEllipse = `<svg width="6" height="8" viewBox="0 0 3 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const iconEllipse = `<svg width="3" height="4" viewBox="0 0 3 4" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="1.5" cy="2" r="1.5" fill="#C4C4C4"/>
 </svg>
 `

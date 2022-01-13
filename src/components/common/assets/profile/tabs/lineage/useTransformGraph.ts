@@ -6,7 +6,7 @@ export default function useTransformGraph(graph, emit) {
     }
 
     const fit = (id) => {
-        graph.value.scale(1)
+        graph.value.scale(0.7)
 
         const cell = graph.value.getCellById(id)
         const pre = graph.value.getPredecessors(cell)

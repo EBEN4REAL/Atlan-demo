@@ -1,42 +1,59 @@
 <template>
-    <AtlanIcon
+    <ClassificationIconInner
+        :color="color"
         :icon="icon"
-        :style="`color: ${color};`"
+        :class-names="classNames"
     />
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref } from 'vue'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
-    import AtlanIcon from './atlanIcon.vue'
+    import ClassificationIconInner from '@/governance/classifications/classificationIcon.vue'
 
     export default defineComponent({
         name: 'ClassificationIcon',
         components: {
-            AtlanIcon
+            ClassificationIconInner
         },
         props: {
             classification: {
                 type: Object as PropType<ClassificationInterface>,
                 required: true,
+            },
+            classNames: {
+                type: String,
+                default: '',
+                required: false
+            },
+            entityGuid: {
+                type: String,
+                required: true
             }
         },
         setup(props, { emit }) {
             const classification = ref<ClassificationInterface>(props.classification)
+            const entityGuid = ref(props.entityGuid)
+
+            const isPropagated = computed(() => {
+                if (!entityGuid.value) {
+                    return false
+                }
+                return entityGuid.value !== classification.value.entityGuid;
+            })
 
             const icon = computed(() => {
-                if (classification.value.propagate) {
+                if (isPropagated.value) {
                     return "ClassificationPropagated"
                 }
                 return "ClassificationShield"
             })
 
-            const color = computed(() => getClassificationColorHex(classification.value.options?.color))
-            console.log(color.value)
+            const color = computed(() => classification.value.options?.color)
             return {
                 icon,
-                color
+                color,
+                isPropagated
             }
         }
     })

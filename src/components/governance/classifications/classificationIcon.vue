@@ -1,7 +1,7 @@
 <template>
     <AtlanIcon
         :icon="icon"
-        :style="`color: ${getClassificationColorHex(color)};`"
+        :style="`stroke: ${getClassificationColorHex(color)};`"
         :class="classNames"
     ></AtlanIcon>
 </template>
@@ -21,9 +21,9 @@
                 default: 'Blue',
             },
             icon: {
-                type: String as PropType<'ShieldFilled' | 'Shield'>,
+                type: String as PropType<'ClassificationShield' | 'ClassificationPropagated' | 'ClassificationAtlan'>,
                 required: false,
-                default: 'Shield',
+                default: 'ClassificationShield',
             },
             classNames: {
                 type: String,

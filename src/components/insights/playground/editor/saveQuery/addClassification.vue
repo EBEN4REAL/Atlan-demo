@@ -11,7 +11,7 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="Shield"></AtlanIcon>
+            <AtlanIcon icon="ClassificationShield"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 Classification
                 <span

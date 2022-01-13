@@ -15,7 +15,7 @@
                     >
                         <div class="">
                             <AtlanIcon
-                                icon="Shield"
+                                icon="ClassificationShield"
                                 class="self-center mr-1"
                                 :class="option.text"
                             />
@@ -40,7 +40,7 @@
             class="flex items-center py-1 pl-2 pr-1 space-x-1 rounded cursor-pointer"
         >
             <AtlanIcon
-                icon="Shield"
+                icon="ClassificationShield"
                 class="self-center"
                 :class="selectedText"
             />
@@ -63,7 +63,7 @@
                 >
                     <div class="">
                         <AtlanIcon
-                            icon="Shield"
+                            icon="ClassificationShield"
                             class="self-center mr-1"
                             :class="option.text"
                         />

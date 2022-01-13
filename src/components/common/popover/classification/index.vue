@@ -3,7 +3,10 @@
         <template #content>
             <div>
                 <div>
-                    <ClassificationHead :classification="classification" />
+                    <ClassificationHead
+                        :classification="classification"
+                        :entity-guid="entityGuid"
+                    />
                 </div>
                 <div>
                     <ClassificationBody :classification="classification" />
@@ -27,10 +30,15 @@
             classification: {
                 type: Object as PropType<ClassificationInterface>,
                 required: true
+            },
+            entityGuid: {
+                type: String,
+                required: true,
+                default: ''
             }
         },
         setup(props) {
-            const classification = ref(props.classification)
+            const classification = ref<ClassificationInterface>(props.classification)
 
         }
     })

@@ -16,21 +16,15 @@
             group
             `"
         :data-test-id="displayName"
-        @mouseover="() => {
-            shieldColour = 'White'
-        }"
-        @mouseleave="() => {
-            shieldColour = originalColour
-        }"
     >
         <ClassificationIcon
             v-if="isPropagated"
-            icon="ShieldFilled"
+            icon="ClassificationPropagated"
             :color="shieldColour"
         />
         <ClassificationIcon
             v-else
-            icon="Shield"
+            icon="ClassificationShield"
             :color="shieldColour"
         />
 

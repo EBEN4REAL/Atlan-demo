@@ -48,7 +48,7 @@
             ></a-tooltip>
 
             <template v-for="classification in list" :key="classification.guid">
-                <Popover :classification="classification">
+                <Popover :classification="classification" :entity-guid="guid">
                     <ClassificationPill
                         :name="classification.name"
                         :display-name="classification?.displayName"

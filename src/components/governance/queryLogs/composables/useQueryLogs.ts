@@ -39,6 +39,7 @@ export function useQueryLogs(
             {
                 dsl: { ...requestBody },
                 attributes: ['name'],
+                suppressLogs: true
             },
             ref('GET_SAVED_QUERY_META'),
             false

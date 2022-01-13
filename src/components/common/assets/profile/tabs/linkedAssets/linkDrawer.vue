@@ -14,15 +14,19 @@
     >
         <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
             <div class="absolute w-full h-full pt-4 bg-white">
-                <div class="flex items-center mx-5 mt-2">
-                    <span class="text-base font-bold text-gray-500"
+                <div class="flex items-center mx-5 mt-2 overflow-hidden">
+                    <span
+                        class="mr-1 overflow-hidden text-base font-bold text-gray-500 min-w-max"
                         >Select and link assets to
                     </span>
-                    <Tooltip
+                    <span class="text-base font-bold text-gray-700 truncate">{{
+                        selectedAsset?.displayText
+                    }}</span>
+                    <!-- <Tooltip
                         :tooltip-text="`${selectedAsset?.displayText}`"
-                        classes="text-base font-bold ml-0.5
+                        classes="text-base font-bold ml-0.5 
                     text-gray-700 "
-                    />
+                    /> -->
                     <CertificateBadge
                         v-if="certificateStatus(selectedAsset)"
                         :status="certificateStatus(selectedAsset)"

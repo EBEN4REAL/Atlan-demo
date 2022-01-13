@@ -358,7 +358,6 @@ import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
 import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
-import Quotes from '~/assets/images/icons/Quotes.svg'
 
 export default {
     GlowFlash,
@@ -705,5 +704,5 @@ export default {
     TaskList,
     LockedFile,
     Databricks,
-    Quotes
+    Quotes,
 }

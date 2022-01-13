@@ -12,44 +12,40 @@
         :width="460"
         :close="closeDrawer"
     >
-        <div class="relative overflow-x-hidden overflow-y-hidden drawer_height">
-            <div class="absolute w-full h-full pt-4 bg-white">
-                <div class="flex items-center mx-5 mt-2 overflow-hidden">
-                    <span
-                        class="mr-1 overflow-hidden text-base font-bold text-gray-500 min-w-max"
-                        >Select and link assets to
-                    </span>
-                    <span class="text-base font-bold text-gray-700 truncate">{{
-                        selectedAsset?.displayText
-                    }}</span>
-                    <!-- <Tooltip
-                        :tooltip-text="`${selectedAsset?.displayText}`"
-                        classes="text-base font-bold ml-0.5 
-                    text-gray-700 "
-                    /> -->
-                    <CertificateBadge
-                        v-if="certificateStatus(selectedAsset)"
-                        :status="certificateStatus(selectedAsset)"
-                        :username="certificateUpdatedBy(selectedAsset)"
-                        :timestamp="certificateUpdatedAt(selectedAsset)"
-                        class="mb-1 ml-1"
-                    ></CertificateBadge>
+        <div class="w-full pt-4 bg-white drawer_height">
+            <div class="flex flex-wrap items-center w-full mx-5 mt-2">
+                <div class="mr-1 text-base font-bold text-gray-500">
+                    Select and link assets to
                 </div>
-                <AssetList
-                    ref="AssetListRef"
-                    initialCacheKey="LINK_ASSETS_DRAWER"
-                    class="pb-6 mt-2 asset-list-height"
-                    :enableSidebarDrawer="false"
-                    :selectable="true"
-                    :openAssetProfileInNewTab="true"
-                    :selectedItems="checkedGuids"
-                    assetListClass="px-0 mt-2"
-                    aggregationTabClass="px-5"
-                    searchBarClass="px-5"
-                    @listItem:check="handleAssetItemCheck"
-                    @handleAssetCardClick="handleAssetCardClick"
+                <!-- <span class="text-base font-bold text-gray-700 truncate">{{
+                        selectedAsset?.displayText
+                    }}</span> -->
+                <Tooltip
+                    :tooltip-text="`${selectedAsset?.displayText}`"
+                    classes="text-base font-bold text-gray-700"
                 />
+                <CertificateBadge
+                    v-if="certificateStatus(selectedAsset)"
+                    :status="certificateStatus(selectedAsset)"
+                    :username="certificateUpdatedBy(selectedAsset)"
+                    :timestamp="certificateUpdatedAt(selectedAsset)"
+                    class="mb-1 ml-1"
+                ></CertificateBadge>
             </div>
+            <AssetList
+                ref="AssetListRef"
+                initialCacheKey="LINK_ASSETS_DRAWER"
+                class="pb-6 mt-2 asset-list-height"
+                :enableSidebarDrawer="false"
+                :selectable="true"
+                :openAssetProfileInNewTab="true"
+                :selectedItems="checkedGuids"
+                assetListClass="px-0 mt-2"
+                aggregationTabClass="px-5"
+                searchBarClass="px-5"
+                @listItem:check="handleAssetItemCheck"
+                @handleAssetCardClick="handleAssetCardClick"
+            />
         </div>
         <a-divider />
         <div class="flex items-center justify-between mx-5 gap-x-2">

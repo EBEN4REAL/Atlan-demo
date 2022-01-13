@@ -704,5 +704,4 @@ export default {
     TaskList,
     LockedFile,
     Databricks,
-    Quotes,
 }

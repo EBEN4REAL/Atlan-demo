@@ -86,6 +86,12 @@
                 :row-key="(group) => group.id"
                 :loading="isLoading"
                 :show-sorter-tooltip="false"
+                :row-class-name="
+                    (r, i) =>
+                        showPreview && selectedGroupId === r.id
+                            ? 'bg-primary-light'
+                            : ''
+                "
                 @change="handleTableChange"
             >
                 <template #headerCell="{ title, column }">
@@ -639,6 +645,8 @@
                 )
             }
             return {
+                showPreview,
+                selectedGroupId,
                 columns,
                 isGroupDrawerVisible,
                 searchText,

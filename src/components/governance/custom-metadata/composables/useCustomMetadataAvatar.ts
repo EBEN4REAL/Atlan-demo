@@ -23,7 +23,7 @@ export default function useCustomMetadataAvatar(metadata, immediate = true) {
 
   const store = useTypedefStore()
   const initializeForm = () => ({
-    logoType: 'image',
+    logoType: '',
     imageId: null,
     emoji: null,
   })
@@ -137,8 +137,8 @@ export default function useCustomMetadataAvatar(metadata, immediate = true) {
 
 
   const imageUrl = computed(
-    () =>
-      `${window.location.origin}/api/service/images/${metadata.value.options.imageId}?ContentDisposition=inline&name=${metadata.value.options.imageId}`
+    () => metadata.value.options.imageId ?
+      `${window.location.origin}/api/service/images/${metadata.value.options.imageId}?ContentDisposition=inline&name=${metadata.value.options.imageId}` : ''
   )
 
 

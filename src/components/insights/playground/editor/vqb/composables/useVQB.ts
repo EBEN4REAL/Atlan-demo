@@ -13,7 +13,6 @@ export function findIndexOfActiveInlineTab(
     )
 }
 export function useVQB() {
-
     const { modifyActiveInlineTab } = useInlineTab()
 
     function addPanelsInVQB(
@@ -131,17 +130,10 @@ export function useVQB() {
     }
 
     function updateVQB(
-        activeInlineTabKey: Ref<string>,
+        activeInlineTab: Ref<activeInlineTabInterface>,
         inlineTabs: Ref<activeInlineTabInterface[]>
     ) {
-        const index = findIndexOfActiveInlineTab(activeInlineTabKey, inlineTabs)
-        const copyTabData = Object.assign(
-            {},
-            { ...toRaw(inlineTabs.value)[index] }
-        )
-
-        copyTabData.isSaved = false
-        inlineTabs.value[index] = copyTabData
+        activeInlineTab.value.isSaved = false
 
         // modifyActiveInlineTab(copyTabData, inlineTabs, false, true)
     }
@@ -151,6 +143,6 @@ export function useVQB() {
         handleAdd,
         deletePanelsInVQB,
         addPanelsInVQB,
-        updateVQB
+        updateVQB,
     }
 }

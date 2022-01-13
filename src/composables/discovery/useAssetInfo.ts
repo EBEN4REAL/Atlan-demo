@@ -324,6 +324,8 @@ export default function useAssetInfo() {
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
             queryPath = `/insights?id=${asset.guid}&runQuery=true`
+        } else if (assetType(asset) === 'Collection') {
+            queryPath = `/insights?col_id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }

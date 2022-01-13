@@ -96,13 +96,13 @@ export default function useGlossary(immediate = true) {
                 ...GLOSSARY_RELATION_ATTRIBUTES,
                 ...AssetRelationAttributes,
             ],
+            suppressLogs: true,
         },
         dependentKey,
         false
     )
     const glossaryStore = useGlossaryStore()
     watch(data, () => {
-        console.log('this being called')
         glossaryStore.setList(data?.value.entities || [])
         glossaryStore.setTermsCount(
             aggregationMap(GROUP_TERM_AGGREATION, true) || []

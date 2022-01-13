@@ -9,17 +9,13 @@ import {
     InternalAttributes,
     GlossaryAttributes,
 } from '~/constant/projection'
-import {
-    Category,
-} from '~/types/glossary/glossary.interface'
+import { Category } from '~/types/glossary/glossary.interface'
 
 interface Params {
     parentGlossaryQf: string
 }
 
-const useCategoriesWidget = ({
-    parentGlossaryQf
-}: Params) => {
+const useCategoriesWidget = ({ parentGlossaryQf }: Params) => {
     // Initialisations
     const limit = ref(20)
     const offset = ref(0)
@@ -28,7 +24,7 @@ const useCategoriesWidget = ({
         ...InternalAttributes,
         ...AssetAttributes,
         ...GlossaryAttributes,
-        'childrenCategories'
+        'childrenCategories',
     ])
     const relationAttributes = ref(['name', 'categories'])
     const preference = ref({
@@ -58,17 +54,12 @@ const useCategoriesWidget = ({
             dsl,
             attributes: attributes?.value,
             relationAttributes: relationAttributes?.value,
+            suppressLogs: true,
         }
     }
 
     const { data, mutate, isLoading, error, isReady } =
-    useIndexSearch<Category>(
-        body,
-        dependentKey,
-        false,
-        false,
-        1
-    )
+        useIndexSearch<Category>(body, dependentKey, false, false, 1)
 
     const initCategories = async () => {
         facets.value = {
@@ -86,7 +77,9 @@ const useCategoriesWidget = ({
                     key: category.guid,
                     value: category.guid,
                     title: category.displayText,
-                    isLeaf: category.attributes?.childrenCategories?.length ? false : true,
+                    isLeaf: category.attributes?.childrenCategories?.length
+                        ? false
+                        : true,
                     checkable: true,
                 }))
             }
@@ -100,8 +93,9 @@ const useCategoriesWidget = ({
         facets.value = {
             typeNames: ['AtlasGlossaryCategory'],
             glossary: parentGlossaryQf,
-            parentCategory: treeNode.dataRef.attributes?.qualifiedName as string,
-            isRootCategory: false
+            parentCategory: treeNode.dataRef.attributes
+                ?.qualifiedName as string,
+            isRootCategory: false,
         }
 
         generateBody()
@@ -122,11 +116,13 @@ const useCategoriesWidget = ({
                             value: category.guid,
                             key: category.guid,
                             title: category.displayText,
-                            isLeaf: category.attributes?.childrenCategories?.length ? false : true,
-                            checkable:true,
+                            isLeaf: category.attributes?.childrenCategories
+                                ?.length
+                                ? false
+                                : true,
+                            checkable: true,
                         })
                     })
-
                 }
                 treeNode.dataRef.isLoading = false
                 treeNode.dataRef.isError = null
@@ -145,4 +141,4 @@ const useCategoriesWidget = ({
     }
 }
 
-export default useCategoriesWidget;
+export default useCategoriesWidget

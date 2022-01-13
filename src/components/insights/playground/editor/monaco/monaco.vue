@@ -680,7 +680,10 @@
                 'atlansql',
                 {
                     provideDocumentRangeFormattingEdits(model) {
-                        let formatted = formatter(model.getValue())
+                        let formatted = formatter(model.getValue(), {
+                            language: 'mysql',
+                            linesBetweenQueries: 2,
+                        })
                         return [
                             {
                                 range: model.getFullModelRange(),

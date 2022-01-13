@@ -225,6 +225,10 @@ const useActiveQueryAccess = (
         }
     })
 
+    const activeTabCollection = computed(()=> {
+        return selectedCollectionData?.value ? selectedCollectionData?.value?.entities[0] : {}
+    })
+
     watch(
         activeInlineTab,
         () => {
@@ -237,6 +241,7 @@ const useActiveQueryAccess = (
         isQueryCreatedByCurrentUser,
         hasQueryReadPermission,
         hasQueryWritePermission,
+        activeTabCollection
     }
 }
 

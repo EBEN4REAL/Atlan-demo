@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getNodeSourceImage } from './util.js'
+import { getNodeSourceImage, getSource, getSchema } from './util.js'
 import {
     iconProcess,
     iconEllipse,
@@ -9,17 +9,6 @@ import {
     iconDeprecated,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
-
-const getSource = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[1]
-    return item[0]
-}
-const getSchema = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[4]
-    return item[3]
-}
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
@@ -290,7 +279,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'rounded' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,

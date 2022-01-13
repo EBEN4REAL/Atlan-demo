@@ -10,7 +10,7 @@
             <!-- Spinner -->
             <div
                 v-if="!isGraphRendered"
-                class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50 "
+                class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
             >
                 <AtlanIcon icon="Loader" class="h-5 animate-spin" />
             </div>
@@ -329,7 +329,7 @@
         &-node {
             border-radius: 10px;
             height: 55px;
-            width: 190px;
+            width: 160px;
             display: inline-flex;
             align-items: center;
             font-size: 16px;

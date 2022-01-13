@@ -30,23 +30,10 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
-                <a-form-item prop="slack">
-                    <template #label> Slack </template>
-                    <a-input
-                        v-model:value="formData.slack"
-                        class="mt-2"
-                        :loading="isRequestLoading"
-                        placeholder="Add Slack channel name or channel ID"
-                    >
-                        <template #prefix>
-                            <span
-                                class="pr-2 border-r border-gray-300 border-solid"
-                            >
-                                <AtlanIcon icon="Slack" />
-                            </span>
-                        </template>
-                    </a-input>
-                </a-form-item>
+                <SlackInput
+                    v-model="formData.slack"
+                    placeholder="Add Slack channel name or channel ID"
+                />
             </div>
         </a-form>
         <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
@@ -76,9 +63,11 @@
     import { message } from 'ant-design-vue'
     import { useVModels } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
+    import SlackInput from '@/admin/common/slackInput.vue'
 
     export default {
         name: 'EditGroup',
+        components: { SlackInput },
 
         props: {
             selectedGroup: {
@@ -93,7 +82,6 @@
         emits: ['updatedGroup', 'toggleEdit', 'success'],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
-            const updateError = ref('')
             const formRef = ref(null)
             const nameRef = ref(null)
 
@@ -148,10 +136,13 @@
                     description: [formData.value.description],
                     alias: [formData.value.name],
                 }
+                // check for #
+                let slackLink = formData.value.slack
+                if (slackLink.startsWith('#'))
+                    slackLink = slackLink.substring(1)
+
                 attributes.channels =
-                    formData.value.slack.length > 0
-                        ? [`[{"slack": "${formData.value.slack}"}]`]
-                        : []
+                    slackLink.length > 0 ? [`[{"slack": "${slackLink}"}]`] : []
                 requestPayload.value = {
                     name: formData.value.alias,
                 }
@@ -170,10 +161,8 @@
                     [data, isReady, error, isLoading],
                     () => {
                         isRequestLoading.value = isLoading.value
-                        updateError.value = error.value
                         if (isReady && !error.value && !isLoading.value) {
                             updateSuccess.value = true
-                            updateError.value = ''
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
@@ -183,9 +172,9 @@
                                 selectedGroup.value.attributes.description = [
                                     formData.value.description,
                                 ]
-                                if (formData.value.slack.length > 0) {
+                                if (slackLink.length > 0) {
                                     selectedGroup.value.attributes.channels = [
-                                        `[{"slack": "${formData.value.slack}"}]`,
+                                        `[{"slack": "${slackLink}"}]`,
                                     ]
                                 } else {
                                     selectedGroup.value.attributes.channels = []
@@ -196,11 +185,8 @@
                                         ? [formData?.value?.description]
                                         : [],
                                     channels:
-                                        formData.value.slack &&
-                                        formData.value.slack.length > 0
-                                            ? [
-                                                  `[{"slack": "${formData.value.slack}"}]`,
-                                              ]
+                                        slackLink && slackLink.length > 0
+                                            ? [`[{"slack": "${slackLink}"}]`]
                                             : [],
                                 }
                             }
@@ -209,15 +195,21 @@
                             emit('updatedGroup')
                             emit('toggleEdit')
                         } else if (error && error.value) {
-                            updateError.value =
-                                'Unable to update group details. Please try again.'
-                            message.error('Failed to update details.')
+                            if (
+                                error.value?.response?.data?.message.includes(
+                                    '409 Conflict:'
+                                )
+                            )
+                                message.error({
+                                    content: `A group with alias ${formData.value.alias} already exists, please change the alias and try again.`,
+                                    duration: 3.5,
+                                })
+                            else message.error('Failed to update details.')
                             formRef.value.resetFields()
                         }
                     },
                     { immediate: true }
                 )
-                updateError.value = ''
             }
             const onCancel = () => {
                 formRef.value.resetFields()
@@ -232,7 +224,6 @@
                 formRef,
                 formData,
                 isRequestLoading,
-                updateError,
                 nameRef,
             }
         },

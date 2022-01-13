@@ -11,6 +11,10 @@
             :row-key="(query) => query._id"
             :loading="isLoading"
             :custom-row="customRow"
+            :row-class-name="
+                (_record, index) =>
+                    _record._id === selectedQuery._id ? 'bg-primary-light' : ''
+            "
             @change="handleTableChange"
         >
             <template #headerCell="{ title, column }">
@@ -309,7 +313,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        Ref,
+        watch,
+        toRefs,
+        unref,
+        computed,
+    } from 'vue'
     import dayjs from 'dayjs'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -358,6 +370,11 @@
                 return ''
             }
             const { selectedQuery, selectedRowKeys } = toRefs(props)
+
+            const rowSelection = computed(() => ({
+                selectedRowKeys: unref(selectedRowKeys),
+                hideDefaultSelections: true,
+            }))
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
 
@@ -413,7 +430,9 @@
                     emit('selectQuery', record)
                 },
             })
+
             return {
+                rowSelection,
                 customRow,
                 handleRowSelected,
                 selectedRowKeys,

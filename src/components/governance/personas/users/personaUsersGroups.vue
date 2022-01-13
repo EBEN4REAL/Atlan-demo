@@ -65,7 +65,12 @@
                     >
                         <a-button
                             type="primary"
-                            @click="() => setPopoverState(!popoverVisible)"
+                            @click="
+                                () => {
+                                    setPopoverState(!popoverVisible),
+                                        setEmptyStateCTA(false)
+                                }
+                            "
                             >Add User/Group</a-button
                         >
                         <!-- <AtlanBtn
@@ -95,6 +100,11 @@
                                     select-group-key="id"
                                     select-user-key="id"
                                     :hide-disabled-tabs="true"
+                                    :active-tab="
+                                        listType === 'groups'
+                                            ? 'groups'
+                                            : 'users'
+                                    "
                                 />
                                 <div class="w-full">
                                     <div class="flex justify-around">
@@ -142,8 +152,8 @@
                 />
             </div>
             <div
-                class="flex-grow px-6 overflow-y-auto"
                 v-if="filteredList && filteredList.length"
+                class="flex-grow px-6 overflow-y-auto"
             >
                 <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
                     <div
@@ -411,11 +421,24 @@
                 </div>
             </div>
             <EmptyView
-                v-else-if="!filteredList.length"
+                v-else-if="!filteredList.length && queryText"
+                class="mt-4"
                 empty-screen="NoResultIllustration"
-                desc="No results found"
+                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona`"
             >
             </EmptyView>
+            <EmptyState
+                v-else-if="!filteredList.length && !queryText"
+                image-class="h-36"
+                empty-screen="CreateGroups"
+                :desc="`${
+                    listType === 'groups'
+                        ? 'No groups added in the persona.'
+                        : listType === 'users'
+                        ? 'No users added in the persona'
+                        : 'No users or groups added in the persona.'
+                }`"
+            />
         </div>
         <!-- END List -->
     </div>
@@ -438,6 +461,7 @@
     import Loader from '@common/loaders/page.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -461,6 +485,7 @@
             EmptyView,
             AggregationTabs,
             Loader,
+            EmptyState,
         },
         props: {
             persona: {
@@ -592,20 +617,25 @@
                 },
             ])
             const placeholder = computed(() => {
+                const usersPlaceholder =
+                    userList.value.length > 1 ? 'users' : 'user'
+                const groupsPlaceholder =
+                    groupList.value.length > 1 ? 'groups' : 'group'
                 if (listType.value !== 'all')
                     return `Search from ${
                         listType.value === 'users'
-                            ? userList.value.length
-                            : groupList.value.length
-                    } ${listType.value}`
+                            ? `${userList.value.length} ${usersPlaceholder}`
+                            : `${groupList.value.length} ${groupsPlaceholder}`
+                    }`
 
                 if (userList.value.length && groupList.value.length)
-                    return `Search from ${userList.value.length} users and ${groupList.value.length} groups`
+                    return `Search from ${userList.value.length} ${usersPlaceholder} and ${groupList.value.length} ${groupsPlaceholder}`
                 if (userList.value.length)
-                    return `Search from ${userList.value.length} users`
+                    return `Search from ${userList.value.length} ${usersPlaceholder} `
                 if (groupList.value.length)
-                    return `Search from ${groupList.value.length} groups`
-
+                    return `Search from ${groupList.value.length} ${groupsPlaceholder}`
+                if (!userList.value.length && !groupList.value.length)
+                    return `Search from ${userList.value.length} user and ${groupList.value.length} group`
                 return ''
             })
 

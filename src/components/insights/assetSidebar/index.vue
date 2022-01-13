@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="selectedAsset?.guid"
-        class="z-20 flex flex-col bg-white asset-preview-container"
+        class="z-20 flex flex-col h-full bg-white asset-preview-container"
     >
         <AssetPreview
             :selected-asset="
@@ -9,7 +9,6 @@
                     ? { ...assetInfo, collectionName: collectionName }
                     : { ...selectedAsset, collectionName: collectionName }
             "
-            class="w-full"
             page="insights"
         ></AssetPreview>
     </div>

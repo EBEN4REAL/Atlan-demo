@@ -1,3 +1,58 @@
+const date = [{
+    id: 'greaterThan',
+    label: 'Greater Than(>)',
+},
+{
+    id: 'greaterThanEqual',
+    label: 'Greater Than Equal(>=)',
+},
+{
+    id: 'lessThan',
+    label: 'Less Than(<)',
+},
+{
+    id: 'lessThanEqual',
+    label: 'Less Than Equal(<=)',
+},
+
+{
+    id: 'equals',
+    label: 'Equals(=)',
+},
+{
+    id: 'notEquals',
+    label: 'Not Equals(!=)',
+}]
+
+const date_mandatory = [
+    {
+        id: 'greaterThan',
+        label: 'Greater Than(>)',
+    },
+    {
+        id: 'greaterThanEqual',
+        label: 'Greater Than Equal(>=)',
+    },
+    {
+        id: 'lessThan',
+        label: 'Less Than(<)',
+    },
+    {
+        id: 'lessThanEqual',
+        label: 'Less Than Equal(<=)',
+    },
+    {
+        id: 'equals',
+        label: 'Equals(=)',
+    },
+    {
+        id: 'notEquals',
+        label: 'Not Equals(!=)',
+    },
+]
+
+
+
 export const operators = {
     enum: [
         {
@@ -205,57 +260,10 @@ export const operators = {
             label: 'Pattern',
         },
     ],
-    date_mandatory: [
-        {
-            id: 'greaterThan',
-            label: 'Greater Than(>)',
-        },
-        {
-            id: 'greaterThanEqual',
-            label: 'Greater Than Equal(>=)',
-        },
-        {
-            id: 'lessThan',
-            label: 'Less Than(<)',
-        },
-        {
-            id: 'lessThanEqual',
-            label: 'Less Than Equal(<=)',
-        },
-        {
-            id: 'equals',
-            label: 'Equals(=)',
-        },
-        {
-            id: 'notEquals',
-            label: 'Not Equals(!=)',
-        },
-    ],
-    date: [
-        {
-            id: 'greaterThan',
-            label: 'Greater Than(>)',
-        },
-        {
-            id: 'greaterThanEqual',
-            label: 'Greater Than Equal(>=)',
-        },
-        {
-            id: 'lessThan',
-            label: 'Less Than(<)',
-        },
-        {
-            id: 'lessThanEqual',
-            label: 'Less Than Equal(<=)',
-        },
-
-        {
-            id: 'equals',
-            label: 'Equals(=)',
-        },
-        {
-            id: 'notEquals',
-            label: 'Not Equals(!=)',
-        },
+    date_mandatory,
+    dateTime_mandatory: [...date_mandatory],
+    date,
+    dateTime: [
+        ...date
     ],
 }

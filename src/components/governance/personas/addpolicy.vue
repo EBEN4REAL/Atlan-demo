@@ -4,13 +4,13 @@
             <div class="relative px-4 pt-5 pb-5">
                 <div
                     v-if="showDrawer"
-                    class="close-btn-add-policy"
+                    class="close-btn-sidebar"
                     @click="handleClose"
                 >
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex items-center">
-                    <AtlanIcon v-if="type === 'meta'" icon="Settings" />
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
                     <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
                     <span class="ml-1 font-semibold"
                         >{{
@@ -40,7 +40,7 @@
             <div class="px-4">
                 <div class="relative">
                     <div class="relative mb-2 text-sm text-gray-500 required">
-                        Name of the Policy<span class="text-red-500">*</span>
+                        Name<span class="text-red-500">*</span>
                     </div>
                     <div v-if="isEdit ? canEdit : true">
                         <a-input
@@ -86,6 +86,7 @@
                         :whitelisted-connections="
                             isEdit ? null : whitelistedConnectionIds
                         "
+                        :hide-power-bi="isEdit ? false : type === 'data' ? true : false"
                         :show-empty-parents="isEdit ? true : false"
                         class="mb-6"
                         :class="isEdit ? 'edit-connector' : ''"
@@ -367,7 +368,7 @@
                     class="drawerAddAsset"
                     :get-container="'body'"
                     @update:assets="handleChangeAssets"
-                    @close="assetSelectorVisible=false"
+                    @close="assetSelectorVisible = false"
                 />
 
                 <a-drawer
@@ -396,7 +397,7 @@
                 class="btn-submit"
                 @click="handleClose"
             >
-                Cancel 
+                Cancel
             </AtlanBtn>
             <AtlanBtn
                 size="sm"
@@ -843,20 +844,6 @@
         transform: rotate(45deg);
         opacity: 0;
         transition: all ease 0.3s;
-    }
-    .close-btn-add-policy {
-        // padding: 10px;
-        height: 32px;
-        width: 32px;
-        background: #3e4359cc;
-        position: fixed;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        transform: rotate(45deg);
-        left: -40px;
-        top: 20px;
-        cursor: pointer;
     }
     .tag-permission {
         text-transform: capitalize;

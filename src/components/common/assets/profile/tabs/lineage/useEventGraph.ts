@@ -54,7 +54,10 @@ export default function useEventGraph(
 
     // highlight
     const highlight = (guid, styleHighlightedNode = true) => {
-        if (guid === highlightedNode.value) onCloseDrawer()
+        if (guid === highlightedNode.value) {
+            onCloseDrawer()
+            assetGuidToHighlight.value = ''
+        }
 
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
@@ -65,7 +68,6 @@ export default function useEventGraph(
             styleHighlightedNode ? highlightedNode : '',
             nodesToHighlight
         )
-        assetGuidToHighlight.value = ''
         loaderCords.value = {}
     }
 

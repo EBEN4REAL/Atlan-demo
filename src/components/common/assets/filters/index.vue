@@ -88,7 +88,7 @@
                 type: String,
                 required: false,
                 default() {
-                    return '_all'
+                    return '__all'
                 },
             },
             activeKey: {

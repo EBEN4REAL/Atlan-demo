@@ -20,7 +20,6 @@
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
-        @click.stop="() => {}"
     >
         <div class="flex items-center" v-if="selectedItem?.label">
             <component

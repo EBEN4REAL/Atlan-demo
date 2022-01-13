@@ -355,6 +355,8 @@ import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
 import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
 import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 
+import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
+
 export default {
     GlowFlash,
     Query24,
@@ -698,4 +700,5 @@ export default {
     RightJoinInfo,
     OuterJoinInfo,
     TaskList,
+    LockedFile
 }

@@ -13,7 +13,6 @@
         </template>
         <a-input
             v-model:value="modelValue"
-            class="mt-2"
             :placeholder="placeholder"
             @blur="handleSlackInputBlur"
         >
@@ -29,7 +28,7 @@
         :class="
             showSlackTestLink && modelValue
                 ? 'opacity-100 cursor-pointer'
-                : 'opacity-0 cursor-default'
+                : 'opacity-0 cursor-default pointer-events-none'
         "
     >
         <div

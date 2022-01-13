@@ -2,7 +2,11 @@
     <a-modal
         :visible="modalVisible"
         :closable="false"
-        :class="modalClass ? `${modalClass}` : `${$style.input}`"
+        :class="
+            modalClass
+                ? `${modalClass}`
+                : `${$style.input} ${$style.titleInput}`
+        "
         :width="modalWidth"
         :destroyOnClose="true"
     >
@@ -27,14 +31,13 @@
                 ref="titleRef"
                 v-model:value="title"
                 :placeholder="titlePlaceholder"
-                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
+                class="mt-1 text-lg font-bold border-0 shadow-none outline-none"
                 :class="titleClass"
             />
             <a-textarea
                 v-model:value="description"
                 :placeholder="descriptionPlaceholder"
-                class="text-gray-500 border-0 shadow-none outline-none placeholder-color"
-                :class="descriptionClass"
+                class="border-0 shadow-none outline-none placeholder-color"
                 :maxlength="descriptionWordLimit"
                 :rows="3"
                 :show-count="showDescriptionLimit"
@@ -128,8 +131,11 @@
 </script>
 
 <style lang="less" scoped>
+    .placeholder-color {
+        @apply text-gray-700 !important;
+    }
     .placeholder-color::placeholder {
-        color: #6f7590 !important;
+        @apply text-gray-500 !important;
     }
 </style>
 <style lang="less" module>
@@ -147,8 +153,11 @@
     }
 
     .titleInput {
-        :global(.ant-input::-webkit-input-placeholder) {
-            @apply font-bold text-gray-500 !important;
+        :global(.ant-input) {
+            @apply text-gray-700 !important;
+            &::placeholder {
+                @apply text-gray-500 !important;
+            }
         }
     }
 </style>

@@ -6,6 +6,13 @@
                 :isQueryRunning="isQueryRunning"
                 @onClickSaveQuery="saveOrUpdate"
                 @onClickRunQuery="toggleRun"
+                v-if="
+                    !(
+                        !isQueryCreatedByCurrentUser &&
+                        !hasQueryReadPermission &&
+                        !hasQueryWritePermission
+                    )
+                "
             />
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
@@ -22,11 +29,30 @@
                 "
                 @onSaveQuery="saveQuery"
             />
+
+            <!-- no query access case -->
+            <NoAccess
+                v-if="
+                    !isQueryCreatedByCurrentUser &&
+                    !hasQueryReadPermission &&
+                    !hasQueryWritePermission
+                "
+                :collection="activeTabCollection"
+            />
             <VQB v-if="showVQB" />
             <Monaco @editorInstance="setInstance" />
 
             <!-- START: EDITOR FOOTER -->
-            <div class="absolute bottom-0 left-0 flex flex-col w-full">
+            <div
+                class="absolute bottom-0 left-0 flex flex-col w-full"
+                v-if="
+                    !(
+                        !isQueryCreatedByCurrentUser &&
+                        !hasQueryReadPermission &&
+                        !hasQueryWritePermission
+                    )
+                "
+            >
                 <CustomVariablesNav
                     v-if="editorInstance && showcustomToolBar"
                     class="border-t"
@@ -394,9 +420,11 @@
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
+    import NoAccess from '~/components/insights/common/noAccess/noAccess.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
@@ -412,6 +440,7 @@
             StatusBadge,
             EditorContext,
             WarehouseConnector,
+            NoAccess,
         },
         props: {
             refreshQueryTree: {
@@ -449,6 +478,7 @@
                 column: 0,
                 lineNumber: 0,
             })
+
             const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
             const limitRows = ref({
@@ -492,10 +522,6 @@
 
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
-            // console.log(
-            //     'editor permission: ',
-            //     permissions.value.indexOf('CREATE_COLLECTION')
-            // )
 
             let userHasPermission = computed(() => {
                 permissions.value.indexOf('CREATE_COLLECTION') >= 0
@@ -509,6 +535,10 @@
             ) as ComputedRef
             const hasQueryWritePermission = inject(
                 'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const activeTabCollection = inject(
+                'activeTabCollection'
             ) as ComputedRef
 
             // toRaw(editorInstance.value).updateOptions({
@@ -844,12 +874,19 @@
                         e.preventDefault()
                         // toggleRun()
                         // console.log('running: ', isQueryRunning.value)
+
                         if (
-                            isQueryRunning.value == '' ||
-                            isQueryRunning.value == 'success' ||
-                            isQueryRunning.value == 'error'
+                            !isQueryCreatedByCurrentUser &&
+                            !hasQueryReadPermission &&
+                            !hasQueryWritePermission
                         ) {
-                            runQuery()
+                            if (
+                                isQueryRunning.value == '' ||
+                                isQueryRunning.value == 'success' ||
+                                isQueryRunning.value == 'error'
+                            ) {
+                                runQuery()
+                            }
                         }
                     }
                     //prevent the default action
@@ -950,6 +987,15 @@
                 ADJACENT_TOOLTIP_DELAY,
                 isFilterIsInteractive,
                 VQBfilterPanel,
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
+                activeTabCollection,
+                // collectionInfo,
+                // hasCollectionReadPermission,
+                // hasCollectionWritePermission,
+                // isCollectionCreatedByCurrentUser,
+                // collectionGuidFromURL
                 // toggleVQB,
             }
         },

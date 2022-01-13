@@ -42,8 +42,8 @@
 
         setup(props, { emit }) {
             const { filterType, disabled } = useVModels(props)
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
+            const activeInlineTab = inject(
+                'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
             const inlineTabs = inject(
@@ -58,7 +58,7 @@
             ])
 
             watch(filterType, () => {
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             })
 
             return {

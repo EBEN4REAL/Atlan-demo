@@ -16,7 +16,7 @@
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
     >
-        <slot name="head"> </slot>
+        <slot name="head" :data="{ isAreaFocused }"> </slot>
 
         <teleport to="body">
             <div
@@ -51,6 +51,10 @@
         toRefs,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -61,11 +65,7 @@
                 required: false,
                 default: false,
             },
-            isAreaFocused: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
+
             specifiedBodyWidth: {
                 type: Number,
                 required: false,
@@ -74,7 +74,7 @@
 
         setup(props, { emit }) {
             const { disabled, specifiedBodyWidth } = toRefs(props)
-            const { isAreaFocused } = useVModels(props)
+            const isAreaFocused = ref(false)
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
 
@@ -128,14 +128,15 @@
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
             }
+            /* ---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
 
-            // watch(isAreaFocused, (newIsAreaFocused) => {
-            //     if (newIsAreaFocused) {
-            //         lockVQBScroll.value = true
-            //     } else {
-            //         lockVQBScroll.value = false
-            //     }
-            // })
+            const provideData: provideDataInterface = {
+                isAreaFocused: isAreaFocused,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
 
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)

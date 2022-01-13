@@ -214,7 +214,7 @@
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5"
                                     style="min-width: 16px"
-                                    @click.stop="onUnselectTable"
+                                    @click="onUnselectTable"
                                 />
 
                                 <span
@@ -251,7 +251,7 @@
                                     ? 'flex justify-center items-center '
                                     : '',
                             ]"
-                            @click.stop="() => {}"
+                            @click="() => {}"
                         >
                             <template
                                 v-if="
@@ -595,7 +595,6 @@
                 inputValue1.value = ''
                 inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
-                // updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -608,7 +607,6 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                     )
                 )
-                updateVQB(activeInlineTabKey, inlineTabs)
             }
 
             const onSelectColumn = (item) => {
@@ -650,6 +648,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 selectedColumnsData.value = selectedColumnsDataCopy
+                updateVQB(activeInlineTab, inlineTabs)
 
                 setFocusedCusror()
             }
@@ -900,7 +899,7 @@
                 selectedItems.value = []
                 map.value = {}
                 selectedColumnsData.value = []
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
 
                 console.log(map.value, 'destroy')
             }
@@ -953,7 +952,6 @@
                             )
                         )
                         tableSelected.value = null
-                        updateVQB(activeInlineTabKey, inlineTabs)
                     }
                 }
             })

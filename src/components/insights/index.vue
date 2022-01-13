@@ -33,7 +33,7 @@
             <splitpanes
                 :class="[
                     $style.splitpane__styles,
-                    activeInlineTab.assetSidebar.isVisible
+                    activeInlineTab?.assetSidebar?.isVisible
                         ? 'show-assetsidebar'
                         : 'hide-assetsidebar',
                 ]"
@@ -126,7 +126,7 @@
         onUnmounted,
         onMounted,
     } from 'vue'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -216,6 +216,7 @@
                 queryCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
+                // selectCollectionFromUrl,
             } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
             const { fullSreenState } = useFullScreen()
@@ -228,8 +229,12 @@
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
 
+            const collectionGuidFromURL = inject('collectionGuidFromURL')
+
             const { queryRun } = useRunQuery()
             const showVQB = ref(false)
+
+            const router = useRouter()
 
             // const schemaNameFromURL = ref(route.query?.schemaNameFromURL)
             // const tableNameFromURL = ref(route.query?.tableNameFromURL)
@@ -265,6 +270,7 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
             watch(activeInlineTab, () => {})
@@ -371,6 +377,7 @@
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
+                activeTabCollection,
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
@@ -395,12 +402,6 @@
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    // const savedQueryInlineTab =
-                    //     transformSavedQueryResponseInfoToInlineTab(
-                    //         savedQueryInfo as Ref<SavedQuery>
-                    //     )
-                    // openSavedQueryInNewTab(savedQueryInfo.value)
-
                     openSavedQueryInNewTab({
                         ...savedQueryInfo.value,
                         parentTitle:
@@ -655,11 +656,26 @@
                             }
 
                             console.log('collection create:')
+                            if (activeInlineTab.value?.queryId) {
+                                const queryParams = {
+                                    id: activeInlineTab.value?.queryId,
+                                }
+                                router.push({
+                                    path: `insights`,
+                                    query: queryParams,
+                                })
+                            } else {
+                                router.push({
+                                    path: `insights`,
+                                })
+                            }
+
                             selectFirstCollectionByDefault(
                                 queryCollections.value,
                                 activeInlineTab,
                                 tabsArray,
-                                isCollectionCreated
+                                isCollectionCreated,
+                                collectionGuidFromURL
                             )
                             queryCollectionsError.value = undefined
                         } else {
@@ -757,6 +773,30 @@
                 window.removeEventListener('keydown', _keyListener)
                 observer?.value?.unobserve(splitpaneRef?.value)
             })
+
+            const onDetectCollection = () => {
+                activeTabId.value = 'queries'
+                selectFirstCollectionByDefault(
+                    queryCollections.value,
+                    activeInlineTab,
+                    tabsArray,
+                    isCollectionCreated,
+                    collectionGuidFromURL
+                )
+            }
+
+            watch(
+                [collectionGuidFromURL, queryCollections],
+                () => {
+                    if (
+                        collectionGuidFromURL.value ||
+                        savedQueryGuidFromURL.value
+                    ) {
+                        onDetectCollection()
+                    }
+                },
+                { immediate: true }
+            )
 
             // provide('refreshQueryTree', refreshQueryTree)
             // provide('resetQueryTree', resetQueryTree)

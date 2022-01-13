@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-center font-normal" style="font-size: 10px">
+    <div
+        class="flex items-center font-normal"
+        style="width: max-content; font-size: 10px"
+    >
         <div
             class="flex items-center p-1 rounded"
             style="background-color: #fffbf5"

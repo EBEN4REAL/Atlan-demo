@@ -49,7 +49,7 @@
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
                 block
-                class="flex items-center justify-between px-2"
+                class="flex items-center justify-between px-2 shadow-none"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
                     <img
@@ -236,49 +236,63 @@
             </div>
         </div>
 
-        <!-- <div
-            v-if="
-                selectedAsset?.guid &&
-                selectedAsset?.typeName === 'Query' &&
-                attributes(selectedAsset)?.parent?.typeName === 'Collection'
-            "
-            class="flex flex-col px-5 text-sm"
-        >
-            <div class="mb-1 text-sm text-gray-500">
-                {{ attributes(selectedAsset)?.parent?.typeName }}
-            </div>
-            <div class="text-sm tracking-wider text-gray-700">
-                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
-            </div>
-        </div> -->
-
         <div
             v-if="selectedAsset?.typeName === 'Query'"
             class="flex flex-col px-5 text-sm"
         >
             <div class="mb-1 text-sm text-gray-500">Collection</div>
-            <div class="text-sm tracking-wider text-gray-700">
-                {{
-                    selectedAsset?.collectionName || collectionInfo?.displayText
-                }}
-            </div>
 
-            <!-- <a-button
-                block
-                class="flex items-center justify-between px-2"
-                @click="() => {}"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon icon="CollectionIconSmall" class="mr-1 mb-0.5" />
-                    <span>
-                        {{
-                            selectedAsset?.collectionName ||
-                            collectionInfo?.displayText
-                        }}
-                    </span>
-                </div>
-                <AtlanIcon icon="External" />
-            </a-button> -->
+            <a-tooltip placement="left" color="#363636">
+                <template #title>
+                    {{
+                        !hasCollectionReadPermission &&
+                        !hasCollectionWritePermission &&
+                        !isCollectionCreatedByCurrentUser
+                            ? `You don't have access to this collection`
+                            : `View collection`
+                    }}
+                </template>
+
+                <a-button
+                    block
+                    class="flex items-center justify-between px-2 shadow-none"
+                    :class="
+                        !hasCollectionReadPermission &&
+                        !hasCollectionWritePermission &&
+                        !isCollectionCreatedByCurrentUser
+                            ? 'disabledButton'
+                            : ''
+                    "
+                    @click="handleCollectionClick"
+                    :disabled="
+                        !hasCollectionReadPermission &&
+                        !hasCollectionWritePermission &&
+                        !isCollectionCreatedByCurrentUser
+                    "
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            icon="CollectionIconSmall"
+                            class="mr-1 mb-0.5"
+                        />
+                        <span>
+                            {{
+                                selectedAsset?.collectionName ||
+                                collectionInfo?.displayText
+                            }}
+                        </span>
+                    </div>
+                    <AtlanIcon
+                        icon="Lock"
+                        v-if="
+                            !hasCollectionReadPermission &&
+                            !hasCollectionWritePermission &&
+                            !isCollectionCreatedByCurrentUser
+                        "
+                    />
+                    <AtlanIcon v-else icon="External" />
+                </a-button>
+            </a-tooltip>
         </div>
 
         <div
@@ -509,6 +523,7 @@
         ref,
         toRefs,
         watch,
+        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -526,6 +541,7 @@
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
+    import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -572,40 +588,13 @@
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
 
-            const { fetchCollectionInfo } = useCollectionInfo()
-
-            const collectionInfo = ref([])
-
-            const fetchAsset = () => {
-                const { data, isLoading, error } =
-                    fetchCollectionInfo(selectedAsset)
-
-                watch([data, error, isLoading], () => {
-                    if (isLoading.value === false) {
-                        if (error.value === undefined) {
-                            if (
-                                data?.value?.entities &&
-                                data?.value?.entities?.length > 0
-                            ) {
-                                collectionInfo.value = data?.value?.entities[0]
-                            }
-                        }
-                    }
-                })
-            }
-
-            // debugger
-
-            watch(
-                () => selectedAsset?.value?.attributes?.collectionQualifiedName,
-                () => {
-                    if (selectedAsset?.value?.typeName === 'Query') {
-                        fetchAsset()
-                    }
-                },
-
-                { deep: true, immediate: true }
-            )
+            // get collection info in case of selected query
+            const {
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
+            } = useCollectionInfo(selectedAsset)
 
             const { isDrawer } = toRefs(props)
 
@@ -638,6 +627,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                getAssetQueryPath,
             } = useAssetInfo()
 
             const {
@@ -682,6 +672,17 @@
 
             const handlePreviewClick = () => {
                 window.open(webURL(selectedAsset.value), '_blank').focus()
+            }
+
+            // route to go to insights and select the collection
+            const handleCollectionClick = () => {
+                const URL =
+                    `http://` +
+                    window.location.host +
+                    `/insights?col_id=` +
+                    collectionInfo?.value?.guid
+
+                window.open(URL, '_blank')?.focus()
             }
 
             return {
@@ -739,7 +740,25 @@
                 externalLocation,
                 externalLocationFormat,
                 collectionInfo,
+                handleCollectionClick,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .button {
+        :global(.ant-btn) {
+            @apply text-gray-700;
+        }
+    }
+</style>
+
+<style lang="less" scoped>
+    .disabledButton {
+        @apply text-gray-500 !important;
+    }
+</style>

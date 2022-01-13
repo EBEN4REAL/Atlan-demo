@@ -144,7 +144,7 @@
 
             const isValidUrl = ref(updating.value)
 
-            const linkURL = ref(updating.value ? link(item.value) : 'https://')
+            const linkURL = ref(updating.value ? link(item.value) : '')
             const faviconLink = ref(
                 updating.value
                     ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
@@ -164,7 +164,7 @@
 
             function handleCancel() {
                 visible.value = false
-                linkURL.value = updating.value ? link(item.value) : 'https://'
+                linkURL.value = updating.value ? link(item.value) : ''
                 linkTitle.value = updating.value ? title(item.value) : ''
             }
 
@@ -181,7 +181,12 @@
             }
 
             function handleAdd() {
-                localResource.value.link = linkURL.value
+                if (linkURL.value.includes('http')) {
+                    localResource.value.link = linkURL.value
+                } else {
+                    localResource.value.link = `https://${linkURL.value}`
+                }
+
                 localResource.value.title = linkTitle.value
                 if (updating.value) {
                     handleUpdateResource(item)
@@ -189,7 +194,7 @@
                     handleAddResource()
                 }
                 visible.value = false
-                linkURL.value = 'https://'
+                linkURL.value = ''
                 linkTitle.value = ''
             }
 
@@ -217,7 +222,7 @@
             })
 
             watch(item, () => {
-                linkURL.value = updating.value ? link(item.value) : 'https://'
+                linkURL.value = updating.value ? link(item.value) : ''
                 linkTitle.value = updating.value ? title(item.value) : ''
             })
 

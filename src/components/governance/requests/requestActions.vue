@@ -1,23 +1,40 @@
 <template>
     <div class="flex items-center justify-end gap-x-2">
-        <a-dropdown v-model:visible="isVisibleReject" placement="bottomRight">
+        <a-dropdown
+            v-model:visible="isVisibleReject"
+            trigger="click"
+            placement="bottomRight"
+        >
             <template #overlay>
                 <a-menu>
                     <a-menu-item key="1" @click="handleClickReject">
                         Reject
                     </a-menu-item>
-                    <a-popover>
-                        <a-menu-item
-                            key="2"
-                            @click="handleClickRejectWithComment"
+
+                    <a-menu-item key="2" @click="handleClickRejectWithComment">
+                        <a-popover
+                            v-model:visible="isVisibleRejectWithComment"
+                            trigger="click"
+                            placement="bottomRight"
+                            :align="{ offset: [15, -70] }"
                         >
-                            Reject with comment
                             <template #content>
-                                <p>Content</p>
-                                <p>Content</p>
+                                <div class="comment-delete">
+                                    <div class="flex">
+                                        <component
+                                            :is="iconQuotes"
+                                            class="mr-4"
+                                        />
+                                        <p>
+                                            Lorem ipsum dolor sit amet,
+                                            consectetur adipiscing elit.
+                                        </p>
+                                    </div>
+                                </div>
                             </template>
-                        </a-menu-item>
-                    </a-popover>
+                            Reject with comment
+                        </a-popover>
+                    </a-menu-item>
                 </a-menu>
             </template>
             <!-- @click.stop="$emit('reject')" -->
@@ -51,6 +68,7 @@
 <script lang="ts">
     import { defineComponent, toRefs, ref } from 'vue'
     import AtlanButton from '@/UI/button.vue'
+    import iconQuotes from '~/assets/images/icons/Quotes.svg'
 
     export default defineComponent({
         name: 'RequestActions',
@@ -58,21 +76,32 @@
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
             const isVisibleReject = ref(false)
-            const isVisibleRejectWithComment = ref(true)
+            const isVisibleRejectWithComment = ref(false)
             const handleClickReject = () => {
                 emit('reject')
                 isVisibleReject.value = false
             }
             const handleClickRejectWithComment = () => {
-                isVisibleRejectWithComment.value = true
-                // isVisibleReject.value = false
+                // isVisibleRejectWithComment.value = true
+                setTimeout(() => {
+                    isVisibleReject.value = false
+                }, 300)
             }
             return {
                 isVisibleReject,
                 handleClickReject,
                 handleClickRejectWithComment,
                 isVisibleRejectWithComment,
+                iconQuotes,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .comment-delete {
+        height: 90px;
+        width: 200px;
+        padding: 12px 8px;
+    }
+</style>

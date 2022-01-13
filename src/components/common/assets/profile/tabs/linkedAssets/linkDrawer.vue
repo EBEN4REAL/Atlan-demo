@@ -97,7 +97,6 @@
     import { useVModels } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import AssetList from '@/common/assetList/assetList.vue'
-    import Assets from '@/assets/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -107,7 +106,6 @@
     export default defineComponent({
         name: 'LinkedAssetsDrawer',
         components: {
-            Assets,
             AtlanBtn,
             Tooltip,
             CertificateBadge,

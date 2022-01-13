@@ -97,7 +97,6 @@
     import AtlanBtn from '@/UI/button.vue'
     import AssetBrowserTree from '@/governance/personas/assets/assetBrowserTree.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
-    import AssetsWrapper from '@/assets/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetList from '@/common/assetList/assetList.vue'
@@ -114,7 +113,6 @@
             SearchAndFilter,
             AssetItem,
             AtlanBtn,
-            AssetsWrapper,
             LinkAssetsDrawer,
         },
         props: {

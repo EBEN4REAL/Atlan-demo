@@ -5,6 +5,7 @@
         class="bg-white"
         :filters="tabFilter"
         :static-use="true"
+        custom-placeholder="Search all related assets"
         emptyViewText="No related assets found"
         :enableSidebarDrawer="true"
         aggregationTabClass="px-6"

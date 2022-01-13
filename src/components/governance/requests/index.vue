@@ -118,8 +118,8 @@
                         />
                     </template>
                 </VirtualList>
-                <div class="h-6" @mouseenter="mouseEnterContainer" />
-                <div class="flex justify-end p-4 bg-white">
+                <div @mouseenter="mouseEnterContainer" />
+                <div class="flex justify-end p-4 bg-white border-t">
                     <Pagination
                         v-model:offset="pagination.offset"
                         :total-pages="pagination.totalPages"

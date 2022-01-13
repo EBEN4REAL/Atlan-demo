@@ -11,11 +11,11 @@
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
             >
-            <span style="color: #c4c4c4" class="mx-2"> • </span>
+            <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[2] }}</span
             >
-            <span class="px-1 text-gray-300">/</span>
+            <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
 
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[1] }}</span

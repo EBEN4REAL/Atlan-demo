@@ -172,6 +172,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const handleListUpdate = (asset: any) => {

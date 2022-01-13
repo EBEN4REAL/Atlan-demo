@@ -187,6 +187,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const updateCurrentList = (asset: any) => {

@@ -304,6 +304,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             /** UTILS */
@@ -447,6 +448,7 @@
                             offset,
                             attributes: defaultAttributes,
                             relationAttributes,
+                            suppressLogs: true,
                         })
                         watch([urlColumnList], () => {
                             columnFromUrl.value = urlColumnList.value

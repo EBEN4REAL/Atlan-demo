@@ -331,7 +331,7 @@
             & > .controls {
                 @apply flex items-center flex-1 gap-x-1;
 
-                & > .control-item {
+                & .control-item {
                     @apply px-2 py-1 cursor-pointer rounded text-gray-500;
 
                     &:hover {

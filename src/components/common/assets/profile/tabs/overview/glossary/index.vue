@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-8 gap-y-4">
+    <div class="flex flex-col p-6 gap-y-4">
         <!-- hidden for GA -->
         <!-- <BulkUploadProgress
             v-if="selectedAsset?.typeName === 'AtlasGlossary'"

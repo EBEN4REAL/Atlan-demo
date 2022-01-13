@@ -1,6 +1,6 @@
 <template>
     <div class="h-full p-0 bg-white">
-        <div class="flex flex-col pt-1 bg-white">
+        <div class="flex flex-col bg-white">
             <div
                 class="flex flex-col items-center justify-center pt-12 pb-20"
                 :class="localAssignedEntities.length ? 'hidden' : ''"
@@ -25,12 +25,12 @@
                     ref="linkedAssetsWrapperRef"
                     :filters="tabFilter"
                     initialCacheKey="LINK_ASSETS_DEFAULT"
-                    class="pb-6 mt-2 asset-list-height"
+                    class="pb-6 asset-list-height"
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
-                    assetListClass="pl-8 pr-6"
-                    aggregationTabClass="pl-8 pr-6 pb-1"
-                    searchBarClass="pl-8"
+                    aggregationTabClass="px-6 "
+                    searchBarClass="pl-6 my-1"
+                    asset-list-class="mx-6 mt-1"
                 >
                     <template #searchAction>
                         <AtlanBtn

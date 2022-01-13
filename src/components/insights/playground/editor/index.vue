@@ -64,6 +64,33 @@
                     <div class="flex items-center">
                         <!-- <WarehouseConnector /> -->
                         <div class="flex items-center">
+                            <a-tooltip
+                                color="#363636"
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                            >
+                                <template #title>Export data</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @click="
+                                        useTableExport(
+                                            activeInlineTab.playground.editor
+                                                .columnList,
+                                            activeInlineTab.playground.editor
+                                                .dataList
+                                        )
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Download"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
+                            </a-tooltip>
+
                             <!-- explorer toggle -->
                             <a-tooltip
                                 color="#363636"
@@ -427,6 +454,8 @@
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
+
+    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
 
     export default defineComponent({
         components: {
@@ -990,6 +1019,7 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
+                useTableExport,
                 // collectionInfo,
                 // hasCollectionReadPermission,
                 // hasCollectionWritePermission,

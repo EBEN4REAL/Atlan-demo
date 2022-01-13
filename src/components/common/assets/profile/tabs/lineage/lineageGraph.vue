@@ -385,20 +385,15 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 10px 8px;
+            padding: 10px 8px 0px 10px;
             font-size: 16px;
             border: 1px solid #e6e6eb;
-            background-color: #ffffff;
             border-radius: 4px;
+            background-color: #ffffff;
             width: 270px;
-            height: 64px;
+            height: 70px;
             cursor: pointer;
             outline: 0 !important;
-            @apply transition-all duration-300;
-
-            &:hover {
-                @apply shadow-lg;
-            }
 
             &__content {
                 display: flex;
@@ -409,6 +404,7 @@
                 border-top-left-radius: 0;
                 border: 1px solid #5277d7 !important;
                 background-color: #ffffff !important;
+
                 &.isHighlightedNode {
                     border: 1px solid #5277d7 !important;
                 }
@@ -420,15 +416,14 @@
                     display: block;
 
                     &-item {
-                        line-height: 22px;
                         background: #ffffff;
                         color: #5277d7;
                         position: absolute;
                         border: 1px solid #5277d7;
                         border-bottom: 0;
                         top: -37px;
-                        padding: 3px 8px 0px 8px;
-                        left: -9px;
+                        padding: 0 8px;
+                        left: -11px;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -436,16 +431,21 @@
             }
 
             & .node-text {
-                @apply text-gray font-bold truncate text-sm;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-transform: lowercase;
+                color: #3e4359;
             }
 
             & .node-meta {
                 display: flex;
                 align-items: center;
-                @apply mt-1;
 
                 &__text {
-                    @apply text-gray-500 capitalize mx-1 my-0 text-sm;
+                    text-transform: capitalize;
+                    color: #6f7590;
+                    margin: 0 0.5rem;
                 }
 
                 &__source {
@@ -470,14 +470,10 @@
 
         .isHighlightedNode {
             border: 1px solid #5277d7 !important;
-            background-color: #f4f6fd !important;
-
-            & .node-text {
-                @apply text-primary;
-            }
+            background-color: #e5ecff !important;
 
             & .caret-bg {
-                background: #f4f6fd !important;
+                background: #e5ecff !important;
             }
         }
 
@@ -487,7 +483,7 @@
         }
 
         .caret-expanded {
-            transform: rotate(180deg);
+            @apply transform rotate-180;
         }
 
         .caret-bg {

@@ -73,7 +73,7 @@ export default function useGraph() {
                           }
                           ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
-                          " id="${data?.id}-wrapper">
+                          ">
                                 
                                 
                                 <span class=" ${isBase ? 'inscr' : 'hidden'}">
@@ -131,12 +131,12 @@ export default function useGraph() {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 64,
+                                height: 69,
                                 strokeWidth: 1,
-                                stroke: 'none',
-                                fill: 'transparent',
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
                                 event: 'port:click',
-                                y: -29,
+                                y: -34,
                             },
                         },
                     },
@@ -161,10 +161,9 @@ export default function useGraph() {
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
-                                'stroke-dasharray': '269 40 0 269 0 40',
-                                fill: '#fff',
+                                fill: '#ffffff',
                                 event: 'port:click',
-                                y: -17,
+                                y: -9.5,
                             },
                             portNameLabel: {
                                 ref: 'portBody',

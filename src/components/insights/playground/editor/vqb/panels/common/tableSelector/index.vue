@@ -384,7 +384,8 @@
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
-                false
+                false,
+                { suppress: true }
             )
             watch(
                 [tableQualfiedName, queryText],

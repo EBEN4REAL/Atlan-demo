@@ -64,6 +64,8 @@ export default function useCreateGraph(
         type: 'dagre',
         ranksep: 25,
         nodesep: 55,
+        align: 'DR',
+        rankDir: 'TB',
     })
 
     return {

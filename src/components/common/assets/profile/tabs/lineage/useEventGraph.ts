@@ -210,6 +210,20 @@ export default function useEventGraph(
                 }
             })
             node.addPorts(ports)
+            if (override) {
+                const createdPorts = node.getPorts()
+                createdPorts.shift()
+                createdPorts.forEach((port, index) => {
+                    if (index === 0 && node.id === baseEntity.value.guid) {
+                        node.setPortProp(port.id, 'attrs/portBody', {
+                            'stroke-dasharray': '0 267 270 39 0',
+                        })
+                    }
+                    node.setPortProp(port.id, 'attrs/portBody', {
+                        stroke: '#5277d7',
+                    })
+                })
+            }
             if (!lineageStore.hasPortList(node.id))
                 lineageStore.setNodesPortList(node.id, ports)
             translateSubsequentNodes(node)
@@ -521,13 +535,21 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
-    // selectPort
-    const selectPort = (node, e, portId) => {
+    // resetPortStyle
+    const resetCHPStyle = () => {
         if (chp.value.node) {
             chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
                 fill: '#ffffff',
             })
+            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
+                stroke: '#e6e6eb',
+            })
         }
+    }
+
+    // selectPort
+    const selectPort = (node, e, portId) => {
+        resetCHPStyle()
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
@@ -542,17 +564,16 @@ export default function useEventGraph(
         node.setPortProp(portId, 'attrs/portBody', {
             fill: '#e5ecff',
         })
+        node.setPortProp(portId, 'attrs/portBody', {
+            stroke: '#5277d7',
+        })
         loaderCords.value = { x: e.clientX, y: e.clientY }
         getColumnLineage(portId)
     }
 
     // deselectPort
     const deselectPort = () => {
-        if (chp.value.node) {
-            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
-                fill: '#ffffff',
-            })
-        }
+        resetCHPStyle()
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)

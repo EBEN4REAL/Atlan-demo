@@ -1,9 +1,9 @@
 <template>
     <div class="flex flex-col h-full">
-        <!-- <div class="flex items-center justify-between px-5">
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="font-semibold text-gray-500">Linked Assets</span>
-        </div> -->
-        <div class="px-4 pt-3 pb-0 h-full">
+        </div>
+        <div class="px-4 h-full">
             <AssetList
                 class="flex-grow bg-white"
                 :filters="tabFilter"

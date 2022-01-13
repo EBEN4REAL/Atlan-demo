@@ -3,9 +3,9 @@
         <template v-for="(item, index) in data">
             <a-popover
                 v-if="popoverTrigger"
+                :key="index"
                 :mouse-enter-delay="0.3"
                 placement="leftTop"
-                :key="index"
                 :trigger="popoverTrigger"
             >
                 <template #content>
@@ -14,10 +14,11 @@
                 <Pill
                     :label="customRendererForLabel(item[labelKey])"
                     :has-action="!readOnly"
+                    :prefix-icon="prefixIcons[index]"
+                    :hovered-pill="hoveredPill"
+                    :is-plain="isPlain"
                     @action="handleDelete(index)"
                     @click="handleClick(item, index)"
-                    :prefixIcon="prefixIcons[index]"
-                    :hoveredPill="hoveredPill"
                 >
                     <template #prefix>
                         <slot name="pillPrefix" :item="item"></slot>
@@ -26,13 +27,14 @@
             </a-popover>
             <Pill
                 v-else
-                :label="customRendererForLabel(item[labelKey])"
                 :key="item[labelKey] + index"
+                :label="customRendererForLabel(item[labelKey])"
                 :has-action="!readOnly"
+                :prefix-icon="prefixIcons[index]"
+                :hovered-pill="hoveredPill"
+                :is-plain="isPlain"
                 @action="handleDelete(index)"
                 @click="handleClick(item, index)"
-                :prefixIcon="prefixIcons[index]"
-                :hoveredPill="hoveredPill"
                 ><template #prefix>
                     <slot name="pillPrefix" :item="item"></slot> </template
             ></Pill>
@@ -42,6 +44,7 @@
             <Pill
                 v-if="!readOnly"
                 class="group"
+                :is-plain="isPlain"
                 @click="handleAdd"
                 @blur="handleBlur"
             >
@@ -95,9 +98,11 @@
             customRendererForLabel: {
                 type: Function,
                 required: false,
-                default: (x: string) => {
-                    return x
-                },
+                default: (x: string) => x,
+            },
+            isPlain: {
+                type: Boolean,
+                default: () => false,
             },
         },
         emits: ['delete', 'update:data', 'select', 'add', 'blur'],

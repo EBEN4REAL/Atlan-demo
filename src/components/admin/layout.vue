@@ -15,7 +15,9 @@
             <div v-if="$slots.header" class="my-3">
                 <slot name="header"></slot>
             </div>
-            <div class="h-full pb-4 overflow-y-auto"><slot /></div>
+            <div class="h-full pb-4 overflow-y-auto container-content">
+                <slot />
+            </div>
         </div>
     </div>
 </template>

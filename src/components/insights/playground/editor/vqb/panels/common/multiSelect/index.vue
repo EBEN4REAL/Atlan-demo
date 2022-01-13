@@ -42,6 +42,7 @@
         inject,
         computed,
         defineComponent,
+        PropType,
         ComputedRef,
         ref,
         onMounted,
@@ -56,6 +57,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     import useBody from './useBody'
 
@@ -83,6 +85,9 @@
             subIndex: {
                 type: Number,
                 required: true,
+            },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
             },
         },
 
@@ -149,23 +154,50 @@
                 isLoading: isColumnLoading,
             } = useAssetListing('', false)
 
-            const getColumnInitialBody = (item) => {
+            const getColumnInitialBody = (
+                item: any | selectedTables[],
+                type: 'initial' | 'not_initial'
+            ) => {
+                //NOTE: item can be an column item OR selectedTables in all panels of VQB context
                 let data = {}
-                if (item.typeName === 'Table') {
+                if (type === 'not_initial') {
+                    if (item.typeName === 'Table') {
+                        data = {
+                            tableQualifiedName: item?.qualifiedName,
+                            searchText: columnQueryText.value,
+                            context:
+                                activeInlineTab.value.playground.editor.context,
+                        }
+                    } else if (item.typeName === 'View') {
+                        data = {
+                            viewQualifiedName: item?.qualifiedName,
+                            searchText: columnQueryText.value,
+                            context:
+                                activeInlineTab.value.playground.editor.context,
+                        }
+                    }
+                } else if (type === 'initial') {
                     data = {
-                        tableQualifiedName: item?.qualifiedName,
                         searchText: columnQueryText.value,
                         context:
                             activeInlineTab.value.playground.editor.context,
                     }
-                } else if (item.typeName === 'View') {
-                    data = {
-                        viewQualifiedName: item?.qualifiedName,
-                        searchText: columnQueryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
+                    if (
+                        activeInlineTab.value.playground.vqb?.panels[0]
+                            ?.subpanels[0]?.tableData?.assetType === 'View'
+                    ) {
+                        data.viewQualifiedName =
+                            item?.length > 0
+                                ? item[0].tableQualifiedName
+                                : tableQualfiedName.value
+                    } else {
+                        data.tableQualfiedName =
+                            item?.length > 0
+                                ? item[0].tableQualifiedName
+                                : tableQualfiedName.value
                     }
                 }
+
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
@@ -173,18 +205,18 @@
                 }
             }
 
-            const getTableInitialBody = () => {
+            const getTableInitialBody = (
+                selectedTablesQualifiedNames: selectedTables[]
+            ) => {
                 return {
                     dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
                         context:
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNamesContraint:
-                            tableQualifiedNamesContraint.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames
+                            ?.filter((x) => x !== null || undefined)
+                            .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
@@ -235,7 +267,9 @@
             }
 
             // for initial call
-            replaceTableBody(getTableInitialBody())
+            replaceTableBody(
+                getTableInitialBody(selectedTablesQualifiedNames.value)
+            )
 
             const setFocus = () => {
                 if (!disabled.value) {

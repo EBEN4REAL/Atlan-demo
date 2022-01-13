@@ -32,7 +32,8 @@
                 class="flex items-center justify-center flex-grow"
             >
                 <EmptyView
-                    empty-screen="EmptyDiscover"
+                    empty-screen="NoAssetsFound"
+                    image-class="h-44"
                     desc="No assets found"
                 />
             </div>
@@ -256,6 +257,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const updateCurrentList = (asset) => {

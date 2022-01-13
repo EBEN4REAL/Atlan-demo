@@ -183,6 +183,8 @@
             const isLoadingRefresh = ref(false)
             const firstNode = ref({})
 
+            const expandedNodes = ref([])
+
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
             const isGraphRendered = ref(false)
@@ -210,7 +212,10 @@
 
             // initialize
             const initialize = (reload = false) => {
-                if (reload) graph.value.dispose()
+                if (reload) {
+                    graph.value.dispose()
+                }
+
                 isLoadingRefresh.value = true
                 isGraphRendered.value = false
                 // useGraph
@@ -221,16 +226,14 @@
                 )
 
                 // useComputeGraph
-                const { nodes } = useComputeGraph(
+                const { nodes, reset, getNodeParent } = useComputeGraph(
                     graph,
                     graphLayout,
                     graphData,
                     currZoom,
-                    currZoomDec,
-                    reload
+                    expandedNodes
                 )
 
-                console.log('nodes', nodes)
                 firstNode.value = nodes.value[0]
                 // useHighlight
                 useHighlight(
@@ -257,6 +260,27 @@
                     isGraphRendered.value = true
                 })
                 isLoadingRefresh.value = false
+
+                graph.value.on(
+                    'node:selected',
+                    (args: {
+                        cell: Cell
+                        node: Node
+                        options: Model.SetOptions
+                    }) => {
+                        if (args.node.id) {
+                            console.log(getNodeParent(args.node.id))
+
+                            expandedNodes.value.push(
+                                getNodeParent(args.node.id)
+                            )
+                            initialize(true)
+                        }
+
+                        // alert('selected')
+                        // code here
+                    }
+                )
             }
 
             watch(
@@ -277,6 +301,7 @@
             const handleRefresh = () => {
                 emit('refresh')
             }
+
             return {
                 minimapContainer,
                 monitorContainer,
@@ -295,6 +320,9 @@
                 handleRefresh,
                 isGraphRendered,
                 handleRecenter,
+                graph,
+
+                expandedNodes,
             }
         },
     })

@@ -24,6 +24,7 @@ import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
+import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -350,6 +351,7 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
 import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
 import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
@@ -400,6 +402,7 @@ export default {
     QueryDiscovery,
     QueryDraft,
     CollapseControl,
+    NoAssetsFound,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -702,5 +705,5 @@ export default {
     OuterJoinInfo,
     TaskList,
     LockedFile,
-    Databricks
+    Databricks,
 }

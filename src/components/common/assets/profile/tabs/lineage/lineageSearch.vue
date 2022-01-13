@@ -1,21 +1,38 @@
 <template>
-    <div class="search">
-        <!-- Search Input -->
-        <a-input
-            ref="searchBar"
-            class="search-input"
-            :value="query"
-            :enter-button="null"
-            :suffix="null"
-            placeholder="Search"
-            allow-clear
-            @change="setQuery"
-            @blur="onBlur"
-            @focus="onFocus"
-        />
+    <div class="flex flex-col">
+        <div class="flex items-center">
+            <div class="control-item" @click="showSearch = !showSearch">
+                <a-tooltip placement="top" mouseEnterDelay="0.4">
+                    <template #title>
+                        <span>search graph</span>
+                    </template>
+                    <AtlanIcon
+                        icon="Search"
+                        class="mx-1 my-2 outline-none"
+                    ></AtlanIcon>
+                </a-tooltip>
+            </div>
+
+            <div v-if="showSearch" class="search">
+                <!-- Search Input -->
+                <a-input
+                    ref="searchBar"
+                    class="search-input"
+                    :value="query"
+                    :enter-button="null"
+                    :suffix="null"
+                    :placeholder="`Search ${searchItems?.length} assets`"
+                    allow-clear
+                    @change="setQuery"
+                    @blur="onBlur"
+                    @focus="onFocus"
+                />
+            </div>
+        </div>
+
         <!-- Search Results -->
-        <div v-if="showResults" class="search-results">
-            <div v-if="query" class="search-results__count">
+        <div v-if="showResults && query" class="search-results">
+            <div class="search-results__count">
                 {{ filteredItems.length }} results found
             </div>
             <div
@@ -45,12 +62,12 @@
         inject,
         computed,
         watch,
-        onMounted,
         nextTick,
     } from 'vue'
 
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { getNodeSourceImage, getSource } from './util'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         components: { SearchAndFilter },
@@ -61,6 +78,7 @@
             const searchItem = ref('')
             const showResults = ref(false)
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
+            const showSearch = ref(false)
 
             /** INJECTIONS */
             const searchItems = inject('searchItems')
@@ -107,10 +125,11 @@
                 else showResults.value = false
             })
 
-            onMounted(async () => {
+            whenever(showSearch, async () => {
                 await nextTick()
                 searchBar.value?.focus()
             })
+
             return {
                 query,
                 searchItems,
@@ -123,6 +142,7 @@
                 onFocus,
                 searchBar,
                 sourceImg,
+                showSearch,
             }
         },
     })
@@ -152,6 +172,7 @@
             border: 1px solid #f1f1f1;
             box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.08);
             z-index: 999;
+            top: 43px;
 
             &__count {
                 padding: 0 16px;

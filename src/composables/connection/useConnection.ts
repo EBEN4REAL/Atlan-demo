@@ -65,6 +65,7 @@ export default function useConnection() {
                 },
             },
             attributes: [...CONNECTION_ATTRIBUTES, ...ConnectionAttriibutes],
+            suppressLogs: true
         },
         ref('DEFAULT_CONNECTIONS'),
         false

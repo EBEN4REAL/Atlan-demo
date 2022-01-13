@@ -104,6 +104,7 @@ const useGlossaryTree = ({
             dsl,
             attributes: attributes?.value,
             relationAttributes: relationAttributes?.value,
+            suppressLogs: true,
         }
     }
 

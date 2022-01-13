@@ -10,6 +10,12 @@
             :columns="columns"
             :row-key="(apikey) => apikey.id"
             :loading="isLoading"
+            :row-class-name="
+                (r, i) =>
+                    isDrawer && selectedAPIKeyId === r.id
+                        ? 'bg-primary-light'
+                        : ''
+            "
             @change="handleTableChange"
         >
             <template #headerCell="{ title, column }">
@@ -212,7 +218,11 @@
                 type: Boolean,
                 default: false,
             },
-            selectedAPIKey: {
+            isDrawer: {
+                type: Boolean,
+                required: true,
+            },
+            selectedAPIKeyId: {
                 type: Object,
                 default: () => {},
             },

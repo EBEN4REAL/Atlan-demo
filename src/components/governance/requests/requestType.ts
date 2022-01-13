@@ -13,6 +13,8 @@ export const primaryText: Record<
     bm_attribute: () => 'Custom metadata request',
     term_link: () => 'Link term to asset',
     attach_classification: () => 'Classification attachment request',
+    purpose_policy_access: () => 'lorem ipsum',
+    persona_access: () => 'lorem ipsum',
 }
 
 // Check iconMap.ts for available icons
@@ -25,6 +27,8 @@ export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
     bm_attribute: 'Edit',
     term_link: 'Link',
     attach_classification: 'Link',
+    purpose_policy_access: 'Link',
+    persona_access: 'Link',
 }
 
 export const attributeCopyMapping: Record<string, string> = {

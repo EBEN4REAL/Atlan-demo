@@ -379,6 +379,7 @@
                             activeInlineTab.value.playground.editor.context,
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 

@@ -410,8 +410,145 @@
                                 </template>
                             </a-tooltip>
                         </div>
+
+                        <div
+                            v-if="
+                                [
+                                    'PowerBIDataset',
+                                    'PowerBIDataflow',
+                                    'PowerBIReport',
+                                    'PowerBIDashboard',
+                                ].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentWorkspace(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentWorkspace(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Workspace -
+                                        {{
+                                            parentWorkspace(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="['PowerBIPage'].includes(item?.typeName)"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentReport(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentReport(item)?.attributes?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Report -
+                                        {{
+                                            parentReport(item)?.attributes?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="['PowerBITile'].includes(item?.typeName)"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentDashboard(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentDashboard(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Dashboard -
+                                        {{
+                                            parentDashboard(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['PowerBIDatasource'].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentDataset(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentDataset(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Dataset -
+                                        {{
+                                            parentDataset(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
-                    <div class="flex flex-wrap mt-1 gap-x-1">
+
+                    <div class="flex flex-wrap gap-x-1">
                         <div
                             v-if="
                                 list.length > 0 &&
@@ -647,6 +784,16 @@
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
+                parentWorkspace,
+                parentReport,
+                parentDashboard,
+                parentDataset,
+                reportCount,
+                dashboardCount,
+                datasetCount,
+                dataflowCount,
+                tileCount,
+                pageCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -779,6 +926,16 @@
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
+                parentWorkspace,
+                parentReport,
+                parentDashboard,
+                parentDataset,
+                reportCount,
+                dashboardCount,
+                datasetCount,
+                dataflowCount,
+                tileCount,
+                pageCount,
             }
         },
     })

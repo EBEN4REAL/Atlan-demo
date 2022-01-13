@@ -216,6 +216,14 @@
                 type: String,
                 default: '',
             },
+            /**
+             * ref: https://linear.app/atlanproduct/issue/META-2830/add-flag-to-suppress-ranger-logs-in-indexsearch-api
+             */
+            suppressLogs: {
+                type: Boolean,
+                default: true,
+                required: false
+            }
         },
         emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
@@ -248,7 +256,7 @@
                 ...customMetadataProjections,
             ])
 
-            const { filters, attributes, selectable, selectedItems } =
+            const { filters, attributes, selectable, selectedItems, suppressLogs } =
                 toRefs(props)
 
             const {
@@ -272,6 +280,7 @@
                 attributes: attributes.value.length
                     ? attributes
                     : defaultAttributes,
+                suppressLogs: suppressLogs?.value
             })
 
             const fetchList = (skip = 0) => {

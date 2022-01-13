@@ -279,7 +279,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'rounded' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,

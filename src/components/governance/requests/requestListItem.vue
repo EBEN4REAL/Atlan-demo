@@ -4,7 +4,7 @@
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary border': active,
+            'border-primary border bg-primary-light': active,
             'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"

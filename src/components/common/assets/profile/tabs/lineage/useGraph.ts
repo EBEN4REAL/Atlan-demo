@@ -130,11 +130,11 @@ export default function useGraph() {
                         ],
                         attrs: {
                             portBody: {
-                                width: 260,
+                                width: 268,
                                 height: 60,
                                 strokeWidth: 1,
-                                stroke: 'red',
-                                fill: '#ffffff',
+                                stroke: 'none',
+                                fill: 'none',
                                 event: 'port:click',
                                 y: -30,
                                 x: 1,

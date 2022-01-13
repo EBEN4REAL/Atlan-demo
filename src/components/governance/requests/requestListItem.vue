@@ -100,7 +100,6 @@
                         :avatar-name="request.created_by_user?.username"
                         avatar-size="24"
                         :avatar-shape="'circle'"
-                        :image-url="atlanLogo"
                     />
 
                     <div class="flex flex-col">

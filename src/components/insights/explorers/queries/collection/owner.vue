@@ -18,7 +18,7 @@
                     :autofocus="false"
                 >
                     <template #tab>
-                        <div class="flex gap-1">
+                        <div class="flex gap-1" :class="hideTabs ? 'hidden' : ''">
                             <a-tooltip title="users" placement="top">
                                 <div
                                     :class="
@@ -201,6 +201,11 @@
             searchPlaceholder:{
                 type: String,
                 default: ''
+            },
+            hideTabs:{
+                type: Boolean,
+                default: false,
+                required: false
             }
         },
         emits: ['change', 'update:modelValue'],

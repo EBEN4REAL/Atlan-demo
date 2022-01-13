@@ -199,13 +199,13 @@
                 })
                 subpanels.value = copySubPanels
 
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const changeColumn = (column) => {

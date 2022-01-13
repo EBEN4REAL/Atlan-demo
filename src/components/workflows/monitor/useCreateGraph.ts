@@ -17,6 +17,9 @@ export default function useCreateGraph(
         autoResize: true,
         interacting: false,
         container: graphContainer.value,
+        selecting: {
+            enabled: true,
+        },
         grid: {
             size: 40,
             visible: true,
@@ -63,7 +66,9 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         ranksep: 25,
-        nodesep: 55,
+        nodesep: 60,
+        align: 'DR',
+        rankDir: 'TB',
     })
 
     return {

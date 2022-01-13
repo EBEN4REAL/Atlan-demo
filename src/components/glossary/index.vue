@@ -339,6 +339,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const { getAnchorQualifiedName } = useAssetInfo()

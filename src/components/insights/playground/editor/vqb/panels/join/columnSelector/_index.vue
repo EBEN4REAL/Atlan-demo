@@ -1,13 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="
-            () => {
-                if (!disabled) {
-                    isAreaFocused = true
-                }
-            }
-        "
+        @click="setFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
@@ -118,18 +112,21 @@
             const tableQualifiedNamesContraint: Ref<{
                 allowed: string[]
                 notAllowed: string[]
-            }> = ref(
-                allowedTablesInJoinSelector(
+            }> = computed(() => {
+                return allowedTablesInJoinSelector(
                     panelIndex.value,
                     rowIndex.value,
                     subIndex.value,
                     activeInlineTab.value
                 )
-            )
+            })
             const isAreaFocused = ref(false)
 
-            let tableSelected = ref(null)
+            const tableSelected = ref(null)
+            const dirtyTableSelected = ref(null)
+            const selectedColumn = ref(null)
             const isTableSelected = ref(false)
+            const dirtyIsTableSelected = ref(false)
             const columnQueryText = ref('')
             const tableQueryText = ref('')
             const TotalTablesCount = computed(
@@ -172,6 +169,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -189,6 +187,7 @@
                             tableQualifiedNamesContraint.value,
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -236,7 +235,13 @@
             }
 
             // for initial call
-            replaceTableBody(getTableInitialBody({ tableQueryText: '' }))
+            replaceTableBody(getTableInitialBody())
+
+            const setFocus = () => {
+                if (!disabled.value) {
+                    isAreaFocused.value = true
+                }
+            }
 
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
@@ -262,16 +267,20 @@
                 isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,
                 tableSelected: tableSelected,
+                dirtyIsTableSelected: dirtyIsTableSelected,
+                dirtyTableSelected: dirtyTableSelected,
             }
             useProvide(provideData)
             /*-------------------------------------*/
 
             return {
+                setFocus,
                 specifiedBodyWidth,
                 disabled,
                 container,
                 isAreaFocused,
                 containerPosition,
+                tableQualifiedNamesContraint,
             }
         },
     })

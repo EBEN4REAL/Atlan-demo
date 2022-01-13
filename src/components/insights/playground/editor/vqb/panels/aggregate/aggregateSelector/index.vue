@@ -201,7 +201,7 @@
                 const label = node?.dataRef?.name
                 const type = node?.dataRef?.dataType?.toLowerCase()
                 cols.value.push({ type, label })
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const inputChange = () => {
@@ -269,7 +269,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 emit('checkChange', selectedItems.value)
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false

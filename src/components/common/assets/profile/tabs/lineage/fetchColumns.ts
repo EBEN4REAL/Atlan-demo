@@ -85,6 +85,7 @@ export default function fetchColumns({
 
     watch(data, () => {
         if (data?.value?.entities) list.value = data?.value?.entities
+        else list.value = null
     })
 
     return {

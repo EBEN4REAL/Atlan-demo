@@ -404,7 +404,7 @@
                             </a-tooltip>
                         </div>
                     </div>
-                    <div class="flex flex-wrap mt-1 gap-x-1">
+                    <div class="flex flex-wrap gap-x-1">
                         <div
                             v-if="
                                 list.length > 0 &&

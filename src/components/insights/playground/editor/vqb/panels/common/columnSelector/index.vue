@@ -36,19 +36,6 @@
 
         <div class="absolute right-2">
             <AtlanIcon
-                v-if="
-                    findVisibility(
-                        'search',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    ) && !disabled
-                "
-                icon="Search"
-                class="w-4 h-4"
-            />
-            <AtlanIcon
                 icon="ChevronDown"
                 class="w-4 h-4"
                 v-if="
@@ -61,25 +48,10 @@
                     )
                 "
             />
-            <AtlanIcon
-                icon="Cross"
-                class="w-4 h-4 cursor-pointer"
-                @click="clearAllSelected"
-                v-if="
-                    findVisibility(
-                        'cross',
-                        isAreaFocused,
-                        mouseOver,
-                        tableQualfiedName,
-                        selectedItem
-                    ) && !disabled
-                "
-            />
         </div>
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click="() => {}"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
                 }px;left:${containerPosition.left}px`"
@@ -713,7 +685,7 @@
                 } else {
                     setFocusedCusror()
                 }
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -778,7 +750,7 @@
             const clearAllSelected = () => {
                 // selectedItem.value = {}
                 emit('change', {})
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             onMounted(() => {
@@ -870,6 +842,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -887,6 +860,7 @@
                             .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -960,7 +934,6 @@
                 inputValue1.value = ''
                 inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
-                updateVQB(activeInlineTabKey, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -1060,28 +1033,15 @@
                 },
                 { immediate: true }
             )
-            watch(isAreaFocused, () => {
-                if (!isAreaFocused.value) {
-                    if (
-                        activeInlineTab.value.playground.vqb.selectedTables
-                            ?.length > 1
-                    ) {
-                        if (selectedItem.value?.label && tableSelected?.value) {
-                            // retain column view
-                            isTableSelected.value = true
-                            // debugger
-                            replaceBody(
-                                getColumnInitialBody(tableSelected?.value)
-                            )
-                        } else {
-                            replaceBody(
-                                getTableInitialBody(
-                                    activeInlineTab.value.playground.vqb
-                                        .selectedTables
-                                )
-                            )
-                        }
-                    }
+            watch(isAreaFocused, (newAreadFocused) => {
+                if (!newAreadFocused) {
+                    isTableSelected.value = false
+                    tableSelected.value = null
+                    replaceBody(
+                        getTableInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables
+                        )
+                    )
                 }
             })
 

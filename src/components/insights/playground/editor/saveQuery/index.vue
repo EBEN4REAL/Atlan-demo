@@ -3,13 +3,13 @@
         :modal-visible="showSaveQueryModal"
         v-model:title="title"
         v-model:description="description"
-        :title-placeholder="`Untitled ${getLastUntitledNumber()}`"
+        :title-placeholder="`Name`"
         description-placeholder="Add Description"
         :descriptionWordLimit="140"
         :show-description-limit="true"
     >
         <template #leftHeader>
-            <div class="flex items-center mr-1">
+            <div class="flex items-center mr-1 cursor-pointer">
                 <QueryFolderSelector
                     :connector="currentConnector"
                     :savedQueryType="queryType"
@@ -62,7 +62,7 @@
         </template>
 
         <template #footerLeft>
-            <div class="flex items-center gap-x-1">
+            <div class="flex items-center cursor-pointer gap-x-1">
                 <!-- <AddClassification
                     @save-classifications="saveClassifications"
                     :selectedClassifications="selectedClassifications"
@@ -79,7 +79,7 @@
                 size="sm"
                 color="secondary"
                 padding="compact"
-                class="flex items-center justify-between h-6 py-1 ml-3 border-none hover:text-primary"
+                class="flex items-center justify-between h-6 py-1 ml-3 border-none cursor-pointer hover:text-primary"
                 @click="closeModal"
             >
                 <span>Cancel</span>
@@ -89,7 +89,8 @@
                 size="sm"
                 color="primary"
                 padding="compact"
-                class="flex items-center justify-between h-6 py-1 ml-2 border-none"
+                class="flex items-center justify-between h-6 py-1 ml-2 border-none cursor-pointer"
+                :disabled="title.length == 0"
                 @click="createSaveQuery"
             >
                 <div class="flex items-center text-white rounded">
@@ -100,7 +101,7 @@
                         class="w-4 h-4 text-white animate-spin"
                     ></AtlanIcon>
 
-                    <span>Create</span>
+                    <span>Save</span>
                 </div>
             </AtlanBtn>
         </template>

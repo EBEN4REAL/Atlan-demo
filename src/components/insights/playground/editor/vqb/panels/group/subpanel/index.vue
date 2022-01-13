@@ -94,7 +94,7 @@
                     <div
                         v-if="subpanel.tableQualfiedName && !readOnly"
                         class="text-gray-500 hover:text-primary"
-                        @click.stop="() => handleDelete(index)"
+                        @click="() => handleDelete(index)"
                     >
                         <AtlanIcon
                             icon="Close"

@@ -17,6 +17,7 @@ export default function useFetchAssetList({
     isCache,
     dependentKey,
     attributes,
+    suppressLogs
 }) {
     const defaultBody = ref({})
     const generateBody = () => {
@@ -32,6 +33,7 @@ export default function useFetchAssetList({
         defaultBody.value = {
             dsl,
             attributes: attributes?.value,
+            suppressLogs
         }
     }
     generateBody()

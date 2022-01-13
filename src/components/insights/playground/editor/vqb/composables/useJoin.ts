@@ -47,11 +47,9 @@ export function useJoin() {
         }
         if (rowIndex === 0 && subIndex === 1) {
             const tableQualifiedName =
-                getTableQualifiedNameFromColumnQualifiedName(
-                    activeInlineTab.playground.vqb?.panels[panelIndex]
-                        ?.subpanels[rowIndex]?.columnsDataLeft
-                        ?.columnQualifiedName
-                )
+                activeInlineTab.playground.vqb?.panels[0]?.subpanels[0]
+                    ?.tableQualfiedName
+
             if (tableQualifiedName) {
                 return {
                     allowed: [],

@@ -111,7 +111,8 @@
                     class="flex-grow"
                 >
                     <EmptyView
-                        empty-screen="EmptyDiscover"
+                        empty-screen="NoAssetsFound"
+                        image-class="h-44"
                         :desc="
                             staticUse && !queryText
                                 ? emptyViewText || 'No assets found'
@@ -325,6 +326,14 @@
                 type: String,
                 required: false,
             },
+            /**
+             * ref: https://linear.app/atlanproduct/issue/META-2830/add-flag-to-suppress-ranger-logs-in-indexsearch-api
+             */
+            suppressLogs: {
+                type: Boolean,
+                default: true,
+                required: false,
+            },
         },
         setup(props, { emit }) {
             const {
@@ -337,6 +346,7 @@
                 disableHandlePreview,
                 isCache,
                 cacheKey,
+                suppressLogs,
             } = toRefs(props)
 
             const limit = ref(20)
@@ -447,6 +457,7 @@
                 attributes: defaultAttributes,
                 relationAttributes,
                 globalState,
+                suppressLogs: suppressLogs?.value,
             })
 
             const selectedAssetIndex = computed(() => {

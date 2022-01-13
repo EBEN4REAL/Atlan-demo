@@ -8,7 +8,11 @@
         >
         </RunsList>
         <div class="relative flex-grow w-2/3 bg-primary-light">
-            <MonitorGraph :graph-data="selectedRun" class="" />
+            <MonitorGraph
+                :graph-data="selectedRun"
+                class=""
+                @refresh="handleRefresh"
+            />
         </div>
     </div>
 
@@ -185,9 +189,9 @@
             // const handleClickNode = (node, type, clickedPod) => {
             //     emit('setSelectedPod', clickedPod)
             // }
-            // const handleRefresh = () => {
-            //     execute(id.value)
-            // }
+            const handleRefresh = () => {
+                mutate()
+            }
             // return {
             //     graphData,
             //     isLoading,
@@ -198,7 +202,7 @@
             //     handleRefresh,
             //     ...useWorkflowInfo(),
             // }
-            return { selectedRunName, workflowName, selectedRun }
+            return { selectedRunName, workflowName, selectedRun, handleRefresh }
         },
     })
 </script>

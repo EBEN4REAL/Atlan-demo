@@ -8,6 +8,8 @@ export type RequestType =
     | 'create_term'
     | 'term_link'
     | 'attach_classification'
+    | 'purpose_policy_access'
+    | 'persona_access'
 
 export type RequestStatus = 'approved' | 'rejected' | 'active'
 

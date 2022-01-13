@@ -1,8 +1,5 @@
 <template>
-    <div
-        class="flex items-center w-full px-8 pt-3"
-        :class="{ 'pr-6': isGTC(item) }"
-    >
+    <div class="flex items-center w-full px-6 pt-3">
         <a-button class="px-1" @click="back">
             <atlan-icon
                 icon="ArrowRight"

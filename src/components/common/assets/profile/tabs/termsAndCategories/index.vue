@@ -1,16 +1,14 @@
 <template>
-    <div class="h-full p-6 pt-6">
-        <div class="bg-white rounded">
-            <Assets
-                :show-filters="false"
-                :initial-filters="tabFilter"
-                :static-use="true"
-                page="glossary"
-                :class="$style.glossaryTermsTab"
-                :enableSidebarDrawer="true"
-            />
-        </div>
-    </div>
+    <AssetList
+        class="bg-white"
+        :filters="tabFilter"
+        :static-use="true"
+        :class="$style.glossaryTermsTab"
+        :enableSidebarDrawer="true"
+        aggregationTabClass="px-6"
+        searchBarClass="px-6 my-1"
+        asset-list-class="mx-6 mt-1"
+    />
 </template>
 
 <script lang="ts">
@@ -18,11 +16,11 @@
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import Assets from '@/assets/index.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
 
     export default defineComponent({
-        name: 'LinkedAssetsTab',
-        components: { Assets },
+        name: 'TermsAndCategoriesTab',
+        components: { AssetList },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -36,7 +34,9 @@
                 if (
                     assetType(selectedAsset.value) === 'AtlasGlossaryCategory'
                 ) {
-                    return { parentCategory: qualifiedName(selectedAsset.value) }
+                    return {
+                        parentCategory: qualifiedName(selectedAsset.value),
+                    }
                 }
                 return { glossary: qualifiedName(selectedAsset.value) }
             })

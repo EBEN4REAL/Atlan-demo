@@ -133,7 +133,7 @@ meta:
 <style lang="less" module>
     .profiletab {
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-8;
+            @apply ml-6;
         }
 
         :global(.ant-tabs-tab-active) {

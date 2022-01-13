@@ -15,7 +15,6 @@
             'flex flex-wrap items-center    rounded  selector-height chip-container ',
             disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
-        @click.stop="() => {}"
     >
         <template
             v-if="enrichedSelectedItems.length !== 0"
@@ -85,7 +84,7 @@
             <AtlanIcon
                 icon="Cross"
                 class="w-4 h-4 cursor-pointer"
-                @click.stop="clearAllSelected"
+                @click="clearAllSelected"
                 v-if="
                     findVisibility(
                         'cross',
@@ -100,7 +99,7 @@
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
-                @click.stop="() => {}"
+                @click="() => {}"
                 @mousedown.stop="cancelEventBlur"
                 :style="`width: ${containerPosition.width}px;top:${
                     containerPosition.top + containerPosition.height
@@ -432,6 +431,7 @@
 
                 return {
                     dsl: useBody(data),
+                    suppressLogs: true,
                     attributes: [
                         'name',
                         'displayName',
@@ -506,7 +506,7 @@
                     selectedItems.value = []
                     // emit('checkboxChange', [])
                 }
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const input1Change = () => {
@@ -569,7 +569,7 @@
                 })
 
                 selectedColumnsData.value = [...columns]
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
 
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
@@ -626,7 +626,7 @@
                 map.value = {}
                 selectAll.value = false
                 selectedColumnsData.value = []
-                updateVQB(activeInlineTabKey, inlineTabs)
+                updateVQB(activeInlineTab, inlineTabs)
                 console.log(map.value, 'destroy')
             }
             onMounted(() => {

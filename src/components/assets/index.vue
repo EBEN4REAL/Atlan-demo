@@ -111,7 +111,8 @@
                     class="flex-grow"
                 >
                     <EmptyView
-                        empty-screen="EmptyDiscover"
+                        empty-screen="NoAssetsFound"
+                        image-class="h-44"
                         :desc="
                             staticUse && !queryText
                                 ? emptyViewText || 'No assets found'

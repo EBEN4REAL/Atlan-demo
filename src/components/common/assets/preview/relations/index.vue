@@ -50,7 +50,8 @@
             class="flex-grow"
         >
             <EmptyView
-                empty-screen="EmptyDiscover"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
                 desc="No related assets found"
             ></EmptyView>
         </div>

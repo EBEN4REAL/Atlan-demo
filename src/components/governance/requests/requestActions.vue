@@ -63,19 +63,37 @@
                 <template #suffix>
                     <AtlanIcon class="mr-1" icon="ChevronDown" />
                 </template>
-                <span class="text-red-500"> Decline </span>
+                <span class="text-red-500"> Reject </span>
+                <div class="sparator" />
             </AtlanButton>
         </a-dropdown>
-        <AtlanButton
-            color="secondary"
-            padding="compact"
-            size="sm"
-            @click.stop="$emit('accept')"
-            ><template #prefix
-                ><AtlanIcon class="mr-1" icon="Approve" />
+        <a-dropdown
+            v-model:visible="isVisibleApprove"
+            trigger="click"
+            placement="bottomRight"
+        >
+            <template #overlay>
+                <a-menu>
+                    <a-menu-item key="4" @click="$emit('accept')">
+                        Approve
+                    </a-menu-item>
+                    <a-menu-item key="3" @click="$emit('accept')">
+                        Approve with comment
+                    </a-menu-item>
+                </a-menu>
             </template>
-            Accept
-        </AtlanButton>
+            <AtlanButton
+                color="secondary"
+                padding="compact"
+                size="sm"
+                @click.stop="isVisibleApprove = !isVisibleApprove"
+                ><template #suffix>
+                    <AtlanIcon class="mr-1" icon="ChevronDown" />
+                </template>
+                <span class="text-green-500"> Approve </span>
+                <div class="sparator" />
+            </AtlanButton>
+        </a-dropdown>
         <!-- <AtlanButton
             color="secondary"
             @click.stop="$emit('more')"
@@ -106,6 +124,7 @@
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
             const isVisibleReject = ref(false)
+            const isVisibleApprove = ref(false)
             const isVisibleRejectWithComment = ref(false)
             const handleClickReject = () => {
                 emit('reject')
@@ -125,6 +144,7 @@
                 handleClickRejectWithComment,
                 isVisibleRejectWithComment,
                 iconQuotes,
+                isVisibleApprove,
             }
         },
     })
@@ -135,5 +155,11 @@
         // height: 90px;
         width: 200px;
         padding: 12px 8px;
+    }
+    .sparator {
+        width: 1px;
+        height: 60%;
+        background: #e6e6eb;
+        margin-left: 10px;
     }
 </style>

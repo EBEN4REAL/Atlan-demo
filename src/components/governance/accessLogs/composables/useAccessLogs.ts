@@ -42,6 +42,7 @@ export function useAccessLogs(
             {
                 dsl: { from: 0, size: size.value, ...requestBody },
                 attributes: defaultAttributes.value,
+                suppressLogs: true
             },
             ref('GET_SAVED_QUERY_META'),
             false

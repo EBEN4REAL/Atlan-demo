@@ -46,6 +46,7 @@ export default function useOwnedAssetAggregation() {
         } = useIndexSearch(
             {
                 dsl: { from: 0, size: 0, ...requestBody },
+                suppressLogs: true
             },
             ref('GET_OWNED_ASSETS_COUNT'),
             false

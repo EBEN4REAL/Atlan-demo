@@ -90,7 +90,7 @@ export default function useCreateGraph(
         },
         ranksepFunc() {
             // horizontal spacing btw nodes
-            return 130
+            return 160
         },
     })
 

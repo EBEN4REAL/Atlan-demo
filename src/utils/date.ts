@@ -3,7 +3,7 @@
  * @param date date timestamp
  * @returns human readable date string without time eg.
  */
-export const formatDate = (date: string | number | Date) => new Date(date).toLocaleString()
+export const formatDate = (date: string | number | Date) => new Date(date).toLocaleDateString()
 
 export const formatDateTime = (
     date: any,

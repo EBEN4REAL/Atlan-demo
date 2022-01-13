@@ -54,7 +54,9 @@
 
             <APIKeysTable
                 :api-keys-list="apiKeysList"
+                :is-drawer="isAPIKeyDrawerVisible"
                 :is-loading="isLoading"
+                :selected-a-p-i-key-id="selectedAPIKey.id"
                 :delete-a-p-i-key-loading="deleteAPIKeyLoading"
                 :search-text="searchText"
                 @selectAPIKey="handleSelectAPIKey"

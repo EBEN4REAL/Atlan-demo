@@ -230,11 +230,11 @@ const useActiveQueryAccess = (
     })
 
     watch(
-        activeInlineTab,
+        ()=>activeInlineTab?.value?.qualifiedName,
         () => {
             fetchSelectedCollectionData()
         },
-        { immediate: true }
+        // { deep: true }
     )
 
     return {

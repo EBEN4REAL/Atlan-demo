@@ -424,7 +424,6 @@
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
-    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'

@@ -97,6 +97,16 @@ export default function useAssetInfo() {
         return ''
     }
 
+    const connectionGuid = (asset: assetInterface) => {
+        const connection = getConnection(
+            asset.attributes.connectionQualifiedName
+        )
+        if (connection) {
+            return connection?.guid
+        }
+        return ''
+    }
+
     const connectionQualifiedName = (asset: assetInterface) =>
         attributes(asset)?.connectionQualifiedName ?? ''
 
@@ -1092,5 +1102,6 @@ export default function useAssetInfo() {
         dataflowCount,
         tileCount,
         pageCount,
+        connectionGuid,
     }
 }

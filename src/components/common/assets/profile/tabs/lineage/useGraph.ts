@@ -80,11 +80,11 @@ export default function useGraph() {
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
-                                    <div class="node-text group-hover:underline">
+                                    <div class="node-text">
                                         <span class="z-50 relative block">
                                             <span class=" absolute right-0 caret-bg text-white flex justify-end w-16">${status} ${iconCaretDown}</span>
                                         </span>
-                                        <div class="truncate">${displayText}</div>
+                                        <div class="node-title truncate group-hover:underline">${displayText}</div>
                                         
                                     </div>
                                     <div class="node-meta">
@@ -130,13 +130,14 @@ export default function useGraph() {
                         ],
                         attrs: {
                             portBody: {
-                                width: 268,
-                                height: 69,
+                                width: 260,
+                                height: 60,
                                 strokeWidth: 1,
-                                stroke: '#e6e6eb',
+                                stroke: 'red',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -34,
+                                y: -30,
+                                x: 1,
                             },
                         },
                     },

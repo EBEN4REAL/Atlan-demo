@@ -645,8 +645,7 @@
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
-                false,
-                { suppress: true }
+                false
             )
 
             const totalCount = computed(() => data.value?.approximateCount || 0)
@@ -843,6 +842,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -860,6 +860,7 @@
                             .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 

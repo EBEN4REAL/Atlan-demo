@@ -141,13 +141,13 @@
                 replaceBody: replaceTableBody,
                 data: tablesData,
                 isLoading: isTableLoading,
-            } = useAssetListing('', false, { suppress: true })
+            } = useAssetListing('', false)
             const {
                 list: ColumnList,
                 replaceBody: replaceColumnBody,
                 data: ColumnsData,
                 isLoading: isColumnLoading,
-            } = useAssetListing('', false, { suppress: true })
+            } = useAssetListing('', false)
 
             const getColumnInitialBody = (item) => {
                 let data = {}
@@ -169,6 +169,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -186,6 +187,7 @@
                             tableQualifiedNamesContraint.value,
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 

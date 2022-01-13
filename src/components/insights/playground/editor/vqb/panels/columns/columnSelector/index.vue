@@ -431,6 +431,7 @@
 
                 return {
                     dsl: useBody(data),
+                    suppressLogs: true,
                     attributes: [
                         'name',
                         'displayName',

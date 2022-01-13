@@ -379,13 +379,13 @@
                             activeInlineTab.value.playground.editor.context,
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
-                false,
-                { suppress: true }
+                false
             )
             watch(
                 [tableQualfiedName, queryText],

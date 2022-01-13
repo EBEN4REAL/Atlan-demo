@@ -26,6 +26,7 @@ interface DiscoverListParams {
     attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
     globalState?: Ref<string[]>
+    suppressLogs?: boolean
 }
 
 export function useDiscoverList({
@@ -41,6 +42,7 @@ export function useDiscoverList({
     attributes,
     relationAttributes,
     globalState,
+    suppressLogs,
 }: DiscoverListParams) {
     const defaultBody = ref({})
     const generateBody = () => {
@@ -58,6 +60,7 @@ export function useDiscoverList({
             dsl,
             attributes: attributes?.value,
             relationAttributes: relationAttributes?.value,
+            suppressLogs,
         }
     }
 

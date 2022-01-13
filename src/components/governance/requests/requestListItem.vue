@@ -17,7 +17,11 @@
                 :entity-type="request?.entityType"
             />
             <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.requestType](request) }}
+                {{
+                    primaryText[request.requestType]
+                        ? primaryText[request.requestType](request)
+                        : ''
+                }}
             </span>
         </div>
         <div class="flex items-center col-span-3">
@@ -212,6 +216,7 @@
                 }
                 state.isLoading = false
             }
+            console.log('request', request.value)
             return {
                 handleApproval,
                 handleRejection,

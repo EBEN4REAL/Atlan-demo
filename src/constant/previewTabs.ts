@@ -101,4 +101,15 @@ export const previewTabs = [
         requiredInProfile: true,
         analyticsKey: 'property',
     },
+    {
+        name: 'Linked Assets',
+        component: 'linkedAssets',
+        icon: 'AssetsInactiveLight',
+        activeIcon: 'AssetsActiveLight',
+        tooltip: 'Linked Assets',
+        scrubbed: false,
+        requiredInProfile: true,
+        analyticsKey: 'linkedAssets',
+        includes: ['AtlasGlossaryTerm'],
+    },
 ]

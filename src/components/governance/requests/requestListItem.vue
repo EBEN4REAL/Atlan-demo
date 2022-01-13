@@ -77,6 +77,7 @@
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
+                        :request="request"
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />

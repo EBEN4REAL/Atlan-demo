@@ -66,23 +66,28 @@
                 class="wrapper-scoll right"
                 @mouseenter="mouseEnterContainer"
             />
-            <SearchAndFilter
-                v-model:value="searchTerm"
-                class="max-w-xl m-4 mb-0"
-                size="default"
-            >
-                <template #categoryFilter>
-                    <div
-                        class="relative px-2 cursor-pointer"
-                        @click="handleClickFilter"
-                    >
-                        <AtlanIcon icon="FilterFunnel" />
+            <div class="flex justify-between m-4 mb-0">
+                <SearchAndFilter
+                    v-model:value="searchTerm"
+                    class="max-w-xl"
+                    size="default"
+                >
+                    <template #categoryFilter>
                         <div
-                            class="absolute border-r border-solid divide-gray-800 devider-filter"
-                        />
-                    </div>
-                </template>
-            </SearchAndFilter>
+                            class="relative px-2 cursor-pointer"
+                            @click="handleClickFilter"
+                        >
+                            <AtlanIcon icon="FilterFunnel" />
+                            <div
+                                class="absolute border-r border-solid divide-gray-800 devider-filter"
+                            />
+                        </div>
+                    </template>
+                </SearchAndFilter>
+                <div class="p-2 border rounded cursor-pointer" @click="mutate">
+                    <AtlanIcon icon="Reload" />
+                </div>
+            </div>
             <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
             <div
                 v-if="listLoading"

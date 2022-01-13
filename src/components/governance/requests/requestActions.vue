@@ -27,8 +27,24 @@
                                         />
                                         <p>
                                             Lorem ipsum dolor sit amet,
-                                            consectetur adipiscing elit.
+                                            consectetur
                                         </p>
+                                    </div>
+                                    <div class="flex items-center mt-4">
+                                        <Avatar
+                                            :allow-upload="false"
+                                            :avatar-name="
+                                                request.created_by_user
+                                                    ?.username
+                                            "
+                                            avatar-size="16"
+                                            :avatar-shape="'circle'"
+                                            class="mr-2"
+                                        />
+                                        <UserPiece
+                                            :user="request.created_by_user"
+                                            :is-pill="false"
+                                        />
                                     </div>
                                 </div>
                             </template>
@@ -71,13 +87,22 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import iconQuotes from '~/assets/images/icons/Quotes.svg'
+    import Avatar from '~/components/common/avatar/index.vue'
+    import { RequestAttributes } from '~/types/atlas/requests'
+    import UserPiece from './pieces/user.vue'
 
     export default defineComponent({
         name: 'RequestActions',
-        components: { AtlanButton },
+        components: { AtlanButton, Avatar, UserPiece },
+        props: {
+            request: {
+                type: Object as PropType<RequestAttributes>,
+                required: true,
+            },
+        },
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
             const isVisibleReject = ref(false)
@@ -105,7 +130,7 @@
 
 <style lang="less" scoped>
     .comment-delete {
-        height: 90px;
+        // height: 90px;
         width: 200px;
         padding: 12px 8px;
     }

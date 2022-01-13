@@ -12,13 +12,14 @@
             label-key="displayName"
             popover-trigger="hover"
             read-only
+            :is-plain="true"
         >
             <template #pillPrefix>
                 <ClassificationIcon :color="classificationColor" />
             </template>
             <template #popover="{ item }">
-                <ClassificationInfoCard :classification="item" class="w-32"
-            /></template>
+                <ClassificationInfoCard :classification="item" class="w-32" />
+            </template>
         </PillGroup>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>

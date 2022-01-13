@@ -167,6 +167,30 @@ export default function useEventGraph(
         return !!node
     }
 
+    // resetPortStyle
+    const resetPortStyle = (node, portId) => {
+        if (!node || !portId) return
+        node.setPortProp(portId, 'attrs/portBody', {
+            fill: '#ffffff',
+        })
+        node.setPortProp(portId, 'attrs/portBody', {
+            stroke: '#e6e6eb',
+        })
+    }
+
+    // setPortStyle
+    const setPortStyle = (node, portId, mode = 'select') => {
+        if (!node || !portId) return
+        const fill = mode === 'select' ? '#e5ecff' : '#ffffff'
+
+        node.setPortProp(portId, 'attrs/portBody', {
+            fill,
+        })
+        node.setPortProp(portId, 'attrs/portBody', {
+            stroke: '#5277d7',
+        })
+    }
+
     // getCaretElement
     const getCaretElement = (nodeId) => {
         const graphNodeElement = document.querySelectorAll(
@@ -215,15 +239,8 @@ export default function useEventGraph(
             if (override) {
                 const createdPorts = node.getPorts()
                 createdPorts.shift()
-                createdPorts.forEach((port, index) => {
-                    if (index === 0 && node.id === baseEntity.value.guid) {
-                        node.setPortProp(port.id, 'attrs/portBody', {
-                            'stroke-dasharray': '0 267 270 39 0',
-                        })
-                    }
-                    node.setPortProp(port.id, 'attrs/portBody', {
-                        stroke: '#5277d7',
-                    })
+                createdPorts.forEach((port) => {
+                    setPortStyle(node, port.id, 'highlight')
                 })
             }
             if (!lineageStore.hasPortList(node.id))
@@ -537,21 +554,9 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
-    // resetPortStyle
-    const resetCHPStyle = () => {
-        if (chp.value.node) {
-            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
-                fill: '#ffffff',
-            })
-            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
-                stroke: '#e6e6eb',
-            })
-        }
-    }
-
     // selectPort
     const selectPort = (node, e, portId) => {
-        resetCHPStyle()
+        resetPortStyle(chp.value.node, chp.value.portId)
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
@@ -563,11 +568,11 @@ export default function useEventGraph(
         chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
-        node.setPortProp(portId, 'attrs/portBody', {
-            fill: '#e5ecff',
-        })
-        node.setPortProp(portId, 'attrs/portBody', {
-            stroke: '#5277d7',
+        const nodePorts = node.getPorts()
+        nodePorts.shift()
+        nodePorts.forEach((port) => {
+            if (port.id === portId) setPortStyle(node, portId, 'select')
+            else resetPortStyle(node, port.id)
         })
         loaderCords.value = { x: e.clientX, y: e.clientY }
         getColumnLineage(portId)
@@ -575,7 +580,7 @@ export default function useEventGraph(
 
     // deselectPort
     const deselectPort = () => {
-        resetCHPStyle()
+        resetPortStyle(chp.value.node, chp.value.portId)
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)

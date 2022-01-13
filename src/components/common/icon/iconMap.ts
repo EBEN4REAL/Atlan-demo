@@ -349,6 +349,7 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
 import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
 import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
@@ -700,5 +701,6 @@ export default {
     RightJoinInfo,
     OuterJoinInfo,
     TaskList,
-    LockedFile
+    LockedFile,
+    Collapsed,
 }

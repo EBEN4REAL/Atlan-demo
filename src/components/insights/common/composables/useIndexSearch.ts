@@ -7,7 +7,8 @@ import { useOptions } from '~/services/api/common'
 export default function useIndexSearch(
     initialBody?: Ref<Record<string, any>> | Record<string, any>,
     cacheSuffx?: string | '',
-    immediate?: boolean
+    immediate?: boolean,
+    params: Object = {}
 ) {
     const cancelTokenSource: CancelTokenSource = axios.CancelToken.source()
 
@@ -24,7 +25,7 @@ export default function useIndexSearch(
     const { data, mutate, error, isLoading, isReady } = useAPI<any>(
         map.INDEX_SEARCH,
         'POST',
-        { body},
+        { body, params },
         options
     )
 

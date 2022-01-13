@@ -645,7 +645,8 @@
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
                 '',
-                false
+                false,
+                { suppress: true }
             )
 
             const totalCount = computed(() => data.value?.approximateCount || 0)

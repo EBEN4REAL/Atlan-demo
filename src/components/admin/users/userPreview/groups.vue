@@ -19,6 +19,7 @@
                                 :hide-disabled-tabs="true"
                                 select-group-key="id"
                                 :user-id="selectedUser.id"
+                                :hideTabs="true"
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">

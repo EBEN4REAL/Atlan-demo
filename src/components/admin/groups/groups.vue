@@ -86,6 +86,12 @@
                 :row-key="(group) => group.id"
                 :loading="isLoading"
                 :show-sorter-tooltip="false"
+                :row-class-name="
+                    (r, i) =>
+                        showPreview && selectedGroupId === r.id
+                            ? 'bg-primary-light'
+                            : ''
+                "
                 @change="handleTableChange"
             >
                 <template #headerCell="{ title, column }">
@@ -639,6 +645,8 @@
                 )
             }
             return {
+                showPreview,
+                selectedGroupId,
                 columns,
                 isGroupDrawerVisible,
                 searchText,
@@ -674,6 +682,13 @@
     })
 </script>
 <style lang="less">
+    .fix-background {
+        @apply bg-primary-light !important;
+    }
+
+    .fix-background > td {
+        @apply bg-transparent !important;
+    }
     .users-groups-table {
         .ant-table-thead {
             height: 44px !important;

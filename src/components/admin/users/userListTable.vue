@@ -10,6 +10,10 @@
         :pagination="false"
         :loading="loading"
         :show-sorter-tooltip="false"
+        :row-class-name="
+            (r, i) =>
+                isPreview && selectedUserId === r.id ? 'bg-primary-light' : ''
+        "
         @change="handleTableChange"
     >
         <template #headerCell="{ title, column }">
@@ -521,6 +525,7 @@
         },
         props: {
             userList: { type: Array, required: true },
+            isPreview: { type: Boolean, required: true },
             loading: { type: Boolean, required: true },
             selectedUserId: { type: String, required: true },
             showChangeRolePopover: { type: Boolean, required: true },
@@ -645,7 +650,19 @@
                 }
                 emit('change', sortValue)
             }
+
+            const rowClass = (_record, index) => {
+                console.log(
+                    _record.id,
+                    index,
+                    selectedUserId.value === _record.id
+                )
+                return selectedUserId.value === _record.id
+                    ? 'bg-primary-light'
+                    : ''
+            }
             return {
+                rowClass,
                 roleList,
                 userColumns,
                 nameCase,

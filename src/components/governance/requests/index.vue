@@ -59,10 +59,11 @@
         </div>
     </a-drawer>
     <DefaultLayout title="Manage Requests">
-        <template #header>
+        <template #header> </template>
+        <div class="border rounded">
             <SearchAndFilter
                 v-model:value="searchTerm"
-                class="max-w-xl mb-6"
+                class="max-w-xl m-4 mb-6"
                 size="default"
             >
                 <template #categoryFilter>
@@ -77,60 +78,69 @@
                     </div>
                 </template>
             </SearchAndFilter>
-            <div class="flex">
-                <RequestTypeTabs v-model:tab="filters.request_type" />
-                <Pagination
-                    v-model:offset="pagination.offset"
-                    :totalPages="pagination.totalPages"
-                    :loading="listLoading"
-                    :pageSize="pagination.limit"
-                    @mutate="mutate"
-                />
-            </div>
-        </template>
-
-        <div v-if="listLoading" class="flex items-center justify-center h-64">
-            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
-        </div>
-        <template v-else-if="requestList.length">
-            <RequestModal
-                v-if="requestList[selectedIndex]"
-                v-model:visible="isDetailsVisible"
-                :request="requestList[selectedIndex]"
-                @up="traverseUp"
-                @down="traverseDown"
-                @action="handleRequestAction($event, index)"
-            ></RequestModal>
-            <VirtualList :data="requestList" data-key="id" class="mt-4">
-                <template #default="{ item, index }">
-                    <RequestListItem
-                        :request="item"
-                        :selected="isSelected(item.id)"
-                        :active="index === selectedIndex"
-                        @select="selectRequest(item.id, index)"
-                        @action="handleRequestAction($event, index)"
-                    />
-                </template>
-            </VirtualList>
-        </template>
-        <div v-else class="flex items-center justify-center h-full">
+            <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
             <div
-                v-if="searchTerm?.length > 0"
-                class="flex flex-col items-center justify-center"
+                v-if="listLoading"
+                class="flex items-center justify-center h-64"
             >
-                <atlan-icon icon="NoRequestFound" class="h-36" />
-                <span class="mt-4 text-center text-gray-500 w-72">
-                    Oops… we didn’t find any requests that match this search
-                </span>
-                <a-button
-                    class="flex items-center justify-center w-40 py-2 mt-4"
-                    @click="searchTerm = ''"
-                    >Clear search</a-button
-                >
+                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <div v-else class="flex flex-col">
-                <atlan-icon icon="NoLinkedAssets" class="h-40" />
-                <span class="mt-4 text-xl">No requests available</span>
+            <template v-else-if="requestList.length">
+                <RequestModal
+                    v-if="requestList[selectedIndex]"
+                    v-model:visible="isDetailsVisible"
+                    :request="requestList[selectedIndex]"
+                    @up="traverseUp"
+                    @down="traverseDown"
+                    @action="handleRequestAction($event, index)"
+                />
+                <VirtualList
+                    :data="requestList"
+                    data-key="id"
+                    class="mt-4 container-scroll"
+                    @mouseleave="mouseLeaveContainer"
+                >
+                    <template #default="{ item, index }">
+                        <!-- :active="index === selectedIndex"
+                            @select="selectRequest(item.id, index)" -->
+                        <RequestListItem
+                            :request="item"
+                            :selected="isSelected(item.id)"
+                            :active-hover="activeHover"
+                            @mouseenter="handleMouseEnter(item.id)"
+                            @action="handleRequestAction($event, index)"
+                        />
+                    </template>
+                </VirtualList>
+                <div class="flex justify-end p-4 bg-white">
+                    <Pagination
+                        v-model:offset="pagination.offset"
+                        :total-pages="pagination.totalPages"
+                        :loading="listLoading"
+                        :page-size="pagination.limit"
+                        @mutate="mutate"
+                    />
+                </div>
+            </template>
+            <div v-else class="flex items-center justify-center h-full">
+                <div
+                    v-if="searchTerm?.length > 0"
+                    class="flex flex-col items-center justify-center"
+                >
+                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <span class="mt-4 text-center text-gray-500 w-72">
+                        Oops… we didn’t find any requests that match this search
+                    </span>
+                    <a-button
+                        class="flex items-center justify-center w-40 py-2 mt-4"
+                        @click="searchTerm = ''"
+                        >Clear search</a-button
+                    >
+                </div>
+                <div v-else class="flex flex-col">
+                    <atlan-icon icon="NoLinkedAssets" class="h-40" />
+                    <span class="mt-4 text-xl">No requests available</span>
+                </div>
             </div>
         </div>
     </DefaultLayout>
@@ -191,7 +201,7 @@
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
-
+            const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
                 attributeValue: undefined,
@@ -290,6 +300,7 @@
             )
 
             function handleRequestAction(req: RequestAttributes, idx: number) {
+                activeHover.value = ''
                 isDetailsVisible.value = false
                 if (filters.value.status.includes(req.status)) {
                     requestList.value[idx] = req
@@ -342,7 +353,14 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-
+            const handleMouseEnter = (itemId) => {
+                if (activeHover.value !== itemId) {
+                    activeHover.value = itemId
+                }
+            }
+            const mouseLeaveContainer = () => {
+                // activeHover.value = ''
+            }
             return {
                 mutate,
                 pagination,
@@ -369,6 +387,9 @@
                 handleChangeConnector,
                 setConnector,
                 connectorsData,
+                handleMouseEnter,
+                activeHover,
+                mouseLeaveContainer,
                 // listPermission
             }
         },
@@ -376,6 +397,9 @@
 </script>
 
 <style lang="less">
+    .container-scroll {
+        max-height: 500px;
+    }
     .wrapper-filter {
         .ant-select-selector {
             background: white !important;

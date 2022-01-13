@@ -1,10 +1,11 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded group gap-x-4 hover:bg-primary-light"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-solid border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary': active,
+            'border-primary border': active,
+            'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"
     >
@@ -67,11 +68,12 @@
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
-            ></AtlanIcon>
+            />
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-center hidden w-full font-bold group-hover:flex"
+                    v-if="activeHover === request.id"
+                    class="items-center justify-center w-full font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -91,7 +93,7 @@
                         Rejected
                     </div>
                 </div>
-                <div class="flex w-1/2 gap-x-2 group-hover:hidden">
+                <div v-else class="flex w-1/2 gap-x-2">
                     <Avatar
                         :allow-upload="false"
                         :avatar-name="request.created_by_user?.username"
@@ -169,6 +171,11 @@
                 default: () => false,
                 required: false,
             },
+            activeHover: {
+                type: String,
+                default: () => '',
+                required: false,
+            },
         },
         emits: ['select', 'action'],
         setup(props, { emit }) {
@@ -216,7 +223,6 @@
                 }
                 state.isLoading = false
             }
-            console.log('request', request.value)
             return {
                 handleApproval,
                 handleRejection,
@@ -228,4 +234,4 @@
     })
 </script>
 
-<style></style>
+<style lang="less" scope></style>

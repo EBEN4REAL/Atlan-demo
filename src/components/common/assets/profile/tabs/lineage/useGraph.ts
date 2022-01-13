@@ -322,9 +322,9 @@ export default function useGraph() {
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
-            if (x.id.includes('processIdGoesHere')) return
             const cell = graph.value.getCellById(x.id)
-            cell.setVisible(visible)
+            cell.attr('line/stroke', visible ? '#c7c7c7' : '#dce0e5')
+            cell.toBack()
         })
     }
 

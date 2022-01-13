@@ -32,26 +32,11 @@ export default function useEventGraph(
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
     const che = ref('') // che -> currentHilightedEdge
-    const chp = ref({ portId: '', expandedNodes: [] }) // chp -> currentHilightedPort
+    const chp = ref({ portId: '', node: null, expandedNodes: [] }) // chp -> currentHilightedPort
     const nodesCaretClicked = ref([])
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
     const activeNodesToggled = ref({})
-
-    /** WATCHERS */
-    watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) highlight(null)
-        else highlight(newVal)
-    })
-
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            highlight(null)
-            resetSelections.value = false
-        }
-    })
 
     /** METHODS */
     // getHighlights
@@ -153,7 +138,6 @@ export default function useEventGraph(
 
             nodeToTranslate.position(x1, newY)
         })
-        nodesTranslated.value[x.id] = []
     }
 
     // portExist
@@ -165,10 +149,9 @@ export default function useEventGraph(
 
     // getAllExpandedNodes
     const getAllExpandedNodes = () => {
-        const chpNode = getPortNode(chp.value.portId)
-        const chpExpandedNodes = chp.value.expandedNodes
+        const chpExpandedNodes = [...chp.value.expandedNodes]
         const res = chpExpandedNodes
-        if (chpNode) res.push(chpNode)
+        if (chp.value.node) res.push(chp.value.node)
         return res
     }
 
@@ -345,7 +328,6 @@ export default function useEventGraph(
         const translateCandidatesSet = new Set()
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
-                toggleNodesEdges(graph, false)
                 const qn = v.attributes.qualifiedName.split('/')
                 const parentName = qn[qn.length - 2]
                 const graphNodes = graph.value.getNodes()
@@ -355,6 +337,7 @@ export default function useEventGraph(
                 if (parentNode) translateCandidatesSet.add(parentNode)
             }
         })
+        toggleNodesEdges(graph, false)
 
         const translateCandidates = Array.from(translateCandidatesSet)
 
@@ -508,8 +491,6 @@ export default function useEventGraph(
                         const ports = node.getPorts()
                         ports.shift()
                         node.removePorts(ports)
-                        translateExpandedNodesToDefault(node)
-                        loaderCords.value = {}
                     } else {
                         const { edges, ports } =
                             activeNodesToggled.value[node.id]
@@ -533,8 +514,9 @@ export default function useEventGraph(
                             }
                         )
                         delete activeNodesToggled.value[node.id]
-                        loaderCords.value = {}
                     }
+                    translateExpandedNodesToDefault(node)
+                    loaderCords.value = {}
                 }
             })
         })
@@ -543,10 +525,8 @@ export default function useEventGraph(
 
     // selectPort
     const selectPort = (node, e, portId) => {
-        const chpNode = getPortNode(chp.value.portId)
-        if (chpNode) {
-            chp.value.expandedNodes.push(chpNode)
-            chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
+        if (chp.value.node) {
+            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
                 fill: '#ffffff',
             })
         }
@@ -558,6 +538,7 @@ export default function useEventGraph(
             x.removePorts(portsToRemove)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
         node.setPortProp(portId, 'attrs/portBody', {
@@ -568,11 +549,12 @@ export default function useEventGraph(
     }
 
     // deselectPort
-    const deselectPort = (node) => {
-        const chpNode = getPortNode(chp.value.portId)
-        chpNode.setPortProp(chp.value.portId, 'attrs/portBody', {
-            fill: '#ffffff',
-        })
+    const deselectPort = () => {
+        if (chp.value.node) {
+            chp.value.node.setPortProp(chp.value.portId, 'attrs/portBody', {
+                fill: '#ffffff',
+            })
+        }
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
@@ -581,6 +563,7 @@ export default function useEventGraph(
             x.removePorts(portsToRemove)
             translateExpandedNodesToDefault(x)
         })
+        chp.value.node = null
         chp.value.portId = ''
         chp.value.expandedNodes = []
         toggleNodesEdges(graph, true)
@@ -594,7 +577,7 @@ export default function useEventGraph(
         const portId = ele.getAttribute('port')
 
         if (chp.value.portId === portId) {
-            deselectPort(node)
+            deselectPort()
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
@@ -606,6 +589,7 @@ export default function useEventGraph(
     // EDGE - CLICK
     const cheCell = graph.value.getCellById(che.value)
     graph.value.on('edge:click', ({ e, edge, cell }) => {
+        if (chp.value.portId) return
         loaderCords.value = { x: e.clientX, y: e.clientY }
 
         if (edge.id.includes('port')) {
@@ -669,7 +653,7 @@ export default function useEventGraph(
 
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
-        if (chp.value.portId) deselectPort(node)
+        if (chp.value.portId) deselectPort()
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
@@ -694,5 +678,20 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+    })
+
+    /** WATCHERS */
+    watch(assetGuidToHighlight, (newVal) => {
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            if (highlightedNode.value) highlight(null)
+            resetSelections.value = false
+        }
     })
 }

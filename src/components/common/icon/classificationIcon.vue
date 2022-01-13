@@ -46,6 +46,9 @@
                 if (isPropagated.value) {
                     return "ClassificationPropagated"
                 }
+                if (classification.value.createdBy.includes('service-account-atlan')) {
+                    return "ClassificationAtlan"
+                }
                 return "ClassificationShield"
             })
 

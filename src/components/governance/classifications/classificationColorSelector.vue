@@ -13,12 +13,8 @@
                         "
                         @click="selectedColor = option.color"
                     >
-                        <div class="">
-                            <AtlanIcon
-                                icon="ClassificationShield"
-                                class="self-center mr-1"
-                                :class="option.text"
-                            />
+                        <div class="text-center">
+                            <ClassificationIcon :color='option.color' :class-names='"self-center mx-1"' />
                         </div>
                         <div class="flex flex-col">
                             <span>{{ option.color }}</span>
@@ -61,12 +57,8 @@
                     "
                     @click="selectedColor = option.color"
                 >
-                    <div class="">
-                        <AtlanIcon
-                            icon="ClassificationShield"
-                            class="self-center mr-1"
-                            :class="option.text"
-                        />
+                    <div class="text-center">
+                        <ClassificationIcon :color='option.color' :class-names='"self-center mx-1"' />
                     </div>
                     <div class="flex flex-col">
                         <span>{{ option.color }}</span>
@@ -89,10 +81,11 @@
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import ClassificationIcon from './classificationIcon.vue'
 
     export default defineComponent({
         name: 'ClassificationColorSelector',
-        components: {},
+        components: { ClassificationIcon },
         props: {
             selectedColor: {
                 type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,

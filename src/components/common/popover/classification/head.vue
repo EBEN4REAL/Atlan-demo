@@ -1,6 +1,9 @@
 <template>
     <div class="w-full px-4 py-3 border-b border-gray-300 bg-gray-100" style='min-width: 374px;'>
-        <div class="flex w-full align-center items-center">
+        <div v-if='isLoading' class='flex justify-center items-center content-center'>
+            <AtlanIcon icon='Loader' class='h-10 animate-spin' />
+        </div>
+        <div v-else class="flex w-full align-center items-center">
             <ClassificationIcon
                 :classification="classification"
                 :entity-guid="guid"
@@ -44,6 +47,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { AssetAttributes, InternalAttributes, SQLAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { and } from '@vueuse/core'
 
     dayjs.extend(relativeTime)
 
@@ -90,7 +94,7 @@
 
             const {
                 list: auditList,
-                isLoading,
+                isLoading: isAuditLoading,
             } = useAssetAuditSearch({
                 guid: classification.value.entityGuid,
                 isCache: false,
@@ -105,9 +109,13 @@
             const linkedAt = ref('')
 
             const propagatedVia = ref({})
+            const isUserLoading = ref(false)
 
             watch(linkedByUserName, () => {
-                if (linkedByUserName.value === '' || isPropagated.value) {
+                if (
+                    linkedByUserName.value.length === 0
+                    || isPropagated.value
+                ) {
                     return
                 }
                 const params = {
@@ -117,16 +125,18 @@
                         $and: [{ username: linkedByUserName.value }],
                     },
                 }
-                const { userList, isLoading: isUserLoading } = useUsers(params)
+                const { userList, isLoading: isUserLoadingInner } = useUsers(params)
+                isUserLoading.value = isUserLoadingInner.value
                 watch(isUserLoading, () => {
+                    isUserLoading.value = isUserLoadingInner.value
                     if (!isUserLoading.value && userList.value.length > 0) {
                         linkedUser.value = { ...userList.value[0] }
                     }
                 })
             })
 
-            watch(isLoading, () => {
-                if (!isLoading.value && auditList.value.length > 0) {
+            watch(isAuditLoading, () => {
+                if (!isAuditLoading.value && auditList.value.length > 0) {
                     linkedByUserName.value = auditList.value[0].user
                     const created = dayjs(auditList.value[0].created)
                     linkedAt.value = dayjs().to(created)
@@ -190,13 +200,16 @@
                 return ''
             })
 
+            const isLoading = and(isUserLoading, isAuditLoading, isAssetLoading)
+
             return {
                 linkedUser,
                 linkedAt,
                 isPropagated,
                 guid,
                 propagatedVia,
-                propagatedViaIcon
+                propagatedViaIcon,
+                isLoading
             }
         }
     })

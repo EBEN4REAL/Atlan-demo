@@ -108,7 +108,7 @@ export const previewTabs = [
         activeIcon: 'AssetsActiveLight',
         tooltip: 'Linked Assets',
         scrubbed: false,
-        requiredInProfile: true,
+        requiredInProfile: false,
         analyticsKey: 'linkedAssets',
         includes: ['AtlasGlossaryTerm'],
     },

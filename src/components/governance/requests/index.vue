@@ -75,7 +75,7 @@
             <div class="flex justify-between m-4 mb-0">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    class="max-w-xl shadow-none filter-request"
+                    class="max-w-lg shadow-none filter-request"
                     size="default"
                     :placeholder="
                         response.totalRecord

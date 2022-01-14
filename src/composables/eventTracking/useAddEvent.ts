@@ -5,9 +5,10 @@ import { useAuthStore } from '~/store/auth'
 import { usePurposeStore } from '~/store/purpose'
 import { usePersonaStore } from '~/store/persona'
 import { storeToRefs } from 'pinia'
+import { Replicated } from '~/services/service/replicated'
 
 const useAddEvent = (category, obj, action, props = {}) => {
-    if (!(window as any).analytics || !(window as any).analytics.track) {
+    if (!window.analytics || !window.analytics.track) {
         return
     }
     // construct params for adding events
@@ -79,25 +80,37 @@ export const identifyUser = async () => {
 
 export const identifyGroup = async () => {
     await addDelay(1800)
-    if ((window as any).analytics) {
-        const tenantStore = useTenantStore()
-        const purposeStore = usePurposeStore()
-        const personaStore = usePersonaStore()
+    if (window?.analytics) {
+        // const groupTraits = window?.analytics?.group()?.traits()
+        const { data, isReady, error, isLoading } = Replicated.getLicense()
+        watch(
+            isLoading,
+            (value) => {
+                if (!value) {
+                    console.log('replicated value loaded', data.value)
+                    const tenantStore = useTenantStore()
+                    const purposeStore = usePurposeStore()
+                    const personaStore = usePersonaStore()
 
-        const purposeCount = (purposeStore.list || []).length
-        const personaCount = (personaStore.list || []).length
+                    const purposeCount = (purposeStore.list || []).length
+                    const personaCount = (personaStore.list || []).length
 
-        const domain = window.location.host
-        const groupId = domain
-        // group
-        if ((window as any).analytics.group) {
-            ;(window as any).analytics.group(groupId, {
-                domain,
-                name: tenantStore.displayName,
-                purpose_count: purposeCount,
-                persona_count: personaCount,
-            })
-        }
+                    const domain = window.location.host
+                    const groupId = domain
+                    // group
+                    if (window?.analytics?.group) {
+                        window?.analytics?.group(groupId, {
+                            domain,
+                            name: tenantStore.displayName,
+                            purpose_count: purposeCount,
+                            persona_count: personaCount,
+                            license_type: data?.value?.license || '',
+                        })
+                    }
+                }
+            },
+            { immediate: true }
+        )
     }
 }
 

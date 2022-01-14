@@ -214,7 +214,7 @@
                                     icon="ChevronLeft"
                                     class="w-4 h-4 -mt-0.5"
                                     style="min-width: 16px"
-                                    @click="onUnselectTable"
+                                    @click.stop="onUnselectTable"
                                 />
 
                                 <span
@@ -251,7 +251,7 @@
                                     ? 'flex justify-center items-center '
                                     : '',
                             ]"
-                            @click="() => {}"
+                            @click.stop="() => {}"
                         >
                             <template
                                 v-if="
@@ -508,7 +508,6 @@
                             .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
-                    suppressLogs: true,
                 }
             }
 
@@ -586,7 +585,6 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
-                    suppressLogs: true,
                 }
             }
 
@@ -597,6 +595,7 @@
                 inputValue1.value = ''
                 inputValue2.value = ''
                 replaceBody(getColumnInitialBody(item))
+                //  updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -609,6 +608,7 @@
                         activeInlineTab.value.playground.vqb.selectedTables
                     )
                 )
+                // updateVQB(activeInlineTab, inlineTabs)
             }
 
             const onSelectColumn = (item) => {
@@ -618,6 +618,7 @@
                     value: item.label,
                     columnQualifiedName: item.qualifiedName,
                 }
+                updateVQB(activeInlineTab, inlineTabs)
                 emit('change', item.qualifiedName)
             }
 

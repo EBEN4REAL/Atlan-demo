@@ -613,7 +613,6 @@ export default function useEventGraph(
     })
 
     // EDGE - CLICK
-    const cheCell = graph.value.getCellById(che.value)
     graph.value.on('edge:click', ({ e, edge, cell }) => {
         if (chp.value.portId) return
         loaderCords.value = { x: e.clientX, y: e.clientY }
@@ -622,6 +621,7 @@ export default function useEventGraph(
             loaderCords.value = {}
             return
         }
+        const cheCell = graph.value.getCellById(che.value)
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
@@ -680,11 +680,15 @@ export default function useEventGraph(
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
+        if (che.value) {
+            const cheCell = graph.value.getCellById(che.value)
+            controlEdgeHighlight(cheCell, true)
+            che.value = ''
+        }
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
         highlight(node?.id)
-        che.value = ''
     })
 
     // BLANK - CLICK

@@ -37,6 +37,10 @@
                                 <template #head>
                                     <ColumnSelectorHead
                                         v-model:selectedColumn="subpanel.column"
+                                        :selectedTables="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
                                     />
                                 </template>
 

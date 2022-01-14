@@ -244,7 +244,6 @@
                                                 item.qualifiedName
                                             "
                                         />
-                                        <div v-else class="w-4 ml-2"></div>
                                     </div>
                                 </div>
                             </PopoverAsset>

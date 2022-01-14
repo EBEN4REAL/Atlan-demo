@@ -259,9 +259,15 @@
             }
 
             // for initial call
-            replaceTableBody(
-                getTableInitialBody(selectedTablesQualifiedNames.value)
-            )
+            if (selectedTablesQualifiedNames.value?.length > 1) {
+                replaceTableBody(
+                    getTableInitialBody(selectedTablesQualifiedNames.value)
+                )
+            } else {
+                replaceColumnBody(
+                    getColumnInitialBody(tableSelected?.value, 'initial')
+                )
+            }
 
             const setFocus = () => {
                 if (!disabled.value) {

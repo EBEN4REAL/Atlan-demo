@@ -29,6 +29,7 @@
         inject,
         computed,
         defineComponent,
+        PropType,
         ref,
         onMounted,
         onUnmounted,
@@ -36,6 +37,7 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -50,10 +52,13 @@
                 type: Object,
                 required: true,
             },
+            selectedTables: {
+                type: Object as PropType<selectedTables[]>,
+            },
         },
 
         setup(props, { emit }) {
-            const { disabled } = toRefs(props)
+            const { disabled, selectedTables } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
@@ -64,14 +69,29 @@
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
 
             const placeholder = computed(() => {
-                let data = !isTableSelected.value
-                    ? isTableLoading.value
-                        ? 'Loading...'
-                        : `${totalTablesCount.value} tables available`
-                    : isColumnLoading.value
-                    ? 'Loading...'
-                    : `Select from ${totalColumnsCount.value} columns`
+                let data = ''
 
+                if (selectedTables.value?.length > 1) {
+                    if (!isTableSelected.value) {
+                        if (isTableLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `${totalTablesCount.value} tables available`
+                        }
+                    } else {
+                        if (isColumnLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `Select from ${totalColumnsCount.value} columns`
+                        }
+                    }
+                } else {
+                    if (isColumnLoading.value) {
+                        data = 'Loading...'
+                    } else {
+                        data = `Select from ${totalColumnsCount.value} columns`
+                    }
+                }
                 return data
             })
 

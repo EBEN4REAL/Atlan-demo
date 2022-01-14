@@ -1,5 +1,7 @@
 <template>
-    <div class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5">
+    <div
+        class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 pill-group"
+    >
         <template v-for="(item, index) in data">
             <a-popover
                 v-if="popoverTrigger"

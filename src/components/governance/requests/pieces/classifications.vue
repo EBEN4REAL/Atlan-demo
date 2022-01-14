@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col justify-start classification-request">
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
@@ -67,3 +67,10 @@
         },
     })
 </script>
+<style lang="less">
+    .classification-request {
+        button {
+            padding-left: 0px !important;
+        }
+    }
+</style>

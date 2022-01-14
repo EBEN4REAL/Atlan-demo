@@ -77,6 +77,15 @@
                     v-model:value="searchTerm"
                     class="max-w-xl shadow-none filter-request"
                     size="default"
+                    :placeholder="
+                        response.totalRecord
+                            ? `Search all ${response.totalRecord} ${
+                                  response.totalRecord > 0
+                                      ? 'requests'
+                                      : 'request'
+                              }`
+                            : 'search'
+                    "
                 >
                     <template #categoryFilter>
                         <div
@@ -90,9 +99,18 @@
                         </div>
                     </template>
                 </SearchAndFilter>
-                <div class="p-2 border rounded cursor-pointer" @click="mutate">
-                    <AtlanIcon icon="Reload" />
-                </div>
+                <a-tooltip placement="topLeft">
+                    <template #title>
+                        <span>refresh</span>
+                    </template>
+                    <div
+                        class="p-2 py-1 border rounded cursor-pointer reload-button"
+                        @click="mutate"
+                    >
+                        <!-- <img :src="logoUrl" /> -->
+                        <AtlanIcon icon="Reload2" />
+                    </div>
+                </a-tooltip>
             </div>
             <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
             <div
@@ -201,6 +219,7 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
+    import reload from '~/assets/images/icons/Reload2.svg'
 
     export default defineComponent({
         name: 'RequestList',
@@ -381,6 +400,9 @@
             const mouseEnterContainer = () => {
                 activeHover.value = ''
             }
+            const logoUrl = computed(
+                () => `${window.location.origin}/api/service/avatars/_logo_`
+            )
             return {
                 mutate,
                 pagination,
@@ -410,6 +432,9 @@
                 handleMouseEnter,
                 activeHover,
                 mouseEnterContainer,
+                response,
+                reload,
+                logoUrl,
                 // listPermission
             }
         },
@@ -417,8 +442,14 @@
 </script>
 
 <style lang="less">
-    .filter-request{
-        height: 25px!important;
+    .reload-button {
+        path {
+            fill: #3e4359;
+            stroke: #3e4359;
+        }
+    }
+    .filter-request {
+        height: 25px !important;
     }
     .drawer-filter-request {
         .ant-drawer-content-wrapper {

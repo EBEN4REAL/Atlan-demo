@@ -5,17 +5,24 @@
         :placement="'left'"
         :width="287"
         :closable="false"
+        :class="'drawer-filter-request'"
     >
-        <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
-            <div
+        <div class="relative h-full pt-8 pb-10 overflow-scroll bg-gray-50">
+            <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
                 } border border-solid order-gray-300`"
                 @click="handleClickFilter"
             >
                 <AtlanIcon icon="ChevronRight" />
+            </div> -->
+            <div
+                v-if="drawerFilter"
+                class="close-btn-sidebar button-close-drawer-request"
+                @click="handleClickFilter"
+            >
+                <AtlanIcon icon="Add" class="text-white" />
             </div>
-
             <div class="px-2 filter-container">
                 <AssetFilters
                     v-model="facets"
@@ -68,7 +75,7 @@
             <div class="flex justify-between m-4 mb-0">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    class="max-w-xl shadow-none"
+                    class="max-w-xl shadow-none filter-request"
                     size="default"
                 >
                     <template #categoryFilter>
@@ -410,6 +417,18 @@
 </script>
 
 <style lang="less">
+    .filter-request{
+        height: 25px!important;
+    }
+    .drawer-filter-request {
+        .ant-drawer-content-wrapper {
+            width: 240px !important;
+        }
+    }
+    .button-close-drawer-request {
+        left: 250px !important;
+        // right: -40px !important;
+    }
     .governance-request {
         .container-content {
             overflow: visible !important;

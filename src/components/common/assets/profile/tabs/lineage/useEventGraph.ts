@@ -223,7 +223,7 @@ export default function useEventGraph(
     }
 
     // controlPorts
-    const controlPorts = (node, columns, override = false) => {
+    const controlPorts = (node, columns, allRelations, override = false) => {
         if (node.getPorts().length === 1 || override) {
             const ports = columns.map((x) => {
                 const { portData } = createPortData(x)
@@ -240,7 +240,10 @@ export default function useEventGraph(
                 const createdPorts = node.getPorts()
                 createdPorts.shift()
                 createdPorts.forEach((port) => {
-                    setPortStyle(node, port.id, 'highlight')
+                    const exist = allRelations.find((rel) =>
+                        [rel.fromEntityId, rel.toEntityId].includes(port.id)
+                    )
+                    if (exist) setPortStyle(node, port.id, 'highlight')
                 })
             }
             if (!lineageStore.hasPortList(node.id))
@@ -299,7 +302,7 @@ export default function useEventGraph(
             if (lineageStore.hasColumnList(node.id)) {
                 const columnList = lineageStore.getNodesColumnList(node.id)
                 const override = allRelations.length ? true : false
-                controlPorts(node, columnList, override)
+                controlPorts(node, columnList, allRelations, override)
                 const rel = getValidPortRelations(allRelations)
                 createRelations(rel)
                 loaderCords.value = {}
@@ -342,7 +345,7 @@ export default function useEventGraph(
                             column.attributes?.[assetType]?.guid === guid
                     )
                     const override = allRelations.length ? true : false
-                    controlPorts(node, columns, override)
+                    controlPorts(node, columns, allRelations, override)
                     if (!lineageStore.hasColumnList(node.id))
                         lineageStore.setNodesColumnList(node.id, columns)
                     const rel = getValidPortRelations(allRelations)

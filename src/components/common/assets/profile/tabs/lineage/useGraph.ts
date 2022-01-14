@@ -163,7 +163,7 @@ export default function useGraph() {
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -9.5,
+                                y: -11,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
@@ -279,7 +279,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'rounded' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,
@@ -322,9 +322,9 @@ export default function useGraph() {
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
-            if (x.id.includes('processIdGoesHere')) return
             const cell = graph.value.getCellById(x.id)
-            cell.setVisible(visible)
+            cell.attr('line/stroke', visible ? '#c7c7c7' : '#dce0e5')
+            cell.toBack()
         })
     }
 

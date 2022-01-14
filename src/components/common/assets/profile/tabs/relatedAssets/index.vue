@@ -5,11 +5,12 @@
         class="bg-white"
         :filters="tabFilter"
         :static-use="true"
+        custom-placeholder="Search all related assets"
         emptyViewText="No related assets found"
         :enableSidebarDrawer="true"
-        aggregationTabClass="px-8"
-        searchBarClass="px-8 my-1"
-        asset-list-class="mx-8 mt-1"
+        aggregationTabClass="px-6"
+        searchBarClass="px-6 my-1"
+        asset-list-class="mx-6 mt-1"
     />
 </template>
 

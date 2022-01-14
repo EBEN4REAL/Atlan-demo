@@ -169,6 +169,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -186,6 +187,7 @@
                             tableQualifiedNamesContraint.value,
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 

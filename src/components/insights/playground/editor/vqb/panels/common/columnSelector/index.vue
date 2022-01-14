@@ -842,6 +842,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -859,6 +860,7 @@
                             .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 

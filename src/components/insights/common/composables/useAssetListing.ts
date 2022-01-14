@@ -6,13 +6,14 @@ import useIndexSearch from './useIndexSearch'
 export function useAssetListing(
     typeName?: string,
     immediate: boolean = true,
-    cacheSuffx?: string | ''
+    params: Object = {}
 ) {
     const list: Ref<assetInterface[]> = ref([])
     const { replaceBody, body, isReady, error, data } = useIndexSearch(
         {},
         '',
-        immediate
+        immediate,
+        params
     )
 
     const isLoading = computed(() => !isReady.value && !error.value)

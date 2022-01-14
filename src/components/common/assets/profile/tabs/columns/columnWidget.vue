@@ -47,7 +47,8 @@
                 class="flex-grow"
             >
                 <EmptyView
-                    empty-screen="EmptyDiscover"
+                    empty-screen="NoAssetsFound"
+                    image-class="h-44"
                     desc="No columns found"
                 ></EmptyView>
             </div>
@@ -303,6 +304,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             /** UTILS */
@@ -446,6 +448,7 @@
                             offset,
                             attributes: defaultAttributes,
                             relationAttributes,
+                            suppressLogs: true,
                         })
                         watch([urlColumnList], () => {
                             columnFromUrl.value = urlColumnList.value

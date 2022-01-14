@@ -126,9 +126,9 @@
         </div>
         <div v-else class="flex flex-col items-center">
             <EmptyScreen
-                emptyScreen="EmptyDiscover"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
                 desc="No logs found"
-                imageClass="h-32"
                 descClass="text-center text-sm"
             />
         </div>

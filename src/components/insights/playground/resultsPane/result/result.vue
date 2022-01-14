@@ -1,11 +1,22 @@
 <template>
-    <div class="h-full overflow-y-hidden rounded">
-        <div class="flex flex-col h-full rounded">
+    <div class="h-full overflow-y-hidden">
+        <div
+            class="flex flex-col h-full"
+            :style="{
+                background:
+                    activeInlineTab.playground.editor.columnList.length > 0 &&
+                    activeInlineTab.playground.editor.dataList.length > 0 &&
+                    isQueryRunning === 'success'
+                        ? '#fbfbfb'
+                        : '#ffffff',
+            }"
+        >
             <Loading v-if="isQueryRunning === 'loading'" />
 
             <!-- {{ activeInlineTab.playground.editor.columnList }} -->
-
-            <AtlanTable
+            <!-- {{ activeInlineTab.playground.editor.dataList }} -->
+            <div
+                class="flex flex-col m-2 overflow-hidden border rounded-lg border-gray-light"
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     activeInlineTab.playground.editor.dataList.length > 0 &&
@@ -13,10 +24,13 @@
                         ? true
                         : false
                 "
-                :dataList="activeInlineTab.playground.editor.dataList"
-                :columns="activeInlineTab.playground.editor.columnList"
-                :key="activeInlineTab.key"
-            />
+            >
+                <AtlanTable
+                    :dataList="activeInlineTab.playground.editor.dataList"
+                    :columns="activeInlineTab.playground.editor.columnList"
+                    :key="activeInlineTab.key"
+                />
+            </div>
 
             <div
                 v-else-if="

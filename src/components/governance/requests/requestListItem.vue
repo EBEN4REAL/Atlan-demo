@@ -1,10 +1,11 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded group gap-x-4 hover:bg-primary-light"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-solid border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary': active,
+            'border-primary border bg-primary-light': active,
+            'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"
     >
@@ -17,7 +18,11 @@
                 :entity-type="request?.entityType"
             />
             <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.requestType](request) }}
+                {{
+                    primaryText[request.requestType]
+                        ? primaryText[request.requestType](request)
+                        : ''
+                }}
             </span>
         </div>
         <div class="flex items-center col-span-3">
@@ -63,14 +68,16 @@
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
-            ></AtlanIcon>
+            />
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-center hidden w-full font-bold group-hover:flex"
+                    v-if="activeHover === request.id"
+                    class="items-center justify-center w-full font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
+                        :request="request"
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />
@@ -87,7 +94,7 @@
                         Rejected
                     </div>
                 </div>
-                <div class="flex w-1/2 gap-x-2 group-hover:hidden">
+                <div v-else class="flex w-1/2 gap-x-2">
                     <Avatar
                         :allow-upload="false"
                         :avatar-name="request.created_by_user?.username"
@@ -113,10 +120,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs, inject } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
-    import { useMagicKeys, whenever } from '@vueuse/core'
-
+    // import { useMagicKeys, whenever } from '@vueuse/core'
+    import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     import RequestActions from './requestActions.vue'
@@ -163,6 +170,11 @@
             active: {
                 type: Boolean,
                 default: () => false,
+                required: false,
+            },
+            activeHover: {
+                type: String,
+                default: () => '',
                 required: false,
             },
         },
@@ -218,9 +230,10 @@
                 primaryText,
                 requestTypeIcon,
                 state,
+                atlanLogo,
             }
         },
     })
 </script>
 
-<style></style>
+<style lang="less" scope></style>

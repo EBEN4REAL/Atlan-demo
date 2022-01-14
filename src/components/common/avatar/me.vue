@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown :trigger="['click']">
+    <a-dropdown>
         <div v-if="$slots?.dropdownIcon" class="footer">
             <slot name="dropdownIcon" />
         </div>

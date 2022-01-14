@@ -165,6 +165,7 @@
                 required: true,
             },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             /** DATA */
             const { graphData, selectedPod } = toRefs(props)
@@ -226,7 +227,13 @@
                 )
 
                 // useComputeGraph
-                const { nodes, reset, getNodeParent } = useComputeGraph(
+                const {
+                    nodes,
+                    reset,
+                    getNodeParent,
+                    isCollapsedNode,
+                    getNode,
+                } = useComputeGraph(
                     graph,
                     graphLayout,
                     graphData,
@@ -269,16 +276,17 @@
                         options: Model.SetOptions
                     }) => {
                         if (args.node.id) {
-                            console.log(getNodeParent(args.node.id))
-
-                            expandedNodes.value.push(
-                                getNodeParent(args.node.id)
-                            )
-                            initialize(true)
+                            if (isCollapsedNode(args.node.id)) {
+                                expandedNodes.value.push(
+                                    getNodeParent(args.node.id)
+                                )
+                                initialize(true)
+                            } else {
+                                console.log(getNode(args.node.id))
+                                emit('select', getNode(args.node.id))
+                            }
+                            // console.log(getNodeParent(args.node.id))
                         }
-
-                        // alert('selected')
-                        // code here
                     }
                 )
             }

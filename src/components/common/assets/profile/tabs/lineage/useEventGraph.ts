@@ -181,7 +181,7 @@ export default function useEventGraph(
     // setPortStyle
     const setPortStyle = (node, portId, mode = 'select') => {
         if (!node || !portId) return
-        const fill = mode === 'select' ? '#e5ecff' : '#ffffff'
+        const fill = mode === 'select' ? '#F4F6FD' : '#ffffff'
 
         node.setPortProp(portId, 'attrs/portBody', {
             fill,

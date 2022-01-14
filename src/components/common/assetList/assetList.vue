@@ -8,7 +8,7 @@
                     :autofocus="true"
                     :allow-clear="true"
                     :class="searchBarClass"
-                    size="large"
+                    :size="searchBarSize"
                     :placeholder="placeholder"
                     @change="handleSearchChange"
                 >
@@ -48,7 +48,8 @@
             </div>
             <div v-if="list.length === 0 && !isValidating" class="h-full">
                 <EmptyView
-                    empty-screen="EmptyDiscover"
+                    empty-screen="NoAssetsFound"
+                    image-class="h-44"
                     :desc="
                         queryText
                             ? 'We didn\'t find anything that matches your search criteria'
@@ -222,8 +223,13 @@
             suppressLogs: {
                 type: Boolean,
                 default: true,
-                required: false
-            }
+                required: false,
+            },
+            searchBarSize: {
+                type: String,
+                default: 'large',
+                required: false,
+            },
         },
         emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
@@ -256,8 +262,13 @@
                 ...customMetadataProjections,
             ])
 
-            const { filters, attributes, selectable, selectedItems, suppressLogs } =
-                toRefs(props)
+            const {
+                filters,
+                attributes,
+                selectable,
+                selectedItems,
+                suppressLogs,
+            } = toRefs(props)
 
             const {
                 list,
@@ -280,7 +291,7 @@
                 attributes: attributes.value.length
                     ? attributes
                     : defaultAttributes,
-                suppressLogs: suppressLogs?.value
+                suppressLogs: suppressLogs?.value,
             })
 
             const fetchList = (skip = 0) => {

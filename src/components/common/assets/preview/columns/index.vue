@@ -46,8 +46,9 @@
         </div>
         <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
             <EmptyView
-                empty-screen="EmptyDiscover"
-                desc="No assets found"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
+                desc="No columns found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->
@@ -179,6 +180,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const handleListUpdate = (asset: any) => {

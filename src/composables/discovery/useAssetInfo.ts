@@ -50,22 +50,22 @@ export default function useAssetInfo() {
         attributes(asset)?.dashboard
 
     const reportCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.reportCount)
+        getCountString(attributes(asset)?.reportCount, true)
 
     const dashboardCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.dashboardCount)
+        getCountString(attributes(asset)?.dashboardCount, true)
 
     const datasetCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.datasetCount)
+        getCountString(attributes(asset)?.datasetCount, true)
 
     const dataflowCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.dataflowCount)
+        getCountString(attributes(asset)?.dataflowCount, true)
 
     const tileCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.tileCount)
+        getCountString(attributes(asset)?.tileCount, true)
 
     const pageCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.pageCount)
+        getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
@@ -93,6 +93,16 @@ export default function useAssetInfo() {
         )
         if (connection) {
             return connection.attributes.name
+        }
+        return ''
+    }
+
+    const connectionGuid = (asset: assetInterface) => {
+        const connection = getConnection(
+            asset.attributes.connectionQualifiedName
+        )
+        if (connection) {
+            return connection?.guid
         }
         return ''
     }
@@ -291,7 +301,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}&runQuery=true`
+            return `/insights?id=${asset.guid}`
         }
         return `/assets/${asset?.guid}`
     }
@@ -323,7 +333,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            queryPath = `/insights?id=${asset.guid}&runQuery=true`
+            queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
             queryPath = `/insights?col_id=${asset.guid}`
         } else {
@@ -409,22 +419,22 @@ export default function useAssetInfo() {
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).rowCount)
+            : getCountString(attributes(asset).rowCount, true)
 
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset)?.columnCount)
+            : getCountString(attributes(asset)?.columnCount, true)
 
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.termsCount?.toLocaleString() || 'N/A'
-            : getCountString(asset?.termsCount)
+            : getCountString(asset?.termsCount, true)
 
     const categoryCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.categoryCount?.toLocaleString() || 'N/A'
-            : getCountString(asset?.categoryCount)
+            : getCountString(asset?.categoryCount, true)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -1092,5 +1102,6 @@ export default function useAssetInfo() {
         dataflowCount,
         tileCount,
         pageCount,
+        connectionGuid,
     }
 }

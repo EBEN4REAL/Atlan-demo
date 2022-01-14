@@ -24,6 +24,7 @@ import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
+import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -401,6 +402,7 @@ export default {
     QueryDiscovery,
     QueryDraft,
     CollapseControl,
+    NoAssetsFound,
     ChevronLeft,
     CheckCircled,
     DisableUser,

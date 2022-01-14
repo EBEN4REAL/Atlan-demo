@@ -15,12 +15,15 @@ export default function useCreateGraph(
     Graph.registerConnector(
         'beiz',
         (s, t) => {
-            const control = 65
-            const v1 = { x: s.x + control, y: s.y }
-            const v2 = { x: t.x - control, y: t.y }
+            const control = 100
+            const offset = 10
+            const v1 = { x: s.x + control + offset, y: s.y }
+            const v2 = { x: t.x - control - offset, y: t.y }
 
             return `M ${s.x} ${s.y}
-             C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x} ${t.y}
+                L ${s.x + offset} ${s.y}
+                C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x - offset} ${t.y}
+                L ${t.x} ${t.y}
             `
         },
         true
@@ -90,7 +93,7 @@ export default function useCreateGraph(
         },
         ranksepFunc() {
             // horizontal spacing btw nodes
-            return 160
+            return 190
         },
     })
 

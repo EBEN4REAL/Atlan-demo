@@ -32,7 +32,8 @@
         <template v-else-if="!personaList.length">
             <EmptyView
                 :desc="searchText ? `No persona found for '${searchText}'` : ''"
-                empty-screen="EmptyDiscover"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
             />
         </template>
         <div v-else class="flex-grow px-2 overflow-y-auto">

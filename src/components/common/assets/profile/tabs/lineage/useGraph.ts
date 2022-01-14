@@ -80,12 +80,14 @@ export default function useGraph() {
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
-                                    <div class="node-text group-hover:underline">
+                                    <div class="node-text">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-16">${status} ${iconCaretDown}</span>
+                                            <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${iconCaretDown}</span>
                                         </span>
-                                        <div class="truncate">${displayText}</div>
-                                        
+                                        <div class="flex items-center gap-x-1">
+                                            <span class="node-title truncate group-hover:underline">${displayText}</span>
+                                            <span class="flex-none mr-1">${status}</span>
+                                        </div>
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -131,12 +133,13 @@ export default function useGraph() {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 69,
+                                height: 60,
                                 strokeWidth: 1,
-                                stroke: '#e6e6eb',
-                                fill: '#ffffff',
+                                stroke: 'none',
+                                fill: 'none',
                                 event: 'port:click',
-                                y: -34,
+                                y: -30,
+                                x: 1,
                             },
                         },
                     },
@@ -287,8 +290,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 8,
-                        height: 8,
+                        width: 0.1,
+                        height: 0.1,
                     },
                 },
             },

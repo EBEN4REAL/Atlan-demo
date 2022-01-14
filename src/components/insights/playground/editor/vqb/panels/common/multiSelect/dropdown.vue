@@ -1,11 +1,117 @@
 <template>
     <div
         tabindex="-1"
-        :class="['  bg-white rounded custom-shadow  dropdown-container']"
+        :class="[
+            '  bg-white rounded custom-shadow flex flex-col  dropdown-container flex-1',
+        ]"
+        style="min-height: 0"
     >
-        <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
+        <div
+            tabindex="-1"
+            :class="['dropdown-container flex   w-full']"
+            style="min-height: 0"
+        >
+            <!-- For single table select -->
+
+            <div
+                class="flex-1 w-full dropdown-container"
+                style="min-height: 0"
+                v-if="
+                    columnDropdownOption.length !== 0 &&
+                    !isColumnLoading &&
+                    selectedTablesQualifiedNames.length < 2
+                "
+            >
+                <template
+                    v-for="(item, index) in columnDropdownOption"
+                    :key="item.value + index"
+                >
+                    <PopoverAsset
+                        :item="item.item"
+                        placement="right"
+                        :mouseEnterDelay="0.85"
+                    >
+                        <template #button>
+                            <AtlanBtn
+                                class="flex-none px-0"
+                                size="sm"
+                                color="minimal"
+                                padding="compact"
+                                style="height: fit-content"
+                                @click="(e) => actionClick(e, item.item)"
+                            >
+                                <span
+                                    class="cursor-pointer text-primary whitespace-nowrap"
+                                >
+                                    Show Preview</span
+                                >
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="text-primary"
+                                />
+                            </AtlanBtn>
+                        </template>
+                        <div
+                            class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                            @click="(e) => onSelectColumn(item, e)"
+                            :class="
+                                selectedColumn?.columnQualifiedName ===
+                                item.qualifiedName
+                                    ? 'bg-primary-light'
+                                    : 'bg-white'
+                            "
+                        >
+                            <div
+                                class="flex items-center parent-ellipsis-container"
+                            >
+                                <component
+                                    :is="getDataTypeImage(item.type)"
+                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                                ></component>
+                                <span
+                                    class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                >
+                                    {{ item.label }}
+                                </span>
+                            </div>
+                            <div class="relative flex items-center h-full">
+                                <ColumnKeys
+                                    :isPrimary="item.isPrimary"
+                                    :isForeign="item.isForeign"
+                                    :isPartition="item.isPartition"
+                                />
+
+                                <AtlanIcon
+                                    icon="Check"
+                                    class="ml-2 text-primary"
+                                    v-if="
+                                        selectedColumn?.columnQualifiedName ===
+                                        item.qualifiedName
+                                    "
+                                />
+                                <div v-else class="w-4 ml-2"></div>
+                            </div>
+                        </div>
+                    </PopoverAsset>
+                </template>
+            </div>
+
+            <span
+                class="w-full mt-4 text-sm text-center text-gray-400"
+                v-if="
+                    columnDropdownOption.length == 0 &&
+                    !isColumnLoading &&
+                    selectedTablesQualifiedNames.length < 2
+                "
+            >
+                No Columns found!
+            </span>
+
             <!--  Multiple table column selection-->
-            <div class="w-full dropdown-container" v-if="!dirtyIsTableSelected">
+            <div
+                class="flex flex-col w-full dropdown-container"
+                v-if="!dirtyIsTableSelected"
+            >
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                 >
@@ -22,7 +128,8 @@
                 </div>
 
                 <div
-                    class="w-full h-full overflow-auto dropdown-container"
+                    class="flex-1 w-full overflow-auto dropdown-container"
+                    style="min-height: 0"
                     tabindex="-1"
                     :class="[
                         tableDropdownOption.length === 0
@@ -284,6 +391,7 @@
         Ref,
         toRefs,
         toRaw,
+        PropType,
         ref,
     } from 'vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
@@ -299,9 +407,10 @@
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { pluralizeString } from '~/utils/string'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
-        name: 'Sub panel',
+        name: 'Multi Select',
         components: { PopoverAsset, Loader, CustomInput, ColumnKeys },
         props: {
             disabled: {
@@ -309,27 +418,27 @@
                 required: false,
                 default: false,
             },
-            panelIndex: {
-                type: Number,
-                required: true,
-            },
-            rowIndex: {
-                type: Number,
-                required: true,
-            },
-            subIndex: {
-                type: Number,
-                required: true,
-            },
             selectedColumn: {
                 type: Object,
                 required: true,
                 default: () => {},
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
+            },
+            tableQualfiedName: {
+                type: String,
+                required: true,
+            },
         },
+        emits: ['change'],
 
         setup(props, { emit }) {
-            const { panelIndex, subIndex, rowIndex, disabled } = toRefs(props)
+            const {
+                disabled,
+                tableQualfiedName,
+                selectedTablesQualifiedNames,
+            } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
@@ -360,9 +469,11 @@
             ) as Function
             const replaceTableBody = inject('replaceTableBody') as Function
             const replaceColumnBody = inject('replaceColumnBody') as Function
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const { allowedTablesInJoinSelector } = useJoin()
-            const { openAssetInSidebar, getTableNameFromTableQualifiedName } =
-                useUtils()
+            const { openAssetInSidebar } = useUtils()
             const { updateVQB } = useVQB()
             const { getDataTypeImage } = useColumn()
             const {
@@ -376,23 +487,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as ComputedRef<string>
-            const inlineTabs = inject('inlineTabs') as ComputedRef<
-                activeInlineTabInterface[]
-            >
-            const tableQualifiedNamesContraint: Ref<{
-                allowed: string[]
-                notAllowed: string[]
-            }> = ref(
-                allowedTablesInJoinSelector(
-                    panelIndex.value,
-                    rowIndex.value,
-                    subIndex.value,
-                    activeInlineTab.value
-                )
-            )
 
             const placeholder = computed(() => {
                 let data = ''
@@ -454,7 +548,8 @@
 
             const onSelectTable = (item, event) => {
                 tableQueryText.value = ''
-                replaceColumnBody(getColumnInitialBody(item))
+
+                replaceColumnBody(getColumnInitialBody(item, 'not_initial'))
                 dirtyIsTableSelected.value = true
                 dirtyTableSelected.value = item
 
@@ -481,13 +576,11 @@
                     label: item.label,
                     type: item.type,
                     value: item.label,
-                    columnQualifiedName: item.qualifiedName,
-                    tableName: getTableNameFromTableQualifiedName(
-                        item.qualifiedName
-                    ),
+                    qualifiedName: item.qualifiedName,
+                    tableName: item.item.attributes.tableName,
                 }
 
-                emit('change', item.qualifiedName)
+                emit('change', item)
                 activeInlineTab.value.playground.vqb.selectedTables =
                     JSON.parse(
                         JSON.stringify(
@@ -529,53 +622,87 @@
             )
 
             watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    tableQualifiedNamesContraint.value =
-                        allowedTablesInJoinSelector(
-                            panelIndex.value,
-                            rowIndex.value,
-                            subIndex.value,
-                            activeInlineTab.value
-                        )
-
-                    if (selectedColumn.value?.label && tableSelected?.value) {
-                    } else {
-                        replaceTableBody(getTableInitialBody())
-                    }
-                }
-            )
-
-            watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
-                    if (newIsAreaFocused) {
-                        dirtyTableSelected.value = toRaw(tableSelected.value)
-                        dirtyIsTableSelected.value = toRaw(
-                            isTableSelected.value
-                        )
-                    } else {
-                        dirtyTableSelected.value = null
-                        dirtyIsTableSelected.value = false
+                    if (selectedTablesQualifiedNames.value.length > 1) {
+                        if (newIsAreaFocused) {
+                            dirtyTableSelected.value = toRaw(
+                                tableSelected.value
+                            )
+                            dirtyIsTableSelected.value = toRaw(
+                                isTableSelected.value
+                            )
+                        } else {
+                            dirtyTableSelected.value = null
+                            dirtyIsTableSelected.value = false
+                        }
                     }
                 },
                 { immediate: true }
             )
 
             watch(tableQueryText, () => {
-                if (!dirtyIsTableSelected?.value) {
-                    replaceTableBody(getTableInitialBody())
+                if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (!dirtyIsTableSelected?.value) {
+                        replaceTableBody(getTableInitialBody())
+                    }
                 }
             })
             watch(columnQueryText, () => {
-                if (dirtyIsTableSelected?.value) {
-                    replaceColumnBody(
-                        getColumnInitialBody(dirtyTableSelected.value)
+                if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (dirtyIsTableSelected?.value) {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                dirtyTableSelected.value,
+                                'not_initial'
+                            )
+                        )
+                    }
+                } else {
+                    getColumnInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables,
+                        'initial'
                     )
                 }
             })
 
+            watch(
+                () => activeInlineTab.value.playground.vqb.selectedTables,
+                () => {
+                    if (selectedTablesQualifiedNames.value.length > 1) {
+                        if (
+                            selectedColumn.value?.label &&
+                            tableSelected?.value
+                        ) {
+                            // debugger
+                            replaceColumnBody(
+                                getColumnInitialBody(
+                                    tableSelected?.value,
+                                    'not_initial'
+                                )
+                            )
+                        } else {
+                            replaceTableBody(
+                                getTableInitialBody(
+                                    activeInlineTab.value.playground.vqb
+                                        .selectedTables
+                                )
+                            )
+                        }
+                    } else {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables,
+                                'initial'
+                            )
+                        )
+                    }
+                }
+            )
+
             return {
+                tableQualfiedName,
                 getDataTypeImage,
                 actionClick,
                 onSelectColumn,
@@ -602,6 +729,7 @@
                 getTableInitialBody,
                 dirtyTableSelected,
                 dirtyIsTableSelected,
+                selectedTablesQualifiedNames,
             }
         },
     })

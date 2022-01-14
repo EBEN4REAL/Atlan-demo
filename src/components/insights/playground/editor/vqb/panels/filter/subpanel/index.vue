@@ -24,20 +24,45 @@
                         <div class="item-1">
                             <ColumnSelector
                                 class="flex-1"
-                                v-model:selectedItem="subpanel.column"
-                                :tableQualfiedName="
+                                v-model:selectedColumn="subpanel.column"
+                                :disabled="readOnly"
+                                :tableQualifiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
-                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
                                 "
-                                @change="
-                                    (val) =>
-                                        handleColumnChange(val, index, subpanel)
-                                "
-                            />
+                            >
+                                <template #head>
+                                    <ColumnSelectorHead
+                                        v-model:selectedColumn="subpanel.column"
+                                    />
+                                </template>
+
+                                <template #body>
+                                    <ColumnSelectorDropdown
+                                        v-model:selectedColumn="subpanel.column"
+                                        :disabled="readOnly"
+                                        :tableQualifiedName="
+                                            columnSubpanels[0]
+                                                ?.tableQualfiedName
+                                        "
+                                        :selectedTablesQualifiedNames="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
+                                        @change="
+                                            (val) =>
+                                                handleColumnChange(
+                                                    val,
+                                                    index,
+                                                    subpanel
+                                                )
+                                        "
+                                    />
+                                </template>
+                            </ColumnSelector>
                         </div>
 
                         <div class="item-2">
@@ -147,7 +172,9 @@
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
-    import ColumnSelector from '../../common/columnSelector/index.vue'
+    import ColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/index.vue'
+    import ColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/dropdown.vue'
+    import ColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/head.vue'
     import Input from '../filterComponents/input.vue'
     import MultiInput from '../filterComponents/multiInput.vue'
     import FilterType from '../filterComponents/filterType.vue'
@@ -169,6 +196,8 @@
             FilterType,
             RangeInput,
             Input,
+            ColumnSelectorDropdown,
+            ColumnSelectorHead,
         },
         props: {
             expand: {
@@ -282,16 +311,6 @@
                         })
                     }
                 )
-                if (variables?.length > 0) {
-                    variables.forEach((variable) => {
-                        changeVariableTypeFromVQB(
-                            activeInlineTab,
-                            tabs,
-                            variable,
-                            val?.type?.toLowerCase() ?? 'string'
-                        )
-                    })
-                }
             }
 
             const handleAddPanel = () => {

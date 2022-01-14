@@ -8,7 +8,7 @@
                 <div class="flex items-center w-full mb-3 pr-9">
                     <ColumnSelector
                         v-if="selectedTables.length < 2"
-                        class="flex-1 h-9"
+                        class="flex-1"
                         v-model:selectedItems="subpanel.columns"
                         :showSelectAll="false"
                         v-model:selectedColumnsData="subpanel.columnsData"

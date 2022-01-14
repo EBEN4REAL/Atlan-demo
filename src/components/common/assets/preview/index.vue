@@ -21,14 +21,7 @@
 
                 <Tooltip
                     :tooltip-text="`${title(selectedAsset)}`"
-                    :route-to="
-                        getProfilePath(
-                            selectedAsset,
-                            !hasCollectionReadPermission &&
-                                !hasCollectionWritePermission &&
-                                !isCollectionCreatedByCurrentUser
-                        )
-                    "
+                    :route-to="getProfilePath(selectedAsset)"
                     classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
                     @click="() => $emit('closeDrawer')"
                 />
@@ -381,24 +374,10 @@
                 emit('closeDrawer')
                 switch (key) {
                     case 'open':
-                        router.push(
-                            getProfilePath(
-                                selectedAsset.value,
-                                !hasCollectionReadPermission?.value &&
-                                    !hasCollectionWritePermission?.value &&
-                                    !isCollectionCreatedByCurrentUser?.value
-                            )
-                        )
+                        router.push(getProfilePath(selectedAsset.value))
                         break
                     case 'query':
-                        router.push(
-                            getAssetQueryPath(
-                                selectedAsset.value,
-                                !hasCollectionReadPermission?.value &&
-                                    !hasCollectionWritePermission?.value &&
-                                    !isCollectionCreatedByCurrentUser?.value
-                            )
-                        )
+                        router.push(getAssetQueryPath(selectedAsset.value))
                         break
                     default:
                         break

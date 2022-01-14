@@ -288,7 +288,7 @@ export default function useAssetInfo() {
         })
     }
 
-    const getProfilePath = (asset, access) => {
+    const getProfilePath = (asset) => {
         if (assetType(asset) === 'Column') {
             const tableGuid = asset?.attributes?.table?.guid
             if (tableGuid) {
@@ -301,11 +301,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            if (!access) {
-                return `/insights?id=${asset.guid}&runQuery=true`
-            } else {
-                return `/insights?id=${asset.guid}`
-            }
+            return `/insights?id=${asset.guid}`
         }
         return `/assets/${asset?.guid}`
     }
@@ -314,7 +310,7 @@ export default function useAssetInfo() {
         return `/assets/${asset.guid}/lineage`
     }
 
-    const getAssetQueryPath = (asset, access) => {
+    const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
         const databaseQualifiedName = `${
             attributes(asset).connectionQualifiedName
@@ -337,11 +333,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            if (!access) {
-                queryPath = `/insights?id=${asset.guid}&runQuery=true`
-            } else {
-                queryPath = `/insights?id=${asset.guid}`
-            }
+            queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
             queryPath = `/insights?col_id=${asset.guid}`
         } else {

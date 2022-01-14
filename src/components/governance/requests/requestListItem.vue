@@ -241,8 +241,8 @@
 <style lang="less" scoped>
     .request-card {
         &.active-request {
-            outline-style: solid !important;
-            outline-color: rgb(82, 119, 215) !important;
+            // outline-style: solid !important;
+            // outline-color: rgb(82, 119, 215) !important;
         }
         outline-offset: -1px !important;
     }

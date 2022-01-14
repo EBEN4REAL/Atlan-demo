@@ -4,7 +4,7 @@
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary border bg-primary-light': active,
+            'active-request outline-1 bg-primary-light': active,
             'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"
@@ -238,4 +238,12 @@
     })
 </script>
 
-<style lang="less" scope></style>
+<style lang="less" scoped>
+    .request-card {
+        &.active-request {
+            outline-style: solid !important;
+            outline-color: rgb(82, 119, 215) !important;
+        }
+        outline-offset: -1px !important;
+    }
+</style>

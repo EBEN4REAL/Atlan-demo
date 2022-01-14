@@ -41,6 +41,7 @@ export default function useCreateGraph(
             zoomAtMousePosition: true,
             maxScale: 1.2,
             enabled: true,
+            factor: 1.1,
             global: true,
             modifiers: ['ctrl', 'meta'],
         },
@@ -69,6 +70,7 @@ export default function useCreateGraph(
         nodesep: 60,
         align: 'DR',
         rankDir: 'TB',
+        controlPoints: false,
     })
 
     return {

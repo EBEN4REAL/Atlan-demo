@@ -408,7 +408,6 @@ export default function useComputeGraph(
     })
     graph.value.fromJSON(model.value)
 
-    console.log('workflow', workflowData.value.metadata?.name)
     /* Center Base */
     const cell = graph.value.getCellById(workflowData.value.metadata?.name)
     if (cell) graph.value.centerCell(cell)
@@ -420,5 +419,13 @@ export default function useComputeGraph(
     graph.value.zoom(-0.4)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
-    return { model, edges, nodes, reset, getNodeParent }
+    return {
+        model,
+        edges,
+        nodes,
+        reset,
+        getNodeParent,
+        isCollapsedNode,
+        getNode,
+    }
 }

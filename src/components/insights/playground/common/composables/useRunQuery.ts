@@ -61,7 +61,7 @@ export default function useProject() {
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
-        // console.log('columns: ', columns)
+        console.log('table columns: ', columns)
         // console.log('table rows: ', rows)
 
         rows.map((result: any) => {
@@ -72,14 +72,14 @@ export default function useProject() {
                     ...tmp,
                     ...{
                         // key: rowindex,
-                        [columns[rowindex].dataIndex]: row
+                        [columns[rowindex].dataIndex]: {data: row, data_type: columns[rowindex].data_type}
                         // key: rowindex,
                     },
                 }
             })
             dataList.value.push(tmp)
         })
-        // console.log('rows: ', dataList)
+        console.log('table rows: ', dataList)
     }
 
     const queryRun = (

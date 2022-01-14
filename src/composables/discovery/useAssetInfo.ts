@@ -301,7 +301,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}&runQuery=true`
+            return `/insights?id=${asset.guid}`
         }
         return `/assets/${asset?.guid}`
     }
@@ -333,7 +333,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            queryPath = `/insights?id=${asset.guid}&runQuery=true`
+            queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
             queryPath = `/insights?col_id=${asset.guid}`
         } else {

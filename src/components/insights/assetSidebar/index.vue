@@ -5,9 +5,7 @@
     >
         <AssetPreview
             :selected-asset="
-                Object.keys(assetInfo)?.length
-                    ? { ...assetInfo, collectionName: collectionName }
-                    : { ...selectedAsset, collectionName: collectionName }
+                Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
             page="insights"
         ></AssetPreview>

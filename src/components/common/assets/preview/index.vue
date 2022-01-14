@@ -176,6 +176,12 @@
                             if (el) tabChildRef[index] = el
                         }
                     "
+                    :collectionData="{
+                        collectionInfo,
+                        hasCollectionReadPermission,
+                        hasCollectionWritePermission,
+                        isCollectionCreatedByCurrentUser,
+                    }"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -207,6 +213,7 @@
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -277,6 +284,13 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
+
+            const {
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
+            } = useCollectionInfo(selectedAsset)
 
             const {
                 title,
@@ -448,6 +462,12 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
+
+                //for collection access
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

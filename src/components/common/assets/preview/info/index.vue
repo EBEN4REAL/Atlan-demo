@@ -245,9 +245,9 @@
             <a-tooltip placement="left" color="#363636">
                 <template #title>
                     {{
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                             ? `You don't have access to this collection`
                             : `View collection`
                     }}
@@ -257,17 +257,17 @@
                     block
                     class="flex items-center justify-between px-2 shadow-none"
                     :class="
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                             ? 'disabledButton'
                             : ''
                     "
                     @click="handleCollectionClick"
                     :disabled="
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                     "
                 >
                     <div class="flex items-center">
@@ -276,18 +276,15 @@
                             class="mr-1 mb-0.5"
                         />
                         <span>
-                            {{
-                                selectedAsset?.collectionName ||
-                                collectionInfo?.displayText
-                            }}
+                            {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>
                     <AtlanIcon
                         icon="Lock"
                         v-if="
-                            !hasCollectionReadPermission &&
-                            !hasCollectionWritePermission &&
-                            !isCollectionCreatedByCurrentUser
+                            !collectionData?.hasCollectionReadPermission &&
+                            !collectionData?.hasCollectionWritePermission &&
+                            !collectionData?.isCollectionCreatedByCurrentUser
                         "
                     />
                     <AtlanIcon v-else icon="External" />
@@ -540,8 +537,6 @@
     import Categories from '@/common/input/categories/categories.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
-    import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -582,19 +577,16 @@
                 required: false,
                 default: false,
             },
+            collectionData: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
-
-            // get collection info in case of selected query
-            const {
-                collectionInfo,
-                hasCollectionReadPermission,
-                hasCollectionWritePermission,
-                isCollectionCreatedByCurrentUser,
-            } = useCollectionInfo(selectedAsset)
+            const { collectionData } = toRefs(props)
 
             const { isDrawer } = toRefs(props)
 
@@ -627,7 +619,6 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
-                getAssetQueryPath,
             } = useAssetInfo()
 
             const {
@@ -680,7 +671,7 @@
                     `http://` +
                     window.location.host +
                     `/insights?col_id=` +
-                    collectionInfo?.value?.guid
+                    collectionData?.value?.collectionInfo?.guid
 
                 window.open(URL, '_blank')?.focus()
             }
@@ -739,11 +730,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
-                collectionInfo,
                 handleCollectionClick,
-                hasCollectionReadPermission,
-                hasCollectionWritePermission,
-                isCollectionCreatedByCurrentUser,
             }
         },
     })

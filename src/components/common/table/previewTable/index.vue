@@ -5,21 +5,25 @@
                 ref="tableRef"
                 :data-test-id="'output-table'"
                 :class="$style.tableStyle"
+                class="rounded-lg"
             >
                 <thead id="headerArea" class="clusterize-content">
                     <tr>
                         <th class="truncate">#</th>
                         <th v-for="(col, index) in columns" :key="index">
-                            <div class="relative flex items-center">
+                            <div
+                                class="relative flex items-center"
+                                :class="alignment(getDataType(col.data_type))"
+                            >
                                 <component
                                     :is="images[getDataType(col.data_type)]"
                                     :data-tooltip="col.data_type"
                                     class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
-                                    style="min-width: 1rem"
+                                    style="min-width: 1rem; color: #919191"
                                 ></component>
 
                                 <!-- <Tooltip :tooltip-text="`${col.title}`" /> -->
-                                <span class="truncate">{{ col.title }}</span>
+                                <span class="truncate">{{ col.title }} </span>
                             </div>
                         </th>
                     </tr>
@@ -44,9 +48,14 @@
                             :data-index="index"
                             class="bg-white"
                         >
-                            <div class="flex items-center justify-between">
+                            <div
+                                class="flex items-center"
+                                :class="
+                                    alignment(getDataType(rowData.data_type))
+                                "
+                            >
                                 <div class="truncate">
-                                    {{ rowData }}
+                                    {{ rowData?.data }}
                                 </div>
                                 <AtlanIcon
                                     icon="Expand"
@@ -277,6 +286,29 @@
                 }
             })
 
+            const alignment = (data_type) => {
+                let align = 'justify-start'
+
+                switch (data_type) {
+                    case 'Number':
+                    case 'DateTime':
+                    case 'Geography':
+                    case 'Decimal':
+                    case 'Boolean':
+                        align = 'justify-end'
+                        break
+
+                    case 'Text':
+                    case 'Array':
+                    case 'Object':
+                    case 'Variant':
+                        align = 'justify-start'
+                        break
+                }
+                console.log('align: ', align)
+                return align
+            }
+
             return {
                 tableRef,
                 images,
@@ -287,6 +319,7 @@
                 modalVisible,
                 handleModalClose,
                 showExpand,
+                alignment,
             }
         },
     })
@@ -294,19 +327,20 @@
 
 <style lang="less" module>
     .tableStyle {
-        @apply rounded overflow-x-auto !important;
+        @apply overflow-x-auto !important;
+
         td,
         th {
             max-width: 200px;
             min-width: 200px;
             text-align: left !important;
-            height: 32px !important;
+            height: 28px !important;
             padding: 0px 16px !important;
-            font-size: 12px !important;
-            @apply border border-gray-light  !important;
+            font-size: 14px !important;
+            @apply border border-gray-light text-gray-700;
         }
+
         tbody {
-            font-family: Hack !important;
             font-weight: 400;
         }
 
@@ -314,32 +348,48 @@
             position: sticky;
             top: 0;
             border-top: 0;
+            height: 36px !important;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700 bg-gray-100 border-r border-gray-light;
-            font-weight: 400 !important;
+            @apply border-r border-gray-light bg-white text-gray-700;
+
+            font-weight: 700 !important;
         }
         td:first-child {
             max-width: 100px !important;
-            min-width: 30px !important;
-            width: 30px;
+            min-width: 42px !important;
+            width: 42px;
             left: 0;
             border-left: 0;
             position: sticky;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-500 bg-gray-100;
+            color: #a0a4b6;
+            @apply bg-white border;
+            // box-shadow: inset -1px 0 #f3f3f3;
+            // border-top-left-radius: 8px !important;
+            // border-bottom-left-radius: 8px !important;
         }
 
         th:first-child {
             max-width: 100px !important;
-            min-width: 30px !important;
-            width: 30px;
+            min-width: 42px !important;
+            width: 42px;
             border-left: 0;
             left: 0;
             z-index: 10;
-            @apply text-gray-500;
+            color: #a0a4b6;
+            font-weight: 400 !important;
+            @apply bg-white border-b-0;
+
+            // border-top-left-radius: 8px;
         }
+        // th {
+        // box-shadow: inset 0 -1px 0 #f3f3f3;
+        // }
+        @apply rounded-none !important;
+
+        // @apply border-8 border-gray-300 !important;
     }
     .variant_modal {
         :global(.ant-modal-body) {

@@ -1,5 +1,5 @@
 export const useTableExport = (columnList, rows) => {
-    let filename = 'default.csv'
+    let filename = 'atlan_analysis.csv'
 
     // list all the headers in array
     let headers = columnList.map((el) => el.title)

@@ -109,8 +109,10 @@
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectItem(item, e)"
                                     :class="
-                                        selectedItem?.qualifiedName ===
-                                        item.columnQualifiedName
+                                        selectedItem?.qualifiedName ??
+                                        selectedItem?.columnQualifiedName ===
+                                            item.columnQualifiedName ??
+                                        item?.qualifiedName
                                             ? 'bg-primary-light'
                                             : 'bg-white'
                                     "
@@ -1033,17 +1035,17 @@
                 },
                 { immediate: true }
             )
-            watch(isAreaFocused, (newAreadFocused) => {
-                if (!newAreadFocused) {
-                    isTableSelected.value = false
-                    tableSelected.value = null
-                    replaceBody(
-                        getTableInitialBody(
-                            activeInlineTab.value.playground.vqb.selectedTables
-                        )
-                    )
-                }
-            })
+            // watch(isAreaFocused, (newAreadFocused) => {
+            //     if (!newAreadFocused) {
+            //         isTableSelected.value = false
+            //         tableSelected.value = null
+            //         replaceBody(
+            //             getTableInitialBody(
+            //                 activeInlineTab.value.playground.vqb.selectedTables
+            //             )
+            //         )
+            //     }
+            // })
 
             return {
                 disabled,

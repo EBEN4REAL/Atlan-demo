@@ -2,13 +2,13 @@ export const useTableExport = (columnList, rows) => {
     let filename = 'default.csv'
 
     // list all the headers in array
-    let headers = columnList.map(el=>el.title)
+    let headers = columnList.map((el) => el.title)
 
     const formatHeaders = (data) => {
         var headerValue = '#,'
         for (let j = 0; j < data.length; j++) {
             let value = data[j] === null ? '' : data[j].toString()
-            
+
             let result = value.replace(/"/g, '""')
             if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"'
             if (j > 0) headerValue += ','
@@ -18,15 +18,17 @@ export const useTableExport = (columnList, rows) => {
     }
 
     const formatColumns = (data, index) => {
-        var rowValue = '' + (index+1)
+        // debugger
+        var rowValue = '' + (index + 1)
 
         // check for each key in the row object
         for (let key in data) {
-            var value = data[key] === null ? '' : data[key].toString()
-            
+            const cell = data[key].data
+            var value = cell === null ? '' : cell.toString()
+
             // check for Date data
-            if (data[key] instanceof Date) {
-                value = data[key].toLocaleString()
+            if (cell instanceof Date) {
+                value = cell.toLocaleString()
             }
             var result = value.replace(/"/g, '""')
             if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"'

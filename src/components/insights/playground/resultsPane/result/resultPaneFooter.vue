@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex h-8 py-1 text-xs bg-white border-t border-b  bottom_footer"
+        class="relative flex justify-between h-8 py-1 text-xs bg-white border-t border-b bottom_footer"
         style="max-height: 8%"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
@@ -36,12 +36,34 @@
             </span>
             <!-- -------------------------------------------- -->
         </div>
+        <a-tooltip
+            color="#363636"
+            :mouseEnterDelay="
+                lastTooltipPresence !== undefined
+                    ? ADJACENT_TOOLTIP_DELAY
+                    : MOUSE_ENTER_DELAY
+            "
+        >
+            <template #title>Export data</template>
+            <div
+                class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                @click="
+                    useTableExport(
+                        activeInlineTab.playground.editor.columnList,
+                        activeInlineTab.playground.editor.dataList
+                    )
+                "
+            >
+                <AtlanIcon icon="Download" class="w-4 h-4" />
+            </div>
+        </a-tooltip>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
 
     export default defineComponent({
         components: {},
@@ -64,6 +86,7 @@
                 queryExecutionTime,
                 activeInlineTab,
                 isQueryRunning,
+                useTableExport,
             }
         },
     })

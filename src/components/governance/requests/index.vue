@@ -58,9 +58,8 @@
             </div>
         </div>
     </a-drawer>
-    <DefaultLayout title="Manage Requests" class="governance-request">
-        <template #header> </template>
-        <div class="relative border rounded">
+    <DefaultLayout title="Manage Requests" class="px-6 governance-request">
+        <div class="relative mt-3 border rounded-md">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
             <div
                 class="wrapper-scoll right"
@@ -69,7 +68,7 @@
             <div class="flex justify-between m-4 mb-0">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    class="max-w-xl"
+                    class="max-w-xl shadow-none"
                     size="default"
                 >
                     <template #categoryFilter>

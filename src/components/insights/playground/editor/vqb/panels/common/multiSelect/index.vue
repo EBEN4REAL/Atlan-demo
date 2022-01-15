@@ -265,7 +265,10 @@
                 )
             } else {
                 replaceColumnBody(
-                    getColumnInitialBody(tableSelected?.value, 'initial')
+                    getColumnInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables,
+                        'initial'
+                    )
                 )
             }
 

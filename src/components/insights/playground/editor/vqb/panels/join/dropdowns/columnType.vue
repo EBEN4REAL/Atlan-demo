@@ -553,6 +553,11 @@
                         dirtyIsTableSelected.value = toRaw(
                             isTableSelected.value
                         )
+                        if (tableSelected.value) {
+                            replaceColumnBody(
+                                getColumnInitialBody(tableSelected.value)
+                            )
+                        }
                     } else {
                         dirtyTableSelected.value = null
                         dirtyIsTableSelected.value = false

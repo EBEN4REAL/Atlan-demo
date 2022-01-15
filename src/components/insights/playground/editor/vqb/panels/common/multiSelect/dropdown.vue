@@ -15,88 +15,105 @@
             style="min-height: 0"
         >
             <!-- For single table select -->
-
-            <div
-                class="flex-1 w-full overflow-auto dropdown-container"
-                style="min-height: 0"
-                v-if="
-                    columnDropdownOption.length !== 0 &&
-                    !isColumnLoading &&
-                    selectedTablesQualifiedNames.length < 2
-                "
-            >
-                <template
-                    v-for="(item, index) in columnDropdownOption"
-                    :key="item.qualifiedName"
+            <div class="flex flex-col">
+                <div
+                    class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                    v-if="selectedTablesQualifiedNames.length < 2"
                 >
-                    <PopoverAsset
-                        :item="item.item"
-                        placement="right"
-                        :mouseEnterDelay="0.85"
+                    <div
+                        class="flex items-center justify-between w-full"
+                        style="min-width: 100%"
                     >
-                        <template #button>
-                            <AtlanBtn
-                                class="flex-none px-0"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                                style="height: fit-content"
-                                @click="(e) => actionClick(e, item.item)"
-                            >
-                                <span
-                                    class="cursor-pointer text-primary whitespace-nowrap"
-                                >
-                                    Show Preview</span
-                                >
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="text-primary"
-                                />
-                            </AtlanBtn>
-                        </template>
-                        <div
-                            class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                            @click="(e) => onSelectColumn(item, e)"
-                            :class="
-                                selectedColumn?.qualifiedName ===
-                                item.qualifiedName
-                                    ? 'bg-primary-light'
-                                    : 'bg-white'
-                            "
-                        >
-                            <div
-                                class="flex items-center parent-ellipsis-container"
-                            >
-                                <component
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
-                                ></component>
-                                <span
-                                    class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
-                                >
-                                    {{ item.label }}
-                                </span>
-                            </div>
-                            <div class="relative flex items-center h-full">
-                                <ColumnKeys
-                                    :isPrimary="item.isPrimary"
-                                    :isForeign="item.isForeign"
-                                    :isPartition="item.isPartition"
-                                />
+                        <CustomInput
+                            v-model:queryText="columnQueryText"
+                            :placeholder="placeholder"
+                            :autofocus="true"
+                        />
+                    </div>
+                </div>
 
-                                <AtlanIcon
-                                    icon="Check"
-                                    class="ml-2 text-primary"
-                                    v-if="
-                                        selectedColumn?.qualifiedName ===
-                                        item.qualifiedName
-                                    "
-                                />
-                                <div v-else class="w-4 ml-2"></div>
+                <div
+                    class="flex-1 w-full overflow-auto dropdown-container"
+                    style="min-height: 0"
+                    v-if="
+                        columnDropdownOption.length !== 0 &&
+                        !isColumnLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
+                >
+                    <template
+                        v-for="(item, index) in columnDropdownOption"
+                        :key="item.qualifiedName"
+                    >
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="right"
+                            :mouseEnterDelay="0.85"
+                        >
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @click="(e) => actionClick(e, item.item)"
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(e) => onSelectColumn(item, e)"
+                                :class="
+                                    selectedColumn?.qualifiedName ===
+                                    item.qualifiedName
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <div
+                                    class="flex items-center parent-ellipsis-container"
+                                >
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div class="relative flex items-center h-full">
+                                    <ColumnKeys
+                                        :isPrimary="item.isPrimary"
+                                        :isForeign="item.isForeign"
+                                        :isPartition="item.isPartition"
+                                    />
+
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary"
+                                        v-if="
+                                            selectedColumn?.qualifiedName ===
+                                            item.qualifiedName
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
                             </div>
-                        </div>
-                    </PopoverAsset>
-                </template>
+                        </PopoverAsset>
+                    </template>
+                </div>
             </div>
 
             <span
@@ -383,7 +400,7 @@
                 </div>
             </div>
             <Loader
-                v-if="isColumnLoading && dirtyIsTableSelected"
+                v-if="isColumnLoading"
                 style="min-height: 100px !important"
             ></Loader>
             <Loader
@@ -503,29 +520,37 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                if (dirtyIsTableSelected.value) {
+                if (selectedTablesQualifiedNames.value?.length > 1) {
+                    if (dirtyIsTableSelected.value) {
+                        if (isColumnLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `Search from ${
+                                totalColumnsCount.value
+                            } ${pluralizeString(
+                                'column',
+                                totalColumnsCount.value,
+                                false
+                            )}`
+                        }
+                    } else {
+                        if (isTableLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `Search from ${
+                                totalTablesCount.value
+                            } ${pluralizeString(
+                                'table',
+                                totalTablesCount.value,
+                                false
+                            )}`
+                        }
+                    }
+                } else {
                     if (isColumnLoading.value) {
                         data = 'Loading...'
                     } else {
-                        data = `Search from ${
-                            totalColumnsCount.value
-                        } ${pluralizeString(
-                            'column',
-                            totalColumnsCount.value,
-                            false
-                        )}`
-                    }
-                } else {
-                    if (isTableLoading.value) {
-                        data = 'Loading...'
-                    } else {
-                        data = `Search from ${
-                            totalTablesCount.value
-                        } ${pluralizeString(
-                            'table',
-                            totalTablesCount.value,
-                            false
-                        )}`
+                        data = `Search from ${totalColumnsCount.value} columns`
                     }
                 }
 
@@ -619,16 +644,14 @@
                 (newContext) => {
                     if (selectedTablesQualifiedNames.value.length > 1) {
                         if (
-                            !dirtyTableSelected.value?.attributes?.qualifiedName?.includes(
+                            !tableSelected.value?.attributes?.qualifiedName?.includes(
                                 newContext.attributeValue
                             )
                         ) {
-                            debugger
                             dirtyIsTableSelected.value = false
                             dirtyTableSelected.value = null
                             isTableSelected.value = false
                             tableSelected.value = null
-                            replaceTableBody(getTableInitialBody())
                         }
                     }
                 },
@@ -648,10 +671,29 @@
                             dirtyIsTableSelected.value = toRaw(
                                 isTableSelected.value
                             )
+
+                            if (!tableSelected.value) {
+                                replaceTableBody(getTableInitialBody())
+                            } else {
+                                replaceColumnBody(
+                                    getColumnInitialBody(
+                                        tableSelected.value,
+                                        'not_initial'
+                                    )
+                                )
+                            }
                         } else {
                             dirtyTableSelected.value = null
                             dirtyIsTableSelected.value = false
                         }
+                    } else {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables,
+                                'initial'
+                            )
+                        )
                     }
                 },
                 { immediate: true }
@@ -683,41 +725,6 @@
                     )
                 }
             })
-
-            watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    if (selectedTablesQualifiedNames.value.length > 1) {
-                        if (
-                            selectedColumn.value?.label &&
-                            tableSelected?.value
-                        ) {
-                            // debugger
-                            replaceColumnBody(
-                                getColumnInitialBody(
-                                    tableSelected?.value,
-                                    'not_initial'
-                                )
-                            )
-                        } else {
-                            replaceTableBody(
-                                getTableInitialBody(
-                                    activeInlineTab.value.playground.vqb
-                                        .selectedTables
-                                )
-                            )
-                        }
-                    } else {
-                        replaceColumnBody(
-                            getColumnInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables,
-                                'initial'
-                            )
-                        )
-                    }
-                }
-            )
 
             return {
                 tableQualfiedName,

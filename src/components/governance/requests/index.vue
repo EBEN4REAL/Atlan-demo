@@ -148,14 +148,26 @@
                     </template>
                 </VirtualList>
                 <div class="h-3" @mouseenter="mouseEnterContainer" />
-                <div class="flex justify-end p-4 bg-white border-t">
-                    <Pagination
-                        v-model:offset="pagination.offset"
-                        :total-pages="pagination.totalPages"
-                        :loading="listLoading"
-                        :page-size="pagination.limit"
-                        @mutate="mutate"
-                    />
+                <div
+                    class="flex items-center justify-between p-4 bg-white border-t"
+                >
+                    <div class="text-gray-500">
+                        <strong
+                            >{{ startCountPagination }}-{{
+                                endCountPagination
+                            }}</strong
+                        >
+                        of {{ pagination.totalData }} requests
+                    </div>
+                    <div class="flex">
+                        <Pagination
+                            v-model:offset="pagination.offset"
+                            :total-pages="pagination.totalPages"
+                            :loading="listLoading"
+                            :page-size="pagination.limit"
+                            @mutate="mutate"
+                        />
+                    </div>
                 </div>
             </div>
             <div
@@ -258,6 +270,7 @@
                 limit: 20,
                 offset: 0,
                 totalPages: 1,
+                totalData: 0,
             })
             const {
                 response,
@@ -275,6 +288,7 @@
                     ) || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
+                pagination.value.totalData = response.value.filterRecord
             })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
@@ -398,6 +412,14 @@
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
             )
+            const startCountPagination = computed(() =>
+                pagination.value.offset === 0 ? 1 : pagination.value.offset + 1
+            )
+            const endCountPagination = computed(() =>
+                pagination.value.offset === 0
+                    ? requestList.value.length
+                    : pagination.value.offset + requestList.value.length
+            )
             return {
                 mutate,
                 pagination,
@@ -430,6 +452,8 @@
                 response,
                 reload,
                 logoUrl,
+                startCountPagination,
+                endCountPagination,
                 // listPermission
             }
         },

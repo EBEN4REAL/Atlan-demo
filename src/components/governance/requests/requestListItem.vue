@@ -83,20 +83,54 @@
                     />
                     <div
                         v-else-if="request.status === 'approved'"
-                        class="font-light text-success"
+                        class="flex items-center font-light text-success"
                     >
                         Approved by
+                        <div class="flex items-center mx-2 truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+                            <UserPiece
+                                :user="nameUpdater"
+                                :is-pill="false"
+                                :default-name="nameUpdater"
+                            />
+                        </div>
                         <DatePiece
                             label="Created At"
                             :date="request.approvedBy[0].timestamp"
                             class="font-light text-gray-500"
                         />
                     </div>
+
                     <div
                         v-else-if="request.status === 'rejected'"
-                        class="text-error"
+                        class="flex items-center font-light text-error"
                     >
-                        Rejected
+                        Rejected by
+                        <div class="flex items-center mx-2">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+                            <UserPiece
+                                :user="nameUpdater"
+                                :is-pill="false"
+                                :default-name="nameUpdater"
+                            />
+                        </div>
+                        <DatePiece
+                            label="Created At"
+                            :date="request.rejectedBy[0].timestamp"
+                            class="font-light text-gray-500"
+                        />
                     </div>
                 </div>
                 <div v-else class="flex w-1/2 gap-x-2">
@@ -127,7 +161,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs, onMounted } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        reactive,
+        toRefs,
+        onMounted,
+        watch,
+        ref,
+        computed,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
@@ -188,7 +231,7 @@
         emits: ['select', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
-
+            const updatedBy = ref({})
             const state = reactive({
                 isLoading: false,
                 message: '',
@@ -232,18 +275,39 @@
                 state.isLoading = false
             }
             onMounted(() => {
-                if (request.value.status === 'approved') {
+                if (
+                    request.value.status === 'approved' ||
+                    request.value.status === 'rejected'
+                ) {
+                    const userId =
+                        request.value.status === 'approved'
+                            ? `${request.value.approvedBy[0].userId}`
+                            : `${request.value.rejectedBy[0].userId}`
                     const payloadFilter = {
-                        $and: [{ id: `${request.value.approvedBy[0].userId}` }],
+                        $and: [
+                            {
+                                id: userId,
+                            },
+                        ],
                     }
-                    const { data } = Users.List({
-                        limit: 1,
-                        offset: 0,
-                        filter: JSON.stringify(payloadFilter),
+                    const { data } = Users.List(
+                        {
+                            limit: 1,
+                            offset: 0,
+                            filter: JSON.stringify(payloadFilter),
+                        },
+                        { cacheKey: userId }
+                    )
+                    watch(data, () => {
+                        updatedBy.value = data.value.records[0]
                     })
                 }
             })
-
+            const nameUpdater = computed(() =>
+                updatedBy.value?.firstName
+                    ? `${updatedBy.value?.firstName} ${updatedBy.value?.lastName}`
+                    : ''
+            )
             return {
                 handleApproval,
                 handleRejection,
@@ -251,6 +315,7 @@
                 requestTypeIcon,
                 state,
                 atlanLogo,
+                nameUpdater,
             }
         },
     })

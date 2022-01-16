@@ -78,9 +78,9 @@
                     class="max-w-lg shadow-none filter-request"
                     size="default"
                     :placeholder="
-                        response.totalRecord
-                            ? `Search all ${response.totalRecord} ${
-                                  response.totalRecord > 0
+                        pagination.totalData
+                            ? `Search all ${pagination.totalData} ${
+                                  pagination.totalData > 0
                                       ? 'requests'
                                       : 'request'
                               }`
@@ -119,7 +119,7 @@
             >
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <template v-else-if="requestList.length">
+            <div v-show="!listLoading && requestList.length">
                 <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
@@ -147,18 +147,33 @@
                         />
                     </template>
                 </VirtualList>
-                <div @mouseenter="mouseEnterContainer" />
-                <div class="flex justify-end p-4 bg-white border-t">
-                    <Pagination
-                        v-model:offset="pagination.offset"
-                        :total-pages="pagination.totalPages"
-                        :loading="listLoading"
-                        :page-size="pagination.limit"
-                        @mutate="mutate"
-                    />
+                <div class="h-3" @mouseenter="mouseEnterContainer" />
+                <div
+                    class="flex items-center justify-between p-4 bg-white border-t"
+                >
+                    <div class="text-gray-500">
+                        <strong
+                            >{{ startCountPagination }}-{{
+                                endCountPagination
+                            }}</strong
+                        >
+                        of {{ pagination.totalData }} requests
+                    </div>
+                    <div class="flex">
+                        <Pagination
+                            v-model:offset="pagination.offset"
+                            :total-pages="pagination.totalPages"
+                            :loading="listLoading"
+                            :page-size="pagination.limit"
+                            @mutate="mutate"
+                        />
+                    </div>
                 </div>
-            </template>
-            <div v-else class="flex items-center justify-center h-full mb-12">
+            </div>
+            <div
+                v-if="!listLoading && !requestList.length"
+                class="flex items-center justify-center h-full mb-12"
+            >
                 <div
                     v-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center mt-12"
@@ -186,15 +201,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        watch,
-        Ref,
-        reactive,
-        provide,
-    } from 'vue'
+    import { defineComponent, computed, ref, watch } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -263,6 +270,7 @@
                 limit: 20,
                 offset: 0,
                 totalPages: 1,
+                totalData: 0,
             })
             const {
                 response,
@@ -280,6 +288,7 @@
                     ) || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
+                pagination.value.totalData = response.value.filterRecord
             })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
@@ -362,7 +371,7 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
-                    ? Object.values(facetsValue.statusRequest)
+                    ? [facetsValue.statusRequest]
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
@@ -403,6 +412,14 @@
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
             )
+            const startCountPagination = computed(() =>
+                pagination.value.offset === 0 ? 1 : pagination.value.offset + 1
+            )
+            const endCountPagination = computed(() =>
+                pagination.value.offset === 0
+                    ? requestList.value.length
+                    : pagination.value.offset + requestList.value.length
+            )
             return {
                 mutate,
                 pagination,
@@ -435,6 +452,8 @@
                 response,
                 reload,
                 logoUrl,
+                startCountPagination,
+                endCountPagination,
                 // listPermission
             }
         },
@@ -514,8 +533,8 @@
     }
 
     .devider-filter {
-        top: -8px;
-        height: 35px;
+        top: -5px;
+        height: 31px;
         right: 0;
     }
 </style>

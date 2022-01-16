@@ -110,7 +110,6 @@
             )
             const { upload, isReady, uploadKey, refreshImage } = uploadAvatar()
             const handleUploadAvatar = async (uploaded) => {
-                console.log('handle Upload', uploaded)
                 upload(uploaded.file)
                 uploadStarted.value = true
                 updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`

@@ -114,8 +114,12 @@
                 channelValue.value = ''
             }
 
-            const removeChannel = (i) => {
-                channels.value.splice(i, 1)
+            const removeChannel = (i, name) => {
+                let index = i
+                if (name) {
+                    index = channels.value.indexOf(name)
+                }
+                channels.value.splice(index, 1)
                 isEdit.value = true
             }
 
@@ -190,6 +194,20 @@
                         duration: 2,
                     })
                 } else {
+                    if (updateData.value.failedChannels) {
+                        const { failedChannels } = updateData.value
+                        message.error({
+                            content: `Unable to add some channels: "${failedChannels.join(
+                                ', '
+                            )}"`,
+                            key: 'failedChannels',
+                            duration: 4,
+                        })
+
+                        // failedChannels.forEach((c) => {
+                        //     removeChannel(null, c)
+                        // })
+                    }
                     message.success({
                         content: 'Updated channel(s) successfully.',
                         key: 'addChannel',

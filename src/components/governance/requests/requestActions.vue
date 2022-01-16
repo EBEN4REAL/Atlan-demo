@@ -4,6 +4,7 @@
             color="secondary"
             padding="compact"
             size="sm"
+            class="btn-actions"
             @click.stop="handleClickReject"
         >
             <span class="text-red-500"> Reject </span>
@@ -71,6 +72,7 @@
             </a-dropdown>
         </AtlanButton>
         <AtlanButton
+            class="btn-actions"
             color="secondary"
             padding="compact"
             size="sm"
@@ -165,5 +167,8 @@
         height: 60%;
         background: #e6e6eb;
         margin-left: 10px;
+    }
+    .btn-actions {
+        padding-right: 8px !important;
     }
 </style>

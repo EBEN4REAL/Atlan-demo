@@ -533,8 +533,8 @@
     }
 
     .devider-filter {
-        top: -8px;
-        height: 35px;
+        top: -5px;
+        height: 31px;
         right: 0;
     }
 </style>

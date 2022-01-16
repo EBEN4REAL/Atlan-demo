@@ -119,7 +119,7 @@
             >
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <template v-else-if="requestList.length">
+            <div v-show="!listLoading && requestList.length">
                 <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
@@ -147,7 +147,7 @@
                         />
                     </template>
                 </VirtualList>
-                <div @mouseenter="mouseEnterContainer" />
+                <div class="h-3" @mouseenter="mouseEnterContainer" />
                 <div class="flex justify-end p-4 bg-white border-t">
                     <Pagination
                         v-model:offset="pagination.offset"
@@ -157,8 +157,11 @@
                         @mutate="mutate"
                     />
                 </div>
-            </template>
-            <div v-else class="flex items-center justify-center h-full mb-12">
+            </div>
+            <div
+                v-if="!listLoading && !requestList.length"
+                class="flex items-center justify-center h-full mb-12"
+            >
                 <div
                     v-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center mt-12"
@@ -186,15 +189,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        watch,
-        Ref,
-        reactive,
-        provide,
-    } from 'vue'
+    import { defineComponent, computed, ref, watch } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -362,7 +357,7 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
-                    ? Object.values(facetsValue.statusRequest)
+                    ? [facetsValue.statusRequest]
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {

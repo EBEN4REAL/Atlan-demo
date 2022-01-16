@@ -3,35 +3,44 @@
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
-        <PillGroup
+        <Popover
             v-if="
                 localClassification?.length &&
                 localClassification[0]?.displayName
             "
-            :data="localClassification"
+            :classification="localClassification[0]"
             label-key="displayName"
             popover-trigger="hover"
             read-only
             :is-plain="true"
         >
-            <template #pillPrefix>
+            <!-- <template #pillPrefix>
                 <ClassificationIcon :color="classificationColor" />
             </template>
             <template #popover="{ item }">
                 <ClassificationInfoCard :classification="item" class="w-32" />
-            </template>
-        </PillGroup>
+            </template> -->
+
+            <ClassificationPill
+                :name="localClassification[0].name"
+                :display-name="localClassification[0]?.displayName"
+                :allow-delete="false"
+                :color="localClassification[0].options?.color"
+                :no-hover="true"
+            />
+        </Popover>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, PropType } from 'vue'
-
+    import Popover from '@/common/popover/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
         props: {
@@ -41,7 +50,13 @@
             },
             typeName: { type: String, default: () => '' },
         },
-        components: { PillGroup, ClassificationInfoCard, ClassificationIcon },
+        components: {
+            PillGroup,
+            ClassificationInfoCard,
+            ClassificationIcon,
+            Popover,
+            ClassificationPill,
+        },
         setup(props) {
             const { data, typeName } = toRefs(props)
             const { classificationList } = useTypedefData()
@@ -71,6 +86,15 @@
     .classification-request {
         button {
             padding-left: 0px !important;
+        }
+    }
+    .classification-pill {
+        padding-left: 0px !important;
+        background: transparent !important;
+        border: none !important;
+        &:hover {
+            background: transparent !important;
+            @apply text-gray-700 !important;
         }
     }
 </style>

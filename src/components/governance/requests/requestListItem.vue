@@ -94,15 +94,13 @@
                                 :avatar-shape="'circle'"
                                 class="mr-2"
                             />
-                            <UserPiece
-                                :user="nameUpdater"
-                                :is-pill="false"
-                                :default-name="nameUpdater"
-                            />
+
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
                         </div>
                         <DatePiece
                             label="Created At"
                             :date="request.approvedBy[0].timestamp"
+                            :no-popover="true"
                             class="font-light text-gray-500"
                         />
                     </div>
@@ -120,16 +118,14 @@
                                 :avatar-shape="'circle'"
                                 class="mr-2"
                             />
-                            <UserPiece
-                                :user="nameUpdater"
-                                :is-pill="false"
-                                :default-name="nameUpdater"
-                            />
+
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
                         </div>
                         <DatePiece
                             label="Created At"
                             :date="request.rejectedBy[0].timestamp"
                             class="font-light text-gray-500"
+                            :no-popover="true"
                         />
                     </div>
                 </div>

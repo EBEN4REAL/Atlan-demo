@@ -78,9 +78,9 @@
                     class="max-w-lg shadow-none filter-request"
                     size="default"
                     :placeholder="
-                        response.totalRecord
-                            ? `Search all ${response.totalRecord} ${
-                                  response.totalRecord > 0
+                        pagination.totalData
+                            ? `Search all ${pagination.totalData} ${
+                                  pagination.totalData > 0
                                       ? 'requests'
                                       : 'request'
                               }`

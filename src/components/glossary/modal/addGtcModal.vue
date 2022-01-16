@@ -58,7 +58,7 @@
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item
-                                    v-for="item in List"
+                                    v-for="item in ListForSidebar"
                                     :key="item.id"
                                     @click="handleStatusChange(item)"
                                 >
@@ -78,7 +78,7 @@
                                 class="w-4 h-4 ml-1"
                             ></AtlanIcon>
                             <StatusBadge
-                                :status-id="currentStatus"
+                                :status-id="entity.attributes.certificateStatus"
                                 :show-chip-style-status="false"
                                 :show-no-status="true"
                                 :show-label="true"
@@ -114,14 +114,18 @@
                     : 'justify-end'
             "
         >
-            <div
-                v-if="entityType !== 'AtlasGlossary'"
-                class="flex items-center space-x-2"
-            >
-                <a-switch size="small" v-model:checked="isCreateMore" />
-                <p class="p-0 m-0">Create more</p>
+            <div class="flex items-center spaxe-x-4">
+                <div
+                    v-if="entityType !== 'AtlasGlossary'"
+                    class="flex items-center space-x-2"
+                >
+                    <a-switch size="small" v-model:checked="isCreateMore" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex items-center ml-2">
+                    <AddOwners @saveOwners="handleOwnersChange" />
+                </div>
             </div>
-
             <a-button
                 type="primary"
                 @click="handleSave"
@@ -151,7 +155,7 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { List } from '~/constant/status'
+    import { ListForSidebar } from '~/constant/status'
 
     import updateAsset from '~/composables/discovery/updateAsset'
 
@@ -159,7 +163,7 @@
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
-
+    import AddOwners from '@/glossary/modal/addOwners.vue'
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
@@ -169,6 +173,7 @@
             GlossaryPopoverSelect,
             GTCSelect,
             StatusBadge,
+            AddOwners,
         },
         props: {
             entityType: {
@@ -228,14 +233,15 @@
 
             const { getGlossaryByQF } = useGlossaryData()
             const visible = ref(false)
-            const isCreateMore = ref<boolean>(false)
-            const currentStatus: Ref<string | undefined> = ref('is_null')
+            const isCreateMore = ref<boolean>()
             const entity = reactive({
                 attributes: {
                     userDescription: '',
                     name: '',
                     qualifiedName: '',
-                    certificateStatus: currentStatus.value,
+                    certificateStatus: 'DRAFT',
+                    ownersUsers: [],
+                    ownerGroups: [],
                 },
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
@@ -372,10 +378,6 @@
                     useAddEvent('gtc', eventCategory, 'created', properties)
                     resetInput()
                     message.success(`${typeNameTitle.value} created`)
-                    // isCreateMore
-                    // localEntityType: "AtlasGlossaryCategory", "AtlasGlossaryTerm", "AtlasGlossary"
-                    // resetInput()
-
                     if (guidCreatedMaps.value?.length > 0) {
                         guid.value = guidCreatedMaps.value[0]
                     }
@@ -384,10 +386,14 @@
             })
 
             const handleStatusChange = (status) => {
-                currentStatus.value = status.id
-                console.log(currentStatus.value)
+                entity.attributes.certificateStatus = status.id
             }
-
+            const handleOwnersChange = (selectedValue) => {
+                console.log(selectedValue)
+                entity.attributes.ownerUsers = selectedValue?.value?.ownerUsers
+                entity.attributes.ownerGroups =
+                    selectedValue?.value?.ownerGroups
+            }
             whenever(error, () => {
                 if (error.value) {
                     if (error.value.response?.status === 409) {
@@ -444,9 +450,9 @@
                 categoryName,
                 localEntityType,
                 handleCancel,
-                List,
-                currentStatus,
+                ListForSidebar,
                 handleStatusChange,
+                handleOwnersChange,
             }
         },
     })

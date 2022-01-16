@@ -76,7 +76,7 @@
                         if (isTableLoading.value) {
                             data = 'Loading...'
                         } else {
-                            data = `${totalTablesCount.value} tables available`
+                            data = `Select from ${totalTablesCount.value} tables`
                         }
                     } else {
                         if (isColumnLoading.value) {

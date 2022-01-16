@@ -519,7 +519,6 @@
                         dirtyTableSelected.value = null
                         isTableSelected.value = false
                         tableSelected.value = null
-                        replaceTableBody(getTableInitialBody())
                     }
                 },
                 {
@@ -528,27 +527,17 @@
             )
 
             watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    tableQualifiedNamesContraint.value =
-                        allowedTablesInJoinSelector(
-                            panelIndex.value,
-                            rowIndex.value,
-                            subIndex.value,
-                            activeInlineTab.value
-                        )
-
-                    if (selectedColumn.value?.label && tableSelected?.value) {
-                    } else {
-                        replaceTableBody(getTableInitialBody())
-                    }
-                }
-            )
-
-            watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
                     if (newIsAreaFocused) {
+                        tableQualifiedNamesContraint.value =
+                            allowedTablesInJoinSelector(
+                                panelIndex.value,
+                                rowIndex.value,
+                                subIndex.value,
+                                activeInlineTab.value
+                            )
+
                         dirtyTableSelected.value = toRaw(tableSelected.value)
                         dirtyIsTableSelected.value = toRaw(
                             isTableSelected.value
@@ -557,6 +546,8 @@
                             replaceColumnBody(
                                 getColumnInitialBody(tableSelected.value)
                             )
+                        } else {
+                            replaceTableBody(getTableInitialBody())
                         }
                     } else {
                         dirtyTableSelected.value = null

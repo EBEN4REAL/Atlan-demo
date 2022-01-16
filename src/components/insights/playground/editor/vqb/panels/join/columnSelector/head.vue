@@ -28,8 +28,11 @@
                     class="mt-0.5 text-xs text-gray-500 truncate"
                     style="max-width: 90%"
                 >
-                    <span v-if="selectedColumn?.tableName" class="truncate">
-                        {{ selectedColumn?.tableName }}
+                    <span
+                        v-if="selectedColumn?.columnQualifiedName"
+                        class="truncate"
+                    >
+                        {{ tableName }}
                     </span>
                     <span v-else>
                         {{ placeholder }}
@@ -61,6 +64,7 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
 
     export default defineComponent({
@@ -99,6 +103,7 @@
             const { disabled, subIndex } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
+            const { getTableName } = useUtils()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
@@ -116,12 +121,22 @@
                 let data = !isTableSelected.value
                     ? isTableLoading.value
                         ? 'Loading...'
-                        : `${totalTablesCount.value} tables available`
+                        : `Select from ${totalTablesCount.value} tables`
                     : isColumnLoading.value
                     ? 'Loading...'
                     : `Select from ${totalColumnsCount.value} columns`
 
                 return data
+            })
+
+            const tableName = computed(() => {
+                let t =
+                    getTableName(selectedColumn.value?.columnQualifiedName) ??
+                    '-'
+                if (t?.length >= 2) {
+                    t = t.slice(1, t?.length - 1)
+                }
+                return t
             })
 
             // const getTableInitialBody = () => {
@@ -142,6 +157,7 @@
             // }
 
             return {
+                tableName,
                 isColumnLoading,
                 isTableLoading,
                 subIndex,

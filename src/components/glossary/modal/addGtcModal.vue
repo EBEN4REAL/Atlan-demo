@@ -12,6 +12,7 @@
         :footer="null"
     >
         <div class="px-5 py-3">
+            <!-- header starts -->
             <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center">
                     <div
@@ -48,10 +49,47 @@
                         {{ categoryName }}
                     </div>
                 </div>
-                <div class="cursor-pointer" @click="handleCancel">
-                    <atlan-icon icon="Cross" class="h-5 text-gray-500" />
+                <div class="text-xs">
+                    <a-dropdown
+                        placement="bottomLeft"
+                        :trigger="['click']"
+                        @click.stop="() => {}"
+                    >
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="item in List"
+                                    :key="item.id"
+                                    @click="handleStatusChange(item)"
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <component
+                                            :is="item.icon"
+                                            class="w-auto h-4 ml-1 mr-2 pushtop"
+                                        />
+                                        {{ item.label }}
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                        <div class="flex flex-row-reverse" style="width: 140px">
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="w-4 h-4 ml-1"
+                            ></AtlanIcon>
+                            <StatusBadge
+                                :status-id="currentStatus"
+                                :show-chip-style-status="false"
+                                :show-no-status="true"
+                                :show-label="true"
+                                :is-tree="false"
+                                class="p-0 cursor-pointer"
+                            ></StatusBadge>
+                        </div>
+                    </a-dropdown>
                 </div>
             </div>
+            <!-- header ends here  -->
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
@@ -110,29 +148,14 @@
         reactive,
     } from 'vue'
 
-    import StatusBadge from '@common/badge/status/index.vue'
-    // import AddGtcModalOwners from './addGtcModalOwners.vue'
-    // import Categories from '@/glossary/common/categories.vue'
-
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
-    import whoami from '~/composables/user/whoami'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
     import { useMagicKeys, whenever } from '@vueuse/core'
-
-    import { List } from '~/constant/status'
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
-    import { useVModels, whenever } from '@vueuse/core'
-    import updateAsset from '~/composables/discovery/updateAsset'
-    import { generateUUID } from '~/utils/helper/generator'
     import { message } from 'ant-design-vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { List } from '~/constant/status'
 
-    import { mutate } from 'swrv'
+    import updateAsset from '~/composables/discovery/updateAsset'
+
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
-    import useGlossary from '~/composables/glossary2/useGlossary'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
@@ -145,8 +168,7 @@
         components: {
             GlossaryPopoverSelect,
             GTCSelect,
-            // AddGtcModalOwners,
-            // Categories,
+            StatusBadge,
         },
         props: {
             entityType: {
@@ -207,12 +229,13 @@
             const { getGlossaryByQF } = useGlossaryData()
             const visible = ref(false)
             const isCreateMore = ref<boolean>(false)
-
+            const currentStatus: Ref<string | undefined> = ref('is_null')
             const entity = reactive({
                 attributes: {
                     userDescription: '',
                     name: '',
                     qualifiedName: '',
+                    certificateStatus: currentStatus.value,
                 },
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
@@ -360,6 +383,11 @@
                 }
             })
 
+            const handleStatusChange = (status) => {
+                currentStatus.value = status.id
+                console.log(currentStatus.value)
+            }
+
             whenever(error, () => {
                 if (error.value) {
                     if (error.value.response?.status === 409) {
@@ -416,6 +444,9 @@
                 categoryName,
                 localEntityType,
                 handleCancel,
+                List,
+                currentStatus,
+                handleStatusChange,
             }
         },
     })

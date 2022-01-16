@@ -17,9 +17,7 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    v-if="
-                        !!intStore.hasConfiguredTenantLevelIntegration('slack')
-                    "
+                    v-if="intStore.integrationStatus['slack'].tenant"
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"

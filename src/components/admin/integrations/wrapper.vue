@@ -7,53 +7,56 @@
     </div>
     <main v-else-if="isReady" class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
-        <template v-for="integration in allIntegrations" :key="integration.id">
+        <template
+            v-for="integration in allIntegrationsTypes"
+            :key="integration.id"
+        >
             <IntegrationCardWrapper
-                v-if="isIntegrationConfigured(integration.name)"
-                :integration-data="integration"
+                v-if="store.integrationStatus[integration.name].tenant"
+                :integration-type-object="integration"
             />
-            <AddIntegrationCard v-else :integration="integration" />
+            <AddIntegrationCardWrapper
+                v-else
+                :integration-type-object="integration"
+            />
         </template>
     </main>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue'
-import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-import AddIntegrationCard from './addIntegrationCard.vue'
-import IntegrationCardWrapper from './integrationCardWrapper.vue'
-import integrationStore from '~/store/integrations/index'
-// import { useAuthStore } from '~/store/auth'
-import ErrorView from '@/common/error/index.vue'
+    import { computed, defineComponent, watch } from 'vue'
+    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+    import IntegrationCardWrapper from './integrationCardWrapper.vue'
+    import AddIntegrationCardWrapper from './addCardWrapper.vue'
+    import integrationStore from '~/store/integrations/index'
+    import ErrorView from '@/common/error/index.vue'
 
-export default defineComponent({
-    name: 'IntegrationsWrapper',
-    components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
-    setup() {
-        const store = integrationStore()
+    export default defineComponent({
+        name: 'IntegrationsWrapper',
+        components: {
+            IntegrationCardWrapper,
+            ErrorView,
+            AddIntegrationCardWrapper,
+        },
+        setup() {
+            const store = integrationStore()
 
-        const {
-            data: allIntegrations,
-            isLoading,
-            error,
-            isReady,
-        } = getIntegrationTypes()
+            const {
+                data: allIntegrationsTypes,
+                isLoading,
+                error,
+                isReady,
+            } = getIntegrationTypes()
 
-        const isIntegrationConfigured = (alias): boolean => {
-            const isTenantLevelIntegrationConfigured =
-                store.hasConfiguredTenantLevelIntegration(alias)
-            return isTenantLevelIntegrationConfigured
-        }
-
-        return {
-            isIntegrationConfigured,
-            allIntegrations,
-            isLoading,
-            error,
-            isReady,
-        }
-    },
-})
+            return {
+                store,
+                allIntegrationsTypes,
+                isLoading,
+                error,
+                isReady,
+            }
+        },
+    })
 </script>
 
 <style scoped></style>

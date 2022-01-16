@@ -6,18 +6,20 @@ import integrationStore from '~/store/integrations/index'
 let { origin } = window.location
 if (origin.includes('localhost')) {
     // origin = `https://staging.atlan.com`
-    origin = `http://localhost:5008`
+    // origin = `http://localhost:5008`
 }
 
 export const getSlackInstallUrlState = (isTenant: boolean) => {
     const authStore = useAuthStore()
     const api = `${origin}/api/service/slack/auth`
     const userId = authStore.id
+    const { username } = authStore
     const state = {
         api,
         origin,
         isTenant,
         userId,
+        username
     }
 
     console.log('slack auth state', state)
@@ -94,7 +96,7 @@ export const getDeepLinkFromUserDmLink = (memberId: string) => {
 export const tenantLevelOauthUrl = computed(() => {
     const intStore = integrationStore()
     const slackIntegration = intStore.getIntegration('slack', true)
-    const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
+    const oauthBaseUrl = slackIntegration?.sourceMetadata?.oauthUrl
     const state = getSlackInstallUrlState(true)
     const slackOauth = `${oauthBaseUrl}&state=${state}`
     return slackOauth

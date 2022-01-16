@@ -39,7 +39,7 @@
                             SMTP
                         </a-menu-item>
                         <a-menu-item
-                            key="integration"
+                            key="integrations"
                             v-auth="[map.LIST_INTEGRATION]"
                         >
                             Integrations

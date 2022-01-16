@@ -1,5 +1,5 @@
 <template>
-    <component :is="`slack`" />
+    <component :is="integrationTypeObject.name" />
 </template>
 
 <script lang="ts">
@@ -9,15 +9,15 @@
         name: 'IntegrationCardWrapper',
         components: {
             slack: defineAsyncComponent(
-                () => import('./integrationCards/slack.vue')
+                () => import('./slack/slackIntegrationCard.vue')
             ),
         },
         props: {
-            integrationData: { type: Object, required: true },
+            integrationTypeObject: { type: Object, required: true },
         },
         setup(props) {
-            const { integrationData: data } = toRefs(props)
-            provide('data', data)
+            const { integrationTypeObject } = toRefs(props)
+            provide('integrationTypeObject', integrationTypeObject)
             return {}
         },
     })

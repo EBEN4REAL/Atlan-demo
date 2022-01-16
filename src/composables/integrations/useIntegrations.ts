@@ -61,6 +61,9 @@ const useIntegrations = () => {
 
     watch(data, () => {
         if (data?.value?.length) store.setAllIntegrationsList(data.value)
+        data.value.forEach(i => {
+            store.setIntegrationStatus(i.name, i.integrationLevel, i.isConfigured)
+        })
     })
 
     return {

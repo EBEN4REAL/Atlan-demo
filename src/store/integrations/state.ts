@@ -1,7 +1,10 @@
 export interface State {
-    allIntegrations?: []
+    allIntegrations?: [],
+    integrationStatus: object,
 }
 
 export const state: State = {
     allIntegrations: [],
+    integrationStatus: {},
+
 }

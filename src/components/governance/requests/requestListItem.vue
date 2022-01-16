@@ -83,9 +83,14 @@
                     />
                     <div
                         v-else-if="request.status === 'approved'"
-                        class="text-success"
+                        class="font-light text-success"
                     >
-                        Approved
+                        Approved by
+                        <DatePiece
+                            label="Created At"
+                            :date="request.approvedBy[0].timestamp"
+                            class="font-light text-gray-500"
+                        />
                     </div>
                     <div
                         v-else-if="request.status === 'rejected'"
@@ -122,7 +127,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs, onMounted } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
@@ -130,7 +135,7 @@
 
     import RequestActions from './requestActions.vue'
     import Avatar from '~/components/common/avatar/index.vue'
-
+    import { Users } from '~/services/service/users/index'
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
     import AttrPiece from './pieces/attributeUpdate.vue'
@@ -226,6 +231,19 @@
                 }
                 state.isLoading = false
             }
+            onMounted(() => {
+                if (request.value.status === 'approved') {
+                    const payloadFilter = {
+                        $and: [{ id: `${request.value.approvedBy[0].userId}` }],
+                    }
+                    const { data } = Users.List({
+                        limit: 1,
+                        offset: 0,
+                        filter: JSON.stringify(payloadFilter),
+                    })
+                }
+            })
+
             return {
                 handleApproval,
                 handleRejection,

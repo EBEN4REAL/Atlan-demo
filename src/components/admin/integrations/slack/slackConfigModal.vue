@@ -62,40 +62,19 @@
                 <div class="flex items-center">
                     <AtlanIcon
                         icon="CheckCurrentColor"
-                        class="
-                            p-0.5
-                            border
-                            text-white
-                            border-success
-                            p-3
-                            rounded-full
-                            h-4
-                            w-4
-                            bg-success
-                            mr-2
-                        "
+                        class="p-0.5 border text-white border-success p-3 rounded-full h-4 w-4 bg-success mr-2"
                     ></AtlanIcon>
                     <span>Atlan app created in your Slack workspace</span>
                 </div>
                 <div class="flex items-center mt-2">
                     <AtlanIcon
                         icon="CheckCurrentColor"
-                        class="
-                            p-0.5
-                            border
-                            text-white
-                            border-success
-                            p-3
-                            rounded-full
-                            h-4
-                            w-4
-                            mr-2
-                        "
+                        class="p-0.5 border text-white border-success p-3 rounded-full h-4 w-4 mr-2"
                     ></AtlanIcon>
                     <span class="flex items-center">
                         Install the Atlan app in your Slack workspace.
                         <span
-                            class="flex items-center ml-1 text-blue-500 cursor-pointer "
+                            class="flex items-center ml-1 text-blue-500 cursor-pointer"
                             @click="openOauthUrl"
                             target="_blank"
                         >
@@ -130,103 +109,102 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
-import { Integrations } from '~/services/service/integrations'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
-import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
-import { useAuthStore } from '~/store/auth'
-import useIntegration from '~/composables/integrations/useIntegrations'
+    import { defineComponent, ref, computed } from 'vue'
+    import { Integrations } from '~/services/service/integrations'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+    import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
+    import { useAuthStore } from '~/store/auth'
+    import useIntegration from '~/composables/integrations/useIntegrations'
 
-export default defineComponent({
-    name: 'SlackConfigModal',
-    emits: ['close', 'handleInviteSent'],
-    setup(props, { emit }) {
-        // stores
-        const authStore = useAuthStore()
+    export default defineComponent({
+        name: 'SlackConfigModal',
+        emits: ['close', 'handleInviteSent'],
+        setup(props, { emit }) {
+            // stores
+            const authStore = useAuthStore()
 
-        // variables
-        const loading = ref(false)
-        const error = ref(null)
-        const slackResponse = ref(null)
-        const accessToken = ref('')
-        const refreshToken = ref('')
+            // variables
+            const loading = ref(false)
+            const error = ref(null)
+            const slackResponse = ref(null)
+            const accessToken = ref('')
+            const refreshToken = ref('')
 
-        // computed
-        const buttonDisabled = computed(
-            () => !(accessToken.value && refreshToken.value)
-        )
+            // computed
+            const buttonDisabled = computed(
+                () => !(accessToken.value && refreshToken.value)
+            )
 
-        const oauthUrl = computed(
-            () =>
-                `${
-                    slackResponse?.value?.oauth_authorize_url
-                }&state=${getSlackInstallUrlState(true)}`
-        )
+            const oauthUrl = computed(
+                () =>
+                    `${
+                        slackResponse?.value?.oauth_authorize_url
+                    }&state=${getSlackInstallUrlState(true)}`
+            )
 
-        const buttonCopy = computed(() => {
-            if (slackResponse.value) {
-                return 'Done'
+            const buttonCopy = computed(() => {
+                if (slackResponse.value) {
+                    return 'Done'
+                }
+                return 'Next'
+            })
+            // methods
+
+            const openOauthUrl = () => {
+                window.open(oauthUrl.value)
             }
-            return 'Next'
-        })
-        // methods
 
-        const openOauthUrl = () => {
-            window.open(oauthUrl.value)
-        }
-
-        const handleSubmit = async () => {
-            if (slackResponse.value) {
-                // close modal
-                // openOauthUrl()
-                emit('close')
-            } else {
-                // send api request
-                const body = ref({
-                    slackConfigurationToken: accessToken.value,
-                    slackRefreshToken: refreshToken.value,
-                    atlanDomain: 'beta.atlan.com',
-                    baseUrl: 'https://ac96-117-199-197-221.ngrok.io',
-                })
-                try {
-                    loading.value = true
-                    const data = await Integrations.CreateSlackApp(body, {})
-                    slackResponse.value = data.slackAppResponse
-                    loading.value = false
-                    console.log('slack create app data', data)
-                    // refresh integrations
-                    useIntegration()
-                    // error.value = err
-                } catch (err) {
-                    loading.value = false
-                    error.value = err
-                    console.error('error in creating app', err)
+            const handleSubmit = async () => {
+                if (slackResponse.value) {
+                    // close modal
+                    // openOauthUrl()
+                    emit('close')
+                } else {
+                    // send api request
+                    const body = ref({
+                        slackConfigurationToken: accessToken.value,
+                        slackRefreshToken: refreshToken.value,
+                        // atlanDomain: 'beta.atlan.com',
+                        // baseUrl: 'https://ac96-117-199-197-221.ngrok.io',
+                    })
+                    try {
+                        loading.value = true
+                        const data = await Integrations.CreateSlackApp(body, {})
+                        slackResponse.value = data.slackAppResponse
+                        loading.value = false
+                        console.log('slack create app data', data)
+                        // refresh integrations
+                        useIntegration()
+                        // error.value = err
+                    } catch (err) {
+                        loading.value = false
+                        error.value = err
+                        console.error('error in creating app', err)
+                    }
                 }
             }
-        }
 
-        return {
-            loading,
-            handleSubmit,
-            accessToken,
-            refreshToken,
-            buttonDisabled,
-            slackResponse,
-            SuccessIllustration,
-            oauthUrl,
-            buttonCopy,
-            openOauthUrl,
-        }
-    },
-    data() {
-        return {
-            showDefaultGroups: false,
-        }
-    },
-    components: { AtlanIcon },
-})
+            return {
+                loading,
+                handleSubmit,
+                accessToken,
+                refreshToken,
+                buttonDisabled,
+                slackResponse,
+                SuccessIllustration,
+                oauthUrl,
+                buttonCopy,
+                openOauthUrl,
+            }
+        },
+        data() {
+            return {
+                showDefaultGroups: false,
+            }
+        },
+        components: { AtlanIcon },
+    })
 </script>
 
-<style lang="less">
-</style>
+<style lang="less"></style>

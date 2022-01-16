@@ -3,7 +3,8 @@ import { State } from './state'
 
 export interface Actions extends State {
     setAllIntegrationsList(list: any): void
-    setIntegrationStatus(name, level, status): void
+    removeIntegration(id: string): void
+    setIntegrationConfigurationStatus(name, level, status): void
     getIntegration(alias: string, tenantLevel): object | undefined
     // hasConfiguredTenantLevelIntegration(alias: string): boolean
 }
@@ -12,6 +13,10 @@ const actions: Actions = {
     setAllIntegrationsList(list) {
         this.allIntegrations = list
     },
+    removeIntegration(id) {
+        this.allIntegrations = this.allIntegrations?.filter(i => i.id !== id) ?? []
+
+    },
     getIntegration(alias: string, tenantLevel: boolean) {
         if (!alias) {
             return undefined
@@ -19,8 +24,8 @@ const actions: Actions = {
         const integrationLevel = tenantLevel ? "tenant" : "personal"
         return this.allIntegrations?.find(integration => integration.name.toLowerCase() === alias.toLowerCase() && integration.integrationLevel === integrationLevel)
     },
-    setIntegrationStatus(name: string, level: string, status: boolean) {
-        this.integrationStatus[name] = { ...(this.integrationStatus[name] ?? {}), [level]: status }
+    setIntegrationConfigurationStatus(name: string, level: string, status: boolean) {
+        this.integrationIsConfigStatus[name] = { ...(this.integrationIsConfigStatus[name] ?? {}), [level]: status }
     },
     // // checks isConfigured flag on tenant level integration
     // hasConfiguredTenantLevelIntegration(alias: string) {

@@ -62,7 +62,7 @@ const useIntegrations = () => {
     watch(data, () => {
         if (data?.value?.length) store.setAllIntegrationsList(data.value)
         data.value.forEach(i => {
-            store.setIntegrationStatus(i.name, i.integrationLevel, i.isConfigured)
+            store.setIntegrationConfigurationStatus(i.name, i.integrationLevel, !!i.isConfigured)
         })
     })
 
@@ -73,9 +73,9 @@ const useIntegrations = () => {
     }
 }
 
-export const UnfurlSlackMessage = (pV, body, asyncOptions) => {
+export const UnfurlSlackMessage = (body, asyncOptions) => {
     console.log("UnfurlSlackMessage called");
-    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(pV, body, { asyncOptions })
+    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(body, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
 

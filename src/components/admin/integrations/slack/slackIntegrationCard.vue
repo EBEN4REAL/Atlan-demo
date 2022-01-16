@@ -160,7 +160,12 @@
                         duration: 2,
                     })
                 } else {
-                    intStore.setIntegrationStatus('slack', 'tenant', false)
+                    intStore.removeIntegration(pV.id)
+                    intStore.setIntegrationConfigurationStatus(
+                        'slack',
+                        'tenant',
+                        false
+                    )
                     message.success({
                         content: 'Slack integration disconnected successfully',
                         key: 'disconnect',

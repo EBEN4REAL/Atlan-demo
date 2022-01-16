@@ -23,18 +23,23 @@
             </p>
         </div>
         <div class="">
-            <AtlanButton
-                v-if="!isTenantIntegrationPresent"
-                v-auth="access.CREATE_INTEGRATION"
-                @click="openSlackConfigModal"
+            <a
+                v-if="tenantLevelOauthUrl"
+                :href="tenantLevelOauthUrl"
+                target="_blank"
             >
-                Add to Slack <AtlanIcon icon="ArrowRight" />
-            </AtlanButton>
-            <a v-else :href="tenantLevelOauthUrl" target="_blank">
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Configure <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </a>
+            <AtlanButton
+                v-else
+                v-auth="access.CREATE_INTEGRATION"
+                @click="openSlackConfigModal"
+            >
+                Add to Slack
+                <AtlanIcon icon="ArrowRight" />
+            </AtlanButton>
         </div>
     </section>
 </template>
@@ -70,10 +75,6 @@
             const openSlackConfigModal = () => {
                 showSlackConfigModal.value = true
             }
-            const isTenantIntegrationPresent = computed(() => {
-                const integration = intStore.getIntegration('slack', true)
-                return !!integration
-            })
 
             return {
                 tenantName,
@@ -81,7 +82,6 @@
                 showSlackConfigModal,
                 closeSlackConfigModal,
                 openSlackConfigModal,
-                isTenantIntegrationPresent,
                 intStore,
                 tenantLevelOauthUrl,
             }

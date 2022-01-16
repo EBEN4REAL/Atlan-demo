@@ -13,7 +13,7 @@ const archiveIntegration = (pathVariables: Ref, options: useOptions) => useAPI(m
 
 // Slack
 const ShareSlack = (body: Ref, options: useOptions) => useAPI(map.SHARE_SLACK, 'POST', { body }, options);
-const UnfurlSlackMessage = (pathVariables: Ref, body, options: useOptions) => useAPI(map.UNFURL_SLACK_MESSAGE, 'POST', { pathVariables, body }, options);
+const UnfurlSlackMessage = (body, options: useOptions) => useAPI(map.UNFURL_SLACK_MESSAGE, 'POST', { body }, options);
 const CreateSlackApp = (body: Ref) => useAPIPromise(map.CREATE_SLACK_APP(), 'POST', { body });
 // const CreateSlackApp = (body: Ref, options: useOptions) => useAPI(map.CREATE_SLACK_APP, 'POST', { body }, options);
 

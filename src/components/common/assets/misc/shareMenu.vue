@@ -23,7 +23,11 @@
                     class="flex items-center"
                     @click="closeMenu"
                 >
-                    <SlackModal :link="link" @closeParent="closeMenu">
+                    <SlackModal
+                        :link="link"
+                        :assetID="asset.guid"
+                        @closeParent="closeMenu"
+                    >
                         <div class="flex items-center">
                             <AtlanIcon icon="Slack" />
                             <span class="pl-2 text-sm">Slack</span>

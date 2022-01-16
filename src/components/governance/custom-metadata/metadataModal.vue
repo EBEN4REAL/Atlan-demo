@@ -43,7 +43,7 @@
                             class="text-lg"
                             >{{ form.options.emoji }}</span
                         >
-                        <template v-if="form.options.logoType === 'image'">
+                        <template v-else-if="form.options.logoType === 'image'">
                             <img
                                 v-if="my_photo"
                                 class="w-5 h-5"

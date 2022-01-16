@@ -25,6 +25,7 @@
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
+                        @onMounted="() => onColumnSelectorMounted(index)"
                     >
                         <template #head>
                             <ColumnSelectorHead
@@ -283,6 +284,15 @@
                     ? false
                     : true
             )
+            const onColumnSelectorMounted = (index: number) => {
+                subpanels.value[index] = {
+                    ...subpanels.value[index],
+                    aggregateORGroupColumn: {
+                        ...subpanels.value[index].aggregateORGroupColumn,
+                        active: false,
+                    },
+                }
+            }
 
             watch(
                 activeInlineTab,
@@ -293,6 +303,7 @@
             )
 
             return {
+                onColumnSelectorMounted,
                 isQueryCreatedByCurrentUser,
                 hasQueryWritePermission,
                 readOnly,

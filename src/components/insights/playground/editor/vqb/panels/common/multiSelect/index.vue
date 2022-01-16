@@ -65,6 +65,7 @@
     export default defineComponent({
         name: 'Sub panel',
         components: {},
+        emits: ['onMounted'],
         props: {
             disabled: {
                 type: Boolean,
@@ -217,6 +218,7 @@
 
             onMounted(() => {
                 // const _container = document.getElementById('_container')
+                emit('onMounted')
                 if (container.value) {
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value

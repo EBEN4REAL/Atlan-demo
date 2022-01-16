@@ -138,6 +138,8 @@
         PropType,
         Ref,
         toRefs,
+        onMounted,
+        onUnmounted,
         toRaw,
         ref,
     } from 'vue'
@@ -293,6 +295,13 @@
             const actionClick = (event, t) => {
                 openAssetInSidebar(event, t, activeInlineTab, inlineTabs)
             }
+
+            onMounted(() => {
+                selectedColumn.value = {
+                    ...selectedColumn.value,
+                    active: true,
+                }
+            })
 
             return {
                 getDataTypeImage,

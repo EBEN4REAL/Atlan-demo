@@ -50,14 +50,31 @@ export function useUtils() {
 
         let res = 'by '
         subpanels.forEach((subpanel, i) => {
-            if (i !== subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}, `
-            else if (i <= subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}`
+            if (subpanel.aggregateORGroupColumn?.active === false) {
+                if (i !== subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (i <= subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            } else {
+                if (
+                    i !== subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (
+                    i <= subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            }
         })
         if (res === 'by ') res = 'No Columns Added for Sort'
         return res

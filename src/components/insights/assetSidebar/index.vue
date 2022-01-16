@@ -1,8 +1,15 @@
 <template>
     <div
         v-if="selectedAsset?.guid"
-        class="z-20 flex flex-col h-full bg-white asset-preview-container"
+        class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >
+        <div
+            v-if="activeInlineTab?.assetSidebar?.isVisible"
+            class="close-btn-add-policy"
+            @click="handleClose"
+        >
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
         <AssetPreview
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
@@ -10,7 +17,13 @@
             page="insights"
         ></AssetPreview>
     </div>
-    <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
+    <div
+        v-else
+        class="relative flex flex-col items-center justify-center h-full -mt-12"
+    >
+        <div v-if="true" class="close-btn-add-policy" @click="handleClose">
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
         <AtlanIcon icon="NoSelectedAsset" class="w-36 h-28" />
         <div class="px-8 mt-6 text-base text-center text-gray-700">
             This is where you will find information about your data assets
@@ -149,7 +162,12 @@
 
             provide('updateList', updateList)
 
+            const handleClose = () => {
+                activeInlineTab.value.assetSidebar.isVisible = false
+            }
+
             return {
+                handleClose,
                 selectedAsset,
                 tabs,
                 activeInlineTab,
@@ -178,6 +196,21 @@
     }
     .sidebar {
         // transition: all 0.22s;
+    }
+    .close-btn-add-policy {
+        // padding: 10px;
+        height: 32px;
+        width: 32px;
+        background: #3e4359cc;
+        position: fixed;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        transform: rotate(45deg);
+        right: 430px;
+        top: 60px;
+        z-index: 20;
+        cursor: pointer;
     }
 </style>
 

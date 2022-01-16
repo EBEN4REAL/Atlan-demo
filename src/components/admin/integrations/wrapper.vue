@@ -12,7 +12,7 @@
             :key="integration.id"
         >
             <IntegrationCardWrapper
-                v-if="store.integrationIsConfigStatus[integration.name].tenant"
+                v-if="store.integrationIsConfigStatus[integration.name]?.tenant"
                 :integration-type-object="integration"
             />
             <AddIntegrationCardWrapper

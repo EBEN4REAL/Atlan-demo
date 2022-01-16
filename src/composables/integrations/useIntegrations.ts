@@ -60,10 +60,12 @@ const useIntegrations = () => {
     const { data, isLoading, error, isReady } = getIntegrationsList()
 
     watch(data, () => {
-        if (data?.value?.length) store.setAllIntegrationsList(data.value)
-        data.value.forEach(i => {
-            store.setIntegrationConfigurationStatus(i.name, i.integrationLevel, !!i.isConfigured)
-        })
+        if (data?.value?.length) {
+            store.setAllIntegrationsList(data.value)
+            data.value.forEach(i => {
+                store.setIntegrationConfigurationStatus(i.name, i.integrationLevel, !!i.isConfigured)
+            })
+        }
     })
 
     return {

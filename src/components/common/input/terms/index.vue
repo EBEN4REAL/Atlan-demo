@@ -69,6 +69,7 @@
             :show-drawer="isTermDrawerVisible"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
+            :show-close-btn="isTermDrawerVisible"
         />
     </div>
 </template>

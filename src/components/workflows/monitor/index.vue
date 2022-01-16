@@ -213,6 +213,7 @@
             //     handleRefresh,
             //     ...useWorkflowInfo(),
             // }
+
             return {
                 selectedRunName,
                 workflowName,

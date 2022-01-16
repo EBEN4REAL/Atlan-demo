@@ -7,7 +7,10 @@
             {{ item.metadata.name }}
         </div>
         <div class="text-gray-500">
-            <span>created {{ creationTimestamp(item, true) }} ago</span>
+            <span
+                >created {{ creationTimestamp(item, true) }} ago by
+                {{ creatorUsername(item) }}</span
+            >
         </div>
         <div class="flex items-center text-gray-500" v-if="cronString(item)">
             <AtlanIcon icon="Clock"></AtlanIcon>
@@ -32,14 +35,21 @@
         setup(props, { emit }) {
             const { item } = toRefs(props)
 
-            const { creationTimestamp, cronString } = useWorkflowInfo()
+            const { creationTimestamp, cronString, creatorUsername } =
+                useWorkflowInfo()
             const router = useRouter()
 
             const handleClick = () => {
                 router.push(`/workflows/${item.value?.metadata?.name}`)
             }
 
-            return { item, creationTimestamp, cronString, handleClick }
+            return {
+                item,
+                creationTimestamp,
+                cronString,
+                handleClick,
+                creatorUsername,
+            }
         },
     })
 </script>

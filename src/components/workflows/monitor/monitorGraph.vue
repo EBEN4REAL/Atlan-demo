@@ -213,7 +213,7 @@
 
             // initialize
             const initialize = (reload = false) => {
-                if (reload) {
+                if (reload && graph.value) {
                     graph.value.dispose()
                 }
 
@@ -282,8 +282,9 @@
                                 )
                                 initialize(true)
                             } else {
-                                console.log(getNode(args.node.id))
-                                emit('select', getNode(args.node.id))
+                                expandedNodes.value.push(args.node.id)
+                                // console.log(getNode(args.node.id))
+                                // emit('select', getNode(args.node.id))
                             }
                             // console.log(getNodeParent(args.node.id))
                         }
@@ -302,10 +303,10 @@
             )
 
             /** LIFECYCLE */
-            onMounted(() => {
-                if (graph.value) graph.value.dispose()
-                initialize()
-            })
+            // onMounted(() => {
+            //     if (graph.value) graph.value.dispose()
+            //     initialize()
+            // })
             const handleRefresh = () => {
                 emit('refresh')
             }

@@ -1,5 +1,8 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
+import { DagreLayout } from '@antv/layout'
+
+import { Graph } from '@antv/x6'
 
 export default function useCreateGraph(
     graph,
@@ -9,8 +12,8 @@ export default function useCreateGraph(
     const graphLayout = ref({})
 
     /* Build Graph Canvas */
-    const { Graph } = window.X6
-    const { DagreLayout } = window.layout
+    // const { Graph } = window.X6
+    // const { DagreLayout } = window.layout
 
     graph.value = new Graph({
         async: true, // Saves resources and enhances performance.
@@ -36,6 +39,12 @@ export default function useCreateGraph(
             pageBreak: false,
             pannable: true,
         },
+        // defaultCombo: {
+        //     type: 'rect',
+        //     style: {
+        //         fillOpacity: 0.1,
+        //     },
+        // },
         mousewheel: {
             minScale: 0.1,
             zoomAtMousePosition: true,
@@ -45,6 +54,11 @@ export default function useCreateGraph(
             global: true,
             modifiers: ['ctrl', 'meta'],
         },
+        // defaultCombo: {
+        //     type: 'circle',
+        //     // 其他配置
+        // },
+        // groupByTypes: false,
         minimap: {
             enabled: true,
             container: minimapContainer.value,

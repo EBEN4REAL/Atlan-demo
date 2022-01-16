@@ -16,6 +16,11 @@ export default function useWorkflowInfo() {
         )
     }
 
+    const creatorUsername = (item) =>
+        item?.metadata?.labels[
+            'workflows.argoproj.io/creator-preferred-username'
+        ]
+
     const labels = (item: any) => item.metadata?.labels
 
     const phase = (item: any) => item.status?.phase
@@ -170,5 +175,6 @@ export default function useWorkflowInfo() {
         getRunTooltip,
         getRunBorderClass,
         getRunTextClass,
+        creatorUsername,
     }
 }

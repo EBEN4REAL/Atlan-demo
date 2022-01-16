@@ -1,6 +1,10 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
 
+import { DagreLayout } from '@antv/layout'
+
+import { Graph } from '@antv/x6'
+
 export default function useCreateGraph(
     graph,
     graphContainer,
@@ -9,8 +13,8 @@ export default function useCreateGraph(
     const graphLayout = ref({})
 
     /* Build Graph Canvas */
-    const { Graph } = window.X6
-    const { DagreLayout } = window.layout
+    // const { Graph } = window.X6
+    // const { DagreLayout } = window.layout
 
     graph.value = new Graph({
         async: true, // Saves resources and enhances performance.

@@ -15,7 +15,7 @@
 
             <div
                 class="flex-1 px-6 py-8 overflow-y-auto bg-white"
-                v-if="workflowTemplate && currentStep < steps.length"
+                v-if="workflowTemplate"
             >
                 <DynamicForm
                     :key="`form_${currentStep}`"
@@ -27,7 +27,6 @@
                     labelAlign="left"
                 ></DynamicForm>
             </div>
-
             <div
                 class="flex justify-between px-6 py-3 border-t"
                 v-if="currentStep < steps.length"
@@ -106,76 +105,6 @@
                 </div>
             </div>
         </div>
-        <div
-            class="flex flex-col items-center justify-center w-full h-full"
-            v-if="status"
-        >
-            <div class="flex flex-col justify-center" v-if="isLoading">
-                <a-spin size="large" />
-                <div>Setting up Workflow</div>
-            </div>
-            <a-result
-                :status="status"
-                :title="title"
-                :sub-title="subTitle"
-                v-else
-            >
-                <template #extra>
-                    <div v-if="run">
-                        <Run
-                            :run="run"
-                            :isLoading="runLoading"
-                            v-if="run"
-                            class="mb-3"
-                        ></Run>
-
-                        <div calss="flex">
-                            <a-button v-if="status === 'success'">
-                                <router-link to="/assets">
-                                    Back to Assets</router-link
-                                >
-                            </a-button>
-                            <a-button
-                                class="ml-3"
-                                @click="handleTrackLink"
-                                v-if="run?.metadata"
-                            >
-                                Monitor Run
-                            </a-button>
-                        </div>
-                    </div>
-
-                    <div
-                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                        v-if="errorMesssage"
-                    >
-                        <span>{{ errorMesssage }}</span>
-                        <a-button
-                            v-if="status === 'error'"
-                            @click="handleBackToSetup"
-                        >
-                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                            Back to setup
-                        </a-button>
-                    </div>
-                </template>
-            </a-result>
-        </div>
-        <a-drawer
-            v-if="isSandbox"
-            title="Sandbox Mode"
-            placement="right"
-            :closable="true"
-            :visible="sandboxVisible"
-            @close="toggleSandbox"
-            :mask="false"
-        >
-            <Sandbox
-                v-model:workflowTemplate="localTemplate"
-                v-model:configMap="localConfigMap"
-                @change="handleRefresh"
-            ></Sandbox>
-        </a-drawer>
     </div>
 </template>
 
@@ -235,6 +164,20 @@
                     return {}
                 },
             },
+            configMap: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
+            initialValue: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
@@ -242,13 +185,13 @@
 
             const stepForm = ref()
             const currentStep = ref(0)
-            const { workflowTemplate, configMap } = toRefs(props)
+            const { workflowTemplate, configMap, initialValue } = toRefs(props)
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
             const sandboxVisible = ref(false)
-            const modelValue = ref({})
+            const modelValue = ref(initialValue.value)
             const selectedStep = ref('')
 
             const cron = ref({

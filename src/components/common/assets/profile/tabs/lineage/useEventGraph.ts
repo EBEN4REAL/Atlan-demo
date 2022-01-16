@@ -31,8 +31,8 @@ export default function useEventGraph(
     /** DATA */
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
-    const che = ref('') // che -> currentHilightedEdge
-    const chp = ref({ portId: '', node: null, expandedNodes: [] }) // chp -> currentHilightedPort
+    const che = ref('') // currentHilightedEdge
+    const chp = ref({ portId: '', node: null, expandedNodes: [] }) // currentHilightedPort
     const nodesCaretClicked = ref([])
     const carets = document.getElementsByClassName('node-caret')
     const caretsArray = Array.from(carets)
@@ -71,6 +71,45 @@ export default function useEventGraph(
         loaderCords.value = {}
     }
 
+    // getAllXPos
+    const getAllXPos = () => {
+        let allXPos = {}
+        graph.value.getNodes().forEach((node) => {
+            const { x } = node.position()
+            const order = node.store.data._order
+            if (allXPos[x]) allXPos[x].push(order)
+            else allXPos = { ...allXPos, [x]: [order] }
+        })
+        Object.entries(allXPos).forEach(([x, v]) => {
+            allXPos[x] = v.sort((a, b) => a - b)
+        })
+        return allXPos
+    }
+
+    // getNodeToTranslatePos
+    const getNodeToTranslatePos = (nodeToTranslate) => {
+        const { x: nttXPos } = nodeToTranslate.position()
+        const allXPos = getAllXPos()
+        const allXPosValue = allXPos[nttXPos]
+        const nttOrder = nodeToTranslate.store.data._order
+        const nttOrderIndex = allXPosValue.findIndex((x) => x === nttOrder)
+        const orderOfNodeToFind = allXPosValue[nttOrderIndex - 1]
+
+        const nodePrev = graph.value.getNodes().find((n) => {
+            const { x: nXPos } = n.position()
+            const nOrder = n.store.data._order
+            if (nXPos !== nttXPos) return false
+            return nOrder === orderOfNodeToFind
+        })
+
+        const { y: y2 } = nodePrev.position()
+        const nodePrevPortsLength = nodePrev.getPorts().length - 1
+        const portsLengthTotal = nodePrevPortsLength * 40
+        const newY = y2 + 130.5 + portsLengthTotal
+
+        return { nttXPos, newY }
+    }
+
     // translateSubsequentNodes
     const translateSubsequentNodes = (node) => {
         const { x } = node.position()
@@ -91,21 +130,9 @@ export default function useEventGraph(
         )
 
         nodesToTranslate.forEach((nodeToTranslate) => {
-            const { x: x3 } = nodeToTranslate.position()
-            const justBefore = graph.value.getNodes().find((n) => {
-                const { x: xq } = n.position()
-                const orderDiff =
-                    nodeToTranslate.store.data._order - n.store.data._order
-                if (xq === x3 && orderDiff === 1) return n
-                return false
-            })
+            const { nttXPos, newY } = getNodeToTranslatePos(nodeToTranslate)
 
-            const { y: y2 } = justBefore.position()
-            const justBeforePortsLength = justBefore.getPorts().length - 1
-            const portsLengthTotal = justBeforePortsLength * 40
-            const newY = y2 + 130.5 + portsLengthTotal
-
-            nodeToTranslate.position(x3, newY)
+            nodeToTranslate.position(nttXPos, newY)
 
             if (nodesTranslated.value[node.id]) {
                 const itExists = nodesTranslated.value[node.id].some(
@@ -122,21 +149,8 @@ export default function useEventGraph(
     const translateExpandedNodesToDefault = (x) => {
         const nodesToTranslate = nodesTranslated.value?.[x.id] || []
         nodesToTranslate.forEach((nodeToTranslate) => {
-            const { x: x1 } = nodeToTranslate.position()
-            const justBefore = graph.value.getNodes().find((n) => {
-                const { x: xq } = n.position()
-                const orderDiff =
-                    nodeToTranslate.store.data._order - n.store.data._order
-                if (xq === x1 && orderDiff === 1) return n
-                return false
-            })
-
-            const { y: y2 } = justBefore.position()
-            const justBeforePortsLength = justBefore.getPorts().length - 1
-            const portsLengthTotal = justBeforePortsLength * 40
-            const newY = y2 + 130.5 + portsLengthTotal
-
-            nodeToTranslate.position(x1, newY)
+            const { nttXPos, newY } = getNodeToTranslatePos(nodeToTranslate)
+            nodeToTranslate.position(nttXPos, newY)
         })
     }
 
@@ -243,7 +257,9 @@ export default function useEventGraph(
                     const exist = allRelations.find((rel) =>
                         [rel.fromEntityId, rel.toEntityId].includes(port.id)
                     )
-                    if (exist) setPortStyle(node, port.id, 'highlight')
+
+                    if (exist && chp.value.portId !== port.id)
+                        setPortStyle(node, port.id, 'highlight')
                 })
             }
             if (!lineageStore.hasPortList(node.id))
@@ -298,13 +314,14 @@ export default function useEventGraph(
         let viewQualifiedName = ['def']
         let tableQualifiedName = ['def']
 
-        nodes.forEach((node) => {
+        nodes.forEach((node, index) => {
             if (lineageStore.hasColumnList(node.id)) {
                 const columnList = lineageStore.getNodesColumnList(node.id)
                 const override = allRelations.length ? true : false
                 controlPorts(node, columnList, allRelations, override)
                 const rel = getValidPortRelations(allRelations)
                 createRelations(rel)
+                translateSubsequentNodes(node)
                 loaderCords.value = {}
                 return
             }
@@ -350,6 +367,7 @@ export default function useEventGraph(
                         lineageStore.setNodesColumnList(node.id, columns)
                     const rel = getValidPortRelations(allRelations)
                     createRelations(rel)
+                    translateSubsequentNodes(node)
                 })
                 loaderCords.value = {}
             },
@@ -359,21 +377,26 @@ export default function useEventGraph(
 
     // controlTranslate
     const controlTranslate = (portId, lineage) => {
-        const translateCandidatesSet = new Set()
+        const translateCandidates = []
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
-                const qn = v.attributes.qualifiedName.split('/')
-                const parentName = qn[qn.length - 2]
+                const qnArr = v.attributes.qualifiedName.split('/')
+                qnArr.pop()
+                const parentName = qnArr.join('/')
                 const graphNodes = graph.value.getNodes()
                 const parentNode = graphNodes.find(
-                    (x) => x.store.data.entity.displayText === parentName
+                    (x) =>
+                        x.store.data.entity.attributes.qualifiedName ===
+                        parentName
                 )
-                if (parentNode) translateCandidatesSet.add(parentNode)
+                const parentNodeExists = translateCandidates.find(
+                    (x) => x?.id === parentNode?.id
+                )
+                if (parentNode && !parentNodeExists)
+                    translateCandidates.push(parentNode)
             }
         })
         toggleNodesEdges(graph, false)
-
-        const translateCandidates = Array.from(translateCandidatesSet)
 
         if (!translateCandidates.length) {
             toggleNodesEdges(graph, true)
@@ -396,9 +419,6 @@ export default function useEventGraph(
         getNodeColumnList(translateCandidates, lineage.relations)
 
         chp.value.expandedNodes = translateCandidates
-        translateCandidates.forEach((candidate) => {
-            translateSubsequentNodes(candidate)
-        })
     }
 
     // getColumnLineage
@@ -557,15 +577,30 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
+    // removeCHPEdges
+    const removeCHPEdges = () => {
+        const graphEdges = graph.value.getEdges()
+        const edges = graphEdges.filter((x) => x.id.includes(chp.value.portId))
+        edges.forEach((edge) => {
+            const cell = graph.value.getCellById(edge.id)
+            cell.remove()
+        })
+    }
+
     // selectPort
     const selectPort = (node, e, portId) => {
         resetPortStyle(chp.value.node, chp.value.portId)
+
+        if (chp.value.portId) removeCHPEdges()
+        activeNodesToggled.value = {}
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
-            ports.shift()
-            const portsToRemove = ports.filter((x) => x.id !== portId)
-            x.removePorts(portsToRemove)
+            if (ports.length > 1) {
+                ports.shift()
+                const portsToRemove = ports.filter((x) => x.id !== portId)
+                x.removePorts(portsToRemove)
+            }
             translateExpandedNodesToDefault(x)
         })
         chp.value.node = getPortNode(portId)
@@ -584,12 +619,17 @@ export default function useEventGraph(
     // deselectPort
     const deselectPort = () => {
         resetPortStyle(chp.value.node, chp.value.portId)
+
+        if (chp.value.portId) removeCHPEdges()
+        activeNodesToggled.value = {}
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
             const portsToRemove = x.getPorts()
-            portsToRemove.shift()
-            x.removePorts(portsToRemove)
+            if (portsToRemove.length > 1) {
+                portsToRemove.shift()
+                x.removePorts(portsToRemove)
+            }
             translateExpandedNodesToDefault(x)
         })
         chp.value.node = null

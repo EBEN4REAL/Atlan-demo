@@ -11,7 +11,7 @@
                     v-if="!fetchedTerm"
                     class="flex items-center justify-center w-full h-full"
                 >
-                    <AtlanIcon icon="Loader" class="animate-spin h-7" />
+                    <AtlanLoader class="h-7" />
                 </div>
                 <div v-else-if="fetchedTerm" class="space-y-2">
                     <div class="flex text-xs gap-x-2">

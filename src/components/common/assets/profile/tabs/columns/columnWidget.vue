@@ -30,10 +30,7 @@
                 v-if="isLoading"
                 class="flex items-center justify-center flex-grow"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-10" />
             </div>
             <div
                 v-if="!isLoading && error"
@@ -157,7 +154,7 @@
                     v-else-if="isValidating"
                     class="flex items-center justify-center"
                 >
-                    <AtlanIcon icon="Loader" class="animate-spin"></AtlanIcon>
+                    <AtlanLoader />
                 </div>
             </AtlanBtn>
 

@@ -8,10 +8,7 @@
         "
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-8 mr-2 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-8 mr-2" />
             <span>Getting sample data</span>
         </div>
         <div v-else-if="error && !isLoading" class="flex flex-col items-center">

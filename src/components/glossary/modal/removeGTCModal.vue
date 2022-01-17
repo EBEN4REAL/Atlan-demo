@@ -6,17 +6,36 @@
     <a-modal
         v-model:visible="visible"
         :class="$style.input"
-        width="25%"
+        width="30%"
         :closable="false"
         okText="Save"
         cancelText=""
         :footer="null"
     >
         <div class="p-3">
-            <p class="mb-1 font-bold text-md">Delete {{ typeNameTitle }}</p>
-            <p class="text-md">
-                Are you sure you want to delete the {{ typeNameTitle }} and all
-                its contents?
+            <p class="mb-1 font-bold text-md">
+                Archive {{ entity?.displayText }}
+            </p>
+            <p v-if="entity?.typeName === 'AtlasGlossary'" class="text-md">
+                Are you sure you want to archive
+                {{ entity?.displayText }} and all its contents?
+            </p>
+            <p
+                v-else-if="entity?.typeName === 'AtlasGlossaryCategory'"
+                class="text-md"
+            >
+                Are you sure you want to archive
+                {{ entity?.displayText }} ? Sub-categories and terms will be
+                moved to
+                {{
+                    entity?.attributes?.anchor?.attributes?.name ??
+                    'Parent Glossary'
+                }}.
+            </p>
+
+            <p v-else class="text-md">
+                Are you sure you want to archive
+                {{ entity?.displayText }} ?
             </p>
         </div>
 

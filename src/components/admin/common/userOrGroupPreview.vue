@@ -160,13 +160,11 @@
     import Avatar from '@common/avatar/avatar.vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
-    import { useTimeAgo } from '@vueuse/core'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
     import Shortcut from '@/common/popover/shortcut.vue'
     import getUserLastSession from '~/composables/user/getUserLastSession'
-    import { formatDateTime, getShortNotationDateTimeAgo } from '~/utils/date'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -341,9 +339,11 @@
                 activeKey.value = tabKey
             }
             const userID = computed(() => selectedUser?.value?.id ?? '')
-            const { latestSession, fetchUserSessions: getLastSession } =
-                getUserLastSession(userID)
-
+            const {
+                lastActiveTimeAgo,
+                lastActiveTime,
+                fetchUserSessions: getLastSession,
+            } = getUserLastSession(userID)
             watch(
                 selectedUser,
                 () => {
@@ -351,25 +351,7 @@
                 },
                 { deep: true, immediate: true }
             )
-            const lastActiveTime = computed(() => {
-                if (latestSession?.value?.lastAccess) {
-                    return formatDateTime(
-                        latestSession?.value?.lastAccess || ''
-                    )
-                }
-                return ''
-            })
-            const lastActiveTimeAgo = computed(() => {
-                if (latestSession?.value?.lastAccess) {
-                    const timeAgoString =
-                        useTimeAgo(latestSession?.value?.lastAccess, {
-                            max: 'week',
-                            fullDateFormatter: () => 'long time ago',
-                        }).value || ''
-                    return getShortNotationDateTimeAgo(timeAgoString)
-                }
-                return ''
-            })
+
             return {
                 tabs,
                 isValidEntity,

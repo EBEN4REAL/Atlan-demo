@@ -142,7 +142,6 @@
 
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
     import AtlanIcon from '../../icon/atlanIcon.vue'
@@ -151,7 +150,6 @@
     import UserAvatar from '@/common/avatar/user.vue'
     import AtlanBtn from '@/UI/button.vue'
     import getUserLastSession from '~/composables/user/getUserLastSession'
-    import { formatDateTime, getShortNotationDateTimeAgo } from '~/utils/date'
 
     export default {
         name: 'PopoverUser',
@@ -208,7 +206,8 @@
 
             const userID = computed(() => selectedUser?.value?.id ?? '')
             const {
-                latestSession,
+                lastActiveTime,
+                lastActiveTimeAgo,
                 fetchUserSessions: getLastSession,
                 isLoading: sessionInfoLoading,
             } = getUserLastSession(userID)
@@ -219,26 +218,7 @@
                 },
                 { deep: true, immediate: true }
             )
-            const lastActiveTime = computed(() => {
-                if (latestSession?.value?.lastAccess) {
-                    return formatDateTime(
-                        latestSession?.value?.lastAccess || ''
-                    )
-                }
-                return ''
-            })
-            const lastActiveTimeAgo = computed(() => {
-                if (latestSession?.value?.lastAccess) {
-                    const timeAgoString =
-                        useTimeAgo(latestSession?.value?.lastAccess, {
-                            max: 'week',
-                            fullDateFormatter: () => 'long time ago',
-                        }).value || ''
-                    return getShortNotationDateTimeAgo(timeAgoString)
-                }
-                return ''
-            })
-
+            
             return {
                 selectedUser,
                 isLoading,

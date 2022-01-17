@@ -117,7 +117,7 @@
                 v-if="listLoading"
                 class="flex items-center justify-center h-64"
             >
-                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+                <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
                 <RequestModal

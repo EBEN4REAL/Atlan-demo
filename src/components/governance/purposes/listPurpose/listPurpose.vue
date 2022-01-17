@@ -3,7 +3,7 @@
         v-if="isLoading && !searchText"
         class="flex items-center justify-center w-full h-full"
     >
-        <AtlanIcon icon="Loader" class="animate-spin h-7" />
+        <AtlanLoader class="h-7" />
     </div>
     <template v-else-if="error">
         <ErrorView />
@@ -27,7 +27,7 @@
             v-if="searchText && isLoading"
             class="flex items-center justify-center w-full h-full"
         >
-            <AtlanIcon icon="Loader" class="animate-spin h-7" />
+            <AtlanLoader class="h-7" />
         </div>
         <template v-else-if="!personaList.length">
             <EmptyView

@@ -1,7 +1,7 @@
 <template>
     <div class="px-4 py-2 overflow-hidden overflow-y-auto tab-content-wrapper">
         <div v-if="isLoading" class="flex items-center justify-center h-full">
-            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+            <AtlanLoader class="h-10" />
         </div>
 
         <div v-else class="h-full">

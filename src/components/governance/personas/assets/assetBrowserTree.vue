@@ -42,7 +42,7 @@
                 v-if="treeData.length === 0 && isInitingTree"
                 class="flex items-center justify-center h-96"
             >
-                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+                <AtlanLoader class="h-10" />
             </div>
         </div>
     </div>

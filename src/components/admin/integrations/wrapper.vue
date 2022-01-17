@@ -1,6 +1,6 @@
 <template>
     <div v-if="isLoading" class="flex items-center justify-center h-full">
-        <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+        <AtlanLoader class="h-10" />
     </div>
     <div v-else-if="error" class="flex items-center justify-center h-full">
         <ErrorView />
@@ -18,42 +18,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue'
-import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-import AddIntegrationCard from './addIntegrationCard.vue'
-import IntegrationCardWrapper from './integrationCardWrapper.vue'
-import integrationStore from '~/store/integrations/index'
-// import { useAuthStore } from '~/store/auth'
-import ErrorView from '@/common/error/index.vue'
+    import { defineComponent, watch } from 'vue'
+    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+    import AddIntegrationCard from './addIntegrationCard.vue'
+    import IntegrationCardWrapper from './integrationCardWrapper.vue'
+    import integrationStore from '~/store/integrations/index'
+    // import { useAuthStore } from '~/store/auth'
+    import ErrorView from '@/common/error/index.vue'
 
-export default defineComponent({
-    name: 'IntegrationsWrapper',
-    components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
-    setup() {
-        const store = integrationStore()
+    export default defineComponent({
+        name: 'IntegrationsWrapper',
+        components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
+        setup() {
+            const store = integrationStore()
 
-        const {
-            data: allIntegrations,
-            isLoading,
-            error,
-            isReady,
-        } = getIntegrationTypes()
+            const {
+                data: allIntegrations,
+                isLoading,
+                error,
+                isReady,
+            } = getIntegrationTypes()
 
-        const isIntegrationConfigured = (alias): boolean => {
-            const isTenantLevelIntegrationConfigured =
-                store.hasConfiguredTenantLevelIntegration(alias)
-            return isTenantLevelIntegrationConfigured
-        }
+            const isIntegrationConfigured = (alias): boolean => {
+                const isTenantLevelIntegrationConfigured =
+                    store.hasConfiguredTenantLevelIntegration(alias)
+                return isTenantLevelIntegrationConfigured
+            }
 
-        return {
-            isIntegrationConfigured,
-            allIntegrations,
-            isLoading,
-            error,
-            isReady,
-        }
-    },
-})
+            return {
+                isIntegrationConfigured,
+                allIntegrations,
+                isLoading,
+                error,
+                isReady,
+            }
+        },
+    })
 </script>
 
 <style scoped></style>

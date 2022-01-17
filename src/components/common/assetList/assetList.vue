@@ -35,10 +35,7 @@
                 v-if="isValidating && !list.length"
                 class="flex items-center justify-center h-full"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-10" />
             </div>
             <div
                 v-else-if="!isValidating && error"

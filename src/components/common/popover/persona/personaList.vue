@@ -15,11 +15,8 @@
                 v-if="isLoading && !filteredPersonas.length"
                 class="flex items-center justify-center w-full h-full"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="mr-1 animate-spin text-primary"
-                ></AtlanIcon
-                >Fetching personas...
+                <AtlanLoader class="mr-1" />
+                Fetching personas...
             </div>
             <div
                 v-else-if="!totalPersonasCount"
@@ -86,11 +83,7 @@
                             </p>
                             <AtlanIcon icon="ArrowDown" />
                         </template>
-                        <AtlanIcon
-                            v-else
-                            icon="Loader"
-                            class="animate-spin"
-                        ></AtlanIcon>
+                        <AtlanLoader v-else />
                     </button>
                 </div>
             </div>

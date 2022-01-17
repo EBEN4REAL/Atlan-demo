@@ -13,10 +13,7 @@
             v-if="auditList.length === 0 && isLoading"
             class="flex items-center justify-center text-sm leading-none"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-5 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-5" />
             <span class="ml-1">Getting activity logs</span>
         </div>
 
@@ -116,11 +113,8 @@
                         </p>
                         <AtlanIcon icon="ArrowDown"
                     /></template>
-                    <AtlanIcon
-                        v-else-if="isLoading"
-                        icon="Loader"
-                        class="w-5 w-auto h-5 animate-spin"
-                    ></AtlanIcon>
+
+                    <AtlanLoader v-else-if="isLoading" class="h-5" />
                 </a-button>
             </div>
         </div>

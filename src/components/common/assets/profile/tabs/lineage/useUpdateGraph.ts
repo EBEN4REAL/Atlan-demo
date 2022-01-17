@@ -1,5 +1,22 @@
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
+    const styleEdges = (edge) => {
+        if (!edge) return
+
+        const s = edge.getSourcePoint()
+        const t = edge.getTargetPoint()
+
+        if (s.x > t.x) {
+            edge.attr('line/strokeDasharray', '3 6')
+            edge.attr('line/stroke', '#aaaaaa')
+        } else {
+            edge.attr('line/strokeDasharray', 0)
+            edge.attr('line/stroke', '#c7c7c7')
+        }
+        edge.attr('line/targetMarker/height', 0.1)
+        edge.attr('line/targetMarker/width', 0.1)
+    }
+
     const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
@@ -47,7 +64,7 @@ export default function useUpdateGraph() {
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
             if (!itExists) {
                 cell.attr('line/strokeWidth', 1.6)
-                cell.attr('line/strokeDasharray', 0)
+                styleEdges(cell)
             }
             x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
             if (itExists) cell.toFront()
@@ -57,5 +74,6 @@ export default function useUpdateGraph() {
     return {
         highlightNodes,
         highlightEdges,
+        styleEdges,
     }
 }

@@ -7,6 +7,7 @@
             :item="item"
             :selectedItem="selectedItem"
             @click="handleSelect(item)"
+            @dblclick="handleDoubleClick(item)"
         ></Item>
     </div>
 </template>
@@ -26,7 +27,7 @@
                 },
             },
         },
-        emits: ['select'],
+        emits: ['select', 'dblClick'],
         setup(props, { emit }) {
             const { list } = toRefs(props)
 
@@ -37,10 +38,15 @@
                 emit('select', item)
             }
 
+            const handleDoubleClick = (item) => {
+                emit('dblClick', item)
+            }
+
             return {
                 list,
                 handleSelect,
                 selectedItem,
+                handleDoubleClick,
             }
         },
     })

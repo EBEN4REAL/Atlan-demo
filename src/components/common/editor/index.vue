@@ -70,10 +70,10 @@
             const { isEditMode } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
-            const localModelValue = ref(modelValue.value)
+            const localModelValue = ref(decodeURIComponent(modelValue.value))
 
             const debouncedEmit = useDebounceFn((content: string) => {
-                modelValue.value = content
+                modelValue.value = encodeURIComponent(content)
                 emit('change')
             }, 500)
 

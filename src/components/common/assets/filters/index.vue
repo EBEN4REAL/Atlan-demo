@@ -30,8 +30,8 @@
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
                 :bordered="false"
-                @change="handleActiveKeyChange"
                 :class="$style.facetfilter"
+                @change="handleActiveKeyChange"
             >
                 <template
                     v-for="item in dynamicList"

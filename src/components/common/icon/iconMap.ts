@@ -361,6 +361,7 @@ import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import Reload2 from '~/assets/images/icons/Reload2.svg'
+import OpenPreview from '~/assets/images/icons/open-preview.svg'
 
 export default {
     GlowFlash,
@@ -709,5 +710,6 @@ export default {
     LockedFile,
     Databricks,
     Quotes2,
-    Reload2
+    Reload2,
+    OpenPreview
 }

@@ -81,8 +81,20 @@
                             <span class="mr-1 text-sm truncate w-28">
                                 @{{ name }}
                             </span>
-                            <span v-if="details" class="text-sm">
-                                &bull; <span class="ml-1">{{ details }}</span>
+                            <span v-if="details" class="mr-1 text-sm">
+                                <span class="text-gray-300">&bull;</span>
+                                <span class="ml-1">{{ details }}</span>
+                            </span>
+                            <span v-if="lastActiveTime" class="text-sm">
+                                <span class="text-gray-300">&bull;</span>
+                                <a-tooltip placement="bottom">
+                                    <template #title>
+                                        {{ lastActiveTime }}</template
+                                    >
+                                    <span class="ml-1">
+                                        Active {{ lastActiveTimeAgo }}</span
+                                    >
+                                </a-tooltip>
                             </span>
                         </div>
                         <!-- <div class="ml-auto">
@@ -142,15 +154,19 @@
         computed,
         toRefs,
         ref,
+        watch,
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import Avatar from '@common/avatar/avatar.vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import getUserLastSession from '~/composables/user/getUserLastSession'
+    import { formatDateTime, getShortNotationDateTimeAgo } from '~/utils/date'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -212,6 +228,7 @@
                 activeKey,
                 userUpdated,
             } = useUserOrGroupPreview(previewType.value)
+
             const isValidUser = computed(() =>
                 Boolean(
                     selectedUser && selectedUser.value && selectedUser.value.id
@@ -227,7 +244,6 @@
             const isValidEntity = computed(() =>
                 isUserPreview.value ? isValidUser.value : isValidGroup.value
             )
-
             /**
              * A utility function for obtaining a property given a key.
              * @param {string} userKey
@@ -324,6 +340,36 @@
             const handleChangeTab = (tabKey) => {
                 activeKey.value = tabKey
             }
+            const userID = computed(() => selectedUser?.value?.id ?? '')
+            const { latestSession, fetchUserSessions: getLastSession } =
+                getUserLastSession(userID)
+
+            watch(
+                selectedUser,
+                () => {
+                    if (selectedUser?.value?.id) getLastSession()
+                },
+                { deep: true, immediate: true }
+            )
+            const lastActiveTime = computed(() => {
+                if (latestSession?.value?.lastAccess) {
+                    return formatDateTime(
+                        latestSession?.value?.lastAccess || ''
+                    )
+                }
+                return ''
+            })
+            const lastActiveTimeAgo = computed(() => {
+                if (latestSession?.value?.lastAccess) {
+                    const timeAgoString =
+                        useTimeAgo(latestSession?.value?.lastAccess, {
+                            max: 'week',
+                            fullDateFormatter: () => 'long time ago',
+                        }).value || ''
+                    return getShortNotationDateTimeAgo(timeAgoString)
+                }
+                return ''
+            })
             return {
                 tabs,
                 isValidEntity,
@@ -349,6 +395,8 @@
                 handleChangeTab,
                 groupChannels,
                 slackChannel,
+                lastActiveTime,
+                lastActiveTimeAgo,
             }
         },
     })

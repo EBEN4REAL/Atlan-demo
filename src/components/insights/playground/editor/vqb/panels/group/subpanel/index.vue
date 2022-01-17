@@ -117,9 +117,9 @@
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
-    import MultiTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/_index.vue'
-    import MultiTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/dropdown.vue'
-    import MultiTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/head.vue'
+    import MultiTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/_index.vue'
+    import MultiTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/dropdown.vue'
+    import MultiTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/head.vue'
 
     export default defineComponent({
         name: 'Sub panel',

@@ -67,6 +67,7 @@
     <a-date-picker
         v-else-if="['date', 'datetime'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        :show-now="false"
         :format="
             dataType.toLowerCase() === 'datetime'
                 ? 'DD/MM/YYYY HH:mm:ss'

@@ -72,6 +72,7 @@
             v-else-if="typeName === 'date'"
             ref="inputRef"
             v-model:value="localValue"
+            :show-now="false"
             :allow-clear="true"
             format="DD/MM/YYYY"
             class="flex-grow w-100"

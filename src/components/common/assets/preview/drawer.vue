@@ -14,7 +14,7 @@
             @close="$emit('closeDrawer')"
         >
             <div
-                v-if="(!showMask && visible) || showCloseBtn"
+                v-if="(!showMask || showCloseBtn) && visible"
                 class="close-btn"
                 @click="() => $emit('closeDrawer')"
             >

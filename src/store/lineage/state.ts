@@ -1,7 +1,6 @@
 import { useStorage } from '@vueuse/core'
 
 export const state = {
-    nodesColumnList: useStorage('nodes_column_list', {}),
-    nodesPortList: useStorage('nodes_port_list', {}),
-    columnsLineage: useStorage('columns_lineage', {}),
+    nodesColumnList: useStorage('lin_nodes_column_list', {}),
+    columnsLineage: useStorage('lin_columns_lineage', {}),
 }

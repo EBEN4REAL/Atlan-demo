@@ -143,6 +143,38 @@ export default function useGraph() {
                             },
                         },
                     },
+                    ctaPort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                            {
+                                tagName: 'text',
+                                selector: 'portNameLabel',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 40,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                event: 'port:click',
+                                y: -11,
+                            },
+                            portNameLabel: {
+                                ref: 'portBody',
+                                refX: 36,
+                                refY: 12,
+                                fontSize: 16,
+                                fill: '#3e4359',
+                                event: 'port:click',
+                            },
+                        },
+                        position: 'erPortPosition',
+                    },
                     columnList: {
                         markup: [
                             {
@@ -266,6 +298,22 @@ export default function useGraph() {
         return { portData }
     }
 
+    const createCustomPortData = (nodeId, text) => {
+        const portData = {
+            id: `${nodeId}-ctaPort`,
+            group: 'columnList',
+            attrs: {
+                portNameLabel: {
+                    text,
+                    x: '1.3em',
+                    fill: '#5277d7',
+                    fontSize: 18,
+                },
+            },
+        }
+        return { portData }
+    }
+
     const createEdgeData = (relation) => {
         const stroke = relation.stroke
         const edgeData = {
@@ -336,6 +384,7 @@ export default function useGraph() {
         addNode,
         removeNode,
         createPortData,
+        createCustomPortData,
         createEdgeData,
         addEdge,
         removeEdge,

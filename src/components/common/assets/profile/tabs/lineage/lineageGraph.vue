@@ -65,7 +65,8 @@
             :data="selectedAsset"
             :show-drawer="isDrawerVisible"
             :show-mask="false"
-            @closeDrawer="onCloseDrawer"
+            :drawer-active-key="drawerActiveKey"
+            @close-drawer="onCloseDrawer"
         />
     </div>
 </template>
@@ -132,6 +133,7 @@
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
+            const drawerActiveKey = ref('Info')
 
             /** METHODS */
             // onSelectAsset
@@ -184,6 +186,7 @@
                     currZoom,
                     resetSelections,
                     config,
+                    drawerActiveKey,
                     onSelectAsset,
                     onCloseDrawer
                 )
@@ -236,6 +239,7 @@
                 loaderCords,
                 graphHeight,
                 graphWidth,
+                drawerActiveKey,
                 onShowAddLineage,
                 onCloseDrawer,
             }

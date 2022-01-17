@@ -78,7 +78,7 @@ export const previewTabs = [
         icon: 'Relation',
         tooltip: 'Relationships',
         scrubbed: false,
-        requiredInProfile: false,
+        requiredInProfile: true,
         analyticsKey: 'relations',
     },
     {

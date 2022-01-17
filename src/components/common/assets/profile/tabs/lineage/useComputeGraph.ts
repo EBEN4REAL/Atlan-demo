@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 
@@ -11,6 +12,10 @@ export default async function useComputeGraph(
     isComputeDone,
     emit
 ) {
+    const lineageStore = useLineageStore()
+    lineageStore.nodesColumnList = {}
+    lineageStore.columnsLineage = {}
+
     const { createNodeData, createEdgeData } = useGraph()
     const { fit } = useTransformGraph(graph, emit)
 
@@ -26,9 +31,33 @@ export default async function useComputeGraph(
     edges.value = []
     nodes.value = []
 
+    let columnEntity = {}
+    const columnEntityIds = []
+
     /* Nodes */
     await Promise.all(
         guidEntityMap.map(async (entity) => {
+            if (entity.typeName === 'Column') {
+                const parentGuid = entity.attributes.table.guid // TODO: Handle for views too
+                if (!columnEntity[parentGuid])
+                    columnEntity = { ...columnEntity, [parentGuid]: [entity] }
+                else columnEntity[parentGuid].push(entity)
+
+                columnEntityIds.push(entity.guid)
+                return
+            }
+
+            if (entity.typeName.toLowerCase() === 'powerbidataset') {
+                lineageStore.setNodesColumnList(
+                    [entity.guid],
+                    [
+                        {
+                            text: 'view related',
+                        },
+                    ]
+                )
+            }
+
             const { nodeData, entity: ent } = await createNodeData(
                 entity,
                 baseEntityGuid
@@ -41,9 +70,22 @@ export default async function useComputeGraph(
         })
     )
 
+    if (Object.keys(columnEntity).length) {
+        Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
+            lineageStore.setNodesColumnList(parentGuid, columns)
+        })
+    }
+
     /* Edges */
     relations.forEach((x) => {
         const { fromEntityId, toEntityId, processId } = x
+
+        if (
+            columnEntityIds.includes(fromEntityId) ||
+            columnEntityIds.includes(toEntityId)
+        )
+            return
+
         const relation = {
             id: `${processId}/${fromEntityId}@${toEntityId}`,
             sourceCell: fromEntityId,

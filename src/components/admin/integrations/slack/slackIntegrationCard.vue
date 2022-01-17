@@ -12,18 +12,18 @@
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
             <h2 class="text-lg font-bold">Channels</h2>
-            <p>
-                {{ meta.description }}
-            </p>
-            <div
-                class="flex flex-wrap items-center gap-3 p-3 py-2 border rounded"
-            >
+            <div class="flex flex-wrap items-center gap-2 p-1 border rounded">
                 <Chip
                     v-for="channel in channels"
                     :id="channel.name"
-                    :key="channel"
+                    :key="channel.name"
                     :content="channel.name"
                     icon="Number"
+                    :class="
+                        channel.invalid
+                            ? 'border border-dashed border-red-500'
+                            : ''
+                    "
                     @remove="removeChannel"
                 />
 
@@ -31,8 +31,12 @@
                     <input
                         v-model="channelValue"
                         class="w-full focus:outline-none"
-                        placeholder="Enter to add channels"
+                        placeholder="Add channel(s)"
                         @keydown.enter="addChannel"
+                        @blur="addChannel"
+                        @keydown.backspace="
+                            removeChannel(channelValue.valueOf.length - 1)
+                        "
                         @keydown.tab="
                             (e) => {
                                 e.preventDefault()
@@ -121,11 +125,8 @@
                 channelValue.value = ''
             }
 
-            const removeChannel = (i, name) => {
-                let index = i
-                if (name) {
-                    index = channels.value.indexOf(name)
-                }
+            const removeChannel = (i) => {
+                const index = i
                 channels.value.splice(index, 1)
                 isEdit.value = true
             }
@@ -135,7 +136,7 @@
             })
 
             const body = computed(() => ({
-                channels: channels.value,
+                channels: channels.value.map((c) => ({ name: c.name })),
             }))
 
             const teamName = computed(
@@ -143,6 +144,17 @@
             )
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
+
+            const handleFailed = (failedC) => {
+                failedC.forEach((c) => {
+                    const index = channels.value.findIndex(
+                        (ch) => ch.name === c
+                    )
+                    if (index > -1) {
+                        channels.value[index].invalid = true
+                    }
+                })
+            }
 
             const {
                 data: updateData,
@@ -171,6 +183,7 @@
                 } else {
                     if (updateData.value.failedChannels) {
                         const { failedChannels } = updateData.value
+                        handleFailed(failedChannels)
                         message.error({
                             content: `Unable to add some channels: "${failedChannels.join(
                                 ', '
@@ -178,10 +191,6 @@
                             key: 'failedChannels',
                             duration: 4,
                         })
-
-                        // failedChannels.forEach((c) => {
-                        //     removeChannel(null, c)
-                        // })
                     }
                     message.success({
                         content: 'Updated channel(s) successfully.',

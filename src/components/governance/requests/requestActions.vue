@@ -62,30 +62,31 @@
                                 <template #content>
                                     <div class="comment-delete">
                                         <div class="flex">
-                                            <component
-                                                :is="iconQuotes"
-                                                class="mr-4"
+                                            <a-textarea
+                                                v-model:value="messageReject"
+                                                placeholder="Message"
+                                                class="border-none"
+                                                :rows="2"
                                             />
-                                            <p>
-                                                Lorem ipsum dolor sit amet,
-                                                consectetur
-                                            </p>
                                         </div>
-                                        <div class="flex items-center mt-4">
-                                            <Avatar
-                                                :allow-upload="false"
-                                                :avatar-name="
-                                                    request.created_by_user
-                                                        ?.username
-                                                "
-                                                avatar-size="16"
-                                                :avatar-shape="'circle'"
-                                                class="mr-2"
-                                            />
-                                            <UserPiece
-                                                :user="request.created_by_user"
-                                                :is-pill="false"
-                                            />
+                                        <div
+                                            class="flex items-center justify-between mt-4"
+                                        >
+                                            <a-button
+                                                class="text-gray-500"
+                                                size="small"
+                                                type="link"
+                                                @click="cancelReject"
+                                            >
+                                                Cancel
+                                            </a-button>
+                                            <a-button
+                                                size="small"
+                                                type="link"
+                                                @click="handleReject"
+                                            >
+                                                Reject
+                                            </a-button>
                                         </div>
                                     </div>
                                 </template>
@@ -119,8 +120,49 @@
                         <a-menu-item key="4" @click="$emit('accept')">
                             Approve
                         </a-menu-item>
-                        <a-menu-item key="3" @click="$emit('accept')">
-                            Approve with comment
+                        <a-menu-item
+                            key="2"
+                            @click="handleClickApproveWithComment"
+                        >
+                            <a-popover
+                                v-model:visible="isVisibleApproveWithComment"
+                                trigger="click"
+                                placement="bottomRight"
+                                :align="{ offset: [15, -70] }"
+                            >
+                                <template #content>
+                                    <div class="comment-delete">
+                                        <div class="flex">
+                                            <a-textarea
+                                                v-model:value="messageApprove"
+                                                placeholder="Message"
+                                                class="border-none"
+                                                :rows="2"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between mt-4"
+                                        >
+                                            <a-button
+                                                class="text-gray-500"
+                                                size="small"
+                                                type="link"
+                                                @click="cancelApprove"
+                                            >
+                                                Cancel
+                                            </a-button>
+                                            <a-button
+                                                size="small"
+                                                type="link"
+                                                @click="handleApprove"
+                                            >
+                                                approve
+                                            </a-button>
+                                        </div>
+                                    </div>
+                                </template>
+                                Approve with comment
+                            </a-popover>
                         </a-menu-item>
                     </a-menu>
                 </template>
@@ -161,18 +203,42 @@
         setup(props, { emit }) {
             const isVisibleReject = ref(false)
             const isVisibleApprove = ref(false)
+            const messageReject = ref('')
+            const messageApprove = ref('')
             const isVisibleRejectWithComment = ref(false)
+            const isVisibleApproveWithComment = ref(false)
             const handleClickReject = () => {
                 emit('reject')
                 isVisibleReject.value = false
             }
             const handleClickRejectWithComment = () => {
-                emit('reject')
-                isVisibleReject.value = false
-                // isVisibleRejectWithComment.value = true
-                // setTimeout(() => {
-                //     isVisibleReject.value = false
-                // }, 300)
+                // emit('reject')
+                // isVisibleReject.value = false
+                isVisibleRejectWithComment.value = true
+                messageReject.value = ''
+                setTimeout(() => {
+                    isVisibleReject.value = false
+                }, 300)
+            }
+            const cancelReject = () => {
+                isVisibleRejectWithComment.value = false
+            }
+            const handleReject = () => {
+                emit('reject', messageReject.value)
+            }
+
+            const handleClickApproveWithComment = () => {
+                isVisibleApproveWithComment.value = true
+                messageReject.value = ''
+                setTimeout(() => {
+                    isVisibleApprove.value = false
+                }, 300)
+            }
+            const cancelApprove = () => {
+                isVisibleApproveWithComment.value = false
+            }
+            const handleApprove = () => {
+                emit('accept', messageApprove.value)
             }
             return {
                 isVisibleReject,
@@ -182,6 +248,14 @@
                 iconQuotes,
                 isVisibleApprove,
                 atlanLogo,
+                messageReject,
+                cancelReject,
+                handleReject,
+                isVisibleApproveWithComment,
+                handleClickApproveWithComment,
+                messageApprove,
+                cancelApprove,
+                handleApprove,
             }
         },
     })

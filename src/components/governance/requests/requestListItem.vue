@@ -287,10 +287,10 @@
                 message.error(msg || 'Request modification failed, try again')
             }
 
-            async function handleApproval() {
+            async function handleApproval(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await approveRequest(request.value.id, state.message)
+                    await approveRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'approved'
                     emit('action', request.value)
@@ -304,10 +304,10 @@
                 state.isLoading = false
             }
 
-            async function handleRejection() {
+            async function handleRejection(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await declineRequest(request.value.id, state.message)
+                    await declineRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'rejected'
                     emit('action', request.value)

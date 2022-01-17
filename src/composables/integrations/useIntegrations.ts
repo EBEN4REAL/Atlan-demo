@@ -62,23 +62,21 @@ const getIntegrationsList = () => {
     const { data, isLoading, error, isReady } = Integrations.List(params)
 
     const records = ref([])
-
     watch(data, (v) => {
-        if (v) records.value = data.value?.records ?? null
+        if (v) records.value = data.value ?? null
     })
     return { data: records, isLoading, error, isReady }
 }
 
-const useIntegrations = () => {
+const useIntegrations = async () => {
     const { setAllIntegrationsList, setIntegrationStatus } = integrationStore()
     const { mutate: getTypes } = getIntegrationTypes()
 
+    await getTypes()
+
     const { data, isLoading, error, isReady } = getIntegrationsList()
-
-
-    watch(data, async () => {
+    watch(data, () => {
         if (data?.value?.length) {
-            await getTypes()
             setAllIntegrationsList(data.value)
             data.value.forEach((i: any) => {
                 setIntegrationStatus({ name: i.name, level: i.integrationLevel, configured: !!i.isConfigured, created: true })

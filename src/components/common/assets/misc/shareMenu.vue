@@ -17,7 +17,10 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    v-if="intStore.integrationStatus['slack']?.tenant"
+                    v-if="
+                        intStore.integrationStatus['slack'].tenant.configured &&
+                        hasChannels
+                    "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"
@@ -25,7 +28,7 @@
                 >
                     <SlackModal
                         :link="link"
-                        :assetID="asset.guid"
+                        :asset-i-d="asset.guid"
                         @closeParent="closeMenu"
                     >
                         <div class="flex items-center">
@@ -70,6 +73,10 @@
             const { getProfilePath } = useAssetInfo()
 
             const intStore = integrationStore()
+            const hasChannels = computed(() => {
+                const slack = intStore.getIntegration('slack', true)
+                return slack && slack?.config?.channels.length
+            })
 
             const { asset } = toRefs(props)
             const closeMenu = () => {
@@ -87,6 +94,7 @@
             }
 
             return {
+                hasChannels,
                 intStore,
                 access,
                 link,

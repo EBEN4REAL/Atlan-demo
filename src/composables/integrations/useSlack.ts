@@ -147,7 +147,7 @@ export const archiveSlack = (pV) => {
                 duration: 2,
             })
         } else {
-            intStore.removeIntegration(pV.id)
+            intStore.removeIntegration(pV.value.id)
             message.success({
                 content: 'Slack integration disconnected successfully',
                 key: 'disconnect',

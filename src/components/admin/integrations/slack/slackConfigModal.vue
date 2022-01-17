@@ -23,14 +23,14 @@
                                 here</a
                             >
                         </span>
-                        <a
+                        <!-- <a
                             class="text-blue-500 cursor-pointer"
                             href="https://docs.atlan.com/integrations/collaboration/slack"
                             target="_blank"
                         >
                             Learn more
                             <AtlanIcon :icon="'ArrowRight'"></AtlanIcon>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -91,11 +91,11 @@
             </div>
         </div>
         <div class="flex justify-end">
-            <div>
+            <div class="flex items-center">
                 <a-button class="mr-3 border-0" @click="$emit('close')"
                     >Cancel
                 </a-button>
-                <a-button
+                <Button
                     :disabled="buttonDisabled"
                     :loading="loading"
                     type="primary"
@@ -103,7 +103,7 @@
                     @click="handleSubmit"
                 >
                     {{ buttonCopy }}
-                </a-button>
+                </Button>
             </div>
         </div>
     </div>
@@ -111,11 +111,11 @@
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
     import { Integrations } from '~/services/service/integrations'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
     import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
     import { useAuthStore } from '~/store/auth'
     import useIntegration from '~/composables/integrations/useIntegrations'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'SlackConfigModal',
@@ -170,17 +170,25 @@
                     })
                     try {
                         loading.value = true
-                        const data = await Integrations.CreateSlackApp(body, {})
+                        const data = await Integrations.CreateSlackApp(body)
                         slackResponse.value = data.slackAppResponse
                         loading.value = false
                         console.log('slack create app data', data)
                         // refresh integrations
                         useIntegration()
                         // error.value = err
+                        message.success({
+                            content:
+                                'Successfully created integration, you can now configure',
+                        })
                     } catch (err) {
                         loading.value = false
                         error.value = err
                         console.error('error in creating app', err)
+                        message.error({
+                            content:
+                                'Kindly check your token or contact support',
+                        })
                     }
                 }
             }
@@ -203,7 +211,6 @@
                 showDefaultGroups: false,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

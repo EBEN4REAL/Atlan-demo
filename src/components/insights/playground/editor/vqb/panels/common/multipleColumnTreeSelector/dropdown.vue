@@ -14,120 +14,6 @@
             ]"
             style="min-height: 0"
         >
-            <!-- For single table select -->
-            <div class="flex flex-col">
-                <div
-                    class="px-4 py-3 border-b border-gray-300 dropdown-container"
-                    v-if="selectedTablesQualifiedNames.length < 2"
-                >
-                    <div
-                        class="flex items-center justify-between w-full"
-                        style="min-width: 100%"
-                    >
-                        <CustomInput
-                            v-model:queryText="columnQueryText"
-                            :placeholder="placeholder"
-                            :autofocus="true"
-                        />
-                    </div>
-                </div>
-
-                <div
-                    class="flex-1 w-full overflow-auto dropdown-container"
-                    style="min-height: 0"
-                    v-if="
-                        columnDropdownOption.length !== 0 &&
-                        !isColumnLoading &&
-                        selectedTablesQualifiedNames.length < 2
-                    "
-                >
-                    <template
-                        v-for="(item, index) in columnDropdownOption"
-                        :key="item.qualifiedName"
-                    >
-                        <PopoverAsset
-                            :item="item.item"
-                            placement="right"
-                            :mouseEnterDelay="0.85"
-                        >
-                            <template #button>
-                                <AtlanBtn
-                                    class="flex-none px-0"
-                                    size="sm"
-                                    color="minimal"
-                                    padding="compact"
-                                    style="height: fit-content"
-                                    @click="(e) => actionClick(e, item.item)"
-                                >
-                                    <span
-                                        class="cursor-pointer text-primary whitespace-nowrap"
-                                    >
-                                        Show Preview</span
-                                    >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="text-primary"
-                                    />
-                                </AtlanBtn>
-                            </template>
-                            <div
-                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                @click="(e) => onSelectColumn(item, e)"
-                                :class="
-                                    selectedColumn?.qualifiedName ===
-                                    item.qualifiedName
-                                        ? 'bg-primary-light'
-                                        : 'bg-white'
-                                "
-                            >
-                                <div
-                                    class="flex items-center parent-ellipsis-container"
-                                >
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
-                                    >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div class="relative flex items-center h-full">
-                                    <ColumnKeys
-                                        :isPrimary="item.isPrimary"
-                                        :isForeign="item.isForeign"
-                                        :isPartition="item.isPartition"
-                                    />
-
-                                    <AtlanIcon
-                                        icon="Check"
-                                        class="ml-2 text-primary"
-                                        v-if="
-                                            selectedColumn?.qualifiedName ===
-                                            item.qualifiedName
-                                        "
-                                    />
-                                    <div v-else class="w-4 ml-2"></div>
-                                </div>
-                            </div>
-                        </PopoverAsset>
-                    </template>
-                </div>
-            </div>
-
-            <span
-                class="w-full mt-4 text-sm text-center text-gray-400"
-                v-if="
-                    columnDropdownOption.length == 0 &&
-                    !isColumnLoading &&
-                    selectedTablesQualifiedNames.length < 2
-                "
-            >
-                No Columns found!
-            </span>
-
-            <!--  Multiple table column selection-->
             <div
                 class="flex flex-col w-full dropdown-container"
                 v-if="
@@ -317,8 +203,9 @@
                         >
                             <PopoverAsset
                                 :item="item.item"
-                                placement="right"
+                                placement="left"
                                 :mouseEnterDelay="0.85"
+                                class="dropdown-container"
                             >
                                 <template #button>
                                     <AtlanBtn
@@ -342,48 +229,43 @@
                                         />
                                     </AtlanBtn>
                                 </template>
-                                <div
-                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                    @click="(e) => onSelectColumn(item, e)"
-                                    :class="
-                                        selectedColumn?.qualifiedName ===
-                                        item.qualifiedName
-                                            ? 'bg-primary-light'
-                                            : 'bg-white'
+
+                                <a-checkbox
+                                    :checked="map[item?.value]"
+                                    @change="
+                                        (checked) =>
+                                            onCheckboxChange(checked, item)
                                     "
+                                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded atlanReverse hover:bg-primary-light dropdown-container"
                                 >
                                     <div
-                                        class="flex items-center parent-ellipsis-container"
+                                        class="justify-between parent-ellipsis-container dropdown-container"
                                     >
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
-                                        ></component>
-                                        <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                        <div class="parent-ellipsis-container">
+                                            <component
+                                                :is="
+                                                    getDataTypeImage(item.type)
+                                                "
+                                                class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                            ></component>
+                                            <span
+                                                class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            >
+                                                {{ item.label }}
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="relative h-full w-14 parent-ellipsis-container-extension"
                                         >
-                                            {{ item.label }}
-                                        </span>
+                                            <ColumnKeys
+                                                :isPrimary="item.isPrimary"
+                                                :isForeign="item.isForeign"
+                                                :isPartition="item.isPartition"
+                                                topStyle="-top-2"
+                                            />
+                                        </div>
                                     </div>
-                                    <div
-                                        class="relative flex items-center h-full"
-                                    >
-                                        <ColumnKeys
-                                            :isPrimary="item.isPrimary"
-                                            :isForeign="item.isForeign"
-                                            :isPartition="item.isPartition"
-                                        />
-
-                                        <AtlanIcon
-                                            icon="Check"
-                                            class="ml-2 text-primary"
-                                            v-if="
-                                                selectedColumn?.qualifiedName ===
-                                                item.qualifiedName
-                                            "
-                                        />
-                                    </div>
-                                </div>
+                                </a-checkbox>
                             </PopoverAsset>
                         </template>
 
@@ -427,7 +309,6 @@
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
-    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -440,7 +321,7 @@
     import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
-        name: 'Multi Select',
+        name: 'Multi Column Select',
         components: { PopoverAsset, Loader, CustomInput, ColumnKeys },
         props: {
             disabled: {
@@ -448,28 +329,33 @@
                 required: false,
                 default: false,
             },
-            selectedColumn: {
-                type: Object,
+            showColumnWithTable: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            selectedItems: {
+                type: Object as PropType<string[]>,
                 required: true,
-                default: () => {},
             },
             selectedTablesQualifiedNames: {
                 type: Object as PropType<selectedTables[]>,
             },
-            tableQualfiedName: {
-                type: String,
+            selectedColumnsData: {
+                type: Object as PropType<
+                    Array<{
+                        qualifiedName: string
+                        label: string
+                        type: Number
+                    }>
+                >,
                 required: true,
             },
         },
-        emits: ['change'],
 
         setup(props, { emit }) {
-            const {
-                disabled,
-                tableQualfiedName,
-                selectedTablesQualifiedNames,
-            } = toRefs(props)
-            const { selectedColumn } = useVModels(props)
+            const { disabled, selectedTablesQualifiedNames } = toRefs(props)
+            const { selectedItems, selectedColumnsData } = useVModels(props)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
@@ -479,6 +365,7 @@
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
             const tableSelected = inject('tableSelected') as Ref<Object>
+            const map = inject('map') as Ref<Object>
             const dirtyTableSelected = inject(
                 'dirtyTableSelected'
             ) as Ref<Object>
@@ -502,7 +389,6 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-            const { allowedTablesInJoinSelector } = useJoin()
             const { openAssetInSidebar } = useUtils()
             const { updateVQB } = useVQB()
             const { getDataTypeImage } = useColumn()
@@ -520,37 +406,29 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                if (selectedTablesQualifiedNames.value?.length > 1) {
-                    if (dirtyIsTableSelected.value) {
-                        if (isColumnLoading.value) {
-                            data = 'Loading...'
-                        } else {
-                            data = `Search from ${
-                                totalColumnsCount.value
-                            } ${pluralizeString(
-                                'column',
-                                totalColumnsCount.value,
-                                false
-                            )}`
-                        }
-                    } else {
-                        if (isTableLoading.value) {
-                            data = 'Loading...'
-                        } else {
-                            data = `Search from ${
-                                totalTablesCount.value
-                            } ${pluralizeString(
-                                'table',
-                                totalTablesCount.value,
-                                false
-                            )}`
-                        }
-                    }
-                } else {
+                if (dirtyIsTableSelected.value) {
                     if (isColumnLoading.value) {
                         data = 'Loading...'
                     } else {
-                        data = `Search from ${totalColumnsCount.value} columns`
+                        data = `Search from ${
+                            totalColumnsCount.value
+                        } ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
+                    }
+                } else {
+                    if (isTableLoading.value) {
+                        data = 'Loading...'
+                    } else {
+                        data = `Search from ${
+                            totalTablesCount.value
+                        } ${pluralizeString(
+                            'table',
+                            totalTablesCount.value,
+                            false
+                        )}`
                     }
                 }
 
@@ -579,6 +457,7 @@
                     isPrimary: ls.attributes?.isPrimary,
                     isForeign: ls.attributes?.isForeign,
                     isPartition: ls.attributes?.isPartition,
+                    value: ls.attributes?.qualifiedName,
                     item: ls,
                 }))
                 return data
@@ -607,26 +486,40 @@
                 return false
             }
 
-            const onSelectColumn = (item, event) => {
-                tableSelected.value = dirtyTableSelected.value
-                isTableSelected.value = true
-                selectedColumn.value = {
-                    label: item.label,
-                    type: item.type,
-                    value: item.label,
-                    qualifiedName: item.qualifiedName,
-                    tableName: item.item.attributes.tableName,
-                }
-                emit('change', item)
-                event.stopPropagation()
-                event.preventDefault()
-                updateVQB(activeInlineTab, inlineTabs)
-                isAreaFocused.value = false
-                return false
-            }
-
             const actionClick = (event, t) => {
                 openAssetInSidebar(event, t, activeInlineTab, inlineTabs)
+            }
+
+            const onCheckboxChange = (checked, item) => {
+                const selectedColumnsDataCopy = JSON.parse(
+                    JSON.stringify(selectedColumnsData.value ?? [])
+                )
+                if (checked.target.checked) {
+                    map.value[item.value] = true
+                    selectedColumnsDataCopy.push({
+                        label: item.label,
+                        type: item.type,
+                        qualifiedName: item.value,
+                    })
+                } else {
+                    delete map.value[item.value]
+                    const _index = selectedColumnsDataCopy.findIndex(
+                        (t) => t.qualifiedName === item.value
+                    )
+                    selectedColumnsDataCopy.splice(_index, 1)
+                }
+                selectedItems.value = [...Object.keys(map.value)]
+                selectedColumnsData.value = selectedColumnsDataCopy
+                updateVQB(activeInlineTab, inlineTabs)
+            }
+
+            const clearAllSelected = () => {
+                selectedItems.value = []
+                map.value = {}
+                selectedColumnsData.value = []
+                updateVQB(activeInlineTab, inlineTabs)
+
+                console.log(map.value, 'destroy')
             }
 
             /* ----------------------------------------- */
@@ -634,17 +527,15 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 (newContext) => {
-                    if (selectedTablesQualifiedNames.value.length > 1) {
-                        if (
-                            !tableSelected.value?.attributes?.qualifiedName?.includes(
-                                newContext.attributeValue
-                            )
-                        ) {
-                            dirtyIsTableSelected.value = false
-                            dirtyTableSelected.value = null
-                            isTableSelected.value = false
-                            tableSelected.value = null
-                        }
+                    if (
+                        !tableSelected.value?.attributes?.qualifiedName?.includes(
+                            newContext.attributeValue
+                        )
+                    ) {
+                        dirtyIsTableSelected.value = false
+                        dirtyTableSelected.value = null
+                        isTableSelected.value = false
+                        tableSelected.value = null
                     }
                 },
                 {
@@ -655,74 +546,50 @@
             watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
-                    if (selectedTablesQualifiedNames.value.length > 1) {
-                        if (newIsAreaFocused) {
-                            dirtyTableSelected.value = toRaw(
-                                tableSelected.value
-                            )
-                            dirtyIsTableSelected.value = toRaw(
-                                isTableSelected.value
-                            )
+                    if (newIsAreaFocused) {
+                        dirtyTableSelected.value = toRaw(tableSelected.value)
+                        dirtyIsTableSelected.value = toRaw(
+                            isTableSelected.value
+                        )
 
-                            if (!tableSelected.value) {
-                                replaceTableBody(getTableInitialBody())
-                            } else {
-                                replaceColumnBody(
-                                    getColumnInitialBody(
-                                        tableSelected.value,
-                                        'not_initial'
-                                    )
-                                )
-                            }
+                        if (!tableSelected.value) {
+                            replaceTableBody(getTableInitialBody())
                         } else {
-                            dirtyTableSelected.value = null
-                            dirtyIsTableSelected.value = false
+                            replaceColumnBody(
+                                getColumnInitialBody(
+                                    tableSelected.value,
+                                    'not_initial'
+                                )
+                            )
                         }
                     } else {
-                        replaceColumnBody(
-                            getColumnInitialBody(
-                                activeInlineTab.value.playground.vqb
-                                    .selectedTables,
-                                'initial'
-                            )
-                        )
+                        dirtyTableSelected.value = null
+                        dirtyIsTableSelected.value = false
                     }
                 },
                 { immediate: true }
             )
 
             watch(tableQueryText, () => {
-                if (selectedTablesQualifiedNames.value.length > 1) {
-                    if (!dirtyIsTableSelected?.value) {
-                        replaceTableBody(getTableInitialBody())
-                    }
+                if (!dirtyIsTableSelected?.value) {
+                    replaceTableBody(getTableInitialBody())
                 }
             })
             watch(columnQueryText, () => {
-                if (selectedTablesQualifiedNames.value.length > 1) {
-                    if (dirtyIsTableSelected?.value) {
-                        replaceColumnBody(
-                            getColumnInitialBody(
-                                dirtyTableSelected.value,
-                                'not_initial'
-                            )
-                        )
-                    }
-                } else {
+                if (dirtyIsTableSelected?.value) {
                     replaceColumnBody(
                         getColumnInitialBody(
-                            activeInlineTab.value.playground.vqb.selectedTables,
-                            'initial'
+                            dirtyTableSelected.value,
+                            'not_initial'
                         )
                     )
                 }
             })
 
             return {
-                tableQualfiedName,
+                map,
                 getDataTypeImage,
                 actionClick,
-                onSelectColumn,
                 onUnselectTable,
                 onSelectTable,
                 isColumnLoading,
@@ -747,6 +614,8 @@
                 dirtyTableSelected,
                 dirtyIsTableSelected,
                 selectedTablesQualifiedNames,
+                onCheckboxChange,
+                clearAllSelected,
             }
         },
     })

@@ -234,7 +234,6 @@
                 const copySubPanels: SubpanelSort[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
-                let uuid = generateUUID()
                 copySubPanels.push({
                     id: generateUUID(),
                     column: {},

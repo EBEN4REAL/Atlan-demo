@@ -42,54 +42,41 @@
                             </div>
                         </template>
                     </ColumnSelector>
-                    <TreeColumnSelector
+
+                    <MultiTableMutliColumnSelector
                         v-else
                         class="flex-1"
-                        :showColumnWithTable="false"
-                        style="max-width: 30%"
                         :disabled="readOnly"
-                        v-model:selectedColumn="subpanel.columnsDataLeft"
-                        v-model:selectedItems="subpanel.columns"
-                        v-model:selectedColumnsData="subpanel.columnsData"
+                        :selectedItems="subpanel.columns"
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
                     >
-                        <template #chip="{ item }">
-                            <div
-                                class="flex cursor-pointer items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-                            >
-                                <component
-                                    v-if="item.type !== 'Columns'"
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
-                                ></component>
-                                <AtlanIcon
-                                    v-else
-                                    icon="Columns"
-                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
-                                />
-
-                                <a-tooltip>
-                                    <template #title>
-                                        <div>
-                                            {{
-                                                `TABLE: ${getTableName(
-                                                    item.columnsQualifiedName
-                                                )}`
-                                            }}
-                                        </div>
-                                    </template>
-
-                                    <div
-                                        class="truncate ... overflow-ellipsis overflow-hidden"
-                                    >
-                                        {{ item.label }}
-                                    </div>
-                                </a-tooltip>
-                            </div>
+                        <template #head>
+                            <MultiTableMutliColumnSelectorHead
+                                :disabled="readOnly"
+                                :selectedItems="subpanel.columns"
+                                :selectedColumnsData="subpanel.columnsData"
+                                :selectedTables="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                            />
                         </template>
-                    </TreeColumnSelector>
+                        <template #body>
+                            <MultiTableMutliColumnSelectorDropdown
+                                :disabled="readOnly"
+                                v-model:selectedItems="subpanel.columns"
+                                v-model:selectedColumnsData="
+                                    subpanel.columnsData
+                                "
+                                :selectedTablesQualifiedNames="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                            />
+                        </template>
+                    </MultiTableMutliColumnSelector>
 
                     <div
                         v-if="subpanel.tableQualfiedName && !readOnly"
@@ -129,10 +116,10 @@
     import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
-    import { selectedTables } from '~/types/insights/VQB.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
-
-    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/index.vue'
+    import MultiTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/_index.vue'
+    import MultiTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/dropdown.vue'
+    import MultiTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multipleColumnTreeSelector/head.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -140,7 +127,9 @@
             Pill,
             TablesTree,
             ColumnSelector,
-            TreeColumnSelector,
+            MultiTableMutliColumnSelector,
+            MultiTableMutliColumnSelectorDropdown,
+            MultiTableMutliColumnSelectorHead,
         },
         props: {
             expand: {

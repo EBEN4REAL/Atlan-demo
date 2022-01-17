@@ -158,7 +158,7 @@
                                                 :class="'text-primary'"
                                                 @click="handleApprove"
                                             >
-                                                approve
+                                                Approve
                                             </a-button>
                                         </div>
                                     </div>

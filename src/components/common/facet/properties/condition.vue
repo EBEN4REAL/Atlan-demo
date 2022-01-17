@@ -37,16 +37,11 @@
             <DynamicInput2
                 v-model="localCondition.value"
                 class="w-full"
-                :data-type="
-                    attribute?.options?.customType ||
-                    attribute?.subTypeName ||
-                    attribute?.options?.enumType ||
-                    attribute?.options?.primitiveType ||
-                    attribute?.typeName
-                "
+                :data-type="dataType"
                 :multiple="
                     attribute?.options?.multiValueSelect === 'true' && false
                 "
+                :operator="localCondition.operator"
                 @change="handleValueChange"
             />
         </div>
@@ -132,9 +127,31 @@
                 emit('clear')
             }
 
+            const dataType = computed(
+                () =>
+                    attribute.value?.options?.customType ||
+                    attribute.value?.subTypeName ||
+                    attribute.value?.options?.enumType ||
+                    attribute.value?.options?.primitiveType ||
+                    attribute.value?.typeName
+            )
+
+            const milisecondsAdjust = (timestamp, operator, dataType) => {
+                let ms = 0
+                if (['lessThanEqual', 'greaterThan'].includes(operator))
+                    ms = 999
+                return Math.floor(timestamp / 1000) * 1000 + ms
+            }
+
             const handleOperatorChange = () => {
                 condition.value.operand = attribute.value.name
                 condition.value.operator = localCondition.value.operator
+                if (['date', 'datetime'].includes(dataType.value.toLowerCase()))
+                    condition.value.value = milisecondsAdjust(
+                        condition.value.value,
+                        condition.value.operator,
+                        dataType.value
+                    )
                 emit('change')
             }
 
@@ -151,13 +168,24 @@
                     delete condition.value.value
                 } else {
                     condition.value.operand = attribute.value.name
-                    condition.value.value = localCondition.value.value
+                    if (
+                        ['date', 'datetime'].includes(
+                            dataType.value.toLowerCase()
+                        )
+                    )
+                        condition.value.value = milisecondsAdjust(
+                            condition.value.value,
+                            condition.value.operator,
+                            dataType.value
+                        )
+                    else condition.value.value = localCondition.value.value
                 }
 
                 emit('change')
             }
 
             return {
+                dataType,
                 localCondition,
                 handleRemove,
                 localOperator,

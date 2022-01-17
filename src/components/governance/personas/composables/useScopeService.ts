@@ -25,8 +25,8 @@ const purposeScopeList = [
                 desc: 'Permission to delete selected assets',
             },
         ],
-        type: 'Asset',
-        label: 'Asset',
+        type: 'Assets',
+        label: 'Assets',
     },
     {
         scopes: [
@@ -198,20 +198,21 @@ export default function scopeService() {
             type === 'persona' ? personaScopeList : purposeScopeList
         const res = [
             { label: 'Asset', action: [] },
-            { label: 'Classifications', action: [] },
-            { label: 'Metadata', action: [] },
+            { label: 'Governance', action: [] },
+            // { label: 'Metadata', action: [] },
         ]
         actions.forEach((action) => {
             scopeList.forEach((scope) => {
                 scope.scopes.forEach((s) => {
                     if (s.value === action) {
-                        if (scope.label === 'Asset') {
+                        if (scope.label === 'Assets') {
                             res[0].action.push(s.label)
-                        } else if (scope.label === 'Classifications') {
+                        } else if (scope.label === 'Governance') {
                             res[1].action.push(s.label)
-                        } else if (scope.label === 'Metadata') {
-                            res[2].action.push(s.label)
                         }
+                        // else if (scope.label === 'Metadata') {
+                        //     res[2].action.push(s.label)
+                        // }
                     }
                 })
             })

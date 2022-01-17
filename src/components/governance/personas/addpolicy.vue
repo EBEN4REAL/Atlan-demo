@@ -718,17 +718,17 @@
                 const assetsList = scopeList[0]
                 const governanceList = scopeList[1]
                 policy.value.actions.forEach((el) => {
-                    const findedAsset = assetsList.scopes.find(
+                    const assetPermission = assetsList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    const findedGovernance = governanceList.scopes.find(
+                    const governancePermission = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    if (findedAsset) {
-                        assetsPermission.push(findedAsset.label)
+                    if (assetPermission) {
+                        assetsPermission.push(assetPermission.label)
                     }
-                    if (findedGovernance) {
-                        governance.push(findedGovernance.label)
+                    if (governancePermission) {
+                        governance.push(governancePermission.label)
                     }
                 })
                 if (assetsPermission.length > 0) {

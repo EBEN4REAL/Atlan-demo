@@ -11,7 +11,6 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon icon="Shield"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
                 {{ filterString }}
             </span>

@@ -158,8 +158,12 @@
             else if (localValue.value == null) localValue.value = ''
 
             const handleInputChange = (v) => {
-                if (props.dataType.toLowerCase() === 'date') {
+                if (
+                    props.dataType.toLowerCase() === 'date' ||
+                    props.dataType.toLowerCase() === 'datetime'
+                ) {
                     const date = localValue.value
+                    // ? reset miliseconds to 000 in case of date
                     modelValue.value = Math.floor(date.valueOf() / 1000) * 1000
                 } else {
                     modelValue.value = localValue.value

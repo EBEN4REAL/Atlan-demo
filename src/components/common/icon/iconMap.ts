@@ -361,6 +361,10 @@ import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import Reload2 from '~/assets/images/icons/Reload2.svg'
+import Message from '~/assets/images/icons/message.svg'
+import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
+import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
+import MessageCross from '~/assets/images/icons/MessageCross.svg'
 
 export default {
     GlowFlash,
@@ -709,5 +713,9 @@ export default {
     LockedFile,
     Databricks,
     Quotes2,
-    Reload2
+    Reload2,
+    Message,
+    MessageSuccess,
+    CrossCircle,
+    MessageCross,
 }

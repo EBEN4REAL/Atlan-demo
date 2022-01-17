@@ -69,10 +69,13 @@
         v-model:value="localValue"
         :format="
             dataType.toLowerCase() === 'datetime'
-                ? 'YYYY-MM-DD HH:mm:ss'
-                : 'YYYY-MM-DD'
+                ? 'DD/MM/YYYY HH:mm:ss'
+                : 'DD/MM/YYYY'
         "
-        :show-time="dataType.toLowerCase() === 'datetime'"
+        :dropdown-class-name="
+            dataType.toLowerCase() === 'date' ? 'hide_time_panel' : ''
+        "
+        :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
         :allow-clear="true"
         value-format="x"
         @change="handleInputChange"
@@ -157,7 +160,7 @@
             const handleInputChange = (v) => {
                 if (props.dataType.toLowerCase() === 'date') {
                     const date = localValue.value
-                    modelValue.value = date?.valueOf()
+                    modelValue.value = Math.floor(date.valueOf() / 1000) * 1000
                 } else {
                     modelValue.value = localValue.value
                 }
@@ -215,4 +218,8 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less">
+    .hide_time_panel .ant-picker-time-panel {
+        @apply hidden;
+    }
+</style>

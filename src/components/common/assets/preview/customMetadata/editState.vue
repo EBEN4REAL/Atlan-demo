@@ -73,9 +73,11 @@
             ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
             class="flex-grow w-100"
+            dropdown-class-name="hide_time_panel"
             value-format="x"
+            :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
             @change="handleChange"
         />
         <a-textarea
@@ -135,13 +137,13 @@
         nextTick,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import dayjs, { Dayjs } from 'dayjs'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
-    import dayjs, { Dayjs } from 'dayjs'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
@@ -156,7 +158,7 @@
                 required: true,
             },
             modelValue: {
-                type: String,
+                type: [String, Number],
                 required: false,
                 default: () => undefined,
             },
@@ -193,7 +195,11 @@
             else if (!localValue.value) localValue.value = ''
 
             const handleChange = () => {
-                modelValue.value = localValue.value
+                if (typeName.value === 'date') {
+                    modelValue.value =
+                        // localValue.value
+                        Math.floor(localValue.value.valueOf() / 100000) * 100000
+                } else modelValue.value = localValue.value
                 emit('change')
             }
 
@@ -231,4 +237,8 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less">
+    .hide_time_panel .ant-picker-time-panel {
+        @apply hidden;
+    }
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <img :src="Loader" :style="{ height: '1rem' }" class="inline w-auto" />
+    <img :src="Loader" class="inline w-auto h-4" />
 </template>
 
 <script lang="ts">

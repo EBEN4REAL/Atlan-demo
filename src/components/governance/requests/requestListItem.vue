@@ -87,41 +87,49 @@
                             request.status === 'rejected'
                         "
                         class="flex items-center justify-end font-light"
+                        :class="
+                            request.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
                     >
-                        Requested by
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                        {{
+                            request.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
                         <div class="flex items-center mx-2 truncate">
                             <Avatar
                                 :allow-upload="false"
                                 :avatar-name="nameUpdater"
                                 :avatar-size="18"
                                 :avatar-shape="'circle'"
-                                :image-url="atlanLogo"
                                 class="mr-2"
                             />
 
-                            <UserPiece
-                                :user="request.created_by_user"
-                                :is-pill="false"
-                                :default-name="'Atlan Bot'"
-                            />
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
                         </div>
                         <DatePiece
                             label="Created At"
-                            :date="request.createdAt"
                             :no-popover="true"
                             class="font-light text-gray-500"
+                            :date="
+                                request.status === 'approved'
+                                    ? request.approvedBy[0].timestamp
+                                    : request.rejectedBy[0].timestamp
+                            "
                         />
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div
-                        v-if="request.status === 'active'"
-                        class="flex items-center gap-x-2"
-                    >
-                        <AtlanIcon
-                            v-if="request.message"
-                            class="mr-3 message-icon"
-                            icon="Message"
+                    <div class="flex items-center gap-x-2">
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
                         />
                         <Avatar
                             :allow-upload="false"
@@ -144,7 +152,7 @@
                             />
                         </div>
                     </div>
-                    <div v-else class="flex items-center">
+                    <!-- <div class="flex items-center">
                         <AtlanIcon
                             v-if="
                                 request.status === 'approved' &&
@@ -199,7 +207,7 @@
                                 class="font-light text-gray-500"
                             />
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </template>
         </div>
@@ -232,6 +240,7 @@
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import IconStatus from './iconStatus.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -252,6 +261,7 @@
             DatePiece,
             TermPiece,
             Avatar,
+            IconStatus,
         },
         props: {
             request: {
@@ -379,6 +389,12 @@
         transform: scale(1.4) !important;
     }
     .check-icon {
-        transform: scale(1.2) !important;
+        transform: scale(1.4) !important;
+    }
+    .cross-icon {
+        transform: scale(1.1) !important;
+    }
+    .message-cross-icon {
+        transform: scale(1.5) !important;
     }
 </style>

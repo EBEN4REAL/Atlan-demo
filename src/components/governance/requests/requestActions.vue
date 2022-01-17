@@ -23,6 +23,7 @@
                         <UserPiece
                             :user="request.created_by_user"
                             :is-pill="false"
+                            :default-name="'Atlan Bot'"
                         />
                     </div>
                 </div>
@@ -154,6 +155,7 @@
                                             <a-button
                                                 size="small"
                                                 type="link"
+                                                :class="'text-primary'"
                                                 @click="handleApprove"
                                             >
                                                 approve

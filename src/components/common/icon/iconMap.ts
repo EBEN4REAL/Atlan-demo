@@ -360,6 +360,8 @@ import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import Reload2 from '~/assets/images/icons/Reload2.svg'
 import Message from '~/assets/images/icons/Message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
+import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
+import MessageCross from '~/assets/images/icons/MessageCross.svg'
 
 export default {
     GlowFlash,
@@ -708,5 +710,7 @@ export default {
     Quotes2,
     Reload2,
     Message,
-    MessageSuccess
+    MessageSuccess,
+    CrossCircle,
+    MessageCross
 }

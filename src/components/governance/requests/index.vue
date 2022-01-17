@@ -108,7 +108,7 @@
                         @click="mutate"
                     >
                         <!-- <img :src="logoUrl" /> -->
-                        <AtlanIcon icon="Reload2" />
+                        <AtlanIcon icon="Retry" />
                     </div>
                 </a-tooltip>
             </div>

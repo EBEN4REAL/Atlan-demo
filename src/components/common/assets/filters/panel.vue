@@ -33,7 +33,10 @@
                                 class="w-full text-xs uppercase text-gray hover:text-primary title"
                                 style="letter-spacing: 0.07em"
                             >
-                                <Truncate :tooltipText="item.label" :rows="2" />
+                                <Truncate
+                                    :tooltip-text="item.label"
+                                    :rows="2"
+                                />
                             </span>
                         </div>
 
@@ -96,6 +99,7 @@
     import LogStatus from '@common/facet/accessLogs/status.vue'
     import UserTypes from '@common/facet/accessLogs/userTypes.vue'
     import CheckBoxOption from '@common/facet/checkBoxOption/index.vue'
+    import RadioButton from '@common/facet/radioButton/index.vue'
     import QueryStatus from '@/common/facet/queryStatus/index.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -127,6 +131,7 @@
             Properties: defineAsyncComponent(
                 () => import('@/common/facet/properties/index.vue')
             ),
+            RadioButton,
         },
         props: {
             item: {
@@ -196,7 +201,6 @@
             )
 
             const handleChange = () => {
-                console.log('discoveryFacet change')
                 modelValue.value = facetMap.value
                 emit('change', item.value)
             }
@@ -256,7 +260,7 @@
 
                 if (id === 'terms' && facetMap.value[id]) {
                     let count = facetMap.value[id].terms.length
-                    if (facetMap.value[id].empty) count = count + 1
+                    if (facetMap.value[id].empty) count += 1
                     return `${count} applied`
                 }
 

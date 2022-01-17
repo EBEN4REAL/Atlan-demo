@@ -1,99 +1,105 @@
 <template>
     <div class="flex items-center justify-end gap-x-2">
-        <a-dropdown
-            v-model:visible="isVisibleReject"
-            trigger="click"
-            placement="bottomRight"
+        <AtlanButton
+            color="secondary"
+            padding="compact"
+            size="sm"
+            class="btn-actions"
+            @click.stop="handleClickReject"
         >
-            <template #overlay>
-                <a-menu>
-                    <a-menu-item key="1" @click="handleClickReject">
-                        Reject
-                    </a-menu-item>
-
-                    <a-menu-item key="2" @click="handleClickRejectWithComment">
-                        <a-popover
-                            v-model:visible="isVisibleRejectWithComment"
-                            trigger="click"
-                            placement="bottomRight"
-                            :align="{ offset: [15, -70] }"
-                        >
-                            <template #content>
-                                <div class="comment-delete">
-                                    <div class="flex">
-                                        <component
-                                            :is="iconQuotes"
-                                            class="mr-4"
-                                        />
-                                        <p>
-                                            Lorem ipsum dolor sit amet,
-                                            consectetur
-                                        </p>
-                                    </div>
-                                    <div class="flex items-center mt-4">
-                                        <Avatar
-                                            :allow-upload="false"
-                                            :avatar-name="
-                                                request.created_by_user
-                                                    ?.username
-                                            "
-                                            avatar-size="16"
-                                            :avatar-shape="'circle'"
-                                            class="mr-2"
-                                        />
-                                        <UserPiece
-                                            :user="request.created_by_user"
-                                            :is-pill="false"
-                                        />
-                                    </div>
-                                </div>
-                            </template>
-                            Reject with comment
-                        </a-popover>
-                    </a-menu-item>
-                </a-menu>
-            </template>
-            <!-- @click.stop="$emit('reject')" -->
-            <AtlanButton
-                color="secondary"
-                padding="compact"
-                size="sm"
-                @click.stop="isVisibleReject = !isVisibleReject"
+            <span class="text-red-500"> Reject </span>
+            <div class="sparator" />
+            <a-dropdown
+                v-model:visible="isVisibleReject"
+                trigger="click"
+                placement="bottomRight"
             >
-                <template #suffix>
-                    <AtlanIcon class="mr-1" icon="ChevronDown" />
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item key="1" @click="handleClickReject">
+                            Reject
+                        </a-menu-item>
+
+                        <a-menu-item
+                            key="2"
+                            @click="handleClickRejectWithComment"
+                        >
+                            <a-popover
+                                v-model:visible="isVisibleRejectWithComment"
+                                trigger="click"
+                                placement="bottomRight"
+                                :align="{ offset: [15, -70] }"
+                            >
+                                <template #content>
+                                    <div class="comment-delete">
+                                        <div class="flex">
+                                            <component
+                                                :is="iconQuotes"
+                                                class="mr-4"
+                                            />
+                                            <p>
+                                                Lorem ipsum dolor sit amet,
+                                                consectetur
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center mt-4">
+                                            <Avatar
+                                                :allow-upload="false"
+                                                :avatar-name="
+                                                    request.created_by_user
+                                                        ?.username
+                                                "
+                                                avatar-size="16"
+                                                :avatar-shape="'circle'"
+                                                class="mr-2"
+                                            />
+                                            <UserPiece
+                                                :user="request.created_by_user"
+                                                :is-pill="false"
+                                            />
+                                        </div>
+                                    </div>
+                                </template>
+                                Reject with comment
+                            </a-popover>
+                        </a-menu-item>
+                    </a-menu>
                 </template>
-                <span class="text-red-500"> Reject </span>
-                <div class="sparator" />
-            </AtlanButton>
-        </a-dropdown>
-        <a-dropdown
-            v-model:visible="isVisibleApprove"
-            trigger="click"
-            placement="bottomRight"
+                <!-- @click.stop="$emit('reject')" -->
+                <div @click.stop="isVisibleReject = !isVisibleReject">
+                    <AtlanIcon icon="ChevronDown" />
+                </div>
+            </a-dropdown>
+        </AtlanButton>
+        <AtlanButton
+            class="btn-actions"
+            color="secondary"
+            padding="compact"
+            size="sm"
+            @click.stop="$emit('accept')"
         >
-            <template #overlay>
-                <a-menu>
-                    <a-menu-item key="4" @click="$emit('accept')">
-                        Approve
-                    </a-menu-item>
-                    <a-menu-item key="3" @click="$emit('accept')">
-                        Approve with comment
-                    </a-menu-item>
-                </a-menu>
-            </template>
-            <AtlanButton
-                color="secondary"
-                padding="compact"
-                size="sm"
-                @click.stop="isVisibleApprove = !isVisibleApprove"
-                ><template #suffix>
-                    <AtlanIcon class="mr-1" icon="ChevronDown" />
+            <span class="text-green-500"> Approve </span>
+            <div class="sparator" />
+            <a-dropdown
+                v-model:visible="isVisibleApprove"
+                trigger="click"
+                placement="bottomRight"
+            >
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item key="4" @click="$emit('accept')">
+                            Approve
+                        </a-menu-item>
+                        <a-menu-item key="3" @click="$emit('accept')">
+                            Approve with comment
+                        </a-menu-item>
+                    </a-menu>
                 </template>
-                <span class="text-green-500"> Approve </span>
-                <div class="sparator" />
-            </AtlanButton>
-        </a-dropdown>
+                <div @click.stop="isVisibleApprove = !isVisibleApprove">
+                    <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
+                </div>
+            </a-dropdown>
+        </AtlanButton>
         <!-- <AtlanButton
             color="secondary"
             @click.stop="$emit('more')"
@@ -161,5 +167,8 @@
         height: 60%;
         background: #e6e6eb;
         margin-left: 10px;
+    }
+    .btn-actions {
+        padding-right: 8px !important;
     }
 </style>

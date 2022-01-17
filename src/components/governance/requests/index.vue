@@ -5,17 +5,24 @@
         :placement="'left'"
         :width="287"
         :closable="false"
+        :class="'drawer-filter-request'"
     >
-        <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
-            <div
+        <div class="relative h-full pt-8 pb-10 overflow-scroll bg-gray-50">
+            <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
                 } border border-solid order-gray-300`"
                 @click="handleClickFilter"
             >
                 <AtlanIcon icon="ChevronRight" />
+            </div> -->
+            <div
+                v-if="drawerFilter"
+                class="close-btn-sidebar button-close-drawer-request"
+                @click="handleClickFilter"
+            >
+                <AtlanIcon icon="Add" class="text-white" />
             </div>
-
             <div class="px-2 filter-container">
                 <AssetFilters
                     v-model="facets"
@@ -58,9 +65,8 @@
             </div>
         </div>
     </a-drawer>
-    <DefaultLayout title="Manage Requests" class="governance-request">
-        <template #header> </template>
-        <div class="relative border rounded">
+    <DefaultLayout title="Requests" class="px-6 governance-request">
+        <div class="relative mt-3 border rounded-md">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
             <div
                 class="wrapper-scoll right"
@@ -69,8 +75,17 @@
             <div class="flex justify-between m-4 mb-0">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    class="max-w-xl"
+                    class="max-w-lg shadow-none filter-request"
                     size="default"
+                    :placeholder="
+                        pagination.totalData
+                            ? `Search all ${pagination.totalData} ${
+                                  pagination.totalData > 0
+                                      ? 'requests'
+                                      : 'request'
+                              }`
+                            : 'search'
+                    "
                 >
                     <template #categoryFilter>
                         <div
@@ -84,9 +99,18 @@
                         </div>
                     </template>
                 </SearchAndFilter>
-                <div class="p-2 border rounded cursor-pointer" @click="mutate">
-                    <AtlanIcon icon="Reload" />
-                </div>
+                <a-tooltip placement="topLeft">
+                    <template #title>
+                        <span>refresh</span>
+                    </template>
+                    <div
+                        class="p-2 py-1 border rounded cursor-pointer reload-button"
+                        @click="mutate"
+                    >
+                        <!-- <img :src="logoUrl" /> -->
+                        <AtlanIcon icon="Reload2" />
+                    </div>
+                </a-tooltip>
             </div>
             <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
             <div
@@ -95,7 +119,7 @@
             >
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <template v-else-if="requestList.length">
+            <div v-show="!listLoading && requestList.length">
                 <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
@@ -123,18 +147,33 @@
                         />
                     </template>
                 </VirtualList>
-                <div @mouseenter="mouseEnterContainer" />
-                <div class="flex justify-end p-4 bg-white border-t">
-                    <Pagination
-                        v-model:offset="pagination.offset"
-                        :total-pages="pagination.totalPages"
-                        :loading="listLoading"
-                        :page-size="pagination.limit"
-                        @mutate="mutate"
-                    />
+                <div class="h-3" @mouseenter="mouseEnterContainer" />
+                <div
+                    class="flex items-center justify-between p-4 bg-white border-t"
+                >
+                    <div class="text-gray-500">
+                        <strong
+                            >{{ startCountPagination }}-{{
+                                endCountPagination
+                            }}</strong
+                        >
+                        of {{ pagination.totalData }} requests
+                    </div>
+                    <div class="flex">
+                        <Pagination
+                            v-model:offset="pagination.offset"
+                            :total-pages="pagination.totalPages"
+                            :loading="listLoading"
+                            :page-size="pagination.limit"
+                            @mutate="mutate"
+                        />
+                    </div>
                 </div>
-            </template>
-            <div v-else class="flex items-center justify-center h-full mb-12">
+            </div>
+            <div
+                v-if="!listLoading && !requestList.length"
+                class="flex items-center justify-center h-full mb-12"
+            >
                 <div
                     v-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center mt-12"
@@ -162,15 +201,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        watch,
-        Ref,
-        reactive,
-        provide,
-    } from 'vue'
+    import { defineComponent, computed, ref, watch } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -195,6 +226,7 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
+    import reload from '~/assets/images/icons/Reload2.svg'
 
     export default defineComponent({
         name: 'RequestList',
@@ -238,6 +270,7 @@
                 limit: 20,
                 offset: 0,
                 totalPages: 1,
+                totalData: 0,
             })
             const {
                 response,
@@ -255,6 +288,7 @@
                     ) || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
+                pagination.value.totalData = response.value.filterRecord
             })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
@@ -337,7 +371,7 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
-                    ? Object.values(facetsValue.statusRequest)
+                    ? [facetsValue.statusRequest]
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
@@ -375,6 +409,17 @@
             const mouseEnterContainer = () => {
                 activeHover.value = ''
             }
+            const logoUrl = computed(
+                () => `${window.location.origin}/api/service/avatars/_logo_`
+            )
+            const startCountPagination = computed(() =>
+                pagination.value.offset === 0 ? 1 : pagination.value.offset + 1
+            )
+            const endCountPagination = computed(() =>
+                pagination.value.offset === 0
+                    ? requestList.value.length
+                    : pagination.value.offset + requestList.value.length
+            )
             return {
                 mutate,
                 pagination,
@@ -404,6 +449,11 @@
                 handleMouseEnter,
                 activeHover,
                 mouseEnterContainer,
+                response,
+                reload,
+                logoUrl,
+                startCountPagination,
+                endCountPagination,
                 // listPermission
             }
         },
@@ -411,6 +461,24 @@
 </script>
 
 <style lang="less">
+    .reload-button {
+        path {
+            fill: #3e4359;
+            stroke: #3e4359;
+        }
+    }
+    .filter-request {
+        height: 25px !important;
+    }
+    .drawer-filter-request {
+        .ant-drawer-content-wrapper {
+            width: 240px !important;
+        }
+    }
+    .button-close-drawer-request {
+        left: 250px !important;
+        // right: -40px !important;
+    }
     .governance-request {
         .container-content {
             overflow: visible !important;
@@ -465,8 +533,8 @@
     }
 
     .devider-filter {
-        top: -8px;
-        height: 35px;
+        top: -5px;
+        height: 31px;
         right: 0;
     }
 </style>

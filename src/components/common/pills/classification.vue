@@ -14,11 +14,14 @@
             cursor-pointer
             hover:text-white
             group
+            classification-pill
             `"
         :data-test-id="displayName"
         @mouseover="
             () => {
-                shieldColour = 'White'
+                if (!noHover) {
+                    shieldColour = 'White'
+                }
             }
         "
         @mouseleave="
@@ -38,7 +41,7 @@
             {{ displayName || name }}
         </div>
 
-        <div class="flex" @click="handleRemove" v-if="allowDelete">
+        <div v-if="allowDelete" class="flex" @click="handleRemove">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500 group-hover:text-white"
@@ -52,6 +55,7 @@
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default defineComponent({
+        components: { ClassificationIcon },
         props: {
             guid: {
                 type: String,
@@ -82,11 +86,16 @@
                     return false
                 },
             },
+            noHover: {
+                type: Boolean,
+                default() {
+                    return false
+                },
+            },
         },
-        components: { ClassificationIcon },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, isPropagated, displayName, color } = toRefs(props)
+            const { name, displayName, color } = toRefs(props)
             const shieldColour = ref(unref(color))
             const originalColour = ref(unref(color))
 
@@ -110,7 +119,6 @@
 
             return {
                 name,
-                isPropagated,
                 displayName,
                 handleRemove,
                 color,

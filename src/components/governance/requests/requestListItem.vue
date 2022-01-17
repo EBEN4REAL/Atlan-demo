@@ -4,7 +4,7 @@
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary border bg-primary-light': active,
+            'active-request outline-1 bg-primary-light': active,
             'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"
@@ -83,15 +83,50 @@
                     />
                     <div
                         v-else-if="request.status === 'approved'"
-                        class="text-success"
+                        class="flex items-center font-light text-success"
                     >
-                        Approved
+                        Approved by
+                        <div class="flex items-center mx-2 truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
+                        </div>
+                        <DatePiece
+                            label="Created At"
+                            :date="request.approvedBy[0].timestamp"
+                            :no-popover="true"
+                            class="font-light text-gray-500"
+                        />
                     </div>
+
                     <div
                         v-else-if="request.status === 'rejected'"
-                        class="text-error"
+                        class="flex items-center font-light text-error"
                     >
-                        Rejected
+                        Rejected by
+                        <div class="flex items-center mx-2">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
+                        </div>
+                        <DatePiece
+                            label="Created At"
+                            :date="request.rejectedBy[0].timestamp"
+                            class="font-light text-gray-500"
+                            :no-popover="true"
+                        />
                     </div>
                 </div>
                 <div v-else class="flex w-1/2 gap-x-2">
@@ -100,12 +135,14 @@
                         :avatar-name="request.created_by_user?.username"
                         avatar-size="24"
                         :avatar-shape="'circle'"
+                        :image-url="atlanLogo"
                     />
 
                     <div class="flex flex-col">
                         <UserPiece
                             :user="request.created_by_user"
                             :is-pill="false"
+                            :default-name="'Atlan Bot'"
                         />
                         <DatePiece
                             label="Created At"
@@ -120,7 +157,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        reactive,
+        toRefs,
+        onMounted,
+        watch,
+        ref,
+        computed,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
@@ -128,7 +174,7 @@
 
     import RequestActions from './requestActions.vue'
     import Avatar from '~/components/common/avatar/index.vue'
-
+    import { Users } from '~/services/service/users/index'
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
     import AttrPiece from './pieces/attributeUpdate.vue'
@@ -181,7 +227,7 @@
         emits: ['select', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
-
+            const updatedBy = ref({})
             const state = reactive({
                 isLoading: false,
                 message: '',
@@ -224,6 +270,40 @@
                 }
                 state.isLoading = false
             }
+            onMounted(() => {
+                if (
+                    request.value.status === 'approved' ||
+                    request.value.status === 'rejected'
+                ) {
+                    const userId =
+                        request.value.status === 'approved'
+                            ? `${request.value.approvedBy[0].userId}`
+                            : `${request.value.rejectedBy[0].userId}`
+                    const payloadFilter = {
+                        $and: [
+                            {
+                                id: userId,
+                            },
+                        ],
+                    }
+                    const { data } = Users.List(
+                        {
+                            limit: 1,
+                            offset: 0,
+                            filter: JSON.stringify(payloadFilter),
+                        },
+                        { cacheKey: userId }
+                    )
+                    watch(data, () => {
+                        updatedBy.value = data.value.records[0]
+                    })
+                }
+            })
+            const nameUpdater = computed(() =>
+                updatedBy.value?.firstName
+                    ? `${updatedBy.value?.firstName} ${updatedBy.value?.lastName}`
+                    : ''
+            )
             return {
                 handleApproval,
                 handleRejection,
@@ -231,9 +311,18 @@
                 requestTypeIcon,
                 state,
                 atlanLogo,
+                nameUpdater,
             }
         },
     })
 </script>
 
-<style lang="less" scope></style>
+<style lang="less" scoped>
+    .request-card {
+        &.active-request {
+            // outline-style: solid !important;
+            // outline-color: rgb(82, 119, 215) !important;
+        }
+        outline-offset: -1px !important;
+    }
+</style>

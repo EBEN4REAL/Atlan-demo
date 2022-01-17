@@ -1,18 +1,14 @@
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
-    const styleEdges = (edge) => {
+    const styleReverseEdge = (edge) => {
         if (!edge) return
 
         const s = edge.getSourcePoint()
         const t = edge.getTargetPoint()
 
-        if (s.x > t.x) {
-            edge.attr('line/strokeDasharray', '3 6')
-            edge.attr('line/stroke', '#aaaaaa')
-        } else {
-            edge.attr('line/strokeDasharray', 0)
-            edge.attr('line/stroke', '#c7c7c7')
-        }
+        edge.attr('line/strokeDasharray', s.x > t.x ? '3 6' : 0)
+        edge.attr('line/stroke', s.x > t.x ? '#aaaaaa' : '#c7c7c7')
+
         edge.attr('line/targetMarker/height', 0.1)
         edge.attr('line/targetMarker/width', 0.1)
     }
@@ -64,7 +60,7 @@ export default function useUpdateGraph() {
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
             if (!itExists) {
                 cell.attr('line/strokeWidth', 1.6)
-                styleEdges(cell)
+                styleReverseEdge(cell)
             }
             x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
             if (itExists) cell.toFront()
@@ -74,6 +70,6 @@ export default function useUpdateGraph() {
     return {
         highlightNodes,
         highlightEdges,
-        styleEdges,
+        styleReverseEdge,
     }
 }

@@ -8,7 +8,7 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
-const { highlightNodes, highlightEdges, styleEdges } = useUpdateGraph()
+const { highlightNodes, highlightEdges, styleReverseEdge } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
     useGraph()
@@ -820,12 +820,12 @@ export default function useEventGraph(
 
     // EDGE ADDED - Style backward pointing edges
     graph.value.on('edge:added', ({ edge }) => {
-        styleEdges(edge)
+        styleReverseEdge(edge)
     })
 
     // Set style of present edges which point backwards
     graph.value.getEdges().forEach((edge) => {
-        styleEdges(edge)
+        styleReverseEdge(edge)
     })
 
     /** WATCHERS */
@@ -837,7 +837,7 @@ export default function useEventGraph(
     watch(resetSelections, (newVal) => {
         if (newVal) {
             onSelectAsset(baseEntity.value, false, false)
-            styleEdges(graph.value.getCellById(che.value))
+            styleReverseEdge(graph.value.getCellById(che.value))
             che.value = ''
             drawerActiveKey.value = 'Info'
             if (highlightedNode.value) highlight(null)

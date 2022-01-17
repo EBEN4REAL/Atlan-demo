@@ -40,6 +40,7 @@
                 :selectable="true"
                 :openAssetProfileInNewTab="true"
                 :selectedItems="checkedGuids"
+                :filters="filters"
                 assetListClass="px-0 mt-2"
                 aggregationTabClass="px-5"
                 searchBarClass="px-5"
@@ -143,6 +144,7 @@
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
+            const filters = ref({excludeGtc: true})
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
@@ -212,6 +214,7 @@
                 handleAssetCardClick,
                 drawerAsset,
                 AssetListRef,
+                filters
             }
         },
     })

@@ -136,6 +136,7 @@
                     @mouseleave="mouseLeaveContainer"
                 >
                     <template #default="{ item, index }">
+                        <!-- @select="selectRequest(item.id, index)" -->
                         <RequestListItem
                             :request="item"
                             :selected="isSelected(item.id)"
@@ -143,7 +144,6 @@
                             :active="index === selectedIndex"
                             @mouseenter="handleMouseEnter(item.id)"
                             @action="handleRequestAction($event, index)"
-                            @select="selectRequest(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -258,7 +258,9 @@
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
-            const facets = ref({})
+            const facets = ref({
+                statusRequest: ['active'],
+            })
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -371,7 +373,7 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
-                    ? [facetsValue.statusRequest]
+                    ? facetsValue.statusRequest
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {

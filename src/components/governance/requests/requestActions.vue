@@ -1,5 +1,34 @@
 <template>
     <div class="flex items-center justify-end gap-x-2">
+        <a-popover
+            v-if="request.message"
+            trigger="hover"
+            placement="bottomRight"
+        >
+            <template #content>
+                <div class="comment-delete">
+                    <div class="flex">
+                        <component :is="iconQuotes" class="mr-4" />
+                        <p>{{ request.message }}</p>
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="request.created_by_user?.username"
+                            :avatar-size="16"
+                            :avatar-shape="'circle'"
+                            class="mr-2"
+                            :image-url="atlanLogo"
+                        />
+                        <UserPiece
+                            :user="request.created_by_user"
+                            :is-pill="false"
+                        />
+                    </div>
+                </div>
+            </template>
+            <AtlanIcon class="mr-3" icon="Message" />
+        </a-popover>
         <AtlanButton
             color="secondary"
             padding="compact"
@@ -117,6 +146,7 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
     import UserPiece from './pieces/user.vue'
+    import atlanLogo from '~/assets/images/atlan-logo.png'
 
     export default defineComponent({
         name: 'RequestActions',
@@ -151,6 +181,7 @@
                 isVisibleRejectWithComment,
                 iconQuotes,
                 isVisibleApprove,
+                atlanLogo,
             }
         },
     })
@@ -160,7 +191,8 @@
     .comment-delete {
         // height: 90px;
         width: 200px;
-        padding: 12px 8px;
+        padding: 12px 12px;
+        border-radius: 8px !important;
     }
     .sparator {
         width: 1px;

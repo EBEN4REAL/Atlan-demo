@@ -151,6 +151,7 @@ export function useSavedQuery(
                                           tableData: {
                                               certificateStatus: undefined,
                                               assetType: undefined,
+                                              item: {},
                                           },
                                           columnsData: [],
                                       },
@@ -285,7 +286,13 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if (isVQB) {
+        // if (isVQB) {
+        //     visualBuilderSchemaBase64 = serializeQuery(
+        //         activeInlineTabCopy?.playground.vqb
+        //     )
+        //     isVisualQuery = true
+        // }
+        if (activeInlineTabCopy.playground.isVQB) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )
@@ -638,14 +645,12 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-        const rawQuery = editorInstanceRaw?.getValue()
+        const rawQuery = ""
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
             getDatabaseQualifiedName(attributeValue) ?? undefined
-        const variablesSchemaBase64 = serializeQuery(
-            activeInlineTab.value.playground.editor.variables
-        )
+        const variablesSchemaBase64 = []
         // const uuidv4 = generateUUID()
         const collectionQualifiedName =
             activeInlineTab.value.explorer.queries.collection.qualifiedName

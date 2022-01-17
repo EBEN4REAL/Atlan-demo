@@ -36,7 +36,7 @@ export const previewTabs = [
         icon: 'Lineage',
         tooltip: 'Lineage',
         scrubbed: true,
-        requiredInProfile: false,
+        requiredInProfile: true,
         analyticsKey: 'lineage',
     },
     {
@@ -77,8 +77,8 @@ export const previewTabs = [
         ],
         icon: 'Relation',
         tooltip: 'Relationships',
-        scrubbed: true,
-        requiredInProfile: false,
+        scrubbed: false,
+        requiredInProfile: true,
         analyticsKey: 'relations',
     },
     {
@@ -100,5 +100,16 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'property',
+    },
+    {
+        name: 'Linked Assets',
+        component: 'linkedAssets',
+        icon: 'AssetsInactiveLight',
+        activeIcon: 'AssetsActiveLight',
+        tooltip: 'Linked Assets',
+        scrubbed: false,
+        requiredInProfile: false,
+        analyticsKey: 'linkedAssets',
+        includes: ['AtlasGlossaryTerm'],
     },
 ]

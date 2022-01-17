@@ -2,8 +2,8 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div
-                v-if="userList.length > 0"
-                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+                v-if="totalUserCount > 0"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
@@ -22,7 +22,12 @@
                             />
                         </template> -->
                     </SearchAndFilter>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover
+                        v-model="visible"
+                        trigger="click"
+                        placement="bottomLeft"
+                        @visibleChange="handleClickFilter"
+                    >
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
@@ -34,10 +39,26 @@
                             />
                         </template>
                         <button
-                            class="flex items-center justify-center h-8 py-2 pl-2 pr-3 transition-colors border border-gray-300 rounded shadow-none hover:shadow"
+                            :class="`flex items-center justify-center h-8 py-2 pl-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow-none hover:border-primary hover:text-primary ${
+                                visible
+                                    ? 'border-primary text-primary blue-icons'
+                                    : ''
+                            }`"
                         >
-                            <AtlanIcon icon="Filter" class="w-5 h-5" />
-                            <span>Filters</span>
+                            <AtlanIcon
+                                :icon="
+                                    filtersLength > 0 ? 'FilterDot' : 'Filter'
+                                "
+                                class="w-5 h-5"
+                            />
+                            <span class="text-sm"
+                                >Filters
+                                {{
+                                    filtersLength > 0
+                                        ? `(${filtersLength})`
+                                        : ''
+                                }}</span
+                            >
                         </button>
                     </a-popover>
                 </div>
@@ -58,7 +79,7 @@
 
         <div
             v-if="error && userList.length === 0"
-            class="flex flex-col items-center h-full align-middle bg-white"
+            class="flex flex-col items-center h-full align-middle bg-white border border-gray-300 rounded-lg"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -83,6 +104,7 @@
                 empty-screen="NoUsers"
                 desc="Oops… we didn’t find any users that match this search"
                 button-text="Clear search"
+                class="border border-gray-300 rounded-b-lg"
                 @event="clearFilter"
             />
             <template v-else>
@@ -106,6 +128,7 @@
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
                     @refetch="refetchData"
+                    :isPreview="showPreview"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -285,6 +308,8 @@
                     },
                     []
                 )
+
+                console.log('user filter', userListAPIParams)
 
                 userListAPIParams.offset = 0
                 getUserList()
@@ -502,7 +527,34 @@
                 })
             }
 
+            const filtersLength = ref(0)
+            watch(
+                [statusFilter, filterRole],
+                ([newA, newB]) => {
+                    if (newA?.length > 0 && newB) {
+                        filtersLength.value = newA.length + 1
+                    } else if (newA?.length > 0) {
+                        filtersLength.value = newA?.length
+                    } else if (newB) {
+                        filtersLength.value = 1
+                    } else {
+                        filtersLength.value = 0
+                    }
+                },
+                {
+                    immediate: true,
+                    deep: true,
+                }
+            )
+
+            const visible = ref(false)
+
+            const handleClickFilter = (v) => {
+                visible.value = v
+            }
+
             return {
+                showPreview,
                 isReady,
                 tenantName,
                 map,
@@ -553,6 +605,9 @@
                 numberOfActiveUser,
                 numberOfDisableUser,
                 numberOfInvitedUser,
+                filtersLength,
+                handleClickFilter,
+                visible,
             }
         },
     })
@@ -569,6 +624,11 @@
         .input-filter {
             width: 300px !important;
             margin-right: 12px !important;
+        }
+    }
+    .blue-icons {
+        path {
+            stroke: rgb(82, 119, 215);
         }
     }
 </style>

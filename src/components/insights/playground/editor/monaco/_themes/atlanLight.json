@@ -5,7 +5,7 @@
 
         {
             "token": "",
-            "foreground": "#3E4359",
+            "foreground": "#000000",
             "background": "fffffe"
         },
         {
@@ -27,7 +27,7 @@
         },
         {
             "token": "field",
-            "foreground": "#3E4359"
+            "foreground": "#000000"
         },
         {
             "token": "variable.predefined",
@@ -65,15 +65,15 @@
 
         {
             "token": "delimiter",
-            "foreground": "#3E4359"
+            "foreground": "#000000"
         },
         {
             "token": "delimiter.html",
-            "foreground": "#3E4359"
+            "foreground": "#000000"
         },
         {
             "token": "delimiter.xml",
-            "foreground": "#3E4359"
+            "foreground": "#000000"
         },
 
         {
@@ -128,11 +128,11 @@
 
         {
             "token": "attribute.name",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "attribute.value",
-            "foreground": "3E4359"
+            "foreground": "000000"
         },
         {
             "token": "attribute.value.number",
@@ -153,53 +153,53 @@
 
         {
             "token": "string",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "string.html",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "string.sql",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "string.yaml",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
 
         {
             "token": "keyword",
-            "foreground": "#5277D7"
+            "foreground": "#2258E5"
         },
         {
             "token": "keyword.json",
-            "foreground": "#5277D7"
+            "foreground": "#2258E5"
         },
         {
             "token": "keyword.flow",
-            "foreground": "#5277D7"
+            "foreground": "#2258E5"
         },
         {
             "token": "keyword.flow.scss",
-            "foreground": "#5277D7"
+            "foreground": "#2258E5"
         },
 
         {
             "token": "operator.scss",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "operator.sql",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "operator.swift",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },
         {
             "token": "predefined.sql",
-            "foreground": "5277D7"
+            "foreground": "2258E5"
         },        
         {
             "token": "quotedString.sql",

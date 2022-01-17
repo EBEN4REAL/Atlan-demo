@@ -1,13 +1,12 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <router-view v-if="isItem" />
-        <div class="flex-1 border-r border-gray-200" v-else-if="!isItem">
-            <keep-alive>
-                <WorkflowDiscovery
-                    ref="assetdiscovery"
-                    :style="isItem ? 'display: none !important;' : ''"
-                ></WorkflowDiscovery>
-            </keep-alive>
+        <div class="flex-1 border-r border-gray-200">
+            <router-view v-if="isItem" />
+
+            <WorkflowDiscovery
+                ref="assetdiscovery"
+                :style="isItem ? 'display: none !important;' : ''"
+            ></WorkflowDiscovery>
         </div>
 
         <div
@@ -38,14 +37,12 @@
             })
             const route = useRoute()
             const assetdiscovery = ref()
-            const isItem = computed(
-                () =>
-                    !!route.params.id ||
-                    route.path.startsWith('/workflows/setup')
+
+            const isItem = computed(() => route.params.id || isSetup.value)
+            const isSetup = computed(() =>
+                route.path.startsWith('/workflows/setup')
             )
             const localSelected = ref()
-
-            const assetStore = useAssetStore()
 
             const handlePreview = (asset) => {
                 localSelected.value = asset
@@ -61,9 +58,10 @@
             provide('preview', handlePreview)
 
             return {
-                isItem,
+                isSetup,
                 assetdiscovery,
                 localSelected,
+                isItem,
             }
         },
     })

@@ -10,7 +10,11 @@
             <div class="flex justify-between">
                 <p
                     class="pr-2 m-0 overflow-hidden text-sm truncate"
-                    :class="isSelected ? 'text-primary' : 'text-gray'"
+                    :class="
+                        isSelected
+                            ? 'text-primary font-semibold'
+                            : 'text-gray hover:text-primary hover:font-semibold'
+                    "
                 >
                     {{ item.name }}
                 </p>

@@ -422,13 +422,12 @@
                         comments: false,
                         strings: true,
                     },
-                    // scrollbar: {
-                    //     useShadows: true,
-                    //     verticalHasArrows: false,
-                    //     vertical: 'visible',
-                    //     horizontal: 'hidden',
-                    //     verticalScrollbarSize: 25,
-                    // },
+                    scrollbar: {
+                        useShadows: false,
+                        verticalHasArrows: true,
+                        vertical: 'visible',
+                        verticalScrollbarSize: 8,
+                    },
                 })
 
                 editor.onDidChangeCursorSelection((e) => {
@@ -681,7 +680,10 @@
                 'atlansql',
                 {
                     provideDocumentRangeFormattingEdits(model) {
-                        let formatted = formatter(model.getValue())
+                        let formatted = formatter(model.getValue(), {
+                            language: 'mysql',
+                            linesBetweenQueries: 2,
+                        })
                         return [
                             {
                                 range: model.getFullModelRange(),

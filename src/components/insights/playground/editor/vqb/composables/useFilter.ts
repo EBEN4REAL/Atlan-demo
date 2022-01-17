@@ -1,3 +1,4 @@
+import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 export function useFilter() {
     let numbers = [
         'NUMBER',
@@ -47,6 +48,8 @@ export function useFilter() {
         'BPCHAR',
         'VARCHAR',
         'ANY',
+        'VARIANT',
+        'OBJECT',
     ]
 
     let date = [
@@ -273,7 +276,10 @@ export function useFilter() {
         ]
 
         let filtersList = all.filter((el) => {
-            return el?.includes.find((el) => el === type?.toUpperCase())
+            let t = el?.includes.find(
+                (el) => el?.toUpperCase() === type?.toUpperCase()
+            )
+            return t
             // return true
         })
 
@@ -282,17 +288,30 @@ export function useFilter() {
 
     function getInputTypeFromColumnType(columnType: string) {
         if (numbers.includes(columnType)) return 'number'
-        if (text.includes(columnType)) return 'text'
-        if (date.includes(columnType)) return 'date'
-        if (boolean.includes(columnType)) return 'number'
-        if (array.includes(columnType)) return 'array'
-        if (object.includes(columnType)) return 'object'
-        if (geography.includes(columnType)) return 'geography'
+        else if (text.includes(columnType)) return 'text'
+        else if (date.includes(columnType)) return 'date'
+        else if (boolean.includes(columnType)) return 'number'
+        else if (array.includes(columnType)) return 'array'
+        else if (object.includes(columnType)) return 'text'
+        else if (geography.includes(columnType)) return 'geography'
+        return 'text'
     }
+
+    function isFilterIsInteractive(subpanels: SubpanelFilter[]) {
+        let isInteractive = false
+        subpanels?.forEach((subpanel) => {
+            if (subpanel?.filter?.isVariable) {
+                isInteractive = true
+            }
+        })
+        return isInteractive
+    }
+
     return {
         totalFiledsMapWithInput,
         nameMap,
         getInputTypeFromColumnType,
         filterList,
+        isFilterIsInteractive,
     }
 }

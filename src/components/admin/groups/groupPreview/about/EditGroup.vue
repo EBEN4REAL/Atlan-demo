@@ -30,6 +30,10 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
+                <SlackInput
+                    v-model="formData.slack"
+                    placeholder="Add Slack channel name or channel ID"
+                />
             </div>
         </a-form>
         <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
@@ -59,10 +63,12 @@
     import { message } from 'ant-design-vue'
     import { useVModels } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
+    import SlackInput from '@/admin/common/slackInput.vue'
 
     export default {
         name: 'EditGroup',
-        components: {},
+        components: { SlackInput },
+
         props: {
             selectedGroup: {
                 type: Object,
@@ -76,16 +82,36 @@
         emits: ['updatedGroup', 'toggleEdit', 'success'],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
-            const updateError = ref('')
             const formRef = ref(null)
             const nameRef = ref(null)
 
             // const { selectedGroup } = toRefs(props)
             const { selectedGroup } = useVModels(props, emit)
+            const groupChannels = computed(
+                () => selectedGroup.value?.attributes?.channels
+            )
+            const slackProfile = computed(() => {
+                if (groupChannels.value?.length > 0) {
+                    const firstChannel = JSON.parse(groupChannels.value[0])
+                    if (
+                        firstChannel &&
+                        firstChannel.length > 0 &&
+                        firstChannel[0].hasOwnProperty('slack')
+                    ) {
+                        return firstChannel[0].slack
+                    }
+                }
+                return ''
+            })
+            const slackEnabled = computed(() => slackProfile.value)
+            const slackUrl = computed(() =>
+                slackEnabled.value ? slackEnabled.value : ''
+            )
             const formData = ref({
                 name: selectedGroup.value.name,
                 alias: selectedGroup.value.alias,
                 description: selectedGroup.value.description || '',
+                slack: slackUrl.value,
             })
             const rules = {
                 alias: [
@@ -110,6 +136,13 @@
                     description: [formData.value.description],
                     alias: [formData.value.name],
                 }
+                // check for #
+                let slackLink = formData.value.slack
+                if (slackLink.startsWith('#'))
+                    slackLink = slackLink.substring(1)
+
+                attributes.channels =
+                    slackLink.length > 0 ? [`[{"slack": "${slackLink}"}]`] : []
                 requestPayload.value = {
                     name: formData.value.alias,
                 }
@@ -128,10 +161,8 @@
                     [data, isReady, error, isLoading],
                     () => {
                         isRequestLoading.value = isLoading.value
-                        updateError.value = error.value
                         if (isReady && !error.value && !isLoading.value) {
                             updateSuccess.value = true
-                            updateError.value = ''
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
@@ -141,11 +172,22 @@
                                 selectedGroup.value.attributes.description = [
                                     formData.value.description,
                                 ]
+                                if (slackLink.length > 0) {
+                                    selectedGroup.value.attributes.channels = [
+                                        `[{"slack": "${slackLink}"}]`,
+                                    ]
+                                } else {
+                                    selectedGroup.value.attributes.channels = []
+                                }
                             } else {
                                 selectedGroup.value.attributes = {
                                     designation: formData?.value?.description
                                         ? [formData?.value?.description]
                                         : [],
+                                    channels:
+                                        slackLink && slackLink.length > 0
+                                            ? [`[{"slack": "${slackLink}"}]`]
+                                            : [],
                                 }
                             }
 
@@ -153,15 +195,21 @@
                             emit('updatedGroup')
                             emit('toggleEdit')
                         } else if (error && error.value) {
-                            updateError.value =
-                                'Unable to update group details. Please try again.'
-                            message.error('Failed to update details.')
+                            if (
+                                error.value?.response?.data?.message.includes(
+                                    '409 Conflict:'
+                                )
+                            )
+                                message.error({
+                                    content: `A group with alias ${formData.value.alias} already exists, please change the alias and try again.`,
+                                    duration: 3.5,
+                                })
+                            else message.error('Failed to update details.')
                             formRef.value.resetFields()
                         }
                     },
                     { immediate: true }
                 )
-                updateError.value = ''
             }
             const onCancel = () => {
                 formRef.value.resetFields()
@@ -176,7 +224,6 @@
                 formRef,
                 formData,
                 isRequestLoading,
-                updateError,
                 nameRef,
             }
         },

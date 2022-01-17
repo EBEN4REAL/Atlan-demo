@@ -36,7 +36,7 @@
             </MinimalTab>
         </div>
 
-        <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
+        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PurposeMeta
                 class="flex flex-col"
                 :persona="persona"
@@ -44,13 +44,13 @@
             />
         </div>
         <div
+            v-else-if="activeTabKey === 'policies'"
             class="flex flex-col px-6 pt-6"
-            v-if="activeTabKey === 'policies'"
             style="height: calc(100% - 155px)"
         >
             <div class="flex items-center justify-between mb-3">
                 <div class="w-1/2">
-                    <div class="container-tabs">
+                    <div v-if="totalPolicy !== 0" class="container-tabs">
                         <a-radio-group
                             v-model:value="activeTabFilter"
                             class="flex flex-grow"
@@ -98,7 +98,12 @@
                     </template>
                 </a-dropdown>
             </div>
-            <div class="flex flex-col flex-grow overflow-y-auto gap-y-3">
+            <div
+                v-if="
+                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
+                "
+                class="flex flex-col flex-grow overflow-y-auto gap-y-3"
+            >
                 <template v-for="(policy, idx) in metaDataComputed" :key="idx">
                     <!-- Render it if the policy is being edited -->
                     <!-- <MetadataPolicy
@@ -147,11 +152,12 @@
             </div>
             <div
                 v-if="
-                    metaDataComputed.length === 0 &&
-                    dataPolicyComputed.length === 0 &&
-                    searchPersona
+                    (activeTabFilter === 'meta' &&
+                        metaDataComputed.length === 0) ||
+                    (activeTabFilter === 'data' &&
+                        dataPolicyComputed.length === 0)
                 "
-                class="flex flex-col items-center justify-center mt-8"
+                class="flex flex-col items-center justify-center h-full"
             >
                 <component :is="NoResultIllustration"></component>
                 <span class="text-sm font-bold text-gray">
@@ -164,7 +170,7 @@
                     !selectedPersonaDirty.metadataPolicies?.length &&
                     !selectedPersonaDirty.dataPolicies?.length
                 "
-                class="flex flex-col items-center justify-center mt-8"
+                class="flex flex-col items-center justify-center h-full"
             >
                 <component :is="NewPolicyIllustration"></component>
                 <span class="text-2xl font-bold text-gray">
@@ -173,13 +179,15 @@
             </div>
         </div>
 
-        <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white">
+        <div
+            v-else-if="activeTabKey === 'linked_assets'"
+            class="h-full bg-white px-7"
+        >
             <div class="wrapper-height">
-                <AssetsWrapper
-                    :initial-filters="filterConfig"
-                    :show-filters="false"
-                    page="purposes"
+                <AssetList
+                    :filters="filterConfig"
                     :enable-sidebar-drawer="true"
+                    :asset-list-style-obj="{ height: 'calc(100% - 9rem)' }"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -249,7 +257,7 @@
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
-    import AssetsWrapper from '@/assets/index.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
@@ -261,10 +269,10 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
-            AssetsWrapper,
             SearchAndFilter,
             AggregationTabs,
             Addpolicy,
+            AssetList,
         },
         props: {
             persona: {
@@ -280,7 +288,7 @@
             const { persona } = toRefs(props)
             const userId = computed(() => persona.value.createdBy)
             const searchPersona = ref('')
-            const activeTabFilter = ref('')
+            const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
@@ -294,7 +302,7 @@
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
-                    icon: 'Settings',
+                    icon: 'Policies',
                     handleClick: () => handleAddPolicy('meta'),
                 },
                 {
@@ -520,7 +528,7 @@
         height: inherit;
     }
     .wrapper-height {
-        height: 660px;
+        height: 90%;
         overflow: auto;
         padding-bottom: 20px;
     }

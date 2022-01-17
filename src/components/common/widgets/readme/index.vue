@@ -32,7 +32,7 @@
                     ></a-tooltip
                 >
 
-                <div v-if="isEdit && isEditMode" class="flex gap-x-1">
+                <div v-if="isEdit && isEditMode" class="flex gap-x-2">
                     <a-button
                         v-if="!isLoading"
                         class="flex items-center"

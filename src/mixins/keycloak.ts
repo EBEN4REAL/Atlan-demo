@@ -16,9 +16,6 @@ export default defineComponent({
             name,
             username,
             displayName: computed(() => tenantStore?.tenant?.getDisplayName),
-            displayNameHTML: computed(
-                () => tenantStore?.tenant?.getDisplayNameHTML
-            ),
             realm: computed(() => tenantStore?.tenant?.getRealmName),
         }
     },

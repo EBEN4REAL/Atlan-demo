@@ -1,20 +1,38 @@
 <template>
-    <div class="search">
-        <!-- Search Input -->
-        <a-input
-            class="search-input"
-            :value="query"
-            :enter-button="null"
-            :suffix="null"
-            placeholder="Search"
-            allow-clear
-            @change="setQuery"
-            @blur="onBlur"
-            @focus="onFocus"
-        />
+    <div class="flex flex-col">
+        <div class="flex items-center">
+            <div class="control-item" @click="showSearch = !showSearch">
+                <a-tooltip placement="top" mouseEnterDelay="0.4">
+                    <template #title>
+                        <span>search graph</span>
+                    </template>
+                    <AtlanIcon
+                        icon="Search"
+                        class="mx-1 my-2 outline-none"
+                    ></AtlanIcon>
+                </a-tooltip>
+            </div>
+
+            <div v-if="showSearch" class="search">
+                <!-- Search Input -->
+                <a-input
+                    ref="searchBar"
+                    class="search-input"
+                    :value="query"
+                    :enter-button="null"
+                    :suffix="null"
+                    :placeholder="`Search ${searchItems?.length} assets`"
+                    allow-clear
+                    @change="setQuery"
+                    @blur="onBlur"
+                    @focus="onFocus"
+                />
+            </div>
+        </div>
+
         <!-- Search Results -->
-        <div v-if="showResults" class="search-results">
-            <div v-if="query" class="search-results__count">
+        <div v-if="showResults && query" class="search-results">
+            <div class="search-results__count">
                 {{ filteredItems.length }} results found
             </div>
             <div
@@ -24,7 +42,12 @@
                 :class="{ selected: searchItem === item.guid }"
                 @click="setSearchItem(item)"
             >
-                <span class="w-6 h-4 bg-gray-300"></span>
+                <img
+                    v-if="sourceImg(item)"
+                    class="h-4"
+                    :src="sourceImg(item)"
+                />
+                <div v-else class="w-4 h-4 bg-gray-300" />
                 <span>{{ item.displayText || item.attributes.name }}</span>
             </div>
         </div>
@@ -33,14 +56,29 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, inject, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        inject,
+        computed,
+        watch,
+        nextTick,
+    } from 'vue'
+
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { getNodeSourceImage, getSource } from './util'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
-        setup() {
+        components: { SearchAndFilter },
+        emits: ['select'],
+        setup(_, { emit }) {
             /** DATA */
             const query = ref('')
             const searchItem = ref('')
             const showResults = ref(false)
+            const searchBar: Ref<null | HTMLInputElement> = ref(null)
+            const showSearch = ref(false)
 
             /** INJECTIONS */
             const searchItems = inject('searchItems')
@@ -64,6 +102,7 @@
             const setSearchItem = (item) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
+                emit('select', item.guid)
             }
 
             const onBlur = () => {
@@ -76,10 +115,19 @@
                 showResults.value = true
             }
 
+            const sourceImg = (entity) => {
+                const source = getSource(entity)
+                return getNodeSourceImage[source]
+            }
             /** WATCHERS */
             watch(query, (val) => {
                 if (val) showResults.value = true
                 else showResults.value = false
+            })
+
+            whenever(showSearch, async () => {
+                await nextTick()
+                searchBar.value?.focus()
             })
 
             return {
@@ -92,6 +140,9 @@
                 setSearchItem,
                 onBlur,
                 onFocus,
+                searchBar,
+                sourceImg,
+                showSearch,
             }
         },
     })
@@ -121,6 +172,7 @@
             border: 1px solid #f1f1f1;
             box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.08);
             z-index: 999;
+            top: 43px;
 
             &__count {
                 padding: 0 16px;
@@ -137,6 +189,7 @@
                 display: flex;
                 align-items: center;
                 text-transform: lowercase;
+                column-gap: 8px;
 
                 & > span:first-child {
                     margin-right: 10px;

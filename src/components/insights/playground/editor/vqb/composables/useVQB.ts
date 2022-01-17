@@ -2,6 +2,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { VQBPanelType } from '~/types/insights/VQB.interface'
 import { Ref, ComputedRef, toRaw } from 'vue'
 import { generateUUID } from '~/utils/helper/generator'
+import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
 export function findIndexOfActiveInlineTab(
     activeInlineTabKey: ComputedRef<string>,
@@ -12,6 +13,8 @@ export function findIndexOfActiveInlineTab(
     )
 }
 export function useVQB() {
+    const { modifyActiveInlineTab } = useInlineTab()
+
     function addPanelsInVQB(
         panelIndex: number,
         panel: VQBPanelType,
@@ -34,6 +37,7 @@ export function useVQB() {
                 panel.expand = true
             }
         })
+        copyTabData.isSaved = false
 
         inlineTabs.value[index] = copyTabData
     }
@@ -45,6 +49,7 @@ export function useVQB() {
         const index = findIndexOfActiveInlineTab(activeInlineTabKey, inlineTabs)
         const copyTabData = Object.assign({}, inlineTabs.value[index])
         copyTabData.playground.vqb.panels.splice(Number(panelIndex), 1)
+        copyTabData.isSaved = false
         inlineTabs.value[index] = copyTabData
     }
     function handleAdd(
@@ -124,10 +129,20 @@ export function useVQB() {
         addPanelsInVQB(Number(index), panelCopy, activeInlineTabKey, inlineTabs)
     }
 
+    function updateVQB(
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        inlineTabs: Ref<activeInlineTabInterface[]>
+    ) {
+        activeInlineTab.value.isSaved = false
+
+        // modifyActiveInlineTab(copyTabData, inlineTabs, false, true)
+    }
+
     function updateSelectedTables() {}
     return {
         handleAdd,
         deletePanelsInVQB,
         addPanelsInVQB,
+        updateVQB,
     }
 }

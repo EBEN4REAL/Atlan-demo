@@ -12,15 +12,9 @@
         :show-description-limit="true"
     >
         <template #leftHeader>
-            <div class="flex items-center text-gray-500 flex-nowrap">
-                <span class="overflow-hidden text-sm overflow-ellipsis">{{
-                    title(asset)
-                }}</span>
-                <AtlanIcon icon="ChevronRight" class="flex-none" />
-                <span class="flex-none text-sm font-bold text-gray"
-                    >{{ updating ? 'Edit' : 'New' }} Announcement</span
-                >
-            </div>
+            <span class="text-sm font-bold text-gray"
+                >{{ updating ? 'Edit' : 'New' }} Announcement</span
+            >
         </template>
 
         <template #rightHeader>
@@ -184,23 +178,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .input {
-        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-        }
-        :global(.ant-input):focus,
-        :global(.ant-input):hover {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none px-0 border-0 !important;
-        }
-    }
-    .titleInput {
-        :global(.ant-input::-webkit-input-placeholder) {
-            @apply font-bold text-gray-500 !important;
-        }
-    }
-</style>

@@ -25,7 +25,7 @@
             {{ displayName || name }}
         </div>
 
-        <div class="flex" @click="handleRemove" v-if="allowDelete">
+        <div v-if="allowDelete" class="flex" @click="handleRemove">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500 group-hover:text-white"
@@ -35,11 +35,12 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, unref, ref } from 'vue'
+    import { toRefs, computed, unref, ref, defineComponent } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
 
-    export default {
+
+    export default defineComponent({
         components: { ClassificationIcon },
         props: {
             guid: {
@@ -71,10 +72,16 @@
                     return false
                 },
             },
+            noHover: {
+                type: Boolean,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, isPropagated, displayName, color } = toRefs(props)
+            const { name, displayName, color } = toRefs(props)
             const shieldColour = ref(unref(color))
             const originalColour = ref(unref(color))
             const bgColor = ref('White')
@@ -87,7 +94,6 @@
 
             return {
                 name,
-                isPropagated,
                 displayName,
                 handleRemove,
                 color,
@@ -97,5 +103,5 @@
                 bgColor
             }
         },
-    }
+    })
 </script>

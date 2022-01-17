@@ -2,7 +2,7 @@
     <div>
         <a-table
             v-if="apiKeysList"
-            class="overflow-hidden border rounded-lg apikey-list"
+            class="overflow-hidden border rounded-b-lg apikey-list api-keys-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :pagination="false"
@@ -10,8 +10,21 @@
             :columns="columns"
             :row-key="(apikey) => apikey.id"
             :loading="isLoading"
+            :row-class-name="
+                (r, i) =>
+                    isDrawer && selectedAPIKeyId === r.id
+                        ? 'bg-primary-light'
+                        : ''
+            "
             @change="handleTableChange"
         >
+            <template #headerCell="{ title, column }">
+                <div
+                    class="flex p-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                >
+                    {{ title }}
+                </div>
+            </template>
             <template #emptyText>
                 No api keys found
                 <span v-if="searchText"
@@ -205,7 +218,11 @@
                 type: Boolean,
                 default: false,
             },
-            selectedAPIKey: {
+            isDrawer: {
+                type: Boolean,
+                required: true,
+            },
+            selectedAPIKeyId: {
                 type: Object,
                 default: () => {},
             },
@@ -295,4 +312,13 @@
     })
 </script>
 
-<style lang="less"></style>
+<style lang="less">
+    .api-keys-table {
+        .ant-table-thead {
+            height: 44px !important;
+            .ant-table-cell {
+                padding: 0 !important;
+            }
+        }
+    }
+</style>

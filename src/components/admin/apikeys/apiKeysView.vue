@@ -27,12 +27,14 @@
         </div>
         <DefaultLayout v-else title="API Keys">
             <template #header>
-                <div class="flex items-center justify-between pb-3">
+                <div
+                    class="flex items-center justify-between p-4 border border-b-0 border-gray-300 rounded-t-lg header-api-keys"
+                >
                     <div class="flex w-1/4">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :placeholder="`Search ${totalAPIKeysCount} api keys`"
-                            size="minimal"
+                            class="h-8 mr-1 shadow-none"
                         />
                     </div>
 
@@ -52,7 +54,9 @@
 
             <APIKeysTable
                 :api-keys-list="apiKeysList"
+                :is-drawer="isAPIKeyDrawerVisible"
                 :is-loading="isLoading"
+                :selected-a-p-i-key-id="selectedAPIKey.id"
                 :delete-a-p-i-key-loading="deleteAPIKeyLoading"
                 :search-text="searchText"
                 @selectAPIKey="handleSelectAPIKey"
@@ -245,8 +249,7 @@
                 const localAPIKey = {
                     displayName: apikey?.displayName,
                     description: apikey?.attributes?.description,
-                    validitySeconds:
-                        apikey?.attributes?.['accessTokenLifespan'],
+                    validitySeconds: apikey?.attributes?.accessTokenLifespan,
                     personas: apikey?.attributes?.personas || [],
                     id: apikey?.id,
                     rawKey: { ...(apikey || {}) },
@@ -297,3 +300,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .header-api-keys {
+        margin-bottom: -16px !important;
+    }
+</style>

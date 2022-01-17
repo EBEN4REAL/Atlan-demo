@@ -18,12 +18,15 @@
                 <span
                     v-if="!isCreate"
                     class="flex-none text-base font-bold text-gray-700"
-                    >{{ isShare ? 'Invite to' : 'Edit ' }}
-                    <span
+                    >{{ isShare ? 'Invite' : 'Edit collection' }}
+                    <!-- <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span
-                    ></span
-                >
+                    > -->
+                    <span class="block text-sm font-normal text-gray-500">{{
+                        item?.attributes?.name
+                    }}</span>
+                </span>
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
                 <span class="text-sm font-normal text-gray-700">Name</span>
@@ -116,7 +119,7 @@
             <!-- <div class="mx-4 mt-3 font-normal" v-if="isShareable === 'true'"> -->
             <div class="mx-4 mt-3 font-normal">
                 <!-- <span class="text-sm text-gray-700">Users and groups</span> -->
-                <span class="text-sm text-gray-700">Share</span>
+                <span class="text-sm text-gray-700" v-if="!isShare">Share</span>
                 <div class="flex items-center mb-1.5">
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
@@ -242,7 +245,7 @@
                     size="sm"
                     color="secondary"
                     padding="compact"
-                    class="flex items-center justify-between h-6 px-6 py-1 ml-3 border border-gray-300 cursor-pointer hover:text-primary"
+                    class="flex items-center justify-between h-6 px-6 py-1 ml-3 border-none cursor-pointer hover:text-primary"
                     @click="closeModal"
                 >
                     <span>Cancel</span>
@@ -364,6 +367,10 @@
                 isCreate.value ? null : item?.value?.attributes?.iconType
             )
 
+            const isCollectionCreated = inject(
+                'isCollectionCreated'
+            ) as Ref<Boolean>
+
             const isShared = computed(() => {
                 if (isCreate.value) {
                     return 'true'
@@ -457,20 +464,12 @@
                     return
                 }
 
-                let ownersData =
-                    isShareable.value === 'true'
-                        ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
-                              viewerUsers: userData.value['view'].ownerUsers,
-                              viewerGroups: userData.value['view'].ownerGroups,
-                          }
-                        : {
-                              adminUsers: [],
-                              adminGroups: [],
-                              viewerUsers: [],
-                              viewerGroups: [],
-                          }
+                let ownersData = {
+                    adminUsers: userData.value['edit'].ownerUsers,
+                    adminGroups: userData.value['edit'].ownerGroups,
+                    viewerUsers: userData.value['view'].ownerUsers,
+                    viewerGroups: userData.value['view'].ownerGroups,
+                }
 
                 const { data, error, isLoading, isReady, mutate } =
                     createCollection({
@@ -496,6 +495,7 @@
                             if (isReady && !error.value && !isLoading.value) {
                                 /* IMP: Don't remove it, otherwise update collections will appear buggy */
                                 setTimeout(() => {
+                                    isCollectionCreated.value = true
                                     refetchQueryCollection.value()
                                 }, 1000)
                             }
@@ -510,20 +510,12 @@
             const updateCollectionData = () => {
                 console.log('item: ', item.value)
 
-                let ownersData =
-                    isShareable.value === 'true'
-                        ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
-                              viewerUsers: userData.value['view'].ownerUsers,
-                              viewerGroups: userData.value['view'].ownerGroups,
-                          }
-                        : {
-                              adminUsers: [],
-                              adminGroups: [],
-                              viewerUsers: [],
-                              viewerGroups: [],
-                          }
+                let ownersData = {
+                    adminUsers: userData.value['edit'].ownerUsers,
+                    adminGroups: userData.value['edit'].ownerGroups,
+                    viewerUsers: userData.value['view'].ownerUsers,
+                    viewerGroups: userData.value['view'].ownerGroups,
+                }
 
                 const entity = {
                     typeName: 'Collection',
@@ -550,6 +542,7 @@
                         ) {
                             closeModal()
                             if (isReady && !error.value && !isLoading.value) {
+                                isCollectionCreated.value = true
                                 refetchQueryCollection.value()
                             }
                         }

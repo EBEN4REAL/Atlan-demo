@@ -1,7 +1,7 @@
 <template>
     <a-popover
         @visibleChange="handleVisibleChange"
-        placement="left"
+        :placement="placement"
         :mouseEnterDelay="0.5"
     >
         <template #content>
@@ -134,6 +134,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            placement: {
+                type: String,
+                required: false,
+                default: 'left',
             },
         },
         emits: [],

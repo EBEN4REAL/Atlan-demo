@@ -9,14 +9,10 @@
         :destroy-on-close="true"
     >
         <template #title>
-            <div class="flex items-center text-gray-500 flex-nowrap">
-                <span class="text-sm truncate">{{ title(asset) }}</span>
-                <AtlanIcon icon="ChevronRight" class="flex-none" />
-                <span class="flex-none text-sm font-bold text-gray"
-                    >{{ updating ? 'Edit' : 'New' }} Resource</span
-                >
-            </div></template
-        >
+            <span class="text-sm font-bold text-gray"
+                >{{ updating ? 'Edit' : 'New' }} Resource</span
+            >
+        </template>
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
                 <AtlanButton
@@ -148,7 +144,7 @@
 
             const isValidUrl = ref(updating.value)
 
-            const linkURL = ref(updating.value ? link(item.value) : 'https://')
+            const linkURL = ref(updating.value ? link(item.value) : '')
             const faviconLink = ref(
                 updating.value
                     ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
@@ -168,7 +164,7 @@
 
             function handleCancel() {
                 visible.value = false
-                linkURL.value = updating.value ? link(item.value) : 'https://'
+                linkURL.value = updating.value ? link(item.value) : ''
                 linkTitle.value = updating.value ? title(item.value) : ''
             }
 
@@ -185,7 +181,12 @@
             }
 
             function handleAdd() {
-                localResource.value.link = linkURL.value
+                if (linkURL.value.includes('http')) {
+                    localResource.value.link = linkURL.value
+                } else {
+                    localResource.value.link = `https://${linkURL.value}`
+                }
+
                 localResource.value.title = linkTitle.value
                 if (updating.value) {
                     handleUpdateResource(item)
@@ -193,7 +194,7 @@
                     handleAddResource()
                 }
                 visible.value = false
-                linkURL.value = 'https://'
+                linkURL.value = ''
                 linkTitle.value = ''
             }
 
@@ -221,7 +222,7 @@
             })
 
             watch(item, () => {
-                linkURL.value = updating.value ? link(item.value) : 'https://'
+                linkURL.value = updating.value ? link(item.value) : ''
                 linkTitle.value = updating.value ? title(item.value) : ''
             })
 

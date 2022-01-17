@@ -20,7 +20,7 @@
                         <div class="inline-flex items-center ml-1 mr-2">
                             <a-dropdown :trigger="['click']">
                                 <span
-                                    class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
+                                    class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1 cursor-pointer"
                                 >
                                     <AtlanIcon icon="Add" />
                                 </span>
@@ -38,7 +38,7 @@
                                                 class="w-6 h-6 mr-2"
                                             />
                                             <span class="text-xs font-bold">
-                                                New Query
+                                                New SQL Query
                                             </span>
                                         </div>
                                         <div
@@ -204,6 +204,7 @@
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
     import { generateUUID } from '~/utils/helper/generator'
+
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
@@ -341,6 +342,7 @@
                                             tableData: {
                                                 certificateStatus: undefined,
                                                 assetType: undefined,
+                                                item: {},
                                             },
                                             columnsData: [],
                                         },

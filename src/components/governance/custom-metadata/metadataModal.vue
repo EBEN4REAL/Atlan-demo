@@ -7,7 +7,12 @@
         :width="632"
     >
         <template #footer>
-            <div class="flex items-center justify-end space-x-3">
+            <div class="flex items-center justify-between space-x-3">
+                <div v-if="!isEdit" class="flex items-center space-x-2">
+                    <a-switch v-model:checked="createMore" size="small" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex-grow"></div>
                 <a-button class="border-0" @click="visible = false"
                     >Cancel</a-button
                 >
@@ -25,7 +30,49 @@
         </template>
         <div class="h-32 p-4 space-y-2">
             <div class="flex items-center gap-x-1">
-                <AvatarUpdate :metadata="form" class="mb-1" />
+                <a-popover
+                    v-model:visible="emojiVisibility"
+                    :trigger="['click']"
+                >
+                    <div
+                        class="cursor-pointer"
+                        @click="emojiVisibility = !emojiVisibility"
+                    >
+                        <span
+                            v-if="form.options.logoType === 'emoji'"
+                            class="text-lg"
+                            >{{ form.options.emoji }}</span
+                        >
+                        <template v-else-if="form.options.logoType === 'image'">
+                            <img
+                                v-if="my_photo"
+                                class="w-5 h-5"
+                                :src="my_photo"
+                                alt="IMG"
+                            />
+                            <img
+                                v-else-if="imageUrl"
+                                class="w-5 h-5"
+                                :src="imageUrl"
+                                alt="IMG"
+                            />
+                        </template>
+                        <div
+                            v-else
+                            class="flex items-center justify-center w-full h-full"
+                        >
+                            <AtlanIcon icon="NoAvatar" class="h-auto" />
+                        </div>
+                    </div>
+                    <template #content
+                        ><EmojiPicker
+                            :emoji="form.options.emoji"
+                            :image="imageFile"
+                            @select="emojiSelect"
+                            @remove="emojiRemove"
+                            @upload="handleUpload"
+                    /></template>
+                </a-popover>
                 <a-input
                     id="name-input"
                     v-model:value="form.displayName"
@@ -36,7 +83,7 @@
             <a-textarea
                 v-model:value="form.description"
                 placeholder="Add description..."
-                class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none"
+                class="p-0 text-gray-700 border-0 shadow-none outline-none resize-none"
             ></a-textarea>
         </div>
     </a-modal>
@@ -52,10 +99,13 @@
     import { useTypedefStore } from '~/store/typedef'
 
     import AtlanButton from '@/UI/button.vue'
-    import AvatarUpdate from './avatarUpdate.vue'
+
+    import EmojiPicker from '@/common/avatar/emojiPicker.vue'
+    import useUploadImage from '~/composables/image/uploadImage'
+    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     export default defineComponent({
-        components: { AtlanButton, AvatarUpdate },
+        components: { AtlanButton, EmojiPicker },
         props: {
             isEdit: {
                 type: Boolean,
@@ -66,7 +116,7 @@
                 default: () => {},
             },
         },
-        emits: ['update:selected'],
+        emits: ['select'],
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
@@ -77,6 +127,7 @@
             })
             const visible = ref(false)
             const loading = ref(false)
+            const createMore = ref(false)
             const error = ref(null)
             const form = ref(initializeForm())
 
@@ -105,7 +156,7 @@
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
                     message.success('Metadata created')
-                    emit('update:selected', serviceResponse[0].guid)
+                    emit('select', serviceResponse[0].guid)
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
@@ -119,7 +170,8 @@
                         if (
                             apiResponse.value?.data?.businessMetadataDefs.length
                         ) {
-                            visible.value = false
+                            if (!createMore.value) visible.value = false
+                            else form.value = initializeForm()
                             handleBmUpdateSuccess(
                                 apiResponse.value.data.businessMetadataDefs
                             )
@@ -151,6 +203,45 @@
                 )
             }
 
+            const emojiVisibility = ref(false)
+            const imageFile = ref()
+            const my_photo = ref()
+            const { imageUrl } = useCustomMetadataAvatar(form)
+
+            // image uploader ======================================================
+            const {
+                data: imageUploadData,
+                error: imageUploadError,
+                isLoading: isUploading,
+                upload,
+            } = useUploadImage()
+
+            const emojiSelect = ({ native }) => {
+                emojiVisibility.value = false
+                form.value.options.logoType = 'emoji'
+                form.value.options.emoji = native
+                form.value.options.imageId = null
+                my_photo.value = null
+                imageFile.value = null
+            }
+
+            const handleUpload = async (payload) => {
+                emojiVisibility.value = false
+                form.value.options.logoType = 'image'
+                form.value.options.emoji = null
+                console.log({ payload })
+                const { file } = payload
+                imageFile.value = file
+                const data = URL.createObjectURL(imageFile.value)
+                my_photo.value = data
+            }
+
+            const emojiRemove = () => {
+                form.value.options.logoType = ''
+                form.value.options.emoji = null
+                form.value.options.imageId = null
+            }
+
             const handleAddBusinessMetadata = async () => {
                 // error.value = null
                 const validatedBm = hasName(form.value.hasName)
@@ -174,18 +265,34 @@
                             },
                         }
                     )
-                else
+                else {
+                    if (
+                        form.value.options.logoType === 'image' &&
+                        imageFile.value
+                    )
+                        await upload(imageFile.value)
+                    console.log({ imageUploadData, imageUploadError })
+
+                    form.value.options.imageId = imageUploadData.value.id
+
                     apiResponse.value = Types.CreateTypedefs(
                         {
                             businessMetadataDefs: [form.value],
                         },
                         { options: { params: { type: 'BUSINESS_METADATA' } } }
                     )
-
+                }
                 handleUpdateBMResponse(apiResponse)
             }
 
             return {
+                imageUrl,
+                createMore,
+                my_photo,
+                emojiRemove,
+                handleUpload,
+                emojiSelect,
+                emojiVisibility,
                 // data
                 visible,
                 loading,

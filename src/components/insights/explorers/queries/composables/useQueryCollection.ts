@@ -180,7 +180,9 @@ const useQueryCollection = () => {
     const selectFirstCollectionByDefault = (
         collection: QueryCollection[],
         activeInlineTab: Ref<activeInlineTabInterface>,
-        tabs: Ref<activeInlineTabInterface[]>
+        tabs: Ref<activeInlineTabInterface[]>,
+        isCollectionCreated: Ref<Boolean>,
+        collectionGuid: Ref
     ) => {
         if (collection?.length > 0) {
             if (activeInlineTab.value?.key) {
@@ -189,29 +191,51 @@ const useQueryCollection = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
 
-                if (activeInlineTab.value?.queryId) {
-                    col = collection.find(
-                        (col) =>
-                            col?.attributes?.qualifiedName ===
-                            activeInlineTabCopy.explorer.queries.collection
-                                .qualifiedName
-                    )
+                if (isCollectionCreated.value) {
+                    let l = collection.length
+                    col = collection[l - 1]
+                    isCollectionCreated.value = false
 
-                    if(col) {
+                    console.log('set collection create :')
+                } else {
+                    if(collectionGuid?.value) {
+                        console.log('set collection guid collection:')
+                        col = collection.find((col) => col?.guid == collectionGuid.value)
 
-                    } else {
-                        col=collection[0]
+                        if (col) {
+                        } else {
+                            col = collection[0]
+                            // message.info(
+                            //     `Either collection does not exist or you don't have the access to it`
+                            // )
+                        }
+                        // collectionGuid.value = null
+                    } else if (activeInlineTab.value?.queryId) {
+                        col = collection.find(
+                            (col) =>
+                                col?.attributes?.qualifiedName ===
+                                activeInlineTabCopy.explorer.queries.collection
+                                    .qualifiedName
+                        )
+
+                        if (col) {
+                        } else {
+                            col = collection[0]
+                        }
+                    } else if (
+                        activeInlineTabCopy.explorer.queries.collection
+                            .qualifiedName
+                    ) {
+                        col = collection.find(
+                            (col) =>
+                                col?.attributes?.qualifiedName ===
+                                activeInlineTabCopy.explorer.queries.collection
+                                    .qualifiedName
+                        )
                     }
-                } else if(activeInlineTabCopy.explorer.queries.collection.qualifiedName) {
-                    col = collection.find(
-                        (col) =>
-                            col?.attributes?.qualifiedName ===
-                            activeInlineTabCopy.explorer.queries.collection
-                                .qualifiedName
-                    )
                 }
 
-                activeInlineTabCopy.explorer.queries.collection.guid = col.guid
+                activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
 
                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
                     col?.attributes?.qualifiedName
@@ -225,6 +249,50 @@ const useQueryCollection = () => {
         }
     }
 
+    // const selectCollectionFromUrl = (
+    //     collection: QueryCollection[],
+    //     activeInlineTab: Ref<activeInlineTabInterface>,
+    //     tabs: Ref<activeInlineTabInterface[]>,
+    //     collectionGuid
+    // ) => {
+    //     if (collection?.length > 0) {
+    //         if (activeInlineTab.value?.key) {
+    //             let col = undefined
+
+    //             console.log('collections: ', collection)
+
+    //             const activeInlineTabCopy: activeInlineTabInterface =
+    //                 Object.assign({}, activeInlineTab.value)
+
+    //             if (collectionGuid.value) {
+    //                 col = collection.find((col) => col?.guid == collectionGuid.value)
+
+    //                 if (col) {
+    //                 } else {
+    //                     col = collection[0]
+    //                     message.info(
+    //                         `Either collection does not exist or you don't have the access to it`
+    //                     )
+    //                 }
+    //                 collectionGuid.value = null
+    
+    //                 activeInlineTabCopy.explorer.queries.collection.guid = col.guid
+    
+    //                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+    //                     col?.attributes?.qualifiedName
+    
+    //                 modifyActiveInlineTab(
+    //                     activeInlineTabCopy,
+    //                     tabs,
+    //                     activeInlineTabCopy.isSaved
+    //                 )
+    //             }
+
+                
+    //         }
+    //     } 
+    // }
+
     return {
         queryCollectionsError,
         queryCollections,
@@ -235,6 +303,7 @@ const useQueryCollection = () => {
         setCollectionsDataInInlineTab,
         createCollection,
         updateCollection,
+        // selectCollectionFromUrl,
     }
 }
 

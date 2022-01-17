@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="computedItems?.length > 0">
         <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
             <AtlanBtn
                 class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
@@ -144,6 +144,30 @@
                         class: 'mt-0.5 mr-2',
                     })
                 }
+
+                const join = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'join'
+                )
+                if (!join) {
+                    _items.push({
+                        id: 'join',
+                        icon: 'Union',
+                        label: 'Join data',
+                        class: 'mr-2',
+                    })
+                }
+                const filter = activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'filter'
+                )
+                if (!filter) {
+                    _items.push({
+                        id: 'filter',
+                        icon: 'Filter',
+                        label: 'Filter',
+                        class: 'mr-2',
+                    })
+                }
+
                 const groupPanel =
                     activeInlineTab.value.playground.vqb.panels.find(
                         (panel) => panel.id.toLowerCase() === 'group'
@@ -168,29 +192,7 @@
                         class: 'mr-2',
                     })
                 }
-                const filter = activeInlineTab.value.playground.vqb.panels.find(
-                    (panel) => panel.id.toLowerCase() === 'filter'
-                )
-                if (!filter) {
-                    _items.push({
-                        id: 'filter',
-                        icon: 'Filter',
-                        label: 'Filter',
-                        class: 'mr-2',
-                    })
-                }
 
-                const join = activeInlineTab.value.playground.vqb.panels.find(
-                    (panel) => panel.id.toLowerCase() === 'join'
-                )
-                if (!join) {
-                    _items.push({
-                        id: 'join',
-                        icon: 'Union',
-                        label: 'Join data',
-                        class: 'mr-2',
-                    })
-                }
                 return _items
             })
 

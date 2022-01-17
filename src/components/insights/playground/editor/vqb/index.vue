@@ -1,6 +1,7 @@
 <template>
     <div
-        class="absolute w-full px-4 py-3 bg-white rounded vqb"
+        class="absolute w-full px-4 py-3 bg-white rounded vqb ml-0.5"
+        :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
         style="z-index: 3"
     >
         <template
@@ -25,12 +26,13 @@
         defineAsyncComponent,
         inject,
         ref,
+        watch,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    // import {
-    //     useProvide,
-    //     provideDataInterface,
-    // } from '~/components/insights/common/composables/useProvide'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
 
     export default defineComponent({
         name: 'VQB',
@@ -63,6 +65,7 @@
             //         },
             //     ],
             // })
+            const lockVQBScroll = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -70,11 +73,20 @@
                 activeInlineTabInterface[]
             >
 
+            // watch(
+            //     () => activeInlineTab.value.playground.vqb.panels,
+            //     () => {
+            //         console.log('vqb update:')
+            //     }
+            // )
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
-            // const provideData: provideDataInterface = {}
-            // useProvide(provideData)
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens-- */
+
+            const provideData: provideDataInterface = {
+                lockVQBScroll: lockVQBScroll,
+            }
+            useProvide(provideData)
             /*-------------------------------------*/
 
             return {
@@ -91,5 +103,9 @@
     .vqb {
         height: calc(100% - 4.5rem);
         overflow-y: auto;
+    }
+    .vqb-scroll-lock {
+        height: calc(100% - 4.5rem);
+        overflow: hidden !important;
     }
 </style>

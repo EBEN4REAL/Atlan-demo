@@ -64,6 +64,7 @@
                     </div>
 
                     <div
+                        v-if="!readOnly"
                         :class="[
                             containerHovered ? 'opacity-100' : 'opacity-0',
                             'flex border border-gray-300 rounded   items-strech',
@@ -122,7 +123,8 @@
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index)
+                        Number(index) &&
+                    !readOnly
                 "
             />
         </div>
@@ -143,6 +145,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         toRefs,
         watch,
@@ -181,7 +184,10 @@
             },
         },
         setup(props, { emit }) {
-            const { getTableNamesStringFromQualfieidNames } = useUtils()
+            const {
+                getTableNamesStringFromQualfieidNames,
+                getInitialPanelExpandedState,
+            } = useUtils()
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
@@ -201,23 +207,45 @@
                     activeInlineTab.value.playground.vqb?.panels?.length == 1
                 )
                     return true
-                if (
-                    activeInlineTab.value.playground.vqb.panels[index.value]
-                        .expand
-                )
-                    return true
+                // if (
+                //     activeInlineTab.value.playground.vqb.panels[index.value]
+                //         .expand
+                // )
+                //     return true
 
                 return false
             }
-            const expand = ref(getInitialExpandValue())
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    expand.value =
-                        activeInlineTab.value.playground.vqb.panels[
-                            index.value
-                        ]?.expand
-                }
+
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            activeInlineTab.value.playground.vqb.panels[index.value].expand =
+                getInitialPanelExpandedState(
+                    readOnly.value,
+                    panel.value,
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        ?.expand
+                )
+
+            const expand = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .expand
             )
 
             const checkbox = ref(true)
@@ -240,6 +268,7 @@
                 else return 'height:104%;;bottom:0'
             }
             const handleAddPanel = (index, type, panel) => {
+                containerHovered.value = false
                 handleAdd(
                     index,
                     type,
@@ -272,12 +301,9 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
-            console.log(
-                activeInlineTab.value.playground.vqb.panels[index.value],
-                index.value
-            )
 
             return {
+                readOnly,
                 getTableNamesStringFromQualfieidNames,
                 submenuHovered,
                 handleMouseOver,

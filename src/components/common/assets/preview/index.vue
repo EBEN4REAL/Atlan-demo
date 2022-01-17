@@ -4,7 +4,7 @@
             v-if="!isProfile"
             class="flex flex-col px-4 py-4 border-b border-gray-200"
         >
-            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+            <div class="flex items-center mb-1">
                 <div
                     v-if="
                         ['column'].includes(
@@ -111,7 +111,7 @@
                                 >
                                     <AtlanIcon
                                         :icon="action.icon"
-                                        class="mb-0.5"
+                                        class="mb-0.5 h-4 w-auto"
                                     />
                                 </a-button>
                             </a-tooltip>
@@ -176,6 +176,12 @@
                             if (el) tabChildRef[index] = el
                         }
                     "
+                    :collectionData="{
+                        collectionInfo,
+                        hasCollectionReadPermission,
+                        hasCollectionWritePermission,
+                        isCollectionCreatedByCurrentUser,
+                    }"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -207,6 +213,7 @@
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -239,6 +246,9 @@
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),
+            linkedAssets: defineAsyncComponent(
+                () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
         },
 
         props: {
@@ -262,10 +272,16 @@
                 required: false,
                 default: 'assets',
             },
+            drawerActiveKey: {
+                type: String,
+                required: false,
+                default: 'info',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { selectedAsset, isDrawer, page, drawerActiveKey } =
+                toRefs(props)
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -274,6 +290,13 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
+
+            const {
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
+            } = useCollectionInfo(selectedAsset)
 
             const {
                 title,
@@ -344,11 +367,17 @@
                 { debounce: 100, immediate: true }
             )
 
-            provide('switchTab', (asset, tabName: string) => {
+            const switchTab = (asset, tabName: string) => {
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+            }
+
+            provide('switchTab', switchTab)
+
+            watch(drawerActiveKey, (newVal) => {
+                switchTab(selectedAsset.value, newVal)
             })
 
             const router = useRouter()
@@ -445,6 +474,12 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
+
+                //for collection access
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

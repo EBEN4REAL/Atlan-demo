@@ -9,8 +9,8 @@
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div
-                v-if="groupList.length > 0"
-                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-200 rounded-t-lg"
+                v-if="totalGroupsCount > 0"
+                class="flex justify-between p-4 -mb-3 border border-b-0 border-gray-300 rounded-t-lg"
             >
                 <div class="flex w-1/4">
                     <SearchAndFilter
@@ -38,9 +38,10 @@
         <a-drawer
             :visible="isGroupDrawerVisible"
             :mask="false"
-            :width="350"
+            :width="450"
             :closable="false"
             :destroy-on-close="true"
+            @close="isGroupDrawerVisible = false"
         >
             <AddGroup
                 @closeDrawer="isGroupDrawerVisible = false"
@@ -48,12 +49,15 @@
             />
         </a-drawer>
 
-        <div v-if="isLoading" class="flex items-center justify-center h-full">
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center h-full border border-gray-300 rounded-lg"
+        >
             <AtlanIcon icon="Loader" class="h-7 animate-spin" />
         </div>
         <div
             v-else-if="error"
-            class="flex flex-col items-center h-full align-middle bg-white"
+            class="flex flex-col items-center h-full align-middle bg-white border border-gray-300 rounded-lg"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -74,7 +78,7 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-b-lg users-groups-table"
+                class="overflow-hidden rounded-b-lg users-groups-table"
                 :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
                 :pagination="false"
                 :data-source="groupList"
@@ -82,6 +86,12 @@
                 :row-key="(group) => group.id"
                 :loading="isLoading"
                 :show-sorter-tooltip="false"
+                :row-class-name="
+                    (r, i) =>
+                        showPreview && selectedGroupId === r.id
+                            ? 'bg-primary-light'
+                            : ''
+                "
                 @change="handleTableChange"
             >
                 <template #headerCell="{ title, column }">
@@ -98,7 +108,7 @@
                             )
                         }}</template>
                         <div
-                            class="flex justify-start font-normal tracking-wide text-gray-500 uppercase cursor-pointer group"
+                            class="flex justify-start font-normal tracking-wide uppercase cursor-pointer group hover:text-gray-700"
                             :class="
                                 column.align === 'right'
                                     ? 'flex-row-reverse'
@@ -160,80 +170,85 @@
                 </template>
 
                 <template #bodyCell="{ text: value, record: group, column }">
-                    <div
-                        v-if="column.key === 'name'"
-                        class="flex items-center"
-                        @click="
-                            () => {
-                                handleGroupClick(group)
-                            }
-                        "
-                    >
-                        <Avatar
-                            :avatar-size="32"
-                            avatar-shape="circle"
-                            class="mr-3"
-                            :is-group="true"
-                        />
-                        <div>
-                            <div
-                                class="flex capitalize truncate cursor-pointer text-primary"
-                            >
-                                <div class="mr-2 truncate max-w-3/4">
-                                    {{ group.name }}
-                                </div>
-                                <div
-                                    v-show="group.isDefault === 'true'"
-                                    class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
-                                >
-                                    Default
-                                </div>
-                            </div>
-                            <p class="mb-0 text-gray-500 truncate">
-                                {{ group.description }}
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                        v-else-if="column.key === 'memberCount'"
-                        @click="handleAddMembers(group)"
-                    >
+                    <div class="flex items-center h-11">
                         <div
-                            class="cursor-pointer text-primary hover:underline"
+                            v-if="column.key === 'name'"
+                            class="flex items-center"
+                            @click="
+                                () => {
+                                    handleGroupClick(group)
+                                }
+                            "
                         >
-                            {{
-                                value >= 2
-                                    ? value + ' members'
-                                    : value + ' member'
-                            }}
+                            <Avatar
+                                :avatar-size="32"
+                                avatar-shape="circle"
+                                class="mr-3"
+                                :is-group="true"
+                            />
+                            <div>
+                                <div
+                                    class="flex capitalize truncate cursor-pointer text-primary"
+                                >
+                                    <div class="mr-2 truncate max-w-3/4">
+                                        {{ group.name }}
+                                    </div>
+                                    <div
+                                        v-show="group.isDefault === 'true'"
+                                        class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
+                                    >
+                                        Default
+                                    </div>
+                                </div>
+                                <p class="mb-0 text-gray-500 truncate">
+                                    {{ group.description }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div
-                        v-else-if="column.key === 'createdBy'"
-                        class="flex cursor-pointer"
-                        @click="handleUserPreview(value)"
-                    >
-                        <Avatar
-                            v-if="value"
-                            :image-url="imageUrl(value)"
-                            :allow-upload="false"
-                            :avatar-name="value"
-                            :avatar-size="24"
-                            :avatar-shape="'circle'"
-                            class="mr-2 mt-0.5"
-                        />
-                        <span>{{ value }}</span>
-                    </div>
-                    <div v-else-if="column.key === 'actions'">
-                        <ActionButtons
-                            v-auth="[map.UPDATE_GROUP]"
-                            :group="group"
-                            :mark-as-default-loading="markAsDefaultLoading"
-                            :delete-group-loading="deleteGroupLoading"
-                            @delete-group="handleDeleteGroup(group)"
-                            @toggle-default="handleToggleDefault(group)"
-                            @members-added="refreshTable"
-                        />
+                        <div
+                            v-else-if="column.key === 'memberCount'"
+                            @click="handleAddMembers(group)"
+                        >
+                            <div
+                                class="cursor-pointer text-primary hover:underline"
+                            >
+                                {{
+                                    value >= 2
+                                        ? value + ' members'
+                                        : value + ' member'
+                                }}
+                            </div>
+                        </div>
+                        <div
+                            v-else-if="column.key === 'createdBy'"
+                            class="flex items-center cursor-pointer"
+                            @click="handleUserPreview(value)"
+                        >
+                            <Avatar
+                                v-if="value"
+                                :image-url="imageUrl(value)"
+                                :allow-upload="false"
+                                :avatar-name="value"
+                                :avatar-size="24"
+                                :avatar-shape="'circle'"
+                                class="mr-2 mt-0.5"
+                            />
+                            <div class="mt-0.5">{{ value }}</div>
+                        </div>
+                        <div
+                            v-else-if="column.key === 'actions'"
+                            class="flex justify-end w-full"
+                        >
+                            <ActionButtons
+                                v-auth="[map.UPDATE_GROUP]"
+                                :group="group"
+                                :mark-as-default-loading="markAsDefaultLoading"
+                                :delete-group-loading="deleteGroupLoading"
+                                @delete-group="handleDeleteGroup(group)"
+                                @toggle-default="handleToggleDefault(group)"
+                                @members-added="refreshTable"
+                            />
+                        </div>
                     </div>
                 </template>
             </a-table>
@@ -255,6 +270,8 @@
             empty-screen="NoGroups"
             desc="Oops… we didn’t find any groups that match this search"
             button-text="Clear search"
+            class="min-h-full border border-gray-300 rounded-b-lg"
+            image-class="h-36"
             @event="clearFilter"
         />
     </DefaultLayout>
@@ -628,6 +645,8 @@
                 )
             }
             return {
+                showPreview,
+                selectedGroupId,
                 columns,
                 isGroupDrawerVisible,
                 searchText,
@@ -667,6 +686,11 @@
         .ant-table-thead {
             height: 44px !important;
         }
+        border-width: 1px;
+        border-top-color: #f3f3f3;
+        border-right-color: #e6e6eb;
+        border-bottom-color: #e6e6eb;
+        border-left-color: #e6e6eb;
     }
 </style>
 <route lang="yaml">

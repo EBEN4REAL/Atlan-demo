@@ -1,9 +1,9 @@
 <template>
-    <div class="h-full px-4 py-2">
+    <div class="h-full py-2">
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"
-                class="flex items-center justify-between mb-3"
+                class="flex items-center justify-between mb-3 px-4"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
                 <MemberPopover
@@ -27,7 +27,7 @@
                     </template>
                 </MemberPopover>
             </div>
-            <div class="flex flex-row items-center justify-between gap-x-1">
+            <div class="flex flex-row items-center justify-between gap-x-1 px-4">
                 <SearchAndFilter
                     v-if="totalMembersCount || isLoading"
                     v-model:value="searchText"
@@ -39,7 +39,7 @@
             </div>
             <div
                 v-if="!totalMembersCount && !isLoading"
-                class="flex flex-col items-center justify-center empty-state-wrapper"
+                class="flex flex-col items-center justify-center empty-state-wrapper px-4"
             >
                 <div class="flex items-center justify-center w-full">
                     <EmptyState
@@ -50,7 +50,7 @@
             </div>
             <div
                 v-if="error"
-                class="flex flex-col items-center justify-center mt-3 bg-white empty-state-wrapper"
+                class="flex flex-col items-center justify-center mt-3 bg-white empty-state-wrapper px-4"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -74,9 +74,10 @@
             </div>
             <div
                 v-else-if="searchText && !filteredMembersCount && !isLoading"
-                class="empty-state-wrapper"
+                class="empty-state-wrapper px-4"
             >
                 <EmptyState
+                    image-class="h-36"
                     empty-screen="NoGroups"
                     :desc="`No member with name ${searchText} found.`"
                     button-text="Clear search"
@@ -88,7 +89,7 @@
                     "
                 />
             </div>
-            <div v-else class="mt-4">
+            <div v-else class="mt-2">
                 <div class="overflow-y-auto member-list-height">
                     <div
                         v-for="user in memberList"
@@ -96,15 +97,16 @@
                         class="relative"
                     >
                         <div
-                            class="flex items-center justify-between  py-2 mt-2 transition-all duration-300 rounded group hover:bg-primary-light"
+                            class="flex items-center justify-between  py-2  transition-all duration-300 rounded group hover:bg-primary-light"
                         >
                             <UserCard
                                 :user="{ ...user, name: getUserName(user) }"
                                 :minimal="true"
+                                class="pl-1"
                             />
 
                             <div
-                                class="absolute right-0 flex justify-between mr-2 cursor-pointer top-3"
+                                class="absolute right-2 flex justify-between mr-2 cursor-pointer top-3"
                             >
                                 <div class="font-bold">
                                     <div

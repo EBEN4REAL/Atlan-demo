@@ -1,16 +1,20 @@
 <template>
-    <div class="flex flex-col py-5" v-auth="map.CREATE_GROUP">
+    <div v-auth="map.CREATE_GROUP" class="flex flex-col py-5">
+        <Shortcut
+            shortcut-key="esc"
+            action="close"
+            placement="left"
+            :delay="0.4"
+            :edit-permission="true"
+        >
+            <div class="close-btn-sidebar" @click="$emit('closeDrawer')">
+                <AtlanIcon icon="Add" class="text-white outline-none" />
+            </div>
+        </Shortcut>
         <div
             class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
             <div class="text-lg font-bold">Create Group</div>
-            <div class="top-0 p-1 rounded cursor-pointer right-2">
-                <AtlanIcon
-                    icon="Cross"
-                    class="r"
-                    @click="$emit('closeDrawer')"
-                />
-            </div>
         </div>
         <div class="flex flex-col px-4 py-3">
             <a-form
@@ -22,8 +26,8 @@
                 <a-form-item label="Name" name="name">
                     <a-input
                         v-model:value="group.name"
-                        @input="setGroupAlias"
                         class="w-full"
+                        @input="setGroupAlias"
                     />
                 </a-form-item>
                 <a-form-item label="Alias" name="alias">
@@ -35,24 +39,25 @@
                 <a-form-item label="Description" name="description">
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
-
+                <SlackInput
+                    v-model="group.slack"
+                    placeholder="Add Slack channel name or channel ID"
+                />
                 <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
-                        <span class="mr-2 font-bold">Members</span>
+                        <span class="mr-2">Users</span>
                     </div>
-                    <UserList
-                        user-list-header-class="min-w-full"
+                    <UserSelector
                         :user-list-style="{
-                            maxHeight: 'calc(100vh - 33.5rem)',
+                            maxHeight: 'calc(100vh - 37.5rem)',
                         }"
-                        :minimal="true"
                         @updateSelectedUsers="updateUserList"
                     />
                 </div>
             </a-form>
         </div>
         <div
-            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 border-t"
+            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 bg-white border-t"
         >
             <div class="flex items-center mt-3 gap-x-1">
                 <a-checkbox v-model:checked="isDefault">
@@ -74,7 +79,7 @@
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
-                :isLoading="createGroupLoading"
+                :is-loading="createGroupLoading"
                 @click="handleSubmit"
             >
                 Create Group
@@ -101,27 +106,37 @@
     import AtlanButton from '@/UI/button.vue'
     import map from '~/constant/accessControl/map'
     import NoAcces from '@/common/secured/access.vue'
+    import SlackInput from '@/admin/common/slackInput.vue'
+    import UserSelector from '@/admin/groups/addGroup/userSelector.vue'
 
     interface Group {
         name: String
         alias: String
         description: String
+        slack: String
     }
     export default defineComponent({
         name: 'AddGroup',
-        components: { UserList, DefaultLayout, NoAcces, AtlanButton },
+        components: {
+            UserList,
+            DefaultLayout,
+            NoAcces,
+            AtlanButton,
+            SlackInput,
+            UserSelector,
+        },
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
             const createGroupLoading = ref(false)
             const isDefault = ref(false)
-
             const listPermission = true
             const createPermission = true
             const group: UnwrapRef<Group> = reactive({
                 name: '',
                 description: '',
                 alias: '',
+                slack: '',
             })
             const validations = {
                 name: [
@@ -154,9 +169,13 @@
                 userIds.value = list
             }
             const handleSubmit = () => {
-                const currentDate = new Date().toISOString()
-                const createdBy = username.value
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
+
+                // check for #
+                let slackLink = group.slack
+                if (slackLink.startsWith('#'))
+                    slackLink = slackLink.substring(1)
+
                 const requestPayload = ref({
                     group: {
                         name: group.alias,
@@ -164,6 +183,10 @@
                             description: [group.description],
                             alias: [group.name],
                             isDefault: [`${isDefault.value}`],
+                            channels:
+                                slackLink.length > 0
+                                    ? [`[{"slack": "${slackLink}"}]`]
+                                    : [],
                         },
                     },
                     users: userIds.value,
@@ -180,9 +203,19 @@
                             emit('refresh')
                             emit('closeDrawer')
                         } else if (error && error.value) {
-                            message.error(
-                                'Unable to create group, please try again.'
+                            if (
+                                error.value?.response?.data?.message.includes(
+                                    '409 Conflict:'
+                                )
                             )
+                                message.error({
+                                    content: `A group with alias ${group.alias} already exists, please change the alias and try again.`,
+                                    duration: 3.5,
+                                })
+                            else
+                                message.error(
+                                    'Unable to create group, please try again.'
+                                )
                             createGroupLoading.value = false
                         }
                     },
@@ -211,9 +244,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .form:deep(.ant-form-item-label) {
-        @apply font-bold;
-    }
-</style>

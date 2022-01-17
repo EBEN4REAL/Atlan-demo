@@ -12,6 +12,23 @@ export default function useCreateGraph(
     const { Graph } = window.X6
     const { DagreLayout } = window.layout
 
+    Graph.registerConnector(
+        'beiz',
+        (s, t) => {
+            const control = 100
+            const offset = 10
+            const v1 = { x: s.x + control + offset, y: s.y }
+            const v2 = { x: t.x - control - offset, y: t.y }
+
+            return `M ${s.x} ${s.y}
+                L ${s.x + offset} ${s.y}
+                C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x - offset} ${t.y}
+                L ${t.x} ${t.y}
+            `
+        },
+        true
+    )
+
     graph.value = new Graph({
         autoResize: true,
         interacting: false,
@@ -58,7 +75,7 @@ export default function useCreateGraph(
             portsPositionArgs.map((_, index) => ({
                 position: {
                     x: 1,
-                    y: (index + 1) * 40 + 40,
+                    y: (index + 1) * 41 + 40,
                 },
                 angle: 0,
             })),
@@ -76,7 +93,7 @@ export default function useCreateGraph(
         },
         ranksepFunc() {
             // horizontal spacing btw nodes
-            return 125
+            return 190
         },
     })
 

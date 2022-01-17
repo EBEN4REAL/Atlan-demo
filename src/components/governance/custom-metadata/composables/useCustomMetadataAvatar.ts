@@ -2,7 +2,7 @@ import { ref, watch, computed, Ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useTypedefStore } from '~/store/typedef'
 import { Types } from '~/services/meta/types'
-
+import { FileItem } from '~/types/typedefs/customMetadata.interface'
 
 // composables
 import useUploadImage from '~/composables/image/uploadImage'
@@ -14,20 +14,7 @@ interface avatarOptions {
   emoji: string | null
 }
 
-interface FileItem {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  url?: string;
-  preview?: string;
-  originFileObj?: any;
-  file: string | Blob;
-}
-
-
-
-export default function useCustomMetadataAvatar(metadata) {
+export default function useCustomMetadataAvatar(metadata, immediate = true) {
   // data
   const popOverVisible = ref(false)
   const isUpdating = ref(false)
@@ -36,7 +23,7 @@ export default function useCustomMetadataAvatar(metadata) {
 
   const store = useTypedefStore()
   const initializeForm = () => ({
-    logoType: 'image',
+    logoType: '',
     imageId: null,
     emoji: null,
   })
@@ -150,8 +137,8 @@ export default function useCustomMetadataAvatar(metadata) {
 
 
   const imageUrl = computed(
-    () =>
-      `${window.location.origin}/api/service/images/${metadata.value.options.imageId}?ContentDisposition=inline&name=${metadata.value.options.imageId}`
+    () => metadata.value.options.imageId ?
+      `${window.location.origin}/api/service/images/${metadata.value.options.imageId}?ContentDisposition=inline&name=${metadata.value.options.imageId}` : ''
   )
 
 

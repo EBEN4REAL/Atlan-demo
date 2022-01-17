@@ -14,6 +14,7 @@
                             class=""
                             v-if="index !== 0"
                             v-model:filterType="subpanel.filter.filterType"
+                            :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
                             >Where</span
@@ -27,6 +28,7 @@
                                 :tableQualfiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
+                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
@@ -44,17 +46,20 @@
                                 :columnName="subpanel?.column?.label"
                                 :columnType="subpanel?.column?.type"
                                 v-model:selectedFilter="subpanel.filter"
+                                :disabled="
+                                    readOnly && !subpanel?.filter?.isVariable
+                                "
                                 @change="() => handleFilterChange(subpanel)"
                             />
                         </div>
 
                         <div class="flex item-3">
                             <Input
-                                v-if="
-                                    subpanel?.filter?.type === 'input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'input'"
                                 :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 class="flex-1 w-full"
                                 :type="
                                     getInputTypeFromColumnType(
@@ -65,20 +70,22 @@
                             />
 
                             <MultiInput
-                                v-if="
-                                    subpanel?.filter?.type === 'multi_input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'multi_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
                             <RangeInput
-                                v-if="
-                                    subpanel?.filter?.type === 'range_input' &&
-                                    !subpanel?.filter?.isVariable
-                                "
+                                v-if="subpanel?.filter?.type === 'range_input'"
                                 class="flex-1 w-full"
+                                :selectedFilter="subpanel.filter"
+                                :subpanel="subpanel"
+                                v-model:subpanels="subpanels"
+                                :index="index"
                                 :type="
                                     getInputTypeFromColumnType(
                                         subpanel?.column?.type
@@ -87,83 +94,13 @@
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
-                            <!-- Custom variable placeholder -->
-                            <div
-                                class="flex items-center w-full"
-                                v-if="subpanel?.filter?.isVariable"
-                            >
-                                <div
-                                    class="flex items-center flex-1 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                    style="height: 32px !important"
-                                >
-                                    <code class="px-3 truncate bg-white">
-                                        <a-tooltip placement="bottomLeft">
-                                            <template #title
-                                                >{{
-                                                    getInputTypeFromColumnType(
-                                                        subpanel?.column?.type
-                                                    )?.toUpperCase()
-                                                }}:&nbsp;
-                                                {{
-                                                    getCustomVariable(subpanel)
-                                                        .value
-                                                }}
-                                            </template>
-                                            <div
-                                                class="truncate cursor-pointer moustacheDecoration"
-                                            >
-                                                {{
-                                                    getCustomVariableText(
-                                                        subpanel
-                                                    )
-                                                }}
-                                            </div>
-                                        </a-tooltip>
-                                    </code>
-                                </div>
-                                <!-- Second input field if it is there -->
-                                <div
-                                    v-if="
-                                        totalFiledsMapWithInput[
-                                            subpanel?.filter?.type
-                                        ] > 1
-                                    "
-                                    class="flex items-center flex-1 w-full border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                    style="height: 32px !important"
-                                >
-                                    <code class="px-3 truncate bg-white">
-                                        <a-tooltip placement="bottomLeft">
-                                            <template #title
-                                                >{{
-                                                    getInputTypeFromColumnType(
-                                                        subpanel?.column?.type
-                                                    )?.toUpperCase()
-                                                }}:&nbsp;
-                                                {{
-                                                    getCustomVariable(
-                                                        subpanel,
-                                                        2
-                                                    ).value
-                                                }}
-                                            </template>
-                                            <div
-                                                class="truncate cursor-pointer moustacheDecoration"
-                                            >
-                                                {{
-                                                    getCustomVariableText(
-                                                        subpanel,
-                                                        2
-                                                    )
-                                                }}
-                                            </div>
-                                        </a-tooltip>
-                                    </code>
-                                </div>
-                            </div>
                             <!--  -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
-                                    v-if="isSubpanelClosable(subpanels)"
+                                    v-if="
+                                        isSubpanelClosable(subpanels) &&
+                                        !readOnly
+                                    "
                                     @click.stop="
                                         () => handleDelete(index, subpanel)
                                     "
@@ -171,45 +108,6 @@
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
                                 <!-- <div style="width: 32px" v-else></div> -->
-
-                                <a-tooltip placement="bottomLeft">
-                                    <template #title
-                                        >Toggle this to change it to
-                                        {{
-                                            subpanel?.filter?.isVariable
-                                                ? 'input field'
-                                                : 'custom variable'
-                                        }}
-                                    </template>
-                                    <div>
-                                        <AtlanIcon
-                                            v-if="!subpanel?.filter?.isVariable"
-                                            @click.stop="
-                                                () =>
-                                                    toggleVariableType(
-                                                        false,
-                                                        index,
-                                                        subpanel
-                                                    )
-                                            "
-                                            icon="Flash"
-                                            class="w-6 h-6 ml-3 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                        />
-                                        <AtlanIcon
-                                            v-else
-                                            @click.stop="
-                                                () =>
-                                                    toggleVariableType(
-                                                        true,
-                                                        index,
-                                                        subpanel
-                                                    )
-                                            "
-                                            icon="FlashColor"
-                                            class="w-6 h-6 ml-3 opacity-0 gap-1cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
-                                        />
-                                    </div>
-                                </a-tooltip>
                             </div>
                         </div>
                     </div>
@@ -218,6 +116,7 @@
         </div>
 
         <span
+            v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
             @click.stop="handleAddPanel"
         >
@@ -236,6 +135,8 @@
         toRaw,
         inject,
         ComputedRef,
+        computed,
+        toRefs,
         Ref,
     } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
@@ -257,6 +158,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { editor } from 'monaco-editor'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -284,18 +186,33 @@
                 required: true,
                 default: [],
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
             const { isSubpanelClosable } = useUtils()
+            const { disabled } = toRefs(props)
             const { getInputTypeFromColumnType, totalFiledsMapWithInput } =
                 useFilter()
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const showcustomVariablesToolBar = inject(
                 'showcustomToolBar'
             ) as Ref<Boolean>
@@ -312,6 +229,8 @@
                 getCustomVaribleByVQBFilterSubpanelId,
             } = useCustomVariable(editorInstance, monacoInstance)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
+            const { updateVQB } = useVQB()
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
@@ -389,74 +308,12 @@
                     },
                 })
                 subpanels.value = copySubPanels
+                updateVQB(activeInlineTab, inlineTabs)
 
                 // console.log('subpanels: ', copySubPanels)
             }
             const handleDelete = (index, subpanel) => {
                 subpanels.value.splice(index, 1)
-                /* FIXME: This needed an improvment when variable is used more than one place
-                right now it assuems that it present in only one place */
-                const subpanelIds = [subpanel.id]
-                let variables: any = []
-                activeInlineTab.value.playground.editor.variables.map(
-                    (_variable) => {
-                        subpanelIds.forEach((subpanelId) => {
-                            if (_variable?.subpanelId?.includes(subpanelId)) {
-                                variables.push(_variable)
-                            }
-                        })
-                    }
-                )
-                try {
-                    const forceDelete = true
-                    // delete all the custom variables
-                    variables.forEach((variable) => {
-                        if (variable !== undefined)
-                            deleteVariable(
-                                activeInlineTab,
-                                tabs,
-                                variable,
-                                forceDelete
-                            )
-                    })
-                } catch (e) {
-                    console.error('Failed to delete custom variable')
-                }
-            }
-            const toggleVariableType = (currVal, index, subpanel) => {
-                /* Check if variable already exists */
-                const Varindex =
-                    activeInlineTab.value.playground.editor.variables.findIndex(
-                        (variable) => variable?.subpanelId === subpanel.id
-                    )
-
-                const Varindex2 =
-                    activeInlineTab.value.playground.editor.variables.findIndex(
-                        (variable) =>
-                            variable?.subpanelId === `${subpanel.id}${2}`
-                    )
-                if (Varindex < 0) {
-                    addVariableFromVQB(activeInlineTab, tabs, {
-                        vqbPanelId: subpanel.id,
-                        subpanelId: subpanel.id,
-                        type: subpanel?.column?.type?.toLowerCase(),
-                    })
-
-                    /* If fileds are more than one, then it will have inputFiledValue 2 */
-                    if (Varindex2 < 0) {
-                        if (
-                            totalFiledsMapWithInput[subpanel?.filter?.type] > 1
-                        ) {
-                            addVariableFromVQB(activeInlineTab, tabs, {
-                                vqbPanelId: `${subpanel.id}${2}`,
-                                subpanelId: `${subpanel.id}${2}`,
-                                type: subpanel?.column?.type.toLowerCase(),
-                            })
-                        }
-                    }
-                }
-                subpanels.value[index].filter.isVariable = !currVal
-                showcustomVariablesToolBar.value = !currVal
             }
 
             const changeColumn = (column) => {
@@ -500,67 +357,37 @@
                 )
             }
 
-            const handleFilterChange = (subpanel) => {
-                /* If user moves from 1 field to 2 */
-                if (
-                    totalFiledsMapWithInput[subpanel?.filter?.type] > 1 &&
-                    subpanel?.filter?.isVariable
-                ) {
-                    /* Check if 2nd field is there, if there then don't create otherwise create it */
-                    /* Check if variable already exists */
-                    /* If fileds are more than one, then it will have inputFiledValue 2 */
-                    const Varindex2 =
-                        activeInlineTab.value.playground.editor.variables.findIndex(
-                            (variable) =>
-                                variable?.subpanelId === `${subpanel.id}${2}`
-                        )
-                    if (Varindex2 < 0) {
-                        addVariableFromVQB(activeInlineTab, tabs, {
-                            vqbPanelId: `${subpanel.id}${2}`,
-                            subpanelId: `${subpanel.id}${2}`,
-                            type: subpanel?.column?.type.toLowerCase(),
-                        })
-                    }
-                }
-
-                /* FIXME: Delete only if there are no instance used in other subpanels */
-                /* If user moves from 2 field to 1 then kill the 2nd variable */
-                if (
-                    totalFiledsMapWithInput[subpanel?.filter?.type] < 2 &&
-                    subpanel?.filter?.isVariable
-                ) {
-                    /* Check if 2nd field is there*/
-                    const Varindex2 =
-                        activeInlineTab.value.playground.editor.variables.findIndex(
-                            (variable) =>
-                                variable?.subpanelId === `${subpanel.id}${2}`
-                        )
-                    if (Varindex2 > -1) {
-                        let forceDelete = true
-                        const variable = {
-                            ...activeInlineTab.value.playground.editor
-                                .variables[Varindex2],
-                        }
-                        deleteVariable(
-                            activeInlineTab,
-                            tabs,
-                            variable,
-                            forceDelete
-                        )
-                    }
-                }
-            }
+            const handleFilterChange = (subpanel) => {}
 
             let hoverItem = ref(null)
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                disabled,
+                readOnly,
                 isSubpanelClosable,
                 activeInlineTab,
                 handleFilterChange,
                 totalFiledsMapWithInput,
                 getCustomVariable,
                 getCustomVariableText,
-                toggleVariableType,
                 getInputTypeFromColumnType,
                 selectedAggregates,
                 columnName,

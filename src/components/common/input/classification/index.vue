@@ -31,21 +31,28 @@
                 "
                 :mouse-enter-delay="0.5"
             >
-                <a-button
-                    shape="circle"
-                    :disabled="!editPermission"
-                    size="small"
-                    class="text-center shadow"
-                    :class="{
-                        editPermission:
-                            'hover:bg-primary-light hover:border-primary',
-                    }"
-                    @click="() => (isEdit = true)"
+                <Shortcut
+                    shortcut-key="t"
+                    action="set classification"
+                    placement="left"
+                    :edit-permission="editPermission && showShortcut"
                 >
-                    <span
-                        ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                    ></span> </a-button
-            ></a-tooltip>
+                    <a-button
+                        shape="circle"
+                        :disabled="!editPermission"
+                        size="small"
+                        class="text-center shadow"
+                        :class="{
+                            editPermission:
+                                'hover:bg-primary-light hover:border-primary',
+                        }"
+                        @click="() => (isEdit = true)"
+                    >
+                        <span
+                            ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                        ></span> </a-button
+                ></Shortcut>
+            </a-tooltip>
 
             <template v-for="classification in list" :key="classification.guid">
                 <Popover :classification="classification" :entity-guid="guid">
@@ -77,6 +84,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -84,6 +92,7 @@
             ClassificationFacet,
             ClassificationPill,
             Popover,
+            Shortcut,
         },
         props: {
             guid: {
@@ -99,6 +108,11 @@
                 default() {
                     return []
                 },
+            },
+            showShortcut: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             disabled: {
                 type: Boolean,

@@ -23,31 +23,29 @@
                 title="Enums"
                 sidebar-class="bg-white"
             >
-                <template #action>
-                    <a-tooltip>
-                        <template #title>New Enum</template>
-                        <AtlanBtn
-                            v-auth="map.CREATE_ENUM"
-                            class="flex-none"
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            @click="toggleAddModal(true)"
-                        >
-                            <AtlanIcon
-                                icon="Add"
-                                class="-mx-1 text-gray"
-                            /> </AtlanBtn
-                    ></a-tooltip>
-                </template>
+                <template #action> </template>
 
                 <template #sidebar>
-                    <div class="px-4 pt-6 pb-4">
+                    <div class="flex items-center px-4 mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :placeholder="`Search from ${enumList.length} enums`"
-                            class="bg-white"
+                            class="mt-0 bg-white"
+                            :autofocus="true"
+                            size="minimal"
                         />
+                        <a-tooltip>
+                            <template #title>New Enum</template>
+                            <AtlanBtn
+                                v-auth="map.CREATE_ENUM"
+                                class="flex-none px-2 ml-4"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="toggleAddModal(true)"
+                            >
+                                <AtlanIcon icon="Add" /> </AtlanBtn
+                        ></a-tooltip>
                     </div>
                     <EnumList
                         v-model:selected="selectedId"

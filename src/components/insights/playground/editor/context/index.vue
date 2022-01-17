@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap items-center justify-between w-full px-3 mt-2">
+    <div class="flex flex-wrap items-center justify-between w-full pr-3 mt-2">
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
@@ -31,7 +31,125 @@
                     />
                 </div>
             </a-tooltip> -->
-            <div class="flex items-center" style="max-width: 16rem">
+            <PopoverAsset
+                :item="{
+                    typeName: 'Query',
+                    attributes: activeInlineTab?.attributes,
+                }"
+                mouseEnterDelay="0.6"
+                placement="bottomLeft"
+                v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
+            >
+                <template #extraHeaders>
+                    <div
+                        class="flex item-center"
+                        v-if="
+                            activeInlineTab?.attributes?.parent?.typeName ===
+                            'Collection'
+                        "
+                    >
+                        <div class="flex items-center">
+                            <div
+                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                style="background-color: #c4c4c4"
+                            ></div>
+                            <div class="flex items-center h-full">
+                                <div
+                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                >
+                                    <AtlanIcon
+                                        :icon="
+                                            activeInlineTab?.attributes?.parent
+                                                ?.typeName === 'Folder'
+                                                ? 'FolderClosed'
+                                                : 'CollectionIconSmall'
+                                        "
+                                        class="h-4 mb-2"
+                                    />
+                                </div>
+
+                                <span>{{
+                                    activeInlineTab?.attributes?.parent
+                                        ?.attributes?.name
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="flex item-center"
+                        v-if="
+                            activeInlineTab?.attributes?.parent?.typeName ===
+                            'Folder'
+                        "
+                    >
+                        <div class="flex items-center">
+                            <div
+                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                style="background-color: #c4c4c4"
+                            ></div>
+                            <div class="flex items-center h-full">
+                                <div
+                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                >
+                                    <AtlanIcon
+                                        icon="CollectionIconSmall"
+                                        class="h-4 mb-2"
+                                    />
+                                </div>
+
+                                <span>{{ collectionName }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div
+                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                style="background-color: #c4c4c4"
+                            ></div>
+                            <div class="flex items-center h-full">
+                                <div
+                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                >
+                                    <AtlanIcon
+                                        icon="FolderClosed"
+                                        class="h-4 mb-2"
+                                    />
+                                </div>
+
+                                <span>{{
+                                    activeInlineTab?.attributes?.parent
+                                        ?.attributes?.name
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template #button> </template>
+
+                <div
+                    class="flex items-center pl-2 ml-1 transition rounded-sm hover:bg-gray-light"
+                    style="max-width: 16rem"
+                >
+                    <div class="mt-1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    'query',
+                                    activeInlineTab?.status
+                                )
+                            "
+                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                        ></AtlanIcon>
+                    </div>
+                    <Tooltip
+                        :tooltip-text="`${activeInlineTab.label}`"
+                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700 '"
+                        tooltipColor="#363636"
+                    />
+                </div>
+            </PopoverAsset>
+
+            <div v-else class="flex items-center pl-3" style="max-width: 16rem">
                 <div class="mt-1">
                     <AtlanIcon
                         :icon="
@@ -43,11 +161,6 @@
                         class="w-4 h-4 my-auto mr-1 -mt-0.5"
                     ></AtlanIcon>
                 </div>
-                <!-- <span
-                    class="mt-1 mr-1 text-base text-gray-700 truncate overflow-ellipsis"
-                    >{{ activeInlineTab.label }}</span
-                > -->
-
                 <Tooltip
                     :tooltip-text="`${activeInlineTab.label}`"
                     :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
@@ -109,7 +222,7 @@
                 >
                     <a-tooltip
                         color="#363636"
-                        class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
+                        class="flex items-center h-6 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                     >
                         <template #title>
                             updated
@@ -164,7 +277,7 @@
                     <div class="p-4" style="width: 332px">
                         <Connector
                             class=""
-                            :filterSourceIds="['powerBI', 'tableau']"
+                            :filterSourceIds="BItypes"
                             :isLeafNodeSelectable="false"
                             v-model:data="connectorsData"
                             :item="{
@@ -318,71 +431,93 @@
                         >
                             <template #title>
                                 {{
-                                    editorContentSelectionState
+                                    activeInlineTab?.playground.resultsPane
+                                        ?.result?.runQueryId &&
+                                    !activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
+                                        ? 'Abort Query'
+                                        : activeInlineTab?.playground
+                                              .resultsPane?.result
+                                              ?.runQueryId &&
+                                          activeInlineTab?.playground
+                                              ?.resultsPane?.result
+                                              ?.buttonDisable
+                                        ? 'Aborting query'
+                                        : isQueryRunning === 'loading'
+                                        ? 'Running query'
+                                        : editorContentSelectionState
                                         ? 'Run selected'
                                         : 'Run query'
                                 }}
                             </template>
-                            <AtlanBtn
-                                class="flex items-center h-6 px-3 button-shadow bg-primary"
-                                size="sm"
-                                color="primary"
-                                padding="compact"
-                                :disabled="
-                                    activeInlineTab?.playground?.resultsPane
-                                        ?.result?.buttonDisable
-                                "
-                                @click="$emit('onClickRunQuery')"
+
+                            <Shortcut
+                                shortcut-key="cmd+enter"
+                                action="Run Query"
+                                placement="right"
+                                :edit-permission="isQueryRunning !== 'loading'"
                             >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="
-                                            isQueryRunning === 'loading'
-                                                ? false
-                                                : true
-                                        "
-                                        icon="Play"
-                                        class="mr-1 text-white rounded"
-                                    ></AtlanIcon>
-                                    <AtlanIcon
-                                        v-else
-                                        icon="CircleLoader"
-                                        class="w-4 h-4 mr-1 text-white animate-spin"
-                                    ></AtlanIcon>
-                                    <div>
-                                        <span
+                                <AtlanBtn
+                                    class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                    size="sm"
+                                    color="primary"
+                                    padding="compact"
+                                    :disabled="
+                                        activeInlineTab?.playground?.resultsPane
+                                            ?.result?.buttonDisable
+                                    "
+                                    @click="$emit('onClickRunQuery')"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
                                             v-if="
-                                                !activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId
+                                                isQueryRunning === 'loading'
+                                                    ? false
+                                                    : true
                                             "
-                                            class="text-white"
-                                            >Run</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId &&
-                                                !activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Abort</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Aborting</span
-                                        >
+                                            icon="Play"
+                                            class="mr-1 text-white rounded"
+                                        ></AtlanIcon>
+                                        <AtlanIcon
+                                            v-else
+                                            icon="CircleLoader"
+                                            class="w-4 h-4 mr-1 text-white animate-spin"
+                                        ></AtlanIcon>
+                                        <div>
+                                            <span
+                                                v-if="
+                                                    !activeInlineTab?.playground
+                                                        .resultsPane?.result
+                                                        ?.runQueryId
+                                                "
+                                                class="text-white"
+                                                >Run</span
+                                            >
+                                            <span
+                                                v-else-if="
+                                                    activeInlineTab?.playground
+                                                        .resultsPane?.result
+                                                        ?.runQueryId &&
+                                                    !activeInlineTab?.playground
+                                                        ?.resultsPane?.result
+                                                        ?.buttonDisable
+                                                "
+                                                class="text-white"
+                                                >Abort</span
+                                            >
+                                            <span
+                                                v-else-if="
+                                                    activeInlineTab?.playground
+                                                        ?.resultsPane?.result
+                                                        ?.buttonDisable
+                                                "
+                                                class="text-white"
+                                                >Aborting</span
+                                            >
+                                        </div>
                                     </div>
-                                </div>
-                            </AtlanBtn>
+                                </AtlanBtn>
+                            </Shortcut>
                         </a-tooltip>
                     </div>
                     <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
@@ -420,6 +555,9 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
@@ -434,6 +572,7 @@
             AtlanIcon,
             Tooltip,
             Shortcut,
+            PopoverAsset,
         },
         props: {
             isUpdating: {
@@ -482,6 +621,8 @@
             // })
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
+
+            const BItypes = getBISourceTypes()
 
             let userHasPermission = computed(() => {
                 permissions.value.indexOf('CREATE_COLLECTION') >= 0
@@ -539,6 +680,19 @@
                 )
             })
 
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
+
+            const collectionName = computed(() => {
+                let col = queryCollections.value?.find(
+                    (col) =>
+                        col.attributes.qualifiedName ===
+                        activeInlineTab.value.attributes.collectionQualifiedName
+                )
+                return col?.displayText
+            })
+
             const handleChange = () => {
                 /* Here we are making a change, so isSaved will be false */
                 // activeInlineTab.value.isSaved = false
@@ -573,6 +727,7 @@
                 },
                 { immediate: true }
             )
+
             return {
                 popoverVisible,
                 onPopoverVisibleChange,
@@ -596,6 +751,8 @@
                 map,
                 userHasPermission,
                 editorContentSelectionState,
+                collectionName,
+                BItypes,
             }
         },
     })

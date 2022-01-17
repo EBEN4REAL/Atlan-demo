@@ -1,17 +1,20 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 rounded hover:bg-primary-light"
-        :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
+        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        :class="{
+            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'cursor-pointer': enableSidebarDrawer,
+        }"
         @click="handlePreview(item)"
     >
         <div
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-light'
+                    ? 'border-primary bg-primary-menu'
                     : 'border-transparent',
-                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+                bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
@@ -400,8 +403,145 @@
                                 </template>
                             </a-tooltip>
                         </div>
+
+                        <div
+                            v-if="
+                                [
+                                    'PowerBIDataset',
+                                    'PowerBIDataflow',
+                                    'PowerBIReport',
+                                    'PowerBIDashboard',
+                                ].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentWorkspace(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentWorkspace(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Workspace -
+                                        {{
+                                            parentWorkspace(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="['PowerBIPage'].includes(item?.typeName)"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentReport(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentReport(item)?.attributes?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Report -
+                                        {{
+                                            parentReport(item)?.attributes?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="['PowerBITile'].includes(item?.typeName)"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentDashboard(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentDashboard(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Dashboard -
+                                        {{
+                                            parentDashboard(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['PowerBIDatasource'].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentDataset(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{
+                                            parentDataset(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Dataset -
+                                        {{
+                                            parentDataset(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
-                    <div class="flex flex-wrap mt-1 gap-x-1">
+
+                    <div class="flex flex-wrap gap-x-1">
                         <div
                             v-if="
                                 list.length > 0 &&
@@ -467,7 +607,12 @@
                 </div>
             </div>
         </div>
-        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <hr
+            class="mx-2 text-gray-100 bg-gray-200"
+            :class="
+                (bulkSelectMode && isChecked) || isSelected ? 'invisible' : ''
+            "
+        />
         <AssetDrawer
             :data="selectedAssetDrawerData"
             :show-drawer="showAssetSidebarDrawer"
@@ -624,6 +769,16 @@
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
+                parentWorkspace,
+                parentReport,
+                parentDashboard,
+                parentDataset,
+                reportCount,
+                dashboardCount,
+                datasetCount,
+                dataflowCount,
+                tileCount,
+                pageCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -752,6 +907,16 @@
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
+                parentWorkspace,
+                parentReport,
+                parentDashboard,
+                parentDataset,
+                reportCount,
+                dashboardCount,
+                datasetCount,
+                dataflowCount,
+                tileCount,
+                pageCount,
             }
         },
     })

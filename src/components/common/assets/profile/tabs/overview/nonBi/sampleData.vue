@@ -1,6 +1,11 @@
 <template>
     <div
-        class="flex items-center justify-center w-full border rounded max-profile-width h-96 border-gray-light"
+        class="flex items-center justify-center w-full overflow-hidden border rounded max-profile-width h-96"
+        :class="
+            results.length > 0 && !isLoading
+                ? 'border-gray-light'
+                : 'border-transparent'
+        "
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
             <AtlanIcon
@@ -19,13 +24,11 @@
                 <p class="mb-0 text-base font-bold text-gray-700">
                     Sample data unavailable!
                 </p>
-                <p class="mt-2 mb-0 text-base text-gray-500">
-                    <span v-if="error?.response?.data?.errorName"
-                        >{{ error?.response?.data?.errorName }} :
-                    </span>
-                    <span v-if="error?.response?.data?.errorCode">
-                        {&nbsp;{{ error?.response?.data?.errorCode }}&nbsp;}
-                    </span>
+                <p
+                    v-if="error?.response?.data?.errorName"
+                    class="mt-2 mb-0 text-base text-gray-500"
+                >
+                    {{ error?.response?.data?.errorName }}
                 </p>
             </div>
         </div>
@@ -103,21 +106,31 @@
             watch([data], () => {
                 if (data.value) {
                     // convert data from API in table format
-                    data.value.columns.forEach((col) => {
+                    data.value.columns.forEach((col, index) => {
                         const obj = {
-                            dataIndex: col.label,
+                            dataIndex: col.columnName + index,
                             title: col.columnName,
                             data_type: col.type.name,
                         }
                         tableColumns.value.push(obj)
                     })
-                    data.value.rows.forEach((val, index) => {
+                    data.value.rows.forEach((val) => {
                         let obj = {}
-                        data.value.columns.forEach((col, i) => {
-                            obj[col.columnName] = val[i] || '---'
+
+                        val.map((row, rowindex) => {
+                            obj = {
+                                ...obj,
+                                ...{
+                                    [tableColumns.value[rowindex].dataIndex]: {
+                                        data: row,
+                                        data_type:
+                                            tableColumns.value[rowindex]
+                                                .data_type,
+                                    },
+                                },
+                            }
                         })
-                        // add key to object
-                        obj = { ...obj }
+
                         results.value.push(obj)
                     })
                 }

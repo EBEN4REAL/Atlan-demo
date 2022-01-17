@@ -37,10 +37,14 @@
             const route = useRoute()
             const router = useRouter()
             const savedQueryGuidFromURL = computed(() => route.query?.id)
+            const collectionGuidFromURL = ref(route.query?.col_id)
             const runQuery = ref(route.query?.runQuery)
             const isVisualQuery = computed(() => route.query?.vqb === 'true')
 
             let refetchQueryCollection = ref() as Ref<Function>
+
+            let isCollectionCreated = ref(false) as Ref<Boolean>
+
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
@@ -97,7 +101,9 @@
             provide('savedQueryInfo', savedQueryInfo)
             provide('queryFolderNamespace', queryFolderNamespace)
             provide('refetchQueryCollection', refetchQueryCollection)
+            provide('isCollectionCreated', isCollectionCreated)
             provide('permissions', permissions)
+            provide('collectionGuidFromURL', collectionGuidFromURL)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
 

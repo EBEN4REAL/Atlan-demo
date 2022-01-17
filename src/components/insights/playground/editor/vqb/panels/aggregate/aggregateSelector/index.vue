@@ -13,7 +13,7 @@
                 : 'border-gray-300 border border-plus',
             ,
             'flex flex-wrap items-center  rounded box-shadow selector-height px-3',
-            !columnName ? ' cursor-not-allowed disable-bg' : '',
+            disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -32,12 +32,12 @@
 
         <a-input
             v-if="selectedItems.length == 0"
-            :disabled="!columnName"
+            :disabled="disabled"
             :placeholder="placeholder"
             :contenteditable="false"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !columnName ? $style.custom_input : '',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -112,6 +112,7 @@
     import { useAggregate } from '~/components/insights/playground/editor/vqb/composables/useAggregate'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     // import useBody from './useBody'
 
@@ -132,10 +133,15 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { columnName, columnType } = toRefs(props)
+            const { columnName, columnType, disabled } = toRefs(props)
 
             const { selectedItems } = useVModels(props)
             const map = ref({})
@@ -153,6 +159,16 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const inputRef = ref()
             const selectAll = ref(false)
             const topPosShift = ref(0)
@@ -160,6 +176,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
+                if (disabled?.value) return
                 if (!columnType.value) return
                 // inputChange()
                 isAreaFocused.value = true
@@ -184,6 +201,7 @@
                 const label = node?.dataRef?.name
                 const type = node?.dataRef?.dataType?.toLowerCase()
                 cols.value.push({ type, label })
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const inputChange = () => {
@@ -226,14 +244,16 @@
                 const data: any[] = []
                 selectedItems.value.forEach((key) => {
                     let item = aggregationList.value.find(
-                        (el) => el.key === key
+                        (el) => el.key?.toLowerCase() === key?.toLowerCase()
                     )
-                    data.push({
-                        label: item.label,
-                    })
-                    // }
-                    // console.log('selected: ', key)
-                    map.value[key] = true
+                    if (item) {
+                        data.push({
+                            label: item?.label,
+                        })
+                        // }
+                        // console.log('selected: ', key)
+                        map.value[key] = true
+                    }
                 })
                 return data
             })
@@ -249,6 +269,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 emit('checkChange', selectedItems.value)
+                updateVQB(activeInlineTab, inlineTabs)
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -293,8 +314,14 @@
             const handleMouseOut = () => {
                 if (mouseOver.value) mouseOver.value = false
             }
+            watch(selectedItems, (newSelectedItems) => {
+                if (newSelectedItems.length == 0) {
+                    map.value = {}
+                }
+            })
 
             return {
+                disabled,
                 map,
                 enrichedSelectedItems,
                 onCheckChange,

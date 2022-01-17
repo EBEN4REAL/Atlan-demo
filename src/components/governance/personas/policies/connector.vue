@@ -31,7 +31,7 @@
                     <div class="flex flex-col">
                         {{ node.title }}
                     </div>
-                    <span class="text-sm text-gray-500" v-if="node.node.count">
+                    <span v-if="node.node.count" class="text-sm text-gray-500">
                         ({{ node.node.count }} assets)</span
                     >
                 </div>
@@ -103,12 +103,16 @@
                 type: String,
                 default: '',
             },
+            hidePowerBi: {
+                type: Boolean,
+                default: false,
+            },
         },
         emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds } = toRefs(props)
+            const { data, filterSourceIds, hidePowerBi } = toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -204,7 +208,10 @@
             const transformConnectorToTree = (data: any) => {
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
-                    const children = transformConnectionsToTree(item.id)
+                    const children =
+                        hidePowerBi.value && item.id === 'powerbi'
+                            ? []
+                            : transformConnectionsToTree(item.id)
                     const treeNodeObj = {
                         value: item.id,
                         key: item.id,

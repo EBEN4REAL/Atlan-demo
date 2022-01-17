@@ -349,7 +349,7 @@
     }
     .tab-select-asset {
         .tab-btn {
-            flex: 1;
+            flex: 1 !important;
         }
     }
     .btn-asset {

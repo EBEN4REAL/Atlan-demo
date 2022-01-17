@@ -9,9 +9,10 @@
                     v-auth="map.ADD_USER_GROUP"
                     color="secondary"
                     padding="compact"
-                    class="flex mr-3.5 p-0 w-7 h-7 items-center justify-center border-transparent cursor-pointer rounded hover:border-primary-focus"
+                    size="sm"
+                    class="flex items-center justify-center w-8 h-8 p-0 mr-2 border-transparent rounded cursor-pointer hover:border-primary-focus"
                 >
-                    <AtlanIcon icon="AddUser" class="text-gray-500" />
+                    <AtlanIcon icon="AddUser" class="text-gray-700" />
                 </AtlanBtn>
             </template>
         </MemberPopover>
@@ -48,11 +49,12 @@
             @visibleChange="handleVisibleChange"
         >
             <AtlanBtn
-                class="flex items-center justify-center p-0 border-transparent rounded cursor-pointer w-7 h-7 hover:border-primary-focus"
+                class="flex items-center justify-center w-8 h-8 p-0 border-transparent rounded cursor-pointer hover:border-primary-focus"
+                size="sm"
                 color="secondary"
                 padding="compact"
             >
-                <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
+                <AtlanIcon icon="KebabMenu" class="text-gray-700"></AtlanIcon>
             </AtlanBtn>
             <template #overlay>
                 <a-menu>
@@ -67,36 +69,45 @@
                                     icon="CircleLoader"
                                     class="mr-2 animate-spin"
                                 />
-                            </template>
-                            <a-checkbox
-                                :class="{
-                                    'hide-checkbox': markAsDefaultLoading,
-                                }"
-                                :checked="group.isDefault === 'true'"
-                                :disabled="
-                                    markAsDefaultLoading || deleteGroupLoading
-                                "
-                                @click="$emit('toggleDefault')"
-                                >{{
+                                {{
                                     group.isDefault === 'true'
-                                        ? 'Unmark'
-                                        : 'Mark as'
+                                        ? 'Unmarking'
+                                        : 'Marking as'
                                 }}
                                 default
-                            </a-checkbox>
-                            <a-tooltip placement="topLeft">
-                                <template #title>
-                                    <span>
-                                        New users are automatically added to
-                                        default groups
-                                    </span>
-                                </template>
+                            </template>
+                            <div v-else>
+                                <a-checkbox
+                                    :class="{
+                                        'hide-checkbox': markAsDefaultLoading,
+                                    }"
+                                    :checked="group.isDefault === 'true'"
+                                    :disabled="
+                                        markAsDefaultLoading ||
+                                        deleteGroupLoading
+                                    "
+                                    @click="$emit('toggleDefault')"
+                                    >{{
+                                        group.isDefault === 'true'
+                                            ? 'Unmark'
+                                            : 'Mark as'
+                                    }}
+                                    default
+                                </a-checkbox>
+                                <a-tooltip placement="topLeft">
+                                    <template #title>
+                                        <span>
+                                            New users are automatically added to
+                                            default groups
+                                        </span>
+                                    </template>
 
-                                <AtlanIcon
-                                    icon="Info"
-                                    class="text-xs text-gray-500 mb-0.5"
-                                />
-                            </a-tooltip>
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="text-xs text-gray-500 mb-0.5"
+                                    />
+                                </a-tooltip>
+                            </div>
                         </div>
                     </a-menu-item>
                     <a-menu-divider class="m-0" />
@@ -114,7 +125,7 @@
                             </div>
                             <AtlanIcon icon="Trash" class="mb-1 mr-1 text-xs" />
 
-                            Delete
+                            {{ deleteGroupLoading ? 'Deleting' : 'Delete' }}
                         </div>
                     </a-menu-item>
                 </a-menu>

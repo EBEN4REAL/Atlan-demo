@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg query-access-logs-table"
+            class="overflow-hidden border rounded-b-lg query-access-logs-table query-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
@@ -11,8 +11,19 @@
             :row-key="(query) => query._id"
             :loading="isLoading"
             :custom-row="customRow"
+            :row-class-name="
+                (_record, index) =>
+                    _record._id === selectedQuery._id ? 'bg-primary-light' : ''
+            "
             @change="handleTableChange"
         >
+            <template #headerCell="{ title, column }">
+                <div
+                    class="flex p-4 py-2 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                >
+                    {{ title }}
+                </div>
+            </template>
             <template #queryInfo="{ text: queryInfo }">
                 <div class="flex items-center h-full py-1">
                     <div
@@ -302,7 +313,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        Ref,
+        watch,
+        toRefs,
+        unref,
+        computed,
+    } from 'vue'
     import dayjs from 'dayjs'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -351,6 +370,11 @@
                 return ''
             }
             const { selectedQuery, selectedRowKeys } = toRefs(props)
+
+            const rowSelection = computed(() => ({
+                selectedRowKeys: unref(selectedRowKeys),
+                hideDefaultSelections: true,
+            }))
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
 
@@ -374,24 +398,26 @@
                     key: 'QueryInfo',
                     ellipsis: true,
                     slots: { customRender: 'queryInfo' },
-                    width: 500,
+                    width: '25%',
                 },
                 {
                     title: 'Execution details',
                     slots: { customRender: 'details' },
                     key: 'execution_details',
+                    width: '15%',
                 },
                 {
                     title: 'User',
                     key: 'user',
                     ellipsis: true,
                     slots: { customRender: 'user' },
-                    width: 120,
+                    width: '10%',
                 },
                 {
                     title: 'Timestamp',
                     key: 'timestamp',
                     slots: { customRender: 'timestamp' },
+                    width: '15%',
                 },
             ]
 
@@ -404,7 +430,9 @@
                     emit('selectQuery', record)
                 },
             })
+
             return {
+                rowSelection,
                 customRow,
                 handleRowSelected,
                 selectedRowKeys,
@@ -439,5 +467,17 @@
     }
     .selected-row {
         background: #f4f6fd;
+    }
+</style>
+
+<style lang="less">
+    .query-table {
+        .ant-table-thead {
+            height: 44px !important;
+            .ant-table-cell {
+                padding: 0 !important;
+                // padding-left: 20px !important;
+            }
+        }
     }
 </style>

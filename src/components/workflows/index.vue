@@ -2,47 +2,20 @@
     <div class="flex flex-col w-full h-full bg-primary-light">
         <div class="flex flex-1 w-full overflow-y-auto">
             <div class="flex flex-col flex-1 h-full">
-                <div class="flex items-center justify-between px-6 py-6">
-                    <a-radio-group
-                        button-style="solid"
-                        v-model:value="discoveryType"
+                <div class="flex items-center justify-between px-6 pt-6">
+                    <div class="flex flex-grow">
+                        <a-input
+                            class="w-1/3"
+                            v-model:value="queryText"
+                            placeholder="Search Packages"
+                        ></a-input>
+                    </div>
+                    <a-button type="primary" @click="handleNewWorkflow"
+                        >New Workflow</a-button
                     >
-                        <a-radio-button value="packages"
-                            >Packages</a-radio-button
-                        >
-                        <a-radio-button value="workflows"
-                            >Workflows</a-radio-button
-                        >
-                    </a-radio-group>
-                    <a-button type="primary">New Workflow</a-button>
-                </div>
-                <div
-                    class="flex px-6 pb-4 font-extrabold gap-x-3 focus-within:text-2xl"
-                >
-                    <a-popover placement="bottomRight">
-                        <template #content>
-                            <PackageFilters
-                                :filter-list="packageFilters"
-                                v-model="facets"
-                                v-model:activeKey="activeKey"
-                                @change="handleFilterChange"
-                                @reset="handleResetEvent"
-                            ></PackageFilters>
-                        </template>
-                        <a-button
-                            ><AtlanIcon icon="Filter" class="mr-1"></AtlanIcon
-                            >Filter</a-button
-                        >
-                    </a-popover>
-                    <a-input
-                        v-model:value="queryText"
-                        placeholder="Search Packages"
-                        @change="handleSearchChange"
-                    ></a-input>
                 </div>
 
-                <div class="flex h-full overflow-y-auto">
-                    <!-- <div
+                <!-- <div
                         class="flex items-center justify-center w-full"
                         v-if="isLoading"
                     >
@@ -64,13 +37,9 @@
                         ></EmptyView>
                     </div> -->
 
-                    <PackageWiseDiscovery
-                        v-if="discoveryType === 'packages'"
-                    ></PackageWiseDiscovery>
-                    <WorkflowWiseDiscovery
-                        v-if="discoveryType === 'workflows'"
-                    ></WorkflowWiseDiscovery>
-                </div>
+                <PackageWiseDiscovery
+                    :queryText="queryText"
+                ></PackageWiseDiscovery>
             </div>
         </div>
     </div>
@@ -86,6 +55,7 @@
 
     import PackageWiseDiscovery from '~/components/workflows/package/index.vue'
     import WorkflowWiseDiscovery from '~/components/workflows/workflows/index.vue'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
@@ -102,9 +72,20 @@
 
             const discoveryType = ref('packages')
 
+            const queryText = ref('')
+
+            const router = useRouter()
+
+            const handleNewWorkflow = () => {
+                router.push('/workflows/setup')
+            }
+
             return {
                 packageFilters,
                 discoveryType,
+                queryText,
+                handleNewWorkflow,
+                router,
             }
         },
     })

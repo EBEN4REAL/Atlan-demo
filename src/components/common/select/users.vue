@@ -1,13 +1,14 @@
 <template>
     <a-select
-        v-model:value="localValue"
         ref="inputRef"
+        v-model:value="localValue"
         :placeholder="`Select user${multiple ? 's' : ''}`"
-        class="w-full"
+        class="w-full center-arrow"
         :show-search="true"
+        :showArrow="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
-        :allowClear="true"
+        :allow-clear="true"
         :filter-option="() => true"
         @change="handleChange"
         @dropdownVisibleChange="handleOpen"
@@ -123,7 +124,6 @@
             watch(
                 () => props.queryText,
                 () => {
-                    s
                     handleSearch(props.queryText)
                 }
             )

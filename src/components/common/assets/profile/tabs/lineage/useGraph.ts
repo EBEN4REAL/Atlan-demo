@@ -1,28 +1,39 @@
 import { ref } from 'vue'
-import { getNodeSourceImage } from './util.js'
-import { iconProcess, iconEllipse, iconCaretDown } from './icons'
+import { getNodeSourceImage, getSource, getSchema } from './util.js'
+import {
+    iconProcess,
+    iconEllipse,
+    iconCaretDown,
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+} from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
-
-const getSource = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[1]
-    return item[0]
-}
-const getSchema = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
-    if (item[0] === 'default') return item[4]
-    return item[3]
-}
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
         const { guid, typeName, attributes } = entity
+        const { certificateStatus } = attributes
+        let status = ''
         let { displayText } = entity
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
+
+        if (certificateStatus) {
+            switch (certificateStatus) {
+                case 'VERIFIED':
+                    status = iconVerified
+                    break
+                case 'DRAFT':
+                    status = iconDraft
+                    break
+                default:
+                    status = iconDeprecated
+            }
+        }
 
         if (!displayText) displayText = attributes.name
 
@@ -69,12 +80,14 @@ export default function useGraph() {
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
-                                    <div class="node-text group-hover:underline">
+                                    <div class="node-text">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-10">${iconCaretDown}</span>
+                                            <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${iconCaretDown}</span>
                                         </span>
-                                        <div class="truncate">${displayText}</div>
-                                        
+                                        <div class="flex items-center gap-x-1">
+                                            <span class="node-title truncate group-hover:underline">${displayText}</span>
+                                            <span class="flex-none mr-1">${status}</span>
+                                        </div>
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -84,10 +97,10 @@ export default function useGraph() {
                                                 ? iconEllipse
                                                 : ''
                                         }
-                                       <div class="node-meta__text text-truncate ${
+                                       <div class="node-meta__text  truncate ${
                                            ['Table', 'View'].includes(typeName)
                                                ? ''
-                                               : 'd-none'
+                                               : 'hidden'
                                        }">${schemaName || ''}</div>
                                     </div>
                                 </div>       
@@ -120,14 +133,47 @@ export default function useGraph() {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 69,
+                                height: 60,
+                                strokeWidth: 1,
+                                stroke: 'none',
+                                fill: 'none',
+                                event: 'port:click',
+                                y: -30,
+                                x: 1,
+                            },
+                        },
+                    },
+                    ctaPort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                            {
+                                tagName: 'text',
+                                selector: 'portNameLabel',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 40,
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -34,
+                                y: -11,
+                            },
+                            portNameLabel: {
+                                ref: 'portBody',
+                                refX: 36,
+                                refY: 12,
+                                fontSize: 16,
+                                fill: '#3e4359',
+                                event: 'port:click',
                             },
                         },
+                        position: 'erPortPosition',
                     },
                     columnList: {
                         markup: [
@@ -152,7 +198,7 @@ export default function useGraph() {
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -9.5,
+                                y: -11,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
@@ -236,6 +282,7 @@ export default function useGraph() {
         const portData = {
             id: item.guid,
             group: 'columnList',
+            entity: item,
             attrs: {
                 portBody: {},
                 portNameLabel: {
@@ -245,6 +292,22 @@ export default function useGraph() {
                     href: `/dataType/${dataType || 'empty'}.svg`,
                     width: 16,
                     height: 16,
+                },
+            },
+        }
+        return { portData }
+    }
+
+    const createCustomPortData = (nodeId, text) => {
+        const portData = {
+            id: `${nodeId}-ctaPort`,
+            group: 'columnList',
+            attrs: {
+                portNameLabel: {
+                    text,
+                    x: '1.3em',
+                    fill: '#5277d7',
+                    fontSize: 18,
                 },
             },
         }
@@ -267,7 +330,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'rounded' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,
@@ -275,8 +338,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 8,
-                        height: 8,
+                        width: 0.1,
+                        height: 0.1,
                     },
                 },
             },
@@ -310,9 +373,9 @@ export default function useGraph() {
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
-            if (x.id.includes('processIdGoesHere')) return
             const cell = graph.value.getCellById(x.id)
-            cell.setVisible(visible)
+            cell.attr('line/stroke', visible ? '#c7c7c7' : '#dce0e5')
+            cell.toBack()
         })
     }
 
@@ -321,6 +384,7 @@ export default function useGraph() {
         addNode,
         removeNode,
         createPortData,
+        createCustomPortData,
         createEdgeData,
         addEdge,
         removeEdge,

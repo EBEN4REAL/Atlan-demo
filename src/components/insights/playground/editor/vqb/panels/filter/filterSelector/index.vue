@@ -13,7 +13,7 @@
                 : 'border-gray-300 border border-plus',
             ,
             'flex flex-wrap items-center  rounded box-shadow selector-height px-3',
-            !columnName ? ' cursor-not-allowed disable-bg' : '',
+            disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
     >
@@ -28,12 +28,12 @@
 
         <a-input
             v-if="!selectedFilter?.name"
-            :disabled="!columnName"
+            :disabled="disabled"
             :placeholder="placeholder"
             :contenteditable="false"
             :class="[
                 'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
-                !columnName ? $style.custom_input : '',
+                disabled ? $style.custom_input : '',
             ]"
         />
         <div class="absolute right-2">
@@ -107,6 +107,8 @@
     } from 'vue'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import { useVModels } from '@vueuse/core'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     // import useBody from './useBody'
 
@@ -127,10 +129,15 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { columnName, columnType } = toRefs(props)
+            const { columnName, columnType, disabled } = toRefs(props)
 
             const { selectedFilter } = useVModels(props)
             const observer = ref()
@@ -143,6 +150,20 @@
 
             const { filterList } = useFilter()
 
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const inlineTabs = inject(
+                'inlineTabs'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const { updateVQB } = useVQB()
+
             const inputRef = ref()
             const selectAll = ref(false)
             const topPosShift = ref(0)
@@ -150,7 +171,7 @@
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
             const setFocus = () => {
-                if (!columnType.value) return
+                if (disabled?.value) return
                 // inputChange()
                 isAreaFocused.value = true
                 // nextTick(() => {
@@ -217,13 +238,24 @@
             const onCheckChange = (event, checked) => {
                 // inputChange()
                 // console.log(checked)
-                selectedFilter.value = {
-                    ...selectedFilter.value,
-                    name: checked.key,
-                    type: checked.type,
-                    title: checked.name,
+                if (checked.type === 'range_input') {
+                    selectedFilter.value = {
+                        ...selectedFilter.value,
+                        name: checked.key,
+                        type: checked.type,
+                        title: checked.name,
+                        value: [undefined, undefined],
+                    }
+                } else {
+                    selectedFilter.value = {
+                        ...selectedFilter.value,
+                        name: checked.key,
+                        type: checked.type,
+                        title: checked.name,
+                    }
                 }
                 emit('change')
+                updateVQB(activeInlineTab, inlineTabs)
                 isAreaFocused.value = false
                 // filterName.value = checked.name
                 event.stopPropagation()
@@ -273,6 +305,7 @@
             }
 
             return {
+                disabled,
                 containerPosition,
                 onCheckChange,
                 selectAll,

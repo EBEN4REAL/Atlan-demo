@@ -1,14 +1,14 @@
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-col w-full h-full">
-            <div class="w-full">
+            <div class="flex w-full">
                 <SearchAdvanced
                     :key="searchDirtyTimestamp"
                     v-model="queryText"
                     :autofocus="true"
                     :allow-clear="true"
                     :class="searchBarClass"
-                    size="large"
+                    :size="searchBarSize"
                     :placeholder="placeholder"
                     @change="handleSearchChange"
                 >
@@ -21,6 +21,7 @@
                         </div>
                     </template>
                 </SearchAdvanced>
+                <slot name="searchAction"></slot>
             </div>
             <div :class="aggregationTabClass">
                 <AggregationTabs
@@ -47,7 +48,8 @@
             </div>
             <div v-if="list.length === 0 && !isValidating" class="h-full">
                 <EmptyView
-                    empty-screen="EmptyDiscover"
+                    empty-screen="NoAssetsFound"
+                    image-class="h-44"
                     :desc="
                         queryText
                             ? 'We didn\'t find anything that matches your search criteria'
@@ -58,7 +60,12 @@
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>
-            <div v-else class="overflow-auto" :class="assetListClass">
+            <div
+                v-else
+                class="overflow-auto"
+                :class="assetListClass"
+                :style="assetListStyleObj"
+            >
                 <AssetList
                     :list="list"
                     :is-load-more="isLoadMore"
@@ -73,11 +80,21 @@
                             :open-asset-profile-in-new-tab="
                                 openAssetProfileInNewTab
                             "
+                            :bulk-select-mode="
+                                selectedItems && selectedItems.length
+                                    ? true
+                                    : false
+                            "
                             :enable-sidebar-drawer="enableSidebarDrawer"
                             :preference="preference"
                             :item="item"
+                            :show-check-box="selectable"
+                            :is-checked="checkIfSelected(item.guid)"
                             @updateDrawer="updateList"
-                            @preview="$emit('handleAssetCardClick')"
+                            @preview="$emit('handleAssetCardClick', item)"
+                            @listItem:check="
+                                (e, item) => $emit('listItem:check', item)
+                            "
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -87,7 +104,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        toRefs,
+        watch,
+        PropType,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -146,18 +170,44 @@
                 default: '95%',
                 required: false,
             },
-            attributes: {
-                type: Array,
-                default: () => [],
-            },
+            /** First cacheKey for assetList as we are using SWRV by default and we need a cacheKey, On subsequent fetching the key is replaced by timestamp. Try to pass this to according to your use case; shouldn't create much havoc in case you don't; Do pass it when using multiple instances of this component at the same place, though!  */
             initialCacheKey: {
                 type: String,
                 default: 'ASSET_LIST',
                 required: false,
             },
+            /** Asset attributes to be fetched; If you don't pass these, it'll use `defaultAttributes` 👇  */
+            attributes: {
+                type: Array,
+                default: () => [],
+            },
+            /** Whether the list items are selectable are not. Pass true to show checkboxes */
+            selectable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            /** List of GUIDs for the selected items */
+            selectedItems: {
+                type: Array as PropType<Array<string>>,
+                required: false,
+                default: () => [],
+            },
+            // custom placeholder for searchbar : will be given priority over computed placeholder
+            customPlaceholder: {
+                type: String,
+                required: false,
+                default: '',
+            },
+
+            /** Style Props */
             assetListClass: {
                 type: String,
                 default: '',
+            },
+            assetListStyleObj: {
+                type: Object,
+                default: () => {},
             },
             aggregationTabClass: {
                 type: String,
@@ -167,8 +217,21 @@
                 type: String,
                 default: '',
             },
+            /**
+             * ref: https://linear.app/atlanproduct/issue/META-2830/add-flag-to-suppress-ranger-logs-in-indexsearch-api
+             */
+            suppressLogs: {
+                type: Boolean,
+                default: true,
+                required: false,
+            },
+            searchBarSize: {
+                type: String,
+                default: 'large',
+                required: false,
+            },
         },
-        emits: ['handleAssetCardClick'],
+        emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
             const limit = ref(20)
             const offset = ref(0)
@@ -199,7 +262,13 @@
                 ...customMetadataProjections,
             ])
 
-            const { filters, attributes } = toRefs(props)
+            const {
+                filters,
+                attributes,
+                selectable,
+                selectedItems,
+                suppressLogs,
+            } = toRefs(props)
 
             const {
                 list,
@@ -222,6 +291,7 @@
                 attributes: attributes.value.length
                     ? attributes
                     : defaultAttributes,
+                suppressLogs: suppressLogs?.value,
             })
 
             const fetchList = (skip = 0) => {
@@ -247,6 +317,9 @@
             }
 
             const placeholder = computed(() => {
+                if (props.customPlaceholder) {
+                    return props.customPlaceholder
+                }
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFilters.value.typeName
                 )
@@ -256,6 +329,11 @@
                 }
                 return 'Search all assets'
             })
+
+            const checkIfSelected = (guid: string) => {
+                if (!selectable.value) return false
+                return selectedItems.value.includes(guid)
+            }
 
             watch(
                 [filters, postFilters, aggregations],
@@ -284,6 +362,8 @@
                 handleLoadMore,
                 handleSearchChange,
                 handleClearSearch,
+                checkIfSelected,
+                quickChange,
             }
         },
     })

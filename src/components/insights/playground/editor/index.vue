@@ -6,6 +6,13 @@
                 :isQueryRunning="isQueryRunning"
                 @onClickSaveQuery="saveOrUpdate"
                 @onClickRunQuery="toggleRun"
+                v-if="
+                    !(
+                        !isQueryCreatedByCurrentUser &&
+                        !hasQueryReadPermission &&
+                        !hasQueryWritePermission
+                    )
+                "
             />
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
@@ -22,11 +29,30 @@
                 "
                 @onSaveQuery="saveQuery"
             />
+
+            <!-- no query access case -->
+            <NoAccess
+                v-if="
+                    !isQueryCreatedByCurrentUser &&
+                    !hasQueryReadPermission &&
+                    !hasQueryWritePermission
+                "
+                :collection="activeTabCollection"
+            />
             <VQB v-if="showVQB" />
             <Monaco @editorInstance="setInstance" />
 
             <!-- START: EDITOR FOOTER -->
-            <div class="absolute bottom-0 left-0 flex flex-col w-full">
+            <div
+                class="absolute bottom-0 left-0 flex flex-col w-full"
+                v-if="
+                    !(
+                        !isQueryCreatedByCurrentUser &&
+                        !hasQueryReadPermission &&
+                        !hasQueryWritePermission
+                    )
+                "
+            >
                 <CustomVariablesNav
                     v-if="editorInstance && showcustomToolBar"
                     class="border-t"
@@ -163,23 +189,38 @@
                                         <VQBSQLPreview />
                                     </div>
                                 </template>
-                                <div
+                                <a-tooltip
+                                    color="#363636"
                                     v-if="showVQB"
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                    :class="
-                                        showQueryPreview ? 'bg-gray-300' : ''
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
                                     "
-                                    @click="toggleQueryPreviewPopover"
                                 >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 text-gray-500"
-                                    />
-                                </div>
+                                    <template #title>Preview SQL</template>
+                                    <div
+                                        v-if="showVQB"
+                                        class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                        :class="
+                                            showQueryPreview
+                                                ? 'bg-gray-300'
+                                                : ''
+                                        "
+                                        @click="toggleQueryPreviewPopover"
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            icon="Info"
+                                            class="w-4 h-4 text-gray-500"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </a-popover>
                             <!-- Custom variables -->
                             <a-tooltip
                                 color="#363636"
+                                v-if="!showVQB"
                                 :mouseEnterDelay="
                                     lastTooltipPresence !== undefined
                                         ? ADJACENT_TOOLTIP_DELAY
@@ -215,6 +256,55 @@
                                     </span>
                                 </a-checkbox>
                             </div>
+                            <div
+                                class="flex items-center px-1"
+                                v-if="
+                                    isFilterIsInteractive(
+                                        VQBfilterPanel?.subpanels
+                                    )
+                                "
+                            >
+                                <a-popover
+                                    placement="top"
+                                    :mouseEnterDelay="0.5"
+                                >
+                                    <template #content>
+                                        <div
+                                            class="flex flex-col justify-center p-2 rounded"
+                                            style="
+                                                background: rgba(0, 0, 0, 0.8);
+                                                width: 208px;
+                                            "
+                                        >
+                                            <div class="w-full mb-3">
+                                                <AtlanIcon
+                                                    icon="InteractiveVariableIllustration"
+                                                    style="height: 111px"
+                                                />
+                                            </div>
+                                            <p class="text-xs text-white">
+                                                Change the results of query by
+                                                adjusting the values of
+                                                interactive input blocks
+                                            </p>
+                                        </div>
+                                    </template>
+
+                                    <div
+                                        class="px-2 py-1 align-middle rounded cursor-pointer bg-pink-light"
+                                    >
+                                        <AtlanIcon
+                                            icon="GlowFlash"
+                                            class="w-4 h-4 mr-1"
+                                        />
+                                        <span
+                                            class="text-xs"
+                                            style="color: #f34d77"
+                                            >This query is interactive</span
+                                        >
+                                    </div>
+                                </a-popover>
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center">
@@ -235,30 +325,15 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                                <a-tooltip
-                                    color="#363636"
-                                    :mouseEnterDelay="
-                                        lastTooltipPresence !== undefined
-                                            ? 0.1
-                                            : 0.5
-                                    "
-                                    placement="topRight"
+                                <div
+                                    class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @mouseout="recordTooltipPresence"
                                 >
-                                    <template #title
-                                        >Toggle output pane ( ctrl + j
-                                        )</template
-                                    >
-
-                                    <div
-                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
-                                        @mouseout="recordTooltipPresence"
-                                    >
-                                        <AtlanIcon
-                                            icon="OutputpaneTrigger"
-                                            class="w-4 h-4 text-gray-500 outline-none"
-                                        />
-                                    </div>
-                                </a-tooltip>
+                                    <AtlanIcon
+                                        icon="OutputpaneTrigger"
+                                        class="w-4 h-4 text-gray-500 outline-none"
+                                    />
+                                </div>
                             </div>
                             <div
                                 class="ml-2"
@@ -345,11 +420,15 @@
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
+    import NoAccess from '~/components/insights/common/noAccess/noAccess.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
+    import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
 
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
+
+    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
 
     export default defineComponent({
         components: {
@@ -362,6 +441,7 @@
             StatusBadge,
             EditorContext,
             WarehouseConnector,
+            NoAccess,
         },
         props: {
             refreshQueryTree: {
@@ -385,6 +465,7 @@
             const { canUserUpdateQuery } = useAccess()
             const { getDatabaseName, getConnectionQualifiedName } =
                 useConnector()
+            const { isFilterIsInteractive } = useFilter()
             const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
@@ -398,6 +479,7 @@
                 column: 0,
                 lineNumber: 0,
             })
+
             const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
             const limitRows = ref({
@@ -441,10 +523,6 @@
 
             const authStore = useAuthStore()
             const { permissions } = storeToRefs(authStore)
-            // console.log(
-            //     'editor permission: ',
-            //     permissions.value.indexOf('CREATE_COLLECTION')
-            // )
 
             let userHasPermission = computed(() => {
                 permissions.value.indexOf('CREATE_COLLECTION') >= 0
@@ -458,6 +536,10 @@
             ) as ComputedRef
             const hasQueryWritePermission = inject(
                 'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const activeTabCollection = inject(
+                'activeTabCollection'
             ) as ComputedRef
 
             // toRaw(editorInstance.value).updateOptions({
@@ -734,6 +816,12 @@
                 showQueryPreview.value = !showQueryPreview.value
             }
 
+            const VQBfilterPanel = computed(() => {
+                return activeInlineTab.value?.playground?.vqb?.panels?.find(
+                    (panel) => panel.id.toLowerCase() === 'filter'
+                )
+            })
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -787,12 +875,19 @@
                         e.preventDefault()
                         // toggleRun()
                         // console.log('running: ', isQueryRunning.value)
+
                         if (
-                            isQueryRunning.value == '' ||
-                            isQueryRunning.value == 'success' ||
-                            isQueryRunning.value == 'error'
+                            !isQueryCreatedByCurrentUser &&
+                            !hasQueryReadPermission &&
+                            !hasQueryWritePermission
                         ) {
-                            runQuery()
+                            if (
+                                isQueryRunning.value == '' ||
+                                isQueryRunning.value == 'success' ||
+                                isQueryRunning.value == 'error'
+                            ) {
+                                runQuery()
+                            }
                         }
                     }
                     //prevent the default action
@@ -891,6 +986,18 @@
                 MOUSE_ENTER_DELAY,
                 MOUSE_TRACK_MAXIMUM_DELAY,
                 ADJACENT_TOOLTIP_DELAY,
+                isFilterIsInteractive,
+                VQBfilterPanel,
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
+                activeTabCollection,
+                useTableExport,
+                // collectionInfo,
+                // hasCollectionReadPermission,
+                // hasCollectionWritePermission,
+                // isCollectionCreatedByCurrentUser,
+                // collectionGuidFromURL
                 // toggleVQB,
             }
         },

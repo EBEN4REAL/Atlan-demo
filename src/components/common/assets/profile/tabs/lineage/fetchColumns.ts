@@ -16,7 +16,7 @@ export default function fetchColumns({
     const relationAttributes = [...AssetRelationAttributes]
     const base = bodybuilder()
     const offset = 0
-    const limit = 20
+    const limit = 20000
     const preference = { sort: 'order-asc' }
     const [name, type] = preference.sort.split('-')
     const facets = [
@@ -85,6 +85,7 @@ export default function fetchColumns({
 
     watch(data, () => {
         if (data?.value?.entities) list.value = data?.value?.entities
+        else list.value = null
     })
 
     return {

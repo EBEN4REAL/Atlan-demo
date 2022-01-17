@@ -172,7 +172,6 @@
             const showEditTenantNameModal = ref(false)
             const announcementModalVisible = ref(false)
             const { name, tenantRaw } = useTenantData()
-            console.log('jhj', name, tenantRaw)
             const newTenantName: Ref<string> = ref('')
             newTenantName.value = name.value
             const updateStatus = ref('')

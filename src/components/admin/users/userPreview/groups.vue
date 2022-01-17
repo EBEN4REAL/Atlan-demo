@@ -19,6 +19,7 @@
                                 :hide-disabled-tabs="true"
                                 select-group-key="id"
                                 :user-id="selectedUser.id"
+                                :hideTabs="true"
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">
@@ -84,8 +85,8 @@
                 <div
                     class="flex items-center justify-center w-full componentHeight"
                 >
-                    <EmptyState
-                        empty-screen="NoGroups"
+                    <EmptyState 
+                        empty-screen="CreateGroups"
                         headline="No Groups Found"
                         desc="This user is not part of any group."
                     />
@@ -120,6 +121,7 @@
                     class="flex items-center justify-center w-full componentHeight"
                 >
                     <EmptyState
+                        image-class="h-36"
                         empty-screen="NoGroups"
                         :desc="`No group with name ${searchText} found.`"
                         button-text="Clear search"

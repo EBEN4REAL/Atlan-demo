@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-3">
         <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-500">Properties</span>
+            <span class="font-semibold text-gray-500">Details</span>
         </div>
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Name</span>

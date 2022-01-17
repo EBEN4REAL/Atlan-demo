@@ -1,5 +1,5 @@
 <template>
-    <a-popover :mouseEnterDelay="0.3" placement="leftTop" trigger="hover">
+    <a-popover :mouse-enter-delay="0.3" placement="leftTop" trigger="hover">
         <template #content>
             <UserInfo v-if="user" :user="user" />
         </template>
@@ -8,7 +8,9 @@
                 <AtlanIcon icon="AddUser" />
             </template>
         </Pill>
-        <span v-else class="text-gray-700">{{ user?.username || 'Bot' }}</span>
+        <span v-else class="text-gray-700">{{
+            user?.username || defaultName
+        }}</span>
     </a-popover>
 </template>
 
@@ -19,6 +21,7 @@
     import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
+        components: { UserInfo, Pill },
         props: {
             user: {
                 type: Object,
@@ -29,8 +32,12 @@
                 required: false,
                 default: () => true,
             },
+            defaultName: {
+                type: String,
+                required: false,
+                default: () => 'Bot',
+            },
         },
-        components: { UserInfo, Pill },
         setup(props) {
             return {}
         },

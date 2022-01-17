@@ -24,10 +24,12 @@ import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
+import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
 import ArrowRight from '~/assets/images/icons/arrow-right.svg'
+import ArrowUpDown from '~/assets/images/icons/arrow_up_down.svg'
 import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
@@ -242,6 +244,7 @@ import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
 import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
 import TextRight from '~/assets/images/readme/TextAlignRight.svg'
 import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+import TaskList from '~/assets/images/readme/TaskList.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -283,6 +286,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
 import ClassificationShield from '~/assets/images/classifications/shield.svg'
@@ -299,6 +303,7 @@ import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
 import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Databricks from '~/assets/images/source/svg/Databricks.svg'
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
@@ -317,6 +322,7 @@ import Policies from '~/assets/images/icons/Policies.svg'
 import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
 import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
 import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import OuterJoin from '~/assets/images/icons/OuterJoin.svg'
 import TableSwap from '~/assets/images/icons/swapTable.svg'
 import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
 import PublicCollection from '~/assets/images/icons/publicCollection.svg'
@@ -342,10 +348,26 @@ import Revoke from '~/assets/images/icons/Revoke.svg'
 import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
+import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
 
+import Vqb from '~/assets/images/icons/Vqb.svg'
+import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
+import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
+import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import Collapsed from '~/assets/images/icons/Collapsed.svg'
+
+import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
+import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
+import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
+import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
+
+import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
+import Quotes2 from '~/assets/images/icons/Quotes.svg'
+import Reload2 from '~/assets/images/icons/Reload2.svg'
 
 export default {
+    GlowFlash,
     Query24,
     Vqb24,
     partitionKey,
@@ -386,6 +408,7 @@ export default {
     QueryDiscovery,
     QueryDraft,
     CollapseControl,
+    NoAssetsFound,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -448,6 +471,7 @@ export default {
     Reload,
     FilterDot,
     ArrowRight,
+    ArrowUpDown,
     Search,
     Database,
     Schema,
@@ -671,11 +695,26 @@ export default {
     CollectionIconLarge,
     CollectionIconSmallGray,
     CollectionIconLargeActive,
+    InteractiveVariableIllustration,
     Revoke,
     WarningIcon,
     SidebarSwitch,
+    Vqb,
+    VqbVerified,
+    VqbDeprecated,
+    VqbDraft,
     Clock,
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,
+    OuterJoin,
+    InnerJoinInfo,
+    LeftJoinInfo,
+    RightJoinInfo,
+    OuterJoinInfo,
+    TaskList,
+    LockedFile,
+    Databricks,
+    Quotes2,
+    Reload2,
 }

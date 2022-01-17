@@ -9,13 +9,13 @@
         >
             <div class="flex items-center mb-1">
                 <AtlanIcon
-                    icon="Settings"
                     v-if="type === 'meta'"
+                    icon="Settings"
                     class="-mt-0.5"
                 />
                 <AtlanIcon
-                    icon="QueryGrey"
                     v-if="type === 'data'"
+                    icon="QueryGrey"
                     class="-mt-0.5"
                 />
                 <span
@@ -53,7 +53,7 @@
                         </span>
                     </div>
                 </div>
-                <span v-if="!policy.allow" class="denied-policy-pill">
+                <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
                     {{
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}

@@ -10,25 +10,34 @@
                     <div
                         class="flex items-center justify-between hover:text-primary"
                     >
-                        <div class="flex items-center">
+                        <div class="flex items-center w-full">
                             <img
-                                v-if="item?.options?.logoType === 'image'"
+                                v-if="
+                                    item?.options?.logoType === 'image' &&
+                                    item.options?.imageId
+                                "
                                 class="float-left w-auto h-4 mr-2"
                                 :src="imageUrl(item.options?.imageId)"
                             />
 
                             <span
-                                v-else-if="item?.options?.logoType === 'emoji'"
+                                v-else-if="
+                                    item?.options?.logoType === 'emoji' &&
+                                    item?.options?.emoji
+                                "
                                 class="self-center float-left mr-2 text-base"
                             >
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="text-xs uppercase text-gray hover:text-primary title"
+                                class="w-full text-xs uppercase text-gray hover:text-primary title"
                                 style="letter-spacing: 0.07em"
                             >
-                                {{ item.label }}</span
-                            >
+                                <Truncate
+                                    :tooltip-text="item.label"
+                                    :rows="2"
+                                />
+                            </span>
                         </div>
 
                         <span
@@ -90,15 +99,18 @@
     import LogStatus from '@common/facet/accessLogs/status.vue'
     import UserTypes from '@common/facet/accessLogs/userTypes.vue'
     import CheckBoxOption from '@common/facet/checkBoxOption/index.vue'
+    import RadioButton from '@common/facet/radioButton/index.vue'
     import QueryStatus from '@/common/facet/queryStatus/index.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
+            Truncate,
             Hierarchy,
             Certificate,
             Owners,
@@ -119,6 +131,7 @@
             Properties: defineAsyncComponent(
                 () => import('@/common/facet/properties/index.vue')
             ),
+            RadioButton,
         },
         props: {
             item: {
@@ -188,7 +201,6 @@
             )
 
             const handleChange = () => {
-                console.log('discoveryFacet change')
                 modelValue.value = facetMap.value
                 emit('change', item.value)
             }
@@ -248,7 +260,7 @@
 
                 if (id === 'terms' && facetMap.value[id]) {
                     let count = facetMap.value[id].terms.length
-                    if (facetMap.value[id].empty) count = count + 1
+                    if (facetMap.value[id].empty) count += 1
                     return `${count} applied`
                 }
 

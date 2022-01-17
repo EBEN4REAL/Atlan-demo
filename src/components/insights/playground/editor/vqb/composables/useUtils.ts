@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { Ref, ComputedRef } from 'vue'
 import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
 import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
 import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
@@ -7,6 +7,8 @@ import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
 import { getValueStringFromType } from './generateSQLQuery'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { aggregatedAliasMap } from '../constants/aggregation'
+import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -101,96 +103,26 @@ export function useUtils() {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel.filter?.isVariable) {
-                            let firstVal = ''
-                            let secondVal = ''
-                            const variable1 =
-                                activeInlineTab.playground.editor.variables.find(
-                                    (variable) =>
-                                        variable?.subpanelId === subpanel.id
-                                )
-                            // inputNumField
-                            const variable2 =
-                                activeInlineTab.playground.editor.variables.find(
-                                    (variable) =>
-                                        variable?.subpanelId ===
-                                        `${subpanel.id}2`
-                                )
-
-                            firstVal = getValueStringFromType(
+                        if (subpanel?.filter?.value?.length > 0) {
+                            let firstVal = getValueStringFromType(
                                 subpanel,
-                                variable1?.value ?? ''
+                                subpanel?.filter?.value[0] ?? ''
                             )
-                            secondVal = getValueStringFromType(
+                            let secondVal = getValueStringFromType(
                                 subpanel,
-                                variable2?.value ?? ''
+                                subpanel?.filter?.value[1] ?? ''
                             )
-
-                            /* Check if the type is date */
-                            if (
-                                subpanel?.column?.type?.toLowerCase() === 'date'
-                            ) {
-                                firstVal = getValueStringFromType(
-                                    subpanel,
-                                    variable1?.value?.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )
-                                secondVal = getValueStringFromType(
-                                    subpanel,
-                                    variable2?.value?.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )
-                            }
-
                             res += ` ${firstVal} AND ${secondVal}`
-                        } else {
-                            if (subpanel?.filter?.value?.length > 0) {
-                                let firstVal = getValueStringFromType(
-                                    subpanel,
-                                    subpanel?.filter?.value[0] ?? ''
-                                )
-                                let secondVal = getValueStringFromType(
-                                    subpanel,
-                                    subpanel?.filter?.value[1] ?? ''
-                                )
-                                res += ` ${firstVal} AND ${secondVal}`
-                            }
                         }
                     }
                     break
                 }
                 case 'input': {
-                    if (subpanel.filter?.isVariable) {
-                        const variable =
-                            activeInlineTab.playground.editor.variables.find(
-                                (variable) =>
-                                    variable?.subpanelId === subpanel.id
-                            )
+                    res += ` ${getValueStringFromType(
+                        subpanel,
+                        subpanel?.filter?.value ?? ''
+                    )}`
 
-                        /* Check if the type is date */
-                        if (subpanel?.column?.type?.toLowerCase() === 'date') {
-                            res += `
-                                ${getValueStringFromType(
-                                    subpanel,
-                                    variable?.value.format(
-                                        'YYYY-MM-DD HH:mm:ss'
-                                    )
-                                )}`
-                        } else {
-                            res += `
-                                  ${getValueStringFromType(
-                                      subpanel,
-                                      variable?.value ?? ''
-                                  )}`
-                        }
-                    } else {
-                        res += ` ${getValueStringFromType(
-                            subpanel,
-                            subpanel?.filter?.value ?? ''
-                        )}`
-                    }
                     break
                 }
                 case 'multi_input': {
@@ -203,7 +135,8 @@ export function useUtils() {
             }
             if (subpanels?.length > 1 && i !== subpanels.length - 1) res += ', '
 
-            if (res === ' ') res = 'No Columns Added for filter'
+            if (res === ' ' || res === ' , ')
+                res = 'No Columns Added for filter'
         })
         return res
     }
@@ -331,6 +264,62 @@ export function useUtils() {
         }
     }
 
+    function getInitialPanelExpandedState(
+        readOnly: boolean,
+        panel: Object,
+        localExpandedState: boolean,
+        isCustomVariable?: boolean
+    ) {
+        if (localExpandedState) return true
+        if (readOnly) {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        } else {
+            if (
+                panel?.id?.toLocaleLowerCase() === 'filter' &&
+                isCustomVariable &&
+                panel?.mounted
+            )
+                return true
+        }
+
+        return false
+    }
+    const openAssetInSidebar = (
+        event,
+        t,
+        activeInlineTab: ComputedRef<activeInlineTabInterface>,
+        inlineTabs: Ref<activeInlineTabInterface[]>
+    ) => {
+        const { isSameNodeOpenedInSidebar } = useSchema()
+        const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+            inlineTabs,
+            activeInlineTab
+        )
+        if (
+            activeInlineTab?.value &&
+            Object.keys(activeInlineTab?.value).length
+        ) {
+            if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                /* Close it if it is already opened */
+                closeAssetSidebar(activeInlineTab.value)
+            } else {
+                let activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.assetSidebar.assetInfo = t
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
+        }
+        event.stopPropagation()
+        event.preventDefault()
+        return false
+    }
+
     return {
         getTableName,
         getTableQualifiedNameFromColumnQualifiedName,
@@ -346,5 +335,7 @@ export function useUtils() {
         collapseAllPanelsExceptCurrent,
         isAggregationORGroupPanelColumnsAdded,
         getAggregationORGroupPanelColumns,
+        getInitialPanelExpandedState,
+        openAssetInSidebar,
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center w-full px-8 pt-3">
+    <div class="flex items-center w-full px-6 pt-3">
         <a-button class="px-1" @click="back">
             <atlan-icon
                 icon="ArrowRight"
@@ -74,7 +74,7 @@
                             "
                             class="text-sm tracking-wider text-gray-500 uppercase"
                         >
-                            {{ item.typeName }}
+                            {{ assetTypeLabel(item) || item?.typeName }}
                         </div>
                         <div
                             v-else
@@ -83,14 +83,14 @@
                             <atlan-icon
                                 v-if="isGTC(item)"
                                 :icon="`${
-                                    assetTypeLabel[item?.typeName]
+                                    glossaryLabel[item?.typeName]
                                         .charAt(0)
                                         .toUpperCase() +
-                                    assetTypeLabel[item?.typeName].slice(1)
+                                    glossaryLabel[item?.typeName].slice(1)
                                 }`"
                                 class="mr-1"
                             />
-                            {{ assetTypeLabel[item?.typeName] }}
+                            {{ glossaryLabel[item?.typeName] }}
                         </div>
                     </div>
 
@@ -325,7 +325,7 @@
     import AssetMenu from './assetMenu.vue'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -378,6 +378,7 @@
                 selectedAssetUpdatePermission,
                 isGTC,
                 isBiAsset,
+                assetTypeLabel,
                 webURL,
             } = useAssetInfo()
 
@@ -410,9 +411,9 @@
                 window.open(webURL(item.value), '_blank').focus()
             }
 
-            whenever(and(Escape, notUsingInput), (v) => {
+            /*  whenever(and(Escape, notUsingInput), (v) => {
                 if (v) back()
-            })
+            }) */
             const { checkAccess } = useAuth()
 
             return {
@@ -443,6 +444,7 @@
                 isScrubbed,
                 selectedAssetUpdatePermission,
                 assetTypeLabel,
+                glossaryLabel,
                 isGTC,
                 map,
                 checkAccess,

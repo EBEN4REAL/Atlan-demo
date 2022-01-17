@@ -18,7 +18,8 @@ const getAssetCount = (selectedBM) => {
                     ]
                 }
             }
-        }
+        },
+        suppressLogs: true
     }
 
     const {

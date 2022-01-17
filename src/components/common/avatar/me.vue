@@ -24,8 +24,8 @@
               Hover me <a-icon type="down" />
     </a>-->
         <template #overlay>
-            <a-menu>
-                <a-menu-item>
+            <a-menu class="mt-1">
+                <a-menu-item style="width: 130px">
                     <a @click="() => handleClickUser(username)">Profile</a>
                 </a-menu-item>
                 <!-- <a-menu-item>

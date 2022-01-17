@@ -4,7 +4,7 @@
             <div class="relative p-5 border-b border-bottom border-slate-300">
                 <div
                     v-if="showDrawer"
-                    class="close-btn-add-policy"
+                    class="close-btn-sidebar"
                     @click="handleClose"
                 >
                     <AtlanIcon icon="Add" class="text-white" />
@@ -603,20 +603,6 @@
         transform: rotate(45deg);
         opacity: 0;
         transition: all ease 0.3s;
-    }
-    .close-btn-add-policy {
-        // padding: 10px;
-        height: 32px;
-        width: 32px;
-        background: #3e4359cc;
-        position: fixed;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        transform: rotate(45deg);
-        left: -40px;
-        top: 20px;
-        cursor: pointer;
     }
     .tag-permission {
         padding: 4px 8px;

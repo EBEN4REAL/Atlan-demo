@@ -27,18 +27,7 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="n"
-                action="set name"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Name</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">Name</div>
 
             <Name
                 ref="nameRef"
@@ -60,12 +49,12 @@
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
                 block
-                class="flex items-center justify-between"
+                class="flex items-center justify-between px-2 shadow-none"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
                     <img
                         :src="getConnectorImage(selectedAsset)"
-                        class="h-5 mr-1"
+                        class="h-4 mr-1"
                     />
                     {{
                         assetTypeLabel(selectedAsset) || selectedAsset.typeName
@@ -240,7 +229,7 @@
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">Table</div>
+                <div class="mb-2 text-sm text-gray-500">View</div>
                 <div class="text-sm tracking-wider text-gray-700">
                     {{ viewName(selectedAsset) }}
                 </div>
@@ -248,7 +237,67 @@
         </div>
 
         <div
-            v-if="selectedAsset?.guid && selectedAsset?.typeName === 'Query'"
+            v-if="selectedAsset?.typeName === 'Query'"
+            class="flex flex-col px-5 text-sm"
+        >
+            <div class="mb-1 text-sm text-gray-500">Collection</div>
+
+            <a-tooltip placement="left" color="#363636">
+                <template #title>
+                    {{
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
+                            ? `You don't have access to this collection`
+                            : `View collection`
+                    }}
+                </template>
+
+                <a-button
+                    block
+                    class="flex items-center justify-between px-2 shadow-none"
+                    :class="
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
+                            ? 'disabledButton'
+                            : ''
+                    "
+                    @click="handleCollectionClick"
+                    :disabled="
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
+                    "
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            icon="CollectionIconSmall"
+                            class="mr-1 mb-0.5"
+                        />
+                        <span>
+                            {{ collectionData?.collectionInfo?.displayText }}
+                        </span>
+                    </div>
+                    <AtlanIcon
+                        icon="Lock"
+                        v-if="
+                            !collectionData?.hasCollectionReadPermission &&
+                            !collectionData?.hasCollectionWritePermission &&
+                            !collectionData?.isCollectionCreatedByCurrentUser
+                        "
+                    />
+                    <AtlanIcon v-else icon="External" />
+                </a-button>
+            </a-tooltip>
+        </div>
+
+        <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
             class="flex flex-col px-5 text-sm"
         >
             <div class="mb-1 text-sm text-gray-500">
@@ -259,26 +308,41 @@
             </div>
         </div>
 
-        <div class="flex flex-col">
-            <Shortcut
-                shortcut-key="d"
-                action="set description"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span>Description</span>
-                    <a-tooltip title="User Description" placement="left">
-                        <AtlanIcon
-                            v-if="isUserDescription(selectedAsset)"
-                            icon="User"
-                            class="h-3 mr-1"
-                        ></AtlanIcon
-                    ></a-tooltip>
+        <!-- <div
+            v-if="
+                selectedAsset?.guid &&
+                selectedAsset?.typeName === 'Query' &&
+                attributes(selectedAsset)?.parent?.typeName === 'Folder'
+            "
+            class="flex flex-col gap-y-4"
+        >
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Collection</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ selectedAsset?.collectionName }}
                 </div>
-            </Shortcut>
+            </div>
+            <div class="flex flex-col px-5 text-sm">
+                <div class="mb-1 text-sm text-gray-500">Folder</div>
+                <div class="text-sm tracking-wider text-gray-700">
+                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+                </div>
+            </div>
+        </div> -->
+
+        <div class="flex flex-col">
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                <span>Description</span>
+                <a-tooltip title="User Description" placement="left">
+                    <AtlanIcon
+                        v-if="isUserDescription(selectedAsset)"
+                        icon="User"
+                        class="h-3 mr-1"
+                    ></AtlanIcon
+                ></a-tooltip>
+            </div>
 
             <Description
                 ref="descriptionRef"
@@ -299,24 +363,18 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="o"
-                action="set owners"
-                placement="left"
-                :edit-permission="editPermission"
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Owners</span>
-                </div>
-            </Shortcut>
+                <span> Owners</span>
+            </div>
 
             <Owners
                 v-model="localOwners"
                 class="px-5"
                 :selected-asset="selectedAsset"
                 :edit-permission="editPermission"
+                :showShortcut="true"
                 @change="handleOwnersChange"
             />
         </div>
@@ -350,18 +408,9 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="t"
-                action="set classification"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Classification</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">
+                <span> Classification</span>
+            </div>
 
             <Classification
                 v-model="localClassifications"
@@ -379,6 +428,7 @@
                     )
                 "
                 class="px-5"
+                :showShortcut="true"
                 @change="handleClassificationChange"
             >
             </Classification>
@@ -395,11 +445,7 @@
             "
             class="flex flex-col"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-            >
-                Terms
-            </p>
+            <p class="px-5 mb-1 text-sm text-gray-500">Terms</p>
             <TermsWidget
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
@@ -424,18 +470,7 @@
         </div>
 
         <div ref="animationPoint" class="flex flex-col">
-            <Shortcut
-                shortcut-key="c"
-                action="set certificate"
-                placement="left"
-                :edit-permission="editPermission"
-            >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span> Certificate</span>
-                </div>
-            </Shortcut>
+            <div class="px-5 mb-1 text-sm text-gray-500">Certificate</div>
 
             <Certificate
                 v-model="localCertificate"
@@ -484,6 +519,8 @@
         inject,
         ref,
         toRefs,
+        watch,
+        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -498,7 +535,6 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
-    import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
@@ -516,7 +552,6 @@
             RowInfoHoverCard,
             SQL,
             TermsWidget,
-            Shortcut,
             Categories,
             Admins,
             SampleDataTable: defineAsyncComponent(
@@ -542,11 +577,16 @@
                 required: false,
                 default: false,
             },
+            collectionData: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+            const { collectionData } = toRefs(props)
 
             const { isDrawer } = toRefs(props)
 
@@ -625,6 +665,17 @@
                 window.open(webURL(selectedAsset.value), '_blank').focus()
             }
 
+            // route to go to insights and select the collection
+            const handleCollectionClick = () => {
+                const URL =
+                    `http://` +
+                    window.location.host +
+                    `/insights?col_id=` +
+                    collectionData?.value?.collectionInfo?.guid
+
+                window.open(URL, '_blank')?.focus()
+            }
+
             return {
                 localDescription,
                 selectedAsset,
@@ -679,7 +730,22 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                handleCollectionClick,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .button {
+        :global(.ant-btn) {
+            @apply text-gray-700;
+        }
+    }
+</style>
+
+<style lang="less" scoped>
+    .disabledButton {
+        @apply text-gray-500 !important;
+    }
+</style>

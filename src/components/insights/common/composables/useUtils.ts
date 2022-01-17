@@ -9,7 +9,27 @@ export function useUtils() {
         )
         return firstConnection
     }
+
+    const checkConnection = (connector) => {
+
+        let attribute = connector?.attributeValue?.split('/')
+        let connection = undefined
+        if(attribute?.length > 2) {
+            connection = attribute.slice(0, 3).join('/')
+        }
+        const connectionStore = useConnectionStore()
+        let selectedConnection = connectionStore?.list.find(
+            (item) => item.attributes.qualifiedName === connection
+        )
+        
+        
+        // console.log('connection selected: ', finalConnection)
+
+        return selectedConnection ? true : false
+            
+    }
     return {
         getFirstQueryConnection,
+        checkConnection
     }
 }

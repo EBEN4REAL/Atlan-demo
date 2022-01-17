@@ -107,21 +107,89 @@
                 <PopoverAsset
                     :item="item"
                     placement="right"
+                    mouseEnterDelay="0.6"
                     v-else-if="item.typeName === 'Query'"
                 >
                     <template #extraHeaders>
                         <div
-                            class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                            style="background-color: #c4c4c4"
-                        ></div>
-                        <div class="flex items-center h-full">
-                            <div
-                                class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                            >
-                                <AtlanIcon icon="FolderClosed" class="h-6" />
-                            </div>
+                            class="flex item-center"
+                            v-if="
+                                item?.attributes?.parent?.typeName ===
+                                'Collection'
+                            "
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                    style="background-color: #c4c4c4"
+                                ></div>
+                                <div class="flex items-center h-full">
+                                    <div
+                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                    >
+                                        <AtlanIcon
+                                            :icon="
+                                                item?.attributes?.parent
+                                                    ?.typeName === 'Folder'
+                                                    ? 'FolderClosed'
+                                                    : 'CollectionIconSmall'
+                                            "
+                                            class="h-4 mb-2"
+                                        />
+                                    </div>
 
-                            <span>{{ item?.parentTitle }}</span>
+                                    <span>{{
+                                        item?.attributes?.parent?.attributes
+                                            ?.name
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex item-center"
+                            v-if="
+                                item?.attributes?.parent?.typeName === 'Folder'
+                            "
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                    style="background-color: #c4c4c4"
+                                ></div>
+                                <div class="flex items-center h-full">
+                                    <div
+                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                    >
+                                        <AtlanIcon
+                                            icon="CollectionIconSmall"
+                                            class="h-4 mb-2"
+                                        />
+                                    </div>
+
+                                    <span>{{ collectionName }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div
+                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                    style="background-color: #c4c4c4"
+                                ></div>
+                                <div class="flex items-center h-full">
+                                    <div
+                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                    >
+                                        <AtlanIcon
+                                            icon="FolderClosed"
+                                            class="h-4 mb-2"
+                                        />
+                                    </div>
+
+                                    <span>{{
+                                        item?.attributes?.parent?.attributes
+                                            ?.name
+                                    }}</span>
+                                </div>
+                            </div>
                         </div>
                     </template>
 
@@ -153,10 +221,15 @@
                         <div class="parent-ellipsis-container py-1.5">
                             <AtlanIcon
                                 :icon="
-                                    getEntityStatusIcon(
-                                        'query',
-                                        certificateStatus(item)
-                                    )
+                                    item?.attributes?.isVisualQuery
+                                        ? getEntityStatusIcon(
+                                              'vqb',
+                                              certificateStatus(item)
+                                          )
+                                        : getEntityStatusIcon(
+                                              'query',
+                                              certificateStatus(item)
+                                          )
                                 "
                                 class="w-4 h-4 my-auto mr-1"
                                 color="#5277D7"
@@ -241,6 +314,18 @@
                                             >
 
                                             <a-menu-item
+                                                key="edit"
+                                                @click="
+                                                    () =>
+                                                        actionClick(
+                                                            'info',
+                                                            item
+                                                        )
+                                                "
+                                                >Edit query</a-menu-item
+                                            >
+
+                                            <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
                                                     showFolderPopover = true
@@ -253,49 +338,6 @@
                                                 @click="copyURL"
                                                 >Share query</a-menu-item
                                             >
-                                            <!-- <div class="text-gray-700">
-                                                <a-sub-menu
-                                                    key="shareQuery"
-                                                    style="min-width: 200px"
-                                                    @click="copyURL"
-                                                >
-                                                    <template #title>
-                                                        <div
-                                                            class="flex items-center justify-between w-full text-gray-500 bg-red-500"
-                                                        >
-                                                            <div
-                                                                class="text-gray-700"
-                                                            >
-                                                                Share query
-                                                            </div>
-                                                            <AtlanIcon
-                                                                icon="ChevronRight"
-                                                                class="bg-red-700 ml-auto text-gray-500 -mt-0.5"
-                                                            />
-                                                        </div>
-                                                    </template>
-                                                    <template #expandIcon />
-                                                    <div
-                                                        class="text-gray-700"
-                                                        style="min-width: 200px"
-                                                    >
-                                                        <a-menu-item
-                                                            key="copyLink"
-                                                            class="px-4 py-2 text-sm"
-                                                            @click="copyURL"
-                                                        >
-                                                            <div
-                                                                class="flex items-center justify-between"
-                                                            >
-                                                                <span
-                                                                    >Copy
-                                                                    Link</span
-                                                                >
-                                                            </div>
-                                                        </a-menu-item>
-                                                    </div>
-                                                </a-sub-menu>
-                                            </div> -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -411,8 +453,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    // import { Classification } from '~/api/atlas/classification'
-    import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
     import { Insights } from '~/services/meta/insights/index'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -424,6 +464,7 @@
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import AtlanBtn from '@/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
 
     const {
         inlineTabRemove,
@@ -528,6 +569,19 @@
             const hasCollectionWritePermission = inject(
                 'hasCollectionWritePermission'
             ) as ComputedRef
+
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
+
+            const collectionName = computed(() => {
+                let col = queryCollections.value?.find(
+                    (col) =>
+                        col.attributes.qualifiedName ===
+                        item.value.attributes.collectionQualifiedName
+                )
+                return col?.displayText
+            })
 
             const hasWritePermission = computed(
                 () =>
@@ -1188,6 +1242,7 @@
                 hasCollectionWritePermission,
                 hasWritePermission,
                 copyURL,
+                collectionName,
                 // input,
                 // newFolderName,
             }

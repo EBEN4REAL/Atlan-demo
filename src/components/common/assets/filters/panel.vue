@@ -315,7 +315,9 @@
 
                 let numOfAttributes = 0
                 Object.keys(facetMap.value[id]).forEach((key) => {
+                    const facet = facetMap.value[id][key]
                     if (
+                        Array.isArray(facet) &&
                         facetMap.value[id][key].find((element) => element.value)
                     )
                         numOfAttributes += 1

@@ -57,11 +57,15 @@
             <span class="mb-1 text-gray-500">Connection</span>
             <div class="flex items-center">
                 <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
-                <span>{{
-                    `${connectorName(selectedAsset)}/${connectionName(
-                        selectedAsset
-                    )}`
-                }}</span>
+                <router-link
+                    :to="`/assets/${connectionGuid(selectedAsset)}`"
+                    class="font-bold text-primary hover:underline"
+                    >{{
+                        `${connectorName(selectedAsset)}/${connectionName(
+                            selectedAsset
+                        )}`
+                    }}</router-link
+                >
             </div>
         </div>
         <div
@@ -195,6 +199,7 @@
                 isGTC,
                 getAnchorProfile,
                 getAnchorName,
+                connectionGuid,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -224,6 +229,7 @@
                 capitalizeFirstLetter,
                 sourceUpdatedBy,
                 sourceCreatedBy,
+                connectionGuid,
             }
         },
     })

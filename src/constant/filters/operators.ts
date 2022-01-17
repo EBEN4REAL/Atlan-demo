@@ -13,16 +13,8 @@ const date = [{
 {
     id: 'lessThanEqual',
     label: 'Less Than Equal(<=)',
-},
-
-{
-    id: 'equals',
-    label: 'Equals(=)',
-},
-{
-    id: 'notEquals',
-    label: 'Not Equals(!=)',
-}]
+}
+]
 
 const date_mandatory = [
     {
@@ -40,15 +32,7 @@ const date_mandatory = [
     {
         id: 'lessThanEqual',
         label: 'Less Than Equal(<=)',
-    },
-    {
-        id: 'equals',
-        label: 'Equals(=)',
-    },
-    {
-        id: 'notEquals',
-        label: 'Not Equals(!=)',
-    },
+    }
 ]
 
 

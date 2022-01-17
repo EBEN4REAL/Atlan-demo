@@ -23,8 +23,27 @@
             </p>
         </div>
         <div class="">
+            <AtlanButton
+                v-if="
+                    store.integrationStatus.slack.tenant.created &&
+                    !store.integrationStatus.slack.tenant.configured
+                "
+                v-auth="access.DELETE_INTEGRATION"
+                color="minimal"
+                class="px-0 text-red-500"
+                :is-loading="isLoading"
+                @click="handleDisconnect"
+            >
+                Disconnect
+            </AtlanButton>
+        </div>
+        <div class="">
             <a
-                v-if="tenantLevelOauthUrl"
+                v-if="
+                    store.integrationStatus.slack.tenant.created &&
+                    !store.integrationStatus.slack.tenant.configured &&
+                    tenantLevelOauthUrl
+                "
                 :href="tenantLevelOauthUrl"
                 target="_blank"
             >
@@ -54,6 +73,7 @@
     import {
         getSlackInstallUrlState,
         tenantLevelOauthUrl,
+        archiveSlack,
     } from '~/composables/integrations/useSlack'
 
     export default defineComponent({
@@ -62,7 +82,7 @@
         props: {},
         setup(props) {
             // store
-            const intStore = integrationStore()
+            const store = integrationStore()
 
             // variables
             const showSlackConfigModal = ref(false)
@@ -76,13 +96,26 @@
                 showSlackConfigModal.value = true
             }
 
+            const pV = ref({ id: '' })
+
+            const { data, isLoading, error, disconnect } = archiveSlack(pV)
+
+            const handleDisconnect = () => {
+                const integration = store.getIntegration('slack', true)
+                pV.value.id = integration.id
+                disconnect()
+            }
+
             return {
+                handleDisconnect,
+                isLoading,
+                store,
                 tenantName,
                 access,
                 showSlackConfigModal,
                 closeSlackConfigModal,
                 openSlackConfigModal,
-                intStore,
+
                 tenantLevelOauthUrl,
             }
         },

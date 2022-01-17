@@ -1,9 +1,14 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import { Integrations } from '~/services/service/integrations'
 import { useAuthStore } from '~/store/auth'
 import integrationStore from '~/store/integrations/index'
+import {
+    archiveIntegration,
+} from '~/composables/integrations/useIntegrations'
 
-let { origin } = window.location
+
+const { origin } = window.location
 if (origin.includes('localhost')) {
     // origin = `https://staging.atlan.com`
     // origin = `http://localhost:5008`
@@ -107,8 +112,54 @@ export const tenantLevelOauthUrl = computed(() => {
 export const userLevelOauthUrl = computed(() => {
     const intStore = integrationStore()
     const slackIntegration = intStore.getIntegration('slack', false)
-    const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
+    const oauthBaseUrl = slackIntegration?.sourceMetadata?.oauthUrl
     const state = getSlackInstallUrlState(true)
     const slackOauth = `${oauthBaseUrl}&state=${state}`
     return slackOauth
 })
+
+
+export const archiveSlack = (pV) => {
+    const intStore = integrationStore()
+
+    const {
+        data,
+        isLoading,
+        error,
+        mutate: disconnect,
+    } = archiveIntegration(pV, { immediate: false })
+
+    watch([isLoading, error], () => {
+        if (isLoading.value) {
+            message.loading({
+                content: 'Disconnecting...',
+                key: 'disconnect',
+                duration: 2,
+            })
+        } else if (error.value) {
+            const errMsg =
+                error.value?.response?.data?.errorMessage || ''
+            const generalError = 'Network error while disconnecting'
+            const e = errMsg || generalError
+            message.error({
+                content: e,
+                key: 'disconnect',
+                duration: 2,
+            })
+        } else {
+            intStore.removeIntegration(pV.id)
+            message.success({
+                content: 'Slack integration disconnected successfully',
+                key: 'disconnect',
+                duration: 2,
+            })
+        }
+    })
+
+    return {
+        data,
+        isLoading,
+        error,
+        disconnect
+    }
+}

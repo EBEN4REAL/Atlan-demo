@@ -33,6 +33,12 @@
                         class="w-full focus:outline-none"
                         placeholder="Enter to add channels"
                         @keydown.enter="addChannel"
+                        @keydown.tab="
+                            (e) => {
+                                e.preventDefault()
+                                addChannel(e)
+                            }
+                        "
                     />
                 </div>
             </div>
@@ -80,6 +86,7 @@
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
+    import { archiveSlack } from '~/composables/integrations/useSlack'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -135,44 +142,7 @@
                 () => integration?.sourceMetadata?.teamName
             )
 
-            const {
-                data,
-                isLoading,
-                error,
-                mutate: disconnect,
-            } = archiveIntegration(pV, { immediate: false })
-
-            watch([isLoading, error], () => {
-                if (isLoading.value) {
-                    message.loading({
-                        content: 'Disconnecting...',
-                        key: 'disconnect',
-                        duration: 2,
-                    })
-                } else if (error.value) {
-                    const errMsg =
-                        error.value?.response?.data?.errorMessage || ''
-                    const generalError = 'Network error while disconnecting'
-                    const e = errMsg || generalError
-                    message.error({
-                        content: e,
-                        key: 'disconnect',
-                        duration: 2,
-                    })
-                } else {
-                    intStore.removeIntegration(pV.id)
-                    intStore.setIntegrationConfigurationStatus(
-                        'slack',
-                        'tenant',
-                        false
-                    )
-                    message.success({
-                        content: 'Slack integration disconnected successfully',
-                        key: 'disconnect',
-                        duration: 2,
-                    })
-                }
-            })
+            const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
             const {
                 data: updateData,

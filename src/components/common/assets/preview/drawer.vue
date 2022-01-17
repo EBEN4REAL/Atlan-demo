@@ -24,6 +24,7 @@
                 v-if="visible"
                 :selected-asset="data"
                 :is-drawer="true"
+                :drawer-active-key="drawerActiveKey"
                 @closeDrawer="$emit('closeDrawer')"
             ></AssetPreview> </a-drawer
     ></teleport>
@@ -54,6 +55,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            drawerActiveKey: {
+                type: String,
+                required: false,
+                default: 'info',
             },
         },
         emits: ['closeDrawer', 'update'],

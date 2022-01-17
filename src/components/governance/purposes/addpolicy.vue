@@ -110,20 +110,20 @@
                     <div
                         class="flex items-center p-2 mt-1 border rounded border-bottom border-slate-300"
                         :class="
-                            selectedPermition.length === 0
+                            selectedPermission.length === 0
                                 ? 'border-dashed'
                                 : 'border-solid'
                         "
                     >
                         <span
-                            v-if="selectedPermition.length === 0"
+                            v-if="selectedPermission.length === 0"
                             class="p-2 text-xs text-gray-500"
                         >
                             Select from set of permissions for your policy
                         </span>
                         <div v-else>
                             <div
-                                v-for="el in selectedPermition"
+                                v-for="el in selectedPermission"
                                 :key="el"
                                 class="h-auto overflow-auto tag-permission max-h-32"
                             >
@@ -477,24 +477,24 @@
                     emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
-            const selectedPermition = computed(() => {
+            const selectedPermission = computed(() => {
                 const result = []
                 const assetsPermission = []
-                const govermence = []
+                const governance = []
                 const assetsList = scopeList[0]
-                const govermanceList = scopeList[1]
+                const governanceList = scopeList[1]
                 policy.value.actions.forEach((el) => {
-                    const findedAsset = assetsList.scopes.find(
+                    const assetPermission = assetsList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    const findedGovrmance = govermanceList.scopes.find(
+                    const governancePermission = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    if (findedAsset) {
-                        assetsPermission.push(findedAsset.label)
+                    if (assetPermission) {
+                        assetsPermission.push(assetPermission.label)
                     }
-                    if (findedGovrmance) {
-                        govermence.push(findedGovrmance.label)
+                    if (governancePermission) {
+                        governance.push(governancePermission.label)
                     }
                 })
                 if (assetsPermission.length > 0) {
@@ -503,10 +503,10 @@
                         value: assetsPermission.join(', '),
                     })
                 }
-                if (govermence.length > 0) {
+                if (governance.length > 0) {
                     result.push({
                         title: `Governance :`,
-                        value: govermence.join(', '),
+                        value: governance.join(', '),
                     })
                 }
                 return result
@@ -561,7 +561,7 @@
                 handleClose,
                 resetPolicy,
                 handleSave,
-                selectedPermition,
+                selectedPermission,
                 policyType,
                 splitName,
                 handleChangeAssets,

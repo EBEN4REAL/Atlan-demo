@@ -14,7 +14,7 @@
             @close="$emit('closeDrawer')"
         >
             <div
-                v-if="!showMask && visible"
+                v-if="(!showMask && visible) || showCloseBtn"
                 class="close-btn"
                 @click="() => $emit('closeDrawer')"
             >
@@ -24,6 +24,7 @@
                 v-if="visible"
                 :selected-asset="data"
                 :is-drawer="true"
+                :drawer-active-key="drawerActiveKey"
                 @closeDrawer="$emit('closeDrawer')"
             ></AssetPreview> </a-drawer
     ></teleport>
@@ -54,6 +55,16 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            drawerActiveKey: {
+                type: String,
+                required: false,
+                default: 'info',
+            },
+            showCloseBtn: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['closeDrawer', 'update'],
@@ -100,7 +111,7 @@
         display: grid;
         place-items: center;
         transform: rotate(45deg);
-        left: -40px;
+        right: 430px;
         top: 60px;
         cursor: pointer;
     }

@@ -179,7 +179,25 @@ export default function useAssetInfo() {
         )
         return activeLinks
     }
-    const link = (asset: assetInterface) => attributes(asset)?.link
+
+    function isValidHttpUrl(string) {
+        let url
+
+        try {
+            url = new URL(string)
+        } catch (_) {
+            return false
+        }
+
+        return url.protocol === 'http:' || url.protocol === 'https:'
+    }
+
+    const link = (asset: assetInterface) => {
+        if (isValidHttpUrl(attributes(asset)?.link)) {
+            return attributes(asset)?.link
+        }
+        return ''
+    }
 
     const queries = (asset: assetInterface) => attributes(asset)?.queries
 

@@ -153,7 +153,7 @@ export const ATTRIBUTE_TYPES = [
         icon: 'Boolean',
     },
     {
-        label: 'Date and Time',
+        label: 'Date',
         id: 'date',
         icon: 'DateTime',
     },

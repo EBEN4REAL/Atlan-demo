@@ -44,12 +44,12 @@
                             All assets
                         </span>
                     </div>
-                    <div v-if="policy.actions.length > 0 && type === 'meta'">
+                    <div v-if="permissions.length > 0 && type === 'meta'">
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm">
-                            {{ policy.actions.length }}
+                            {{ permissions.length }}
                             {{
-                                policy.actions.length > 1
+                                permissions.length > 1
                                     ? 'permissions'
                                     : 'permission'
                             }}
@@ -57,7 +57,7 @@
                     </div>
                     <div v-if="type === 'data'">
                         <span class="text-gray-300 mx-1.5">•</span>
-                        <span class="flex-none text-sm"> Query Access </span>
+                        <span class="flex-none text-sm">Query Access </span>
                     </div>
                     <div
                         v-if="
@@ -193,10 +193,20 @@
                 policy.value?.assets?.map((name) => getAssetIcon(name))
             )
             const actions = computed(
-                () => findActions(policy.value.actions),
+                () => findActions(policy.value.actions, 'persona'),
                 type.value
             )
-
+            const permissions = computed(() => {
+                if (actions?.value?.length) {
+                    const allPermissions = []
+                    actions.value.forEach((action) => {
+                        if (action?.action?.length)
+                            action.action.forEach((a) => allPermissions.push(a))
+                    })
+                    return allPermissions
+                }
+                return []
+            })
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
             const removePolicy = () => {
@@ -267,6 +277,7 @@
                 visibleDelete,
                 isAddAll,
                 maskComputed,
+                permissions
             }
         },
     })

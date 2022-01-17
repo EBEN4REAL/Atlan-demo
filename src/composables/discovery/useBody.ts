@@ -367,6 +367,12 @@ export function useBody(
                 }
                 break
             }
+            case 'excludeGtc': {
+                if(filterObject) {
+                    base.notFilter('terms', '__typeName.keyword', ['AtlasGlossary', 'AtlasGlossaryCategory', 'AtlasGlossaryTerm'])
+                }
+                break
+            }
             case 'guid': {
                 if (filterObject) {
                     base.filter('term', '__guid', filterObject)

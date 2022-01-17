@@ -272,10 +272,16 @@
                 required: false,
                 default: 'assets',
             },
+            drawerActiveKey: {
+                type: String,
+                required: false,
+                default: 'info',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { selectedAsset, isDrawer, page, drawerActiveKey } =
+                toRefs(props)
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -361,11 +367,17 @@
                 { debounce: 100, immediate: true }
             )
 
-            provide('switchTab', (asset, tabName: string) => {
+            const switchTab = (asset, tabName: string) => {
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+            }
+
+            provide('switchTab', switchTab)
+
+            watch(drawerActiveKey, (newVal) => {
+                switchTab(selectedAsset.value, newVal)
             })
 
             const router = useRouter()

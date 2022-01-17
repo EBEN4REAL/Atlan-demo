@@ -8,7 +8,7 @@
                     :src="`https://www.google.com/s2/favicons?domain=${link(
                         item
                     )}&sz=64`"
-                    :alt="title(item)"
+                    alt=""
                     class="h-7"
                 />
             </div>

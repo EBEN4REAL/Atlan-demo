@@ -39,6 +39,7 @@
                 ]"
                 class="parent_splitpanes"
                 @resize="paneResize"
+                :dbl-click-splitter="false"
             >
                 <pane
                     :max-size="maxExplorerSize"
@@ -102,6 +103,7 @@
                             ? sidebarPaneSize
                             : 0
                     "
+                    class="assetSidebar"
                     :min-size="sidebarPaneSize"
                     :size="sidebarPaneSize"
                 >
@@ -891,6 +893,24 @@
             @apply z-50 !important;
         }
     }
+    // asset sidebar resize disabled
+    :global(.splitpanes__splitter:nth-child(4)) {
+        cursor: default !important;
+        &:after {
+            display: none !important;
+            cursor: default !important;
+        }
+        &:hover {
+            &:before {
+                display: none !important;
+                cursor: default !important;
+            }
+            &:after {
+                display: none !important;
+                cursor: default !important;
+            }
+        }
+    }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {
         position: relative;
         margin-top: -1px;
@@ -962,6 +982,9 @@
     }
     .full-width {
         width: 99.9%;
+    }
+    .assetSidebar {
+        z-index: 51 !important;
     }
 </style>
 

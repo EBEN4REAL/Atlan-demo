@@ -6,6 +6,10 @@ import { createHead } from '@vueuse/head'
 import Keycloak from 'keycloak-js'
 import { createPinia } from 'pinia'
 
+// import surely and styles
+import '@surely-vue/table/dist/index.css'
+import STable from '@surely-vue/table';
+
 import App from './App.vue'
 
 import '~/styles/antd.less'
@@ -27,6 +31,9 @@ app.use(createPinia())
 //vue-head
 const head = createHead()
 app.use(head)
+
+// use surely table
+app.use(STable);
 
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })

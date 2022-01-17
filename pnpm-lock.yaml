@@ -11,6 +11,7 @@ specifiers:
   '@babel/eslint-parser': ^7.16.5
   '@intlify/vite-plugin-vue-i18n': ^3.2.1
   '@rollup/plugin-strip': ^2.1.0
+  '@surely-vue/table': ^2.0.10
   '@tailwindcss/line-clamp': ^0.3.0
   '@tailwindcss/typography': ^0.4.1
   '@tiptap/core': ^2.0.0-beta.137
@@ -87,6 +88,7 @@ specifiers:
   prettier: ^2.5.1
   prosemirror-model: 1.14.1
   prosemirror-state: 1.3.4
+  regular-table: ^0.4.2
   rollup-plugin-visualizer: ^5.5.2
   short-unique-id: ^4.4.4
   splitpanes: ^3.0.6
@@ -119,10 +121,12 @@ specifiers:
   vue-loader: ^16.8.3
   vue-router: ^4.0.12
   vue-tsc: ^0.30.2
+  vue-virtual-table: ^0.2.22
   vue3-json-editor: ^1.1.3
   vue3-timepicker: ^1.0.0-beta.2
 
 dependencies:
+  '@surely-vue/table': 2.0.10_e761a15ef5f3975b1235f3603394f6dd
   '@tailwindcss/typography': 0.4.1_tailwindcss@2.2.19
   '@tiptap/core': 2.0.0-beta.137
   '@tiptap/extension-code': 2.0.0-beta.25_@tiptap+core@2.0.0-beta.137
@@ -176,6 +180,7 @@ dependencies:
   pluralize: 8.0.0
   prosemirror-model: 1.14.1
   prosemirror-state: 1.3.4
+  regular-table: 0.4.2
   short-unique-id: 4.4.4
   splitpanes: 3.0.6
   sql-formatter: 4.0.2
@@ -193,6 +198,7 @@ dependencies:
   vue-i18n: 9.2.0-beta.25_vue@3.2.26
   vue-linkify: 1.0.1
   vue-router: 4.0.12_vue@3.2.26
+  vue-virtual-table: 0.2.22_vue@3.2.26
   vue3-json-editor: 1.1.3
   vue3-timepicker: 1.0.0-beta.2
 
@@ -1525,8 +1531,8 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 9.2.0-beta.26
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/message-compiler': 9.2.0-beta.28
+      '@intlify/shared': 9.2.0-beta.28
       jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
       vue-i18n: 9.2.0-beta.25_vue@3.2.26
@@ -1558,11 +1564,11 @@ packages:
       source-map: 0.6.1
     dev: false
 
-  /@intlify/message-compiler/9.2.0-beta.26:
-    resolution: {integrity: sha512-qtDgHCMqrXNTekKXGzm0Dm6r3+/X7/jFXP+E07hx+PJbPMv7DzK1iU8h5LlAMQ1/jr2UIRBgXvR5wh35OKoGrA==}
+  /@intlify/message-compiler/9.2.0-beta.28:
+    resolution: {integrity: sha512-NBH9fZyitN2cijGt8bmU1W7ZPdhKbgW01L1RxJKFJW0cRaCmknJq63Aif1Q6xcxKt9ZhPbvIKHgPGzg1nWMfeA==}
     engines: {node: '>= 12'}
     dependencies:
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/shared': 9.2.0-beta.28
       source-map: 0.6.1
     dev: true
 
@@ -1571,8 +1577,8 @@ packages:
     engines: {node: '>= 12'}
     dev: false
 
-  /@intlify/shared/9.2.0-beta.26:
-    resolution: {integrity: sha512-MjUlkjNThqkqy8yXUcFKBiW/hIfqAn5cP3Vd0b4wdOHS8rPCEbvSbAnF08uiZDkVv8gTcsLyymX21GaU6oYyyQ==}
+  /@intlify/shared/9.2.0-beta.28:
+    resolution: {integrity: sha512-JBMcoj1D4kSAma7Vb0+d8z6lPLIn7hIdZJPxbU8bgeMMniwKLoIS/jGlEfrZihsB5+otckPeQp203z8skwVS0w==}
     engines: {node: '>= 12'}
     dev: true
 
@@ -1590,7 +1596,7 @@ packages:
         optional: true
     dependencies:
       '@intlify/bundle-utils': 2.2.0_vue-i18n@9.2.0-beta.25
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/shared': 9.2.0-beta.28
       '@rollup/pluginutils': 4.1.1
       debug: 4.3.2
       fast-glob: 3.2.7
@@ -1733,6 +1739,22 @@ packages:
     dependencies:
       core-js: 3.19.2
       nanopop: 2.1.0
+    dev: false
+
+  /@surely-vue/table/2.0.10_e761a15ef5f3975b1235f3603394f6dd:
+    resolution: {integrity: sha512-iXDIMKL0Y3c3OkK7pWnONceYx2S6CjsMEb+lbc6T1FpOtbUQ9v5yTUAUV1mdQ3+eAvsAtjP4cOSkbOBmVDnEKA==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@vue/compiler-sfc': ^3.2.20
+      ant-design-vue: ^2.0.0 || ^3.0.0-0
+      vue: ^3.2.20
+    dependencies:
+      '@ant-design/icons-vue': 6.0.1_vue@3.2.26
+      '@vue/compiler-sfc': 3.2.26
+      ant-design-vue: 3.0.0-beta.7_ae87cbba5ec93a01f3fe1197df446ca3
+      lodash-es: 4.17.21
+      resize-observer-polyfill: 1.5.1
+      vue: 3.2.26
     dev: false
 
   /@surma/rollup-plugin-off-main-thread/2.2.3:
@@ -6186,6 +6208,11 @@ packages:
     hasBin: true
     dev: true
 
+  /popper.js/1.16.1:
+    resolution: {integrity: sha512-Wb4p1J4zyFTbM+u6WuO4XstYx4Ky9Cewe4DWrel7B0w6VVICvPwdOpotjzcf6eD8TsckVnIMNONQyPIUFOUbCQ==}
+    deprecated: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+    dev: false
+
   /postcss-js/3.0.3:
     resolution: {integrity: sha512-gWnoWQXKFw65Hk/mi2+WTQTHdPD5UJdDXZmX073EY/B3BWnYjO4F4t0VneTCnCGQ5E5GsCdMkzPaTXwl3r5dJw==}
     engines: {node: '>=10.0'}
@@ -6688,6 +6715,11 @@ packages:
     dependencies:
       jsesc: 0.5.0
     dev: true
+
+  /regular-table/0.4.2:
+    resolution: {integrity: sha512-nRgsEI6eeiOynB5dkXWluRYbUaWPuIqrztUN6HK1QLwrjx1gXaII6zIQd5S+4luSAfPYOuib0bK2W5+jzu2Frg==}
+    engines: {node: '>=10.18.1'}
+    dev: false
 
   /request-light/0.5.7:
     resolution: {integrity: sha512-i/wKzvcx7Er8tZnvqSxWuNO5ZGggu2UgZAqj/RyZ0si7lBTXL7kZiI/dWxzxnQjaY7s5HEy1qK21Do4Ncr6cVw==}
@@ -7681,6 +7713,16 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: true
 
+  /v-tooltip/2.0.2_vue@3.2.26:
+    resolution: {integrity: sha512-xQ+qzOFfywkLdjHknRPgMMupQNS8yJtf9Utd5Dxiu/0n4HtrxqsgDtN2MLZ0LKbburtSAQgyypuE/snM8bBZhw==}
+    dependencies:
+      lodash: 4.17.21
+      popper.js: 1.16.1
+      vue-resize: 0.4.5_vue@3.2.26
+    transitivePeerDependencies:
+      - vue
+    dev: false
+
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
@@ -8080,6 +8122,16 @@ packages:
       vue: 3.2.26
       vue-observe-visibility: 0.4.6
       vue-resize: 0.4.5_vue@3.2.26
+    dev: false
+
+  /vue-virtual-table/0.2.22_vue@3.2.26:
+    resolution: {integrity: sha512-7adjvmAB5gLZuylUBWC6+eCktwvR4V+ZC+XEiEDTXfQj9fKxkfy/s1nJHPBI8ovU3ZmBWnCYxr/pZl1L+5a7Mw==}
+    dependencies:
+      v-tooltip: 2.0.2_vue@3.2.26
+      vue-observe-visibility: 0.4.6
+      vue-resize: 0.4.5_vue@3.2.26
+    transitivePeerDependencies:
+      - vue
     dev: false
 
   /vue/2.6.14:

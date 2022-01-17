@@ -48,10 +48,11 @@ export default function useProject() {
             columnList.value = []
             columns.map((col: any, index) => {
                 columnList.value.push({
-                    title: col.columnName.split('_').join('_'),
+                    title: col.columnName,
                     dataIndex: col.columnName + index,
-                    key: col.columnName,
+                    key: index,
                     data_type: col.type.name,
+                    width: '250px'
                 })
             })
         }
@@ -59,25 +60,28 @@ export default function useProject() {
         // console.log('table columns: ', columns)
     }
 
+    let keys = ref(0)
+
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
-        console.log('table columns: ', columns)
-        // console.log('table rows: ', rows)
+        console.log('table rows raw: ', rows)
 
-        rows.map((result: any) => {
+        console.log('row index here: ', rows)
+        
+        rows.map((result: any, index1) => {
             // console.log(result)
-            let tmp = {}
-            result.map((row, rowindex) => {
-                tmp = {
-                    ...tmp,
-                    ...{
-                        // key: rowindex,
-                        [columns[rowindex].dataIndex]: {data: row, data_type: columns[rowindex].data_type}
-                        // key: rowindex,
-                    },
-                }
-            })
-            dataList.value.push(tmp)
+            // let tmp = {}
+            // result.map((row, rowindex) => {
+            //     tmp = {
+            //         ...tmp,                    
+            //         [columns[rowindex].dataIndex]: row
+                    
+            //     }
+            // })
+            // // console.log('row index: ', index1+1)
+            // tmp = {...tmp, key: keys.value}
+            // keys.value= keys.value+1
+            dataList.value.push(result)
         })
         console.log('table rows: ', dataList)
     }
@@ -261,6 +265,8 @@ export default function useProject() {
         const pathVariables = {
             params: search_prms,
         }
+
+        keys.value = 0;
 
         const {
             eventSource,

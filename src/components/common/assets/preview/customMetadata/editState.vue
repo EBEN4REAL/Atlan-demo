@@ -198,7 +198,7 @@
                 if (typeName.value === 'date') {
                     modelValue.value =
                         // localValue.value
-                        Math.floor(localValue.value.valueOf() / 100000) * 100000
+                        Math.floor(localValue.value.valueOf() / 1000) * 1000
                 } else modelValue.value = localValue.value
                 emit('change')
             }

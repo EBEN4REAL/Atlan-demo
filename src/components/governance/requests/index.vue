@@ -159,7 +159,7 @@
                         >
                         of {{ pagination.totalData }} requests
                     </div>
-                    <div class="flex">
+                    <div v-if="showPagination" class="flex">
                         <Pagination
                             v-model:offset="pagination.offset"
                             :total-pages="pagination.totalPages"
@@ -201,7 +201,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch } from 'vue'
+    import { defineComponent, computed, ref, watch, Ref } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -247,6 +247,7 @@
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
+            const showPagination = ref(true)
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -261,6 +262,7 @@
             const facets = ref({
                 statusRequest: ['active'],
             })
+            const paginationRef = ref('')
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -371,6 +373,11 @@
                 { deep: true }
             )
             const handleFilterChange = () => {
+                pagination.value.offset = 0
+                showPagination.value = false
+                setTimeout(() => {
+                    showPagination.value = true
+                }, 200)
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
@@ -456,6 +463,8 @@
                 logoUrl,
                 startCountPagination,
                 endCountPagination,
+                paginationRef,
+                showPagination,
                 // listPermission
             }
         },

@@ -120,7 +120,7 @@
                     >
                         <AtlanIcon
                             v-if="request.message"
-                            class="mr-3"
+                            class="mr-3 message-icon"
                             icon="Message"
                         />
                         <Avatar
@@ -150,7 +150,7 @@
                                 request.status === 'approved' &&
                                 request.approvedBy[0]?.message
                             "
-                            class="mr-3 text-success"
+                            class="mr-3 text-success check-icon"
                             icon="MessageSuccess"
                         />
                         <AtlanIcon
@@ -158,7 +158,7 @@
                                 request.status === 'approved' &&
                                 !request.approvedBy[0]?.message
                             "
-                            class="mr-3 text-success"
+                            class="mr-2 text-success check-icon"
                             icon="Check"
                         />
                         <div
@@ -371,5 +371,14 @@
             // outline-color: rgb(82, 119, 215) !important;
         }
         outline-offset: -1px !important;
+    }
+</style>
+
+<style lang="less">
+    .message-icon {
+        transform: scale(1.4) !important;
+    }
+    .check-icon {
+        transform: scale(1.2) !important;
     }
 </style>

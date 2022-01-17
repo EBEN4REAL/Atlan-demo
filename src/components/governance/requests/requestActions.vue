@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </template>
-            <AtlanIcon class="mr-3" icon="Message" />
+            <AtlanIcon class="mr-3 message-icon" icon="Message" />
         </a-popover>
         <AtlanButton
             color="secondary"
@@ -261,6 +261,11 @@
     })
 </script>
 
+<style lang="less">
+    .message-icon {
+        transform: scale(1.4) !important;
+    }
+</style>
 <style lang="less" scoped>
     .comment-delete {
         // height: 90px;

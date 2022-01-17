@@ -296,14 +296,11 @@
                     )
                     watch(data, () => {
                         updatedBy.value = data.value.records[0]
+                        console.log('updated', updatedBy.value)
                     })
                 }
             })
-            const nameUpdater = computed(() =>
-                updatedBy.value?.firstName
-                    ? `${updatedBy.value?.firstName} ${updatedBy.value?.lastName}`
-                    : ''
-            )
+            const nameUpdater = computed(() => updatedBy?.value?.username)
             return {
                 handleApproval,
                 handleRejection,

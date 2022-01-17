@@ -6,12 +6,10 @@
                 :key="subpanel?.id + index"
             >
                 <div class="flex items-center w-full mb-3 pr-9">
-                    <ColumnSelector
+                    <SingleTableMutliColumnSelector
                         v-if="selectedTables.length < 2"
                         class="flex-1"
-                        v-model:selectedItems="subpanel.columns"
-                        :showSelectAll="false"
-                        v-model:selectedColumnsData="subpanel.columnsData"
+                        :selectedItems="subpanel.columns"
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
@@ -20,28 +18,35 @@
                             columnSubpanels[0]?.tableQualfiedName
                         "
                     >
-                        <template #chip="{ item }">
-                            <div
-                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-                            >
-                                <component
-                                    v-if="item.type !== 'Columns'"
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
-                                ></component>
-                                <AtlanIcon
-                                    v-else
-                                    icon="Columns"
-                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
-                                />
-                                <div
-                                    class="truncate ... overflow-ellipsis overflow-hidden"
-                                >
-                                    {{ item.label }}
-                                </div>
-                            </div>
+                        <template #head>
+                            <SingleTableMutliColumnSelectorHead
+                                v-model:selectedItems="subpanel.columns"
+                                v-model:selectedColumnsData="
+                                    subpanel.columnsData
+                                "
+                                :disabled="readOnly"
+                                :tableQualfiedName="
+                                    columnSubpanels[0]?.tableQualfiedName
+                                "
+                            />
                         </template>
-                    </ColumnSelector>
+                        <template #body>
+                            <SingleTableMutliColumnSelectorDropdown
+                                v-model:selectedItems="subpanel.columns"
+                                v-model:selectedColumnsData="
+                                    subpanel.columnsData
+                                "
+                                :selectedTablesQualifiedNames="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                                :disabled="readOnly"
+                                :tableQualfiedName="
+                                    columnSubpanels[0]?.tableQualfiedName
+                                "
+                            />
+                        </template>
+                    </SingleTableMutliColumnSelector>
 
                     <MultiTableMutliColumnSelector
                         v-else
@@ -55,8 +60,10 @@
                         <template #head>
                             <MultiTableMutliColumnSelectorHead
                                 :disabled="readOnly"
-                                :selectedItems="subpanel.columns"
-                                :selectedColumnsData="subpanel.columnsData"
+                                v-model:selectedItems="subpanel.columns"
+                                v-model:selectedColumnsData="
+                                    subpanel.columnsData
+                                "
                                 :selectedTables="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
@@ -117,9 +124,14 @@
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+
     import MultiTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/_index.vue'
     import MultiTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/dropdown.vue'
     import MultiTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/head.vue'
+
+    import SingleTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/_index.vue'
+    import SingleTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/dropdown.vue'
+    import SingleTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/head.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -130,6 +142,9 @@
             MultiTableMutliColumnSelector,
             MultiTableMutliColumnSelectorDropdown,
             MultiTableMutliColumnSelectorHead,
+            SingleTableMutliColumnSelector,
+            SingleTableMutliColumnSelectorDropdown,
+            SingleTableMutliColumnSelectorHead,
         },
         props: {
             expand: {

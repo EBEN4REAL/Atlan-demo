@@ -58,7 +58,6 @@
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { useVModels } from '@vueuse/core'
 
@@ -80,11 +79,26 @@
                 type: Object as PropType<string[]>,
                 required: true,
             },
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
+            },
+            tableQualfiedName: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
-            const { disabled, selectedTablesQualifiedNames, selectedItems } =
-                toRefs(props)
+            const {
+                disabled,
+                selectedTablesQualifiedNames,
+                selectedItems,
+                selectedTableData,
+                tableQualfiedName,
+            } = toRefs(props)
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
             const observer = ref()
@@ -101,29 +115,16 @@
 
             const isAreaFocused = ref(false)
 
-            const tableSelected = ref(null)
-            const dirtyTableSelected = ref(null)
-            const isTableSelected = ref(false)
-            const dirtyIsTableSelected = ref(false)
             const columnQueryText = ref('')
-            const tableQueryText = ref('')
             const map = ref({})
             selectedItems.value?.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
-            const TotalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
+
             const TotalColumnsCount = computed(
                 () => ColumnsData.value?.approximateCount || 0
             )
 
-            const {
-                list: TableList,
-                replaceBody: replaceTableBody,
-                data: tablesData,
-                isLoading: isTableLoading,
-            } = useAssetListing('', false)
             const {
                 list: ColumnList,
                 replaceBody: replaceColumnBody,
@@ -131,41 +132,29 @@
                 isLoading: isColumnLoading,
             } = useAssetListing('', false)
 
-            const getColumnInitialBody = (item) => {
-                let data = {}
-                if (item.typeName === 'Table') {
-                    data = {
-                        tableQualifiedName: item?.qualifiedName,
-                        searchText: columnQueryText.value,
-                    }
-                } else if (item.typeName === 'View') {
-                    data = {
-                        viewQualifiedName: item?.qualifiedName,
-                        searchText: columnQueryText.value,
-                    }
+            const getColumnInitialBody = () => {
+                let data = {
+                    searchText: columnQueryText.value,
+                    assetType: selectedTableData.value?.assetType,
+                }
+                if (
+                    activeInlineTab.value.playground.vqb?.panels[0]
+                        ?.subpanels[0]?.tableData?.assetType === 'View'
+                ) {
+                    data.viewQualifiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                } else {
+                    data.tableQualfiedName =
+                        selectedTablesQualifiedNames.value?.length > 0
+                            ? selectedTablesQualifiedNames.value[0]
+                                  .tableQualifiedName
+                            : tableQualfiedName.value
                 }
 
                 return {
                     dsl: useBody(data),
-                    attributes: attributes,
-                    suppressLogs: true,
-                }
-            }
-
-            const getTableInitialBody = () => {
-                return {
-                    dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-
-                        searchText: tableQueryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
-                    }),
                     attributes: attributes,
                     suppressLogs: true,
                 }
@@ -215,7 +204,7 @@
             }
 
             // for initial call
-            replaceTableBody(getTableInitialBody())
+            replaceColumnBody(getColumnInitialBody())
 
             const setFocus = () => {
                 if (!disabled.value) {
@@ -232,23 +221,13 @@
             */
 
             const provideData: provideDataInterface = {
-                getTableInitialBody: getTableInitialBody,
                 getColumnInitialBody: getColumnInitialBody,
-                replaceTableBody: replaceTableBody,
                 replaceColumnBody: replaceColumnBody,
                 columnQueryText: columnQueryText,
-                tableQueryText: tableQueryText,
-                TableList: TableList,
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,
-                isTableSelected: isTableSelected,
-                totalTablesCount: TotalTablesCount,
                 totalColumnsCount: TotalColumnsCount,
-                isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,
-                tableSelected: tableSelected,
-                dirtyIsTableSelected: dirtyIsTableSelected,
-                dirtyTableSelected: dirtyTableSelected,
                 map: map,
             }
             useProvide(provideData)

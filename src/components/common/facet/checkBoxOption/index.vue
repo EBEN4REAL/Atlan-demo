@@ -10,9 +10,16 @@
                     :value="el.id"
                     class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
-                    <span class="mb-0 ml-3 text-gray">
-                        {{ el.label }}
-                    </span>
+                    <div class="flex items-center">
+                        <div
+                            v-if="el.colorDot"
+                            :style="`background-color: ${el.colorDot}`"
+                            class="dot"
+                        />
+                        <span class="mb-0 ml-3 text-gray">
+                            {{ el.label }}
+                        </span>
+                    </div>
                 </a-checkbox>
             </template>
         </div>
@@ -30,8 +37,8 @@
             },
             item: {
                 required: false,
-                default: {}
-            }
+                default: {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -50,4 +57,9 @@
 </script>
 
 <style lang="less" scoped>
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+    }
 </style>

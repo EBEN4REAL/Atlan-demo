@@ -10,11 +10,9 @@ import fetchAsset from './fetchAsset'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
-const { createPortData, toggleNodesEdges, addEdge } = useGraph()
+const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
+    useGraph()
 const lineageStore = useLineageStore()
-lineageStore.nodesColumnList = {}
-lineageStore.nodesPortList = {}
-lineageStore.columnsLineage = {}
 
 export default function useEventGraph(
     graph,
@@ -25,6 +23,7 @@ export default function useEventGraph(
     currZoom,
     resetSelections,
     config,
+    drawerActiveKey,
     onSelectAsset,
     onCloseDrawer
 ) {
@@ -262,14 +261,7 @@ export default function useEventGraph(
                         setPortStyle(node, port.id, 'highlight')
                 })
             }
-            if (!lineageStore.hasPortList(node.id))
-                lineageStore.setNodesPortList(node.id, ports)
             translateSubsequentNodes(node)
-        } else {
-            const ports = node.getPorts()
-            ports.shift()
-            node.removePorts(ports)
-            translateExpandedNodesToDefault(node)
         }
     }
 
@@ -311,14 +303,33 @@ export default function useEventGraph(
 
     // getNodesColumnList
     const getNodeColumnList = (nodes, allRelations = []) => {
-        let viewQualifiedName = ['def']
-        let tableQualifiedName = ['def']
+        const viewQualifiedName = ['def']
+        const tableQualifiedName = ['def']
 
-        nodes.forEach((node, index) => {
+        nodes.forEach((node) => {
+            const asset = node.store.data.entity
+            const { typeName, attributes } = asset
+
+            if (node.getPorts().length > 1) {
+                const ports = node.getPorts()
+                ports.shift()
+                node.removePorts(ports)
+                translateExpandedNodesToDefault(node)
+                loaderCords.value = {}
+                if (!allRelations.length) return
+            }
+
             if (lineageStore.hasColumnList(node.id)) {
                 const columnList = lineageStore.getNodesColumnList(node.id)
-                const override = allRelations.length ? true : false
-                controlPorts(node, columnList, allRelations, override)
+                if (columnList[0]?.text) {
+                    const { text } = columnList[0]
+                    const { portData } = createCustomPortData(node.id, text)
+                    node.addPort(portData)
+                } else {
+                    const override = !!allRelations.length
+                    controlPorts(node, columnList, allRelations, override)
+                }
+
                 const rel = getValidPortRelations(allRelations)
                 createRelations(rel)
                 translateSubsequentNodes(node)
@@ -326,16 +337,16 @@ export default function useEventGraph(
                 return
             }
 
-            const asset = node.store.data.entity
-            const { typeName, attributes } = asset
             if (typeName.toLowerCase() === 'view')
                 viewQualifiedName.push(attributes.qualifiedName)
             else if (typeName.toLowerCase() === 'table')
                 tableQualifiedName.push(attributes.qualifiedName)
         })
 
-        if (tableQualifiedName.length === 1 && viewQualifiedName.length === 1)
+        if (tableQualifiedName.length === 1 && viewQualifiedName.length === 1) {
+            loaderCords.value = {}
             return
+        }
 
         const { list } = fetchColumns({
             viewQualifiedName,
@@ -361,7 +372,7 @@ export default function useEventGraph(
                         (column) =>
                             column.attributes?.[assetType]?.guid === guid
                     )
-                    const override = allRelations.length ? true : false
+                    const override = !!allRelations.length
                     controlPorts(node, columns, allRelations, override)
                     if (!lineageStore.hasColumnList(node.id))
                         lineageStore.setNodesColumnList(node.id, columns)
@@ -387,7 +398,9 @@ export default function useEventGraph(
                 const parentNode = graphNodes.find(
                     (x) =>
                         x.store.data.entity.attributes.qualifiedName ===
-                        parentName
+                            parentName ||
+                        x.store.data.entity.typeName.toLowerCase() ===
+                            'powerbidataset'
                 )
                 const parentNodeExists = translateCandidates.find(
                     (x) => x?.id === parentNode?.id
@@ -444,8 +457,37 @@ export default function useEventGraph(
                 message.info('No lineage data available for selected column')
                 return
             }
-            lineageStore.setColumnsLineage(portId, data.value)
-            controlTranslate(portId, data.value)
+
+            let lineageData = data.value
+
+            const { relations, guidEntityMap } = lineageData
+            const powerBiDatasets = Object.values(guidEntityMap)
+                .filter((x) => x.typeName.toLowerCase() === 'powerbidataset')
+                .map((x) => x.guid)
+            if (powerBiDatasets.length) {
+                const newRelations = []
+                relations.forEach((x) => {
+                    const { fromEntityId, toEntityId, processId } = x
+                    let newFromEntityId = fromEntityId
+                    let newToEntityId = fromEntityId
+                    if (powerBiDatasets.includes(fromEntityId)) {
+                        newFromEntityId = `${fromEntityId}-invisiblePort`
+                    }
+                    if (powerBiDatasets.includes(toEntityId)) {
+                        newToEntityId = `${toEntityId}-invisiblePort`
+                    }
+                    const newRelation = {
+                        fromEntityId: newFromEntityId,
+                        toEntityId: newToEntityId,
+                        processId,
+                    }
+                    newRelations.push(newRelation)
+                })
+                lineageData = { ...lineageData, relations: newRelations }
+            }
+
+            lineageStore.setColumnsLineage(portId, lineageData)
+            controlTranslate(portId, lineageData)
         })
     }
 
@@ -613,7 +655,7 @@ export default function useEventGraph(
             else resetPortStyle(node, port.id)
         })
         loaderCords.value = { x: e.clientX, y: e.clientY }
-        getColumnLineage(portId)
+        if (!chp.value.portId.includes('ctaPort')) getColumnLineage(portId)
     }
 
     // deselectPort
@@ -650,6 +692,20 @@ export default function useEventGraph(
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
+            if (portId.includes('ctaPort')) {
+                setPortStyle(node, portId, 'select')
+                if (drawerActiveKey.value === 'Relations') {
+                    resetPortStyle(node, portId)
+                    onCloseDrawer()
+                    return
+                }
+                onSelectAsset(node.store.data.entity)
+                setTimeout(() => {
+                    drawerActiveKey.value = 'Relations'
+                    loaderCords.value = {}
+                }, 500)
+                return
+            }
             const port = node.getPort(portId)
             onSelectAsset(port.entity)
         }
@@ -763,7 +819,10 @@ export default function useEventGraph(
         if (newVal) {
             onSelectAsset(baseEntity.value, false, false)
             che.value = ''
+            drawerActiveKey.value = 'Info'
             if (highlightedNode.value) highlight(null)
+            if (chp.value.portId) deselectPort()
+
             resetSelections.value = false
         }
     })

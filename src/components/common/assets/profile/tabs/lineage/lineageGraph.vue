@@ -65,6 +65,7 @@
             :data="selectedAsset"
             :show-drawer="isDrawerVisible"
             :show-mask="false"
+            :show-close-btn="true"
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
         />

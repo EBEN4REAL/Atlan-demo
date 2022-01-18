@@ -277,78 +277,75 @@
                 // icons for table headers
 
                 let rows = window.regularTable.querySelectorAll('tbody tr')
-                console.log('rows: ', rows)
-                for (const th of window.regularTable.querySelectorAll(
-                    'thead tr th'
-                )) {
-                    const { x } = window.regularTable.getMeta(th)
-                    const column = columns.value[x]
+                for (const [i, th] of window.regularTable
+                    .querySelectorAll('thead tr th')
+                    .entries()) {
+                    if (i !== 0) {
+                        const { x } = window.regularTable.getMeta(th)
+                        const column = columns.value[x]
+                        // console.log('x: ', x)
 
-                    if (
-                        column.data_type.toLowerCase() === 'any' ||
-                        column.data_type.toLowerCase() === 'variant' ||
-                        column.data_type.toLowerCase() === 'object' ||
-                        column.data_type.toLowerCase() === 'struct'
-                    ) {
-                        // th.setAttribute('id', column.dataIndex.toString())
+                        if (
+                            column.data_type.toLowerCase() === 'any' ||
+                            column.data_type.toLowerCase() === 'variant' ||
+                            column.data_type.toLowerCase() === 'object' ||
+                            column.data_type.toLowerCase() === 'struct'
+                        ) {
+                            // th.setAttribute('id', column.dataIndex.toString())
 
-                        rows.forEach((element) => {
-                            if (element?.children?.length > x) {
-                                element?.children[x]?.setAttribute(
-                                    'key',
-                                    column.dataIndex.toString()
-                                )
-                                element?.children[x]?.setAttribute(
-                                    'data-key',
-                                    column.dataIndex.toString()
-                                )
-                                const span = document.createElement('span')
-                                span.setAttribute('id', 'expandIcon')
-                                span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='src/assets/images/icons/expand.svg'>`
-
-                                if (
-                                    !element.children[x]?.querySelector(
-                                        '#expandIcon > img'
+                            rows.forEach((element, i) => {
+                                if (element?.children?.length - 1 > x) {
+                                    element?.children[x + 1]?.setAttribute(
+                                        'key',
+                                        column.dataIndex.toString()
                                     )
-                                ) {
-                                    element.children[x]?.append(span)
+                                    element?.children[x + 1]?.setAttribute(
+                                        'data-key',
+                                        column.dataIndex.toString()
+                                    )
+                                    const span = document.createElement('span')
+                                    span.setAttribute('id', 'expandIcon')
+                                    span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='src/assets/images/icons/expand.svg'>`
+
+                                    if (
+                                        !element.children[x + 1]?.querySelector(
+                                            '#expandIcon > img'
+                                        )
+                                    ) {
+                                        element.children[x + 1]?.append(span)
+                                    }
                                 }
+                            })
+                        }
+
+                        // here, order in which operation is performed is important
+                        if (column?.key !== 0) {
+                            const span = document.createElement('span')
+                            span.setAttribute('id', 'icon')
+                            span.innerHTML = `<img data-tooltip=${
+                                column.data_type
+                            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src='src/assets/images/dataType/${
+                                imageMap[getDataType(column.data_type)]
+                            }.svg'>`
+
+                            if (!th.querySelector('#icon > img')) {
+                                th.prepend(span)
                             }
-                        })
-                    }
-
-                    // here, order in which operation is performed is important
-                    if (column?.key !== 0) {
-                        const span = document.createElement('span')
-                        span.setAttribute('id', 'icon')
-                        span.innerHTML = `<img data-tooltip=${
-                            column.data_type
-                        }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src='src/assets/images/dataType/${
-                            imageMap[getDataType(column.data_type)]
-                        }.svg'>`
-
-                        if (!th.querySelector('#icon > img')) {
-                            th.prepend(span)
                         }
                     }
-
-                    // console.log('th data: ', th.childNodes[1])
-                    // th.childNodes[1].classList.add(
-                    //     `w-full`,
-                    //     `flex`,
-                    //     alignment(column?.data_type)
-                    // )
                 }
+            }
 
-                // icon for variant type
+            function row_header(i) {
+                return [`${i + 1}`]
             }
 
             const dataHere = (rows) => {
-                // debugger
                 return (x0, y0, x1, y1) => ({
                     num_rows: dataList.value.length,
                     num_columns: columns.value.length,
                     column_headers: range(x0, x1, group_header.bind(null)),
+                    row_headers: range(y0, y1, row_header.bind(null)),
                     data: range(x0, x1, (x) =>
                         range(y0, y1, (y) => rows[y][x]?.data)
                     ),
@@ -359,7 +356,6 @@
                 const table = document.getElementsByTagName('regular-table')[0]
 
                 let rows = dataList.value
-                // debugger
 
                 table?.setDataListener(dataHere(rows))
                 table?.addStyleListener(styleListener)
@@ -427,29 +423,30 @@
 
         font-weight: 700 !important;
     }
-    td:first-child {
-        // max-width: 100px !important;
-        // min-width: 42px !important;
-        // width: 42px;
-        // left: 0;
-        border-left: 0;
-        // position: sticky;
-        // z-index: 4;
-        font-size: 14px !important;
-        // color: #a0a4b6;
-        @apply bg-white border;
-    }
+    // td:first-child {
+    //     // max-width: 100px !important;
+    //     // min-width: 42px !important;
+    //     // width: 42px;
+    //     // left: 0;
+    //     border-left: 0;
+    //     // position: sticky;
+    //     // z-index: 4;
+    //     font-size: 14px !important;
+    //     // color: #a0a4b6;
+    //     @apply bg-white border;
+    // }
 
     th:first-child {
-        // max-width: 100px !important;
-        // min-width: 42px !important;
-        // width: 42px;
+        max-width: 100px !important;
+        min-width: 42px !important;
+        width: 42px;
         border-left: 0;
+        height: 28px !important;
         // left: 0;
         // z-index: 10;
-        // color: #a0a4b6;
+        color: #a0a4b6;
         font-weight: 400 !important;
-        @apply bg-white border-b-0;
+        @apply bg-white border;
     }
 </style>
 

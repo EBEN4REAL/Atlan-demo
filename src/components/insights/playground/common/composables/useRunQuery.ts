@@ -45,13 +45,16 @@ export default function useProject() {
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
+            // columnList.value = [
+            //     {
+            //         title: '#',
+            //         dataIndex: 'columnIndex',
+            //         key: 0,
+            //         data_type: 'number'
+            //     }
+            // ]
+
             columnList.value = [
-                {
-                    title: '#',
-                    dataIndex: 'columnIndex',
-                    key: 0,
-                    data_type: 'number'
-                }
             ]
             columns.map((col: any, index) => {
                 columnList.value.push({
@@ -71,17 +74,11 @@ export default function useProject() {
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
-        console.log('table rows raw: ', rows)
-
-        console.log('row index here: ', rows)
-        
+       
         rows.map((result: any, index1) => {
-            console.log('result: ', result)
-            let row2 = [{
-                columnIndex: keys.value+1,
-                data: keys.value+1,
-                data_Type: 'number' 
-            }]
+          
+
+            let row2 = []
             result.map((row, rowindex) => {
                 let tmp = {}
                 tmp = {
@@ -101,7 +98,6 @@ export default function useProject() {
             // 
 
         })
-        console.log('table rows: ', dataList)
     }
 
     const queryRun = (
@@ -321,7 +317,7 @@ export default function useProject() {
                                 )
                         }
                         /* ---------------------------------- */
-                        console.log('message', message, )
+                        // console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)

@@ -4,6 +4,7 @@
         v-model="localValue"
         @change="handleChange"
         :connector="connectorName"
+        :isAdmin="true"
     ></Connection>
 </template>
 

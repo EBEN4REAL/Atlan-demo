@@ -90,7 +90,9 @@
                     )
                 }
                 if (componentProps.value.max) {
-                    return current && current > componentProps.value.max
+                    return (
+                        current && current > dayjs.unixcomponentProps.value.max
+                    )
                 }
                 return false
             }

@@ -12,11 +12,17 @@
             </div>
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
-            <h2 class="text-lg font-bold">Channels</h2>
+            <div class="flex items-center gap-x-1.5">
+                <h2 class="text-lg font-bold">Channels</h2>
+                <a-tooltip
+                    title="These are the channels where users will be able share Atlan assets"
+                    ><AtlanIcon class="mb-0.5" icon="Info"
+                /></a-tooltip>
+            </div>
             <div class="flex flex-wrap items-center gap-2 p-1 border rounded">
                 <Chip
-                    v-for="channel in channels"
-                    :id="channel.name"
+                    v-for="(channel, x) in channels"
+                    :index="x"
                     :key="channel.name"
                     :content="channel.name"
                     icon="Number"
@@ -32,7 +38,7 @@
                     <input
                         v-model="channelValue"
                         class="w-full focus:outline-none"
-                        placeholder="Add channel(s)"
+                        placeholder="Add channels"
                         @keydown.enter="addChannel"
                         @blur="addChannel"
                         @keydown.backspace="
@@ -107,9 +113,9 @@
 
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
-            const channels: Ref<[{ name: string; invalid: boolean }]> = ref([])
+            const channels: Ref<[{ name: string; invalid?: boolean }]> = ref([])
 
-            const channelValue = ref('')
+            const channelValue = ref([])
 
             const isEdit = ref(false)
 
@@ -119,12 +125,12 @@
             // }
 
             const addChannel = (e) => {
-                const value = e?.target?.value ?? null
+                const value = e?.target?.value.trim() ?? null
                 if (value) {
                     channels.value.push({ name: value })
                     isEdit.value = true
                 }
-                channelValue.value = ''
+                channelValue.value = []
             }
 
             const removeChannel = (i) => {

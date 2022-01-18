@@ -112,12 +112,12 @@
             <div class="flex items-center spaxe-x-4">
                 <div
                     v-if="entityType !== 'AtlasGlossary'"
-                    class="flex items-center space-x-2"
+                    class="flex items-center mr-2 space-x-2"
                 >
                     <a-switch size="small" v-model:checked="isCreateMore" />
                     <p class="p-0 m-0">Create more</p>
                 </div>
-                <div class="flex items-center ml-2">
+                <div class="flex items-center">
                     <AddOwners @saveOwners="handleOwnersChange" />
                 </div>
             </div>

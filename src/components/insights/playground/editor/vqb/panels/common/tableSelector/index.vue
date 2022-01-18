@@ -238,7 +238,6 @@
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
@@ -259,7 +258,6 @@
         components: {
             Pill,
             Loader,
-            TablesTree,
             PopoverAsset,
             AtlanBtn,
             CustomInput,

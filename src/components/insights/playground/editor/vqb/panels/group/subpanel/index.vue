@@ -116,7 +116,6 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import ColumnSelector from '../../columns/columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
@@ -137,7 +136,6 @@
         name: 'Sub panel',
         components: {
             Pill,
-            TablesTree,
             ColumnSelector,
             MultiTableMutliColumnSelector,
             MultiTableMutliColumnSelectorDropdown,

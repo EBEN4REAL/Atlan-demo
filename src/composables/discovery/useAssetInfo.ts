@@ -753,6 +753,14 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isProcess = (asset: assetInterface) => {
+        return assetType(asset) === 'Process'
+    }
+
+    const getProcessSQL = (asset: assetInterface) => {
+        return attributes(asset)?.sql
+    }
+
     const getHierarchy = (asset: assetInterface) => {
         const assetType_ = assetTypeList.find((a) => a.id == asset?.typeName)
         const relations: any[] = []
@@ -1121,5 +1129,7 @@ export default function useAssetInfo() {
         tileCount,
         pageCount,
         connectionGuid,
+        isProcess,
+        getProcessSQL,
     }
 }

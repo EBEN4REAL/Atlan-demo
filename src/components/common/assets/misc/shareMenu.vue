@@ -19,7 +19,7 @@
                 <a-menu-item
                     v-if="
                         tenantSlackStatus.configured &&
-                        tenantSlackStatus.channels
+                        tenantSlackStatus.channels.length
                     "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"

@@ -1,7 +1,7 @@
 interface TenantSlackStatus {
     created: boolean,
     configured: boolean,
-    channels: object[],
+    channels: [{ name: string, id: string }],
     id: string,
     oAuth: string,
     teamName: string

@@ -134,7 +134,7 @@
             }
 
             onMounted(() => {
-                channels.value = tenantSlackStatus.value.channels
+                channels.value = tenantSlackStatus.value.channels as any
             })
 
             const body = computed(() => ({

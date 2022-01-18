@@ -343,17 +343,12 @@
                 // icon for variant type
             }
 
-            function row_header(i) {
-                return [`${i}`]
-            }
-
             const dataHere = (rows) => {
                 // debugger
                 return (x0, y0, x1, y1) => ({
                     num_rows: dataList.value.length,
                     num_columns: columns.value.length,
                     column_headers: range(x0, x1, group_header.bind(null)),
-                    // row_headers: range(y0, y1, row_header.bind(null)),
                     data: range(x0, x1, (x) =>
                         range(y0, y1, (y) => rows[y][x]?.data)
                     ),

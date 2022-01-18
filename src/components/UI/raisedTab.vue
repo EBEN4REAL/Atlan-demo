@@ -13,17 +13,25 @@
             @click="$emit('update:active', item.key)"
         >
             {{ item.label }}
+            <span v-if="item.count" class="chip">{{ item.count }}</span>
         </button>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
     interface TabConfig {
         key: string
         label: string
+        count?: number
     }
+
+    /**
+     *  By default the Raised Tab will take up the entire width available,
+     * If you want to use a compact version that only takes up the space
+     * it needs, just add the `mr-auto` or `ml-auto` class.
+     */
     export default defineComponent({
         name: 'RaisedTab',
         props: {
@@ -49,16 +57,27 @@
     .tab-btn {
         @apply h-8 px-2;
         @apply rounded;
-        @apply flex items-center justify-center flex-none;
+        @apply flex items-center justify-center flex-shrink-0 flex-grow;
         @apply outline-none;
-
+        @apply transition duration-300;
         @apply bg-transparent;
         @apply text-gray-500 text-sm;
+
+        & .chip {
+            padding: 3px 2px 1px;
+            margin-left: 2px;
+            @apply font-bold text-xs rounded bg-gray-200 text-gray-500;
+            @apply transition duration-300;
+        }
 
         &:hover {
             @apply opacity-90;
             @apply text-primary;
+            & .chip {
+                @apply bg-primary-menu text-primary;
+            }
         }
+
         &:focus-visible {
             @apply ring-2 ring-primary-focus;
         }
@@ -75,6 +94,10 @@
         &.active {
             @apply bg-white text-primary;
             @apply shadow;
+
+            & .chip {
+                @apply bg-primary-light text-primary;
+            }
         }
     }
 </style>

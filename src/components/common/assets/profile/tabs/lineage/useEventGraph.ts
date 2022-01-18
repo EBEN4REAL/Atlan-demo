@@ -500,6 +500,7 @@ export default function useEventGraph(
         edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
         edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
         edge.toFront()
+
         if (animate)
             edge.attr('line/style/animation', 'ant-line 30s infinite linear')
         else edge.attr('line/style/animation', 'unset')
@@ -507,27 +508,23 @@ export default function useEventGraph(
         const s = edge.getSourcePoint()
         const t = edge.getTargetPoint()
 
-        if (s.x < t.x) {
-            edge.attr('line/strokeDasharray', reset ? 0 : 5)
-        } else {
-            edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
-        }
+        if (s.x < t.x) edge.attr('line/strokeDasharray', reset ? 0 : 5)
+        else edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
     }
 
     // getEventPath
     const getEventPath = (e) => {
-        let path = (e.composedPath && e.composedPath()) || e.path
-        let target = e.target
+        const path = (e.composedPath && e.composedPath()) || e.path
+        const target = e?.target
 
         if (path != null)
             return path.indexOf(window) < 0 ? path.concat(window) : path
         if (target === window) return [window]
 
-        function getParents(node, memo) {
-            memo = memo || []
-            let parentNode = node.parentNode
+        function getParents(node, memo = []) {
+            const parentNode = node?.parentNode
             if (!parentNode) return memo
-            else return getParents(parentNode, memo.concat(parentNode))
+            return getParents(parentNode, memo.concat(parentNode))
         }
 
         return [target].concat(getParents(target), window)

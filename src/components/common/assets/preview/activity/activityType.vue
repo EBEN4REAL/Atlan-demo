@@ -20,6 +20,8 @@
             Description: defineAsyncComponent(
                 () => import('./types/description/index.vue')
             ),
+            Name: defineAsyncComponent(() => import('./types/name/index.vue')),
+
             Terms: defineAsyncComponent(
                 () => import('./types/terms/index.vue')
             ),
@@ -46,6 +48,9 @@
                     return { displayValue: 'Event', value: [] }
                 },
             },
+        },
+        setup(props) {
+            console.log(props.data)
         },
     })
 </script>

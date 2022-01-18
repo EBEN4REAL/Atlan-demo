@@ -6,9 +6,10 @@ export default function useUpdateGraph() {
         const s = edge.getSourcePoint()
         const t = edge.getTargetPoint()
 
-        edge.attr('line/strokeDasharray', s.x > t.x ? '3 6' : 0)
-        edge.attr('line/stroke', s.x > t.x ? '#aaaaaa' : '#c7c7c7')
+        if (s.x < t.x) return
 
+        edge.attr('line/strokeDasharray', '3 6')
+        edge.attr('line/stroke', '#aaaaaa')
         edge.attr('line/targetMarker/height', 0.1)
         edge.attr('line/targetMarker/width', 0.1)
     }

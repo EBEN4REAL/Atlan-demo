@@ -2,11 +2,7 @@
     <div>
         <div class="flex items-center px-3 py-2 border-b">
             <div class="w-5 h-5 pb-1 mr-1" style="margin-bottom: 2px">
-                <AtlanIcon
-                    v-if="isLoading"
-                    icon="Loader"
-                    class="w-auto h-5 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader v-if="isLoading" class="h-5" />
                 <atlan-icon v-else icon="Search" class="w-auto h-5" />
             </div>
             <a-input
@@ -46,10 +42,7 @@
                 v-else-if="!list.length && !queryText.length"
                 class="flex items-center justify-around px-4 mb-6 h-80"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-10" />
             </div>
             <div
                 v-for="(item, index) in list"

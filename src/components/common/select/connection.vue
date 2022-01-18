@@ -40,6 +40,7 @@
 
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import whoami from '~/composables/user/whoami'
     import { usePersonaStore } from '~/store/persona'
 
     export default defineComponent({
@@ -72,10 +73,17 @@
                     return ''
                 },
             },
+            isAdmin: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { connector, showCount, persona } = toRefs(props)
+            const { connector, showCount, persona, isAdmin } = toRefs(props)
 
             const personaStore = usePersonaStore()
 
@@ -85,7 +93,10 @@
             const { list } = useConnectionData()
             const queryText = ref('')
 
-            const { getConnectorImage } = useAssetInfo()
+            const { getConnectorImage, createdBy, adminGroups, adminUsers } =
+                useAssetInfo()
+
+            const { username, groups } = whoami()
 
             const applicableConnectionArray = computed(() => {
                 const found = personaStore.list.find(
@@ -93,6 +104,19 @@
                 )
                 return found?.metadataPolicies.map((i) => i.connectionId) || []
             })
+
+            const isAdminConnection = (item) => {
+                if (
+                    createdBy(item) === username.value ||
+                    adminUsers(item).includes(username) ||
+                    adminGroups(item).some((group) =>
+                        groups.value.includes(group)
+                    )
+                ) {
+                    return true
+                }
+                return false
+            }
 
             const filteredList = computed(() =>
                 list
@@ -120,11 +144,18 @@
                         return true
                     })
                     .filter((item) => {
+                        if (isAdmin.value) {
+                            if (isAdminConnection(item)) {
+                                return true
+                            }
+                            return false
+                        }
                         if (persona.value) {
                             return applicableConnectionArray.value.includes(
                                 item.guid
                             )
                         }
+
                         return true
                     })
                     .sort((a, b) => {
@@ -154,6 +185,10 @@
                 showCount,
                 getConnectorImage,
                 applicableConnectionArray,
+                createdBy,
+                adminGroups,
+                adminUsers,
+                isAdminConnection,
             }
         },
     })

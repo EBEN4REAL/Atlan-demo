@@ -8,11 +8,10 @@
                 <div class="flex flex-col">
                     <div class="text-sm text-gray-500">Status</div>
                     <div class="text-sm font-semibold text-gray-700">
-                        <AtlanIcon
+                        <AtlanLoader
                             v-if="run?.status?.phase === 'Running'"
-                            icon="Loader"
-                            class="mr-1 animate-spin"
-                        ></AtlanIcon>
+                            class="mr-1"
+                        />
                         {{ run?.status?.phase }}
                     </div>
                 </div>

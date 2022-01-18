@@ -63,7 +63,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3 pr-4">
+        <div class="flex items-center justify-end col-span-3 pr-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -82,10 +82,26 @@
                         @reject="handleRejection"
                     />
                     <div
-                        v-else-if="request.status === 'approved'"
-                        class="flex items-center font-light text-success"
+                        v-else-if="
+                            request.status === 'approved' ||
+                            request.status === 'rejected'
+                        "
+                        class="flex items-center justify-end font-light"
+                        :class="
+                            request.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
                     >
-                        Approved by
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                        {{
+                            request.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
                         <div class="flex items-center mx-2 truncate">
                             <Avatar
                                 :allow-upload="false"
@@ -99,57 +115,99 @@
                         </div>
                         <DatePiece
                             label="Created At"
-                            :date="request.approvedBy[0].timestamp"
                             :no-popover="true"
                             class="font-light text-gray-500"
-                        />
-                    </div>
-
-                    <div
-                        v-else-if="request.status === 'rejected'"
-                        class="flex items-center font-light text-error"
-                    >
-                        Rejected by
-                        <div class="flex items-center mx-2">
-                            <Avatar
-                                :allow-upload="false"
-                                :avatar-name="nameUpdater"
-                                :avatar-size="18"
-                                :avatar-shape="'circle'"
-                                class="mr-2"
-                            />
-
-                            <span class="text-gray-700">{{ nameUpdater }}</span>
-                        </div>
-                        <DatePiece
-                            label="Created At"
-                            :date="request.rejectedBy[0].timestamp"
-                            class="font-light text-gray-500"
-                            :no-popover="true"
+                            :date="
+                                request.status === 'approved'
+                                    ? request.approvedBy[0].timestamp
+                                    : request.rejectedBy[0].timestamp
+                            "
                         />
                     </div>
                 </div>
-                <div v-else class="flex w-1/2 gap-x-2">
-                    <Avatar
-                        :allow-upload="false"
-                        :avatar-name="request.created_by_user?.username"
-                        avatar-size="24"
-                        :avatar-shape="'circle'"
-                        :image-url="atlanLogo"
-                    />
+                <div v-else class="flex">
+                    <div class="flex items-center gap-x-2">
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="request.created_by_user?.username"
+                            avatar-size="24"
+                            :avatar-shape="'circle'"
+                            :image-url="atlanLogo"
+                        />
 
-                    <div class="flex flex-col">
-                        <UserPiece
-                            :user="request.created_by_user"
-                            :is-pill="false"
-                            :default-name="'Atlan Bot'"
-                        />
-                        <DatePiece
-                            label="Created At"
-                            :date="request.createdAt"
-                            class="text-gray-500"
-                        />
+                        <div class="flex flex-col">
+                            <UserPiece
+                                :user="request.created_by_user"
+                                :is-pill="false"
+                                :default-name="'Atlan Bot'"
+                            />
+                            <DatePiece
+                                label="Created At"
+                                :date="request.createdAt"
+                                class="text-gray-500"
+                            />
+                        </div>
                     </div>
+                    <!-- <div class="flex items-center">
+                        <AtlanIcon
+                            v-if="
+                                request.status === 'approved' &&
+                                request.approvedBy[0]?.message
+                            "
+                            class="mr-3 text-success check-icon"
+                            icon="MessageSuccess"
+                        />
+                        <AtlanIcon
+                            v-if="
+                                request.status === 'approved' &&
+                                !request.approvedBy[0]?.message
+                            "
+                            class="mr-2 text-success check-icon"
+                            icon="Check"
+                        />
+                        <div
+                            class="flex items-center font-light"
+                            :class="
+                                request.status === 'approved'
+                                    ? 'text-success'
+                                    : 'text-error'
+                            "
+                        >
+                            {{
+                                request.status === 'approved'
+                                    ? 'Approved by'
+                                    : 'Rejected by'
+                            }}
+
+                            <div class="flex items-center mx-2 truncate">
+                                <Avatar
+                                    :allow-upload="false"
+                                    :avatar-name="nameUpdater"
+                                    :avatar-size="18"
+                                    :avatar-shape="'circle'"
+                                    class="mr-2"
+                                />
+
+                                <span class="text-gray-700">{{
+                                    nameUpdater
+                                }}</span>
+                            </div>
+                            <DatePiece
+                                label="Created At"
+                                :date="
+                                    request.status === 'approved'
+                                        ? request.approvedBy[0].timestamp
+                                        : request.rejectedBy[0].timestamp
+                                "
+                                :no-popover="true"
+                                class="font-light text-gray-500"
+                            />
+                        </div>
+                    </div> -->
                 </div>
             </template>
         </div>
@@ -182,6 +240,7 @@
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import IconStatus from './iconStatus.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -202,6 +261,7 @@
             DatePiece,
             TermPiece,
             Avatar,
+            IconStatus,
         },
         props: {
             request: {
@@ -237,10 +297,10 @@
                 message.error(msg || 'Request modification failed, try again')
             }
 
-            async function handleApproval() {
+            async function handleApproval(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await approveRequest(request.value.id, state.message)
+                    await approveRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'approved'
                     emit('action', request.value)
@@ -254,10 +314,10 @@
                 state.isLoading = false
             }
 
-            async function handleRejection() {
+            async function handleRejection(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await declineRequest(request.value.id, state.message)
+                    await declineRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'rejected'
                     emit('action', request.value)
@@ -321,5 +381,20 @@
             // outline-color: rgb(82, 119, 215) !important;
         }
         outline-offset: -1px !important;
+    }
+</style>
+
+<style lang="less">
+    .message-icon {
+        transform: scale(1.4) !important;
+    }
+    .check-icon {
+        transform: scale(1.4) !important;
+    }
+    .cross-icon {
+        transform: scale(1.1) !important;
+    }
+    .message-cross-icon {
+        transform: scale(1.5) !important;
     }
 </style>

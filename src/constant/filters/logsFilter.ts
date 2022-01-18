@@ -141,7 +141,7 @@ export const requestFilter = [
     {
         id: 'statusRequest',
         label: 'STATUS',
-        component: 'radioButton',
+        component: 'CheckBoxOption',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,

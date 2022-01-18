@@ -12,6 +12,7 @@
         :footer="null"
     >
         <div class="px-5 py-3">
+            <!-- header starts -->
             <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center">
                     <div
@@ -48,10 +49,47 @@
                         {{ categoryName }}
                     </div>
                 </div>
-                <div class="cursor-pointer" @click="handleCancel">
-                    <atlan-icon icon="Cross" class="h-5 text-gray-500" />
+                <div class="text-xs">
+                    <a-dropdown
+                        placement="bottomLeft"
+                        :trigger="['click']"
+                        @click.stop="() => {}"
+                    >
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="item in ListForSidebar"
+                                    :key="item.id"
+                                    @click="handleStatusChange(item)"
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <component
+                                            :is="item.icon"
+                                            class="w-auto h-4 ml-1 mr-2 pushtop"
+                                        />
+                                        {{ item.label }}
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                        <div class="flex flex-row-reverse" style="width: 140px">
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="w-4 h-4 ml-1"
+                            ></AtlanIcon>
+                            <StatusBadge
+                                :status-id="entity.attributes.certificateStatus"
+                                :show-chip-style-status="false"
+                                :show-no-status="true"
+                                :show-label="true"
+                                :is-tree="false"
+                                class="p-0 cursor-pointer"
+                            ></StatusBadge>
+                        </div>
+                    </a-dropdown>
                 </div>
             </div>
+            <!-- header ends here  -->
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
@@ -69,21 +107,20 @@
         </div>
 
         <div
-            class="flex w-full px-5 py-3 border-t border-gray-200"
-            :class="
-                entityType !== 'AtlasGlossary'
-                    ? 'justify-between'
-                    : 'justify-end'
-            "
+            class="flex justify-between w-full px-5 py-3 border-t border-gray-200"
         >
-            <div
-                v-if="entityType !== 'AtlasGlossary'"
-                class="flex items-center space-x-2"
-            >
-                <a-switch size="small" v-model:checked="isCreateMore" />
-                <p class="p-0 m-0">Create more</p>
+            <div class="flex items-center spaxe-x-4">
+                <div
+                    v-if="entityType !== 'AtlasGlossary'"
+                    class="flex items-center space-x-2"
+                >
+                    <a-switch size="small" v-model:checked="isCreateMore" />
+                    <p class="p-0 m-0">Create more</p>
+                </div>
+                <div class="flex items-center ml-2">
+                    <AddOwners @saveOwners="handleOwnersChange" />
+                </div>
             </div>
-
             <a-button
                 type="primary"
                 @click="handleSave"
@@ -110,33 +147,18 @@
         reactive,
     } from 'vue'
 
-    import StatusBadge from '@common/badge/status/index.vue'
-    // import AddGtcModalOwners from './addGtcModalOwners.vue'
-    // import Categories from '@/glossary/common/categories.vue'
-
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
-    import whoami from '~/composables/user/whoami'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
     import { useMagicKeys, whenever } from '@vueuse/core'
-
-    import { List } from '~/constant/status'
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
-    import { useVModels, whenever } from '@vueuse/core'
-    import updateAsset from '~/composables/discovery/updateAsset'
-    import { generateUUID } from '~/utils/helper/generator'
     import { message } from 'ant-design-vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { ListForSidebar } from '~/constant/status'
 
-    import { mutate } from 'swrv'
+    import updateAsset from '~/composables/discovery/updateAsset'
+
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
-    import useGlossary from '~/composables/glossary2/useGlossary'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
-
+    import AddOwners from '@/glossary/modal/addOwners.vue'
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
@@ -145,8 +167,8 @@
         components: {
             GlossaryPopoverSelect,
             GTCSelect,
-            // AddGtcModalOwners,
-            // Categories,
+            StatusBadge,
+            AddOwners,
         },
         props: {
             entityType: {
@@ -206,13 +228,15 @@
 
             const { getGlossaryByQF } = useGlossaryData()
             const visible = ref(false)
-            const isCreateMore = ref<boolean>(false)
-
+            const isCreateMore = ref<boolean>()
             const entity = reactive({
                 attributes: {
                     userDescription: '',
                     name: '',
                     qualifiedName: '',
+                    certificateStatus: 'DRAFT',
+                    ownersUsers: [],
+                    ownerGroups: [],
                 },
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
@@ -349,10 +373,6 @@
                     useAddEvent('gtc', eventCategory, 'created', properties)
                     resetInput()
                     message.success(`${typeNameTitle.value} created`)
-                    // isCreateMore
-                    // localEntityType: "AtlasGlossaryCategory", "AtlasGlossaryTerm", "AtlasGlossary"
-                    // resetInput()
-
                     if (guidCreatedMaps.value?.length > 0) {
                         guid.value = guidCreatedMaps.value[0]
                     }
@@ -360,6 +380,15 @@
                 }
             })
 
+            const handleStatusChange = (status) => {
+                entity.attributes.certificateStatus = status.id
+            }
+            const handleOwnersChange = (selectedValue) => {
+                console.log(selectedValue)
+                entity.attributes.ownerUsers = selectedValue?.value?.ownerUsers
+                entity.attributes.ownerGroups =
+                    selectedValue?.value?.ownerGroups
+            }
             whenever(error, () => {
                 if (error.value) {
                     if (error.value.response?.status === 409) {
@@ -416,6 +445,9 @@
                 categoryName,
                 localEntityType,
                 handleCancel,
+                ListForSidebar,
+                handleStatusChange,
+                handleOwnersChange,
             }
         },
     })

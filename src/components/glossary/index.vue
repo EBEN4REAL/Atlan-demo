@@ -104,10 +104,7 @@
             v-if="isLoading && queryText"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-else-if="list.length == 0 && !isLoading && queryText"
@@ -193,6 +190,7 @@
         InternalAttributes,
         GlossaryAttributes,
     } from '~/constant/projection'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -281,10 +279,13 @@
                 glossary: '__all',
             })
             const dependentKey = ref('DEFAULT_GLOSSARY_ITEMS_LIST')
+            const { customMetadataProjections } = useTypedefData()
+
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...GlossaryAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])

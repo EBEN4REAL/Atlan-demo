@@ -62,11 +62,7 @@
                     class="flex items-center justify-center w-full px-4"
                     v-else
                 >
-                    <AtlanIcon
-                        v-if="isLoading"
-                        icon="Loader"
-                        class="w-auto h-8 animate-spin"
-                    ></AtlanIcon>
+                    <AtlanLoader v-if="isLoading" class="h-8" />
                 </div>
             </div>
         </template>

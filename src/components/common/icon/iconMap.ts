@@ -206,7 +206,6 @@ import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
-import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
@@ -361,6 +360,10 @@ import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import Reload2 from '~/assets/images/icons/Reload2.svg'
+import Message from '~/assets/images/icons/message.svg'
+import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
+import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
+import MessageCross from '~/assets/images/icons/MessageCross.svg'
 
 export default {
     GlowFlash,
@@ -591,7 +594,6 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
-    Loader,
     Property,
     PropertyActive,
     OverviewActive,
@@ -709,5 +711,9 @@ export default {
     LockedFile,
     Databricks,
     Quotes2,
-    Reload2
+    Reload2,
+    Message,
+    MessageSuccess,
+    CrossCircle,
+    MessageCross,
 }

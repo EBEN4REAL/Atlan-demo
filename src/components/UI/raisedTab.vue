@@ -64,6 +64,7 @@
         @apply text-gray-500 text-sm;
 
         & .chip {
+            min-width: 20px;
             padding: 3px 2px 1px;
             margin-left: 2px;
             @apply font-bold text-xs rounded bg-gray-200 text-gray-500;

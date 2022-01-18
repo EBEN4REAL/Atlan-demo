@@ -32,6 +32,7 @@
 
 <script lang="ts">
     import {
+        watch,
         Ref,
         inject,
         computed,
@@ -77,6 +78,10 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
 
             const placeholder = computed(() => {
                 if (isTableLoading.value) return 'Loading...'
@@ -87,6 +92,17 @@
                     return `Select from ${totalTablesCount.value} tables`
                 return `Select a table first`
             })
+
+            watch(
+                () => activeInlineTab.value.playground.editor.context,
+                (newContext) => {
+                    if (
+                        !modelValue.value?.includes(newContext.attributeValue)
+                    ) {
+                        replaceTableBody(getTableInitialBody())
+                    }
+                }
+            )
 
             return {
                 selectedTableData,

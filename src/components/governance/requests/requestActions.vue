@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-end gap-x-2">
+    <div class="flex items-center gap-x-2">
         <a-popover
             v-if="request.message"
             trigger="hover"
@@ -59,7 +59,7 @@
                                 v-model:visible="isVisibleRejectWithComment"
                                 trigger="click"
                                 placement="bottomRight"
-                                :align="{ offset: [15, -70] }"
+                                :align="{ offset: [15, -60] }"
                             >
                                 <template #content>
                                     <div class="comment-delete">

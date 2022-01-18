@@ -121,14 +121,14 @@
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <RequestModal
+                <!-- <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                />
+                /> -->
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"

@@ -64,7 +64,7 @@
 
             const placeholder = computed(() => {
                 if (totalColumnsCount.value > 0) {
-                    return `Search from ${
+                    return `Select from ${
                         totalColumnsCount.value
                     } ${pluralizeString(
                         'column',

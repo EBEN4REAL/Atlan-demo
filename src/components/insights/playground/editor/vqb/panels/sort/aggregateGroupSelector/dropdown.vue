@@ -41,79 +41,49 @@
                             v-for="(item, index) in columnDropdownOption"
                             :key="item.qualifiedName"
                         >
-                            <PopoverAsset
-                                :item="item.item"
-                                placement="right"
-                                :mouseEnterDelay="0.85"
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(e) => onSelectColumn(item, e)"
+                                :class="
+                                    selectedColumn?.qualifiedName +
+                                        selectedColumn?.value ===
+                                    item.value + item?.label
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
                             >
-                                <template #button>
-                                    <AtlanBtn
-                                        class="flex-none px-0"
-                                        size="sm"
-                                        color="minimal"
-                                        padding="compact"
-                                        style="height: fit-content"
-                                        @click="
-                                            (e) => actionClick(e, item.item)
-                                        "
-                                    >
-                                        <span
-                                            class="cursor-pointer text-primary whitespace-nowrap"
-                                        >
-                                            Show Preview</span
-                                        >
-                                        <AtlanIcon
-                                            icon="ArrowRight"
-                                            class="text-primary"
-                                        />
-                                    </AtlanBtn>
-                                </template>
                                 <div
-                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                    @click="(e) => onSelectColumn(item, e)"
-                                    :class="
-                                        selectedColumn?.qualifiedName +
-                                            selectedColumn?.value ===
-                                        item.value + item?.label
-                                            ? 'bg-primary-light'
-                                            : 'bg-white'
-                                    "
+                                    class="flex items-center parent-ellipsis-container"
                                 >
-                                    <div
-                                        class="flex items-center parent-ellipsis-container"
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
                                     >
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
-                                        ></component>
-                                        <span
-                                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
-                                        >
-                                            {{ item.label }}
-                                        </span>
-                                    </div>
-                                    <div
-                                        class="relative flex items-center h-full"
-                                    >
-                                        <ColumnKeys
-                                            :isPrimary="item.isPrimary"
-                                            :isForeign="item.isForeign"
-                                            :isPartition="item.isPartition"
-                                        />
-
-                                        <AtlanIcon
-                                            icon="Check"
-                                            class="ml-2 text-primary"
-                                            v-if="
-                                                selectedColumn?.qualifiedName +
-                                                    selectedColumn?.value ===
-                                                item.value + item?.label
-                                            "
-                                        />
-                                        <div v-else class="w-4 ml-2"></div>
-                                    </div>
+                                        {{ item.label }}
+                                    </span>
                                 </div>
-                            </PopoverAsset>
+                                <div class="relative flex items-center h-full">
+                                    <ColumnKeys
+                                        :isPrimary="item.isPrimary"
+                                        :isForeign="item.isForeign"
+                                        :isPartition="item.isPartition"
+                                    />
+
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary"
+                                        v-if="
+                                            selectedColumn?.qualifiedName +
+                                                selectedColumn?.value ===
+                                            item.value + item?.label
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
+                            </div>
                         </template>
                     </div>
                 </div>
@@ -147,7 +117,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
-    import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
@@ -160,7 +129,7 @@
 
     export default defineComponent({
         name: 'Sub panel',
-        components: { PopoverAsset, Loader, CustomInput, ColumnKeys },
+        components: { Loader, CustomInput, ColumnKeys },
         props: {
             disabled: {
                 type: Boolean,

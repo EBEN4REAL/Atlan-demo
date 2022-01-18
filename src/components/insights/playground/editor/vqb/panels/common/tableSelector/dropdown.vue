@@ -170,10 +170,7 @@
                 type: Object,
                 required: true,
             },
-            tableQualfiedName: {
-                type: String,
-                required: true,
-            },
+
             modelValue: {
                 type: String,
                 required: true,
@@ -188,7 +185,7 @@
         emits: ['update:modelValue', 'change', 'update:selectedTableData'],
 
         setup(props, { emit }) {
-            const { tableQualfiedName, disabled, selectedItem } = toRefs(props)
+            const { disabled, selectedItem } = toRefs(props)
             const { modelValue, selectedTableData } = useVModels(props)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
@@ -220,7 +217,7 @@
 
             const placeholder = computed(() => {
                 let data = `Select a table first`
-                if (tableQualfiedName.value) {
+                if (modelValue.value) {
                     data = `Search from ${totalTablesCount.value} columns`
                     if (isTableLoading.value) {
                         data = 'Loading...'

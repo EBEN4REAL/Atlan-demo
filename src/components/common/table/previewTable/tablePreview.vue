@@ -2,11 +2,11 @@
     <div class="table_height">
         <regular-table ref="tableRef" class="regular_table"></regular-table>
     </div>
-    <VariantModal
+    <!-- <VariantModal
         v-if="modalVisible"
         v-model:visible="modalVisible"
         :data="selectedData"
-    />
+    /> -->
 </template>
 
 <script lang="ts">
@@ -83,98 +83,98 @@
                 handleOpenModal(td.innerText)
             }
 
-            watch([dataList], () => {
-                init()
-                const tbody = document.getElementsByTagName('tbody')[0]
+            // watch([dataList], () => {
+            //     // init()
+            //     const tbody = document.getElementsByTagName('tbody')[0]
 
-                tbody.onclick = function (e) {
-                    let td = e.target.closest('td')
-                    if (!td) return
-                    if (!tbody.contains(td)) return
-                    if (
-                        variantTypeIndexes.value.includes(
-                            td.dataset.key.toString()
-                        )
-                    ) {
-                        handleClick(td)
-                    }
-                }
-                tbody.onmouseover = function (e) {
-                    let td = e.target.closest('td')
-                    if (!td) return
-                    if (!tbody.contains(td)) return
-                    if (
-                        variantTypeIndexes.value.includes(
-                            td.dataset.key.toString()
-                        )
-                    ) {
-                        if (hoverTD.value) {
-                            hoverTD.value.classList.remove('hover-state')
-                        }
-                        hoverTD.value = td
-                        hoverTD.value.classList.add('hover-state')
+            //     tbody.onclick = function (e) {
+            //         let td = e.target.closest('td')
+            //         if (!td) return
+            //         if (!tbody.contains(td)) return
+            //         if (
+            //             variantTypeIndexes.value.includes(
+            //                 td.dataset.key.toString()
+            //             )
+            //         ) {
+            //             handleClick(td)
+            //         }
+            //     }
+            //     tbody.onmouseover = function (e) {
+            //         let td = e.target.closest('td')
+            //         if (!td) return
+            //         if (!tbody.contains(td)) return
+            //         if (
+            //             variantTypeIndexes.value.includes(
+            //                 td.dataset.key.toString()
+            //             )
+            //         ) {
+            //             if (hoverTD.value) {
+            //                 hoverTD.value.classList.remove('hover-state')
+            //             }
+            //             hoverTD.value = td
+            //             hoverTD.value.classList.add('hover-state')
 
-                        // Decreasing text width on hover
-                        hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
-                            '85%'
+            //             // Decreasing text width on hover
+            //             hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+            //                 '85%'
 
-                        // Showing Expand Icon
-                        hoverTD.value.childNodes[0].childNodes[1].classList.add(
-                            'block'
-                        )
-                        hoverTD.value.childNodes[0].childNodes[1].classList.remove(
-                            'hidden'
-                        )
-                    }
-                }
-                tbody.onmouseout = function (e) {
-                    let td = e.target.closest('td')
-                    if (!td) return
-                    if (!tbody.contains(td)) return
-                    hoverTD.value = td
-                    hoverTD.value.classList.remove('hover-state')
+            //             // Showing Expand Icon
+            //             hoverTD.value.childNodes[0].childNodes[1].classList.add(
+            //                 'block'
+            //             )
+            //             hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+            //                 'hidden'
+            //             )
+            //         }
+            //     }
+            //     tbody.onmouseout = function (e) {
+            //         let td = e.target.closest('td')
+            //         if (!td) return
+            //         if (!tbody.contains(td)) return
+            //         hoverTD.value = td
+            //         hoverTD.value.classList.remove('hover-state')
 
-                    hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
-                        '100%'
+            //         hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
+            //             '100%'
 
-                    hoverTD.value.childNodes[0].childNodes[1].classList.remove(
-                        'block'
-                    )
-                    hoverTD.value.childNodes[0].childNodes[1].classList.add(
-                        'hidden'
-                    )
-                }
-            })
+            //         hoverTD.value.childNodes[0].childNodes[1].classList.remove(
+            //             'block'
+            //         )
+            //         hoverTD.value.childNodes[0].childNodes[1].classList.add(
+            //             'hidden'
+            //         )
+            //     }
+            // })
 
-            watch([columns], () => {
-                init()
-                const thead = document.getElementsByTagName('thead')[0]
+            // watch([columns], () => {
+            //     // init()
+            //     const thead = document.getElementsByTagName('thead')[0]
 
-                thead.onmouseover = function (e) {
-                    let svg = e.target.closest('svg')
-                    if (!svg) return
-                    if (!thead.contains(svg)) return
+            //     thead.onmouseover = function (e) {
+            //         let svg = e.target.closest('svg')
+            //         if (!svg) return
+            //         if (!thead.contains(svg)) return
 
-                    let tooltipContent = svg.dataset.tooltip
-                    if (!tooltipContent) return
+            //         let tooltipContent = svg.dataset.tooltip
+            //         if (!tooltipContent) return
 
-                    hoverTH.value = document.createElement('div')
-                    hoverTH.value.className =
-                        'bg-black text-white px-3 py-1 rounded opacity-80 absolute z-50 top-7 mx-auto'
-                    hoverTH.value.innerHTML = tooltipContent
+            //         hoverTH.value = document.createElement('div')
+            //         hoverTH.value.className =
+            //             'bg-black text-white px-3 py-1 rounded opacity-80 absolute z-50 top-7 mx-auto'
+            //         hoverTH.value.innerHTML = tooltipContent
 
-                    svg.parentElement.append(hoverTH.value)
-                }
+            //         svg.parentElement.append(hoverTH.value)
+            //     }
 
-                thead.onmouseout = function (e) {
-                    let svg = e.target.closest('svg')
-                    if (!svg) return
-                    if (!thead.contains(svg)) return
+            //     thead.onmouseout = function (e) {
+            //         let svg = e.target.closest('svg')
+            //         if (!svg) return
+            //         if (!thead.contains(svg)) return
 
-                    hoverTH.value.remove()
-                    hoverTH.value = null
-                }
-            })
+            //         hoverTH.value.remove()
+            //         hoverTH.value = null
+            //     }
+            // })
 
             watch(tableRef, () => {
                 setRenderTime(new Date())
@@ -194,16 +194,16 @@
             onMounted(() => {
                 init()
 
-                columns.value.forEach((col) => {
-                    if (
-                        col.data_type.toLowerCase() === 'any' ||
-                        col.data_type.toLowerCase() === 'variant' ||
-                        col.data_type.toLowerCase() === 'object' ||
-                        col.data_type.toLowerCase() === 'struct'
-                    ) {
-                        variantTypeIndexes.value.push(col.dataIndex.toString())
-                    }
-                })
+                // columns.value.forEach((col) => {
+                //     if (
+                //         col.data_type.toLowerCase() === 'any' ||
+                //         col.data_type.toLowerCase() === 'variant' ||
+                //         col.data_type.toLowerCase() === 'object' ||
+                //         col.data_type.toLowerCase() === 'struct'
+                //     ) {
+                //         variantTypeIndexes.value.push(col.dataIndex.toString())
+                //     }
+                // })
             })
 
             watch(modalVisible, () => {
@@ -238,44 +238,40 @@
                 return Array.from(Array(x1 - x0).keys()).map((x) => f(x + x0))
             }
 
-            // function dataListener(num_rows, num_columns) {
-            //     return (x0, y0, x1, y1) => {
-            //         console.log('data here: ', {
-            //             num_rows,
-            //             num_columns,
-            //             column_headers: range(
-            //                 x0,
-            //                 x1,
-            //                 group_header.bind(null, 'Column')
-            //             ),
-            //             data: range(x0, x1, (x) =>
-            //                 range(y0, y1, (y) => `A+${x} + B+${y}`)
-            //             ),
-            //         })
-            //         return {
-            //             num_rows,
-            //             num_columns,
-            //             column_headers: range(
-            //                 x0,
-            //                 x1,
-            //                 group_header.bind(null, 'Column')
-            //             ),
-            //             data: range(x0, x1, (x) =>
-            //                 range(y0, y1, (y) => `A+${x} + B+${y}`)
-            //             ),
-            //         }
-            //     }
-            // }
+            function dataListener(num_rows, num_columns) {
+                return (x0, y0, x1, y1) => {
+                    console.log('data here: ', {
+                        num_rows,
+                        num_columns,
+                        column_headers: range(x0, x1, group_header.bind(null)),
+                        data: range(x0, x1, (x) =>
+                            range(y0, y1, (y) => `A+${x} + B+${y}`)
+                        ),
+                    })
+                    return {
+                        num_rows,
+                        num_columns,
+                        column_headers: range(x0, x1, group_header.bind(null)),
+                        data: range(x0, x1, (x) =>
+                            range(y0, y1, (y) => `A+${x} + B+${y}`)
+                        ),
+                    }
+                }
+            }
+
+            function group_header(i, name) {
+                let title = columns.value[i]?.title.toUpperCase()
+                return [`${title}`]
+            }
 
             const dataHere = (transposed) => {
+                // debugger
                 return (x0, y0, x1, y1) => ({
                     num_rows: dataList.value.length,
                     num_columns: columns.value.length,
-                    column_headers: columns.value.map((col) => {
-                        return [`${col.title}`]
-                    }),
+                    column_headers: range(x0, x1, group_header.bind(null)),
                     data: range(x0, x1, (x) =>
-                        range(y0, y1, (y) => transposed[x][y])
+                        range(y0, y1, (y) => transposed[y][x])
                     ),
                 })
             }
@@ -283,7 +279,8 @@
             function init() {
                 const table = document.getElementsByTagName('regular-table')[0]
 
-                let transposed = transpose(dataList.value)
+                let transposed = dataList.value
+                // debugger
 
                 table?.setDataListener(dataHere(transposed))
                 table?.draw()
@@ -322,7 +319,7 @@
         height: 28px !important;
         padding: 0px 16px !important;
         font-size: 14px !important;
-        @apply border border-gray-light text-gray-700;
+        @apply border border-gray-light text-gray-700 bg-white;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -373,7 +370,6 @@
     .table_height {
         height: 600px !important;
         position: relative;
-        overflow: scroll !important;
     }
     .regular_table {
         height: 600px;

@@ -29,6 +29,16 @@
     import VariantModal from './variantModal.vue'
     import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
+    import number from '~/assets/images/dataType/number.svg'
+    import float1 from '~/assets/images/dataType/float1.svg'
+    import boolean from '~/assets/images/dataType/boolean.svg'
+    import string from '~/assets/images/dataType/string.svg'
+    import date from '~/assets/images/dataType/date.svg'
+    import array from '~/assets/images/dataType/array.svg'
+    import struct from '~/assets/images/dataType/struct.svg'
+    import geography from '~/assets/images/dataType/geography.svg'
+    import variant from '~/assets/images/dataType/variant.svg'
+
     export default defineComponent({
         name: 'AtlanTable',
         components: {
@@ -331,6 +341,8 @@
                             if (!th.querySelector('#icon > img')) {
                                 th.prepend(span)
                             }
+
+                            // th.classList.add('number')
                         }
                     }
                 }
@@ -413,28 +425,12 @@
     }
 
     th {
-        // position: sticky;
-        // top: 0;
         border-top: 0;
         height: 36px !important;
-        // z-index: 4;
         font-size: 14px !important;
         @apply border-r border-gray-light bg-white text-gray-700;
-
         font-weight: 700 !important;
     }
-    // td:first-child {
-    //     // max-width: 100px !important;
-    //     // min-width: 42px !important;
-    //     // width: 42px;
-    //     // left: 0;
-    //     border-left: 0;
-    //     // position: sticky;
-    //     // z-index: 4;
-    //     font-size: 14px !important;
-    //     // color: #a0a4b6;
-    //     @apply bg-white border;
-    // }
 
     th:first-child {
         max-width: 100px !important;
@@ -448,6 +444,60 @@
         font-weight: 400 !important;
         @apply bg-white border;
     }
+    // thead th.number:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/number.svg');
+    // }
+    // thead th.decimal:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/float1.svg');
+    // }
+    // thead th.boolean:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/boolean.svg');
+    // }
+    // thead th.text:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/string.svg');
+    // }
+    // thead th.array:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/array.svg');
+    // }
+    // thead th.date:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/date.svg');
+    // }
+    // thead th.object:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/struct.svg');
+    // }
+    // thead th.geography:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/geography.svg');
+    // }
+    // thead th.variant:before {
+    //     display: inline-block;
+    //     width: 16px !important;
+    //     height: 16px !important;
+    //     content: url('src/assets/images/dataType/variant.svg');
+    // }
 </style>
 
 <style lang="less" scoped>

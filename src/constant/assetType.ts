@@ -142,7 +142,7 @@ export const assetTypeList: {
         nameAttribute: 'siteName',
         isDiscoverable: true,
         parents: [],
-        relationships: [],
+        relationships: ['projects'],
     },
     {
         id: 'TableauProject',
@@ -151,7 +151,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         // in order of hierarchy
         parents: ['TableauProject', 'TableauSite'],
-        relationships: [],
+        relationships: ['workbooks', 'site', 'datasources', 'flows', 'metrics'],
     },
     {
         id: 'TableauWorkbook',
@@ -159,21 +159,21 @@ export const assetTypeList: {
         nameAttribute: 'workbookName',
         isDiscoverable: true,
         parents: ['TableauProject'],
-        relationships: [],
+        relationships: ['worksheets', 'datasources', 'project', 'dashboards'],
     },
     {
         id: 'TableauWorksheet',
         label: 'Tableau Worksheet',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
-        relationships: [],
+        relationships: ['workbook', 'dashboards'],
     },
     {
         id: 'TableauDashboard',
         label: 'Tableau Dashboard',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
-        relationships: [],
+        relationships: ['workbook', 'worksheets'],
     },
     {
         id: 'TableauDatasource',
@@ -181,19 +181,19 @@ export const assetTypeList: {
         nameAttribute: 'datasourceName',
         isDiscoverable: true,
         parents: ['TableauWorkbook'],
-        relationships: [],
+        relationships: ['workbook', 'project', 'fields'],
     },
     {
         id: 'TableauDatasourceField',
         label: 'Tableau Datasource Field',
         parents: ['TableauWorkbook'],
-        relationships: [],
+        relationships: ['datasource'],
     },
     {
         id: 'TableauCalculatedField',
         label: 'Tableau Calculated Field',
         parents: ['TableauWorkbook'],
-        relationships: [],
+        relationships: ['datasource'],
     },
     {
         id: 'PowerBIWorkspace',

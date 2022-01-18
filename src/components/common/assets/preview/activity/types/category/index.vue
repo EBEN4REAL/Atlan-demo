@@ -1,5 +1,5 @@
 <template>
-    <div><b>Terms</b> were updated</div>
+    <div><b>Categories</b> were updated</div>
     <!-- <div class="my-3">
         <Pill :label="data.value"
             ><template #prefix>

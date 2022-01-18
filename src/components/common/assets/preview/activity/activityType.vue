@@ -25,6 +25,10 @@
             Terms: defineAsyncComponent(
                 () => import('./types/terms/index.vue')
             ),
+            Category: defineAsyncComponent(
+                () => import('./types/category/index.vue')
+            ),
+
             Experts: defineAsyncComponent(
                 () => import('./types/experts/index.vue')
             ),

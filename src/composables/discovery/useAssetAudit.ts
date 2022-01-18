@@ -88,6 +88,11 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.displayValue = 'added'
                 data.component = 'Terms'
             }
+            if (relationshipAttributes.categories) {
+                data.value = []
+                data.displayValue = 'added'
+                data.component = 'Category'
+            }
             // data.displayValue = 'owners'
             // data.value = {}
             // if (attributes.ownerUsers) {

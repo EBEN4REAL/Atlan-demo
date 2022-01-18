@@ -66,7 +66,7 @@
         & .chip {
             min-width: 20px;
             padding: 3px 2px 1px;
-            margin-left: 2px;
+            margin-left: 4px;
             @apply font-bold text-xs rounded bg-gray-200 text-gray-500;
             @apply transition duration-300;
         }

@@ -146,6 +146,7 @@
                 }>,
                 required: true,
             },
+
             selectedColumn: {
                 type: Object,
                 required: true,
@@ -155,7 +156,7 @@
 
         setup(props, { emit }) {
             const { mixedSubpanels, disabled } = toRefs(props)
-            const { selectedColumn } = useVModels(props)
+            const { selectedColumn, subpanel } = useVModels(props)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
@@ -264,13 +265,6 @@
             const actionClick = (event, t) => {
                 openAssetInSidebar(event, t, activeInlineTab, inlineTabs)
             }
-
-            onMounted(() => {
-                selectedColumn.value = {
-                    ...selectedColumn.value,
-                    active: true,
-                }
-            })
 
             return {
                 getDataTypeImage,

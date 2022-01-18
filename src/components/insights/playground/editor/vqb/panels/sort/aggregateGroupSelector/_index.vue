@@ -48,8 +48,7 @@
         toRefs,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
-    import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+    import { VQBPanelType } from '~/types/insights/VQB.interface'
 
     import {
         useProvide,
@@ -70,11 +69,15 @@
                 required: true,
                 default: () => {},
             },
+            panel: {
+                type: Object as PropType<VQBPanelType>,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
             const { disabled } = toRefs(props)
-            const { selectedColumn } = useVModels(props)
+            const { selectedColumn, panel } = useVModels(props)
             const container = ref()
 
             const observer = ref()
@@ -106,6 +109,7 @@
 
             onMounted(() => {
                 // const _container = document.getElementById('_container')
+
                 if (container.value) {
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value

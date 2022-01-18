@@ -27,7 +27,7 @@
                 :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
                 style="height: 32px !important"
-                @change="(event) => onChange(event, type)"
+                @change="(event) => onChange(event, 'first', type)"
             >
                 <template #suffixIcon>
                     <div class="w-6 h-4"></div>
@@ -88,7 +88,7 @@
                 :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
                 style="height: 32px !important"
-                @change="(event) => onChange(event, type)"
+                @change="(event) => onChange(event, 'second', type)"
             >
                 <template #suffixIcon>
                     <div class="w-6 h-4"></div>
@@ -211,8 +211,8 @@
                 secondValue.value = inputValue.value
                     ? dayjs(inputValue.value[1])
                     : undefined
-                inputValue.value[0] = firstvalue.value
-                inputValue.value[1] = secondValue.value
+                inputValue.value[0] = firstvalue.value?.format(dateFormat)
+                inputValue.value[1] = secondValue.value?.format(dateFormat)
             }
 
             let timeout = null

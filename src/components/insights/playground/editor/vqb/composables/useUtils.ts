@@ -9,6 +9,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+import { VQBPanelType } from '~/types/insights/VQB.interface'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -45,12 +46,15 @@ export function useUtils() {
         }
         return ''
     }
-    function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
+    function getSummarisedInfoOfSortPanel(
+        subpanels: SubpanelSort[],
+        panel: VQBPanelType
+    ) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
 
         let res = 'by '
         subpanels.forEach((subpanel, i) => {
-            if (subpanel.aggregateORGroupColumn?.active === false) {
+            if (panel?.active === false) {
                 if (i !== subpanels.length - 1 && subpanel?.column?.label)
                     res += `${
                         subpanel?.column?.label
@@ -62,17 +66,17 @@ export function useUtils() {
             } else {
                 if (
                     i !== subpanels.length - 1 &&
-                    subpanel.aggregateORGroupColumn.label
+                    subpanel.aggregateORGroupColumn?.label
                 )
                     res += `${
-                        subpanel.aggregateORGroupColumn.label
+                        subpanel.aggregateORGroupColumn?.label
                     } in ${subpanel.order?.toUpperCase()}, `
                 else if (
                     i <= subpanels.length - 1 &&
-                    subpanel.aggregateORGroupColumn.label
+                    subpanel.aggregateORGroupColumn?.label
                 )
                     res += `${
-                        subpanel.aggregateORGroupColumn.label
+                        subpanel.aggregateORGroupColumn?.label
                     } in ${subpanel.order?.toUpperCase()}`
             }
         })

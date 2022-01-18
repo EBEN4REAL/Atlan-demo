@@ -61,6 +61,7 @@
                         v-else
                         :disabled="readOnly"
                         v-model:selectedColumn="subpanel.aggregateORGroupColumn"
+                        v-model:panel="panel"
                     >
                         <template #head>
                             <AggregateGroupHead
@@ -154,6 +155,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { VQBPanelType } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -182,6 +184,10 @@
                 required: true,
                 default: [],
             },
+            panel: {
+                type: Object as PropType<VQBPanelType>,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
@@ -195,7 +201,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const { subpanels, columnSubpanels } = useVModels(props)
+            const { subpanels, columnSubpanels, panel } = useVModels(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
@@ -285,29 +291,28 @@
                     ? false
                     : true
             )
-            const onColumnSelectorMounted = (index: number) => {
-                subpanels.value[index] = {
-                    ...subpanels.value[index],
-                    aggregateORGroupColumn: {
-                        ...subpanels.value[index].aggregateORGroupColumn,
-                        active: false,
-                    },
-                }
-            }
+            const onColumnSelectorMounted = (index: number) => {}
+
+            const isAggregateORGroupSelectorActive = computed(() => {
+                const res = isAggregationORGroupPanelColumnsAdded(
+                    activeInlineTab.value
+                )
+                return res
+            })
             const onColumnSelectorUnMounted = (index: number) => {
-                subpanels.value[index] = {
-                    ...subpanels.value[index],
-                    attributes: {},
-                    column: {},
-                    isForeign: undefined,
-                    isPartition: undefined,
-                    isPrimary: undefined,
-                    item: undefined,
-                    label: undefined,
-                    order: 'asc',
-                    qualifiedName: undefined,
-                    type: undefined,
-                }
+                // subpanels.value[index] = {
+                //     ...subpanels.value[index],
+                //     attributes: {},
+                //     column: {},
+                //     isForeign: undefined,
+                //     isPartition: undefined,
+                //     isPrimary: undefined,
+                //     item: undefined,
+                //     label: undefined,
+                //     order: 'asc',
+                //     qualifiedName: undefined,
+                //     type: undefined,
+                // }
             }
 
             watch(
@@ -319,6 +324,8 @@
             )
 
             return {
+                panel,
+                isAggregateORGroupSelectorActive,
                 onColumnSelectorUnMounted,
                 onColumnSelectorMounted,
                 isQueryCreatedByCurrentUser,

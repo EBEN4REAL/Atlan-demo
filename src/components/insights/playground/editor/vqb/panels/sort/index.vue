@@ -80,7 +80,10 @@
                                     getSummarisedInfoOfSortPanel(
                                         activeInlineTab.playground.vqb.panels[
                                             index
-                                        ].subpanels
+                                        ].subpanels,
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ]
                                     )
                                 }}
                             </p>
@@ -178,6 +181,7 @@
             <!-- Show on expand -->
             <keep-alive>
                 <SortSubPanel
+                    v-model:panel="panel"
                     v-model:subpanels="
                         activeInlineTab.playground.vqb.panels[index].subpanels
                     "
@@ -225,6 +229,7 @@
         Ref,
         inject,
         PropType,
+        onUpdated,
         toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -259,6 +264,7 @@
             const {
                 getSummarisedInfoOfSortPanel,
                 getInitialPanelExpandedState,
+                isAggregationORGroupPanelColumnsAdded,
             } = useUtils()
             const isChecked = computed(
                 () =>
@@ -365,6 +371,65 @@
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
             }
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    const res = isAggregationORGroupPanelColumnsAdded(
+                        activeInlineTab.value
+                    )
+
+                    if (res) {
+                        if (
+                            !activeInlineTab.value.playground.vqb.panels[
+                                index.value
+                            ]?.active
+                        ) {
+                            let copySubPanels = JSON.parse(
+                                JSON.stringify(
+                                    activeInlineTab.value.playground.vqb.panels[
+                                        index.value
+                                    ].subpanels
+                                )
+                            )
+                            copySubPanels = copySubPanels.map((subpanel) => {
+                                return {
+                                    ...subpanel,
+                                    attributes: {},
+                                    column: {},
+                                    isForeign: undefined,
+                                    isPartition: undefined,
+                                    isPrimary: undefined,
+                                    item: undefined,
+                                    label: undefined,
+                                    order: 'asc',
+                                    qualifiedName: undefined,
+                                    type: undefined,
+                                }
+                            })
+                            activeInlineTab.value.playground.vqb.panels[
+                                index.value
+                            ] = {
+                                ...panel.value,
+                                subpanels: copySubPanels,
+                                active: true,
+                            }
+                        }
+                    } else {
+                        if (
+                            activeInlineTab.value.playground.vqb.panels[
+                                index.value
+                            ]?.active
+                        ) {
+                            activeInlineTab.value.playground.vqb.panels[
+                                index.value
+                            ] = { ...panel.value, active: false }
+                        }
+                    }
+                },
+                {
+                    deep: true,
+                }
+            )
 
             return {
                 readOnly,

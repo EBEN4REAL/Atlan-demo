@@ -15,7 +15,10 @@
             style="min-height: 0"
         >
             <!-- For single table select -->
-            <div class="flex flex-col w-full">
+            <div
+                class="flex flex-col w-full"
+                v-if="selectedTablesQualifiedNames.length < 2"
+            >
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                     v-if="selectedTablesQualifiedNames.length < 2"

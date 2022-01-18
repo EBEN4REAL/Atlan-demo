@@ -384,34 +384,41 @@
                                 index.value
                             ]?.active
                         ) {
-                            let copySubPanels = JSON.parse(
-                                JSON.stringify(
-                                    activeInlineTab.value.playground.vqb.panels[
-                                        index.value
-                                    ].subpanels
+                            if (
+                                activeInlineTab.value.playground.vqb.panels[
+                                    index.value
+                                ]?.subpanels
+                            ) {
+                                let copySubPanels = JSON.parse(
+                                    JSON.stringify(
+                                        activeInlineTab.value.playground.vqb
+                                            .panels[index.value]?.subpanels
+                                    )
                                 )
-                            )
-                            copySubPanels = copySubPanels.map((subpanel) => {
-                                return {
-                                    ...subpanel,
-                                    attributes: {},
-                                    column: {},
-                                    isForeign: undefined,
-                                    isPartition: undefined,
-                                    isPrimary: undefined,
-                                    item: undefined,
-                                    label: undefined,
-                                    order: 'asc',
-                                    qualifiedName: undefined,
-                                    type: undefined,
+                                copySubPanels = copySubPanels.map(
+                                    (subpanel) => {
+                                        return {
+                                            ...subpanel,
+                                            attributes: {},
+                                            column: {},
+                                            isForeign: undefined,
+                                            isPartition: undefined,
+                                            isPrimary: undefined,
+                                            item: undefined,
+                                            label: undefined,
+                                            order: 'asc',
+                                            qualifiedName: undefined,
+                                            type: undefined,
+                                        }
+                                    }
+                                )
+                                activeInlineTab.value.playground.vqb.panels[
+                                    index.value
+                                ] = {
+                                    ...panel.value,
+                                    subpanels: copySubPanels,
+                                    active: true,
                                 }
-                            })
-                            activeInlineTab.value.playground.vqb.panels[
-                                index.value
-                            ] = {
-                                ...panel.value,
-                                subpanels: copySubPanels,
-                                active: true,
                             }
                         }
                     } else {
@@ -420,9 +427,33 @@
                                 index.value
                             ]?.active
                         ) {
+                            let copySubPanels = JSON.parse(
+                                JSON.stringify(
+                                    activeInlineTab.value.playground.vqb.panels[
+                                        index.value
+                                    ]?.subpanels
+                                )
+                            )
+                            copySubPanels = copySubPanels.map((subpanel) => {
+                                return {
+                                    ...subpanel,
+                                    aggregateORGroupColumn: {
+                                        qualifiedName: undefined,
+                                        tableName: undefined,
+                                        type: undefined,
+                                        value: undefined,
+                                        label: undefined,
+                                    },
+                                }
+                            })
+
                             activeInlineTab.value.playground.vqb.panels[
                                 index.value
-                            ] = { ...panel.value, active: false }
+                            ] = {
+                                ...panel.value,
+                                subpanels: copySubPanels,
+                                active: false,
+                            }
                         }
                     }
                 },

@@ -87,12 +87,17 @@
                             :item="item"
                             :show-check-box="selectable"
                             :is-checked="checkIfSelected(item.guid)"
+                            :class="assetItemClass"
                             @updateDrawer="updateList"
                             @preview="$emit('handleAssetCardClick', item)"
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
-                        ></AssetItem>
+                        >
+                            <template #cta>
+                                <slot :item="item" name="assetItemCta"> </slot>
+                            </template>
+                        </AssetItem>
                     </template>
                 </AssetList>
             </div>
@@ -199,6 +204,10 @@
 
             /** Style Props */
             assetListClass: {
+                type: String,
+                default: '',
+            },
+            assetItemClass: {
                 type: String,
                 default: '',
             },

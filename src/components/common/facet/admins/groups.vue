@@ -39,11 +39,7 @@
                 </template>
                 <template v-if="list?.length < filterTotal">
                     <div class="flex justify-center">
-                        <AtlanIcon
-                            icon="Loader"
-                            v-if="isLoading"
-                            class="animate-spin"
-                        />
+                        <AtlanLoader v-if="isLoading" />
                     </div>
                     <div
                         class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"

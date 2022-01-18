@@ -17,12 +17,12 @@
         </div>
         <DefaultLayout v-else title="Access Logs">
             <template #header>
-                <div class="flex items-center justify-between pb-3">
+                <div class="flex items-center justify-between p-4 pb-3 -mb-3 border border-b-0 border-gray-200 rounded-t-lg access-logs">
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
                             <AtlanBtn
                                 color="secondary"
-                                class="px-2 rounded-tr-none rounded-br-none"
+                                class="px-2 border-r-0 rounded-tr-none rounded-br-none filter-button"
                                 :class="
                                     accessLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
@@ -46,8 +46,8 @@
                                     ? `Search through ${filteredLogsCount} logs`
                                     : `Search logs`
                             "
-                            class="w-1/3 mr-1 border border-l-0 border-gray-300 rounded-none rounded-tr rounded-br shadow-sm"
-                            size="default"
+                            class="w-1/3 h-full mr-1"
+                            size="minimal"
                             :allow-clear="true"
                             @change="handleSearch"
                         ></a-input-search>
@@ -306,3 +306,10 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .access-logs {
+        .filter-button {
+            height: 30px !important;
+        }
+    }
+</style>

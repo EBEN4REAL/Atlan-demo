@@ -7,7 +7,7 @@
         :closable="false"
         :class="'drawer-filter-request'"
     >
-        <div class="relative h-full pt-8 pb-10 overflow-scroll bg-gray-50">
+        <div class="relative h-full pt-4 pb-10 overflow-scroll bg-gray-50">
             <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
@@ -30,7 +30,7 @@
                     :allow-custom-filters="false"
                     :no-filter-title="'No filters applied'"
                     :extra-count-filter="connectorsData.attributeValue ? 1 : 0"
-                    class="bg-gray-100"
+                    class="bg-gray-100 drawer-request"
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
@@ -104,11 +104,12 @@
                         <span>refresh</span>
                     </template>
                     <div
-                        class="p-2 py-1 border rounded cursor-pointer reload-button"
+                        class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
                         <!-- <img :src="logoUrl" /> -->
-                        <AtlanIcon icon="Retry" />
+                        <!-- <AtlanIcon icon="Retry" /> -->
+                        <img :src="retryImage" />
                     </div>
                 </a-tooltip>
             </div>
@@ -117,7 +118,7 @@
                 v-if="listLoading"
                 class="flex items-center justify-center h-64"
             >
-                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+                <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
                 <RequestModal
@@ -137,9 +138,9 @@
                 >
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
+                        <!-- :selected="isSelected(item.id)" -->
                         <RequestListItem
                             :request="item"
-                            :selected="isSelected(item.id)"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
                             @mouseenter="handleMouseEnter(item.id)"
@@ -226,7 +227,7 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
-    import reload from '~/assets/images/icons/Reload2.svg'
+    import retryImage from '~/assets/images/Retry.png'
 
     export default defineComponent({
         name: 'RequestList',
@@ -459,7 +460,7 @@
                 activeHover,
                 mouseEnterContainer,
                 response,
-                reload,
+                retryImage,
                 logoUrl,
                 startCountPagination,
                 endCountPagination,
@@ -472,14 +473,28 @@
 </script>
 
 <style lang="less">
+    .drawer-request {
+        .ant-collapse-content {
+            background: none !important;
+        }
+        .ant-collapse-header {
+            @apply hover:bg-transparent !important;
+        }
+        .group {
+            background: none !important;
+        }
+        .clear-filter-asset {
+            @apply text-gray-500 !important;
+        }
+    }
     .reload-button {
         path {
-            fill: #3e4359;
-            stroke: #3e4359;
+            fill: #64748b;
+            stroke: #64748b;
         }
     }
     .filter-request {
-        height: 25px !important;
+        height: 32px !important;
     }
     .drawer-filter-request {
         .ant-drawer-content-wrapper {

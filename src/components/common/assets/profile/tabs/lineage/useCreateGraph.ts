@@ -15,8 +15,14 @@ export default function useCreateGraph(
     Graph.registerConnector(
         'beiz',
         (s, t) => {
-            const control = 100
-            const offset = 10
+            let control = 100
+            let offset = 10
+
+            if (s.x > t.x) {
+                control = -control
+                offset = -offset
+            }
+
             const v1 = { x: s.x + control + offset, y: s.y }
             const v2 = { x: t.x - control - offset, y: t.y }
 

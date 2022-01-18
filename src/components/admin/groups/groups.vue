@@ -53,7 +53,7 @@
             v-if="isLoading"
             class="flex items-center justify-center h-full border border-gray-300 rounded-lg"
         >
-            <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+            <AtlanLoader class="h-7" />
         </div>
         <div
             v-else-if="error"

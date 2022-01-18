@@ -117,7 +117,7 @@
                     v-if="isLoading && !userList.length"
                     class="flex justify-center mt-3"
                 >
-                    <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+                    <AtlanLoader class="h-10" />
                 </div>
             </div>
 

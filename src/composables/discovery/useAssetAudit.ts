@@ -64,6 +64,12 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.component = 'Certificate'
                 return data
             }
+            if ('name' in attributes) {
+                data.value = attributes?.name
+                data.displayValue = 'name'
+                data.component = 'Name'
+                return data
+            }
             if (
                 'announcementType' in attributes ||
                 'announcementTitle' in attributes ||
@@ -81,6 +87,11 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Terms'
+            }
+            if (relationshipAttributes.categories) {
+                data.value = []
+                data.displayValue = 'added'
+                data.component = 'Category'
             }
             // data.displayValue = 'owners'
             // data.value = {}
@@ -186,6 +197,7 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (eventDetail) {
+                console.log(eventDetail)
                 switch (auditEvent.action) {
                     // case 'LABEL_ADD':
                     //     data.displayValue = `Label <b>${eventDetail[1].trim()}</b> added`

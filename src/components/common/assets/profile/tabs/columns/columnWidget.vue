@@ -30,10 +30,7 @@
                 v-if="isLoading"
                 class="flex items-center justify-center flex-grow"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-10" />
             </div>
             <div
                 v-if="!isLoading && error"
@@ -157,7 +154,7 @@
                     v-else-if="isValidating"
                     class="flex items-center justify-center"
                 >
-                    <AtlanIcon icon="Loader" class="animate-spin"></AtlanIcon>
+                    <AtlanLoader />
                 </div>
             </AtlanBtn>
 
@@ -192,7 +189,6 @@
     // Components
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'

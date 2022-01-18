@@ -10,7 +10,7 @@
             v-if="!isGraphRendered"
             class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
         >
-            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+            <AtlanLoader class="h-5" />
         </div>
 
         <!-- Monitor Controls -->

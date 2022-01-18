@@ -197,9 +197,9 @@
 
             const handleChange = () => {
                 if (typeName.value === 'date') {
-                    modelValue.value =
-                        // localValue.value
-                        Math.floor(localValue.value.valueOf() / 1000) * 1000
+                    modelValue.value = localValue.value
+                        ? Math.floor(localValue.value.valueOf() / 1e3) * 1e3
+                        : ''
                 } else modelValue.value = localValue.value
                 emit('change')
             }

@@ -13,7 +13,7 @@
         </Shortcut>
 
         <div v-if="isLoading" class="flex items-center justify-center h-full">
-            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-if="error"

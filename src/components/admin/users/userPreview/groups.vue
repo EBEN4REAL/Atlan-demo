@@ -85,7 +85,7 @@
                 <div
                     class="flex items-center justify-center w-full componentHeight"
                 >
-                    <EmptyState 
+                    <EmptyState
                         empty-screen="CreateGroups"
                         headline="No Groups Found"
                         desc="This user is not part of any group."
@@ -170,7 +170,7 @@
                             v-else
                             class="flex cursor-default text-error-muted"
                         >
-                            <AtlanIcon icon="Loader" class="h-5 mr-1" />
+                            <AtlanLoader class="h-5" />
                             <div>Removing...</div>
                         </div>
                     </div>

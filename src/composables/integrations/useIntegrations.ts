@@ -2,37 +2,6 @@ import { Ref, ref, watch } from 'vue'
 import { Integrations } from '~/services/service/integrations'
 import integrationStore from '~/store/integrations/index'
 
-interface IntType {
-    name: String
-}
-
-export const getIntegrationTypes = () => {
-    const params = ref({ limit: 10, offset: 0 })
-    const { data, isLoading, error, isReady, mutate } = Integrations.ListTypes(params, { asyncOptions: { immediate: false } })
-
-    const records: Ref<Array<IntType>> = ref([])
-    const { setIntegrationStatus, setIntegrationTypes } = integrationStore()
-
-    watch(data, (v) => {
-        if (v) {
-            records.value = data?.value?.records ?? null
-            setIntegrationTypes(records.value)
-            records.value.forEach(integration_type => {
-                integration_type.integrationLevels.forEach(level => {
-                    // initializing status
-                    setIntegrationStatus({
-                        name: integration_type.name,
-                        level,
-                        configured: false,
-                        created: false
-                    })
-                })
-            })
-        }
-    })
-    return { data: records, isLoading, error, isReady, mutate }
-}
-
 export const getIntegrationById = (id) => {
     const pV = ref({ id })
     const { data, isLoading, error, isReady } = Integrations.List(pV)
@@ -69,18 +38,13 @@ const getIntegrationsList = () => {
 }
 
 const useIntegrations = async () => {
-    const { setAllIntegrationsList, setIntegrationStatus } = integrationStore()
-    const { mutate: getTypes } = getIntegrationTypes()
+    const { setAllIntegrationsList } = integrationStore()
 
-    await getTypes()
 
     const { data, isLoading, error, isReady } = getIntegrationsList()
     watch(data, () => {
         if (data?.value?.length) {
             setAllIntegrationsList(data.value)
-            data.value.forEach((i: any) => {
-                setIntegrationStatus({ name: i.name, level: i.integrationLevel, configured: !!i.isConfigured, created: true })
-            })
         }
     })
 

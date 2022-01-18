@@ -18,8 +18,8 @@
 
                 <a-menu-item
                     v-if="
-                        intStore.integrationStatus['slack'].tenant.configured &&
-                        hasChannels
+                        tenantSlackStatus.configured &&
+                        tenantSlackStatus.channels
                     "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
@@ -72,11 +72,8 @@
             const isVisible = ref(false)
             const { getProfilePath } = useAssetInfo()
 
-            const intStore = integrationStore()
-            const hasChannels = computed(() => {
-                const slack = intStore.getIntegration('slack', true)
-                return slack && slack?.config?.channels.length
-            })
+            const store = integrationStore()
+            const { tenantSlackStatus } = toRefs(store)
 
             const { asset } = toRefs(props)
             const closeMenu = () => {
@@ -94,8 +91,7 @@
             }
 
             return {
-                hasChannels,
-                intStore,
+                tenantSlackStatus,
                 access,
                 link,
                 handleCopyProfileLink,

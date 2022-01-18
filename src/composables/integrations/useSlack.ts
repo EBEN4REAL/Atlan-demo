@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, toRefs } from 'vue'
 import { message } from 'ant-design-vue'
 import { Integrations } from '~/services/service/integrations'
 import { useAuthStore } from '~/store/auth'
@@ -100,22 +100,25 @@ export const getDeepLinkFromUserDmLink = (memberId: string) => {
 }
 
 export const tenantLevelOauthUrl = computed(() => {
-    const intStore = integrationStore()
-    const slackIntegration = intStore.getIntegration('slack', true)
-    if (!slackIntegration) return null
-    const oauthBaseUrl = slackIntegration?.sourceMetadata?.oauthUrl
+    const store = integrationStore()
+
+    const { tenantSlackStatus } = toRefs(store)
+    const oauthBaseUrl = tenantSlackStatus.value.oAuth
     const state = getSlackInstallUrlState(true)
     const slackOauth = `${oauthBaseUrl}&state=${state}`
     return slackOauth
 })
 
 export const userLevelOauthUrl = computed(() => {
-    const intStore = integrationStore()
-    const slackIntegration = intStore.getIntegration('slack', false)
-    const oauthBaseUrl = slackIntegration?.sourceMetadata?.oauthUrl
-    const state = getSlackInstallUrlState(true)
-    const slackOauth = `${oauthBaseUrl}&state=${state}`
-    return slackOauth
+    return ''
+    // fixme
+    // const store = integrationStore()
+
+    // const { tenantSlackStatus } = toRefs(store)
+    // const oauthBaseUrl = tenantSlackStatus.oAuth
+    // const state = getSlackInstallUrlState(true)
+    // const slackOauth = `${oauthBaseUrl}&state=${state}`
+    // return slackOauth
 })
 
 
@@ -163,3 +166,4 @@ export const archiveSlack = (pV) => {
         disconnect
     }
 }
+

@@ -25,14 +25,13 @@
         <div class="">
             <AtlanButton
                 v-if="
-                    store.integrationStatus.slack.tenant.created &&
-                    !store.integrationStatus.slack.tenant.configured
+                    tenantSlackStatus.created && !tenantSlackStatus.configured
                 "
                 v-auth="access.DELETE_INTEGRATION"
                 color="minimal"
                 class="px-0 text-red-500"
                 :is-loading="isLoading"
-                @click="handleDisconnect"
+                @click="disconnect"
             >
                 Disconnect
             </AtlanButton>
@@ -40,8 +39,8 @@
         <div class="">
             <a
                 v-if="
-                    store.integrationStatus.slack.tenant.created &&
-                    !store.integrationStatus.slack.tenant.configured &&
+                    tenantSlackStatus.created &&
+                    !tenantSlackStatus.configured &&
                     tenantLevelOauthUrl
                 "
                 :href="tenantLevelOauthUrl"
@@ -84,6 +83,8 @@
             // store
             const store = integrationStore()
 
+            const { tenantSlackStatus } = toRefs(store)
+
             // variables
             const showSlackConfigModal = ref(false)
             const { name: tenantName } = useTenantData()
@@ -96,18 +97,13 @@
                 showSlackConfigModal.value = true
             }
 
-            const pV = ref({ id: '' })
+            const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
-            const handleDisconnect = () => {
-                const integration = store.getIntegration('slack', true)
-                pV.value.id = integration.id
-                disconnect()
-            }
-
             return {
-                handleDisconnect,
+                disconnect,
+                tenantSlackStatus,
                 isLoading,
                 store,
                 tenantName,
@@ -115,7 +111,6 @@
                 showSlackConfigModal,
                 closeSlackConfigModal,
                 openSlackConfigModal,
-
                 tenantLevelOauthUrl,
             }
         },

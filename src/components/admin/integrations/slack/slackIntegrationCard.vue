@@ -7,7 +7,8 @@
                 style="color: #00a680"
                 class="flex items-center h-8 px-3 bg-gray-100 rounded gap-x-2"
             >
-                <AtlanIcon icon="Check" /> {{ teamName }} workspace connected
+                <AtlanIcon icon="Check" />
+                {{ tenantSlackStatus.teamName }} workspace connected
             </div>
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
@@ -78,6 +79,7 @@
         onMounted,
         Ref,
         ref,
+        toRefs,
         watch,
     } from 'vue'
     import { message } from 'ant-design-vue'
@@ -98,23 +100,23 @@
         setup() {
             const { name: tenantName } = useTenantData()
 
-            const intStore = integrationStore()
+            const store = integrationStore()
 
+            const { tenantSlackStatus } = toRefs(store)
             const meta = inject('integrationTypeObject')
-            const integration = intStore.getIntegration('slack', true)
 
-            const pV = { id: integration.id }
+            const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
-            const channels: Ref<object[]> = ref([])
+            const channels: Ref<[{ name: string; invalid: boolean }]> = ref([])
 
             const channelValue = ref('')
 
             const isEdit = ref(false)
 
-            const getChannels = () => {
-                if (!integration) return []
-                return integration?.config?.channels ?? []
-            }
+            // const getChannels = () => {
+            //     if (!integration) return []
+            //     return integration?.config?.channels ?? []
+            // }
 
             const addChannel = (e) => {
                 const value = e?.target?.value ?? null
@@ -132,16 +134,12 @@
             }
 
             onMounted(() => {
-                channels.value = getChannels()
+                channels.value = tenantSlackStatus.value.channels
             })
 
             const body = computed(() => ({
                 channels: channels.value.map((c) => ({ name: c.name })),
             }))
-
-            const teamName = computed(
-                () => integration?.sourceMetadata?.teamName
-            )
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
@@ -201,6 +199,7 @@
             })
 
             return {
+                tenantSlackStatus,
                 body,
                 removeChannel,
                 meta,
@@ -208,14 +207,12 @@
                 tenantName,
                 updateLoading,
                 channelValue,
-                integration,
                 addChannel,
                 disconnect,
                 update,
                 channels,
                 isEdit,
                 access,
-                teamName,
             }
         },
     })

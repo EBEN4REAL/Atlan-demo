@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-    import { defineProps, defineEmits, ref, watch } from 'vue'
+    import { defineProps, defineEmits, ref, watch, toRefs } from 'vue'
     import { message as toast } from 'ant-design-vue'
 
     import intStore from '~/store/integrations/index'
@@ -80,14 +80,13 @@
 
     const store = intStore()
 
-    const slack = store.getIntegration('slack', true)
+    const { tenantSlackStatus } = toRefs(store)
 
     const channels = ref([])
 
     const getChannels = () => {
-        if (!slack) return []
         channels.value =
-            slack?.config?.channels.map((channel) => ({
+            tenantSlackStatus.value.channels.map((channel) => ({
                 value: channel.id,
                 label: `# ${channel.name}`,
             })) ?? []

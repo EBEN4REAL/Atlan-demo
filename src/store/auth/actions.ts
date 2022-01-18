@@ -67,9 +67,9 @@ export const actions: Actions = {
                     }`
                 ) >= 0
         )
-        if (this.evaluations.length + uniqueArray.length > 30) {
+        /*  if (this.evaluations.length + uniqueArray.length > 30) {
             this.evaluations.splice(0, uniqueArray.length)
-        }
+        } */
         this.evaluations.push(...uniqueArray)
     },
     setRoles(value) {

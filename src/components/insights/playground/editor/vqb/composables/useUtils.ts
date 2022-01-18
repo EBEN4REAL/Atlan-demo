@@ -143,7 +143,13 @@ export function useUtils() {
                     break
                 }
                 case 'multi_input': {
-                    res += ` (${subpanel?.filter?.value?.join(',') ?? ''})`
+                    res += ` ( `
+                    subpanel?.filter?.value?.forEach((el, i) => {
+                        if (i !== subpanel?.filter?.value?.length - 1)
+                            res += `'${el}',`
+                        else res += `'${el}'`
+                    })
+                    res += ` )`
                     break
                 }
                 case 'none': {

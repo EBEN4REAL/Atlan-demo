@@ -217,7 +217,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIPage'],
-        relationships: ['workspace', 'pages'],
+        relationships: ['workspace', 'pages', 'tiles', 'dataset'],
     },
     {
         id: 'PowerBIDataset',
@@ -225,21 +225,27 @@ export const assetTypeList: {
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIDatasource'],
-        relationships: ['workspace', 'datasources'],
+        relationships: [
+            'workspace',
+            'datasources',
+            'reports',
+            'tiles',
+            'dataflows',
+        ],
     },
     {
         id: 'PowerBIDataflow',
         label: 'Power BI Dataflow',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace'],
-        relationships: ['workspace'],
+        relationships: ['workspace', 'datasets'],
     },
     {
         id: 'PowerBITile',
         label: 'Power BI Tile',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
-        relationships: ['dashboard'],
+        relationships: ['dashboard', 'dataset', 'report'],
     },
     {
         id: 'PowerBIPage',
@@ -253,6 +259,6 @@ export const assetTypeList: {
         label: 'Power BI Datasource',
         isDiscoverable: true,
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
-        relationships: ['dataset'],
+        relationships: ['datasets'],
     },
 ]

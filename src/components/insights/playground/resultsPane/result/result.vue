@@ -14,7 +14,7 @@
             <Loading v-if="isQueryRunning === 'loading'" />
 
             <div
-                class="flex flex-col m-2 overflow-hidden border rounded-lg border-gray-light"
+                class="flex flex-col h-full m-2 overflow-hidden border rounded-lg border-gray-light"
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     activeInlineTab.playground.editor.dataList.length > 0 &&

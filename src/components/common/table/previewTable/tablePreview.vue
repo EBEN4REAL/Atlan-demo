@@ -1,12 +1,16 @@
 <template>
     <div class="table_height">
-        <regular-table ref="tableRef" class="regular_table"></regular-table>
+        <regular-table
+            ref="tableRef"
+            class="regular_table"
+            id="regularTable"
+        ></regular-table>
     </div>
-    <!-- <VariantModal
+    <VariantModal
         v-if="modalVisible"
         v-model:visible="modalVisible"
         :data="selectedData"
-    /> -->
+    />
 </template>
 
 <script lang="ts">
@@ -18,13 +22,12 @@
         ref,
         onMounted,
     } from 'vue'
-    // import Clusterize from 'clusterize.js'
+
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import VariantModal from './variantModal.vue'
     import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
-    // import VueVirtualTable from 'vue-virtual-table'
 
     export default defineComponent({
         name: 'AtlanTable',
@@ -32,7 +35,6 @@
             Tooltip,
             AtlanIcon,
             VariantModal,
-            // VueVirtualTable,
         },
         props: {
             dataList: {
@@ -83,98 +85,104 @@
                 handleOpenModal(td.innerText)
             }
 
-            // watch([dataList], () => {
-            //     // init()
-            //     const tbody = document.getElementsByTagName('tbody')[0]
+            watch([tableRef, dataList], () => {
+                // init()
+                const tbody = document.getElementsByTagName('tbody')[0]
 
-            //     tbody.onclick = function (e) {
-            //         let td = e.target.closest('td')
-            //         if (!td) return
-            //         if (!tbody.contains(td)) return
-            //         if (
-            //             variantTypeIndexes.value.includes(
-            //                 td.dataset.key.toString()
-            //             )
-            //         ) {
-            //             handleClick(td)
-            //         }
-            //     }
-            //     tbody.onmouseover = function (e) {
-            //         let td = e.target.closest('td')
-            //         if (!td) return
-            //         if (!tbody.contains(td)) return
-            //         if (
-            //             variantTypeIndexes.value.includes(
-            //                 td.dataset.key.toString()
-            //             )
-            //         ) {
-            //             if (hoverTD.value) {
-            //                 hoverTD.value.classList.remove('hover-state')
-            //             }
-            //             hoverTD.value = td
-            //             hoverTD.value.classList.add('hover-state')
+                tbody.onclick = function (e) {
+                    let td = e.target.closest('td')
+                    if (!td) return
+                    if (!tbody.contains(td)) return
+                    if (
+                        variantTypeIndexes.value.includes(
+                            td?.dataset?.key?.toString()
+                        )
+                    ) {
+                        handleClick(td)
+                    }
+                }
+                tbody.onmouseover = function (e) {
+                    let td = e.target.closest('td')
+                    if (!td) return
+                    if (!tbody.contains(td)) return
+                    if (
+                        variantTypeIndexes.value.includes(
+                            td?.dataset?.key?.toString()
+                        )
+                    ) {
+                        if (hoverTD.value) {
+                            // hoverTD.value.classList.remove('hover-state')
+                            hoverTD.value.classList.remove(
+                                'bg-primary-light',
+                                'cursor-pointer'
+                            )
+                            // td.style.paddingRight = '16px !important'
+                            td.classList.add('pr-4')
+                        }
+                        hoverTD.value = td
 
-            //             // Decreasing text width on hover
-            //             hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
-            //                 '85%'
+                        // hoverTD.value.classList.add('hover-state')
+                        hoverTD.value.classList.add(
+                            'bg-primary-light',
+                            'cursor-pointer'
+                        )
+                        // td.style.paddingRight = '28px !important'
+                        td.classList.remove('pr-4')
+                        td.classList.add('pr-10')
 
-            //             // Showing Expand Icon
-            //             hoverTD.value.childNodes[0].childNodes[1].classList.add(
-            //                 'block'
-            //             )
-            //             hoverTD.value.childNodes[0].childNodes[1].classList.remove(
-            //                 'hidden'
-            //             )
-            //         }
-            //     }
-            //     tbody.onmouseout = function (e) {
-            //         let td = e.target.closest('td')
-            //         if (!td) return
-            //         if (!tbody.contains(td)) return
-            //         hoverTD.value = td
-            //         hoverTD.value.classList.remove('hover-state')
+                        hoverTD.value.childNodes[1].childNodes[0].classList.remove(
+                            'hidden'
+                        )
+                    }
+                }
+                tbody.onmouseout = function (e) {
+                    let td = e.target.closest('td')
+                    if (!td) return
+                    if (!tbody.contains(td)) return
+                    hoverTD.value = td
+                    // hoverTD?.value?.classList?.remove('hover-state')
+                    hoverTD.value.classList.remove(
+                        'bg-primary-light',
+                        'cursor-pointer'
+                    )
+                    td.classList.remove('pr-10')
+                    td.classList.add('pr-4')
 
-            //         hoverTD.value.childNodes[0].childNodes[0].style.maxWidth =
-            //             '100%'
+                    hoverTD?.value?.childNodes[1]?.childNodes[0]?.classList?.add(
+                        'hidden'
+                    )
+                }
+            })
 
-            //         hoverTD.value.childNodes[0].childNodes[1].classList.remove(
-            //             'block'
-            //         )
-            //         hoverTD.value.childNodes[0].childNodes[1].classList.add(
-            //             'hidden'
-            //         )
-            //     }
-            // })
+            watch([tableRef, columns], () => {
+                // init()
+                const thead = document.getElementsByTagName('thead')[0]
 
-            // watch([columns], () => {
-            //     // init()
-            //     const thead = document.getElementsByTagName('thead')[0]
+                thead.onmouseover = function (e) {
+                    let img = e.target.closest('img')
+                    if (!img) return
+                    if (!thead.contains(img)) return
 
-            //     thead.onmouseover = function (e) {
-            //         let svg = e.target.closest('svg')
-            //         if (!svg) return
-            //         if (!thead.contains(svg)) return
+                    let tooltipContent = img.dataset.tooltip
+                    if (!tooltipContent) return
 
-            //         let tooltipContent = svg.dataset.tooltip
-            //         if (!tooltipContent) return
+                    hoverTH.value = document.createElement('div')
+                    hoverTH.value.className =
+                        'fixed bg-black text-white px-3 py-1 rounded opacity-80 z-50 mx-auto'
+                    hoverTH.value.innerHTML = tooltipContent
 
-            //         hoverTH.value = document.createElement('div')
-            //         hoverTH.value.className =
-            //             'bg-black text-white px-3 py-1 rounded opacity-80 absolute z-50 top-7 mx-auto'
-            //         hoverTH.value.innerHTML = tooltipContent
+                    img.parentElement.append(hoverTH.value)
+                }
 
-            //         svg.parentElement.append(hoverTH.value)
-            //     }
+                thead.onmouseout = function (e) {
+                    let img = e.target.closest('img')
+                    if (!img) return
+                    if (!thead.contains(img)) return
 
-            //     thead.onmouseout = function (e) {
-            //         let svg = e.target.closest('svg')
-            //         if (!svg) return
-            //         if (!thead.contains(svg)) return
-
-            //         hoverTH.value.remove()
-            //         hoverTH.value = null
-            //     }
-            // })
+                    hoverTH.value.remove()
+                    hoverTH.value = null
+                }
+            })
 
             watch(tableRef, () => {
                 setRenderTime(new Date())
@@ -184,26 +192,36 @@
                 modalVisible.value = true
                 selectedData.value = data
                 selectedTD.value.classList.add('selected-state')
+                // selectedTD.value.classList.add(
+                //     'bg-primary-light',
+                //     'shadow',
+                //     'shadow-primary'
+                // )
             }
 
             const handleModalClose = () => {
                 selectedData.value = ''
                 selectedTD.value.classList.remove('selected-state')
+                // selectedTD.value.classList.remove(
+                //     'bg-primary-light',
+                //     'border',
+                //     'border-primary'
+                // )
             }
 
             onMounted(() => {
                 init()
 
-                // columns.value.forEach((col) => {
-                //     if (
-                //         col.data_type.toLowerCase() === 'any' ||
-                //         col.data_type.toLowerCase() === 'variant' ||
-                //         col.data_type.toLowerCase() === 'object' ||
-                //         col.data_type.toLowerCase() === 'struct'
-                //     ) {
-                //         variantTypeIndexes.value.push(col.dataIndex.toString())
-                //     }
-                // })
+                columns.value.forEach((col) => {
+                    if (
+                        col.data_type.toLowerCase() === 'any' ||
+                        col.data_type.toLowerCase() === 'variant' ||
+                        col.data_type.toLowerCase() === 'object' ||
+                        col.data_type.toLowerCase() === 'struct'
+                    ) {
+                        variantTypeIndexes.value.push(col.dataIndex.toString())
+                    }
+                })
             })
 
             watch(modalVisible, () => {
@@ -232,31 +250,10 @@
                 return align
             }
 
-            const transpose = (m) => m[0].map((x, i) => m.map((x) => x[i]))
+            // const transpose = (m) => m[0].map((x, i) => m.map((x) => x[i]))
 
             function range(x0, x1, f) {
                 return Array.from(Array(x1 - x0).keys()).map((x) => f(x + x0))
-            }
-
-            function dataListener(num_rows, num_columns) {
-                return (x0, y0, x1, y1) => {
-                    console.log('data here: ', {
-                        num_rows,
-                        num_columns,
-                        column_headers: range(x0, x1, group_header.bind(null)),
-                        data: range(x0, x1, (x) =>
-                            range(y0, y1, (y) => `A+${x} + B+${y}`)
-                        ),
-                    })
-                    return {
-                        num_rows,
-                        num_columns,
-                        column_headers: range(x0, x1, group_header.bind(null)),
-                        data: range(x0, x1, (x) =>
-                            range(y0, y1, (y) => `A+${x} + B+${y}`)
-                        ),
-                    }
-                }
             }
 
             function group_header(i, name) {
@@ -264,14 +261,101 @@
                 return [`${title}`]
             }
 
-            const dataHere = (transposed) => {
+            const imageMap = {
+                Number: 'number',
+                Decimal: 'float1',
+                Boolean: 'boolean',
+                Text: 'string',
+                DateTime: 'date',
+                Array: 'array',
+                Object: 'struct',
+                Geography: 'geography',
+                Variant: 'variant',
+            }
+
+            function styleListener() {
+                // icons for table headers
+
+                let rows = window.regularTable.querySelectorAll('tbody tr')
+                console.log('rows: ', rows)
+                for (const th of window.regularTable.querySelectorAll(
+                    'thead tr th'
+                )) {
+                    const { x } = window.regularTable.getMeta(th)
+                    const column = columns.value[x]
+
+                    if (
+                        column.data_type.toLowerCase() === 'any' ||
+                        column.data_type.toLowerCase() === 'variant' ||
+                        column.data_type.toLowerCase() === 'object' ||
+                        column.data_type.toLowerCase() === 'struct'
+                    ) {
+                        // th.setAttribute('id', column.dataIndex.toString())
+
+                        rows.forEach((element) => {
+                            if (element?.children?.length > x) {
+                                element?.children[x]?.setAttribute(
+                                    'key',
+                                    column.dataIndex.toString()
+                                )
+                                element?.children[x]?.setAttribute(
+                                    'data-key',
+                                    column.dataIndex.toString()
+                                )
+                                const span = document.createElement('span')
+                                span.setAttribute('id', 'expandIcon')
+                                span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='src/assets/images/icons/expand.svg'>`
+
+                                if (
+                                    !element.children[x]?.querySelector(
+                                        '#expandIcon > img'
+                                    )
+                                ) {
+                                    element.children[x]?.append(span)
+                                }
+                            }
+                        })
+                    }
+
+                    // here, order in which operation is performed is important
+                    if (column?.key !== 0) {
+                        const span = document.createElement('span')
+                        span.setAttribute('id', 'icon')
+                        span.innerHTML = `<img data-tooltip=${
+                            column.data_type
+                        }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src='src/assets/images/dataType/${
+                            imageMap[getDataType(column.data_type)]
+                        }.svg'>`
+
+                        if (!th.querySelector('#icon > img')) {
+                            th.prepend(span)
+                        }
+                    }
+
+                    // console.log('th data: ', th.childNodes[1])
+                    // th.childNodes[1].classList.add(
+                    //     `w-full`,
+                    //     `flex`,
+                    //     alignment(column?.data_type)
+                    // )
+                }
+
+                // icon for variant type
+            }
+
+            function row_header(i) {
+                return [`${i}`]
+            }
+
+            const dataHere = (rows) => {
                 // debugger
                 return (x0, y0, x1, y1) => ({
                     num_rows: dataList.value.length,
                     num_columns: columns.value.length,
                     column_headers: range(x0, x1, group_header.bind(null)),
+                    // row_headers: range(y0, y1, row_header.bind(null)),
                     data: range(x0, x1, (x) =>
-                        range(y0, y1, (y) => transposed[y][x])
+                        range(y0, y1, (y) => rows[y][x]?.data)
                     ),
                 })
             }
@@ -279,10 +363,11 @@
             function init() {
                 const table = document.getElementsByTagName('regular-table')[0]
 
-                let transposed = dataList.value
+                let rows = dataList.value
                 // debugger
 
-                table?.setDataListener(dataHere(transposed))
+                table?.setDataListener(dataHere(rows))
+                table?.addStyleListener(styleListener)
                 table?.draw()
             }
 
@@ -307,6 +392,10 @@
 </script>
 
 <style lang="less" module>
+    regular-table tr:hover td {
+        background: #fff;
+    }
+
     table {
         // @apply overflow-x-auto !important;
     }
@@ -323,6 +412,9 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        font-family: Avenir !important;
+        padding-top: 5px !important;
+        position: relative;
     }
 
     tbody {
@@ -330,50 +422,54 @@
     }
 
     th {
-        position: sticky;
-        top: 0;
+        // position: sticky;
+        // top: 0;
         border-top: 0;
         height: 36px !important;
-        z-index: 4;
+        // z-index: 4;
         font-size: 14px !important;
         @apply border-r border-gray-light bg-white text-gray-700;
 
         font-weight: 700 !important;
     }
     td:first-child {
-        max-width: 100px !important;
-        min-width: 42px !important;
-        width: 42px;
+        // max-width: 100px !important;
+        // min-width: 42px !important;
+        // width: 42px;
         // left: 0;
         border-left: 0;
         // position: sticky;
         // z-index: 4;
         font-size: 14px !important;
-        color: #a0a4b6;
+        // color: #a0a4b6;
         @apply bg-white border;
     }
 
     th:first-child {
-        max-width: 100px !important;
-        min-width: 42px !important;
-        width: 42px;
+        // max-width: 100px !important;
+        // min-width: 42px !important;
+        // width: 42px;
         border-left: 0;
         // left: 0;
         // z-index: 10;
-        color: #a0a4b6;
+        // color: #a0a4b6;
         font-weight: 400 !important;
         @apply bg-white border-b-0;
     }
 </style>
 
 <style lang="less" scoped>
+    @font-face {
+        font-family: Avenir;
+        src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
+    }
     .table_height {
         height: 600px !important;
         position: relative;
     }
     .regular_table {
-        height: 600px;
-        @apply rounded-none !important;
+        // height: 100% !important;
+        @apply rounded-none p-0 !important;
     }
 
     .variant_body {
@@ -381,15 +477,7 @@
     }
 
     .selected-state {
-        box-shadow: inset 0px 0px 0px 1px rgba(82, 119, 215);
+        box-shadow: inset 0px 0px 0px 1px rgba(82, 119, 215) !important;
         @apply bg-primary-light !important;
-    }
-
-    .hover-state {
-        @apply bg-primary-light cursor-pointer !important;
-    }
-
-    .tooltip {
-        @apply bg-black text-white px-6 py-3 rounded opacity-80 absolute z-50 !important;
     }
 </style>

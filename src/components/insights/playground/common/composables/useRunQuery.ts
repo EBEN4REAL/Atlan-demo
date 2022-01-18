@@ -45,14 +45,21 @@ export default function useProject() {
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
-            columnList.value = []
+            columnList.value = [
+                {
+                    title: '#',
+                    dataIndex: 'columnIndex',
+                    key: 0,
+                    data_type: 'number'
+                }
+            ]
             columns.map((col: any, index) => {
                 columnList.value.push({
                     title: col.columnName,
                     dataIndex: col.columnName + index,
-                    key: index,
+                    key: index+1,
                     data_type: col.type.name,
-                    width: '250px'
+                    
                 })
             })
         }
@@ -69,19 +76,30 @@ export default function useProject() {
         console.log('row index here: ', rows)
         
         rows.map((result: any, index1) => {
-            // console.log(result)
-            // let tmp = {}
-            // result.map((row, rowindex) => {
-            //     tmp = {
-            //         ...tmp,                    
-            //         [columns[rowindex].dataIndex]: row
+            console.log('result: ', result)
+            let row2 = [{
+                columnIndex: keys.value+1,
+                data: keys.value+1,
+                data_Type: 'number' 
+            }]
+            result.map((row, rowindex) => {
+                let tmp = {}
+                tmp = {
+                                        
+                    [columns[rowindex].dataIndex]: row,
+                    data: row,
+                    data_type: columns[rowindex].data_type
                     
-            //     }
-            // })
-            // // console.log('row index: ', index1+1)
-            // tmp = {...tmp, key: keys.value}
-            // keys.value= keys.value+1
-            dataList.value.push(result)
+                }
+                // debugger
+                row2.push(tmp)
+
+            })
+            
+            dataList.value.push(row2)
+            keys.value=keys.value+1;
+            // 
+
         })
         console.log('table rows: ', dataList)
     }

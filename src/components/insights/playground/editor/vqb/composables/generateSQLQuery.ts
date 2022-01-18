@@ -316,7 +316,7 @@ export function generateSQLQuery(
                     subpanel.aggregateORGroupColumn?.value ?? ''
                 )
                 const tableName = getTableName(
-                    subpanel.aggregateORGroupColumn?.value ?? ''
+                    subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {

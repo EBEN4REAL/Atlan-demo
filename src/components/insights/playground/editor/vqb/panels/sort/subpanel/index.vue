@@ -26,6 +26,7 @@
                             activeInlineTab.playground.vqb.selectedTables
                         "
                         @onMounted="() => onColumnSelectorMounted(index)"
+                        @onUnmounted="() => onColumnSelectorUnMounted(index)"
                     >
                         <template #head>
                             <ColumnSelectorHead
@@ -59,6 +60,7 @@
                         class="flex-1"
                         v-else
                         :disabled="readOnly"
+                        v-model:selectedColumn="subpanel.aggregateORGroupColumn"
                     >
                         <template #head>
                             <AggregateGroupHead
@@ -292,6 +294,21 @@
                     },
                 }
             }
+            const onColumnSelectorUnMounted = (index: number) => {
+                subpanels.value[index] = {
+                    ...subpanels.value[index],
+                    attributes: {},
+                    column: {},
+                    isForeign: undefined,
+                    isPartition: undefined,
+                    isPrimary: undefined,
+                    item: undefined,
+                    label: undefined,
+                    order: 'asc',
+                    qualifiedName: undefined,
+                    type: undefined,
+                }
+            }
 
             watch(
                 activeInlineTab,
@@ -302,6 +319,7 @@
             )
 
             return {
+                onColumnSelectorUnMounted,
                 onColumnSelectorMounted,
                 isQueryCreatedByCurrentUser,
                 hasQueryWritePermission,

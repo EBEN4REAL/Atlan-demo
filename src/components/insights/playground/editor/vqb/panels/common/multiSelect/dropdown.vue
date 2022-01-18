@@ -616,6 +616,12 @@
                     value: item.label,
                     qualifiedName: item.qualifiedName,
                     tableName: item.item.attributes.tableName,
+                    column: item.item,
+                    attributes: item.attributes,
+                    isPrimary: item.item.attributes?.isPrimary,
+                    isForeign: item.item.attributes?.isForeign,
+                    isPartition: item.item.attributes?.isPartition,
+                    item: item.item,
                 }
                 emit('change', item)
                 event.stopPropagation()

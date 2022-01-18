@@ -50,6 +50,7 @@
     import { useVModels } from '@vueuse/core'
     import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+
     import {
         useProvide,
         provideDataInterface,
@@ -64,10 +65,16 @@
                 required: false,
                 default: false,
             },
+            selectedColumn: {
+                type: Object,
+                required: true,
+                default: () => {},
+            },
         },
 
         setup(props, { emit }) {
             const { disabled } = toRefs(props)
+            const { selectedColumn } = useVModels(props)
             const container = ref()
 
             const observer = ref()
@@ -141,6 +148,11 @@
 
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
+                selectedColumn.value.qualifiedName = undefined
+                selectedColumn.value.tableName = undefined
+                selectedColumn.value.type = undefined
+                selectedColumn.value.value = undefined
+                selectedColumn.value.label = undefined
             })
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------

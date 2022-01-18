@@ -65,7 +65,7 @@
     export default defineComponent({
         name: 'Sub panel',
         components: {},
-        emits: ['onMounted'],
+        emits: ['onMounted', 'onUnmounted'],
         props: {
             disabled: {
                 type: Boolean,
@@ -286,6 +286,7 @@
 
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
+                emit('onUnmounted')
             })
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------

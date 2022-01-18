@@ -15,7 +15,7 @@
             style="min-height: 0"
         >
             <!-- For single table select -->
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full">
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                     v-if="selectedTablesQualifiedNames.length < 2"
@@ -114,18 +114,17 @@
                         </PopoverAsset>
                     </template>
                 </div>
+                <span
+                    class="w-full mt-4 text-sm text-center text-gray-400"
+                    v-if="
+                        columnDropdownOption.length == 0 &&
+                        !isColumnLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
+                >
+                    No Columns found!
+                </span>
             </div>
-
-            <span
-                class="w-full mt-4 text-sm text-center text-gray-400"
-                v-if="
-                    columnDropdownOption.length == 0 &&
-                    !isColumnLoading &&
-                    selectedTablesQualifiedNames.length < 2
-                "
-            >
-                No Columns found!
-            </span>
 
             <!--  Multiple table column selection-->
             <div

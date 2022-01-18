@@ -139,10 +139,15 @@ export function useUtils() {
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    let value = subpanel?.filter?.value
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        subpanel?.filter?.value[0]
+                    ) {
+                        value = subpanel?.filter?.value[0]
+                    }
+                    res += ` ${getValueStringFromType(subpanel, value ?? '')}`
 
                     break
                 }

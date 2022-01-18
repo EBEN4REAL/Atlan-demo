@@ -5,9 +5,11 @@
                 :is="getDataTypeImage(selectedColumn?.type)"
                 class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
             ></component>
-            <span class="mb-0 ml-1 text-sm text-gray-700 truncate">
-                {{ selectedColumn?.label }}
-            </span>
+            <div style="max-width: 90%" class="truncate">
+                <span class="mb-0 ml-1 text-sm text-gray-700">
+                    {{ selectedColumn?.label }}
+                </span>
+            </div>
         </div>
         <span v-else class="text-gray-500">
             {{ placeholder }}

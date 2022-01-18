@@ -17,11 +17,11 @@
                             :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
-                            >Where</span
+                            >WHERE</span
                         >
                     </div>
                     <div class="w-full grid-container group">
-                        <div class="item-1">
+                        <div class="item-1" style="max-width: 45%">
                             <ColumnSelector
                                 class="flex-1"
                                 v-model:selectedColumn="subpanel.column"
@@ -69,7 +69,7 @@
                             </ColumnSelector>
                         </div>
 
-                        <div class="item-2">
+                        <div class="item-2" v-if="subpanel?.filter?.type">
                             <FilterSelector
                                 class="w-full"
                                 :columnName="subpanel?.column?.label"
@@ -136,7 +136,7 @@
                                     icon="Close"
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
-                                <!-- <div style="width: 32px" v-else></div> -->
+                                <div style="width: 32px" v-else></div>
                             </div>
                         </div>
                     </div>
@@ -438,24 +438,27 @@
         margin-top: 9px;
     }
     .grid-container {
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 0.65fr 1.5fr;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
     }
     .item-1 {
-        grid-column-start: 1;
-        grid-column-end: 2;
+        flex: 0.35;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-2 {
-        grid-column-start: 2;
-        grid-column-end: 3;
+        flex: 0.15;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-3 {
-        grid-column-start: 3;
-        grid-column-end: 4;
-    }
-    .item-4 {
-        grid-column-start: 4;
-        grid-column-end: 5;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
 </style>

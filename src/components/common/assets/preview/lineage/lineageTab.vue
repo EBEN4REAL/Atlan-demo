@@ -22,13 +22,16 @@
                 Download Impact
             </AtlanButton>
 
-            <router-link
-                v-else
-                :to="link"
-                class="flex items-center text-primary gap-x-1"
-            >
-                <AtlanIcon icon="External" />
-                <span> View Graph </span>
+            <router-link v-else :to="link">
+                <AtlanButton
+                    size="sm"
+                    padding="compact"
+                    color="minimal"
+                    class="text-primary"
+                >
+                    <AtlanIcon icon="External" />
+                    View Graph
+                </AtlanButton>
             </router-link>
         </div>
 

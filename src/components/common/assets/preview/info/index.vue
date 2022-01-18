@@ -353,6 +353,14 @@
                 @change="handleChangeDescription"
             />
         </div>
+        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
@@ -525,6 +533,7 @@
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
+    import SQLSnippet from '@/common/sql/snippet.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
@@ -551,6 +560,7 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
+            SQLSnippet,
             TermsWidget,
             Categories,
             Admins,
@@ -611,6 +621,8 @@
                 definition,
                 webURL,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
@@ -703,6 +715,8 @@
                 webURL,
                 handlePreviewClick,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 handleOwnersChange,
                 localCertificate,
                 handleChangeCertificate,

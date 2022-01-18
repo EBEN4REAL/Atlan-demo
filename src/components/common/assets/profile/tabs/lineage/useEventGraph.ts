@@ -741,7 +741,7 @@ export default function useEventGraph(
         che.value = edge.id
         controlEdgeHighlight(edge, false)
         const processId = edge.id.split('/')[0]
-        const { data } = fetchAsset(processId)
+        const { data } = fetchAsset(processId, ['sql'])
         watch(data, () => {
             onSelectAsset(data.value)
             const target = edge.id.split('/')[1].split('@')[1]

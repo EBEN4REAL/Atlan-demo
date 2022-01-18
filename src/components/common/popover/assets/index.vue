@@ -31,9 +31,15 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '-' &&
+                                    rows !== '0' &&
                                     rows !== '' &&
-                                    item.typeName?.toLowerCase() !== 'column'
+                                    (item.typeName?.toLowerCase() === 'table' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'view' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'tablepartition' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'materialisedview')
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
@@ -44,9 +50,15 @@
                             </span>
                             <span
                                 v-if="
-                                    cols !== '-' &&
+                                    cols !== '0' &&
                                     cols !== '' &&
-                                    item.typeName?.toLowerCase() !== 'column'
+                                    (item.typeName?.toLowerCase() === 'table' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'view' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'tablepartition' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'materialisedview')
                                 "
                                 class="text-xs text-gray-500"
                                 :class="{ 'ml-3': rows === '-' || rows === '' }"

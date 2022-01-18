@@ -3,7 +3,7 @@
         v-if="isLoading && treeData.length == 0"
         class="flex items-center justify-center flex-grow h-full"
     >
-        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
+        <AtlanLoader class="h-10" />
     </div>
     <div
         v-else-if="treeData.length === 0 && !isLoading"

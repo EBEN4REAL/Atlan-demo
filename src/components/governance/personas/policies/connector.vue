@@ -341,7 +341,8 @@
                     node.title === 'athena' ||
                     node.title === 'snowflake' ||
                     node.title === 'powerbi' ||
-                    node.title === 'tableau'
+                    node.title === 'tableau' ||
+                    node.title === 'databricks'
                 ) {
                     switch (node.title) {
                         case 'snowflake':
@@ -352,6 +353,8 @@
                             return 'PowerBI'
                         case 'tableau':
                             return 'Tableau'
+                        case 'databricks':
+                            return 'Databricks'
                     }
                 } else {
                     const el = node?.key?.split('/')
@@ -365,6 +368,8 @@
                                 return 'PowerBI'
                             case 'tableau':
                                 return 'Tableau'
+                            case 'databricks':
+                                return 'Databricks'
                         }
                     } else {
                         return ''

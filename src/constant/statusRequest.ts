@@ -1,6 +1,6 @@
 export const statusRequest = [
     {
-        id: 'pending',
+        id: 'active',
         label: 'Pending',
         description: 'Pending',
         colorDot: '#FFBA52'

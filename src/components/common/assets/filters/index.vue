@@ -12,7 +12,7 @@
                     {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
                 >
                 <div class="flex font-medium text-gray-500">
-                    <span class="text-red-500" @click="handleResetAll">
+                    <span class="text-red-500 clear-filter-asset" @click="handleResetAll">
                         <span class="text-sm cursor-pointer">Clear All</span>
                     </span>
                 </div>
@@ -30,8 +30,8 @@
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
                 :bordered="false"
-                @change="handleActiveKeyChange"
                 :class="$style.facetfilter"
+                @change="handleActiveKeyChange"
             >
                 <template
                     v-for="item in dynamicList"

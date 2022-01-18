@@ -1,5 +1,18 @@
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
+    const styleReverseEdge = (edge) => {
+        if (!edge) return
+
+        const s = edge.getSourcePoint()
+        const t = edge.getTargetPoint()
+
+        edge.attr('line/strokeDasharray', s.x > t.x ? '3 6' : 0)
+        edge.attr('line/stroke', s.x > t.x ? '#aaaaaa' : '#c7c7c7')
+
+        edge.attr('line/targetMarker/height', 0.1)
+        edge.attr('line/targetMarker/width', 0.1)
+    }
+
     const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
@@ -47,7 +60,7 @@ export default function useUpdateGraph() {
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
             if (!itExists) {
                 cell.attr('line/strokeWidth', 1.6)
-                cell.attr('line/strokeDasharray', 0)
+                styleReverseEdge(cell)
             }
             x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
             if (itExists) cell.toFront()
@@ -57,5 +70,6 @@ export default function useUpdateGraph() {
     return {
         highlightNodes,
         highlightEdges,
+        styleReverseEdge,
     }
 }

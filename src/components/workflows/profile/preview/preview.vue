@@ -5,7 +5,7 @@
                 v-if="loadingFetchPod"
                 class="absolute flex items-center justify-center w-full h-full"
             >
-                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+                <AtlanLoader class="h-5" />
             </div>
 
             <div

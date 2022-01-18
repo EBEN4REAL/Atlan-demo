@@ -167,6 +167,27 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().toggleImageBlock().run(),
     },
+    {
+        title: 'Table',
+        key: 'insertTable',
+        helpText: 'Insert a table',
+        icon: 'Table',
+        border: true,
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertTable({
+                          rows: 3,
+                          cols: 3,
+                          withHeaderRow: true,
+                      })
+                      .run()
+                : editor.chain().focus().insertTable().run(),
+    },
     /*   {
         title: 'Google doc',
         key: 'googleDoc',
@@ -257,6 +278,17 @@ export const menuData: CommandItem[] = [
         helpText: '',
         icon: 'Redo',
         command: ({ editor, range }) => editor.chain().focus().redo().run(),
+    },
+    // table
+]
+
+export const menuDataTable: CommandItem[] = [
+    {
+        title: 'Insert Row After',
+        key: 'insert-row-after',
+        helpText: 'Insert a row below this cell',
+        icon: 'Add',
+        command: ({ editor }) => editor.chain().focus().addRowAfter().run(),
     },
     // table
 ]

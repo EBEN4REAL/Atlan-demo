@@ -107,12 +107,7 @@
         </div>
 
         <div
-            class="flex w-full px-5 py-3 border-t border-gray-200"
-            :class="
-                entityType !== 'AtlasGlossary'
-                    ? 'justify-between'
-                    : 'justify-end'
-            "
+            class="flex justify-between w-full px-5 py-3 border-t border-gray-200"
         >
             <div class="flex items-center spaxe-x-4">
                 <div

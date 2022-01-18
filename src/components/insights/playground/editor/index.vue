@@ -429,11 +429,12 @@
     import { storeToRefs } from 'pinia'
 
     import { useTableExport } from '~/components/insights/common/composables/useTableExport'
+    const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
     export default defineComponent({
         components: {
             VQB,
-            Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
+            Monaco: Monaco,
             CustomVariablesNav,
             SaveQueryModal,
             AtlanBtn,

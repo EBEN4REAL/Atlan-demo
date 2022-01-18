@@ -26,7 +26,6 @@
             class="close-btn-add-policy"
             @click="handleClose"
         >
-        <div v-if="activeInlineTab?.assetSidebar?.isVisible" class="close-btn-add-policy" @click="handleClose">
             <AtlanIcon icon="Add" class="text-white" />
         </div>
         <AtlanIcon icon="NoSelectedAsset" class="w-36 h-28" />

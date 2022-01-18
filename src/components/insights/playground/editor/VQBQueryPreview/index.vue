@@ -9,7 +9,7 @@
 
 <script lang="ts">
     import { defineComponent, inject, ComputedRef, Ref } from 'vue'
-    import SQLSnippet from '~/components/common/sql/_snippet.vue'
+    import SQLSnippet from '~/components/common/sql/snippet.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 

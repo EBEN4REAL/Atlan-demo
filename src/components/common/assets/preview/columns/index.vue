@@ -34,7 +34,6 @@
             class="flex items-center justify-center flex-grow"
         >
             <AtlanLoader class="h-10" />
-            <AtlanLoader class="h-10" />
         </div>
         <div
             v-if="!isLoading && error"

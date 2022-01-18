@@ -125,10 +125,8 @@
             v-if="isEvaluating"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+        <AtlanLoader class="h-10" />
+
         </div> -->
         <a-tabs
             v-model:activeKey="activeKey"

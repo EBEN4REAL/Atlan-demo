@@ -73,7 +73,7 @@
                 v-if="isLoading && !response"
                 class="flex items-center justify-center h-full"
             >
-                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+                <AtlanLoader class="h-5" />
             </div>
             <EmptyView
                 v-else-if="isEmptyLogs || (!response && !isLoading)"

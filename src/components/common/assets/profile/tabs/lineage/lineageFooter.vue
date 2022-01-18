@@ -1,5 +1,5 @@
 <template>
-    <div class="lineage-control footer">
+    <div ref="footerRoot" class="lineage-control footer">
         <slot></slot>
 
         <div class="controls">
@@ -35,6 +35,7 @@
                     <a-popover
                         v-model:visible="isPreferencesVisible"
                         trigger="click"
+                        :getPopupContainer="() => footerRoot"
                     >
                         <template #content>
                             <div class="px-4 py-3 text-sm">View Options</div>
@@ -251,6 +252,7 @@
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
             const isPreferencesVisible = ref(false)
+            const footerRoot = ref<HTMLElement>()
 
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
@@ -304,6 +306,7 @@
             }
             return {
                 showMinimap,
+                footerRoot,
                 isFullscreen,
                 isPreferencesVisible,
                 isExpanded,

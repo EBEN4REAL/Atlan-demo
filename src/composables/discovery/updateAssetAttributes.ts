@@ -374,12 +374,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     const handleAssignedEntitiesUpdate = ({
-        linkedAssets,
-        unlinkedAssets,
+        linkedAssets = [],
+        unlinkedAssets = [],
         term,
     }: {
-        linkedAssets: assetInterface[]
-        unlinkedAssets: assetInterface[]
+        linkedAssets?: assetInterface[]
+        unlinkedAssets?: assetInterface[]
         term: assetInterface
     }) => {
         const linked = linkedAssets.map((assignedEntitiy) => {
@@ -421,7 +421,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
 
         body.value.entities = [...linked, ...unlinked]
-        currentMessage.value = 'Linked assets updated'
+        if(!unlinkedAssets.length)
+            currentMessage.value = 'Assets linked'
+        else if(!linkedAssets.length)
+            currentMessage.value = 'Assets unlinked'
+        else
+            currentMessage.value = 'Linked assets updated'
         mutate()
 
         whenever(isUpdateReady, () => {

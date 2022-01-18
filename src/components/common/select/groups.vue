@@ -28,11 +28,7 @@
             <v-nodes :vnodes="menu"> </v-nodes>
             <div class="px-2 pt-2">
                 <div class="flex justify-center">
-                    <AtlanIcon
-                        v-if="isLoading"
-                        icon="Loader"
-                        class="animate-spin"
-                    />
+                    <AtlanLoader v-if="isLoading" />
                 </div>
                 <div class="flex items-end justify-between">
                     <span v-if="list?.length" class="text-xs text-gray-500">

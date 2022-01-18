@@ -60,8 +60,23 @@ export default function useGlossary(immediate = true) {
                 aggs: {
                     [GROUP_TERM_AGGREATION]: {
                         filter: {
-                            terms: {
-                                '__typeName.keyword': ['AtlasGlossaryTerm'],
+                            bool: {
+                                filter: [
+                                    {
+                                        terms: {
+                                            '__typeName.keyword': [
+                                                'AtlasGlossaryTerm',
+                                            ],
+                                        },
+                                    },
+                                ],
+                                must: [
+                                    {
+                                        term: {
+                                            __state: 'ACTIVE',
+                                        },
+                                    },
+                                ],
                             },
                         },
                         aggs: {
@@ -75,8 +90,23 @@ export default function useGlossary(immediate = true) {
                     },
                     [GROUP_CATEGORY_AGGREATION]: {
                         filter: {
-                            terms: {
-                                '__typeName.keyword': ['AtlasGlossaryCategory'],
+                            bool: {
+                                filter: [
+                                    {
+                                        terms: {
+                                            '__typeName.keyword': [
+                                                'AtlasGlossaryCategory',
+                                            ],
+                                        },
+                                    },
+                                ],
+                                must: [
+                                    {
+                                        term: {
+                                            __state: 'ACTIVE',
+                                        },
+                                    },
+                                ],
                             },
                         },
                         aggs: {

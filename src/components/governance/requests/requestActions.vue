@@ -4,6 +4,7 @@
             v-if="request.message"
             trigger="hover"
             placement="bottomRight"
+            :align="{ offset: [90, -5] }"
         >
             <template #content>
                 <div class="comment-delete">

@@ -3,6 +3,7 @@
         v-bind="componentProps"
         v-model="localValue"
         @change="handleChange"
+        :connector="connectorName"
     ></Connection>
 </template>
 
@@ -11,6 +12,7 @@
 
     import Connection from '@common/select/connection.vue'
     import { useVModels } from '@vueuse/core'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'FormBuilder',
@@ -32,11 +34,12 @@
             const { property } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
+            const componentProps = computed(() => property.value.ui)
+
             const localValue = ref(modelValue.value)
 
             const list = computed(() => {
                 const temp = []
-
                 property.value.enum.forEach((item, index) => {
                     temp.push({
                         id: item,
@@ -46,13 +49,26 @@
                 return temp
             })
 
+            const connectorName = computed(() => {
+                if (componentProps.value.connectorName) {
+                    return componentProps.value.connectorName
+                }
+                return ''
+            })
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change', localValue.value)
             }
 
-            const componentProps = computed(() => property.value.ui)
-            return { property, componentProps, list, localValue, handleChange }
+            return {
+                property,
+                componentProps,
+                list,
+                localValue,
+                handleChange,
+                connectorName,
+            }
         },
     })
 </script>

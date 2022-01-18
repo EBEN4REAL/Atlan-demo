@@ -1,11 +1,142 @@
 <template>
     <div
         tabindex="-1"
-        :class="['  bg-white rounded custom-shadow  dropdown-container']"
+        :class="[
+            '  bg-white rounded custom-shadow flex flex-col  dropdown-container flex-1',
+        ]"
+        style="min-height: 0"
     >
-        <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
+        <div
+            tabindex="-1"
+            :class="[
+                'dropdown-container flex w-full',
+                isColumnLoading || isTableLoading ? 'flex-col' : '',
+            ]"
+            style="min-height: 0"
+        >
+            <!-- For single table select -->
+            <div
+                class="flex flex-col w-full"
+                v-if="selectedTablesQualifiedNames.length < 2"
+            >
+                <div
+                    class="px-4 py-3 border-b border-gray-300 dropdown-container"
+                    v-if="selectedTablesQualifiedNames.length < 2"
+                >
+                    <div
+                        class="flex items-center justify-between w-full"
+                        style="min-width: 100%"
+                    >
+                        <CustomInput
+                            v-model:queryText="columnQueryText"
+                            :placeholder="placeholder"
+                            :autofocus="true"
+                        />
+                    </div>
+                </div>
+
+                <div
+                    class="flex-1 w-full overflow-auto dropdown-container"
+                    style="min-height: 0"
+                    v-if="
+                        columnDropdownOption.length !== 0 &&
+                        !isColumnLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
+                >
+                    <template
+                        v-for="(item, index) in columnDropdownOption"
+                        :key="item.qualifiedName"
+                    >
+                        <PopoverAsset
+                            :item="item.item"
+                            placement="right"
+                            :mouseEnterDelay="0.85"
+                        >
+                            <template #button>
+                                <AtlanBtn
+                                    class="flex-none px-0"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                    style="height: fit-content"
+                                    @click="(e) => actionClick(e, item.item)"
+                                >
+                                    <span
+                                        class="cursor-pointer text-primary whitespace-nowrap"
+                                    >
+                                        Show Preview</span
+                                    >
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </AtlanBtn>
+                            </template>
+                            <div
+                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                @click="(e) => onSelectColumn(item, e)"
+                                :class="
+                                    selectedColumn?.qualifiedName ===
+                                    item.qualifiedName
+                                        ? 'bg-primary-light'
+                                        : 'bg-white'
+                                "
+                            >
+                                <div
+                                    class="flex items-center parent-ellipsis-container"
+                                >
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div class="relative flex items-center h-full">
+                                    <ColumnKeys
+                                        :isPrimary="item.isPrimary"
+                                        :isForeign="item.isForeign"
+                                        :isPartition="item.isPartition"
+                                    />
+
+                                    <AtlanIcon
+                                        icon="Check"
+                                        class="ml-2 text-primary"
+                                        v-if="
+                                            selectedColumn?.qualifiedName ===
+                                            item.qualifiedName
+                                        "
+                                    />
+                                    <div v-else class="w-4 ml-2"></div>
+                                </div>
+                            </div>
+                        </PopoverAsset>
+                    </template>
+                </div>
+                <span
+                    class="w-full mt-4 text-sm text-center text-gray-400"
+                    v-if="
+                        columnDropdownOption.length == 0 &&
+                        !isColumnLoading &&
+                        selectedTablesQualifiedNames.length < 2
+                    "
+                >
+                    No Columns found!
+                </span>
+            </div>
+
             <!--  Multiple table column selection-->
-            <div class="w-full dropdown-container" v-if="!dirtyIsTableSelected">
+            <div
+                class="flex flex-col w-full dropdown-container"
+                v-if="
+                    !dirtyIsTableSelected &&
+                    selectedTablesQualifiedNames.length >= 2
+                "
+            >
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                 >
@@ -22,7 +153,8 @@
                 </div>
 
                 <div
-                    class="w-full h-full overflow-auto dropdown-container"
+                    class="flex-1 w-full overflow-auto dropdown-container"
+                    style="min-height: 0"
                     tabindex="-1"
                     :class="[
                         tableDropdownOption.length === 0
@@ -107,7 +239,13 @@
                 </div>
             </div>
 
-            <div class="w-full dropdown-container" v-if="dirtyIsTableSelected">
+            <div
+                class="flex flex-col w-full dropdown-container"
+                v-if="
+                    dirtyIsTableSelected &&
+                    selectedTablesQualifiedNames.length >= 2
+                "
+            >
                 <div
                     class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                     @click.stop="() => {}"
@@ -161,17 +299,19 @@
                 </div>
 
                 <div
-                    class="w-full dropdown-container"
+                    class="flex w-full dropdown-container"
                     v-if="dirtyIsTableSelected && !isColumnLoading"
+                    :class="isColumnLoading || isTableLoading ? 'flex-col' : ''"
+                    style="min-height: 0"
                 >
                     <div
-                        class="overflow-y-auto"
-                        style="height: 180px"
+                        class="w-full overflow-y-auto"
                         :class="[
                             columnDropdownOption.length === 0
                                 ? 'flex justify-center items-center'
                                 : '',
                         ]"
+                        style="min-height: 0"
                     >
                         <template
                             v-for="(item, index) in columnDropdownOption"
@@ -208,7 +348,7 @@
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectColumn(item, e)"
                                     :class="
-                                        selectedColumn?.columnQualifiedName ===
+                                        selectedColumn?.qualifiedName ===
                                         item.qualifiedName
                                             ? 'bg-primary-light'
                                             : 'bg-white'
@@ -240,7 +380,7 @@
                                             icon="Check"
                                             class="ml-2 text-primary"
                                             v-if="
-                                                selectedColumn?.columnQualifiedName ===
+                                                selectedColumn?.qualifiedName ===
                                                 item.qualifiedName
                                             "
                                         />
@@ -262,7 +402,7 @@
                 </div>
             </div>
             <Loader
-                v-if="isColumnLoading && dirtyIsTableSelected"
+                v-if="isColumnLoading"
                 style="min-height: 100px !important"
             ></Loader>
             <Loader
@@ -283,6 +423,7 @@
         Ref,
         toRefs,
         toRaw,
+        PropType,
         ref,
     } from 'vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
@@ -298,9 +439,10 @@
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { pluralizeString } from '~/utils/string'
+    import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
-        name: 'Sub panel',
+        name: 'Multi Select',
         components: { PopoverAsset, Loader, CustomInput, ColumnKeys },
         props: {
             disabled: {
@@ -308,27 +450,27 @@
                 required: false,
                 default: false,
             },
-            panelIndex: {
-                type: Number,
-                required: true,
-            },
-            rowIndex: {
-                type: Number,
-                required: true,
-            },
-            subIndex: {
-                type: Number,
-                required: true,
-            },
             selectedColumn: {
                 type: Object,
                 required: true,
                 default: () => {},
             },
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
+            },
+            tableQualfiedName: {
+                type: String,
+                required: true,
+            },
         },
+        emits: ['change'],
 
         setup(props, { emit }) {
-            const { panelIndex, subIndex, rowIndex, disabled } = toRefs(props)
+            const {
+                disabled,
+                tableQualfiedName,
+                selectedTablesQualifiedNames,
+            } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
@@ -359,9 +501,11 @@
             ) as Function
             const replaceTableBody = inject('replaceTableBody') as Function
             const replaceColumnBody = inject('replaceColumnBody') as Function
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const { allowedTablesInJoinSelector } = useJoin()
-            const { openAssetInSidebar, getTableNameFromTableQualifiedName } =
-                useUtils()
+            const { openAssetInSidebar } = useUtils()
             const { updateVQB } = useVQB()
             const { getDataTypeImage } = useColumn()
             const {
@@ -375,49 +519,40 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as ComputedRef<string>
-            const inlineTabs = inject('inlineTabs') as ComputedRef<
-                activeInlineTabInterface[]
-            >
-            const tableQualifiedNamesContraint: Ref<{
-                allowed: string[]
-                notAllowed: string[]
-            }> = ref(
-                allowedTablesInJoinSelector(
-                    panelIndex.value,
-                    rowIndex.value,
-                    subIndex.value,
-                    activeInlineTab.value
-                )
-            )
 
             const placeholder = computed(() => {
                 let data = ''
-                if (dirtyIsTableSelected.value) {
+                if (selectedTablesQualifiedNames.value?.length > 1) {
+                    if (dirtyIsTableSelected.value) {
+                        if (isColumnLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `Search from ${
+                                totalColumnsCount.value
+                            } ${pluralizeString(
+                                'column',
+                                totalColumnsCount.value,
+                                false
+                            )}`
+                        }
+                    } else {
+                        if (isTableLoading.value) {
+                            data = 'Loading...'
+                        } else {
+                            data = `Search from ${
+                                totalTablesCount.value
+                            } ${pluralizeString(
+                                'table',
+                                totalTablesCount.value,
+                                false
+                            )}`
+                        }
+                    }
+                } else {
                     if (isColumnLoading.value) {
                         data = 'Loading...'
                     } else {
-                        data = `Search from ${
-                            totalColumnsCount.value
-                        } ${pluralizeString(
-                            'column',
-                            totalColumnsCount.value,
-                            false
-                        )}`
-                    }
-                } else {
-                    if (isTableLoading.value) {
-                        data = 'Loading...'
-                    } else {
-                        data = `Search from ${
-                            totalTablesCount.value
-                        } ${pluralizeString(
-                            'table',
-                            totalTablesCount.value,
-                            false
-                        )}`
+                        data = `Search from ${totalColumnsCount.value} columns`
                     }
                 }
 
@@ -453,7 +588,8 @@
 
             const onSelectTable = (item, event) => {
                 tableQueryText.value = ''
-                replaceColumnBody(getColumnInitialBody(item))
+
+                replaceColumnBody(getColumnInitialBody(item, 'not_initial'))
                 dirtyIsTableSelected.value = true
                 dirtyTableSelected.value = item
 
@@ -480,20 +616,16 @@
                     label: item.label,
                     type: item.type,
                     value: item.label,
-                    columnQualifiedName: item.qualifiedName,
-                    tableName: getTableNameFromTableQualifiedName(
-                        item.qualifiedName
-                    ),
+                    qualifiedName: item.qualifiedName,
+                    tableName: item.item.attributes.tableName,
+                    column: item.item,
+                    attributes: item.attributes,
+                    isPrimary: item.item.attributes?.isPrimary,
+                    isForeign: item.item.attributes?.isForeign,
+                    isPartition: item.item.attributes?.isPartition,
+                    item: item.item,
                 }
-
-                emit('change', item.qualifiedName)
-                activeInlineTab.value.playground.vqb.selectedTables =
-                    JSON.parse(
-                        JSON.stringify(
-                            activeInlineTab.value.playground.vqb.selectedTables
-                        )
-                    )
-
+                emit('change', item)
                 event.stopPropagation()
                 event.preventDefault()
                 updateVQB(activeInlineTab, inlineTabs)
@@ -510,15 +642,17 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 (newContext) => {
-                    if (
-                        !dirtyTableSelected.value?.attributes?.qualifiedName?.includes(
-                            newContext.attributeValue
-                        )
-                    ) {
-                        dirtyIsTableSelected.value = false
-                        dirtyTableSelected.value = null
-                        isTableSelected.value = false
-                        tableSelected.value = null
+                    if (selectedTablesQualifiedNames.value.length > 1) {
+                        if (
+                            !tableSelected.value?.attributes?.qualifiedName?.includes(
+                                newContext.attributeValue
+                            )
+                        ) {
+                            dirtyIsTableSelected.value = false
+                            dirtyTableSelected.value = null
+                            isTableSelected.value = false
+                            tableSelected.value = null
+                        }
                     }
                 },
                 {
@@ -529,48 +663,71 @@
             watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
-                    if (newIsAreaFocused) {
-                        tableQualifiedNamesContraint.value =
-                            allowedTablesInJoinSelector(
-                                panelIndex.value,
-                                rowIndex.value,
-                                subIndex.value,
-                                activeInlineTab.value
+                    if (selectedTablesQualifiedNames.value.length > 1) {
+                        if (newIsAreaFocused) {
+                            dirtyTableSelected.value = toRaw(
+                                tableSelected.value
+                            )
+                            dirtyIsTableSelected.value = toRaw(
+                                isTableSelected.value
                             )
 
-                        dirtyTableSelected.value = toRaw(tableSelected.value)
-                        dirtyIsTableSelected.value = toRaw(
-                            isTableSelected.value
-                        )
-                        if (tableSelected.value) {
-                            replaceColumnBody(
-                                getColumnInitialBody(tableSelected.value)
-                            )
+                            if (!tableSelected.value) {
+                                replaceTableBody(getTableInitialBody())
+                            } else {
+                                replaceColumnBody(
+                                    getColumnInitialBody(
+                                        tableSelected.value,
+                                        'not_initial'
+                                    )
+                                )
+                            }
                         } else {
-                            replaceTableBody(getTableInitialBody())
+                            dirtyTableSelected.value = null
+                            dirtyIsTableSelected.value = false
                         }
                     } else {
-                        dirtyTableSelected.value = null
-                        dirtyIsTableSelected.value = false
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                activeInlineTab.value.playground.vqb
+                                    .selectedTables,
+                                'initial'
+                            )
+                        )
                     }
                 },
                 { immediate: true }
             )
 
             watch(tableQueryText, () => {
-                if (!dirtyIsTableSelected?.value) {
-                    replaceTableBody(getTableInitialBody())
+                if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (!dirtyIsTableSelected?.value) {
+                        replaceTableBody(getTableInitialBody())
+                    }
                 }
             })
             watch(columnQueryText, () => {
-                if (dirtyIsTableSelected?.value) {
+                if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (dirtyIsTableSelected?.value) {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                dirtyTableSelected.value,
+                                'not_initial'
+                            )
+                        )
+                    }
+                } else {
                     replaceColumnBody(
-                        getColumnInitialBody(dirtyTableSelected.value)
+                        getColumnInitialBody(
+                            activeInlineTab.value.playground.vqb.selectedTables,
+                            'initial'
+                        )
                     )
                 }
             })
 
             return {
+                tableQualfiedName,
                 getDataTypeImage,
                 actionClick,
                 onSelectColumn,
@@ -597,6 +754,7 @@
                 getTableInitialBody,
                 dirtyTableSelected,
                 dirtyIsTableSelected,
+                selectedTablesQualifiedNames,
             }
         },
     })

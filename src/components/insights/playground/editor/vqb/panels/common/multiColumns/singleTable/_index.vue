@@ -24,9 +24,11 @@
                         : `width:${containerPosition?.width}px;`
                 }top:${
                     containerPosition?.top + containerPosition?.height
-                }px;left:${containerPosition?.left}px;height:280px`"
+                }px;left:${
+                    containerPosition?.left
+                }px;height:280px;min-height:0`"
                 :class="[
-                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 flex flex-col bg-white rounded custom-shadow position',
                 ]"
             >
                 <slot name="body"> </slot>
@@ -43,6 +45,7 @@
         computed,
         defineComponent,
         ComputedRef,
+        PropType,
         ref,
         onMounted,
         onUnmounted,
@@ -55,7 +58,8 @@
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useVModels } from '@vueuse/core'
 
     import useBody from './useBody'
 
@@ -68,20 +72,21 @@
                 required: false,
                 default: false,
             },
-            specifiedBodyWidth: {
-                type: Number,
-                required: false,
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
             },
-            panelIndex: {
-                type: Number,
+            selectedItems: {
+                type: Object as PropType<string[]>,
                 required: true,
             },
-            rowIndex: {
-                type: Number,
-                required: true,
+            selectedTableData: {
+                type: Object as PropType<{
+                    certificateStatus: string | undefined
+                    assetType: string | undefined
+                }>,
             },
-            subIndex: {
-                type: Number,
+            tableQualfiedName: {
+                type: String,
                 required: true,
             },
         },
@@ -89,12 +94,11 @@
         setup(props, { emit }) {
             const {
                 disabled,
-                specifiedBodyWidth,
-                panelIndex,
-                subIndex,
-                rowIndex,
+                selectedTablesQualifiedNames,
+                selectedItems,
+                selectedTableData,
+                tableQualfiedName,
             } = toRefs(props)
-            const { allowedTablesInJoinSelector } = useJoin()
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
             const observer = ref()
@@ -109,39 +113,18 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
-            const tableQualifiedNamesContraint: Ref<{
-                allowed: string[]
-                notAllowed: string[]
-            }> = computed(() => {
-                return allowedTablesInJoinSelector(
-                    panelIndex.value,
-                    rowIndex.value,
-                    subIndex.value,
-                    activeInlineTab.value
-                )
-            })
             const isAreaFocused = ref(false)
 
-            const tableSelected = ref(null)
-            const dirtyTableSelected = ref(null)
-            const selectedColumn = ref(null)
-            const isTableSelected = ref(false)
-            const dirtyIsTableSelected = ref(false)
             const columnQueryText = ref('')
-            const tableQueryText = ref('')
-            const TotalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
+            const map = ref({})
+            selectedItems.value?.forEach((selectedItem) => {
+                map.value[selectedItem] = true
+            })
+
             const TotalColumnsCount = computed(
                 () => ColumnsData.value?.approximateCount || 0
             )
 
-            const {
-                list: TableList,
-                replaceBody: replaceTableBody,
-                data: tablesData,
-                isLoading: isTableLoading,
-            } = useAssetListing('', false)
             const {
                 list: ColumnList,
                 replaceBody: replaceColumnBody,
@@ -149,43 +132,29 @@
                 isLoading: isColumnLoading,
             } = useAssetListing('', false)
 
-            const getColumnInitialBody = (item) => {
-                let data = {}
-                if (item.typeName === 'Table') {
-                    data = {
-                        tableQualifiedName: item?.qualifiedName,
-                        searchText: columnQueryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-                    }
-                } else if (item.typeName === 'View') {
-                    data = {
-                        viewQualifiedName: item?.qualifiedName,
-                        searchText: columnQueryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-                    }
+            const getColumnInitialBody = () => {
+                let data = {
+                    searchText: columnQueryText.value,
+                    assetType: selectedTableData.value?.assetType,
                 }
+                if (
+                    activeInlineTab.value.playground.vqb?.panels[0]
+                        ?.subpanels[0]?.tableData?.assetType === 'View'
+                ) {
+                    data.viewQualifiedName =
+                        selectedTablesQualifiedNames?.length > 0
+                            ? selectedTablesQualifiedNames[0].tableQualifiedName
+                            : tableQualfiedName.value
+                } else {
+                    data.tableQualfiedName =
+                        selectedTablesQualifiedNames.value?.length > 0
+                            ? selectedTablesQualifiedNames.value[0]
+                                  .tableQualifiedName
+                            : tableQualfiedName.value
+                }
+
                 return {
                     dsl: useBody(data),
-                    attributes: attributes,
-                    suppressLogs: true,
-                }
-            }
-
-            const getTableInitialBody = () => {
-                return {
-                    dsl: useBody({
-                        schemaQualifiedName:
-                            activeInlineTab.value.playground.editor.context
-                                .attributeValue,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
-
-                        searchText: tableQueryText.value,
-                        tableQualifiedNamesContraint:
-                            tableQualifiedNamesContraint.value,
-                    }),
                     attributes: attributes,
                     suppressLogs: true,
                 }
@@ -209,8 +178,8 @@
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value
                     )
-                    setDropDownPosition()
 
+                    setDropDownPosition()
                     document.addEventListener('click', (event) => {
                         const withinBoundaries = event
                             .composedPath()
@@ -238,7 +207,7 @@
             }
 
             // for initial call
-            replaceTableBody(getTableInitialBody())
+            replaceColumnBody(getColumnInitialBody())
 
             const setFocus = () => {
                 setDropDownPosition()
@@ -256,35 +225,24 @@
             */
 
             const provideData: provideDataInterface = {
-                getTableInitialBody: getTableInitialBody,
                 getColumnInitialBody: getColumnInitialBody,
-                replaceTableBody: replaceTableBody,
                 replaceColumnBody: replaceColumnBody,
                 columnQueryText: columnQueryText,
-                tableQueryText: tableQueryText,
-                TableList: TableList,
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,
-                isTableSelected: isTableSelected,
-                totalTablesCount: TotalTablesCount,
                 totalColumnsCount: TotalColumnsCount,
-                isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,
-                tableSelected: tableSelected,
-                dirtyIsTableSelected: dirtyIsTableSelected,
-                dirtyTableSelected: dirtyTableSelected,
+                map: map,
             }
             useProvide(provideData)
             /*-------------------------------------*/
 
             return {
                 setFocus,
-                specifiedBodyWidth,
                 disabled,
                 container,
                 isAreaFocused,
                 containerPosition,
-                tableQualifiedNamesContraint,
             }
         },
     })

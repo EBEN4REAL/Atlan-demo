@@ -25,8 +25,7 @@
     } from 'vue'
 
     import { languageTokens } from './sqlTokens'
-    import TurndownService from 'turndown'
-    import * as monaco from 'monaco-editor'
+    import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -38,14 +37,11 @@
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
     import { loadThemes } from './themeLoader'
-    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
-    const turndownService = new TurndownService({})
 
     import Column from '~/assets/images/insights/autocomplete/Column.png'
     import Default from '~/assets/images/insights/autocomplete/default.png'

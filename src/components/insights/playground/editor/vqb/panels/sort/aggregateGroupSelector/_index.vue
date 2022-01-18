@@ -2,28 +2,33 @@
     <div
         ref="container"
         @click="setFocus"
-        class="relative flex items-center w-full group"
+        class="relative flex items-center w-full border cursor-pointer group"
         :class="[
-            isAreaFocused ? ' border-primary-focus  ' : 'border-gray-300 ',
+            isAreaFocused
+                ? ' container-box-shadow-focus'
+                : 'border-gray-300 container-box-shadow',
             ,
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
     >
-        <slot name="head" :data="{ isAreaFocused }"> </slot>
+        <slot name="head"> </slot>
 
         <teleport to="body">
             <div
                 v-if="isAreaFocused"
+                @click.stop="() => {}"
                 :style="`${
                     specifiedBodyWidth
                         ? `width:${specifiedBodyWidth}px;`
                         : `width:${containerPosition?.width}px;`
                 }top:${
                     containerPosition?.top + containerPosition?.height
-                }px;left:${containerPosition?.left}px`"
+                }px;left:${
+                    containerPosition?.left
+                }px;height:280px;min-height:0`"
                 :class="[
-                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 flex flex-col bg-white rounded custom-shadow position',
                 ]"
             >
                 <slot name="body"> </slot>
@@ -34,17 +39,17 @@
 
 <script lang="ts">
     import {
-        Ref,
-        watch,
-        inject,
         computed,
         defineComponent,
         ref,
         onMounted,
         onUnmounted,
+        PropType,
         toRefs,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import { VQBPanelType } from '~/types/insights/VQB.interface'
+
     import {
         useProvide,
         provideDataInterface,
@@ -59,18 +64,21 @@
                 required: false,
                 default: false,
             },
-
-            specifiedBodyWidth: {
-                type: Number,
-                required: false,
+            selectedColumn: {
+                type: Object,
+                required: true,
+                default: () => {},
+            },
+            panel: {
+                type: Object as PropType<VQBPanelType>,
+                required: true,
             },
         },
 
         setup(props, { emit }) {
-            const { disabled, specifiedBodyWidth } = toRefs(props)
-            const isAreaFocused = ref(false)
+            const { disabled } = toRefs(props)
+            const { selectedColumn, panel } = useVModels(props)
             const container = ref()
-            // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
 
             const observer = ref()
             const containerPosition = ref({
@@ -80,26 +88,32 @@
                 left: undefined,
             })
 
-            const setDropDownPosition = () => {
-                const viewportOffset = container.value?.getBoundingClientRect()
-                if (viewportOffset?.width)
-                    containerPosition.value.width = viewportOffset?.width
-                if (viewportOffset?.top)
-                    containerPosition.value.top = viewportOffset?.top + 1
-                if (viewportOffset?.left)
-                    containerPosition.value.left = viewportOffset?.left
-                if (viewportOffset?.height)
-                    containerPosition.value.height = viewportOffset?.height
-            }
+            const isAreaFocused = ref(false)
+            const isTableSelected = ref(false)
+            const isColumnLoading = ref(false)
+            const columnQueryText = ref('')
+            const tableQueryText = ref('')
+            const TotalColumnsCount = ref(0)
 
             onMounted(() => {
                 // const _container = document.getElementById('_container')
+
                 if (container.value) {
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value
                     )
 
-                    setDropDownPosition()
+                    const viewportOffset =
+                        container.value?.getBoundingClientRect()
+                    if (viewportOffset?.width)
+                        containerPosition.value.width = viewportOffset?.width
+                    if (viewportOffset?.top)
+                        containerPosition.value.top = viewportOffset?.top + 1
+                    if (viewportOffset?.left)
+                        containerPosition.value.left = viewportOffset?.left
+                    if (viewportOffset?.height)
+                        containerPosition.value.height = viewportOffset?.height
+
                     document.addEventListener('click', (event) => {
                         const withinBoundaries = event
                             .composedPath()
@@ -125,30 +139,34 @@
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
             }
-            /* ---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
-
-            const provideData: provideDataInterface = {
-                isAreaFocused: isAreaFocused,
-            }
-            useProvide(provideData)
-            /*-------------------------------------*/
-
-            onUnmounted(() => {
-                observer?.value?.unobserve(container?.value)
-            })
 
             const setFocus = () => {
-                setDropDownPosition()
                 if (!disabled.value) {
                     isAreaFocused.value = true
                 }
             }
 
+            onUnmounted(() => {
+                observer?.value?.unobserve(container?.value)
+            })
+
+            /* ---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+
+            const provideData: provideDataInterface = {
+                columnQueryText: columnQueryText,
+                tableQueryText: tableQueryText,
+                isAreaFocused: isAreaFocused,
+                isTableSelected: isTableSelected,
+                totalColumnsCount: TotalColumnsCount,
+                isColumnLoading: isColumnLoading,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
+
             return {
                 setFocus,
-                specifiedBodyWidth,
                 disabled,
                 container,
                 isAreaFocused,
@@ -174,11 +192,15 @@
         @apply right-0;
     }
     .box-shadow {
-        box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-            0px 6px 16px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
     }
     .disable-bg {
         background-color: #fbfbfb;
+    }
+    .container-box-shadow {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .container-box-shadow-focus {
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
     }
 </style>

@@ -24,9 +24,11 @@
                         : `width:${containerPosition?.width}px;`
                 }top:${
                     containerPosition?.top + containerPosition?.height
-                }px;left:${containerPosition?.left}px;height:280px`"
+                }px;left:${
+                    containerPosition?.left
+                }px;height:280px;min-height:0`"
                 :class="[
-                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 flex flex-col bg-white rounded custom-shadow position',
                 ]"
             >
                 <slot name="body"> </slot>
@@ -43,6 +45,7 @@
         computed,
         defineComponent,
         ComputedRef,
+        PropType,
         ref,
         onMounted,
         onUnmounted,
@@ -56,6 +59,8 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
+    import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useVModels } from '@vueuse/core'
 
     import useBody from './useBody'
 
@@ -68,33 +73,18 @@
                 required: false,
                 default: false,
             },
-            specifiedBodyWidth: {
-                type: Number,
-                required: false,
+            selectedTablesQualifiedNames: {
+                type: Object as PropType<selectedTables[]>,
             },
-            panelIndex: {
-                type: Number,
-                required: true,
-            },
-            rowIndex: {
-                type: Number,
-                required: true,
-            },
-            subIndex: {
-                type: Number,
+            selectedItems: {
+                type: Object as PropType<string[]>,
                 required: true,
             },
         },
 
         setup(props, { emit }) {
-            const {
-                disabled,
-                specifiedBodyWidth,
-                panelIndex,
-                subIndex,
-                rowIndex,
-            } = toRefs(props)
-            const { allowedTablesInJoinSelector } = useJoin()
+            const { disabled, selectedTablesQualifiedNames, selectedItems } =
+                toRefs(props)
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
             const observer = ref()
@@ -109,26 +99,18 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
-            const tableQualifiedNamesContraint: Ref<{
-                allowed: string[]
-                notAllowed: string[]
-            }> = computed(() => {
-                return allowedTablesInJoinSelector(
-                    panelIndex.value,
-                    rowIndex.value,
-                    subIndex.value,
-                    activeInlineTab.value
-                )
-            })
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
             const dirtyTableSelected = ref(null)
-            const selectedColumn = ref(null)
             const isTableSelected = ref(false)
             const dirtyIsTableSelected = ref(false)
             const columnQueryText = ref('')
             const tableQueryText = ref('')
+            const map = ref({})
+            selectedItems.value?.forEach((selectedItem) => {
+                map.value[selectedItem] = true
+            })
             const TotalTablesCount = computed(
                 () => tablesData.value?.approximateCount || 0
             )
@@ -155,17 +137,14 @@
                     data = {
                         tableQualifiedName: item?.qualifiedName,
                         searchText: columnQueryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
                     }
                 } else if (item.typeName === 'View') {
                     data = {
                         viewQualifiedName: item?.qualifiedName,
                         searchText: columnQueryText.value,
-                        context:
-                            activeInlineTab.value.playground.editor.context,
                     }
                 }
+
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
@@ -183,14 +162,14 @@
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNamesContraint:
-                            tableQualifiedNamesContraint.value,
+                        tableQualifiedNames: selectedTablesQualifiedNames.value
+                            ?.filter((x) => x !== null || undefined)
+                            .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
                 }
             }
-
             const setDropDownPosition = () => {
                 const viewportOffset = container.value?.getBoundingClientRect()
                 if (viewportOffset?.width)
@@ -209,8 +188,8 @@
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value
                     )
-                    setDropDownPosition()
 
+                    setDropDownPosition()
                     document.addEventListener('click', (event) => {
                         const withinBoundaries = event
                             .composedPath()
@@ -273,18 +252,17 @@
                 tableSelected: tableSelected,
                 dirtyIsTableSelected: dirtyIsTableSelected,
                 dirtyTableSelected: dirtyTableSelected,
+                map: map,
             }
             useProvide(provideData)
             /*-------------------------------------*/
 
             return {
                 setFocus,
-                specifiedBodyWidth,
                 disabled,
                 container,
                 isAreaFocused,
                 containerPosition,
-                tableQualifiedNamesContraint,
             }
         },
     })

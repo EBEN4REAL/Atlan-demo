@@ -1,18 +1,6 @@
 import { watch, ref, Ref, onMounted } from 'vue'
-import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
-import {
-    Attributes,
-    Database,
-    Schema,
-    Table,
-    Column,
-    View,
-} from '~/types/insights/table.interface'
 // import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
-import { IndexSearchResponse } from '~/services/meta/search/index'
-
-import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
 import { message } from 'ant-design-vue'
@@ -121,7 +109,9 @@ const useTree = ({
         qualifiedName: string,
         initialStack?: string[]
     ) => {
-        const parentStack = initialStack?.length ? initialStack : [qualifiedName]
+        const parentStack = initialStack?.length
+            ? initialStack
+            : [qualifiedName]
 
         const findPath = (currQualifiedName: string) => {
             if (
@@ -180,7 +170,8 @@ const useTree = ({
                 )
                 tableResponse.entities?.forEach((table) => {
                     treeData.value.push(returnTreeDataItemAttributes(table))
-                    nodeToParentKeyMap[table?.attributes?.qualifiedName] = 'root'
+                    nodeToParentKeyMap[table?.attributes?.qualifiedName] =
+                        'root'
                 })
 
                 checkAndAddLoadMoreNode(
@@ -410,13 +401,10 @@ const useTree = ({
      * Asynchronously fetches children of a node and appends them
      */
 
-     const isNodeLoading = ref(false)
-     const nodeError = ref(undefined)
-     const errorNode = ref(undefined)
+    const isNodeLoading = ref(false)
+    const nodeError = ref(undefined)
+    const errorNode = ref(undefined)
 
-     
-    
-    
     const onLoadData = async (treeNode: {
         [key: string]: any
         dataRef: CustomTreeDataItem
@@ -434,7 +422,7 @@ const useTree = ({
                 const schemaResponse = await getSchemaForDatabase(
                     treeNode.dataRef.qualifiedName
                 )
-    
+
                 schemaResponse.entities?.forEach((schema) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(schema)
@@ -442,8 +430,9 @@ const useTree = ({
                     nodeToParentKeyMap[schema.attributes.qualifiedName] =
                         treeNode.dataRef.qualifiedName
                 })
-    
-                if (!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true
+
+                if (!schemaResponse.entities?.length)
+                    treeNode.dataRef.isLeaf = true
                 checkAndAddLoadMoreNode(
                     schemaResponse,
                     'Database',
@@ -453,7 +442,7 @@ const useTree = ({
                 const tableResponse = await getTablesAndViewsForSchema(
                     treeNode.dataRef.qualifiedName
                 )
-    
+
                 tableResponse.entities?.forEach((table) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(table)
@@ -461,8 +450,9 @@ const useTree = ({
                     nodeToParentKeyMap[table.attributes.qualifiedName] =
                         treeNode.dataRef.qualifiedName
                 })
-    
-                if (!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true
+
+                if (!tableResponse.entities?.length)
+                    treeNode.dataRef.isLeaf = true
                 checkAndAddLoadMoreNode(
                     tableResponse,
                     'Schema',
@@ -472,7 +462,7 @@ const useTree = ({
                 const columnResponse = await getColumnsForTable(
                     treeNode.dataRef.qualifiedName
                 )
-    
+
                 columnResponse.entities?.forEach((column) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(column)
@@ -489,7 +479,7 @@ const useTree = ({
                 const columnResponse = await getColumnsForView(
                     treeNode.dataRef.qualifiedName
                 )
-    
+
                 columnResponse.entities?.forEach((column) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(column)
@@ -504,17 +494,18 @@ const useTree = ({
                 )
             }
             loadedKeys.value.push(treeNode.dataRef.key)
-        } catch(error) {
+        } catch (error) {
             const er = Object.getOwnPropertyDescriptor(error, 'message')
-                isNodeLoading.value = false
-                nodeError.value = er?.value
-                errorNode.value = treeNode
-                message.error(`Something went wrong while fetching the ${treeNode.dataRef.typeName} data`)
+            isNodeLoading.value = false
+            nodeError.value = er?.value
+            errorNode.value = treeNode
+            message.error(
+                `Something went wrong while fetching the ${treeNode.dataRef.typeName} data`
+            )
 
-                loadedKeys.value.push(treeNode.dataRef.key)
-                return
-        }   
-
+            loadedKeys.value.push(treeNode.dataRef.key)
+            return
+        }
     }
 
     const expandNode = (expanded: string[], event: any) => {
@@ -564,18 +555,18 @@ const useTree = ({
     }) => {
         const currentParents = nodeToParentKeyMap[qualifiedName]
         // console.log('schema tree update: ', entity)
-        
+
         if (currentParents === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
             // console.log('schema tree update: ', treeData)
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === qualifiedName) {
-                // console.log('node update: ', {
-                //     ...treeNode,
-                //     attributes: entity.attributes,
-                //     classifications: entity.classifications,
-                //     meanings: entity.meanings,
-                // })
+                    // console.log('node update: ', {
+                    //     ...treeNode,
+                    //     attributes: entity.attributes,
+                    //     classifications: entity.classifications,
+                    //     meanings: entity.meanings,
+                    // })
                     return {
                         ...treeNode,
                         ...entity,
@@ -610,8 +601,6 @@ const useTree = ({
                         classifications: entity.classifications,
                         meanings: entity.meanings,
                     }
-
-                    
                 }
                 return {
                     ...node,

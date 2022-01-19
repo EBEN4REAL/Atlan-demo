@@ -1,24 +1,25 @@
 <template>
-    <a-select
-        v-model:value="inputValue"
-        :disabled="readOnly && !subpanel?.filter?.isVariable"
-        mode="tags"
-        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-        :class="$style.multi_input"
-        style="height: 32px !important"
-        placeholder="Enter multi values 1,2,3"
-        :token-separators="[',']"
-        @change="handleChange"
-    >
-        <template #suffixIcon>
+    <div class="relative z-50 flex w-full" style="min-height: 34px">
+        <a-select
+            v-model:value="inputValue"
+            :disabled="readOnly && !subpanel?.filter?.isVariable"
+            mode="tags"
+            :class="$style.multi_input"
+            class="z-10 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+            style="height: 32px !important"
+            placeholder="Enter multi values 1,2,3"
+            :token-separators="[',']"
+            @change="handleChange"
+        />
+        <div class="absolute z-20 right-2 trigger-icon">
             <CustomVariableTrigger
                 v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                 :subpanel="subpanel"
                 :index="index"
                 v-model:subpanels="subpanels"
             />
-        </template>
-    </a-select>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -130,6 +131,10 @@
 <style lang="less" scoped>
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+    }
+    .trigger-icon {
+        transform: translateY(-60%);
+        top: 50%;
     }
 </style>
 <style lang="less" module>

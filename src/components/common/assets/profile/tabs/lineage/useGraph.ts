@@ -314,9 +314,9 @@ export default function useGraph() {
         return { portData }
     }
 
-    const createEdgeData = (relation) => {
-        const stroke = relation.stroke
-        const edgeData = {
+    const createEdgeData = (relation, data = {}) => {
+        const stroke = relation?.stroke
+        let edgeData = {
             zIndex: 0,
             id: relation.id,
             source: {
@@ -343,7 +343,10 @@ export default function useGraph() {
                     },
                 },
             },
+            data,
         }
+
+        if (Object.keys(data).length) edgeData = { ...edgeData, data }
 
         return {
             edgeData,
@@ -374,7 +377,7 @@ export default function useGraph() {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
-            cell.attr('line/stroke', visible ? '#c7c7c7' : '#dce0e5')
+            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()
         })
     }

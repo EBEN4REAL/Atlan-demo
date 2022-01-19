@@ -101,7 +101,6 @@
                 v-model:value="entity.attributes.userDescription"
                 placeholder="Add description..."
                 class="text-gray-500 border-0 shadow-none outline-none"
-                :maxlength="140"
                 :rows="2"
             />
         </div>

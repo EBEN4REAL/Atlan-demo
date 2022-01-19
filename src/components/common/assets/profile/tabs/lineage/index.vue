@@ -68,6 +68,7 @@
         SQLAttributes,
         AssetRelationAttributes,
     } from '~/constant/projection'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -75,6 +76,7 @@
         emits: ['preview'],
         setup(_, { emit }) {
             const route = useRoute()
+            const { customMetadataProjections } = useTypedefData()
 
             /** DATA */
             const lineage = ref({})
@@ -109,6 +111,7 @@
                     ...SQLAttributes,
                     ...AssetRelationAttributes,
                     ...BasicSearchAttributes,
+                    ...customMetadataProjections,
                 ],
             }))
 

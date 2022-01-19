@@ -128,7 +128,6 @@
             )
 
             const toggleVariableType = (currVal, index, subpanel) => {
-                debugger
                 if (readOnly.value) return
                 subpanels.value[index].filter.isVariable = !currVal
                 updateVQB(activeInlineTab, tabs)

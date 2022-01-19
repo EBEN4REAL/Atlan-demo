@@ -33,22 +33,13 @@ export function useEditor(
         editorInstance: any
     ) {
         if (activeInlineTab?.value && tabs?.value) {
-            const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-                {},
-                activeInlineTab.value
-            )
-            // const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
-            //     editorText,
-            //     sqlVariables,
-            //     event,
-            //     editorInstance
+            // const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            //     {},
+            //     activeInlineTab.value
             // )
-            // /* If there are any array changes show them here */
-            // setSqlVariables(sqlVariables, res)
-            // activeInlineTabCopy.playground.editor.variables = res
-            // console.log('editor content update')
-            activeInlineTabCopy.playground.editor.text = editorText
-            modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+            // activeInlineTabCopy.playground.editor.text = editorText
+            // modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+            activeInlineTab.value.playground.editor.text = editorText
         }
     }
 

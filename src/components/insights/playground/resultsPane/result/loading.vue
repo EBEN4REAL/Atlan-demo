@@ -4,7 +4,8 @@
         v-if="isQueryRunning === 'loading'"
     >
         <div class="flex flex-col items-center justify-center">
-            <Loader style="min-height: 60px !important"></Loader>
+            <!-- <Loader style="min-height: 60px !important"></Loader> -->
+            <a-spin />
             <p class="mt-2 mb-0 text-base text-gray-700">Crunching Data</p>
         </div>
     </div>

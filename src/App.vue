@@ -3,7 +3,7 @@
     <div class="feedback-btn-wrapper" @click="toggleHelpWidget">
         <div id="feedback-btn">
             <img
-                src="/public/feedback.svg"
+                :src="Feedback"
                 class="feedback-icon ml-2 mt-1 pb-1.5 pl-0.5 pt-1 w-3/6"
             />
         </div>
@@ -24,6 +24,7 @@
     import usePersona from './composables/persona/usePersona'
     import usePurpose from './composables/purpose/usePurpose'
     import useUserData from '~/composables/user/useUserData'
+    import Feedback from '~/assets/images/illustrations/feedback.svg?url'
 
     export default defineComponent({
         setup(props, context) {
@@ -77,7 +78,7 @@
                 // zE('webWidget', 'open')
                 zE('webWidget', 'toggle')
             }
-            return { locale, t, toggleHelpWidget }
+            return { locale, t, toggleHelpWidget, Feedback }
         },
     })
 </script>

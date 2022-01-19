@@ -62,7 +62,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useTableExport } from '~/components/insights/common/composables/useTableExport'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
-    // import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
     export default defineComponent({
         components: {},
@@ -73,8 +72,6 @@
             ) as Ref<activeInlineTabInterface>
 
             const { getFormattedTimeFromMilliSeconds } = useUtils()
-            // const { dataResponse, renderResponse, totalRenderTime } =
-            //     useTimeEvent()
 
             const isQueryRunning = computed(
                 () =>
@@ -92,7 +89,6 @@
                 isQueryRunning,
                 useTableExport,
                 getFormattedTimeFromMilliSeconds,
-                // totalRenderTime,
             }
         },
     })

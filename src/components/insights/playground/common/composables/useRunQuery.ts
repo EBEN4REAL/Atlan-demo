@@ -11,7 +11,6 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
-// import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
 export default function useProject() {
     const {
@@ -22,7 +21,6 @@ export default function useProject() {
         getParsedQueryCursor,
     } = useEditor()
 
-    // const {setStartTime, setResponseTime} = useTimeEvent();
 
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()

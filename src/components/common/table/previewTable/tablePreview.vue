@@ -27,7 +27,6 @@
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import VariantModal from './variantModal.vue'
-    // import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
     export default defineComponent({
         name: 'AtlanTable',
@@ -74,8 +73,6 @@
                 })
                 return label
             }
-
-            // const { setRenderTime } = useTimeEvent()
 
             function handleClick(td) {
                 if (selectedTD.value) {

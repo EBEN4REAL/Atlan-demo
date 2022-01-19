@@ -480,7 +480,9 @@
                 dirtyTableSelected.value = null
                 columnDropdownOption.value = []
                 columnQueryText.value = ''
-                replaceTableBody(getTableInitialBody())
+                replaceTableBody(
+                    getTableInitialBody(selectedTablesQualifiedNames.value)
+                )
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -553,7 +555,11 @@
                         )
 
                         if (!tableSelected.value) {
-                            replaceTableBody(getTableInitialBody())
+                            replaceTableBody(
+                                getTableInitialBody(
+                                    selectedTablesQualifiedNames.value
+                                )
+                            )
                         } else {
                             replaceColumnBody(
                                 getColumnInitialBody(
@@ -572,7 +578,9 @@
 
             watch(tableQueryText, () => {
                 if (!dirtyIsTableSelected?.value) {
-                    replaceTableBody(getTableInitialBody())
+                    replaceTableBody(
+                        getTableInitialBody(selectedTablesQualifiedNames.value)
+                    )
                 }
             })
             watch(columnQueryText, () => {

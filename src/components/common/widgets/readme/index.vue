@@ -142,7 +142,7 @@
 
             const handleCancel = () => {
                 if (editor.value) {
-                    editor.value.resetEditor(readmeContent(asset.value))
+                    editor.value.resetEditor(decodeURIComponent(readmeContent(asset.value) || ""))
                 }
                 localReadmeContent.value = readmeContent(asset.value)
                 isEditMode.value = false

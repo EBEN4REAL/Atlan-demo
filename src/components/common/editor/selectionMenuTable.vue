@@ -126,20 +126,19 @@
             class="flex items-center m-1"
         >
             <a-tooltip
-                v-for="menuItem in menuDataTable"
+                v-for="(menuItem, index) in menuDataTable"
                 :key="menuItem.key"
                 placement="bottom"
             >
                 <div
                     class="
                         flex
-                        p-2
+                        p-1.5
                         text-gray-500
                         transition
                         duration-100
                         ease-in
                         border-0
-                        rounded
                         shadow-none
                         hover:bg-gray-100
                         mx-0.5
@@ -154,10 +153,11 @@
                                 editor.isActive({
                                     textAlign: menuItem.key.split('-')[1],
                                 })),
+                        'border-r': index < menuDataTable.length - 1
                     }"
                     @click="() => menuItem.command({ editor })"
                 >
-                    <AtlanIcon :icon="menuItem.icon" class="w-auto h-4" />
+                    {{ menuItem.title }}
                 </div>
 
                 <template #title>{{

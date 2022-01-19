@@ -9,7 +9,8 @@ import axios from 'axios'
 
 export default function useEvaluate(
     body: Record<string, any> | Ref<Record<string, any>>,
-    immediate?: Boolean
+    immediate?: Boolean,
+    isDrawer?: Boolean
 ) {
     const options: useOptions = {}
     let cancel = axios.CancelToken.source()

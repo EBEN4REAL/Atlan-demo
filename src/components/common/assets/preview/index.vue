@@ -348,7 +348,8 @@
             const body = ref({})
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
-                false
+                false,
+                isDrawer.value
             )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,

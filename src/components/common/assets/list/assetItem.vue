@@ -46,7 +46,7 @@
                             :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
-                            classes="text-md font-bold text-gray-700  mb-0 cursor-pointer text-primary hover:underline "
+                            classes="text-md font-bold mb-0 cursor-pointer text-primary hover:underline "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />

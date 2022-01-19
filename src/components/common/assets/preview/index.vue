@@ -204,7 +204,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-
+    import { useAuthStore } from '~/store/auth'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
@@ -346,6 +346,8 @@
             )
 
             const body = ref({})
+            const authStore = useAuthStore()
+
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
                 false,
@@ -355,11 +357,20 @@
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
                     if (prev) {
+                        if (
+                            authStore?.evaluations?.some(
+                                (ev) =>
+                                    ev?.entityGuid === selectedAsset.value?.guid
+                            )
+                        ) {
+                            return
+                        }
                         body.value = {
                             entities: getAssetEvaluationsBody(
                                 selectedAsset.value
                             ),
                         }
+
                         refresh()
                     }
                 },

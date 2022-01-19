@@ -87,6 +87,7 @@
                                                 size="small"
                                                 type="link"
                                                 @click="handleReject"
+                                                :class="'text-red-500'"
                                             >
                                                 Reject
                                             </a-button>
@@ -157,7 +158,7 @@
                                             <a-button
                                                 size="small"
                                                 type="link"
-                                                :class="'text-primary'"
+                                                :class="'text-green-500'"
                                                 @click="handleApprove"
                                             >
                                                 Approve

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex justify-between h-8 pb-1 text-xs border-b"
+        class="relative flex justify-between h-8 py-1 text-xs border-b"
         style="max-height: 8%; background: #fbfbfb"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&

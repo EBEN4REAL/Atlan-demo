@@ -23,7 +23,7 @@
                 </SearchAdvanced>
                 <slot name="searchAction"></slot>
             </div>
-            <div :class="aggregationTabClass">
+            <div v-if="list.length !== 0" :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
                     class="mt-3"
@@ -53,7 +53,7 @@
                             : emptyViewText
                     "
                     :button-text="queryText ? 'Clear search' : null"
-                    class="flex items-center justify-center h-full"
+                    class="flex items-center justify-center h-full mt-4"
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>

@@ -284,18 +284,7 @@
             }
 
             function getImageUrl(name) {
-                // console.log(
-                //     'url: ',
-                //     new URL(
-                //         `src/assets/images/icons/${name}.svg`,
-                //         import.meta.url
-                //     )
-                // )
-                return `~/assets/images/icons/${name}.svg`
-                // return new URL(
-                //     `src/assets/images/icons/${name}.svg`,
-                //     import.meta.url
-                // ).href
+                return `/dataType/${name}.svg`
             }
 
             function styleListener() {
@@ -330,7 +319,7 @@
                                     )
                                     const span = document.createElement('span')
                                     span.setAttribute('id', 'expandIcon')
-                                    span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='~/assets/images/icons/expand.svg'>`
+                                    span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='/dataType/expand.svg'>`
 
                                     if (
                                         !element.children[x + 1]?.querySelector(

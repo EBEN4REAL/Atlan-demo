@@ -166,7 +166,7 @@
                     :is-drawer="isDrawer"
                     :read-permission="isScrubbed(selectedAsset)"
                     :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
+                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
                     :data="tab.data"
                     :ref="
@@ -348,7 +348,8 @@
             const body = ref({})
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
-                false
+                false,
+                isDrawer.value
             )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,

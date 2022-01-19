@@ -114,6 +114,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const timeAgo = (time: string) => dayjs().from(time, true)
@@ -133,7 +138,7 @@
                 return 'linkPreview'
             }
 
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
 
             const hasAtleastOneSlackLink = computed(() => {
                 const linkArr = links(selectedAsset.value)
@@ -147,6 +152,7 @@
                 () =>
                     selectedAssetUpdatePermission(
                         selectedAsset.value,
+                        isDrawer.value,
                         'RELATIONSHIP_ADD',
                         'Link'
                     ) && assetPermission('CREATE_LINK')

@@ -171,7 +171,7 @@ export const blockMenu: CommandItem[] = [
         title: 'Table',
         key: 'insertTable',
         helpText: 'Insert a table',
-        icon: 'Table',
+        icon: 'TableBlack',
         border: true,
         disabled: () => false,
         command: ({ editor, range }) =>
@@ -284,11 +284,11 @@ export const menuData: CommandItem[] = [
 
 export const menuDataTable: CommandItem[] = [
     {
-        title: 'Insert Row After',
-        key: 'insert-row-after',
-        helpText: 'Insert a row below this cell',
-        icon: 'Add',
-        command: ({ editor }) => editor.chain().focus().addRowAfter().run(),
+        title: 'Insert Column After',
+        key: 'insert-column-after',
+        helpText: 'Append a column to the table',
+        icon: 'AddColumn',
+        command: ({ editor }) => editor.chain().focus().addColumnAfter().run(),
     },
     // table
 ]

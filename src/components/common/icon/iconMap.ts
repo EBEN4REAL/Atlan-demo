@@ -52,6 +52,7 @@ import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
+import TableBlack from '~/assets/images/icons/table-black.svg'
 import View from '~/assets/images/icons/view.svg'
 import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
 import ViewDraft from '~/assets/images/icons/view_draft.svg'
@@ -287,6 +288,7 @@ import EmptyCollections from '~/assets/images/illustrations/empty-collections.sv
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
+import AddColumn from '~/assets/images/icons/add-column.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -477,6 +479,7 @@ export default {
     Schema,
     Table,
     TableGray,
+    TableBlack,
     View,
     ViewGray,
     Notification,
@@ -718,4 +721,5 @@ export default {
     MessageSuccess,
     CrossCircle,
     MessageCross,
+    AddColumn,
 }

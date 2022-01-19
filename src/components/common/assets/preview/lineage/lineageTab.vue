@@ -16,6 +16,7 @@
                 padding="compact"
                 color="minimal"
                 class="text-primary"
+                :disabled="!downstreamGuids?.length"
                 @click="showImpactedAssets = true"
             >
                 <AtlanIcon icon="Download" />

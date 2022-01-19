@@ -103,7 +103,7 @@ export const actions: Actions = {
                     }`
                 ) >= 0
         )
-        if (this.secondaryEvaluations.length + uniqueArray.length > 30) {
+        if (this.secondaryEvaluations.length + uniqueArray.length > 80) {
             this.secondaryEvaluations.splice(0, uniqueArray.length)
         }
         this.secondaryEvaluations.push(...uniqueArray)

@@ -119,6 +119,7 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const isAreaFocused = ref(false)
+            const isJoinPanelDisabled = ref(true)
 
             const tableSelected = ref(null)
             const dirtyTableSelected = ref(null)
@@ -207,9 +208,11 @@
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNames: isJoinPanelDisabled.value
+                            ? undefined
+                            : selectedTablesQualifiedNames
+                                  ?.filter((x) => x !== null || undefined)
+                                  .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
@@ -288,6 +291,24 @@
                 observer?.value?.unobserve(container?.value)
                 emit('onUnmounted')
             })
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    const joinPanel =
+                        activeInlineTab.value.playground.vqb.panels.find(
+                            (panel) => panel.id.toLowerCase() === 'join'
+                        )
+                    if (!joinPanel?.hide) {
+                        isJoinPanelDisabled.value = true
+                    } else {
+                        isJoinPanelDisabled.value = false
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -316,6 +337,7 @@
             /*-------------------------------------*/
 
             return {
+                isJoinPanelDisabled,
                 setFocus,
                 specifiedBodyWidth,
                 disabled,

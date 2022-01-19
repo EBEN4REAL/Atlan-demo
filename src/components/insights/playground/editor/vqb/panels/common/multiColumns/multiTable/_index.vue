@@ -102,6 +102,7 @@
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
+            const isJoinPanelDisabled = ref(true)
             const dirtyTableSelected = ref(null)
             const isTableSelected = ref(false)
             const dirtyIsTableSelected = ref(false)
@@ -162,9 +163,11 @@
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNames: isJoinPanelDisabled.value
+                            ? undefined
+                            : selectedTablesQualifiedNames.value
+                                  ?.filter((x) => x !== null || undefined)
+                                  .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
@@ -191,6 +194,7 @@
 
                     setDropDownPosition()
                     document.addEventListener('click', (event) => {
+                        console.info(event, 'event')
                         const withinBoundaries = event
                             .composedPath()
                             .includes(container.value)
@@ -229,6 +233,25 @@
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
             })
+
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    const joinPanel =
+                        activeInlineTab.value.playground.vqb.panels.find(
+                            (panel) => panel.id.toLowerCase() === 'join'
+                        )
+                    if (!joinPanel?.hide) {
+                        isJoinPanelDisabled.value = true
+                    } else {
+                        isJoinPanelDisabled.value = false
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--

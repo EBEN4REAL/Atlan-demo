@@ -715,6 +715,8 @@ export default function useAssetInfo() {
         typeName?
     ) => {
         let evaluations: any = []
+
+        // Anything that isn't a selectedAsset in store - any drawer, column items in columns tab
         if (secondaryEvaluation) {
             evaluations = authStore?.secondaryEvaluations
         } else {

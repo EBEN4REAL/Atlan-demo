@@ -193,6 +193,7 @@
                 } else {
                     handleAddResource()
                 }
+
                 visible.value = false
                 linkURL.value = ''
                 linkTitle.value = ''

@@ -367,6 +367,7 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import QueryTime from '~/assets/images/icons/query_time.svg'
 
 export default {
     GlowFlash,
@@ -722,4 +723,5 @@ export default {
     CrossCircle,
     MessageCross,
     AddColumn,
+    QueryTime
 }

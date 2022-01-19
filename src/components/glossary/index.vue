@@ -372,8 +372,10 @@
             }
             // for sidebar
             const handlePreview = (item) => {
-                if (!props.checkable) router.push(`/glossary/${item.guid}`)
-                handleSelectedGlossary(item)
+                if (!props.checkable) {
+                    router.push(`/glossary/${item.guid}`)
+                    handleSelectedGlossary(item)
+                }
                 sendSearchClickeEvent()
             }
 

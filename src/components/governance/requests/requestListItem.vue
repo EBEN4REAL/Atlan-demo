@@ -33,7 +33,7 @@
                 </div>
             </Popover>
         </div>
-        <div class="flex items-center col-span-3 pr-12">
+        <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center pl-7 w-52 gap-x-2">
+                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"

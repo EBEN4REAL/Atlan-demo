@@ -1,5 +1,6 @@
 import { ref, watch } from 'vue'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+import useTypedefData from '~/composables/typedefs/useTypedefData'
 import {
     InternalAttributes,
     SQLAttributes,
@@ -7,6 +8,8 @@ import {
 } from '~/constant/projection'
 
 export default function fetchAsset(guid, extraAttr: string[] = []) {
+    const { customMetadataProjections } = useTypedefData()
+
     const data = ref({})
     const limit = ref(1)
     const offset = ref(0)
@@ -17,6 +20,7 @@ export default function fetchAsset(guid, extraAttr: string[] = []) {
     const defaultAttributes = ref([
         ...InternalAttributes,
         ...SQLAttributes,
+        ...customMetadataProjections,
         ...extraAttr,
     ])
     const relationAttributes = ref([...AssetRelationAttributes])

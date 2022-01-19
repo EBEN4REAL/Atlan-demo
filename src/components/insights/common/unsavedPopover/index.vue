@@ -1,45 +1,52 @@
 <template>
-    <div class="p-4 rounded" style="width: 321px">
+    <div class="p-4 rounded" style="width: 360px">
         <!-- <div @click="popUpClose()"></div> -->
         <div class="mb-6">
             <!-- <div > -->
             <p class="mb-2 text-base font-bold text-gray-700">
                 You have unsaved changes
-                <a-button
-                    type="text"
-                    class="float-right w-1 h-auto bg-transparent"
-                    @click="popUpClose"
-                    ><AtlanIcon
-                        icon="Cancel"
-                        class="h-3 text-gray-400"
-                    ></AtlanIcon
-                ></a-button>
             </p>
-
-            <!-- </div> -->
 
             <p class="mb-0 text-black">
                 Do you want to save your changes before closing the tab?
             </p>
         </div>
 
-        <div class="flex justify-end w-full">
-            <a-button
-                class="px-5 mr-4 text-sm border rounded"
-                style="width: 100px"
-                type="default"
+        <div class="flex w-full">
+            <AtlanBtn
+                size="sm"
+                color="secondary"
+                padding="compact"
+                class="h-6 py-1 text-sm border-none rounded shadow-none cursor-pointer justify-self-start hover:text-primary"
                 @click="close"
-                >Close Tab</a-button
             >
-            <a-button
-                class="px-5 text-sm rounded"
-                style="width: 100px"
-                type="primary"
-                :loading="isSaving"
-                @click="save"
-                v-auth="[map.CREATE_COLLECTION]"
-                >Save</a-button
-            >
+                <span>Close Tab</span>
+            </AtlanBtn>
+            <div class="flex justify-end w-full">
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    style="width: 80px"
+                    class="h-6 py-1 text-sm border-none rounded shadow-none cursor-pointer hover:text-primary"
+                    @click="popUpClose"
+                >
+                    <span>Cancel</span>
+                </AtlanBtn>
+
+                <AtlanBtn
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                    style="width: 80px"
+                    class="h-6 py-1 text-sm border-none rounded shadow-none cursor-pointer"
+                    :loading="isSaving"
+                    @click="save"
+                    v-auth="[map.CREATE_COLLECTION]"
+                >
+                    <span>Save</span>
+                </AtlanBtn>
+            </div>
         </div>
     </div>
 </template>
@@ -48,9 +55,10 @@
     import { defineComponent, Ref, inject, PropType, toRefs } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import map from '~/constant/accessControl/map'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     export default defineComponent({
-        components: {},
+        components: { AtlanBtn },
         emits: ['closeTab', 'saveTab', 'closePopup'],
         props: {
             unsavedPopover: {

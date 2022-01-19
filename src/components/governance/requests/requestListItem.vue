@@ -63,7 +63,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3 pr-3">
+        <div class="flex items-center col-span-3 pr-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -73,7 +73,7 @@
             <template v-else>
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center justify-center w-full font-bold"
+                    class="items-center font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -86,7 +86,7 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center justify-end font-light"
+                        class="flex items-center font-light w-96"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'
@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center gap-x-2">
+                    <div class="flex items-center w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"

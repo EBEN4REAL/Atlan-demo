@@ -508,6 +508,25 @@
             </Categories>
         </div>
 
+        <div
+            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                See Also
+            </p>
+            <RelatedTerms
+                v-model="localSeeAlso"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :edit-permission="editPermission"
+                :allow-delete="editPermission"
+                @change="handleSeeAlsoUpdate"
+            >
+            </RelatedTerms>
+        </div>
         <a-modal
             v-model:visible="sampleDataVisible"
             :footer="null"
@@ -544,6 +563,7 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
@@ -563,6 +583,7 @@
             SQLSnippet,
             TermsWidget,
             Categories,
+            RelatedTerms,
             Admins,
             SampleDataTable: defineAsyncComponent(
                 () =>
@@ -644,6 +665,8 @@
                 localClassifications,
                 localMeanings,
                 localCategories,
+                localSeeAlso,
+                handleSeeAlsoUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -732,8 +755,10 @@
                 localMeanings,
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
+                handleSeeAlsoUpdate,
                 isUserDescription,
                 localCategories,
+                localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
                 selectedAssetUpdatePermission,

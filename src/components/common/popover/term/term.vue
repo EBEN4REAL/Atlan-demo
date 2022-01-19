@@ -118,6 +118,28 @@
                             </template>
                         </div>
                     </div>
+                    <div
+                        v-if="
+                            attributes?.localSeeAlso?.length
+                        "
+                        style="font-size: 12px"
+                        class=""
+                    >
+                        <div class="text-gray-500">See Also</div>
+                        <div
+                            class="flex flex-wrap gap-1 leading-5 text-gray-700 truncate overflow-ellipsis"
+                        >
+                            <template
+                                v-for="term in attributes?.localSeeAlso"
+                                :key="term.guid"
+                            >
+                                <TermPill
+                                    :term="term"
+                                    :allow-delete="false"
+                                />
+                            </template>
+                        </div>
+                    </div>
                     <div class="w-full pt-4">
                         <router-link :to="`/glossary/${term.guid}/overview`">
                             <AtlanButton
@@ -168,6 +190,7 @@
 
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
+    import TermPill from '@/common/pills/term.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
 
@@ -176,6 +199,7 @@
         components: {
             UserPill,
             GroupPill,
+            TermPill,
             PopOverUser,
             PopOverGroup,
             ErrorView,

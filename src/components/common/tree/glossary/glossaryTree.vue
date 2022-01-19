@@ -123,6 +123,10 @@
                 type: Object as PropType<string[]>,
                 required: false,
             },
+            disabledGuids: {
+                type: Object as PropType<string[]>,
+                required: false,
+            }
         },
         emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
@@ -169,6 +173,7 @@
                 parentGlossaryGuid,
                 checkable: props.checkable,
                 checkedGuids: checkedGuids.value,
+                disabledGuids: props.disabledGuids,
                 localCheckedNodes,
             })
 

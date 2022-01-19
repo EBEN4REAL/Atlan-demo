@@ -38,6 +38,7 @@ export default function useAssetInfo() {
         asset?.attributes?.parentCategory
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
+    const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -1097,6 +1098,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         isForeign,
         categories,
+        seeAlso,
         parentCategory,
         isGTC,
         getProfilePath,

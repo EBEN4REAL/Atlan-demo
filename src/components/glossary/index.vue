@@ -97,6 +97,7 @@
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
                 v-model:checked-guids="checkedGuids"
+                :disabled-guids="disabledGuids"
                 @check="onCheck"
             ></GlossaryTree>
         </div>
@@ -140,6 +141,7 @@
             >
                 <template v-slot:default="{ item }">
                     <GlossaryItem
+                        v-if="!disabledGuids?.includes(item.guid)"
                         :item="item"
                         :selectedGuid="selectedGlossary?.guid"
                         :checkable="checkable"
@@ -241,6 +243,10 @@
                 type: Object as PropType<string[]>,
                 required: false,
             },
+            disabledGuids: {
+                type: Object as PropType<string[]>,
+                required: false,
+            }
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {

@@ -283,6 +283,21 @@
                 Variant: 'variant',
             }
 
+            function getImageUrl(name) {
+                // console.log(
+                //     'url: ',
+                //     new URL(
+                //         `src/assets/images/icons/${name}.svg`,
+                //         import.meta.url
+                //     )
+                // )
+                return `~/assets/images/icons/${name}.svg`
+                // return new URL(
+                //     `src/assets/images/icons/${name}.svg`,
+                //     import.meta.url
+                // ).href
+            }
+
             function styleListener() {
                 // icons for table headers
 
@@ -315,7 +330,7 @@
                                     )
                                     const span = document.createElement('span')
                                     span.setAttribute('id', 'expandIcon')
-                                    span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='src/assets/images/icons/expand.svg'>`
+                                    span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src='~/assets/images/icons/expand.svg'>`
 
                                     if (
                                         !element.children[x + 1]?.querySelector(
@@ -334,9 +349,9 @@
                             span.setAttribute('id', 'icon')
                             span.innerHTML = `<img data-tooltip=${
                                 column.data_type
-                            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src='src/assets/images/dataType/${
+                            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src="${getImageUrl(
                                 imageMap[getDataType(column.data_type)]
-                            }.svg'>`
+                            )}">`
 
                             if (!th.querySelector('#icon > img')) {
                                 th.prepend(span)

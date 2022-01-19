@@ -659,11 +659,9 @@
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useRouter } from 'vue-router'
-    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
     import { generateUUID } from '~/utils/helper/generator'
     import {
         useMapping,
@@ -672,6 +670,26 @@
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+
+    export function getLastMappedKeyword(
+        token_param: string[],
+        mappingKeywords,
+        mappingKeywordsKeys
+    ) {
+        // console.log(tokens)
+        let tokens = token_param.map((token) => token?.toUpperCase())
+        for (let i = tokens.length - 1; i >= 0; i--) {
+            /* type- TABLE/COLUMN/SQL keyword */
+            if (mappingKeywordsKeys.includes(tokens[i])) {
+                return {
+                    token: tokens[i],
+                    index: i,
+                    type: mappingKeywords[tokens[i]],
+                }
+            }
+        }
+        return undefined
+    }
 
     export default defineComponent({
         components: { StatusBadge, PopoverAsset, AtlanBtn, ColumnKeys },

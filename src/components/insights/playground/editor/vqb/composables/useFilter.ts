@@ -119,16 +119,16 @@ export function useFilter() {
                         type: 'range_input',
                         name: 'Between',
                     },
-                    // {
-                    //     key: 'is_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is one of',
-                    // },
-                    // {
-                    //     key: 'is_not_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is not one of',
-                    // },
+                    {
+                        key: 'is_one_of',
+                        type: 'multi_input',
+                        name: 'Is one of',
+                    },
+                    {
+                        key: 'is_not_one_of',
+                        type: 'multi_input',
+                        name: 'Is not one of',
+                    },
                 ],
             },
             {
@@ -172,16 +172,6 @@ export function useFilter() {
                         type: 'range_input',
                         name: 'Between',
                     },
-                    // {
-                    //     key: 'is_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is one of',
-                    // },
-                    // {
-                    //     key: 'is_not_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is not one of',
-                    // },
                 ],
             },
             {
@@ -227,6 +217,16 @@ export function useFilter() {
                         key: 'end_like',
                         type: 'input',
                         name: 'Ends with',
+                    },
+                    {
+                        key: 'is_one_of',
+                        type: 'multi_input',
+                        name: 'Is one of',
+                    },
+                    {
+                        key: 'is_not_one_of',
+                        type: 'multi_input',
+                        name: 'Is not one of',
                     },
                 ],
             },

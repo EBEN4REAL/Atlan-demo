@@ -4,7 +4,7 @@ import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.inte
 interface useBodyProps {
     from?: number
     limit?: number
-    tableQualfiedName?: string | undefined
+    tableQualifiedName?: string | undefined
     viewQualifiedName?: string[] | undefined
     tableQualifiedNames?: string[] | undefined
     searchText?: string | undefined
@@ -13,13 +13,14 @@ interface useBodyProps {
 export default function useBody({
     from = 0,
     limit = 100,
-    tableQualfiedName,
+    tableQualifiedName,
     viewQualifiedName,
     tableQualifiedNames,
     searchText,
     context,
 }: useBodyProps) {
     const base = bodybuilder()
+    // debugger
 
     base.from(from || 0)
     base.size(limit || 100)
@@ -29,8 +30,8 @@ export default function useBody({
             value: `*${searchText}*`,
         })
 
-    if (tableQualfiedName) {
-        base.filter('term', 'tableQualifiedName', tableQualfiedName)
+    if (tableQualifiedName) {
+        base.filter('term', 'tableQualifiedName', tableQualifiedName)
         base.filter('term', '__typeName.keyword', 'Column')
     } else if (viewQualifiedName) {
         base.filter('term', 'viewQualifiedName', viewQualifiedName)
@@ -41,7 +42,7 @@ export default function useBody({
         base.filter('terms', 'qualifiedName', tableQualifiedNames)
     }
 
-    if (!tableQualfiedName && !viewQualifiedName) {
+    if (!tableQualifiedName && !viewQualifiedName) {
         switch (context?.attributeName) {
             case 'connectionQualifiedName': {
                 base.filter(

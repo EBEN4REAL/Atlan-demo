@@ -9,6 +9,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+import { VQBPanelType } from '~/types/insights/VQB.interface'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -45,19 +46,39 @@ export function useUtils() {
         }
         return ''
     }
-    function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
+    function getSummarisedInfoOfSortPanel(
+        subpanels: SubpanelSort[],
+        panel: VQBPanelType
+    ) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
 
         let res = 'by '
         subpanels.forEach((subpanel, i) => {
-            if (i !== subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}, `
-            else if (i <= subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}`
+            if (panel?.active === false) {
+                if (i !== subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (i <= subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            } else {
+                if (
+                    i !== subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn?.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn?.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (
+                    i <= subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn?.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn?.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            }
         })
         if (res === 'by ') res = 'No Columns Added for Sort'
         return res
@@ -118,15 +139,26 @@ export function useUtils() {
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    let value = subpanel?.filter?.value
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        subpanel?.filter?.value[0]
+                    ) {
+                        value = subpanel?.filter?.value[0]
+                    }
+                    res += ` ${getValueStringFromType(subpanel, value ?? '')}`
 
                     break
                 }
                 case 'multi_input': {
-                    res += ` (${subpanel?.filter?.value?.join(',') ?? ''})`
+                    res += ` ( `
+                    subpanel?.filter?.value?.forEach((el, i) => {
+                        if (i !== subpanel?.filter?.value?.length - 1)
+                            res += `'${el}',`
+                        else res += `'${el}'`
+                    })
+                    res += ` )`
                     break
                 }
                 case 'none': {

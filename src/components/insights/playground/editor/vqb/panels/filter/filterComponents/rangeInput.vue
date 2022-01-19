@@ -18,34 +18,31 @@
                 />
             </template>
         </a-input>
+
         <div v-else-if="type === 'date'" class="relative flex flex-1">
             <a-date-picker
+                placeholder="Select Date"
+                :show-time="{ format: 'HH:mm' }"
                 v-model:value="firstvalue"
                 :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
-                @change="(event) => onChange(event, 'first', type)"
-                :show-time="{ format: 'HH:mm' }"
                 style="height: 32px !important"
-                place
+                @change="(event) => onChange(event, 'first', type)"
             >
                 <template #suffixIcon>
-                    <CustomVariableTrigger
-                        v-if="!(readOnly && !subpanel?.filter?.isVariable)"
-                        :subpanel="subpanel"
-                        :index="index"
-                        v-model:subpanels="subpanels"
-                    />
+                    <div class="w-6 h-4"></div>
                 </template>
             </a-date-picker>
             <div class="absolute right-2.5 top-1">
                 <CustomVariableTrigger
-                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                     :subpanel="subpanel"
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                     :index="index"
                     v-model:subpanels="subpanels"
                 />
             </div>
         </div>
+
         <a-input
             v-model:value="firstvalue"
             :disabled="readOnly && !subpanel?.filter?.isVariable"
@@ -85,26 +82,22 @@
         </a-input>
         <div v-else-if="type === 'date'" class="relative flex flex-1">
             <a-date-picker
+                placeholder="Select Date"
+                :show-time="{ format: 'HH:mm' }"
                 v-model:value="secondValue"
                 :disabled="readOnly && !subpanel?.filter?.isVariable"
                 class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
                 style="height: 32px !important"
-                :show-time="{ format: 'HH:mm' }"
                 @change="(event) => onChange(event, 'second', type)"
             >
                 <template #suffixIcon>
-                    <CustomVariableTrigger
-                        v-if="!(readOnly && !subpanel?.filter?.isVariable)"
-                        :subpanel="subpanel"
-                        :index="index"
-                        v-model:subpanels="subpanels"
-                    />
+                    <div class="w-6 h-4"></div>
                 </template>
             </a-date-picker>
             <div class="absolute right-2.5 top-1">
                 <CustomVariableTrigger
-                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                     :subpanel="subpanel"
+                    v-if="!(readOnly && !subpanel?.filter?.isVariable)"
                     :index="index"
                     v-model:subpanels="subpanels"
                 />
@@ -218,8 +211,8 @@
                 secondValue.value = inputValue.value
                     ? dayjs(inputValue.value[1])
                     : undefined
-                inputValue.value[0] = firstvalue.value
-                inputValue.value[1] = secondValue.value
+                inputValue.value[0] = firstvalue.value?.format(dateFormat)
+                inputValue.value[1] = secondValue.value?.format(dateFormat)
             }
 
             let timeout = null

@@ -52,6 +52,7 @@ import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
+import TableBlack from '~/assets/images/icons/table-black.svg'
 import View from '~/assets/images/icons/view.svg'
 import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
 import ViewDraft from '~/assets/images/icons/view_draft.svg'
@@ -287,6 +288,7 @@ import EmptyCollections from '~/assets/images/illustrations/empty-collections.sv
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
+import AddColumn from '~/assets/images/icons/add-column.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -360,6 +362,7 @@ import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import Reload2 from '~/assets/images/icons/Reload2.svg'
+import OpenPreview from '~/assets/images/icons/open-preview.svg'
 import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
@@ -476,6 +479,7 @@ export default {
     Schema,
     Table,
     TableGray,
+    TableBlack,
     View,
     ViewGray,
     Notification,
@@ -712,8 +716,10 @@ export default {
     Databricks,
     Quotes2,
     Reload2,
+    OpenPreview,
     Message,
     MessageSuccess,
     CrossCircle,
     MessageCross,
+    AddColumn,
 }

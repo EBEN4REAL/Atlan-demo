@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-end gap-x-2">
+    <div class="flex items-center gap-x-2">
         <a-popover
             v-if="request.message"
             trigger="hover"
@@ -31,6 +31,7 @@
             </template>
             <AtlanIcon class="mr-3 message-icon" icon="Message" />
         </a-popover>
+        <div v-else class="w-7" />
         <AtlanButton
             color="secondary"
             padding="compact"
@@ -59,7 +60,7 @@
                                 v-model:visible="isVisibleRejectWithComment"
                                 trigger="click"
                                 placement="bottomRight"
-                                :align="{ offset: [15, -70] }"
+                                :align="{ offset: [15, -60] }"
                             >
                                 <template #content>
                                     <div class="comment-delete">
@@ -86,6 +87,7 @@
                                                 size="small"
                                                 type="link"
                                                 @click="handleReject"
+                                                :class="'text-red-500'"
                                             >
                                                 Reject
                                             </a-button>
@@ -156,7 +158,7 @@
                                             <a-button
                                                 size="small"
                                                 type="link"
-                                                :class="'text-primary'"
+                                                :class="'text-green-500'"
                                                 @click="handleApprove"
                                             >
                                                 Approve

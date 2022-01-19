@@ -38,6 +38,7 @@ export default function useAssetInfo() {
         asset?.attributes?.parentCategory
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
+    const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -753,6 +754,14 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isProcess = (asset: assetInterface) => {
+        return assetType(asset) === 'Process'
+    }
+
+    const getProcessSQL = (asset: assetInterface) => {
+        return attributes(asset)?.sql
+    }
+
     const getHierarchy = (asset: assetInterface) => {
         const assetType_ = assetTypeList.find((a) => a.id == asset?.typeName)
         const relations: any[] = []
@@ -1089,6 +1098,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         isForeign,
         categories,
+        seeAlso,
         parentCategory,
         isGTC,
         getProfilePath,
@@ -1121,5 +1131,7 @@ export default function useAssetInfo() {
         tileCount,
         pageCount,
         connectionGuid,
+        isProcess,
+        getProcessSQL,
     }
 }

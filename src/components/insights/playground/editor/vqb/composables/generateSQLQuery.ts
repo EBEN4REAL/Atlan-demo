@@ -249,19 +249,10 @@ export function generateSQLQuery(
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
             subpanel.columnsData.forEach((columnData) => {
-                const tableName = getTableName(
-                    columnData.columnsQualifiedName ??
-                        subpanel.column?.qualifiedName ??
-                        subpanel.column?.columnQualifiedName
-                )
+                const tableName = getTableName(columnData.qualifiedName ?? '')
                 if (tableName && columnData?.label) {
                     let contextPrefix = ''
-                    contextPrefix = getContext(
-                        columnData.columnsQualifiedName ??
-                            subpanel.column?.qualifiedName ??
-                            subpanel.column?.columnQualifiedName ??
-                            ''
-                    )
+                    contextPrefix = getContext(columnData.qualifiedName ?? '')
                     if (contextPrefix !== '') {
                         select.group(
                             `${contextPrefix}.${tableName}."${columnData.label}"`
@@ -281,7 +272,7 @@ export function generateSQLQuery(
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
 
-            if (subpanel.aggregateORGroupColumn?.active === false) {
+            if (sortPanel.active === false) {
                 let contextPrefix = ''
                 contextPrefix = getContext(
                     subpanel.column?.qualifiedName ??
@@ -316,17 +307,17 @@ export function generateSQLQuery(
                     subpanel.aggregateORGroupColumn?.value ?? ''
                 )
                 const tableName = getTableName(
-                    subpanel.aggregateORGroupColumn?.value ?? ''
+                    subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {
                         select.order(
-                            `${contextPrefix}.${tableName}."${subpanel.aggregateORGroupColumn?.label}"`,
+                            `"${subpanel.aggregateORGroupColumn?.label}"`,
                             order
                         )
                     } else {
                         select.order(
-                            `${tableName}."${subpanel.aggregateORGroupColumn?.label}"`,
+                            `"${subpanel.aggregateORGroupColumn?.label}"`,
                             order
                         )
                     }
@@ -398,9 +389,13 @@ export function generateSQLQuery(
                         break
                     }
                     case 'multi_input': {
-                        res += ` ('${
-                            subpanel?.filter?.value?.join(',') ?? ''
-                        }')`
+                        res += ` ( `
+                        subpanel?.filter?.value?.forEach((el, i) => {
+                            if (i !== subpanel?.filter?.value?.length - 1)
+                                res += `'${el}',`
+                            else res += `'${el}'`
+                        })
+                        res += ` )`
                         break
                     }
                     case 'none': {

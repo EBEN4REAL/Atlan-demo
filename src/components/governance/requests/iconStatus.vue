@@ -66,6 +66,7 @@
         class="mr-3 message-icon"
         icon="Message"
     />
+    <div v-else class="w-7" />
 </template>
 
 <script lang="ts">

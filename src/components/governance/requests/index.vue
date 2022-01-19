@@ -259,7 +259,7 @@
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(0)
+            const selectedIndex = ref(-1)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
@@ -371,7 +371,7 @@
             watch(
                 filters,
                 () => {
-                    selectedIndex.value = 0
+                    selectedIndex.value = -1
                 },
                 { deep: true }
             )
@@ -414,6 +414,7 @@
             }
             const setConnector = () => {}
             const handleMouseEnter = (itemId, idx) => {
+                 selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
@@ -421,6 +422,7 @@
             const mouseEnterContainer = () => {
                 clearTimeout(timeoutHover)
                 activeHover.value = ''
+                selectedIndex.value = -1
             }
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`

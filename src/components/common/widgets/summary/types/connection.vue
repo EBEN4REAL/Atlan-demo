@@ -88,13 +88,13 @@
                 drawerData.value = {}
             }
 
-            watch(
-                () => [...list.value],
-                () => {
+            watch(list, () => {
+                if (list.value.length > 0) {
+                    console.log('hello')
                     drawerData.value = list.value[0]
                     drawerVisible.value = true
                 }
-            )
+            })
 
             return {
                 getConnectorImage,

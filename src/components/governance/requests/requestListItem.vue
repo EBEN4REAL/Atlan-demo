@@ -12,20 +12,23 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <AssetPiece
-                v-if="request.destinationQualifiedName"
-                :asset-qf-name="request.destinationQualifiedName"
-                :entity-type="request?.entityType"
-            />
-            <span v-else class="text-sm overflow-ellipsis">
-                {{
-                    primaryText[request.requestType]
-                        ? primaryText[request.requestType](request)
-                        : ''
-                }}
-            </span>
+            <div @mouseenter="$emit('mouseEnterAsset')">
+                <AssetPiece
+                    v-if="request.destinationQualifiedName"
+                    :asset-qf-name="request.destinationQualifiedName"
+                    :entity-type="request?.entityType"
+                    :destination-entity="request.destinationEntity"
+                />
+                <span v-else class="text-sm overflow-ellipsis">
+                    {{
+                        primaryText[request.requestType]
+                            ? primaryText[request.requestType](request)
+                            : ''
+                    }}
+                </span>
+            </div>
         </div>
-        <div class="flex items-center col-span-3">
+        <div class="flex items-center col-span-3 justify-evenly">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -63,7 +66,7 @@
             />
         </div>
 
-        <div class="flex items-center col-span-3 pr-3">
+        <div class="flex items-center justify-end col-span-3 pr-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -86,7 +89,7 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center font-light w-96"
+                        class="flex items-center justify-end font-light w-96"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'

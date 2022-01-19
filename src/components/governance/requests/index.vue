@@ -121,14 +121,14 @@
                 <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <!-- <RequestModal
+                <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                /> -->
+                />
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"
@@ -138,13 +138,14 @@
                 >
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
-                        <!-- :selected="isSelected(item.id)" -->
                         <RequestListItem
                             :request="item"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
-                            @mouseenter="handleMouseEnter(item.id)"
+                            :selected="isSelected(item.id)"
+                            @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
+                            @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -249,6 +250,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
+            let timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -257,7 +259,7 @@
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(0)
+            const selectedIndex = ref(-1)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
@@ -369,7 +371,7 @@
             watch(
                 filters,
                 () => {
-                    selectedIndex.value = 0
+                    selectedIndex.value = -1
                 },
                 { deep: true }
             )
@@ -411,13 +413,16 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-            const handleMouseEnter = (itemId) => {
+            const handleMouseEnter = (itemId, idx) => {
+                 selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
             }
             const mouseEnterContainer = () => {
+                clearTimeout(timeoutHover)
                 activeHover.value = ''
+                selectedIndex.value = -1
             }
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
@@ -430,6 +435,12 @@
                     ? requestList.value.length
                     : pagination.value.offset + requestList.value.length
             )
+            const mouseEnterAsset = (itemId, idx) => {
+                clearTimeout(timeoutHover)
+                timeoutHover = setTimeout(() => {
+                    selectRequest(itemId, idx)
+                }, 1000)
+            }
             return {
                 mutate,
                 pagination,
@@ -466,6 +477,7 @@
                 endCountPagination,
                 paginationRef,
                 showPagination,
+                mouseEnterAsset,
                 // listPermission
             }
         },

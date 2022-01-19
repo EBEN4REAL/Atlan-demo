@@ -94,7 +94,6 @@
         isSlackLink,
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
-    import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
 
     dayjs.extend(relativeTime)
 

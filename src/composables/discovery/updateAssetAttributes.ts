@@ -283,9 +283,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-                certificateStatus(selectedAsset.value) ||
+            certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-                certificateStatusMessage(selectedAsset.value)
+            certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -503,7 +503,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         )} updated`
         mutate()
         sendTrackEvent('resource', 'updated', {
-            domain: localLResource.value.link.split('/')[2],
+            domain: localResource.value.link.split('/')[2],
         })
     }
 
@@ -513,8 +513,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         whenever(error, () => {
             message.error(
-                `${error.value?.response?.data?.errorCode} ${
-                    error.value?.response?.data?.errorMessage.split(':')[0]
+                `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
                 }` ?? 'Something went wrong'
             )
         })
@@ -595,8 +594,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -674,8 +672,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })

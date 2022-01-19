@@ -40,8 +40,7 @@
 
             const { tenantSlackStatus } = toRefs(store)
 
-            const { isLoading, error, isReady, call } = useIntegrations(false)
-            // call()
+            const { isLoading, error, isReady, call } = useIntegrations(true)
 
             return {
                 isLoading,

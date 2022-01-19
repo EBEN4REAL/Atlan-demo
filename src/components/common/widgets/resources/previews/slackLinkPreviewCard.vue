@@ -1,7 +1,18 @@
 <template>
-    <div>
+    <template v-if="isLoading">
+        <div class="p-2 border rounded">
+            <a-skeleton
+                :loading="true"
+                avatar
+                active
+                :title="false"
+                :paragraph="{ rows: 2 }"
+            />
+        </div>
+    </template>
+    <LinkPreview v-else-if="error" v-bind="$props" />
+    <template v-else>
         <div
-            v-if="!isLoading"
             class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
             @click="openLink(item?.attributes?.link)"
         >
@@ -18,6 +29,7 @@
                         class="absolute slack-icon-avatar-overlay"
                     ></AtlanIcon>
                 </div>
+
                 <div class="flex flex-col">
                     <div class="flex items-center">
                         <!-- sender -->
@@ -37,7 +49,7 @@
                     </div>
                     <!-- message -->
                     <div>
-                        {{ data.message.text }}
+                        <Truncate :tooltip-text="data.message.text" :rows="2" />
                     </div>
                     <div class="flex text-sm text-gray-500">
                         <span class="" v-if="data.message.reply_count">
@@ -48,9 +60,64 @@
                         <span> #{{ data?.channel?.name }} </span>
                     </div>
                 </div>
+                <div class="flex-grow"></div>
+                <!-- extract this into component -->
+                <div class="">
+                    <a-dropdown trigger="click" placement="bottomRight">
+                        <div
+                            class="flex justify-end w-5 mt-1"
+                            @click="(e) => e.stopPropagation()"
+                        >
+                            <AtlanIcon
+                                icon="KebabMenu"
+                                class="h-4 m-0 cursor-pointer hover:text-primary"
+                            />
+                        </div>
+
+                        <template #overlay>
+                            <a-menu mode="vertical">
+                                <EditResource
+                                    :asset="selectedAsset"
+                                    :edit-permission="editPermission"
+                                    :item="item"
+                                    :updating="true"
+                                    ><template #trigger>
+                                        <a-menu-item key="edit">
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    icon="Edit"
+                                                    class="h-4 mb-0.5 mr-1"
+                                                />
+                                                Edit
+                                            </div>
+                                        </a-menu-item></template
+                                    ></EditResource
+                                >
+                                <DeleteResource
+                                    :asset="selectedAsset"
+                                    :item="item"
+                                    :edit-permission="editPermission"
+                                    ><template #trigger>
+                                        <a-menu-item key="delete">
+                                            <div
+                                                class="flex items-center text-red-500"
+                                            >
+                                                <AtlanIcon
+                                                    icon="Delete"
+                                                    class="h-4 mb-0.5 mr-1"
+                                                />
+                                                Delete
+                                            </div>
+                                        </a-menu-item></template
+                                    ></DeleteResource
+                                >
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
             </template>
         </div>
-    </div>
+    </template>
 </template>
 
 <script lang="ts">
@@ -61,17 +128,33 @@
     import { defineComponent, computed, toRefs } from 'vue'
 
     import integrationStore from '~/store/integrations/index'
-    import { getChannelAndMessageIdFromSlackLink } from '~/composables/integrations/useSlack'
-    import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
+    import {
+        getChannelAndMessageIdFromSlackLink,
+        UnfurlSlackMessage,
+    } from '~/composables/integrations/useSlack'
+    import LinkPreview from '@/common/widgets/resources/previews/linkPreviewCard.vue'
+    import DeleteResource from '../deleteResource.vue'
+    import EditResource from '../addResource.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     dayjs.extend(relativeTime)
 
     export default defineComponent({
-        components: {},
+        components: { LinkPreview, DeleteResource, EditResource, Truncate },
         props: {
             item: {
                 type: Object,
                 required: true,
+            },
+            selectedAsset: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props) {
@@ -84,21 +167,24 @@
             const { link } = item.value.attributes
             const { channelId, messageId } =
                 getChannelAndMessageIdFromSlackLink(link)
-            const { data, isLoading, error } = UnfurlSlackMessage(
+            const { data, isLoading, error, mutate } = UnfurlSlackMessage(
                 {
                     conversationId: channelId,
                     messageId,
                 },
                 {
-                    immediate: true,
+                    immediate: false,
                 }
             )
+            mutate()
+
             function openLink(url) {
                 if (!url) {
                     return
                 }
                 window.open(url)
             }
+
             return {
                 data,
                 isLoading,

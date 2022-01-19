@@ -76,10 +76,4 @@ const useIntegrations = (immediate = true) => {
     }
 }
 
-export const UnfurlSlackMessage = (body, asyncOptions) => {
-    console.log("UnfurlSlackMessage called");
-    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(body, { asyncOptions })
-    return { data, isLoading, error, mutate }
-}
-
 export default useIntegrations;

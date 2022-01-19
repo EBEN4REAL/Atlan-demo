@@ -119,6 +119,12 @@ export const userLevelOauthUrl = computed(() => {
     return slackOauth
 })
 
+export const UnfurlSlackMessage = (body, asyncOptions) => {
+    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(body, { asyncOptions })
+    return { data, isLoading, error, mutate }
+}
+
+
 
 export const archiveSlack = (pV) => {
     const intStore = integrationStore()

@@ -4,11 +4,18 @@
     >
         <div class="flex items-center flex-1" @click="openLink(link(item))">
             <div class="mr-2 min-w-link-left-col">
+                <AtlanIcon
+                    v-if="defaultIcon || link(item) === ''"
+                    icon="Link"
+                    class="w-auto h-7"
+                />
                 <img
+                    v-else
                     :src="`https://www.google.com/s2/favicons?domain=${link(
                         item
                     )}&sz=64`"
-                    :alt="title(item)"
+                    alt=""
+                    :onerror="imageLoadOnError"
                     class="h-7"
                 />
             </div>
@@ -83,15 +90,16 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
-        components: { DeleteResource, EditResource, Tooltip },
+        components: { DeleteResource, EditResource, Tooltip, AtlanIcon },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -109,6 +117,8 @@
             },
         },
         setup() {
+            const defaultIcon = ref(false)
+
             function openLink(url) {
                 if (!url) {
                     return
@@ -124,6 +134,11 @@
                 link,
             } = useAssetInfo()
 
+            const imageLoadOnError = (e) => {
+                console.log('replace image')
+                defaultIcon.value = true
+            }
+
             return {
                 createdBy,
                 modifiedBy,
@@ -132,6 +147,8 @@
                 title,
                 link,
                 openLink,
+                imageLoadOnError,
+                defaultIcon,
             }
         },
     })

@@ -10,7 +10,7 @@
             <div class="flex items-center mb-1">
                 <AtlanIcon
                     v-if="type === 'meta'"
-                    icon="Settings"
+                    icon="Policies"
                     class="-mt-0.5"
                 />
                 <AtlanIcon
@@ -18,38 +18,59 @@
                     icon="QueryGrey"
                     class="-mt-0.5"
                 />
-                <span
-                    class="ml-1 tracking-wider text-gray-500 uppercase"
-                    data-test-id="policy-type"
-                    >{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span
-                >
+                <span class="ml-1 text-gray-500" data-test-id="policy-type">{{
+                    type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                }}</span>
+                <span class="mx-1 text-gray-500">/</span>
+                <span class="text-gray-500">{{ policy?.name }}</span>
             </div>
 
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-x-3">
-                    <div class="text-gray-700">
-                        <span class="ml-1">{{ policy?.name }}</span>
-                    </div>
-
+                <div class="flex items-center">
                     <div class="flex justify-items-end">
                         <span v-if="splitAssets.a.length > 0" class="">
-                            <strong>{{ splitAssets.a.length }}</strong>
-                            {{ splitAssets.a.length === 1 ? 'user' : 'users' }}
+                            {{ splitAssets.a.length }}
+                            {{ splitAssets.a.length === 1 ? 'User' : 'Users' }}
                         </span>
                         <span
                             v-if="
                                 splitAssets.b.length > 0 &&
                                 splitAssets.a.length > 0
                             "
-                            >,</span
+                            >&nbsp;and</span
                         >
-                        <span v-if="splitAssets.b.length > 0" class="ml-2">
-                            <strong>{{ splitAssets.b.length }}</strong>
+                        <span v-if="splitAssets.b.length > 0">
+                            &nbsp;{{ splitAssets.b.length }}
                             {{
                                 splitAssets.b.length === 1 ? 'Group' : 'Groups'
                             }}
+                        </span>
+                    </div>
+                    <div v-if="permissions.length > 0 && type === 'meta'">
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span class="flex-none text-sm">
+                            {{ permissions.length }}
+                            {{
+                                permissions.length > 1
+                                    ? 'permissions'
+                                    : 'permission'
+                            }}
+                        </span>
+                    </div>
+                    <div v-if="type === 'data'">
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span class="flex-none text-sm">Query Access </span>
+                    </div>
+                    <div
+                        v-if="
+                            type === 'data' &&
+                            policy?.mask &&
+                            policy?.mask != 'null'
+                        "
+                    >
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span v-if="maskComputed" class="flex-none text-sm">
+                            {{ maskComputed }}
                         </span>
                     </div>
                 </div>
@@ -121,6 +142,7 @@
     import { splitArray } from '~/utils/string'
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
+    import { maskPurpose } from '~/constant/policy'
 
     export default defineComponent({
         name: 'Purpose Policy',
@@ -173,6 +195,17 @@
                 () => findActions(policy.value.actions),
                 type.value
             )
+            const permissions = computed(() => {
+                if (actions?.value?.length) {
+                    const allPermissions = []
+                    actions.value.forEach((action) => {
+                        if (action?.action?.length)
+                            action.action.forEach((a) => allPermissions.push(a))
+                    })
+                    return allPermissions
+                }
+                return []
+            })
             const removePolicy = () => {
                 /* Delete when the policy is saved */
                 if (!policy.value?.isNew) emit('delete')
@@ -181,6 +214,11 @@
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value, type: type.value })
             }
+            const maskComputed = computed(
+                () =>
+                    maskPurpose.find((el) => el.value === policy.value.mask)
+                        ?.label
+            )
             return {
                 editToggle,
                 splitAssets,
@@ -191,6 +229,8 @@
                 removePolicy,
                 actions,
                 handleClickPlicyCard,
+                permissions,
+                maskComputed
             }
         },
     })

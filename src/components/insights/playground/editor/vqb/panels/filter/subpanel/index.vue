@@ -17,30 +17,59 @@
                             :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
-                            >Where</span
+                            >WHERE</span
                         >
                     </div>
                     <div class="w-full grid-container group">
-                        <div class="item-1">
+                        <div class="item-1" style="max-width: 45%">
                             <ColumnSelector
                                 class="flex-1"
-                                v-model:selectedItem="subpanel.column"
-                                :tableQualfiedName="
+                                v-model:selectedColumn="subpanel.column"
+                                :disabled="readOnly"
+                                :tableQualifiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
-                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
                                 "
-                                @change="
-                                    (val) =>
-                                        handleColumnChange(val, index, subpanel)
-                                "
-                            />
+                            >
+                                <template #head>
+                                    <ColumnSelectorHead
+                                        v-model:selectedColumn="subpanel.column"
+                                        :selectedTables="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
+                                    />
+                                </template>
+
+                                <template #body>
+                                    <ColumnSelectorDropdown
+                                        v-model:selectedColumn="subpanel.column"
+                                        :disabled="readOnly"
+                                        :tableQualifiedName="
+                                            columnSubpanels[0]
+                                                ?.tableQualfiedName
+                                        "
+                                        :selectedTablesQualifiedNames="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
+                                        @change="
+                                            (val) =>
+                                                handleColumnChange(
+                                                    val,
+                                                    index,
+                                                    subpanel
+                                                )
+                                        "
+                                    />
+                                </template>
+                            </ColumnSelector>
                         </div>
 
-                        <div class="item-2">
+                        <div class="item-2" v-if="subpanel?.filter?.type">
                             <FilterSelector
                                 class="w-full"
                                 :columnName="subpanel?.column?.label"
@@ -107,7 +136,7 @@
                                     icon="Close"
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
-                                <!-- <div style="width: 32px" v-else></div> -->
+                                <div style="width: 32px" v-else></div>
                             </div>
                         </div>
                     </div>
@@ -147,7 +176,9 @@
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
-    import ColumnSelector from '../../common/columnSelector/index.vue'
+    import ColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/index.vue'
+    import ColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/dropdown.vue'
+    import ColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/head.vue'
     import Input from '../filterComponents/input.vue'
     import MultiInput from '../filterComponents/multiInput.vue'
     import FilterType from '../filterComponents/filterType.vue'
@@ -169,6 +200,8 @@
             FilterType,
             RangeInput,
             Input,
+            ColumnSelectorDropdown,
+            ColumnSelectorHead,
         },
         props: {
             expand: {
@@ -282,16 +315,6 @@
                         })
                     }
                 )
-                if (variables?.length > 0) {
-                    variables.forEach((variable) => {
-                        changeVariableTypeFromVQB(
-                            activeInlineTab,
-                            tabs,
-                            variable,
-                            val?.type?.toLowerCase() ?? 'string'
-                        )
-                    })
-                }
             }
 
             const handleAddPanel = () => {
@@ -415,24 +438,27 @@
         margin-top: 9px;
     }
     .grid-container {
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 0.65fr 1.5fr;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
     }
     .item-1 {
-        grid-column-start: 1;
-        grid-column-end: 2;
+        flex: 0.35;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-2 {
-        grid-column-start: 2;
-        grid-column-end: 3;
+        flex: 0.15;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-3 {
-        grid-column-start: 3;
-        grid-column-end: 4;
-    }
-    .item-4 {
-        grid-column-start: 4;
-        grid-column-end: 5;
+        flex: 0.5;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
 </style>

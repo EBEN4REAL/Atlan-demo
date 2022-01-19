@@ -8,7 +8,7 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
-const { highlightNodes, highlightEdges } = useUpdateGraph()
+const { highlightNodes, highlightEdges, styleReverseEdge } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
     useGraph()
@@ -492,32 +492,39 @@ export default function useEventGraph(
     }
 
     // controlEdgeHighlight
-    const controlEdgeHighlight = (cell, reset, animate = false) => {
-        if (!cell) return
-        cell.attr('line/stroke', reset ? '#c7c7c7' : '#5277d7')
-        cell.attr('line/strokeWidth', reset ? 1.6 : 3)
-        cell.attr('line/strokeDasharray', reset ? 0 : 5)
-        cell.attr('line/targetMarker/stroke', reset ? '#c7c7c7' : '#5277d7')
-        cell.toFront()
+    const controlEdgeHighlight = (edge, reset, animate = false) => {
+        if (!edge) return
+        edge.attr('line/stroke', reset ? '#c7c7c7' : '#5277d7')
+        edge.attr('line/strokeWidth', reset ? 1.6 : 3)
+        edge.attr('line/targetMarker/stroke', reset ? '#c7c7c7' : '#5277d7')
+        edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
+        edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        edge.toFront()
+
         if (animate)
-            cell.attr('line/style/animation', 'ant-line 30s infinite linear')
-        else cell.attr('line/style/animation', 'unset')
+            edge.attr('line/style/animation', 'ant-line 30s infinite linear')
+        else edge.attr('line/style/animation', 'unset')
+
+        const s = edge.getSourcePoint()
+        const t = edge.getTargetPoint()
+
+        if (s.x < t.x) edge.attr('line/strokeDasharray', reset ? 0 : 5)
+        else edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
     }
 
     // getEventPath
     const getEventPath = (e) => {
-        let path = (e.composedPath && e.composedPath()) || e.path
-        let target = e.target
+        const path = (e.composedPath && e.composedPath()) || e.path
+        const target = e?.target
 
         if (path != null)
             return path.indexOf(window) < 0 ? path.concat(window) : path
         if (target === window) return [window]
 
-        function getParents(node, memo) {
-            memo = memo || []
-            let parentNode = node.parentNode
+        function getParents(node, memo = []) {
+            const parentNode = node?.parentNode
             if (!parentNode) return memo
-            else return getParents(parentNode, memo.concat(parentNode))
+            return getParents(parentNode, memo.concat(parentNode))
         }
 
         return [target].concat(getParents(target), window)
@@ -720,22 +727,21 @@ export default function useEventGraph(
             loaderCords.value = {}
             return
         }
-        const cheCell = graph.value.getCellById(che.value)
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
-            controlEdgeHighlight(cheCell, true)
+            controlEdgeHighlight(edge, true)
             highlight(null)
             return
         }
         if (che.value) {
-            controlEdgeHighlight(cheCell, true)
+            controlEdgeHighlight(edge, true)
             highlight(null)
         }
         che.value = edge.id
-        controlEdgeHighlight(cell, false)
+        controlEdgeHighlight(edge, false)
         const processId = edge.id.split('/')[0]
-        const { data } = fetchAsset(processId)
+        const { data } = fetchAsset(processId, ['sql'])
         watch(data, () => {
             onSelectAsset(data.value)
             const target = edge.id.split('/')[1].split('@')[1]
@@ -753,7 +759,7 @@ export default function useEventGraph(
         }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(cell, false, true)
+            controlEdgeHighlight(edge, false, true)
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -769,7 +775,7 @@ export default function useEventGraph(
         }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(cell, true)
+            controlEdgeHighlight(edge, true)
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -809,6 +815,16 @@ export default function useEventGraph(
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
 
+    // EDGE ADDED - Style backward pointing edges
+    graph.value.on('edge:added', ({ edge }) => {
+        styleReverseEdge(edge)
+    })
+
+    // Set style of present edges which point backwards
+    graph.value.getEdges().forEach((edge) => {
+        styleReverseEdge(edge)
+    })
+
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
         if (!newVal) highlight(null)
@@ -818,6 +834,7 @@ export default function useEventGraph(
     watch(resetSelections, (newVal) => {
         if (newVal) {
             onSelectAsset(baseEntity.value, false, false)
+            styleReverseEdge(graph.value.getCellById(che.value))
             che.value = ''
             drawerActiveKey.value = 'Info'
             if (highlightedNode.value) highlight(null)

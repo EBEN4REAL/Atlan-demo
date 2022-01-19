@@ -122,6 +122,7 @@ export const GlossaryAttributes = [
     'categories',
     'parentCategory',
     'assignedEntities',
+    'seeAlso'
 ]
 
 export const GlossaryRelationAttributes = ['name']

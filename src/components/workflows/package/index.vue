@@ -11,10 +11,7 @@
             v-if="isLoading || isLoadingPackage"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
 
         <div
@@ -60,11 +57,7 @@
                     </p>
                     <AtlanIcon icon="ArrowDown" />
                 </template>
-                <AtlanIcon
-                    icon="Loader"
-                    v-else
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader v-else class="h-10" />
             </button>
         </div>
     </div>

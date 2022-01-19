@@ -7,7 +7,7 @@
         :closable="false"
         :class="'drawer-filter-request'"
     >
-        <div class="relative h-full pt-8 pb-10 overflow-scroll bg-gray-50">
+        <div class="relative h-full pt-4 pb-10 overflow-scroll bg-gray-50">
             <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
@@ -30,7 +30,7 @@
                     :allow-custom-filters="false"
                     :no-filter-title="'No filters applied'"
                     :extra-count-filter="connectorsData.attributeValue ? 1 : 0"
-                    class="bg-gray-100"
+                    class="bg-gray-100 drawer-request"
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
@@ -104,11 +104,12 @@
                         <span>refresh</span>
                     </template>
                     <div
-                        class="p-2 py-1 border rounded cursor-pointer reload-button"
+                        class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
                         <!-- <img :src="logoUrl" /> -->
-                        <AtlanIcon icon="Reload2" />
+                        <!-- <AtlanIcon icon="Retry" /> -->
+                        <img :src="retryImage" />
                     </div>
                 </a-tooltip>
             </div>
@@ -117,7 +118,7 @@
                 v-if="listLoading"
                 class="flex items-center justify-center h-64"
             >
-                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+                <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
                 <RequestModal
@@ -136,14 +137,15 @@
                     @mouseleave="mouseLeaveContainer"
                 >
                     <template #default="{ item, index }">
+                        <!-- @select="selectRequest(item.id, index)" -->
                         <RequestListItem
                             :request="item"
-                            :selected="isSelected(item.id)"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
-                            @mouseenter="handleMouseEnter(item.id)"
+                            :selected="isSelected(item.id)"
+                            @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
-                            @select="selectRequest(item.id, index)"
+                            @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -159,7 +161,7 @@
                         >
                         of {{ pagination.totalData }} requests
                     </div>
-                    <div class="flex">
+                    <div v-if="showPagination" class="flex">
                         <Pagination
                             v-model:offset="pagination.offset"
                             :total-pages="pagination.totalPages"
@@ -201,7 +203,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch } from 'vue'
+    import { defineComponent, computed, ref, watch, Ref } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -226,7 +228,7 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
-    import reload from '~/assets/images/icons/Reload2.svg'
+    import retryImage from '~/assets/images/Retry.png'
 
     export default defineComponent({
         name: 'RequestList',
@@ -247,6 +249,8 @@
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
+            const showPagination = ref(true)
+            let timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -255,10 +259,13 @@
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(0)
+            const selectedIndex = ref(-1)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
-            const facets = ref({})
+            const facets = ref({
+                statusRequest: ['active'],
+            })
+            const paginationRef = ref('')
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -364,14 +371,19 @@
             watch(
                 filters,
                 () => {
-                    selectedIndex.value = 0
+                    selectedIndex.value = -1
                 },
                 { deep: true }
             )
             const handleFilterChange = () => {
+                pagination.value.offset = 0
+                showPagination.value = false
+                setTimeout(() => {
+                    showPagination.value = true
+                }, 200)
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
-                    ? [facetsValue.statusRequest]
+                    ? facetsValue.statusRequest
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
@@ -401,13 +413,16 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-            const handleMouseEnter = (itemId) => {
+            const handleMouseEnter = (itemId, idx) => {
+                 selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
             }
             const mouseEnterContainer = () => {
+                clearTimeout(timeoutHover)
                 activeHover.value = ''
+                selectedIndex.value = -1
             }
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
@@ -420,6 +435,12 @@
                     ? requestList.value.length
                     : pagination.value.offset + requestList.value.length
             )
+            const mouseEnterAsset = (itemId, idx) => {
+                clearTimeout(timeoutHover)
+                timeoutHover = setTimeout(() => {
+                    selectRequest(itemId, idx)
+                }, 1000)
+            }
             return {
                 mutate,
                 pagination,
@@ -450,10 +471,13 @@
                 activeHover,
                 mouseEnterContainer,
                 response,
-                reload,
+                retryImage,
                 logoUrl,
                 startCountPagination,
                 endCountPagination,
+                paginationRef,
+                showPagination,
+                mouseEnterAsset,
                 // listPermission
             }
         },
@@ -461,14 +485,28 @@
 </script>
 
 <style lang="less">
+    .drawer-request {
+        .ant-collapse-content {
+            background: none !important;
+        }
+        .ant-collapse-header {
+            @apply hover:bg-transparent !important;
+        }
+        .group {
+            background: none !important;
+        }
+        .clear-filter-asset {
+            @apply text-gray-500 !important;
+        }
+    }
     .reload-button {
         path {
-            fill: #3e4359;
-            stroke: #3e4359;
+            fill: #64748b;
+            stroke: #64748b;
         }
     }
     .filter-request {
-        height: 25px !important;
+        height: 32px !important;
     }
     .drawer-filter-request {
         .ant-drawer-content-wrapper {

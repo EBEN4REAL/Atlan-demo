@@ -1,6 +1,6 @@
 <template>
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
-        <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
+        <AtlanLoader class="h-8" />
     </div>
     <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <!-- header starts here -->

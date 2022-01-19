@@ -327,7 +327,6 @@
                 facets,
                 pagination,
                 filteredLogsCount,
-
                 savedQueryMetaMap,
                 totalLogsCount,
                 EmptyLogsIllustration,
@@ -338,7 +337,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .query-logs {
         .filter-button {
             height: 30px !important;

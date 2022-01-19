@@ -8,49 +8,40 @@
             style="z-index: 600"
         />
         <div class="flex items-center justify-between px-5 pt-4">
-            <a-radio-group
-                v-model:value="direction"
-                button-style="solid"
-                size="small"
-                @change="handleChangeDirection"
+            <span class="text-base font-bold text-gray-500">Lineage</span>
+
+            <AtlanButton
+                v-if="isWithGraph"
+                size="sm"
+                padding="compact"
+                color="minimal"
+                class="text-primary"
+                @click="showImpactedAssets = true"
             >
-                <a-radio-button value="BOTH" size="small">All</a-radio-button>
-                <a-radio-button value="UPSTREAM" size="small"
-                    >Upstream
-                    <span :class="$style.chip">{{
-                        upstreamGuids?.length
-                    }}</span>
-                </a-radio-button>
-                <a-radio-button value="DOWNSTREAM" size="small"
-                    >Downstream
-                    <span :class="$style.chip">{{
-                        downstreamGuids?.length
-                    }}</span></a-radio-button
+                <AtlanIcon icon="Download" />
+                Download Impact
+            </AtlanButton>
+
+            <router-link v-else :to="link">
+                <AtlanButton
+                    size="sm"
+                    padding="compact"
+                    color="minimal"
+                    class="text-primary"
                 >
-            </a-radio-group>
-
-            <a-button-group v-if="isWithGraph">
-                <a-tooltip title="View Impact">
-                    <a-button
-                        class="flex items-center justify-center"
-                        @click="showImpactedAssets = true"
-                    >
-                        <AtlanIcon icon="ImpactedAssets" />
-                    </a-button>
-                </a-tooltip>
-                <!-- <a-tooltip title="View Graph">
-                    <a-button class="flex items-center justify-center">
-                        <router-link :to="link">
-                            <AtlanIcon icon="Minimap" />
-                        </router-link>
-                    </a-button>
-                </a-tooltip> -->
-            </a-button-group>
-
-            <router-link v-else :to="link" class="underline text-primary"
-                >View Graph</router-link
-            >
+                    <AtlanIcon icon="External" />
+                    View Graph
+                </AtlanButton>
+            </router-link>
         </div>
+
+        <RaisedTab
+            v-model:active="direction"
+            class="mx-5 mt-4"
+            :data="streams"
+            @update:active="handleChangeDirection"
+        />
+
         <Assets
             v-if="selectedGuids.length > 0"
             :selectedGuids="selectedGuids"
@@ -91,6 +82,7 @@
     // import AssetList from '@/common/assets/list/index.vue'
     // import AssetItem from '@/common/assets/list/assetItem.vue'
     import EmptyView from '@common/empty/index.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
     import AtlanButton from '@/UI/button.vue'
     import LineageImpactModal from './lineageImpactModal.vue'
     import Assets from './list/index.vue'
@@ -110,6 +102,7 @@
             EmptyView,
             AtlanButton,
             LineageImpactModal,
+            RaisedTab,
         },
         props: {
             selectedAsset: {
@@ -140,17 +133,6 @@
 
             const direction = ref('BOTH')
 
-            const streams = [
-                {
-                    key: 'upstream',
-                    name: 'Upstream',
-                },
-                {
-                    key: 'downstream',
-                    name: 'Downstream',
-                },
-            ]
-
             const link = computed(() => {
                 const baseUrl = window.location.origin
                 const text = `/assets/${guid.value}/lineage`
@@ -177,6 +159,23 @@
                 )
 
             const selectedGuids = ref([])
+
+            const streams = computed(() => [
+                {
+                    key: 'BOTH',
+                    label: 'All',
+                },
+                {
+                    key: 'UPSTREAM',
+                    label: 'Upstream',
+                    count: upstreamGuids.value?.length,
+                },
+                {
+                    key: 'DOWNSTREAM',
+                    label: 'Downstream',
+                    count: downstreamGuids.value?.length,
+                },
+            ])
 
             watch(data, () => {
                 // console.log(guidList.value)
@@ -340,17 +339,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .chip {
-        @apply self-center text-xs font-bold tracking-wide ml-0;
-    }
-    :global(.ant-radio-button-wrapper) {
-        @apply text-gray-500 inline-flex items-center;
-    }
-    :global(.ant-radio-button-wrapper-checked) {
-        .chip {
-            @apply text-white;
-        }
-    }
-</style>

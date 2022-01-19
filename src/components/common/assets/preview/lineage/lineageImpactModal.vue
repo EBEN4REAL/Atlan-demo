@@ -14,6 +14,7 @@
             <div class="relative mb-6">
                 <a-table
                     :columns="columns"
+                    :class="$style.impactTable"
                     :data-source="columnsData"
                     :scroll="{ y: 300, x: 500 }"
                     :pagination="false"
@@ -431,3 +432,11 @@
         },
     })
 </script>
+
+<style lang="less" module>
+    .impactTable {
+        :global(.ant-table-body .ant-table-cell) {
+            background-color: white;
+        }
+    }
+</style>

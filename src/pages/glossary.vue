@@ -63,10 +63,7 @@
                 </AddGTCModal>
             </template>
             <template v-else>
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-12 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-12" />
             </template>
         </div>
     </div>

@@ -15,12 +15,12 @@
             <selection-menu :editor="editor" :editable="isEditMode" />
         </bubble-menu>
         <bubble-menu
-            v-if="!editor?.isActive('uploadimage') && editor?.isActive('table') && editor"
+            v-if="!editor?.isActive('uploadimage') && editor?.isActive('customTable') && editor"
             class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
                 zIndex: 1,
-                placement: 'top',
+                placement: 'top-end',
                 maxWidth: 'none',
                 animation: 'fade',
                 trigger: 'click'
@@ -53,6 +53,7 @@
     import TableRow from '@tiptap/extension-table-row'
     import TableHeader from '@tiptap/extension-table-header'
     import TableCell from '@tiptap/extension-table-cell'
+    import { CustomTable } from '@common/editor/extensions/table/extension'
 
     import SelectionMenu from './selectionMenu.vue'
     import SelectionMenuTable from './selectionMenuTable.vue'
@@ -204,12 +205,14 @@
                         placeholder: ({ node }) => node.type.name === 'codeBlock' ? "Go ahead. Type some geek..." : props.placeholder,
                         showOnlyWhenEditable: true
                     }),
-                    Table.extend({
+                    CustomTable.extend({
                         addKeyboardShortcuts() {
                             return {
-                                'Enter': () => this.editor.commands.goToNextCell() || (this.editor.commands.addRowAfter() && this.editor.commands.goToNextCell())
+                                'Tab': () => this.editor.commands.goToNextCell()
                             }
                         }
+                    }).configure({
+                        resizable: false
                     }),
                     TableRow,
                     TableHeader.configure({
@@ -276,5 +279,10 @@
         position: relative;
         min-width: inherit;
         max-width: inherit;
+    }
+
+    .table-wrapper {
+        padding: 1rem 0;
+        overflow-x: auto;
     }
 </style>

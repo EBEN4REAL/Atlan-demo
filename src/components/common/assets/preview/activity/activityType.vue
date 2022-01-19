@@ -44,9 +44,6 @@
             Create: defineAsyncComponent(
                 () => import('./types/create/index.vue')
             ),
-            ProcessSQL: defineAsyncComponent(
-                () => import('./types/lineage/processSQL.vue')
-            ),
         },
         props: {
             data: {

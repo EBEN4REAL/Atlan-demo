@@ -63,7 +63,7 @@
             />
         </div>
 
-        <div class="flex items-center col-span-3 pr-3 ml-10">
+        <div class="flex items-center col-span-3 pr-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -86,7 +86,7 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center font-light"
+                        class="flex items-center font-light w-96"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'

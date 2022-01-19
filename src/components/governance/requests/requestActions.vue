@@ -31,6 +31,7 @@
             </template>
             <AtlanIcon class="mr-3 message-icon" icon="Message" />
         </a-popover>
+        <div v-else class="w-7" />
         <AtlanButton
             color="secondary"
             padding="compact"

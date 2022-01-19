@@ -63,7 +63,7 @@
             />
         </div>
 
-        <div class="flex items-center col-span-3 pr-3">
+        <div class="flex items-center col-span-3 pr-3 ml-10">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -73,7 +73,7 @@
             <template v-else>
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center w-full font-bold"
+                    class="items-center font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center gap-x-2">
+                    <div class="flex items-center w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"

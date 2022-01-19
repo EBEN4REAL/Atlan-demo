@@ -1,38 +1,35 @@
 <template>
     <div
-        class="relative flex justify-between h-8 py-1 text-xs bg-white border-t border-b bottom_footer"
-        style="max-height: 8%"
+        class="relative flex justify-between h-8 py-1 text-xs border-b"
+        style="max-height: 8%; background: #fbfbfb"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
             isQueryRunning === 'success'
         "
     >
-        <div class="flex items-center px-3 text-gray-500 mt-0.5">
-            <span class="mr-3">
+        <div class="flex items-center px-3 text-gray-700 mt-0.5">
+            <span class="mr-2">
                 {{
-                    activeInlineTab.playground.editor.columnList.length
-                }}&nbsp;Columns
-            </span>
-            <div class="w-1 h-1 mr-3 bg-gray-500 rounded-full"></div>
-            <!-- <div
-                        class="flex items-center justify-center mx-2"
-                        v-if="rowCountRunning == 'loading'"
-                    >
-                        <div class="loader_16"></div>
-                    </div> -->
-            <span class="mr-3"
-                >{{
                     `${activeInlineTab.playground.resultsPane.result.totalRowsCount} rows`
                 }}
+            </span>
+            <div class="w-1 h-1 mr-2 bg-gray-500 rounded-full mb-0.5"></div>
+
+            <span class="mr-2">
+                {{
+                    activeInlineTab.playground.editor.columnList.length
+                }}&nbsp;cols
             </span>
             <!-- Execution Time will be shown when it is >0 -->
             <div
                 v-if="queryExecutionTime > 0"
-                class="w-1 h-1 mr-3 bg-gray-500 rounded-full"
+                class="w-1 h-1 mr-2 bg-gray-500 rounded-full mb-0.5"
             ></div>
-            <span v-if="queryExecutionTime > 0" class="mr-3">
-                Took Time:
-                {{ queryExecutionTime }}ms
+            <span v-if="queryExecutionTime > 0" class="flex items-center mr-2">
+                <AtlanIcon class="w-4 h-4 mr-1 mb-0.5" icon="QueryTime" />
+                <span>
+                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
+                </span>
             </span>
             <!-- -------------------------------------------- -->
         </div>
@@ -64,6 +61,7 @@
     import { defineComponent, computed, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useTableExport } from '~/components/insights/common/composables/useTableExport'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
 
     export default defineComponent({
         components: {},
@@ -72,6 +70,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+
+            const { getFormattedTimeFromMilliSeconds } = useUtils()
+
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -87,6 +88,7 @@
                 activeInlineTab,
                 isQueryRunning,
                 useTableExport,
+                getFormattedTimeFromMilliSeconds,
             }
         },
     })

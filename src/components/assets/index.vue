@@ -174,6 +174,9 @@
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
+                                :openAssetProfileInNewTab="
+                                    item.typeName.toLowerCase() === 'query'
+                                "
                             ></AssetItem>
                         </template>
                     </AssetList>

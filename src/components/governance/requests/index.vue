@@ -84,6 +84,8 @@
                                       ? 'requests'
                                       : 'request'
                               }`
+                            : listLoading
+                            ? 'Loading..'
                             : 'search'
                     "
                 >
@@ -167,6 +169,7 @@
                             :total-pages="pagination.totalPages"
                             :loading="listLoading"
                             :page-size="pagination.limit"
+                            :defaultPage="defaultPage"
                             @mutate="mutate"
                         />
                     </div>
@@ -267,6 +270,7 @@
             })
             const paginationRef = ref('')
             const searchTerm = ref('')
+            const defaultPage = ref(1)
             const filters = ref({
                 status: 'active' as RequestStatus,
                 request_type: [],
@@ -274,7 +278,7 @@
             const requestList = ref([])
 
             const pagination = ref({
-                limit: 20,
+                limit: 40,
                 offset: 0,
                 totalPages: 1,
                 totalData: 0,
@@ -361,6 +365,21 @@
                     requestList.value[idx] = req
                 } else {
                     requestList.value.splice(idx, 1)
+                }
+                if (!requestList.value.length) {
+                    pagination.value.offset =
+                        pagination.value.offset - pagination.value.limit
+                    defaultPage.value =
+                        Math.ceil(pagination.value.totalPages) - 1
+                    showPagination.value = false
+                    setTimeout(() => {
+                        showPagination.value = true
+                    }, 200)
+                    mutate()
+                } else {
+                    pagination.value.totalData = pagination.value.totalData - 1
+                    pagination.value.totalPages =
+                        pagination.value.totalData / pagination.value.limit
                 }
             }
 
@@ -478,6 +497,7 @@
                 paginationRef,
                 showPagination,
                 mouseEnterAsset,
+                defaultPage,
                 // listPermission
             }
         },
@@ -523,7 +543,7 @@
         }
     }
     .container-scroll {
-        max-height: 500px;
+        max-height: 475px;
     }
     .wrapper-filter {
         .ant-select-selector {

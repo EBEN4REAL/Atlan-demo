@@ -422,16 +422,13 @@
                                     "
                                     class="flex items-center text-gray-500"
                                 >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
+                                    <span class="tracking-tight">
+                                        in
                                         {{
                                             parentWorkspace(item)?.attributes
                                                 ?.name
                                         }}
-                                    </div>
+                                    </span>
                                 </div>
                                 <template #title>
                                     <span
@@ -453,15 +450,12 @@
                                     v-if="parentReport(item)?.attributes?.name"
                                     class="flex items-center text-gray-500"
                                 >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
+                                    <span class="tracking-tight">
+                                        in
                                         {{
                                             parentReport(item)?.attributes?.name
                                         }}
-                                    </div>
+                                    </span>
                                 </div>
                                 <template #title>
                                     <span
@@ -484,16 +478,13 @@
                                     "
                                     class="flex items-center text-gray-500"
                                 >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
+                                    <span class="tracking-tight">
+                                        in
                                         {{
                                             parentDashboard(item)?.attributes
                                                 ?.name
                                         }}
-                                    </div>
+                                    </span>
                                 </div>
                                 <template #title>
                                     <span
@@ -517,16 +508,13 @@
                                     v-if="parentDataset(item)?.attributes?.name"
                                     class="flex items-center text-gray-500"
                                 >
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
+                                    <span class="tracking-tight">
+                                        in
                                         {{
                                             parentDataset(item)?.attributes
                                                 ?.name
                                         }}
-                                    </div>
+                                    </span>
                                 </div>
                                 <template #title>
                                     <span

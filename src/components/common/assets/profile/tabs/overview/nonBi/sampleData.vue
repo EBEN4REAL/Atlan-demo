@@ -145,6 +145,6 @@
 
 <style lang="less" scoped>
     .max-profile-width {
-        max-width: calc(100vw - 476px);
+        max-width: calc(100vw - 516px);
     }
 </style>

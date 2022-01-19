@@ -66,6 +66,7 @@ export const previewTabs = [
             'Connection',
             'Database',
             'Schema',
+            'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Table',

@@ -80,6 +80,12 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.component = 'Announcement'
                 return data
             }
+            if ('sql' in attributes) {
+                data.value = attributes?.sql
+                data.displayValue = 'query'
+                data.component = 'ProcessSQL'
+                return data
+            }
         }
         if ('relationshipAttributes' in logs) {
             const { relationshipAttributes } = logs

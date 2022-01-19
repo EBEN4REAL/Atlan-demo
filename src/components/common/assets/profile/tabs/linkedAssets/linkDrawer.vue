@@ -10,7 +10,7 @@
         :mask="true"
         :class="$style.drawerStyle"
         :width="460"
-        :close="closeDrawer"
+        @close="closeDrawer"
     >
         <div class="w-full pt-4 bg-white drawer_height">
             <div class="flex flex-wrap items-center w-full mx-5 mt-2">

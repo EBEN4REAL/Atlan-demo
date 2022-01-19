@@ -118,7 +118,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -156,6 +156,7 @@
 
             const {
                 list,
+                freshList,
                 isLoading,
                 isLoadMore,
                 fetch,
@@ -193,7 +194,7 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false)
+            const { refresh } = useEvaluate(body, false, true) // true for secondaryEvaluations
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
@@ -228,17 +229,20 @@
                 quickChange()
             }
 
-            watch(list, () => {
-                // For evaluations
-                body.value = {
-                    entities: list.value.map((item) => ({
-                        typeName: item.typeName,
-                        entityGuid: item.guid,
-                        action: 'ENTITY_UPDATE',
-                    })),
+            watch(
+                () => [...freshList.value],
+                () => {
+                    // For evaluations
+                    body.value = {
+                        entities: freshList.value.map((item) => ({
+                            typeName: item.typeName,
+                            entityGuid: item.guid,
+                            action: 'ENTITY_UPDATE',
+                        })),
+                    }
+                    refresh()
                 }
-                refresh()
-            })
+            )
 
             return {
                 isLoading,

@@ -84,6 +84,8 @@
                                       ? 'requests'
                                       : 'request'
                               }`
+                            : listLoading
+                            ? 'Loading..'
                             : 'search'
                     "
                 >
@@ -138,13 +140,14 @@
                 >
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
-                        <!-- :selected="isSelected(item.id)" -->
                         <RequestListItem
                             :request="item"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
-                            @mouseenter="handleMouseEnter(item.id)"
+                            :selected="isSelected(item.id)"
+                            @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
+                            @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -166,6 +169,7 @@
                             :total-pages="pagination.totalPages"
                             :loading="listLoading"
                             :page-size="pagination.limit"
+                            :defaultPage="defaultPage"
                             @mutate="mutate"
                         />
                     </div>
@@ -249,6 +253,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
+            let timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -257,7 +262,7 @@
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(0)
+            const selectedIndex = ref(-1)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
@@ -265,6 +270,7 @@
             })
             const paginationRef = ref('')
             const searchTerm = ref('')
+            const defaultPage = ref(1)
             const filters = ref({
                 status: 'active' as RequestStatus,
                 request_type: [],
@@ -272,7 +278,7 @@
             const requestList = ref([])
 
             const pagination = ref({
-                limit: 20,
+                limit: 40,
                 offset: 0,
                 totalPages: 1,
                 totalData: 0,
@@ -360,6 +366,21 @@
                 } else {
                     requestList.value.splice(idx, 1)
                 }
+                if (!requestList.value.length) {
+                    pagination.value.offset =
+                        pagination.value.offset - pagination.value.limit
+                    defaultPage.value =
+                        Math.ceil(pagination.value.totalPages) - 1
+                    showPagination.value = false
+                    setTimeout(() => {
+                        showPagination.value = true
+                    }, 200)
+                    mutate()
+                } else {
+                    pagination.value.totalData = pagination.value.totalData - 1
+                    pagination.value.totalPages =
+                        pagination.value.totalData / pagination.value.limit
+                }
             }
 
             watch(listError, () => {
@@ -369,7 +390,7 @@
             watch(
                 filters,
                 () => {
-                    selectedIndex.value = 0
+                    selectedIndex.value = -1
                 },
                 { deep: true }
             )
@@ -411,13 +432,16 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-            const handleMouseEnter = (itemId) => {
+            const handleMouseEnter = (itemId, idx) => {
+                selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
             }
             const mouseEnterContainer = () => {
+                clearTimeout(timeoutHover)
                 activeHover.value = ''
+                selectedIndex.value = -1
             }
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
@@ -430,6 +454,12 @@
                     ? requestList.value.length
                     : pagination.value.offset + requestList.value.length
             )
+            const mouseEnterAsset = (itemId, idx) => {
+                // clearTimeout(timeoutHover)
+                // timeoutHover = setTimeout(() => {
+                //     selectRequest(itemId, idx)
+                // }, 1000)
+            }
             return {
                 mutate,
                 pagination,
@@ -466,6 +496,8 @@
                 endCountPagination,
                 paginationRef,
                 showPagination,
+                mouseEnterAsset,
+                defaultPage,
                 // listPermission
             }
         },
@@ -511,7 +543,7 @@
         }
     }
     .container-scroll {
-        max-height: 500px;
+        max-height: 475px;
     }
     .wrapper-filter {
         .ant-select-selector {

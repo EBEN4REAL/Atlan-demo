@@ -24,9 +24,11 @@
                         : `width:${containerPosition?.width}px;`
                 }top:${
                     containerPosition?.top + containerPosition?.height
-                }px;left:${containerPosition?.left}px;height:280px`"
+                }px;left:${
+                    containerPosition?.left
+                }px;height:280px;min-height:0`"
                 :class="[
-                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 flex flex-col bg-white rounded custom-shadow position',
                 ]"
             >
                 <slot name="body"> </slot>
@@ -56,7 +58,6 @@
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
-    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
     import { selectedTables } from '~/types/insights/VQB.interface'
 
     import useBody from './useBody'
@@ -64,6 +65,7 @@
     export default defineComponent({
         name: 'Sub panel',
         components: {},
+        emits: ['onMounted', 'onUnmounted'],
         props: {
             disabled: {
                 type: Boolean,
@@ -89,17 +91,19 @@
             selectedTablesQualifiedNames: {
                 type: Object as PropType<selectedTables[]>,
             },
+            tableQualifiedName: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
             const {
                 disabled,
                 specifiedBodyWidth,
-                panelIndex,
-                subIndex,
-                rowIndex,
+                tableQualifiedName,
+                selectedTablesQualifiedNames,
             } = toRefs(props)
-            const { allowedTablesInJoinSelector } = useJoin()
             const container = ref()
             // const lockVQBScroll = inject('lockVQBScroll') as Ref<Boolean>
             const observer = ref()
@@ -114,17 +118,6 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
-            const tableQualifiedNamesContraint: Ref<{
-                allowed: string[]
-                notAllowed: string[]
-            }> = computed(() => {
-                return allowedTablesInJoinSelector(
-                    panelIndex.value,
-                    rowIndex.value,
-                    subIndex.value,
-                    activeInlineTab.value
-                )
-            })
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
@@ -189,12 +182,12 @@
                         data.viewQualifiedName =
                             item?.length > 0
                                 ? item[0].tableQualifiedName
-                                : tableQualfiedName.value
+                                : tableQualifiedName.value
                     } else {
-                        data.tableQualfiedName =
+                        data.tableQualifiedName =
                             item?.length > 0
                                 ? item[0].tableQualifiedName
-                                : tableQualfiedName.value
+                                : tableQualifiedName.value
                     }
                 }
 
@@ -223,23 +216,27 @@
                 }
             }
 
+            const setDropDownPosition = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top + 1
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+
             onMounted(() => {
                 // const _container = document.getElementById('_container')
+                emit('onMounted')
                 if (container.value) {
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value
                     )
 
-                    const viewportOffset =
-                        container.value?.getBoundingClientRect()
-                    if (viewportOffset?.width)
-                        containerPosition.value.width = viewportOffset?.width
-                    if (viewportOffset?.top)
-                        containerPosition.value.top = viewportOffset?.top + 1
-                    if (viewportOffset?.left)
-                        containerPosition.value.left = viewportOffset?.left
-                    if (viewportOffset?.height)
-                        containerPosition.value.height = viewportOffset?.height
+                    setDropDownPosition()
                     document.addEventListener('click', (event) => {
                         const withinBoundaries = event
                             .composedPath()
@@ -267,11 +264,21 @@
             }
 
             // for initial call
-            replaceTableBody(
-                getTableInitialBody(selectedTablesQualifiedNames.value)
-            )
+            if (selectedTablesQualifiedNames.value?.length > 1) {
+                replaceTableBody(
+                    getTableInitialBody(selectedTablesQualifiedNames.value)
+                )
+            } else {
+                replaceColumnBody(
+                    getColumnInitialBody(
+                        activeInlineTab.value.playground.vqb.selectedTables,
+                        'initial'
+                    )
+                )
+            }
 
             const setFocus = () => {
+                setDropDownPosition()
                 if (!disabled.value) {
                     isAreaFocused.value = true
                 }
@@ -279,6 +286,7 @@
 
             onUnmounted(() => {
                 observer?.value?.unobserve(container?.value)
+                emit('onUnmounted')
             })
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
@@ -314,7 +322,6 @@
                 container,
                 isAreaFocused,
                 containerPosition,
-                tableQualifiedNamesContraint,
             }
         },
     })

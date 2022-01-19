@@ -14,13 +14,28 @@
         >
             <selection-menu :editor="editor" :editable="isEditMode" />
         </bubble-menu>
+        <bubble-menu
+            v-if="!editor?.isActive('uploadimage') && editor?.isActive('customTable') && editor"
+            class="w-full bubble-menu"
+            :tippy-options="{
+                duration: 100,
+                zIndex: 1,
+                placement: 'top-end',
+                maxWidth: 'none',
+                animation: 'fade',
+                trigger: 'click'
+            }"
+            :editor="editor"
+        >
+            <selection-menu-table :editor="editor" :editable="isEditMode" />
+        </bubble-menu>
 
         <editor-content :editor="editor" class="mb-4" />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, computed } from 'vue'
     import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
@@ -34,7 +49,14 @@
     import Image from '@tiptap/extension-image'
     import Highlight from '@tiptap/extension-highlight'
 
+    import Table from '@tiptap/extension-table'
+    import TableRow from '@tiptap/extension-table-row'
+    import TableHeader from '@tiptap/extension-table-header'
+    import TableCell from '@tiptap/extension-table-cell'
+    import { CustomTable } from '@common/editor/extensions/table/extension'
+
     import SelectionMenu from './selectionMenu.vue'
+    import SelectionMenuTable from './selectionMenuTable.vue'
     import SlashCommands from './extensions/slashCommands/commands'
     import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
@@ -46,6 +68,7 @@
             EditorContent,
             BubbleMenu,
             SelectionMenu,
+            SelectionMenuTable
         },
         props: {
             isEditMode: {
@@ -66,6 +89,9 @@
             const showImageBubble = ref(false)
             const widthOption = ref(1)
             const customWidth = ref(100)
+
+            const selectedRowIndex = ref(0)
+            const selectedColIndex = ref(0)
 
             const { isEditMode } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
@@ -137,6 +163,27 @@
                     attributes: {
                         class: 'prose prose-sm w-full',
                     },
+                    // handleClick(view, pos) {
+                    //     const getBlock = view.domAtPos(pos)
+                    //
+                    //     let isTableCell = false
+                    //     let { parentElement } = getBlock.node
+                    //     while (parentElement !== null) {
+                    //         if (parentElement.nodeName === "TD" || parentElement.nodeName === "TH") {
+                    //             isTableCell = true
+                    //             break
+                    //         }
+                    //         parentElement = parentElement.parentElement
+                    //     }
+                    //
+                    //     if (isTableCell && (parentElement?.nodeName === "TD" || parentElement?.nodeName === "TH") && parentElement?.parentElement?.nodeName === "TR") {
+                    //         parentElement?.parentElement?.classList.add("something")
+                    //         selectedColIndex.value = parentElement?.cellIndex
+                    //         selectedRowIndex.value = parentElement?.rowIndex
+                    //     }
+                    //
+                    //     return true
+                    // }
                 },
                 autofocus: true,
                 extensions: [
@@ -158,9 +205,29 @@
                         placeholder: ({ node }) => node.type.name === 'codeBlock' ? "Go ahead. Type some geek..." : props.placeholder,
                         showOnlyWhenEditable: true
                     }),
+                    CustomTable.extend({
+                        addKeyboardShortcuts() {
+                            return {
+                                'Tab': () => this.editor.commands.goToNextCell()
+                            }
+                        }
+                    }).configure({
+                        resizable: false
+                    }),
+                    TableRow,
+                    TableHeader.configure({
+                        HTMLAttributes: {
+                            class: 'border border-l-gray-500 px-3 py-1 text-bold text-sm bg-gray-100'
+                        }
+                    }),
+                    TableCell.configure({
+                        HTMLAttributes: {
+                            class: 'border border-l-gray-500 px-3 py-1 text-sm',
+                        }
+                    }),
                 ],
-                onUpdate({ editor }) {
-                    const content = editor.getHTML()
+                onUpdate({ editor: currEditor }) {
+                    const content = currEditor.getHTML()
                     debouncedEmit(content)
                 },
             })
@@ -181,6 +248,16 @@
                 editor.value?.setEditable(isEditMode.value)
             })
 
+            const shouldShowLegacyMenu = ({ editor: currEditor, view, state, oldState, from, to })  => {
+                // only show the bubble menu for images and links
+                return from !== to
+            }
+
+            const shouldShowTableMenu = ({ editor: currEditor, view, state, oldState, from, to })  => {
+                // only show the bubble menu for images and links
+                return (currEditor.isActive('table') && from === to)
+            }
+
             return {
                 editor,
                 showImageBubble,
@@ -190,6 +267,8 @@
                 resetEditor,
                 applyTemplate,
                 getEditorContent,
+                shouldShowLegacyMenu,
+                shouldShowTableMenu
             }
         },
     })
@@ -200,5 +279,10 @@
         position: relative;
         min-width: inherit;
         max-width: inherit;
+    }
+
+    .table-wrapper {
+        padding: 1rem 0;
+        overflow-x: auto;
     }
 </style>

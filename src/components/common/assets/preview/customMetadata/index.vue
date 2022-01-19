@@ -46,6 +46,7 @@
                 v-if="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_UPDATE_BUSINESS_METADATA'
                     )
                 "
@@ -318,6 +319,7 @@
                                 v-if="
                                     selectedAssetUpdatePermission(
                                         selectedAsset,
+                                        isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
                                     )
                                 "
@@ -330,6 +332,7 @@
                             v-if="
                                 selectedAssetUpdatePermission(
                                     selectedAsset,
+                                    isDrawer,
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
                                 )
                             "
@@ -435,6 +438,11 @@
             data: {
                 type: Object,
                 required: true,
+            },
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props) {

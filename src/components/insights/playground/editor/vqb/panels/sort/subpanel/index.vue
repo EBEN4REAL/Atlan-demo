@@ -17,26 +17,76 @@
                             )
                         "
                         class="flex-1"
-                        v-model:selectedItem="subpanel.column"
-                        :tableQualfiedName="
+                        v-model:selectedColumn="subpanel.column"
+                        :disabled="readOnly"
+                        :tableQualifiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
-                        @change="(val) => handleColumnChange(val, index)"
-                        :disabled="readOnly"
-                    />
-                    <AggregatorGroupColumnsSelector
+                        @onMounted="() => onColumnSelectorMounted(index)"
+                        @onUnmounted="() => onColumnSelectorUnMounted(index)"
+                    >
+                        <template #head>
+                            <ColumnSelectorHead
+                                v-model:selectedColumn="subpanel.column"
+                                :selectedTables="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                            />
+                        </template>
+
+                        <template #body>
+                            <ColumnSelectorDropdown
+                                v-model:selectedColumn="subpanel.column"
+                                :disabled="readOnly"
+                                :tableQualifiedName="
+                                    columnSubpanels[0]?.tableQualfiedName
+                                "
+                                :selectedTablesQualifiedNames="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                                @change="
+                                    (val) =>
+                                        handleColumnChange(val, index, subpanel)
+                                "
+                            />
+                        </template>
+                    </ColumnSelector>
+                    <AggregateGroupSelector
                         class="flex-1"
                         v-else
-                        :mixedSubpanels="
-                            getAggregationORGroupPanelColumns(activeInlineTab)
-                        "
-                        @change="(val) => handleColumnChange(val, index)"
-                        v-model:selectedItem="subpanel.aggregateORGroupColumn"
                         :disabled="readOnly"
-                    />
+                        v-model:selectedColumn="subpanel.aggregateORGroupColumn"
+                        v-model:panel="panel"
+                    >
+                        <template #head>
+                            <AggregateGroupHead
+                                v-model:selectedColumn="
+                                    subpanel.aggregateORGroupColumn
+                                "
+                            />
+                        </template>
+                        <template #body>
+                            <AggregateGroupDropdown
+                                :mixedSubpanels="
+                                    getAggregationORGroupPanelColumns(
+                                        activeInlineTab
+                                    )
+                                "
+                                @change="
+                                    (val) => handleColumnChange(val, index)
+                                "
+                                v-model:selectedColumn="
+                                    subpanel.aggregateORGroupColumn
+                                "
+                                :disabled="readOnly"
+                            />
+                        </template>
+                    </AggregateGroupSelector>
 
                     <span class="px-3 text-sm text-gray-500">order by</span>
                     <!-- {{ subpanel }} -->
@@ -66,7 +116,7 @@
             <div
                 v-if="!readonly"
                 class="items-center mt-3 cursor-pointer text-primary"
-                @click.stop="handleAddPanel"
+                @click="handleAddPanel"
             >
                 <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
                 <span>Add another</span>
@@ -94,20 +144,29 @@
     import { useVModels } from '@vueuse/core'
     import RaisedTab from '@/UI/raisedTab.vue'
     // import ColumnSelector from '../columnSelector/index.vue'
-    import ColumnSelector from '../../common/columnSelector/index.vue'
+    import ColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/index.vue'
+    import ColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/dropdown.vue'
+    import ColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/head.vue'
+
+    import AggregateGroupSelector from '~/components/insights/playground/editor/vqb/panels/sort/aggregateGroupSelector/_index.vue'
+    import AggregateGroupDropdown from '~/components/insights/playground/editor/vqb/panels/sort/aggregateGroupSelector/dropdown.vue'
+    import AggregateGroupHead from '~/components/insights/playground/editor/vqb/panels/sort/aggregateGroupSelector/head.vue'
+
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
-    import AggregatorGroupColumnsSelector from '../aggregateGroupSelector/index.vue'
-
-    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import { VQBPanelType } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             ColumnSelector,
             RaisedTab,
-            AggregatorGroupColumnsSelector,
+            AggregateGroupSelector,
+            AggregateGroupDropdown,
+            AggregateGroupHead,
+            ColumnSelectorDropdown,
+            ColumnSelectorHead,
         },
         props: {
             expand: {
@@ -125,6 +184,10 @@
                 required: true,
                 default: [],
             },
+            panel: {
+                type: Object as PropType<VQBPanelType>,
+                required: true,
+            },
         },
 
         setup(props, { emit }) {
@@ -138,7 +201,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const { subpanels, columnSubpanels } = useVModels(props)
+            const { subpanels, columnSubpanels, panel } = useVModels(props)
             const columnName = ref('Hello World')
             const columnType = ref('char')
 
@@ -179,7 +242,6 @@
                 const copySubPanels: SubpanelSort[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
-                let uuid = generateUUID()
                 copySubPanels.push({
                     id: generateUUID(),
                     column: {},
@@ -229,6 +291,29 @@
                     ? false
                     : true
             )
+            const onColumnSelectorMounted = (index: number) => {}
+
+            const isAggregateORGroupSelectorActive = computed(() => {
+                const res = isAggregationORGroupPanelColumnsAdded(
+                    activeInlineTab.value
+                )
+                return res
+            })
+            const onColumnSelectorUnMounted = (index: number) => {
+                // subpanels.value[index] = {
+                //     ...subpanels.value[index],
+                //     attributes: {},
+                //     column: {},
+                //     isForeign: undefined,
+                //     isPartition: undefined,
+                //     isPrimary: undefined,
+                //     item: undefined,
+                //     label: undefined,
+                //     order: 'asc',
+                //     qualifiedName: undefined,
+                //     type: undefined,
+                // }
+            }
 
             watch(
                 activeInlineTab,
@@ -239,6 +324,10 @@
             )
 
             return {
+                panel,
+                isAggregateORGroupSelectorActive,
+                onColumnSelectorUnMounted,
+                onColumnSelectorMounted,
                 isQueryCreatedByCurrentUser,
                 hasQueryWritePermission,
                 readOnly,

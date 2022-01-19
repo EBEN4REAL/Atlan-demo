@@ -825,6 +825,13 @@ export default function useEventGraph(
         styleReverseEdge(edge)
     })
 
+    // Set connector for duplicate relations
+    graph.value.getEdges().forEach((edge) => {
+        if (edge.store.data?.data?.isDup) {
+            edge.setConnector('beizAlt')
+        }
+    })
+
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
         if (!newVal) highlight(null)

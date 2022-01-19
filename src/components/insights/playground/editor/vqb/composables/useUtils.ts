@@ -23,6 +23,17 @@ export function useUtils() {
             return `"${spiltArray[5]}"`
         }
     }
+
+    function isValidValueArray(arr: any[]) {
+        let res = true
+        arr.forEach((el) => {
+            if (el === '') res = false
+            if (el === null) res = false
+            if (el === undefined) res = false
+        })
+        return res
+    }
+
     function getTableNamesStringFromQualfieidNames(
         tableQualfieidNames: string[]
     ) {
@@ -118,23 +129,32 @@ export function useUtils() {
         if (subpanels.length == 0) return 'No Columns Added for filter'
         let res = ' '
         subpanels.forEach((subpanel, i) => {
-            if (subpanel.column.label) res += `${subpanel.column.label} `
-            if (subpanel.filter.title) res += `${subpanel.filter.title}`
-
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
-                    if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value?.length > 0) {
-                            let firstVal = getValueStringFromType(
-                                subpanel,
-                                subpanel?.filter?.value[0] ?? ''
-                            )
-                            let secondVal = getValueStringFromType(
-                                subpanel,
-                                subpanel?.filter?.value[1] ?? ''
-                            )
-                            res += ` ${firstVal} AND ${secondVal}`
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        isValidValueArray(subpanel?.filter?.value)
+                    ) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        if (subpanel?.filter?.name === 'between') {
+                            if (subpanel?.filter?.value?.length > 0) {
+                                let firstVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[0] ?? ''
+                                )
+                                let secondVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[1] ?? ''
+                                )
+                                res += ` ${firstVal} AND ${secondVal}`
+                            }
                         }
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
                     }
                     break
                 }
@@ -143,29 +163,57 @@ export function useUtils() {
                     if (
                         Array.isArray(subpanel?.filter?.value) &&
                         subpanel?.filter?.value?.length > 0 &&
-                        subpanel?.filter?.value[0]
+                        subpanel?.filter?.value[0] &&
+                        isValidValueArray(subpanel?.filter?.value)
                     ) {
                         value = subpanel?.filter?.value[0]
                     }
-                    res += ` ${getValueStringFromType(subpanel, value ?? '')}`
+                    if (value) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        res += ` ${getValueStringFromType(
+                            subpanel,
+                            value ?? ''
+                        )}`
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
+                    }
 
                     break
                 }
                 case 'multi_input': {
-                    res += ` ( `
-                    subpanel?.filter?.value?.forEach((el, i) => {
-                        if (i !== subpanel?.filter?.value?.length - 1)
-                            res += `'${el}',`
-                        else res += `'${el}'`
-                    })
-                    res += ` )`
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        isValidValueArray(subpanel?.filter?.value)
+                    ) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        res += ` ( `
+                        subpanel?.filter?.value?.forEach((el, i) => {
+                            if (i !== subpanel?.filter?.value?.length - 1)
+                                res += `'${el}',`
+                            else res += `'${el}'`
+                        })
+                        res += ` )`
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
+                    }
                     break
                 }
                 case 'none': {
+                    if (subpanel.column.label)
+                        res += `${subpanel.column.label} `
+                    if (subpanel.filter.title) res += `${subpanel.filter.title}`
+                    if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                        res += ', '
                     break
                 }
             }
-            if (subpanels?.length > 1 && i !== subpanels.length - 1) res += ', '
 
             if (res === ' ' || res === ' , ')
                 res = 'No Columns Added for filter'

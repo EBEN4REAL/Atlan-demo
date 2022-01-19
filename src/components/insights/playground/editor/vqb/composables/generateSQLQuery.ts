@@ -40,6 +40,16 @@ export function getValueStringFromType(subpanel, value) {
     } else if (type === 'date') res += `DATE '${value}'`
     return res
 }
+
+function isValidValueArray(arr: any[]) {
+    let res = true
+    arr.forEach((el) => {
+        if (el === '') res = false
+        if (el === null) res = false
+        if (el === undefined) res = false
+    })
+    return res
+}
 // "TABLENAME"."COLUMNNAME"
 // "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
 function getJoinFormattedColumnName(columnQualifiedName: string) {
@@ -349,24 +359,25 @@ export function generateSQLQuery(
                         subpanel.column?.columnQualifiedName ??
                         ''
                 )
-                if (index == 0) res = ''
-                if (
-                    tableName &&
-                    subpanel?.column?.label &&
-                    nameMap[subpanel?.filter?.name]
-                ) {
-                    if (contextPrefix !== '') {
-                        res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
-                    } else {
-                        res += `${tableName}."${subpanel?.column?.label}"`
-                    }
-                    res += `${nameMap[subpanel?.filter?.name]} `
-                }
 
                 switch (subpanel?.filter?.type) {
                     case 'range_input': {
-                        if (subpanel?.filter?.name === 'between') {
-                            if (subpanel?.filter?.value?.length > 0) {
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name] &&
+                            subpanel?.filter?.value?.length > 0 &&
+                            isValidValueArray(subpanel?.filter?.value)
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                            } else {
+                                res += `${tableName}."${subpanel?.column?.label}"`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+
+                            if (subpanel?.filter?.name === 'between') {
                                 const firstVal = getValueStringFromType(
                                     subpanel,
                                     subpanel?.filter?.value[0] ?? ''
@@ -378,27 +389,73 @@ export function generateSQLQuery(
                                 res += `${firstVal} AND ${secondVal}`
                             }
                         }
+
                         break
                     }
                     case 'input': {
-                        res += `${getValueStringFromType(
-                            subpanel,
-                            subpanel?.filter?.value ?? ''
-                        )}`
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name]
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                            } else {
+                                res += `${tableName}."${subpanel?.column?.label}"`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += `${getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value ?? ''
+                            )}`
+                        }
 
                         break
                     }
                     case 'multi_input': {
-                        res += ` ( `
-                        subpanel?.filter?.value?.forEach((el, i) => {
-                            if (i !== subpanel?.filter?.value?.length - 1)
-                                res += `'${el}',`
-                            else res += `'${el}'`
-                        })
-                        res += ` )`
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name] &&
+                            subpanel?.filter?.value?.length > 0 &&
+                            isValidValueArray(subpanel?.filter?.value)
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                            } else {
+                                res += `${tableName}."${subpanel?.column?.label}"`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+
+                            res += ` ( `
+                            subpanel?.filter?.value?.forEach((el, i) => {
+                                if (i !== subpanel?.filter?.value?.length - 1)
+                                    res += `'${el}',`
+                                else res += `'${el}'`
+                            })
+                            debugger
+                            res += ` )`
+                        }
+
                         break
                     }
                     case 'none': {
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name]
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                            } else {
+                                res += `${tableName}."${subpanel?.column?.label}"`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+                        }
+
                         break
                     }
                 }

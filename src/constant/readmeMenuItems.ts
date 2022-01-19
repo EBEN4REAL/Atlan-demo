@@ -284,11 +284,32 @@ export const menuData: CommandItem[] = [
 
 export const menuDataTable: CommandItem[] = [
     {
-        title: 'Insert Column After',
+        title: 'Add Column',
         key: 'insert-column-after',
         helpText: 'Append a column to the table',
         icon: 'AddColumn',
         command: ({ editor }) => editor.chain().focus().addColumnAfter().run(),
+    },
+    {
+        title: 'Add Row',
+        key: 'insert-row-after',
+        helpText: 'Append a row to the table',
+        icon: 'AddColumn',
+        command: ({ editor }) => editor.chain().focus().addRowAfter().run(),
+    },
+    {
+        title: 'Delete Column',
+        key: 'delete-column',
+        helpText: 'Delete the current column',
+        icon: 'AddColumn',
+        command: ({ editor }) => editor.chain().focus().deleteColumn().run(),
+    },
+    {
+        title: 'Delete Row',
+        key: 'delete-row',
+        helpText: 'Delete the current row',
+        icon: 'AddColumn',
+        command: ({ editor }) => editor.chain().focus().deleteRow().run(),
     },
     // table
 ]

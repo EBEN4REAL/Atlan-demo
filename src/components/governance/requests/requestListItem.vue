@@ -380,7 +380,12 @@
                     guid: request.value.destinationGuid,
                     displayText:
                         request.value?.destinationEntity?.attributes?.name,
+                    typeName: request.value?.entityType,
                     attributes: {
+                        connectorName:
+                            request.value?.destinationEntity?.attributes.qualifiedName.split(
+                                '/'
+                            )[1],
                         rowCount: 0,
                         columnCount: 0,
                         schemaName: name[1],

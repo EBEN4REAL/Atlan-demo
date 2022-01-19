@@ -12,21 +12,26 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <div class="cursor-pointer" @mouseenter="$emit('mouseEnterAsset')">
-                <AssetPiece
-                    v-if="request.destinationQualifiedName"
-                    :asset-qf-name="request.destinationQualifiedName"
-                    :entity-type="request?.entityType"
-                    :destination-entity="request.destinationEntity"
-                />
-                <span v-else class="text-sm overflow-ellipsis">
-                    {{
-                        primaryText[request.requestType]
-                            ? primaryText[request.requestType](request)
-                            : ''
-                    }}
-                </span>
-            </div>
+            <Popover :item="item">
+                <div
+                    class="cursor-pointer"
+                    @mouseenter="$emit('mouseEnterAsset')"
+                >
+                    <AssetPiece
+                        v-if="request.destinationQualifiedName"
+                        :asset-qf-name="request.destinationQualifiedName"
+                        :entity-type="request?.entityType"
+                        :destination-entity="request.destinationEntity"
+                    />
+                    <span v-else class="text-sm overflow-ellipsis">
+                        {{
+                            primaryText[request.requestType]
+                                ? primaryText[request.requestType](request)
+                                : ''
+                        }}
+                    </span>
+                </div>
+            </Popover>
         </div>
         <div class="flex items-center col-span-3 pr-12">
             <ClassificationPiece
@@ -244,7 +249,7 @@
     import TermPiece from './pieces/term.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
-
+    import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
         approveRequest,
@@ -265,6 +270,7 @@
             TermPiece,
             Avatar,
             IconStatus,
+            Popover,
         },
         props: {
             request: {
@@ -364,6 +370,39 @@
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
+            const item = computed(() => {
+                const name = request?.value?.destinationQualifiedName
+                    .split('/')
+                    .slice(-3)
+                    .reverse()
+                return {
+                    ...request.value,
+                    guid: request.value.destinationGuid,
+                    displayText:
+                        request.value?.destinationEntity?.attributes?.name,
+                    typeName: request.value?.entityType,
+                    attributes: {
+                        connectorName:
+                            request.value?.destinationEntity?.attributes.qualifiedName.split(
+                                '/'
+                            )[1],
+                        rowCount: 0,
+                        columnCount: 0,
+                        schemaName: name[1],
+                        ownerUsers: [],
+                        tableName: name[2],
+                        certificateStatus:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateStatus,
+                        certificateUpdatedBy:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedBy,
+                        certificateUpdatedAt:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedAt,
+                    },
+                }
+            })
             return {
                 handleApproval,
                 handleRejection,
@@ -372,6 +411,7 @@
                 state,
                 atlanLogo,
                 nameUpdater,
+                item,
             }
         },
     })

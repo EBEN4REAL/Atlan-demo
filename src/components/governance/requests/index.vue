@@ -414,7 +414,7 @@
             }
             const setConnector = () => {}
             const handleMouseEnter = (itemId, idx) => {
-                 selectedIndex.value = idx
+                selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
@@ -436,10 +436,10 @@
                     : pagination.value.offset + requestList.value.length
             )
             const mouseEnterAsset = (itemId, idx) => {
-                clearTimeout(timeoutHover)
-                timeoutHover = setTimeout(() => {
-                    selectRequest(itemId, idx)
-                }, 1000)
+                // clearTimeout(timeoutHover)
+                // timeoutHover = setTimeout(() => {
+                //     selectRequest(itemId, idx)
+                // }, 1000)
             }
             return {
                 mutate,

@@ -86,5 +86,94 @@
             async
             src="https://cdn.jsdelivr.net/npm/@antv/layout@0.1.19-beta.3/dist/layout.min.js"
         ></script>
+        <script>
+            window.zESettings = {
+                webWidget: {
+                    zIndex: 1000,
+                    color: {
+                        theme: '#3862D2',
+                        launcher: '#CC3A83',
+                        launcherText: '#E589B7',
+                        button: '#3862D2',
+                        articleLinks: '#3862D2',
+                        header: '#3862D2',
+                        resultLists: '#3862D2',
+                    },
+                    launcher: {
+                        label: {
+                            '*': 'Chat now',
+                        },
+                    },
+                    // answerBot: {
+                    //     suppress: true,
+                    // },
+                    answerBot: {
+                        title: {
+                            '*': 'Chat with us!',
+                        },
+
+                        avatar: {
+                            url: `src/assets/images/atlan-logo.png`,
+                            name: {
+                                '*': 'Atlan',
+                            },
+                        },
+                    },
+                    contactForm: {
+                        ticketForms: [{ id: 1900000492633, title: false }],
+                        title: {
+                            '*': 'Report a bug or request a feature',
+                        },
+                    },
+                },
+            }
+        </script>
+
+        <!-- Start of atlan Zendesk Widget script -->
+        <script
+            id="ze-snippet"
+            src="https://static.zdassets.com/ekr/snippet.js?key=5a56374b-0c6a-43d9-8abb-ed8724bae48e"
+        ></script>
+        <script>
+            zE('webWidget:on', 'open', function () {
+                // creates any CSS to be added to the Web Widget
+                var style = document.createElement('style')
+                style.innerHTML = `
+                        #Embed{
+                            font-family: Avenir;
+                        }
+                        .styles__Fields-sc-cb953b-1.gJkjOz > div:nth-child(2){
+                            margin-top:0 !important;
+                        }
+                        [data-garden-id="forms.field"] [data-fieldid="email"]{
+                            display:none !important;
+                        }
+                        [data-garden-id="forms.field"] [name="email"]{
+                            display:none !important; 
+                        }
+                        .dmwHSF, .iuJCfr{
+                            color: #3862D2 !important;
+                        }
+                `
+             
+                // appends the CSS in the web widget
+                
+               //TODO: Find a better way than setTimeout to append css in iframe
+                setTimeout(() => {
+                    parent.document
+                        .getElementById('webWidget')
+                        .contentDocument.head.appendChild(style)
+                }, 500)
+            })
+        </script>
+        <!-- End of atlan Zendesk Widget script -->
     </body>
 </html>
+<style>
+    #webWidget{
+      width: 430px !important;
+    }
+    #launcher{
+        display: none;
+    }
+</style>

@@ -2,12 +2,13 @@
     <h2 class="mb-3 text-xl font-bold">Workspace</h2>
     <Card
         v-for="l in worksplaceListMeta"
+        :key="l.id"
         :url="l.path"
         :desc="l.desc"
         :head="l.label"
         :icon="l.icon"
-        :key="l.id"
     />
+    <a-button @click="openHelpWidget">Get help</a-button>
 </template>
 
 <script lang="ts">
@@ -15,6 +16,7 @@
     import Card from '@/home/shared/card.vue'
     import { topNavKeys, bottomNavKeys } from '~/constant/navigation/workspace'
     import useTenantData from '~/composables/tenant/useTenantData'
+
     export default defineComponent({
         name: 'YourWorkspace',
         components: { Card },
@@ -74,7 +76,10 @@
             //     //list.push({ ...admin, ...worksplaceListMeta.admin })
             //     return list
             // })
-            return { worksplaceListMeta }
+            const openHelpWidget = () => {
+                zE('webWidget', 'open')
+            }
+            return { worksplaceListMeta, openHelpWidget }
         },
     })
 </script>

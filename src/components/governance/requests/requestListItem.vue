@@ -27,7 +27,7 @@
                 }}
             </span>
         </div>
-        <div class="flex items-center col-span-3">
+        <div class="flex items-center col-span-3 justify-evenly">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&

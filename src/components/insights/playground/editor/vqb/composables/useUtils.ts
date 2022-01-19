@@ -34,6 +34,11 @@ export function useUtils() {
         return res
     }
 
+    function getQuotesAccordingtoType(value, type) {
+        if (type.toLowerCase() === 'number') return Number(value)
+        else return `'${value}'`
+    }
+
     function getTableNamesStringFromQualfieidNames(
         tableQualfieidNames: string[]
     ) {
@@ -193,13 +198,19 @@ export function useUtils() {
                             res += `${subpanel.column.label} `
                         if (subpanel.filter.title)
                             res += `${subpanel.filter.title}`
-                        res += ` ( `
+                        res += ` `
                         subpanel?.filter?.value?.forEach((el, i) => {
                             if (i !== subpanel?.filter?.value?.length - 1)
-                                res += `'${el}',`
-                            else res += `'${el}'`
+                                res += `${getQuotesAccordingtoType(
+                                    el,
+                                    subpanel?.column?.type
+                                )} or `
+                            else
+                                res += `${getQuotesAccordingtoType(
+                                    el,
+                                    subpanel?.column?.type
+                                )}`
                         })
-                        res += ` )`
                         if (subpanels?.length > 1 && i !== subpanels.length - 1)
                             res += ', '
                     }

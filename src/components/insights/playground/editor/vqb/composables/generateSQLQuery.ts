@@ -41,6 +41,11 @@ export function getValueStringFromType(subpanel, value) {
     return res
 }
 
+function getQuotesAccordingtoType(value, type) {
+    if (type.toLowerCase() === 'number') return Number(value)
+    else return `'${value}'`
+}
+
 function isValidValueArray(arr: any[]) {
     let res = true
     arr.forEach((el) => {
@@ -435,7 +440,6 @@ export function generateSQLQuery(
                                     res += `'${el}',`
                                 else res += `'${el}'`
                             })
-                            debugger
                             res += ` )`
                         }
 

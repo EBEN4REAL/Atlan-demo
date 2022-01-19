@@ -3,7 +3,7 @@
     <div class="feedback-btn-wrapper" @click="toggleHelpWidget">
         <div id="feedback-btn">
             <img
-                src="src/assets/images/feedback.svg"
+                src="/public/feedback.svg"
                 class="feedback-icon ml-2 mt-1 pb-1.5 pl-0.5 pt-1 w-3/6"
             />
         </div>

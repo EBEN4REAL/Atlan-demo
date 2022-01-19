@@ -710,11 +710,19 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (
         asset: assetInterface,
+        secondaryEvaluation = false,
         action = 'ENTITY_UPDATE',
         typeName?
     ) => {
+        let evaluations: any = []
+        if (secondaryEvaluation) {
+            evaluations = authStore?.secondaryEvaluations
+        } else {
+            evaluations = authStore?.evaluations
+        }
+
         if (typeName) {
-            return authStore?.evaluations.find(
+            return evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
@@ -723,7 +731,8 @@ export default function useAssetInfo() {
                         ev?.entityTypeEnd2 === typeName)
             )?.allowed
         }
-        return authStore?.evaluations.find(
+
+        return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
         )?.allowed
     }

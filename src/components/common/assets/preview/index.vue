@@ -166,7 +166,7 @@
                     :is-drawer="isDrawer"
                     :read-permission="isScrubbed(selectedAsset)"
                     :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
+                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
                     :data="tab.data"
                     :ref="

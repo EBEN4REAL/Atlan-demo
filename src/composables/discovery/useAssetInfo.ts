@@ -231,7 +231,7 @@ export default function useAssetInfo() {
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
-        if (cmList(assetType(asset)).length > 0) {
+        if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
@@ -341,7 +341,7 @@ export default function useAssetInfo() {
             //     attributes(asset).tableName
 
             const name =
-                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
+                tableName(asset)?.length > 0 ? tableName(asset) : viewName(asset)
             const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`

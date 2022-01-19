@@ -121,14 +121,14 @@
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <!-- <RequestModal
+                <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                /> -->
+                />
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"
@@ -138,12 +138,12 @@
                 >
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
-                        <!-- :selected="isSelected(item.id)" -->
                         <RequestListItem
                             :request="item"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
-                            @mouseenter="handleMouseEnter(item.id)"
+                            :selected="isSelected(item.id)"
+                            @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
                         />
                     </template>
@@ -249,6 +249,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
+            let timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -411,12 +412,17 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-            const handleMouseEnter = (itemId) => {
+            const handleMouseEnter = (itemId, idx) => {
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
+                    clearTimeout(timeoutHover)
+                    timeoutHover = setTimeout(() => {
+                        selectRequest(itemId, idx)
+                    }, 2000)
                 }
             }
             const mouseEnterContainer = () => {
+                clearTimeout(timeoutHover)
                 activeHover.value = ''
             }
             const logoUrl = computed(

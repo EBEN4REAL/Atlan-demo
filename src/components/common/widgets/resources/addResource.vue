@@ -52,7 +52,7 @@
                         class="text-lg font-bold text-gray-700"
                         allow-clear
                     >
-                        <template #prefix>
+                        <template v-if="!imageNotFound" #prefix>
                             <!-- <span v-show="imageNotFound" class="mr-2">
                                 🔗
                             </span> -->

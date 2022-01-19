@@ -7,12 +7,14 @@
                 v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"
                 :edit-permission="linkEditPermission"
-                ><template #trigger>
+            >
+                <template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none hover:border-gray-400"
                     >
-                        <AtlanIcon icon="Add" /> </a-button
-                ></template>
+                        <AtlanIcon icon="Add" />
+                    </a-button>
+                </template>
             </AddResources>
         </div>
         <div>
@@ -32,8 +34,8 @@
                 <SlackUserLoginTrigger
                     v-if="
                         hasAtleastOneSlackLink &&
-                        !hasUserLevelSlackIntegration &&
-                        hasTenantLevelSlackIntegration
+                        !userSlackStatus.configured &&
+                        tenantSlackStatus.configured
                     "
                     class="mt-6"
                 />
@@ -81,13 +83,13 @@
         toRefs,
         defineAsyncComponent,
     } from 'vue'
+    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AddResources from './addResource.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AtlanButton from '~/components/UI/button.vue'
     import integrationStore from '~/store/integrations/index'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         getChannelAndMessageIdFromSlackLink,
@@ -97,6 +99,7 @@
     dayjs.extend(relativeTime)
 
     export default defineComponent({
+        name: 'ResourceWidget',
         components: {
             SlackUserLoginTrigger,
             AddResources,
@@ -119,14 +122,15 @@
             const timeAgo = (time: string) => dayjs().from(time, true)
             const { links, selectedAssetUpdatePermission, assetPermission } =
                 useAssetInfo()
-            const hasUserLevelSlackIntegration = true
-            const hasTenantLevelSlackIntegration = true
+
+            const store = integrationStore()
+            const { tenantSlackStatus, userSlackStatus } = toRefs(store)
 
             function getPreviewComponent(url) {
                 if (
                     isSlackLink(url) &&
-                    hasUserLevelSlackIntegration &&
-                    hasTenantLevelSlackIntegration
+                    tenantSlackStatus.value.configured &&
+                    userSlackStatus.value.configured
                 ) {
                     return 'slackLinkPreview'
                 }
@@ -153,14 +157,14 @@
             )
 
             return {
+                tenantSlackStatus,
+                userSlackStatus,
                 links,
                 linkEditPermission,
                 hasAtleastOneSlackLink,
-                hasUserLevelSlackIntegration,
                 isSlackLink,
                 timeAgo,
                 getPreviewComponent,
-                hasTenantLevelSlackIntegration,
             }
         },
     })

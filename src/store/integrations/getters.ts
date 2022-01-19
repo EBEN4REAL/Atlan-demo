@@ -1,4 +1,4 @@
-interface TenantSlackStatus {
+interface SlackStatus {
     created: boolean,
     configured: boolean,
     channels: [{ name: string, id: string }],
@@ -12,8 +12,19 @@ const getters = {
     getIntegrationList(state) {
         return state.allIntegrations
     },
-    tenantSlackStatus: (state): TenantSlackStatus => {
-        const integration = state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'tenant')
+    tenantSlackStatus: (state): SlackStatus => {
+        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'tenant')))
+        return {
+            oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
+            id: integration?.id || null,
+            created: !!integration,
+            configured: integration?.isConfigured,
+            channels: integration?.config?.channels ?? [],
+            teamName: integration?.sourceMetadata?.teamName
+        }
+    },
+    userSlackStatus: (state): SlackStatus => {
+        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'user')))
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
             id: integration?.id || null,

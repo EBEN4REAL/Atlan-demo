@@ -110,15 +110,13 @@ export const tenantLevelOauthUrl = computed(() => {
 })
 
 export const userLevelOauthUrl = computed(() => {
-    return ''
-    // fixme
-    // const store = integrationStore()
+    const store = integrationStore()
 
-    // const { tenantSlackStatus } = toRefs(store)
-    // const oauthBaseUrl = tenantSlackStatus.oAuth
-    // const state = getSlackInstallUrlState(true)
-    // const slackOauth = `${oauthBaseUrl}&state=${state}`
-    // return slackOauth
+    const { userSlackStatus } = toRefs(store)
+    const oauthBaseUrl = userSlackStatus.value.oAuth
+    const state = getSlackInstallUrlState(true)
+    const slackOauth = `${oauthBaseUrl}&state=${state}`
+    return slackOauth
 })
 
 

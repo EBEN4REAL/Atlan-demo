@@ -75,8 +75,8 @@
                         Install the Atlan app in your Slack workspace.
                         <span
                             class="flex items-center ml-1 text-blue-500 cursor-pointer"
-                            @click="openOauthUrl"
                             target="_blank"
+                            @click="openOauthUrl"
                         >
                             Install now<AtlanIcon
                                 :icon="'ArrowRight'"
@@ -110,12 +110,12 @@
 </template>
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
+    import { message } from 'ant-design-vue'
     import { Integrations } from '~/services/service/integrations'
     import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
     import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
     import { useAuthStore } from '~/store/auth'
     import useIntegration from '~/composables/integrations/useIntegrations'
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'SlackConfigModal',
@@ -157,15 +157,13 @@
 
             const handleSubmit = async () => {
                 if (slackResponse.value) {
-                    // close modal
-                    // openOauthUrl()
                     emit('close')
                 } else {
                     // send api request
                     const body = ref({
                         slackConfigurationToken: accessToken.value,
                         slackRefreshToken: refreshToken.value,
-                        // atlanDomain: 'beta.atlan.com',
+                        atlanDomain: 'beta.atlan.com',
                         // baseUrl: 'https://ac96-117-199-197-221.ngrok.io',
                     })
                     try {
@@ -176,7 +174,6 @@
                         console.log('slack create app data', data)
                         // refresh integrations
                         useIntegration()
-                        // error.value = err
                         message.success({
                             content:
                                 'Successfully created integration, you can now configure',

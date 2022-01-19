@@ -42,7 +42,12 @@
                         @keydown.enter="addChannel"
                         @blur="addChannel"
                         @keydown.backspace="
-                            removeChannel(channelValue.valueOf.length - 1)
+                            (e) => {
+                                if (!e?.target?.value)
+                                    removeChannel(
+                                        channelValue.valueOf.length - 1
+                                    )
+                            }
                         "
                         @keydown.tab="
                             (e) => {
@@ -94,6 +99,7 @@
     import {
         UpdateIntegration,
         archiveIntegration,
+        getIntegrationById,
     } from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
@@ -107,6 +113,7 @@
             const { name: tenantName } = useTenantData()
 
             const store = integrationStore()
+            const { updateIntegration: updateStore } = store
 
             const { tenantSlackStatus } = toRefs(store)
             const meta = inject('integrationTypeObject')
@@ -118,11 +125,6 @@
             const channelValue = ref([])
 
             const isEdit = ref(false)
-
-            // const getChannels = () => {
-            //     if (!integration) return []
-            //     return integration?.config?.channels ?? []
-            // }
 
             const addChannel = (e) => {
                 const value = e?.target?.value.trim() ?? null
@@ -160,6 +162,18 @@
                 })
             }
 
+            const refetchIntegration = (id) => {
+                const {
+                    data: i,
+                    isLoading: loading,
+                    error: e,
+                } = getIntegrationById(id)
+
+                watch(i, (v) => {
+                    if (v) store.updateIntegration(v)
+                })
+            }
+
             const {
                 data: updateData,
                 isLoading: updateLoading,
@@ -185,7 +199,7 @@
                         duration: 2,
                     })
                 } else {
-                    if (updateData.value.failedChannels) {
+                    if (updateData.value?.failedChannels) {
                         const { failedChannels } = updateData.value
                         handleFailed(failedChannels)
                         message.error({
@@ -196,6 +210,7 @@
                             duration: 4,
                         })
                     }
+                    refetchIntegration(pV.value.id)
                     message.success({
                         content: 'Updated channel(s) successfully.',
                         key: 'addChannel',

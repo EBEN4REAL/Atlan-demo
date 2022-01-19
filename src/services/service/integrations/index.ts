@@ -5,8 +5,7 @@ import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { useOptions } from '~/services/api/common'
 
 // Integration & IntegrationTypes
-const ListTypes = (params: Ref, options) => useAPI(map.LIST_INTEGRATIONS_TYPES, 'GET', { params }, options);
-const List = (params: Ref) => useAPI(map.LIST_INTEGRATIONS, 'GET', { params }, {});
+const List = (params: Ref, options = {}) => useAPI(map.LIST_INTEGRATIONS, 'GET', { params }, options);
 const getIntegrationById = (pathVariables: Ref) => useAPI(map.GET_INTEGRATION, 'GET', { pathVariables }, {});
 const UpdateIntegration = (pathVariables: Ref, body, options: useOptions) => useAPI(map.UPDATE_INTEGRATION, 'POST', { pathVariables, body }, options);
 const archiveIntegration = (pathVariables: Ref, options: useOptions) => useAPI(map.ARCHIVE_INTEGRATION, 'POST', { pathVariables }, options);
@@ -19,6 +18,6 @@ const CreateSlackApp = (body: Ref) => useAPIPromise(map.CREATE_SLACK_APP(), 'POS
 
 
 export const Integrations = {
-    ListTypes, List, getIntegrationById, UpdateIntegration, archiveIntegration, ShareSlack, UnfurlSlackMessage,
+    List, getIntegrationById, UpdateIntegration, archiveIntegration, ShareSlack, UnfurlSlackMessage,
     CreateSlackApp
 }

@@ -21,7 +21,7 @@
                         >
                     </div>
                     <div class="w-full grid-container group">
-                        <div class="item-1" style="max-width: 45%">
+                        <div class="item-1">
                             <ColumnSelector
                                 class="flex-1"
                                 v-model:selectedColumn="subpanel.column"
@@ -69,9 +69,27 @@
                             </ColumnSelector>
                         </div>
 
-                        <div class="item-2" v-if="subpanel?.filter?.type">
+                        <div class="item-2">
+                            <!-- Will appear when there is only one column -->
+                            <div class="flex items-center text-gray-500">
+                                <AtlanIcon
+                                    v-if="
+                                        isSubpanelClosable(subpanels) &&
+                                        !readOnly &&
+                                        !subpanel?.filter?.type
+                                    "
+                                    @click.stop="
+                                        () => handleDelete(index, subpanel)
+                                    "
+                                    icon="Close"
+                                    class="w-6 h-6 text-gray-500 opacity-0 mt-0.5 cursor-pointer group-hover:opacity-100"
+                                />
+                                <div style="width: 32px" v-else></div>
+                            </div>
+                            <!-- ------------ -->
                             <FilterSelector
                                 class="w-full"
+                                v-if="subpanel?.filter?.type"
                                 :columnName="subpanel?.column?.label"
                                 :columnType="subpanel?.column?.type"
                                 v-model:selectedFilter="subpanel.filter"
@@ -123,12 +141,13 @@
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
-                            <!--  -->
+                            <!-- Will appear when there are 3 columns visible on screen -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
                                     v-if="
                                         isSubpanelClosable(subpanels) &&
-                                        !readOnly
+                                        !readOnly &&
+                                        subpanel?.filter?.type
                                     "
                                     @click.stop="
                                         () => handleDelete(index, subpanel)

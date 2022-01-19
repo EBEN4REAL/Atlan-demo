@@ -3,7 +3,7 @@
         v-if="isLoading && treeData.length == 0"
         class="flex items-center justify-center flex-grow h-full"
     >
-        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
+        <AtlanLoader class="h-10" />
     </div>
     <div
         v-else-if="treeData.length === 0 && !isLoading"
@@ -123,6 +123,10 @@
                 type: Object as PropType<string[]>,
                 required: false,
             },
+            disabledGuids: {
+                type: Object as PropType<string[]>,
+                required: false,
+            }
         },
         emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
@@ -169,6 +173,7 @@
                 parentGlossaryGuid,
                 checkable: props.checkable,
                 checkedGuids: checkedGuids.value,
+                disabledGuids: props.disabledGuids,
                 localCheckedNodes,
             })
 

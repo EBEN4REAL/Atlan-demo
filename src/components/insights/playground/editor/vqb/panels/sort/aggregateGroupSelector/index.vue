@@ -139,7 +139,6 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
@@ -157,7 +156,6 @@
         name: 'Sub panel',
         components: {
             Pill,
-            TablesTree,
             ColumnKeys,
             CustomInput,
         },

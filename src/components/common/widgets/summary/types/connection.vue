@@ -3,9 +3,14 @@
         <span class="mb-1 text-sm text-gray-500">Connection</span>
         <div class="flex items-center">
             <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
-            <span>{{
-                `${connectorName(asset)}/${connectionName(asset)}`
-            }}</span>
+
+            <router-link
+                :to="`/assets/${connectionGuid(asset)}`"
+                class="font-bold text-primary hover:underline"
+                >{{
+                    `${connectorName(asset)}/${connectionName(asset)}`
+                }}</router-link
+            >
         </div>
     </div>
 </template>
@@ -27,13 +32,18 @@
             },
         },
         setup() {
-            const { getConnectorImage, connectorName, connectionName } =
-                useAssetInfo()
+            const {
+                getConnectorImage,
+                connectorName,
+                connectionName,
+                connectionGuid,
+            } = useAssetInfo()
 
             return {
                 getConnectorImage,
                 connectorName,
                 connectionName,
+                connectionGuid,
             }
         },
     })

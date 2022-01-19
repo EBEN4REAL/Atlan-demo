@@ -38,6 +38,7 @@ export default function useAssetInfo() {
         asset?.attributes?.parentCategory
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
+    const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -50,22 +51,22 @@ export default function useAssetInfo() {
         attributes(asset)?.dashboard
 
     const reportCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.reportCount)
+        getCountString(attributes(asset)?.reportCount, true)
 
     const dashboardCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.dashboardCount)
+        getCountString(attributes(asset)?.dashboardCount, true)
 
     const datasetCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.datasetCount)
+        getCountString(attributes(asset)?.datasetCount, true)
 
     const dataflowCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.dataflowCount)
+        getCountString(attributes(asset)?.dataflowCount, true)
 
     const tileCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.tileCount)
+        getCountString(attributes(asset)?.tileCount, true)
 
     const pageCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.pageCount)
+        getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
@@ -93,6 +94,16 @@ export default function useAssetInfo() {
         )
         if (connection) {
             return connection.attributes.name
+        }
+        return ''
+    }
+
+    const connectionGuid = (asset: assetInterface) => {
+        const connection = getConnection(
+            asset.attributes.connectionQualifiedName
+        )
+        if (connection) {
+            return connection?.guid
         }
         return ''
     }
@@ -169,7 +180,25 @@ export default function useAssetInfo() {
         )
         return activeLinks
     }
-    const link = (asset: assetInterface) => attributes(asset)?.link
+
+    function isValidHttpUrl(string) {
+        let url
+
+        try {
+            url = new URL(string)
+        } catch (_) {
+            return false
+        }
+
+        return url.protocol === 'http:' || url.protocol === 'https:'
+    }
+
+    const link = (asset: assetInterface) => {
+        if (isValidHttpUrl(attributes(asset)?.link)) {
+            return attributes(asset)?.link
+        }
+        return ''
+    }
 
     const queries = (asset: assetInterface) => attributes(asset)?.queries
 
@@ -202,7 +231,7 @@ export default function useAssetInfo() {
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
-        if (cmList(assetType(asset)).length > 0) {
+        if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
@@ -291,7 +320,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}&runQuery=true`
+            return `/insights?id=${asset.guid}`
         }
         return `/assets/${asset?.guid}`
     }
@@ -312,7 +341,7 @@ export default function useAssetInfo() {
             //     attributes(asset).tableName
 
             const name =
-                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
+                tableName(asset)?.length > 0 ? tableName(asset) : viewName(asset)
             const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -323,7 +352,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            queryPath = `/insights?id=${asset.guid}&runQuery=true`
+            queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
             queryPath = `/insights?col_id=${asset.guid}`
         } else {
@@ -409,22 +438,22 @@ export default function useAssetInfo() {
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).rowCount)
+            : getCountString(attributes(asset).rowCount, true)
 
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset)?.columnCount)
+            : getCountString(attributes(asset)?.columnCount, true)
 
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.termsCount?.toLocaleString() || 'N/A'
-            : getCountString(asset?.termsCount)
+            : getCountString(asset?.termsCount, true)
 
     const categoryCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.categoryCount?.toLocaleString() || 'N/A'
-            : getCountString(asset?.categoryCount)
+            : getCountString(asset?.categoryCount, true)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -681,11 +710,21 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (
         asset: assetInterface,
+        secondaryEvaluation = false,
         action = 'ENTITY_UPDATE',
         typeName?
     ) => {
+        let evaluations: any = []
+
+        // Anything that isn't a selectedAsset in store - any drawer, column items in columns tab
+        if (secondaryEvaluation) {
+            evaluations = authStore?.secondaryEvaluations
+        } else {
+            evaluations = authStore?.evaluations
+        }
+
         if (typeName) {
-            return authStore?.evaluations.find(
+            return evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
@@ -694,7 +733,8 @@ export default function useAssetInfo() {
                         ev?.entityTypeEnd2 === typeName)
             )?.allowed
         }
-        return authStore?.evaluations.find(
+
+        return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
         )?.allowed
     }
@@ -723,6 +763,14 @@ export default function useAssetInfo() {
             return true
         }
         return false
+    }
+
+    const isProcess = (asset: assetInterface) => {
+        return assetType(asset) === 'Process'
+    }
+
+    const getProcessSQL = (asset: assetInterface) => {
+        return attributes(asset)?.sql
     }
 
     const getHierarchy = (asset: assetInterface) => {
@@ -1061,6 +1109,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         isForeign,
         categories,
+        seeAlso,
         parentCategory,
         isGTC,
         getProfilePath,
@@ -1092,5 +1141,8 @@ export default function useAssetInfo() {
         dataflowCount,
         tileCount,
         pageCount,
+        connectionGuid,
+        isProcess,
+        getProcessSQL,
     }
 }

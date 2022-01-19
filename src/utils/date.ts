@@ -3,7 +3,7 @@
  * @param date date timestamp
  * @returns human readable date string without time eg.
  */
-export const formatDate = (date: string | number | Date) => new Date(date).toLocaleString()
+export const formatDate = (date: string | number | Date) => new Date(date).toLocaleDateString()
 
 export const formatDateTime = (
     date: any,
@@ -38,7 +38,39 @@ export const formatDateTime = (
     }
     return formattedDate
 }
+/**
+ *
+ * @param dateString : time ago string ex - 1 hour ago
+ * @returns time ago string with shortened time-unit ex - 1h ago
+ */
+export const getShortNotationDateTimeAgo = (dateString) => {
+    const timeUnitStrings = [
+        'sec',
+        'min',
+        'hour',
+        'day',
+        'week',
+        'month',
+        'year',
+    ]
+    const dateTimeStringFragments = dateString.split(' ')
+    const timeFragmentIndex = dateTimeStringFragments.findIndex((s) =>
+        timeUnitStrings.some((ts) => s.includes(ts))
+    )
+    const timeFragment = dateTimeStringFragments.find((s) =>
+        timeUnitStrings.some((ts) => s.includes(ts))
+    )
+    const timeMagnitude = dateTimeStringFragments[0]
+    let timeFragmentShortNotation = ''
+    if (timeFragmentIndex && timeFragment) {
+        timeFragmentShortNotation = timeFragment?.includes('month')
+            ? dateTimeStringFragments[timeFragmentIndex].substring(0, 2) // mo for months, m for mins
+            : dateTimeStringFragments[timeFragmentIndex].substring(0, 1)
 
+        return `${timeMagnitude}${timeFragmentShortNotation} ${dateTimeStringFragments[2]}`
+    }
+    return dateString
+}
 /**
  *
  * @param date_future date_now  date timestamp

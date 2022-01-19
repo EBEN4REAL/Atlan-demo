@@ -54,6 +54,7 @@
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
+                            @dblClick="handleDoubleClick"
                         ></PackageList>
                     </div>
                     <div
@@ -168,6 +169,11 @@
                 emit('select', item)
             }
 
+            const handleDoubleClick = (item) => {
+                handleSelect(item)
+                handleSetup(item)
+            }
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
@@ -201,6 +207,7 @@
                 handleSearchChange,
                 activeKey,
                 handleResetEvent,
+                handleDoubleClick,
             }
         },
     })

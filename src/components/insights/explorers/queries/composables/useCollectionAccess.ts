@@ -191,13 +191,15 @@ const useCollectionAccess = (
     })
 
     watch(
-        activeInlineTab,
+        ()=>activeInlineTab?.value?.explorer
+        ?.queries?.collection
+        ?.qualifiedName,
         async () => {
             // console.log('activeInlineTab: ', activeInlineTab.value)
 
             await fetchSelectedCollectionData()
         },
-        { immediate: true }
+        { deep: true }
     )
 
     return {

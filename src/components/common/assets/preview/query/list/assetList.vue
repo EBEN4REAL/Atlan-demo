@@ -28,11 +28,7 @@
                         </p>
                         <AtlanIcon icon="ArrowDown" />
                     </template>
-                    <AtlanIcon
-                        icon="Loader"
-                        v-else
-                        class="w-auto h-10 animate-spin"
-                    ></AtlanIcon>
+                    <AtlanLoader v-else class="h-10" />
                 </button>
             </div>
         </template>

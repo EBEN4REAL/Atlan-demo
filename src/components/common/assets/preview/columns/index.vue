@@ -33,10 +33,7 @@
             v-if="isLoading"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-if="!isLoading && error"
@@ -46,8 +43,9 @@
         </div>
         <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
             <EmptyView
-                empty-screen="EmptyDiscover"
-                desc="No assets found"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
+                desc="No columns found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->
@@ -120,7 +118,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -158,6 +156,7 @@
 
             const {
                 list,
+                freshList,
                 isLoading,
                 isLoadMore,
                 fetch,
@@ -179,6 +178,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const handleListUpdate = (asset: any) => {
@@ -194,7 +194,7 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false)
+            const { refresh } = useEvaluate(body, false, true) // true for secondaryEvaluations
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
@@ -229,17 +229,20 @@
                 quickChange()
             }
 
-            watch(list, () => {
-                // For evaluations
-                body.value = {
-                    entities: list.value.map((item) => ({
-                        typeName: item.typeName,
-                        entityGuid: item.guid,
-                        action: 'ENTITY_UPDATE',
-                    })),
+            watch(
+                () => [...freshList.value],
+                () => {
+                    // For evaluations
+                    body.value = {
+                        entities: freshList.value.map((item) => ({
+                            typeName: item.typeName,
+                            entityGuid: item.guid,
+                            action: 'ENTITY_UPDATE',
+                        })),
+                    }
+                    refresh()
                 }
-                refresh()
-            })
+            )
 
             return {
                 isLoading,

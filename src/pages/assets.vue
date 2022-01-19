@@ -12,7 +12,7 @@
         </div>
 
         <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview :selected-asset="localSelected"></AssetPreview>
+            <AssetPreview :selected-asset="localSelected" />
         </div>
     </div>
 </template>

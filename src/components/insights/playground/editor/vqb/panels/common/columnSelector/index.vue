@@ -109,8 +109,10 @@
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectItem(item, e)"
                                     :class="
-                                        selectedItem?.qualifiedName ===
-                                        item.columnQualifiedName
+                                        selectedItem?.qualifiedName ??
+                                        selectedItem?.columnQualifiedName ===
+                                            item.columnQualifiedName ??
+                                        item?.qualifiedName
                                             ? 'bg-primary-light'
                                             : 'bg-white'
                                     "
@@ -492,7 +494,6 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
@@ -516,7 +517,6 @@
         components: {
             Pill,
             Loader,
-            TablesTree,
             ColumnKeys,
             PopoverAsset,
             AtlanBtn,
@@ -842,6 +842,7 @@
                 return {
                     dsl: useBody(data),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -859,6 +860,7 @@
                             .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
+                    suppressLogs: true,
                 }
             }
 
@@ -1031,17 +1033,17 @@
                 },
                 { immediate: true }
             )
-            watch(isAreaFocused, (newAreadFocused) => {
-                if (!newAreadFocused) {
-                    isTableSelected.value = false
-                    tableSelected.value = null
-                    replaceBody(
-                        getTableInitialBody(
-                            activeInlineTab.value.playground.vqb.selectedTables
-                        )
-                    )
-                }
-            })
+            // watch(isAreaFocused, (newAreadFocused) => {
+            //     if (!newAreadFocused) {
+            //         isTableSelected.value = false
+            //         tableSelected.value = null
+            //         replaceBody(
+            //             getTableInitialBody(
+            //                 activeInlineTab.value.playground.vqb.selectedTables
+            //             )
+            //         )
+            //     }
+            // })
 
             return {
                 disabled,

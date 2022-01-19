@@ -244,7 +244,6 @@
                                                 item.qualifiedName
                                             "
                                         />
-                                        <div v-else class="w-4 ml-2"></div>
                                     </div>
                                 </div>
                             </PopoverAsset>
@@ -361,7 +360,8 @@
             const replaceTableBody = inject('replaceTableBody') as Function
             const replaceColumnBody = inject('replaceColumnBody') as Function
             const { allowedTablesInJoinSelector } = useJoin()
-            const { openAssetInSidebar } = useUtils()
+            const { openAssetInSidebar, getTableNameFromTableQualifiedName } =
+                useUtils()
             const { updateVQB } = useVQB()
             const { getDataTypeImage } = useColumn()
             const {
@@ -481,7 +481,9 @@
                     type: item.type,
                     value: item.label,
                     columnQualifiedName: item.qualifiedName,
-                    tableName: item.item.attributes.tableName,
+                    tableName: getTableNameFromTableQualifiedName(
+                        item.qualifiedName
+                    ),
                 }
 
                 emit('change', item.qualifiedName)
@@ -517,7 +519,6 @@
                         dirtyTableSelected.value = null
                         isTableSelected.value = false
                         tableSelected.value = null
-                        replaceTableBody(getTableInitialBody())
                     }
                 },
                 {
@@ -526,31 +527,28 @@
             )
 
             watch(
-                () => activeInlineTab.value.playground.vqb.selectedTables,
-                () => {
-                    tableQualifiedNamesContraint.value =
-                        allowedTablesInJoinSelector(
-                            panelIndex.value,
-                            rowIndex.value,
-                            subIndex.value,
-                            activeInlineTab.value
-                        )
-
-                    if (selectedColumn.value?.label && tableSelected?.value) {
-                    } else {
-                        replaceTableBody(getTableInitialBody())
-                    }
-                }
-            )
-
-            watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
                     if (newIsAreaFocused) {
+                        tableQualifiedNamesContraint.value =
+                            allowedTablesInJoinSelector(
+                                panelIndex.value,
+                                rowIndex.value,
+                                subIndex.value,
+                                activeInlineTab.value
+                            )
+
                         dirtyTableSelected.value = toRaw(tableSelected.value)
                         dirtyIsTableSelected.value = toRaw(
                             isTableSelected.value
                         )
+                        if (tableSelected.value) {
+                            replaceColumnBody(
+                                getColumnInitialBody(tableSelected.value)
+                            )
+                        } else {
+                            replaceTableBody(getTableInitialBody())
+                        }
                     } else {
                         dirtyTableSelected.value = null
                         dirtyIsTableSelected.value = false

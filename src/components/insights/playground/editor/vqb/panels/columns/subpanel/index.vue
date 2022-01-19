@@ -6,19 +6,31 @@
                 :key="subpanel?.id + index"
             >
                 <div class="flex items-start w-full mb-3 pr-9">
-                    <TableSelector
-                        typeName="Table"
-                        class="flex-1"
-                        :class="[subpanel.tableQualfiedName ? '' : '']"
-                        v-model:modelValue="subpanel.tableQualfiedName"
-                        :filterValues="filteredTablesValues"
-                        v-model:selectedTableData="subpanel.tableData"
-                        :disabled="readOnly"
-                        :selectedItem="{}"
-                        @change="
-                            (val) => hanldeTableQualifiedNameChange(val, index)
-                        "
-                    />
+                    <TableSelector class="flex-1" :disabled="readOnly">
+                        <template #head>
+                            <TableSelectorHead
+                                :modelValue="subpanel.tableQualfiedName"
+                                :selectedTableData="subpanel.tableData"
+                                :disabled="readOnly"
+                            />
+                        </template>
+                        <template #body>
+                            <TableSelectorDropdown
+                                class="flex-1"
+                                v-model:modelValue="subpanel.tableQualfiedName"
+                                v-model:selectedTableData="subpanel.tableData"
+                                :disabled="readOnly"
+                                :selectedItem="{}"
+                                @change="
+                                    (val) =>
+                                        hanldeTableQualifiedNameChange(
+                                            val,
+                                            index
+                                        )
+                                "
+                            />
+                        </template>
+                    </TableSelector>
                 </div>
             </template>
         </div>
@@ -48,9 +60,6 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
-    import TableSelector from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/index.vue'
-    import ColumnSelector from '../columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { useVModels } from '@vueuse/core'
@@ -58,13 +67,17 @@
     import { selectedTables } from '~/types/insights/VQB.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
+    import TableSelector from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/_index.vue'
+    import TableSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/dropdown.vue'
+    import TableSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/tableSelector/head.vue'
+
     export default defineComponent({
         name: 'Sub panel',
         components: {
             Pill,
-            TablesTree,
             TableSelector,
-            ColumnSelector,
+            TableSelectorDropdown,
+            TableSelectorHead,
         },
         props: {
             expand: {

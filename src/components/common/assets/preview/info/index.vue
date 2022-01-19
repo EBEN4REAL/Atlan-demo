@@ -245,9 +245,9 @@
             <a-tooltip placement="left" color="#363636">
                 <template #title>
                     {{
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                             ? `You don't have access to this collection`
                             : `View collection`
                     }}
@@ -257,17 +257,17 @@
                     block
                     class="flex items-center justify-between px-2 shadow-none"
                     :class="
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                             ? 'disabledButton'
                             : ''
                     "
                     @click="handleCollectionClick"
                     :disabled="
-                        !hasCollectionReadPermission &&
-                        !hasCollectionWritePermission &&
-                        !isCollectionCreatedByCurrentUser
+                        !collectionData?.hasCollectionReadPermission &&
+                        !collectionData?.hasCollectionWritePermission &&
+                        !collectionData?.isCollectionCreatedByCurrentUser
                     "
                 >
                     <div class="flex items-center">
@@ -276,18 +276,15 @@
                             class="mr-1 mb-0.5"
                         />
                         <span>
-                            {{
-                                selectedAsset?.collectionName ||
-                                collectionInfo?.displayText
-                            }}
+                            {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>
                     <AtlanIcon
                         icon="Lock"
                         v-if="
-                            !hasCollectionReadPermission &&
-                            !hasCollectionWritePermission &&
-                            !isCollectionCreatedByCurrentUser
+                            !collectionData?.hasCollectionReadPermission &&
+                            !collectionData?.hasCollectionWritePermission &&
+                            !collectionData?.isCollectionCreatedByCurrentUser
                         "
                     />
                     <AtlanIcon v-else icon="External" />
@@ -356,6 +353,14 @@
                 @change="handleChangeDescription"
             />
         </div>
+        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
@@ -421,12 +426,14 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_ADD_CLASSIFICATION'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
@@ -456,6 +463,7 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_ADD',
                         'AtlasGlossaryTerm'
                     ) && editPermission
@@ -463,6 +471,7 @@
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_REMOVE',
                         'AtlasGlossaryTerm'
                     ) && editPermission
@@ -503,6 +512,25 @@
             </Categories>
         </div>
 
+        <div
+            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                See Also
+            </p>
+            <RelatedTerms
+                v-model="localSeeAlso"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :edit-permission="editPermission"
+                :allow-delete="editPermission"
+                @change="handleSeeAlsoUpdate"
+            >
+            </RelatedTerms>
+        </div>
         <a-modal
             v-model:visible="sampleDataVisible"
             :footer="null"
@@ -528,6 +556,7 @@
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
+    import SQLSnippet from '@/common/sql/snippet.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
@@ -538,10 +567,9 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
-    import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -556,8 +584,10 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
+            SQLSnippet,
             TermsWidget,
             Categories,
+            RelatedTerms,
             Admins,
             SampleDataTable: defineAsyncComponent(
                 () =>
@@ -582,19 +612,16 @@
                 required: false,
                 default: false,
             },
+            collectionData: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
-
-            // get collection info in case of selected query
-            const {
-                collectionInfo,
-                hasCollectionReadPermission,
-                hasCollectionWritePermission,
-                isCollectionCreatedByCurrentUser,
-            } = useCollectionInfo(selectedAsset)
+            const { collectionData } = toRefs(props)
 
             const { isDrawer } = toRefs(props)
 
@@ -619,6 +646,8 @@
                 definition,
                 webURL,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
@@ -627,7 +656,6 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
-                getAssetQueryPath,
             } = useAssetInfo()
 
             const {
@@ -641,6 +669,8 @@
                 localClassifications,
                 localMeanings,
                 localCategories,
+                localSeeAlso,
+                handleSeeAlsoUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -680,7 +710,7 @@
                     `http://` +
                     window.location.host +
                     `/insights?col_id=` +
-                    collectionInfo?.value?.guid
+                    collectionData?.value?.collectionInfo?.guid
 
                 window.open(URL, '_blank')?.focus()
             }
@@ -712,6 +742,8 @@
                 webURL,
                 handlePreviewClick,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 handleOwnersChange,
                 localCertificate,
                 handleChangeCertificate,
@@ -727,8 +759,10 @@
                 localMeanings,
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
+                handleSeeAlsoUpdate,
                 isUserDescription,
                 localCategories,
+                localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
                 selectedAssetUpdatePermission,
@@ -739,11 +773,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
-                collectionInfo,
                 handleCollectionClick,
-                hasCollectionReadPermission,
-                hasCollectionWritePermission,
-                isCollectionCreatedByCurrentUser,
             }
         },
     })

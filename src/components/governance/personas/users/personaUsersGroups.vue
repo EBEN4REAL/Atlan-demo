@@ -33,10 +33,7 @@
             v-else-if="isUsersLoading || isGroupsLoading"
             class="flex items-center justify-center loading-view"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-7 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-7" />
         </div>
         <!-- END Loading state: no persona users and groups -->
 

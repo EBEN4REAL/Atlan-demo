@@ -125,10 +125,8 @@
             v-if="isEvaluating"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+        <AtlanLoader class="h-10" />
+
         </div> -->
         <a-tabs
             v-model:activeKey="activeKey"
@@ -168,7 +166,7 @@
                     :is-drawer="isDrawer"
                     :read-permission="isScrubbed(selectedAsset)"
                     :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
+                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
                     :data="tab.data"
                     :ref="
@@ -176,6 +174,12 @@
                             if (el) tabChildRef[index] = el
                         }
                     "
+                    :collectionData="{
+                        collectionInfo,
+                        hasCollectionReadPermission,
+                        hasCollectionWritePermission,
+                        isCollectionCreatedByCurrentUser,
+                    }"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -200,13 +204,14 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-
+    import { useAuthStore } from '~/store/auth'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -239,6 +244,9 @@
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),
+            linkedAssets: defineAsyncComponent(
+                () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
         },
 
         props: {
@@ -262,10 +270,16 @@
                 required: false,
                 default: 'assets',
             },
+            drawerActiveKey: {
+                type: String,
+                required: false,
+                default: 'info',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { selectedAsset, isDrawer, page, drawerActiveKey } =
+                toRefs(props)
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -274,6 +288,13 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
+
+            const {
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
+            } = useCollectionInfo(selectedAsset)
 
             const {
                 title,
@@ -325,30 +346,48 @@
             )
 
             const body = ref({})
+            const authStore = useAuthStore()
+
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
-                false
+                false,
+                isDrawer.value
             )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
                     if (prev) {
+                        if (
+                            authStore?.evaluations?.some(
+                                (ev) =>
+                                    ev?.entityGuid === selectedAsset.value?.guid
+                            )
+                        ) {
+                            return
+                        }
                         body.value = {
                             entities: getAssetEvaluationsBody(
                                 selectedAsset.value
                             ),
                         }
+
                         refresh()
                     }
                 },
                 { debounce: 100, immediate: true }
             )
 
-            provide('switchTab', (asset, tabName: string) => {
+            const switchTab = (asset, tabName: string) => {
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+            }
+
+            provide('switchTab', switchTab)
+
+            watch(drawerActiveKey, (newVal) => {
+                switchTab(selectedAsset.value, newVal)
             })
 
             const router = useRouter()
@@ -445,6 +484,12 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
+
+                //for collection access
+                collectionInfo,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                isCollectionCreatedByCurrentUser,
             }
         },
     })

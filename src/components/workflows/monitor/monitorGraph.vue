@@ -10,7 +10,7 @@
             v-if="!isGraphRendered"
             class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
         >
-            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+            <AtlanLoader class="h-5" />
         </div>
 
         <!-- Monitor Controls -->
@@ -165,6 +165,7 @@
                 required: true,
             },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             /** DATA */
             const { graphData, selectedPod } = toRefs(props)
@@ -182,6 +183,8 @@
             const isRunning = ref(true)
             const isLoadingRefresh = ref(false)
             const firstNode = ref({})
+
+            const expandedNodes = ref([])
 
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
@@ -210,7 +213,10 @@
 
             // initialize
             const initialize = (reload = false) => {
-                if (reload) graph.value.dispose()
+                if (reload) {
+                    graph.value.dispose()
+                }
+
                 isLoadingRefresh.value = true
                 isGraphRendered.value = false
                 // useGraph
@@ -221,16 +227,20 @@
                 )
 
                 // useComputeGraph
-                const { nodes } = useComputeGraph(
+                const {
+                    nodes,
+                    reset,
+                    getNodeParent,
+                    isCollapsedNode,
+                    getNode,
+                } = useComputeGraph(
                     graph,
                     graphLayout,
                     graphData,
                     currZoom,
-                    currZoomDec,
-                    reload
+                    expandedNodes
                 )
 
-                console.log('nodes', nodes)
                 firstNode.value = nodes.value[0]
                 // useHighlight
                 useHighlight(
@@ -257,6 +267,28 @@
                     isGraphRendered.value = true
                 })
                 isLoadingRefresh.value = false
+
+                graph.value.on(
+                    'node:selected',
+                    (args: {
+                        cell: Cell
+                        node: Node
+                        options: Model.SetOptions
+                    }) => {
+                        if (args.node.id) {
+                            if (isCollapsedNode(args.node.id)) {
+                                expandedNodes.value.push(
+                                    getNodeParent(args.node.id)
+                                )
+                                initialize(true)
+                            } else {
+                                console.log(getNode(args.node.id))
+                                emit('select', getNode(args.node.id))
+                            }
+                            // console.log(getNodeParent(args.node.id))
+                        }
+                    }
+                )
             }
 
             watch(
@@ -277,6 +309,7 @@
             const handleRefresh = () => {
                 emit('refresh')
             }
+
             return {
                 minimapContainer,
                 monitorContainer,
@@ -295,6 +328,9 @@
                 handleRefresh,
                 isGraphRendered,
                 handleRecenter,
+                graph,
+
+                expandedNodes,
             }
         },
     })

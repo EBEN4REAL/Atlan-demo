@@ -42,6 +42,7 @@ interface UseTreeParams {
     nodesKey?: 'qualifiedName' | 'guid'
     checkable: Boolean
     checkedGuids?: string[]
+    disabledGuids?: string[]
     localCheckedNodes?: Ref<Array<any>>
 }
 
@@ -56,6 +57,7 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
     checkedGuids = [],
+    disabledGuids = [],
     localCheckedNodes,
 }: UseTreeParams) => {
     const limit = ref(100)
@@ -104,6 +106,7 @@ const useGlossaryTree = ({
             dsl,
             attributes: attributes?.value,
             relationAttributes: relationAttributes?.value,
+            suppressLogs: true,
         }
     }
 
@@ -143,6 +146,7 @@ const useGlossaryTree = ({
                             i.typeName === 'AtlasGlossaryTerm'
                                 ? checkable
                                 : false,
+                        disabled: disabledGuids.includes(i.guid)
                     }))
                     if (data.value && map) {
                         map?.forEach((el) => {
@@ -253,6 +257,7 @@ const useGlossaryTree = ({
                                 i.typeName === 'AtlasGlossaryTerm'
                                     ? checkable
                                     : false,
+                            disabled: disabledGuids.includes(i.guid)
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -465,6 +470,7 @@ const useGlossaryTree = ({
                                 i.typeName === 'AtlasGlossaryTerm'
                                     ? checkable
                                     : false,
+                            disabled: disabledGuids.includes(i.guid)
                         }))
                         treeData.value.sort((a, b) => {
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
@@ -1075,6 +1081,8 @@ const useGlossaryTree = ({
                     isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     checkable:
                         i.typeName === 'AtlasGlossaryTerm' ? checkable : false,
+                    disabled: disabledGuids.includes(i.guid)
+
                 }))
                 map?.forEach((el) => {
                     if (el.typeName === 'AtlasGlossaryTerm') {

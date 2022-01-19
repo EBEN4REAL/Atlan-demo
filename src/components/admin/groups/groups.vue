@@ -53,7 +53,7 @@
             v-if="isLoading"
             class="flex items-center justify-center h-full border border-gray-300 rounded-lg"
         >
-            <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+            <AtlanLoader class="h-7" />
         </div>
         <div
             v-else-if="error"
@@ -86,6 +86,12 @@
                 :row-key="(group) => group.id"
                 :loading="isLoading"
                 :show-sorter-tooltip="false"
+                :row-class-name="
+                    (r, i) =>
+                        showPreview && selectedGroupId === r.id
+                            ? 'bg-primary-light'
+                            : ''
+                "
                 @change="handleTableChange"
             >
                 <template #headerCell="{ title, column }">
@@ -639,6 +645,8 @@
                 )
             }
             return {
+                showPreview,
+                selectedGroupId,
                 columns,
                 isGroupDrawerVisible,
                 searchText,

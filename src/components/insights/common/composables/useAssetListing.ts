@@ -6,16 +6,11 @@ import useIndexSearch from './useIndexSearch'
 export function useAssetListing(
     typeName?: string,
     immediate: boolean = true,
-    cacheSuffx?: string | ''
+    params: Object = {}
 ) {
     const list: Ref<assetInterface[]> = ref([])
-    const { replaceBody, body, isReady, error, data } = useIndexSearch(
-        {},
-        '',
-        immediate
-    )
-
-    const isLoading = computed(() => !isReady.value && !error.value)
+    const { replaceBody, body, isReady, error, data, isLoading } =
+        useIndexSearch({}, '', immediate, params)
 
     function mutateAssetInList(updatedAsset: assetInterface) {
         const idx = list.value.findIndex(

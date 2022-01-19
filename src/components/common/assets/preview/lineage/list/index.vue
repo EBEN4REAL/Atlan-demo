@@ -150,6 +150,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const columnDataTypeAggregationList = computed(() =>

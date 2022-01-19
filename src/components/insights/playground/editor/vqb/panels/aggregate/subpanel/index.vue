@@ -15,16 +15,43 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        v-model:selectedItem="subpanel.column"
-                        :tableQualfiedName="
+                        v-model:selectedColumn="subpanel.column"
+                        :disabled="readOnly"
+                        :tableQualifiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
-                        :disabled="readOnly"
                         :selectedTablesQualifiedNames="
                             activeInlineTab.playground.vqb.selectedTables
                         "
-                        @change="(val) => handleColumnChange(val, index)"
-                    />
+                    >
+                        <template #head>
+                            <ColumnSelectorHead
+                                v-model:selectedColumn="subpanel.column"
+                                :selectedTables="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                            />
+                        </template>
+
+                        <template #body>
+                            <ColumnSelectorDropdown
+                                v-model:selectedColumn="subpanel.column"
+                                :disabled="readOnly"
+                                :tableQualifiedName="
+                                    columnSubpanels[0]?.tableQualfiedName
+                                "
+                                :selectedTablesQualifiedNames="
+                                    activeInlineTab.playground.vqb
+                                        .selectedTables
+                                "
+                                @change="
+                                    (val) =>
+                                        handleColumnChange(val, index, subpanel)
+                                "
+                            />
+                        </template>
+                    </ColumnSelector>
 
                     <span class="px-3 text-sm text-gray-500"
                         >Calculate the</span
@@ -83,17 +110,21 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
-    // import ColumnSelector from '../columnSelector/index.vue'
-    import ColumnSelector from '../../common/columnSelector/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { dataTypeCategoryList } from '~/constant/dataType'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+
+    import ColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/index.vue'
+    import ColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/dropdown.vue'
+    import ColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/head.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             AggregateSelector,
             ColumnSelector,
+            ColumnSelectorDropdown,
+            ColumnSelectorHead,
         },
         props: {
             expand: {

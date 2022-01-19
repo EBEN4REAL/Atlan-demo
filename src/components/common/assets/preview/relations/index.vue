@@ -30,10 +30,7 @@
             v-if="isLoading || isFetchingGuids"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-if="!isLoading && !isFetchingGuids && error"
@@ -50,7 +47,8 @@
             class="flex-grow"
         >
             <EmptyView
-                empty-screen="EmptyDiscover"
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
                 desc="No related assets found"
             ></EmptyView>
         </div>
@@ -186,6 +184,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const updateCurrentList = (asset: any) => {

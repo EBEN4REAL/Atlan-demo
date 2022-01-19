@@ -7,12 +7,16 @@
             style="min-width: 250px"
         >
         </RunsList>
-        <div class="relative flex-grow w-2/3 bg-primary-light">
+        <div class="relative flex-grow bg-primary-light">
             <MonitorGraph
                 :graph-data="selectedRun"
                 class=""
                 @refresh="handleRefresh"
+                @select="handleSelectPod"
             />
+        </div>
+        <div class="w-1/4 h-full p-6 bg-white border-l-2">
+            <Sidebar :selected-pod="selectedPod"></Sidebar>
         </div>
     </div>
 
@@ -51,7 +55,7 @@
             v-if="loadingGeneral"
             class="absolute flex items-center justify-center w-full h-full"
         >
-            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+            <AtlanLoader class="h-5" />
         </div> -->
     <!-- <div
             v-else-if="!isLoading && !graphData?.name"
@@ -107,10 +111,11 @@
     import RunsSelect from '@/common/select/runs.vue'
 
     import useRunItem from '~/composables/package/useRunItem'
+    import Sidebar from './sidebar.vue'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
-        components: { RunsSelect, RunsList, MonitorGraph },
+        components: { RunsSelect, RunsList, MonitorGraph, Sidebar },
         // mixins: [WorkflowMixin],
         props: {
             workflowName: {
@@ -146,6 +151,12 @@
                     mutate()
                 }
             })
+
+            const selectedPod = ref({})
+            const handleSelectPod = (pod) => {
+                console.log(pod)
+                selectedPod.value = pod
+            }
             // const route = useRoute()
             /** DATA */
             // const { selectedRunName, selectedPod } = toRefs(props)
@@ -202,7 +213,14 @@
             //     handleRefresh,
             //     ...useWorkflowInfo(),
             // }
-            return { selectedRunName, workflowName, selectedRun, handleRefresh }
+            return {
+                selectedRunName,
+                workflowName,
+                selectedRun,
+                handleRefresh,
+                handleSelectPod,
+                selectedPod,
+            }
         },
     })
 </script>

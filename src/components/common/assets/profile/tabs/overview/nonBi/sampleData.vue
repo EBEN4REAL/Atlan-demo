@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full border rounded max-profile-width h-96"
+        class="flex items-center justify-center w-full overflow-hidden border rounded max-profile-width h-96"
         :class="
             results.length > 0 && !isLoading
                 ? 'border-gray-light'
@@ -8,10 +8,7 @@
         "
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-8 mr-2 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-8 mr-2" />
             <span>Getting sample data</span>
         </div>
         <div v-else-if="error && !isLoading" class="flex flex-col items-center">
@@ -121,8 +118,12 @@
                             obj = {
                                 ...obj,
                                 ...{
-                                    [tableColumns.value[rowindex].dataIndex]:
-                                        row || '---',
+                                    [tableColumns.value[rowindex].dataIndex]: {
+                                        data: row,
+                                        data_type:
+                                            tableColumns.value[rowindex]
+                                                .data_type,
+                                    },
                                 },
                             }
                         })
@@ -144,6 +145,6 @@
 
 <style lang="less" scoped>
     .max-profile-width {
-        max-width: calc(100vw - 476px);
+        max-width: calc(100vw - 516px);
     }
 </style>

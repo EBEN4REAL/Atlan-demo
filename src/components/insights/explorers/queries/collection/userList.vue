@@ -100,10 +100,9 @@
                                                 @click="handleLoadMore"
                                                 class="w-20"
                                             >
-                                                <AtlanIcon
+                                                <AtlanLoader
                                                     v-if="userIsLoading"
-                                                    icon="Loader"
-                                                    class="h-3 animate-spin"
+                                                    class="h-3"
                                                 />
                                                 <span v-else> load more </span>
                                             </AtlanButton>
@@ -186,10 +185,9 @@
                                                 @click="handleLoadMore"
                                                 class="w-20"
                                             >
-                                                <AtlanIcon
+                                                <AtlanLoader
                                                     v-if="groupIsLoading"
-                                                    icon="Loader"
-                                                    class="h-3 animate-spin"
+                                                    class="h-3"
                                                 />
                                                 <span v-else> load more </span>
                                             </AtlanButton>

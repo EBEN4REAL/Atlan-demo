@@ -240,7 +240,6 @@
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
@@ -267,7 +266,6 @@
         components: {
             Pill,
             Loader,
-            TablesTree,
             ColumnKeys,
             PopoverAsset,
             AtlanBtn,
@@ -431,6 +429,7 @@
 
                 return {
                     dsl: useBody(data),
+                    suppressLogs: true,
                     attributes: [
                         'name',
                         'displayName',

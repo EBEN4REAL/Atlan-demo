@@ -80,12 +80,14 @@ export default function useGraph() {
                                     <span class="inscr-item">BASE</span>
                                 </span>
                                 <div>
-                                    <div class="node-text group-hover:underline">
+                                    <div class="node-text">
                                         <span class="z-50 relative block">
-                                            <span class=" absolute right-0 caret-bg text-white flex justify-end w-16">${status} ${iconCaretDown}</span>
+                                            <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${iconCaretDown}</span>
                                         </span>
-                                        <div class="truncate">${displayText}</div>
-                                        
+                                        <div class="flex items-center gap-x-1">
+                                            <span class="node-title truncate group-hover:underline">${displayText}</span>
+                                            <span class="flex-none mr-1">${status}</span>
+                                        </div>
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -131,14 +133,47 @@ export default function useGraph() {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 69,
+                                height: 60,
+                                strokeWidth: 1,
+                                stroke: 'none',
+                                fill: 'none',
+                                event: 'port:click',
+                                y: -30,
+                                x: 1,
+                            },
+                        },
+                    },
+                    ctaPort: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                            {
+                                tagName: 'text',
+                                selector: 'portNameLabel',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 40,
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -34,
+                                y: -11,
+                            },
+                            portNameLabel: {
+                                ref: 'portBody',
+                                refX: 36,
+                                refY: 12,
+                                fontSize: 16,
+                                fill: '#3e4359',
+                                event: 'port:click',
                             },
                         },
+                        position: 'erPortPosition',
                     },
                     columnList: {
                         markup: [
@@ -163,7 +198,7 @@ export default function useGraph() {
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -9.5,
+                                y: -11,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
@@ -263,9 +298,25 @@ export default function useGraph() {
         return { portData }
     }
 
-    const createEdgeData = (relation) => {
-        const stroke = relation.stroke
-        const edgeData = {
+    const createCustomPortData = (nodeId, text) => {
+        const portData = {
+            id: `${nodeId}-ctaPort`,
+            group: 'columnList',
+            attrs: {
+                portNameLabel: {
+                    text,
+                    x: '1.3em',
+                    fill: '#5277d7',
+                    fontSize: 18,
+                },
+            },
+        }
+        return { portData }
+    }
+
+    const createEdgeData = (relation, data = {}) => {
+        const stroke = relation?.stroke
+        let edgeData = {
             zIndex: 0,
             id: relation.id,
             source: {
@@ -279,7 +330,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'rounded' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,
@@ -287,12 +338,15 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 8,
-                        height: 8,
+                        width: 0.1,
+                        height: 0.1,
                     },
                 },
             },
+            data,
         }
+
+        if (Object.keys(data).length) edgeData = { ...edgeData, data }
 
         return {
             edgeData,
@@ -322,9 +376,9 @@ export default function useGraph() {
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
-            if (x.id.includes('processIdGoesHere')) return
             const cell = graph.value.getCellById(x.id)
-            cell.setVisible(visible)
+            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
+            cell.toBack()
         })
     }
 
@@ -333,6 +387,7 @@ export default function useGraph() {
         addNode,
         removeNode,
         createPortData,
+        createCustomPortData,
         createEdgeData,
         addEdge,
         removeEdge,

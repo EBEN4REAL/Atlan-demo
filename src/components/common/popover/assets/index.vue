@@ -31,9 +31,15 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '-' &&
+                                    rows !== '0' &&
                                     rows !== '' &&
-                                    item.typeName?.toLowerCase() !== 'column'
+                                    (item.typeName?.toLowerCase() === 'table' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'view' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'tablepartition' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'materialisedview')
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
@@ -44,9 +50,15 @@
                             </span>
                             <span
                                 v-if="
-                                    cols !== '-' &&
+                                    cols !== '0' &&
                                     cols !== '' &&
-                                    item.typeName?.toLowerCase() !== 'column'
+                                    (item.typeName?.toLowerCase() === 'table' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'view' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'tablepartition' ||
+                                        item.typeName?.toLowerCase() ===
+                                            'materialisedview')
                                 "
                                 class="text-xs text-gray-500"
                                 :class="{ 'ml-3': rows === '-' || rows === '' }"
@@ -141,7 +153,7 @@
                 <div v-if="description(item)" class="mt-1 text-sm">
                     {{ description(item) }}
                 </div>
-                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-3">
+                <div v-if="list?.length > 0" class="flex flex-wrap gap-1 mt-3">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"
@@ -161,7 +173,7 @@
                     </template>
                 </div>
                 <div
-                    v-if="item?.attributes?.ownerUsers.length > 0"
+                    v-if="item?.attributes?.ownerUsers?.length > 0"
                     class="mt-4"
                 >
                     <div class="mb-1 text-sm text-gray-500">Owners</div>

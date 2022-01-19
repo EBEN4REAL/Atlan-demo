@@ -128,6 +128,7 @@
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
                     @refetch="refetchData"
+                    :isPreview="showPreview"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -553,6 +554,7 @@
             }
 
             return {
+                showPreview,
                 isReady,
                 tenantName,
                 map,

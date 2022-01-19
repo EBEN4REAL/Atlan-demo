@@ -4,10 +4,7 @@
             v-if="isLoading"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-else-if="!isLoading && error"
@@ -45,7 +42,8 @@
                 class="flex items-center justify-center flex-grow"
             >
                 <EmptyView
-                    empty-screen="EmptyDiscover"
+                    empty-screen="NoAssetsFound"
+                    image-class="h-44"
                     desc="No queries found"
                 ></EmptyView>
             </div>
@@ -171,6 +169,7 @@
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
+                suppressLogs: true,
             })
 
             const handleListUpdate = (asset: any) => {

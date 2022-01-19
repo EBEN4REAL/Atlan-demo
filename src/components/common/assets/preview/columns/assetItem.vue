@@ -65,7 +65,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     :selected-asset="item"
-                    :edit-permission="selectedAssetUpdatePermission(item)"
+                    :edit-permission="selectedAssetUpdatePermission(item, true)"
                     @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">

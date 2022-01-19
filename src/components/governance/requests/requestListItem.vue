@@ -1,26 +1,39 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded group gap-x-4 hover:bg-primary-light"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-solid border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
-            'border-primary': active,
+            'active-request outline-1 bg-primary-light': active,
+            'bg-primary-light': activeHover === request.id,
         }"
         @click="$emit('select')"
     >
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <AssetPiece
-                v-if="request.destinationQualifiedName"
-                :asset-qf-name="request.destinationQualifiedName"
-                :entity-type="request?.entityType"
-            />
-            <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.requestType](request) }}
-            </span>
+            <Popover :item="item">
+                <div
+                    class="cursor-pointer"
+                    @mouseenter="$emit('mouseEnterAsset')"
+                >
+                    <AssetPiece
+                        v-if="request.destinationQualifiedName"
+                        :asset-qf-name="request.destinationQualifiedName"
+                        :entity-type="request?.entityType"
+                        :destination-entity="request.destinationEntity"
+                    />
+                    <span v-else class="text-sm overflow-ellipsis">
+                        {{
+                            primaryText[request.requestType]
+                                ? primaryText[request.requestType](request)
+                                : ''
+                        }}
+                    </span>
+                </div>
+            </Popover>
         </div>
-        <div class="flex items-center col-span-3">
+        <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -58,54 +71,151 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3 pr-4">
+        <div class="flex items-center justify-end col-span-3 pr-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
-            ></AtlanIcon>
+            />
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-center hidden w-full font-bold group-hover:flex"
+                    v-if="activeHover === request.id"
+                    class="items-center font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
+                        :request="request"
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />
                     <div
-                        v-else-if="request.status === 'approved'"
-                        class="text-success"
+                        v-else-if="
+                            request.status === 'approved' ||
+                            request.status === 'rejected'
+                        "
+                        class="flex items-center justify-end font-light w-96"
+                        :class="
+                            request.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
                     >
-                        Approved
-                    </div>
-                    <div
-                        v-else-if="request.status === 'rejected'"
-                        class="text-error"
-                    >
-                        Rejected
-                    </div>
-                </div>
-                <div class="flex w-1/2 gap-x-2 group-hover:hidden">
-                    <Avatar
-                        :allow-upload="false"
-                        :avatar-name="request.created_by_user?.username"
-                        avatar-size="24"
-                        :avatar-shape="'circle'"
-                    />
-
-                    <div class="flex flex-col">
-                        <UserPiece
-                            :user="request.created_by_user"
-                            :is-pill="false"
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
                         />
+                        {{
+                            request.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
+                        <div class="flex items-center mx-2 truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
+                        </div>
                         <DatePiece
                             label="Created At"
-                            :date="request.createdAt"
-                            class="text-gray-500"
+                            :no-popover="true"
+                            class="font-light text-gray-500"
+                            :date="
+                                request.status === 'approved'
+                                    ? request.approvedBy[0].timestamp
+                                    : request.rejectedBy[0].timestamp
+                            "
                         />
                     </div>
+                </div>
+                <div v-else class="flex">
+                    <div class="flex items-center pl-8 w-52 gap-x-2">
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="request.created_by_user?.username"
+                            avatar-size="24"
+                            :avatar-shape="'circle'"
+                            :image-url="atlanLogo"
+                        />
+
+                        <div class="flex flex-col">
+                            <UserPiece
+                                :user="request.created_by_user"
+                                :is-pill="false"
+                                :default-name="'Atlan Bot'"
+                            />
+                            <DatePiece
+                                label="Created At"
+                                :date="request.createdAt"
+                                class="text-gray-500"
+                            />
+                        </div>
+                    </div>
+                    <!-- <div class="flex items-center">
+                        <AtlanIcon
+                            v-if="
+                                request.status === 'approved' &&
+                                request.approvedBy[0]?.message
+                            "
+                            class="mr-3 text-success check-icon"
+                            icon="MessageSuccess"
+                        />
+                        <AtlanIcon
+                            v-if="
+                                request.status === 'approved' &&
+                                !request.approvedBy[0]?.message
+                            "
+                            class="mr-2 text-success check-icon"
+                            icon="Check"
+                        />
+                        <div
+                            class="flex items-center font-light"
+                            :class="
+                                request.status === 'approved'
+                                    ? 'text-success'
+                                    : 'text-error'
+                            "
+                        >
+                            {{
+                                request.status === 'approved'
+                                    ? 'Approved by'
+                                    : 'Rejected by'
+                            }}
+
+                            <div class="flex items-center mx-2 truncate">
+                                <Avatar
+                                    :allow-upload="false"
+                                    :avatar-name="nameUpdater"
+                                    :avatar-size="18"
+                                    :avatar-shape="'circle'"
+                                    class="mr-2"
+                                />
+
+                                <span class="text-gray-700">{{
+                                    nameUpdater
+                                }}</span>
+                            </div>
+                            <DatePiece
+                                label="Created At"
+                                :date="
+                                    request.status === 'approved'
+                                        ? request.approvedBy[0].timestamp
+                                        : request.rejectedBy[0].timestamp
+                                "
+                                :no-popover="true"
+                                class="font-light text-gray-500"
+                            />
+                        </div>
+                    </div> -->
                 </div>
             </template>
         </div>
@@ -113,15 +223,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        reactive,
+        toRefs,
+        onMounted,
+        watch,
+        ref,
+        computed,
+    } from 'vue'
     import { message } from 'ant-design-vue'
-    import { useMagicKeys, whenever } from '@vueuse/core'
-
+    // import { useMagicKeys, whenever } from '@vueuse/core'
+    import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     import RequestActions from './requestActions.vue'
     import Avatar from '~/components/common/avatar/index.vue'
-
+    import { Users } from '~/services/service/users/index'
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
     import AttrPiece from './pieces/attributeUpdate.vue'
@@ -129,7 +248,8 @@
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
+    import IconStatus from './iconStatus.vue'
+    import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
         approveRequest,
@@ -149,6 +269,8 @@
             DatePiece,
             TermPiece,
             Avatar,
+            IconStatus,
+            Popover,
         },
         props: {
             request: {
@@ -165,11 +287,16 @@
                 default: () => false,
                 required: false,
             },
+            activeHover: {
+                type: String,
+                default: () => '',
+                required: false,
+            },
         },
         emits: ['select', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
-
+            const updatedBy = ref({})
             const state = reactive({
                 isLoading: false,
                 message: '',
@@ -179,10 +306,10 @@
                 message.error(msg || 'Request modification failed, try again')
             }
 
-            async function handleApproval() {
+            async function handleApproval(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await approveRequest(request.value.id, state.message)
+                    await approveRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'approved'
                     emit('action', request.value)
@@ -196,10 +323,10 @@
                 state.isLoading = false
             }
 
-            async function handleRejection() {
+            async function handleRejection(messageProp = '') {
                 state.isLoading = true
                 try {
-                    await declineRequest(request.value.id, state.message)
+                    await declineRequest(request.value.id, messageProp)
                     request.value.message = state.message
                     request.value.status = 'rejected'
                     emit('action', request.value)
@@ -212,15 +339,105 @@
                 }
                 state.isLoading = false
             }
+            onMounted(() => {
+                if (
+                    request.value.status === 'approved' ||
+                    request.value.status === 'rejected'
+                ) {
+                    const userId =
+                        request.value.status === 'approved'
+                            ? `${request.value.approvedBy[0].userId}`
+                            : `${request.value.rejectedBy[0].userId}`
+                    const payloadFilter = {
+                        $and: [
+                            {
+                                id: userId,
+                            },
+                        ],
+                    }
+                    const { data } = Users.List(
+                        {
+                            limit: 1,
+                            offset: 0,
+                            filter: JSON.stringify(payloadFilter),
+                        },
+                        { cacheKey: userId }
+                    )
+                    watch(data, () => {
+                        updatedBy.value = data.value.records[0]
+                        console.log('updated', updatedBy.value)
+                    })
+                }
+            })
+            const nameUpdater = computed(() => updatedBy?.value?.username)
+            const item = computed(() => {
+                const name = request?.value?.destinationQualifiedName
+                    .split('/')
+                    .slice(-3)
+                    .reverse()
+                return {
+                    ...request.value,
+                    guid: request.value.destinationGuid,
+                    displayText:
+                        request.value?.destinationEntity?.attributes?.name,
+                    typeName: request.value?.entityType,
+                    attributes: {
+                        connectorName:
+                            request.value?.destinationEntity?.attributes.qualifiedName.split(
+                                '/'
+                            )[1],
+                        rowCount: 0,
+                        columnCount: 0,
+                        schemaName: name[1],
+                        ownerUsers: [],
+                        tableName: name[2],
+                        certificateStatus:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateStatus,
+                        certificateUpdatedBy:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedBy,
+                        certificateUpdatedAt:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedAt,
+                    },
+                }
+            })
             return {
                 handleApproval,
                 handleRejection,
                 primaryText,
                 requestTypeIcon,
                 state,
+                atlanLogo,
+                nameUpdater,
+                item,
             }
         },
     })
 </script>
 
-<style></style>
+<style lang="less" scoped>
+    .request-card {
+        &.active-request {
+            // outline-style: solid !important;
+            // outline-color: rgb(82, 119, 215) !important;
+        }
+        outline-offset: -1px !important;
+    }
+</style>
+
+<style lang="less">
+    .message-icon {
+        transform: scale(1.4) !important;
+    }
+    .check-icon {
+        transform: scale(1.4) !important;
+    }
+    .cross-icon {
+        transform: scale(1.1) !important;
+    }
+    .message-cross-icon {
+        transform: scale(1.5) !important;
+    }
+</style>

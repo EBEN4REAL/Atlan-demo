@@ -1,6 +1,6 @@
 <template>
     <div class="h-full p-0 bg-white">
-        <div class="flex flex-col pt-1 bg-white">
+        <div class="flex flex-col bg-white">
             <div
                 class="flex flex-col items-center justify-center pt-12 pb-20"
                 :class="localAssignedEntities.length ? 'hidden' : ''"
@@ -25,12 +25,13 @@
                     ref="linkedAssetsWrapperRef"
                     :filters="tabFilter"
                     initialCacheKey="LINK_ASSETS_DEFAULT"
-                    class="pb-6 mt-2 asset-list-height"
+                    class="pb-6 asset-list-height"
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
-                    assetListClass="pl-8 pr-6"
-                    aggregationTabClass="pl-8 pr-6 pb-1"
-                    searchBarClass="pl-8"
+                    aggregationTabClass="px-6 "
+                    searchBarClass="pl-6 my-1"
+                    asset-list-class="mx-6 mt-1"
+                    asset-item-class="group"
                 >
                     <template #searchAction>
                         <AtlanBtn
@@ -41,6 +42,29 @@
                             @click="openLinkDrawer"
                             >Link assets</AtlanBtn
                         >
+                    </template>
+
+                    <template #assetItemCta="{ item }">
+                        <a-dropdown>
+
+                            <AtlanBtn
+                                class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus opacity-0 group-hover:opacity-100"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="(e) => e.stopPropagation()"
+                            >
+                                <AtlanIcon icon="KebabMenu" class="text-gray-700"></AtlanIcon>
+                            </AtlanBtn>
+
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item @click="() => unlinkOneAsset(item)">
+                                        Unlink asset
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </template>
                 </AssetList>
             </div>
@@ -71,6 +95,7 @@
     </a-modal>
 
     <LinkAssetsDrawer
+        v-if="isVisible"
         :isVisible="isVisible"
         :preference="preference"
         :selectedAssetCount="selectedAssetCount"
@@ -97,7 +122,6 @@
     import AtlanBtn from '@/UI/button.vue'
     import AssetBrowserTree from '@/governance/personas/assets/assetBrowserTree.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
-    import AssetsWrapper from '@/assets/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetList from '@/common/assetList/assetList.vue'
@@ -114,7 +138,6 @@
             SearchAndFilter,
             AssetItem,
             AtlanBtn,
-            AssetsWrapper,
             LinkAssetsDrawer,
         },
         props: {
@@ -201,6 +224,14 @@
 
                 closeDrawer()
             }
+
+            const unlinkOneAsset = (asset: assetInterface) => {
+                handleAssignedEntitiesUpdate({
+                    unlinkedAssets: [asset],
+                    term: selectedAsset.value,
+                })
+            }
+
             const handleModalCancel = () => {
                 isModalVisible.value = false
             }
@@ -236,6 +267,7 @@
                 isModalVisible,
                 handleModalCancel,
                 handleConfirmCancel,
+                unlinkOneAsset
             }
         },
     })

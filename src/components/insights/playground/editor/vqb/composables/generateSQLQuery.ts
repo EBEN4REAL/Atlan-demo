@@ -360,11 +360,14 @@ export function generateSQLQuery(
     if (filter?.hide) {
         let res = ''
         filter?.subpanels.forEach((subpanel, index) => {
-            if (
-                subpanel?.column?.label &&
-                nameMap[subpanel?.filter?.name] &&
-                subpanel.filter?.value !== undefined
-            ) {
+            if (subpanel?.column?.label && nameMap[subpanel?.filter?.name]) {
+                if (
+                    !['IS NOT NULL', 'IS NULL'].includes(
+                        nameMap[subpanel?.filter?.name]
+                    ) &&
+                    subpanel.filter?.value == undefined
+                )
+                    return
                 res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
                 const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
@@ -394,8 +397,22 @@ export function generateSQLQuery(
 
                 switch (subpanel?.filter?.type) {
                     case 'range_input': {
-                        if (subpanel?.filter?.name === 'between') {
-                            if (subpanel?.filter?.value?.length > 0) {
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name] &&
+                            subpanel?.filter?.value?.length > 0 &&
+                            isValidValueArray(subpanel?.filter?.value)
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            } else {
+                                res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+
+                            if (subpanel?.filter?.name === 'between') {
                                 const firstVal = getValueStringFromType(
                                     subpanel,
                                     subpanel?.filter?.value[0] ?? ''
@@ -407,27 +424,72 @@ export function generateSQLQuery(
                                 res += `${firstVal} AND ${secondVal}`
                             }
                         }
+
                         break
                     }
                     case 'input': {
-                        res += `${getValueStringFromType(
-                            subpanel,
-                            subpanel?.filter?.value ?? ''
-                        )}`
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name]
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            } else {
+                                res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += `${getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value ?? ''
+                            )}`
+                        }
 
                         break
                     }
                     case 'multi_input': {
-                        res += ` ( `
-                        subpanel?.filter?.value?.forEach((el, i) => {
-                            if (i !== subpanel?.filter?.value?.length - 1)
-                                res += `'${el}',`
-                            else res += `'${el}'`
-                        })
-                        res += ` )`
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name] &&
+                            subpanel?.filter?.value?.length > 0 &&
+                            isValidValueArray(subpanel?.filter?.value)
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            } else {
+                                res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+
+                            res += ` ( `
+                            subpanel?.filter?.value?.forEach((el, i) => {
+                                if (i !== subpanel?.filter?.value?.length - 1)
+                                    res += `'${el}',`
+                                else res += `'${el}'`
+                            })
+                            res += ` )`
+                        }
+
                         break
                     }
                     case 'none': {
+                        if (index == 0) res = ''
+                        if (
+                            tableName &&
+                            subpanel?.column?.label &&
+                            nameMap[subpanel?.filter?.name]
+                        ) {
+                            if (contextPrefix !== '') {
+                                res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            } else {
+                                res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
+                            }
+                            res += `${nameMap[subpanel?.filter?.name]} `
+                        }
+
                         break
                     }
                 }

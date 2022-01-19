@@ -145,6 +145,7 @@
                             :selected="isSelected(item.id)"
                             @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
+                            @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -415,10 +416,6 @@
             const handleMouseEnter = (itemId, idx) => {
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
-                    clearTimeout(timeoutHover)
-                    timeoutHover = setTimeout(() => {
-                        selectRequest(itemId, idx)
-                    }, 1000)
                 }
             }
             const mouseEnterContainer = () => {
@@ -436,6 +433,12 @@
                     ? requestList.value.length
                     : pagination.value.offset + requestList.value.length
             )
+            const mouseEnterAsset = (itemId, idx) => {
+                clearTimeout(timeoutHover)
+                timeoutHover = setTimeout(() => {
+                    selectRequest(itemId, idx)
+                }, 1000)
+            }
             return {
                 mutate,
                 pagination,
@@ -472,6 +475,7 @@
                 endCountPagination,
                 paginationRef,
                 showPagination,
+                mouseEnterAsset,
                 // listPermission
             }
         },

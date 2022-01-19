@@ -12,20 +12,21 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-
-            <AssetPiece
-                v-if="request.destinationQualifiedName"
-                :asset-qf-name="request.destinationQualifiedName"
-                :entity-type="request?.entityType"
-                :destination-entity="request.destinationEntity"
-            />
-            <span v-else class="text-sm overflow-ellipsis">
-                {{
-                    primaryText[request.requestType]
-                        ? primaryText[request.requestType](request)
-                        : ''
-                }}
-            </span>
+            <div @mouseenter="$emit('mouseEnterAsset')">
+                <AssetPiece
+                    v-if="request.destinationQualifiedName"
+                    :asset-qf-name="request.destinationQualifiedName"
+                    :entity-type="request?.entityType"
+                    :destination-entity="request.destinationEntity"
+                />
+                <span v-else class="text-sm overflow-ellipsis">
+                    {{
+                        primaryText[request.requestType]
+                            ? primaryText[request.requestType](request)
+                            : ''
+                    }}
+                </span>
+            </div>
         </div>
         <div class="flex items-center col-span-3 justify-evenly">
             <ClassificationPiece

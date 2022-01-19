@@ -1,6 +1,6 @@
 <template>
     <a-modal
-        style="top: 5rem; right: 0px; margin-left: auto; margin-right: 4rem"
+        style="top: 5rem; margin-right: auto"
         :mask="false"
         :body-style="{ padding: '20px' }"
         class="p-1"
@@ -106,7 +106,7 @@
     import { computed, defineComponent, PropType, toRefs, reactive } from 'vue'
     import { message } from 'ant-design-vue'
     import { useTimeAgo } from '@vueuse/core'
-        import {
+    import {
         attributeCopyMapping,
         typeCopyMapping,
         requestTypeIcon,
@@ -168,9 +168,7 @@
                     )?.label
 
                     title += ` ${
-                        attributeCopyMapping[
-                            request.value.destinationAttribute
-                        ]
+                        attributeCopyMapping[request.value.destinationAttribute]
                     }`
                 }
 

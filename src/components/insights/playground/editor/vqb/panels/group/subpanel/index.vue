@@ -122,7 +122,6 @@
     import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
-    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     import MultiTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/_index.vue'
     import MultiTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/multiTable/dropdown.vue'
@@ -164,7 +163,6 @@
 
         setup(props, { emit }) {
             const { subpanels, columnSubpanels } = useVModels(props)
-            const { getTableName } = useUtils()
             const { expand } = toRefs(props)
             const filteredTablesValues = computed(() =>
                 subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
@@ -244,7 +242,6 @@
 
             return {
                 readOnly,
-                getTableName,
                 selectedTables,
                 filteredTablesValues,
                 activeInlineTab,

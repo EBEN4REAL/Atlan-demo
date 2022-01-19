@@ -64,7 +64,6 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
 
     export default defineComponent({
@@ -103,7 +102,6 @@
             const { disabled, subIndex } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
-            const { getTableName } = useUtils()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
@@ -129,13 +127,19 @@
                 return data
             })
 
+            function getTableName(columnQualifiedName: string) {
+                const spiltArray = columnQualifiedName?.split('/')
+                if (spiltArray?.length > 5) {
+                    return `${spiltArray[5]}`
+                }
+                return ''
+            }
+
             const tableName = computed(() => {
                 let t =
                     getTableName(selectedColumn.value?.columnQualifiedName) ??
                     '-'
-                if (t?.length >= 2) {
-                    t = t.slice(1, t?.length - 1)
-                }
+
                 return t
             })
 

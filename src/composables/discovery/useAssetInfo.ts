@@ -231,7 +231,7 @@ export default function useAssetInfo() {
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
-        if (cmList(assetType(asset)).length > 0) {
+        if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
@@ -341,7 +341,7 @@ export default function useAssetInfo() {
             //     attributes(asset).tableName
 
             const name =
-                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
+                tableName(asset)?.length > 0 ? tableName(asset) : viewName(asset)
             const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -710,11 +710,19 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (
         asset: assetInterface,
+        secondaryEvaluation = false,
         action = 'ENTITY_UPDATE',
         typeName?
     ) => {
+        let evaluations: any = []
+        if (secondaryEvaluation) {
+            evaluations = authStore?.secondaryEvaluations
+        } else {
+            evaluations = authStore?.evaluations
+        }
+
         if (typeName) {
-            return authStore?.evaluations.find(
+            return evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
@@ -723,7 +731,8 @@ export default function useAssetInfo() {
                         ev?.entityTypeEnd2 === typeName)
             )?.allowed
         }
-        return authStore?.evaluations.find(
+
+        return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
         )?.allowed
     }

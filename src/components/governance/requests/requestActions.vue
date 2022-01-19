@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center gap-x-2">
         <a-popover
-            v-if="request.message"
+            v-if="request?.message"
             trigger="hover"
             placement="bottomRight"
             :align="{ offset: [90, -5] }"
@@ -10,7 +10,7 @@
                 <div class="comment-delete">
                     <div class="flex">
                         <component :is="iconQuotes" class="mr-4" />
-                        <p>{{ request.message }}</p>
+                        <p>{{ request?.message }}</p>
                     </div>
                     <div class="flex items-center mt-4">
                         <Avatar
@@ -86,8 +86,8 @@
                                             <a-button
                                                 size="small"
                                                 type="link"
-                                                @click="handleReject"
                                                 :class="'text-red-500'"
+                                                @click="handleReject"
                                             >
                                                 Reject
                                             </a-button>
@@ -100,7 +100,10 @@
                     </a-menu>
                 </template>
                 <!-- @click.stop="$emit('reject')" -->
-                <div @click.stop="isVisibleReject = !isVisibleReject">
+                <div
+                    class="chevron-icon"
+                    @click.stop="isVisibleReject = !isVisibleReject"
+                >
                     <AtlanIcon icon="ChevronDown" />
                 </div>
             </a-dropdown>
@@ -171,7 +174,10 @@
                         </a-menu-item>
                     </a-menu>
                 </template>
-                <div @click.stop="isVisibleApprove = !isVisibleApprove">
+                <div
+                    class="chevron-icon"
+                    @click.stop="isVisibleApprove = !isVisibleApprove"
+                >
                     <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
                 </div>
             </a-dropdown>
@@ -270,6 +276,15 @@
     .message-icon {
         transform: scale(1.4) !important;
     }
+    .btn-actions {
+        padding-right: 0px !important;
+        .chevron-icon {
+            height: 28px;
+            // background: red;
+            padding-top: 5px;
+            padding-right: 7px;
+        }
+    }
 </style>
 <style lang="less" scoped>
     .comment-delete {
@@ -285,6 +300,6 @@
         margin-left: 10px;
     }
     .btn-actions {
-        padding-right: 8px !important;
+        // padding-right: 8px !important;
     }
 </style>

@@ -13,10 +13,8 @@
         >
             <Loading v-if="isQueryRunning === 'loading'" />
 
-            <!-- {{ activeInlineTab.playground.editor.columnList }} -->
-            <!-- {{ activeInlineTab.playground.editor.dataList }} -->
             <div
-                class="flex flex-col m-2 overflow-hidden border rounded-lg border-gray-light"
+                class="flex flex-col h-full m-2 overflow-hidden border rounded-lg border-gray-light"
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     activeInlineTab.playground.editor.dataList.length > 0 &&
@@ -25,7 +23,7 @@
                         : false
                 "
             >
-                <AtlanTable
+                <AtlanPreviewTable
                     :dataList="activeInlineTab.playground.editor.dataList"
                     :columns="activeInlineTab.playground.editor.columnList"
                     :key="activeInlineTab.key"
@@ -128,6 +126,7 @@
     // import { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } from '~/components/insights/common/constants'
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanTable from '@/common/table/previewTable/index.vue'
+    import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
@@ -145,6 +144,7 @@
             AtlanBtn,
             QueryAbort,
             AtlanIcon,
+            AtlanPreviewTable,
         },
         props: {
             dataList: {

@@ -153,7 +153,7 @@
                 <div v-if="description(item)" class="mt-1 text-sm">
                     {{ description(item) }}
                 </div>
-                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-3">
+                <div v-if="list?.length > 0" class="flex flex-wrap gap-1 mt-3">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"
@@ -173,7 +173,7 @@
                     </template>
                 </div>
                 <div
-                    v-if="item?.attributes?.ownerUsers.length > 0"
+                    v-if="item?.attributes?.ownerUsers?.length > 0"
                     class="mt-4"
                 >
                     <div class="mb-1 text-sm text-gray-500">Owners</div>

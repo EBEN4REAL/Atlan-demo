@@ -45,13 +45,24 @@ export default function useProject() {
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
-            columnList.value = []
+            // columnList.value = [
+            //     {
+            //         title: '#',
+            //         dataIndex: 'columnIndex',
+            //         key: 0,
+            //         data_type: 'number'
+            //     }
+            // ]
+
+            columnList.value = [
+            ]
             columns.map((col: any, index) => {
                 columnList.value.push({
-                    title: col.columnName.split('_').join('_'),
+                    title: col.columnName,
                     dataIndex: col.columnName + index,
-                    key: col.columnName,
+                    key: index+1,
                     data_type: col.type.name,
+                    
                 })
             })
         }
@@ -59,27 +70,34 @@ export default function useProject() {
         // console.log('table columns: ', columns)
     }
 
+    let keys = ref(0)
+
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
-        console.log('table columns: ', columns)
-        // console.log('table rows: ', rows)
+       
+        rows.map((result: any, index1) => {
+          
 
-        rows.map((result: any) => {
-            // console.log(result)
-            let tmp = {}
+            let row2 = []
             result.map((row, rowindex) => {
+                let tmp = {}
                 tmp = {
-                    ...tmp,
-                    ...{
-                        // key: rowindex,
-                        [columns[rowindex].dataIndex]: {data: row, data_type: columns[rowindex].data_type}
-                        // key: rowindex,
-                    },
+                                        
+                    [columns[rowindex].dataIndex]: row,
+                    data: row,
+                    data_type: columns[rowindex].data_type
+                    
                 }
+                // debugger
+                row2.push(tmp)
+
             })
-            dataList.value.push(tmp)
+            
+            dataList.value.push(row2)
+            // keys.value=keys.value+1;
+            // 
+
         })
-        console.log('table rows: ', dataList)
     }
 
     const queryRun = (
@@ -262,6 +280,8 @@ export default function useProject() {
             params: search_prms,
         }
 
+        keys.value = 0;
+
         const {
             eventSource,
             data: sse,
@@ -297,7 +317,7 @@ export default function useProject() {
                                 )
                         }
                         /* ---------------------------------- */
-                        console.log('message', message, )
+                        // console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)

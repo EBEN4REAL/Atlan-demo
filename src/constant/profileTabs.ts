@@ -69,6 +69,7 @@ export const profileTabs = [
             'Connection',
             'Database',
             'Schema',
+            'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Table',

@@ -426,12 +426,14 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_ADD_CLASSIFICATION'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
@@ -461,6 +463,7 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_ADD',
                         'AtlasGlossaryTerm'
                     ) && editPermission
@@ -468,6 +471,7 @@
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_REMOVE',
                         'AtlasGlossaryTerm'
                     ) && editPermission

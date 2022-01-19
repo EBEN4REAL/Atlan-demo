@@ -4,8 +4,18 @@ import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
+import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
+
+export function getTableName(columnQualifiedName: string) {
+    const spiltArray = columnQualifiedName?.split('/')
+    if (spiltArray?.length > 5) {
+        return `${spiltArray[5]}`
+    }
+    return ''
+}
+
 export function getValueStringFromType(subpanel, value) {
     let res = ''
     const type = getInputTypeFromColumnType(
@@ -40,21 +50,6 @@ export function getValueStringFromType(subpanel, value) {
     } else if (type === 'date') res += `DATE '${value}'`
     return res
 }
-// "TABLENAME"."COLUMNNAME"
-// "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
-function getJoinFormattedColumnName(columnQualifiedName: string) {
-    const spiltArray = columnQualifiedName?.split('/')
-    if (spiltArray.length > 6) {
-        return `"${spiltArray[5]}"."${spiltArray[6]}"`
-    }
-}
-export function getTableName(columnQualifiedName: string) {
-    const spiltArray = columnQualifiedName?.split('/')
-    if (spiltArray?.length > 5) {
-        return `"${spiltArray[5]}"`
-    }
-    return ''
-}
 
 export function generateSQLQuery(
     activeInlineTab: activeInlineTabInterface,
@@ -64,7 +59,13 @@ export function generateSQLQuery(
     }
 ) {
     const { getTableNameFromTableQualifiedName } = useUtils()
-    const { getDatabaseName, getSchemaName } = useConnector()
+    const { getDatabaseName, getSchemaName, getConnectorName } = useConnector()
+    // for assetQuote Info of different sources
+    const assetQuoteType = getDialectInfo(
+        getConnectorName(
+            activeInlineTab.playground.editor.context.attributeValue
+        ) ?? ''
+    )
 
     const context = activeInlineTab.playground.editor.context
 
@@ -89,15 +90,35 @@ export function generateSQLQuery(
         (panel) => panel.id.toLowerCase() === 'join'
     )
 
+    function getTableNameWithQuotes(columnQualifiedName: string) {
+        const spiltArray = columnQualifiedName?.split('/')
+        if (spiltArray?.length > 5) {
+            return `${assetQuoteType}${spiltArray[5]}${assetQuoteType}`
+        }
+        return ''
+    }
+    // "TABLENAME"."COLUMNNAME"
+    // "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
+    function getJoinFormattedColumnName(columnQualifiedName: string) {
+        const spiltArray = columnQualifiedName?.split('/')
+        if (spiltArray.length > 6) {
+            return `${assetQuoteType}${spiltArray[5]}${assetQuoteType}.${assetQuoteType}${spiltArray[6]}${assetQuoteType}`
+        }
+    }
+
     function getContext(qualifiedName) {
         let contextPrefix = ''
         /*_______________CONTEXT_______ */
         if (context.attributeName === 'connectionQualifiedName') {
-            contextPrefix += `"${
+            contextPrefix += `${assetQuoteType}${
                 getDatabaseName(qualifiedName ?? '') ?? ''
-            }"."${getSchemaName(qualifiedName ?? '') ?? ''}"`
+            }${assetQuoteType}.${assetQuoteType}${
+                getSchemaName(qualifiedName ?? '') ?? ''
+            }${assetQuoteType}`
         } else if (context.attributeName === 'databaseQualifiedName') {
-            contextPrefix += `"${getSchemaName(qualifiedName ?? '') ?? ''}"`
+            contextPrefix += `${assetQuoteType}${
+                getSchemaName(qualifiedName ?? '') ?? ''
+            }${assetQuoteType}`
         }
         return contextPrefix
         /* _______________________________ */
@@ -121,9 +142,13 @@ export function generateSQLQuery(
                     if (tableName) {
                         // if context is set
                         if (contextPrefix !== '') {
-                            select.from(`${contextPrefix}."${tableName}"`)
+                            select.from(
+                                `${contextPrefix}.${assetQuoteType}${tableName}${assetQuoteType}`
+                            )
                         } else {
-                            select.from(`"${tableName}"`)
+                            select.from(
+                                `${assetQuoteType}${tableName}${assetQuoteType}`
+                            )
                         }
                     }
                 }
@@ -146,18 +171,18 @@ export function generateSQLQuery(
                             )
 
                             _addAggregatorGroup = true
-                            const tableName = getTableName(
+                            const tableName = getTableNameWithQuotes(
                                 columnData.columnsQualifiedName ??
                                     columnData?.qualifiedName ??
                                     columnData?.columnQualifiedName
                             )
                             if (contextPrefix !== '') {
                                 select.field(
-                                    `${contextPrefix}.${tableName}."${columnData.label}"`
+                                    `${contextPrefix}.${tableName}.${assetQuoteType}${columnData.label}${assetQuoteType}`
                                 )
                             } else
                                 select.field(
-                                    `${tableName}."${columnData.label}"`
+                                    `${tableName}.${assetQuoteType}${columnData.label}${assetQuoteType}`
                                 )
                         }
                     )
@@ -194,7 +219,7 @@ export function generateSQLQuery(
                         ''
                 )
                 const aggregatorUpperCase = aggregator.toUpperCase()
-                const tableName = getTableName(
+                const tableName = getTableNameWithQuotes(
                     subpanel.column?.qualifiedName ??
                         subpanel.column?.columnsQualifiedName ??
                         subpanel.column?.columnQualifiedName
@@ -205,14 +230,14 @@ export function generateSQLQuery(
                     if (aggregatorUpperCase && tableName && columnName) {
                         if (contextPrefix !== '') {
                             select.field(
-                                `COUNT (DISTINCT ${contextPrefix}.${tableName}."${columnName}")`,
+                                `COUNT (DISTINCT ${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
                                 aggregatedAliasMap[aggregatorUpperCase](
                                     columnName
                                 )
                             )
                         } else {
                             select.field(
-                                `COUNT (DISTINCT ${tableName}."${columnName}")`,
+                                `COUNT (DISTINCT ${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
                                 aggregatedAliasMap[aggregatorUpperCase](
                                     columnName
                                 )
@@ -223,14 +248,14 @@ export function generateSQLQuery(
                     if (aggregatorUpperCase && tableName && columnName) {
                         if (contextPrefix !== '') {
                             select.field(
-                                `${aggregatorUpperCase} (${contextPrefix}.${tableName}."${columnName}")`,
+                                `${aggregatorUpperCase} (${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
                                 aggregatedAliasMap[aggregatorUpperCase](
                                     columnName
                                 )
                             )
                         } else {
                             select.field(
-                                `${aggregatorUpperCase} (${tableName}."${columnName}")`,
+                                `${aggregatorUpperCase} (${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
                                 aggregatedAliasMap[aggregatorUpperCase](
                                     columnName
                                 )
@@ -249,16 +274,20 @@ export function generateSQLQuery(
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
             subpanel.columnsData.forEach((columnData) => {
-                const tableName = getTableName(columnData.qualifiedName ?? '')
+                const tableName = getTableNameWithQuotes(
+                    columnData.qualifiedName ?? ''
+                )
                 if (tableName && columnData?.label) {
                     let contextPrefix = ''
                     contextPrefix = getContext(columnData.qualifiedName ?? '')
                     if (contextPrefix !== '') {
                         select.group(
-                            `${contextPrefix}.${tableName}."${columnData.label}"`
+                            `${contextPrefix}.${tableName}.${assetQuoteType}${columnData.label}${assetQuoteType}`
                         )
                     } else {
-                        select.group(`${tableName}."${columnData.label}"`)
+                        select.group(
+                            `${tableName}.${assetQuoteType}${columnData.label}${assetQuoteType}`
+                        )
                     }
                 }
             })
@@ -281,7 +310,7 @@ export function generateSQLQuery(
                         ''
                 )
                 if (subpanel.column.label) {
-                    const tableName = getTableName(
+                    const tableName = getTableNameWithQuotes(
                         subpanel.column?.qualifiedName ??
                             subpanel.column?.columnsQualifiedName ??
                             subpanel.column?.columnQualifiedName
@@ -290,12 +319,12 @@ export function generateSQLQuery(
                     if (tableName && subpanel.column?.label && order) {
                         if (contextPrefix !== '') {
                             select.order(
-                                `${contextPrefix}.${tableName}."${subpanel.column.label}"`,
+                                `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel.column.label}${assetQuoteType}`,
                                 order
                             )
                         } else {
                             select.order(
-                                `${tableName}."${subpanel.column.label}"`,
+                                `${tableName}.${assetQuoteType}${subpanel.column.label}${assetQuoteType}`,
                                 order
                             )
                         }
@@ -306,18 +335,18 @@ export function generateSQLQuery(
                 contextPrefix = getContext(
                     subpanel.aggregateORGroupColumn?.value ?? ''
                 )
-                const tableName = getTableName(
+                const tableName = getTableNameWithQuotes(
                     subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {
                         select.order(
-                            `"${subpanel.aggregateORGroupColumn?.label}"`,
+                            `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
                             order
                         )
                     } else {
                         select.order(
-                            `"${subpanel.aggregateORGroupColumn?.label}"`,
+                            `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
                             order
                         )
                     }
@@ -337,7 +366,7 @@ export function generateSQLQuery(
                 subpanel.filter?.value !== undefined
             ) {
                 res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
-                const tableName = getTableName(
+                const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
                         subpanel.column?.qualifiedName ??
                         subpanel.column?.columnQualifiedName
@@ -356,9 +385,9 @@ export function generateSQLQuery(
                     nameMap[subpanel?.filter?.name]
                 ) {
                     if (contextPrefix !== '') {
-                        res += `${contextPrefix}.${tableName}."${subpanel?.column?.label}"`
+                        res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                     } else {
-                        res += `${tableName}."${subpanel?.column?.label}"`
+                        res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                     }
                     res += `${nameMap[subpanel?.filter?.name]} `
                 }
@@ -420,7 +449,7 @@ export function generateSQLQuery(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
             // leftTableName = "TABLENAME"
-            let rightTableName = getTableName(
+            let rightTableName = getTableNameWithQuotes(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
 

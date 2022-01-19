@@ -15,6 +15,9 @@ export const SourceList = [
         image: snowflake,
         filterMaxLevel: 2,
         connectionCount: 0,
+        dialectConfig: {
+            assetQuoteType: '"',
+        },
         hierarchy: [
             {
                 typeName: 'Database',
@@ -116,7 +119,7 @@ export const SourceList = [
                 parent: 'Schema',
                 attribute: 'viewQualifiedName',
                 level: 3,
-            }
+            },
         ],
         connectionCount: 0,
         types: [

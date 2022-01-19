@@ -12,7 +12,7 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <div @mouseenter="$emit('mouseEnterAsset')">
+            <div class="cursor-pointer" @mouseenter="$emit('mouseEnterAsset')">
                 <AssetPiece
                     v-if="request.destinationQualifiedName"
                     :asset-qf-name="request.destinationQualifiedName"
@@ -28,7 +28,7 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center col-span-3 justify-evenly">
+        <div class="flex items-center col-span-3 pr-12">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -129,7 +129,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center w-52 gap-x-2">
+                    <div class="flex items-center pl-7 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"

@@ -374,7 +374,7 @@ export default function useGraph() {
         const graphEdges = graph.value.getEdges()
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
-            cell.attr('line/stroke', visible ? '#c7c7c7' : '#dce0e5')
+            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()
         })
     }

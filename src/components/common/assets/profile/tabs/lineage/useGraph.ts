@@ -314,9 +314,9 @@ export default function useGraph() {
         return { portData }
     }
 
-    const createEdgeData = (relation) => {
-        const stroke = relation.stroke
-        const edgeData = {
+    const createEdgeData = (relation, data = {}) => {
+        const stroke = relation?.stroke
+        let edgeData = {
             zIndex: 0,
             id: relation.id,
             source: {
@@ -343,7 +343,10 @@ export default function useGraph() {
                     },
                 },
             },
+            data,
         }
+
+        if (Object.keys(data).length) edgeData = { ...edgeData, data }
 
         return {
             edgeData,

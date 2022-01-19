@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center pl-12 w-52 gap-x-2">
+                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"

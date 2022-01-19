@@ -118,7 +118,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -193,7 +193,7 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false)
+            const { refresh } = useEvaluate(body, false, true) // true for secondaryEvaluations
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,

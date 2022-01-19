@@ -60,6 +60,7 @@
                 () =>
                     selectedAssetUpdatePermission(
                         selectedAsset.value,
+                        false,
                         'RELATIONSHIP_ADD',
                         'Readme'
                     ) && assetPermission('CREATE_README')

@@ -5,8 +5,8 @@ import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion'
 import CommandsList from '@common/editor/extensions/slashCommands/CommandsList.vue'
 
 export default {
-    items: (query) =>
-        query
+    items: (query: string) =>
+        query.length
             ? blockMenu.filter((item) =>
                   item.title.toLowerCase().startsWith(query.toLowerCase())
               )

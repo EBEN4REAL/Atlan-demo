@@ -41,49 +41,60 @@
                             v-for="(item, index) in columnDropdownOption"
                             :key="item.qualifiedName"
                         >
-                            <div
-                                class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
-                                @click="(e) => onSelectColumn(item, e)"
-                                :class="
-                                    selectedColumn?.qualifiedName +
-                                        selectedColumn?.value ===
-                                    item.value + item?.label
-                                        ? 'bg-primary-light'
-                                        : 'bg-white'
-                                "
+                            <PopoverAsset
+                                :item="item.item"
+                                placement="right"
+                                :mouseEnterDelay="0.85"
                             >
+                                <template #button>
+                                    <span class="absolute"></span>
+                                </template>
                                 <div
-                                    class="flex items-center parent-ellipsis-container"
+                                    class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
+                                    @click="(e) => onSelectColumn(item, e)"
+                                    :class="
+                                        selectedColumn?.qualifiedName +
+                                            selectedColumn?.value ===
+                                        item.value + item?.label
+                                            ? 'bg-primary-light'
+                                            : 'bg-white'
+                                    "
                                 >
-                                    <component
-                                        :is="getDataTypeImage(item.type)"
-                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></component>
-                                    <span
-                                        class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                    <div
+                                        class="flex items-center parent-ellipsis-container"
                                     >
-                                        {{ item.label }}
-                                    </span>
-                                </div>
-                                <div class="relative flex items-center h-full">
-                                    <ColumnKeys
-                                        :isPrimary="item.isPrimary"
-                                        :isForeign="item.isForeign"
-                                        :isPartition="item.isPartition"
-                                    />
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                                        ></component>
+                                        <span
+                                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                                        >
+                                            {{ item.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="relative flex items-center h-full"
+                                    >
+                                        <ColumnKeys
+                                            :isPrimary="item.isPrimary"
+                                            :isForeign="item.isForeign"
+                                            :isPartition="item.isPartition"
+                                        />
 
-                                    <AtlanIcon
-                                        icon="Check"
-                                        class="ml-2 text-primary"
-                                        v-if="
-                                            selectedColumn?.qualifiedName +
-                                                selectedColumn?.value ===
-                                            item.value + item?.label
-                                        "
-                                    />
-                                    <div v-else class="w-4 ml-2"></div>
+                                        <AtlanIcon
+                                            icon="Check"
+                                            class="ml-2 text-primary"
+                                            v-if="
+                                                selectedColumn?.qualifiedName +
+                                                    selectedColumn?.value ===
+                                                item.value + item?.label
+                                            "
+                                        />
+                                        <div v-else class="w-4 ml-2"></div>
+                                    </div>
                                 </div>
-                            </div>
+                            </PopoverAsset>
                         </template>
                     </div>
                 </div>
@@ -126,10 +137,12 @@
     import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
     import { aggregatedAliasMap } from '~/components/insights/playground/editor/vqb/constants/aggregation'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import { useUtilsScoped } from './useUtilsScoped'
 
     export default defineComponent({
         name: 'Sub panel',
-        components: { Loader, CustomInput, ColumnKeys },
+        components: { Loader, CustomInput, ColumnKeys, PopoverAsset },
         props: {
             disabled: {
                 type: Boolean,
@@ -157,6 +170,7 @@
         setup(props, { emit }) {
             const { mixedSubpanels, disabled } = toRefs(props)
             const { selectedColumn, subpanel } = useVModels(props)
+            const { suffixDuplicates } = useUtilsScoped()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
@@ -199,6 +213,7 @@
                                 item?.qualifiedName,
                             addedBy: item.addedBy,
                             type: item?.type,
+                            item: item.item,
                             /* Reduntant property */
                             totalCount,
                         })
@@ -214,6 +229,7 @@
                                     item?.column?.qualifiedName,
                                 addedBy: item.addedBy,
                                 type: item?.column?.type,
+                                item: item.column.item,
                                 aggregator: aggregator,
                                 /* Reduntant property */
                                 totalCount,
@@ -221,6 +237,9 @@
                         })
                     }
                 })
+
+                _data = suffixDuplicates(_data)
+                // debugger
 
                 const filtered_data = _data.filter((item) =>
                     item?.label.includes(columnQueryText.value)

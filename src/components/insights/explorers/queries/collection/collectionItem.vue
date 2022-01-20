@@ -203,7 +203,7 @@
                             `${item.value?.attributes?.name} deleted!`
                         )
                     } else {
-                        message.success(
+                        message.error(
                             `${item.value?.attributes?.name} deletion failed!`
                         )
                     }

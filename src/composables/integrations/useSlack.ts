@@ -116,12 +116,32 @@ export const userLevelOauthUrl = computed(() => {
     return slackOauth
 })
 
+
+export function openSlackOAuth(w = 500, h = 600, tenant = false) {
+    const { width, height } = window.screen
+    const leftPosition = width ? (width - w) / 2 : 0
+    const topPosition = height ? (height - h) / 2 : 0
+
+    const new_window = window.open(
+        tenant
+            ? tenantLevelOauthUrl.value
+            : userLevelOauthUrl.value,
+        'popUpWindow',
+        `height=600,width=500,left=${leftPosition},top=${topPosition},resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes`
+    )
+    // hack to dete window closing from crossXorigin
+    const timer = setInterval(() => {
+        if (new_window.closed) {
+            clearInterval(timer);
+            console.log('closed');
+        }
+    }, 1000);
+}
+
 export const UnfurlSlackMessage = (body, asyncOptions) => {
     const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(body, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
-
-
 
 export const archiveSlack = (pV) => {
     const intStore = integrationStore()

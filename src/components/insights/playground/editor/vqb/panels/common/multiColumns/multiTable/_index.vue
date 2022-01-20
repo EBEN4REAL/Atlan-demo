@@ -102,7 +102,10 @@
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
-            const isJoinPanelDisabled = ref(true)
+            const joinPanel = activeInlineTab.value.playground.vqb.panels.find(
+                (panel) => panel.id.toLowerCase() === 'join'
+            )
+            const isJoinPanelDisabled = ref(!joinPanel?.hide ? true : false)
             const dirtyTableSelected = ref(null)
             const isTableSelected = ref(false)
             const dirtyIsTableSelected = ref(false)

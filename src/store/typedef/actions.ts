@@ -7,6 +7,7 @@ export interface Actions extends State {
   setClassificationList(value: any): void
   appendEnumList(value: any): void
   setEnumList(value: any): void
+  updateEnum(_enum: object): void;
   appendCustomMetadata(value: any): void
   setCustomMetadata(value: any): void
   updateCustomMetadata(value: object): void;
@@ -46,6 +47,10 @@ export const actions: Actions = {
   },
   setEnumList(value) {
     this.enumList = value
+  },
+  updateEnum(_enum) {
+    const index = this.enumList.findIndex(e => e.guid === _enum.guid) ?? -1
+    if (index > -1) this.enumList[index] = _enum
   },
   // custom metadata
   appendCustomMetadata(value) {

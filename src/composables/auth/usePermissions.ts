@@ -19,7 +19,7 @@ export default function usePermissions() {
     watch(data, () => {
         authStore.setPermissions(data.value?.permissions)
         authStore.setRoles(data.value?.roles)
-        authStore.setDecentralizedRoles(data.value?.decentralizedRole)
+        authStore.setDecentralizedRoles(data.value?.decentralizedRoles)
         authStore.setPersonas(data.value?.personas)
         authStore.setPurposes(data.value?.purposes)
     })

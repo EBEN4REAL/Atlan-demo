@@ -112,7 +112,7 @@ export const actions: Actions = {
         this.roles = value
     },
     setDecentralizedRoles(value) {
-        this.decentralizedRole = value
+        this.decentralizedRoles = value
     },
     setPersonas(value) {
         this.personas = value

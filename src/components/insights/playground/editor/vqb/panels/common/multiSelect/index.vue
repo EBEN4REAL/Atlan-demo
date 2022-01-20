@@ -301,7 +301,8 @@
                     if (!joinPanel?.hide) {
                         isJoinPanelDisabled.value = true
                     } else {
-                        isJoinPanelDisabled.value = false
+                        if (isJoinPanelDisabled.value)
+                            isJoinPanelDisabled.value = false
                     }
                 },
                 {

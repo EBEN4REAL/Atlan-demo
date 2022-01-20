@@ -177,9 +177,6 @@
             newTenantName.value = name.value
             const updateStatus = ref('')
             const { username } = useUserData()
-            // const logoUrl = computed(
-            //     () => `${window.location.origin}/api/service/avatars/_logo_`
-            // )
 
             const tenant = useTenantStore()
 

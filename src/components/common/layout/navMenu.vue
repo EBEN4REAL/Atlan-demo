@@ -40,7 +40,7 @@
             <a-dropdown placement="bottomRight">
                 <template #overlay>
                     <a-menu>
-                        <div class="py-2">
+                        <div class="">
                             <!-- had to replace a-menu-item with divs because v-auth wasn't working with it-->
                             <div
                                 v-auth="[map.CREATE_WORKFLOW]"
@@ -191,8 +191,7 @@
 
 <style lang="less" scoped>
     .menu-item {
-        @apply py-1;
-        @apply px-3;
+        @apply px-4 py-2;
         cursor: pointer;
     }
     .menu-item:hover {

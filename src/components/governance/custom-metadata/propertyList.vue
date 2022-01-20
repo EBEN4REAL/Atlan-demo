@@ -23,7 +23,7 @@
                     class="relative flex items-center justify-between last:rounded-b hover:bg-gray-light"
                     style="height: 44px"
                     :class="{
-                        'bg-primary-light': selected === property.name,
+                        'bg-gray-light': selected === property.name,
                         'border-b': properties.length !== index + 1,
                     }"
                 >

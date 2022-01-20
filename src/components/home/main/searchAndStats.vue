@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, inject } from 'vue'
+    import { defineComponent, ref, computed, watch, inject, toRefs } from 'vue'
     import defaultLogo from '~/assets/images/your_company.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import CmndK from '~/components/common/commandK/cmndK.vue'
@@ -67,10 +67,7 @@
                 toggleCMDK()
             }
             const logoNotFound = ref(false)
-
-            const logoUrl = computed(
-                () => `${window.location.origin}/api/service/avatars/_logo_`
-            )
+            const { logoUrl } = toRefs(tenantStore)
 
             const logoName = computed(() => tenantStore.displayName)
 

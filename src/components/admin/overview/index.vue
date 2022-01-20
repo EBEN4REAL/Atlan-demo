@@ -146,7 +146,7 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, Ref, ref, watch } from 'vue'
+    import { defineComponent, computed, Ref, ref, watch, toRefs } from 'vue'
     import DefaultLayout from '~/components/admin/layout.vue'
     import OrgLogo from '~/components/common/logo/orgLogo.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
@@ -157,6 +157,7 @@
     import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
     import AtlanBtn from '@/UI/button.vue'
     import useUserData from '~/composables/user/useUserData'
+    import { useTenantStore } from '~/store/tenant'
 
     export default defineComponent({
         name: 'Overview',
@@ -176,9 +177,13 @@
             newTenantName.value = name.value
             const updateStatus = ref('')
             const { username } = useUserData()
-            const logoUrl = computed(
-                () => `${window.location.origin}/api/service/avatars/_logo_`
-            )
+            // const logoUrl = computed(
+            //     () => `${window.location.origin}/api/service/avatars/_logo_`
+            // )
+
+            const tenant = useTenantStore()
+
+            const { logoUrl } = toRefs(tenant)
 
             const updateTenant = (payload) => {
                 try {

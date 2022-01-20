@@ -469,13 +469,13 @@
         overflow: hidden;
     }
     .item-2 {
-        flex: 0.15;
+        flex: 0.2;
         flex-shrink: 0;
         white-space: nowrap;
         overflow: hidden;
     }
     .item-3 {
-        flex: 0.5;
+        flex: 0.45;
         flex-shrink: 0;
         white-space: nowrap;
         overflow: hidden;

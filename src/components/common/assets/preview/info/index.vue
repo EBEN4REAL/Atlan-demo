@@ -23,7 +23,9 @@
 
         <div
             v-if="
-                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+                isGTC(selectedAsset) ||
+                selectedAsset.typeName === 'Connection' ||
+                selectedAsset.typeName === 'Process'
             "
             class="flex flex-col"
         >

@@ -442,7 +442,6 @@ export function generateSQLQuery(
                                 subpanel?.filter?.value ?? ''
                             )}`
                         }
-                        debugger
 
                         break
                     }

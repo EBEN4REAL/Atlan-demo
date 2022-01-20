@@ -204,21 +204,9 @@
             }
 
             watch(
-                () => activeInlineTab.value.playground.vqb.panels,
+                () => selectedTables,
                 () => {
-                    const joinPanel =
-                        activeInlineTab.value.playground.vqb.panels.find(
-                            (panel) => panel.id.toLowerCase() === 'join'
-                        )
-                    if (!joinPanel?.hide) {
-                        isJoinPanelDisabled.value = true
-                        replaceTableBody(getTableInitialBody())
-                    } else {
-                        if (isJoinPanelDisabled.value) {
-                            isJoinPanelDisabled.value = false
-                            replaceTableBody(getTableInitialBody())
-                        }
-                    }
+                    replaceTableBody(getTableInitialBody())
                 },
                 {
                     deep: true,

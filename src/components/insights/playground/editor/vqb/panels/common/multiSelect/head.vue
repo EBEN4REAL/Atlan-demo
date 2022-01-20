@@ -42,6 +42,7 @@
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -65,7 +66,10 @@
             const { disabled, selectedTables } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
-            const isJoinPanelDisabled = ref(true)
+            const { isJoinPanelStateDisabledComputed } = useJoin()
+            const isJoinPanelDisabled = inject(
+                'isJoinPanelDisabled'
+            ) as Ref<Boolean>
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
@@ -76,6 +80,10 @@
                 'getTableInitialBody'
             ) as Function
             const replaceTableBody = inject('replaceTableBody') as Function
+            const getColumnInitialBody = inject(
+                'getColumnInitialBody'
+            ) as Function
+            const replaceColumnBody = inject('replaceColumnBody') as Function
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -84,7 +92,12 @@
             const placeholder = computed(() => {
                 let data = ''
 
-                if (selectedTables.value?.length > 1) {
+                if (
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled.value,
+                        selectedTables.value
+                    )
+                ) {
                     if (!isTableSelected.value) {
                         if (isTableLoading.value) {
                             data = 'Loading...'
@@ -109,24 +122,19 @@
             })
 
             watch(
-                () => activeInlineTab.value.playground.vqb.panels,
+                [isJoinPanelDisabled, selectedTables],
                 () => {
-                    const joinPanel =
-                        activeInlineTab.value.playground.vqb.panels.find(
-                            (panel) => panel.id.toLowerCase() === 'join'
+                    if (isJoinPanelDisabled.value) {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                selectedTables.value,
+                                'initial'
+                            )
                         )
-                    if (!joinPanel?.hide) {
-                        isJoinPanelDisabled.value = true
+                    } else {
                         replaceTableBody(
                             getTableInitialBody(selectedTables.value)
                         )
-                    } else {
-                        if (isJoinPanelDisabled.value) {
-                            isJoinPanelDisabled.value = false
-                            replaceTableBody(
-                                getTableInitialBody(selectedTables.value)
-                            )
-                        }
                     }
                 },
                 {

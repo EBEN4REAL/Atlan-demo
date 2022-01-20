@@ -87,7 +87,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, watch } from 'vue'
+    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
@@ -136,9 +136,7 @@
                 return false
             })
 
-            const logoUrl = computed(() => {
-                return `${window.location.origin}/api/service/avatars/_logo_`
-            })
+            const { logoUrl } = toRefs(tenantStore)
 
             const logoName = computed(() => tenantStore.displayName)
 

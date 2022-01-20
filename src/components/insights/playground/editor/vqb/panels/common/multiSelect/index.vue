@@ -59,6 +59,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
     import useBody from './useBody'
 
@@ -119,10 +120,15 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const isAreaFocused = ref(false)
-            const joinPanel = activeInlineTab.value.playground.vqb.panels.find(
-                (panel) => panel.id.toLowerCase() === 'join'
-            )
-            const isJoinPanelDisabled = ref(!joinPanel?.hide ? true : false)
+            const { isJoinPanelStateDisabledComputed } = useJoin()
+
+            const isJoinPanelDisabled = computed(() => {
+                const joinPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+                return !joinPanel?.hide ? true : false
+            })
 
             const tableSelected = ref(null)
             const dirtyTableSelected = ref(null)
@@ -212,7 +218,10 @@
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNames: isJoinPanelDisabled.value
+                        tableQualifiedNames: isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled.value,
+                            selectedTablesQualifiedNames
+                        )
                             ? undefined
                             : selectedTablesQualifiedNames
                                   ?.filter((x) => x !== null || undefined)
@@ -271,7 +280,7 @@
             }
 
             // for initial call
-            if (selectedTablesQualifiedNames.value?.length > 1) {
+            if (!isJoinPanelDisabled.value) {
                 replaceTableBody(
                     getTableInitialBody(selectedTablesQualifiedNames.value)
                 )
@@ -295,25 +304,6 @@
                 observer?.value?.unobserve(container?.value)
                 emit('onUnmounted')
             })
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    const joinPanel =
-                        activeInlineTab.value.playground.vqb.panels.find(
-                            (panel) => panel.id.toLowerCase() === 'join'
-                        )
-                    if (!joinPanel?.hide) {
-                        isJoinPanelDisabled.value = true
-                    } else {
-                        if (isJoinPanelDisabled.value)
-                            isJoinPanelDisabled.value = false
-                    }
-                },
-                {
-                    deep: true,
-                    immediate: true,
-                }
-            )
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -326,6 +316,7 @@
                 replaceColumnBody: replaceColumnBody,
                 columnQueryText: columnQueryText,
                 tableQueryText: tableQueryText,
+                isJoinPanelDisabled: isJoinPanelDisabled,
                 TableList: TableList,
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,

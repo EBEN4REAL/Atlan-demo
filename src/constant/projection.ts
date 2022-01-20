@@ -85,6 +85,7 @@ export const AssetAttributes = [
     'queries',
     'externalLocation',
     'externalLocationFormat',
+    'sql',
 ]
 
 export const SQLAttributes = [
@@ -122,7 +123,7 @@ export const GlossaryAttributes = [
     'categories',
     'parentCategory',
     'assignedEntities',
-    'seeAlso'
+    'seeAlso',
 ]
 
 export const GlossaryRelationAttributes = ['name']

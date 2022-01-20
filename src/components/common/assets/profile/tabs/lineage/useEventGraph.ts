@@ -754,7 +754,7 @@ export default function useEventGraph(
         che.value = edge.id
         controlEdgeHighlight(edge, false)
         const processId = edge.id.split('/')[0]
-        const { data } = fetchAsset(processId, ['sql'])
+        const { data } = fetchAsset(processId)
 
         /** Automatically stop the watcher once done.
          * Added this to stop memory leaks from happening

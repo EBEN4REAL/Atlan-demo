@@ -15,7 +15,7 @@
                         className: 'text-primary',
                         target: '_blank',
                     }"
-                    class="text-gray-500 break-all"
+                    class="text-gray-500 break-words"
                 >
                     {{ announcementMessage(selectedAsset) }}
                 </div>

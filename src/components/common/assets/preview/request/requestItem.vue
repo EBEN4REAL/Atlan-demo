@@ -78,9 +78,70 @@
                     <AtlanIcon class="btn-approve" icon="CheckCurrentColor" />
                 </div>
             </a-tooltip>
-            <div
-                class="flex items-center justify-center cursor-pointer action-btn"
-            ></div>
+            <a-dropdown
+                v-model:visible="isVisible"
+                trigger="click"
+                placement="bottomRight"
+            >
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item key="1" @click="handleClickReject">
+                            Approve with comment
+                        </a-menu-item>
+
+                        <a-menu-item
+                            key="2"
+                            @click="handleClickRejectWithComment"
+                        >
+                            <a-popover
+                                v-model:visible="isVisibleRejectWithComment"
+                                trigger="click"
+                                placement="bottomRight"
+                                :align="{ offset: [15, -60] }"
+                            >
+                                <template #content>
+                                    <div class="comment-delete">
+                                        <div class="flex">
+                                            <a-textarea
+                                                v-model:value="messageReject"
+                                                placeholder="Message"
+                                                class="border-none"
+                                                :rows="2"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between mt-4"
+                                        >
+                                            <a-button
+                                                class="text-gray-500"
+                                                size="small"
+                                                type="link"
+                                                @click="cancelReject"
+                                            >
+                                                Cancel
+                                            </a-button>
+                                            <a-button
+                                                size="small"
+                                                type="link"
+                                                :class="'text-red-500'"
+                                                @click="handleReject"
+                                            >
+                                                Reject
+                                            </a-button>
+                                        </div>
+                                    </div>
+                                </template>
+                                Reject with comment
+                            </a-popover>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+                <div
+                    class="flex items-center justify-center cursor-pointer action-btn"
+                >
+                    <AtlanIcon icon="ThreeDots" />
+                </div>
+            </a-dropdown>
         </div>
     </div>
 </template>
@@ -117,6 +178,9 @@
             const { classificationList } = useTypedefData()
             const createdTime = (time) => useTimeAgo(time).value
             const isLoading = ref(false)
+            const isVisible = ref(false)
+            const isVisibleRejectWithComment = ref(false)
+            const messageReject = ref('')
             const localClassification = (typeName) =>
                 classificationList.value.find((clsf) => clsf?.name === typeName)
 
@@ -153,12 +217,23 @@
                 }
                 isLoading.value = false
             }
+            const handleClickRejectWithComment = () => {
+                isVisibleRejectWithComment.value = true
+                messageReject.value = ''
+                setTimeout(() => {
+                    isVisible.value = false
+                }, 300)
+            }
             return {
                 createdTime,
                 localClassification,
                 handleRejection,
                 isLoading,
                 handleApproval,
+                isVisible,
+                isVisibleRejectWithComment,
+                handleClickRejectWithComment,
+                messageReject,
             }
         },
     })
@@ -213,5 +288,11 @@
         height: 113px;
         right: 0;
         top: 0;
+    }
+    .comment-delete {
+        // height: 90px;
+        width: 200px;
+        padding: 12px 12px;
+        border-radius: 8px !important;
     }
 </style>

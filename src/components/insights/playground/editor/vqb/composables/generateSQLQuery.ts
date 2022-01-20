@@ -97,6 +97,16 @@ export function generateSQLQuery(
         }
         return ''
     }
+
+    function isValidValueArray(arr: any[]) {
+        let res = true
+        arr.forEach((el) => {
+            if (el === '') res = false
+            if (el === null) res = false
+            if (el === undefined) res = false
+        })
+        return res
+    }
     // "TABLENAME"."COLUMNNAME"
     // "default/snowflake/1640717306/ATLAN_SAMPLE_DATA/COVID_19/COVID_COUNTY_LEVEL_PIVOT/LAST_UPDATED_DATE"
     function getJoinFormattedColumnName(columnQualifiedName: string) {

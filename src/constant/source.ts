@@ -260,7 +260,7 @@ export const SourceList = [
     },
     {
         id: 'powerbi',
-        label: 'PowerBI',
+        label: 'Power BI',
         image: powerbi,
         connectionCount: 0,
         hierarchy: [],

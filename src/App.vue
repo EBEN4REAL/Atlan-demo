@@ -1,19 +1,18 @@
 <template>
     <router-view />
-    <div class="feedback-btn-wrapper" @click="toggleHelpWidget">
+    <!-- <div class="feedback-btn-wrapper" @click="toggleHelpWidget">
         <div id="feedback-btn">
             <img
                 :src="Feedback"
                 class="feedback-icon ml-2 mt-1 pb-1.5 pl-0.5 pt-1 w-3/6"
             />
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch, inject, computed } from 'vue'
     import { useI18n } from 'vue-i18n'
-    import { useRoute } from 'vue-router'
     import useTypedefs from '~/composables/typedefs/useTypedefs'
 
     import useTenant from '~/composables/tenant/useTenant'
@@ -24,20 +23,12 @@
     import useGlossary from './composables/glossary2/useGlossary'
     import usePersona from './composables/persona/usePersona'
     import usePurpose from './composables/purpose/usePurpose'
-    import useUserData from '~/composables/user/useUserData'
     import Feedback from '~/assets/images/illustrations/feedback.svg?url'
-    import { getLabelsForZendeskArticles } from '~/utils/helper/labelsForZendeskArticles'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
 
     export default defineComponent({
         setup(props, context) {
-            // prefill email field in zendesk form; the field is hidden
-            const { email } = useUserData()
-            zE('webWidget', 'prefill', {
-                email: {
-                    value: email,
-                    readOnly: true, // optional
-                },
-            })
+            const { toggleHelpWidget } = useHelpWidget()
             // const isPermissionsReady = ref(false)
             // const isTypedefReady = ref(false)
 
@@ -76,14 +67,6 @@
             //     isTypedefReady.value = true
             // })
 
-            const route = useRoute()
-            const toggleHelpWidget = () => {
-                const labels = getLabelsForZendeskArticles(route?.path ?? '')
-                zE('webWidget', 'helpCenter:setSuggestions', {
-                    labels,
-                })
-                zE('webWidget', 'toggle')
-            }
             return { locale, t, toggleHelpWidget, Feedback }
         },
     })

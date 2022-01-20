@@ -211,7 +211,7 @@
                                         @mouseout="recordTooltipPresence"
                                     >
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="Query"
                                             class="w-4 h-4 text-gray-500"
                                         />
                                     </div>

@@ -119,7 +119,10 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const isAreaFocused = ref(false)
-            const isJoinPanelDisabled = ref(true)
+            const joinPanel = activeInlineTab.value.playground.vqb.panels.find(
+                (panel) => panel.id.toLowerCase() === 'join'
+            )
+            const isJoinPanelDisabled = ref(!joinPanel?.hide ? true : false)
 
             const tableSelected = ref(null)
             const dirtyTableSelected = ref(null)
@@ -202,6 +205,7 @@
             const getTableInitialBody = (
                 selectedTablesQualifiedNames: selectedTables[]
             ) => {
+                // debugger
                 return {
                     dsl: useBody({
                         context:

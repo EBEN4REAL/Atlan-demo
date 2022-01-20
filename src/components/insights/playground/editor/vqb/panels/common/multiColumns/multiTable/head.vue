@@ -69,6 +69,7 @@
         inject,
         computed,
         defineComponent,
+        watch,
         PropType,
         ComputedRef,
         toRefs,
@@ -115,6 +116,7 @@
             const { getTableName } = useUtils()
             const { updateVQB } = useVQB()
             const mouseOver = ref(false)
+            const isJoinPanelDisabled = ref(true)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
@@ -122,6 +124,10 @@
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
             const map = inject('map') as Ref<Object>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -196,6 +202,29 @@
                 updateVQB(activeInlineTab, inlineTabs)
                 console.log(map.value, 'destroy')
             }
+
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    const joinPanel =
+                        activeInlineTab.value.playground.vqb.panels.find(
+                            (panel) => panel.id.toLowerCase() === 'join'
+                        )
+                    if (!joinPanel?.hide) {
+                        isJoinPanelDisabled.value = true
+                        replaceTableBody(getTableInitialBody())
+                    } else {
+                        if (isJoinPanelDisabled.value) {
+                            isJoinPanelDisabled.value = false
+                            replaceTableBody(getTableInitialBody())
+                        }
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             return {
                 mouseOver,

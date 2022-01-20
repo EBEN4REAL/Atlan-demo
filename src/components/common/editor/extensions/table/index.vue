@@ -7,41 +7,43 @@
             <template #title>
                 Add a Column
             </template>
-            <a-button
-                shape='circle'
-                size='small'
+            <button
+                class='ant-btn ant-btn-circle ant-btn-sm'
                 tabindex='-1'
+                @mousedown.prevent='() => {}'
                 @click='() => {
                     if (editor.isEditable) {
                         editor.commands.addColumnAfter()
-                        editor.commands.focus()
-                    }
-                }'
-            >
-                <span class='flex items-center content-center justify-center'>
-                    <AtlanIcon icon='Add' class='h-3'/>
-                </span>
-            </a-button>
-        </a-tooltip>
-        <a-tooltip v-if='showHelpers' class='absolute -left-2.5 -bottom-2.5' placement='bottom'>
-            <template #title>
-                Add a Row
-            </template>
-            <a-button
-                shape='circle'
-                size='small'
-                tabindex='-1'
-                @click='() => {
-                    if (editor.isEditable) {
-                        editor.commands.addRowAfter()
-                        editor.commands.focus()
                     }
                 }'
             >
             <span class='flex items-center content-center justify-center'>
                 <AtlanIcon icon='Add' class='h-3'/>
             </span>
-            </a-button>
+            </button>
+        </a-tooltip>
+        <a-tooltip
+            v-if='showHelpers'
+            class='absolute -left-2.5 -bottom-2.5'
+            placement='bottom'
+        >
+            <template #title>
+                Add a Row
+            </template>
+            <button
+                class='ant-btn ant-btn-circle ant-btn-sm'
+                tabindex='-1'
+                @mousedown.prevent='() => {}'
+                @click='() => {
+                    if (editor.isEditable) {
+                        editor.commands.addRowAfter()
+                    }
+                }'
+            >
+            <span class='flex items-center content-center justify-center'>
+                <AtlanIcon icon='Add' class='h-3'/>
+            </span>
+            </button>
         </a-tooltip>
     </node-view-wrapper>
 </template>
@@ -71,7 +73,7 @@
 
             return {
                 showHelpers,
-                addedRowOrColumn
+                addedRowOrColumn,
             }
         }
     })

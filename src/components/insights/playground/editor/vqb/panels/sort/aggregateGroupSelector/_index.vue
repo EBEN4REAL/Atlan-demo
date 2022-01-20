@@ -95,6 +95,18 @@
             const tableQueryText = ref('')
             const TotalColumnsCount = ref(0)
 
+            const setDropDownPosition = () => {
+                const viewportOffset = container.value?.getBoundingClientRect()
+                if (viewportOffset?.width)
+                    containerPosition.value.width = viewportOffset?.width
+                if (viewportOffset?.top)
+                    containerPosition.value.top = viewportOffset?.top + 1
+                if (viewportOffset?.left)
+                    containerPosition.value.left = viewportOffset?.left
+                if (viewportOffset?.height)
+                    containerPosition.value.height = viewportOffset?.height
+            }
+
             onMounted(() => {
                 // const _container = document.getElementById('_container')
 
@@ -102,17 +114,7 @@
                     observer.value = new ResizeObserver(onResize).observe(
                         container.value
                     )
-
-                    const viewportOffset =
-                        container.value?.getBoundingClientRect()
-                    if (viewportOffset?.width)
-                        containerPosition.value.width = viewportOffset?.width
-                    if (viewportOffset?.top)
-                        containerPosition.value.top = viewportOffset?.top + 1
-                    if (viewportOffset?.left)
-                        containerPosition.value.left = viewportOffset?.left
-                    if (viewportOffset?.height)
-                        containerPosition.value.height = viewportOffset?.height
+                    setDropDownPosition()
 
                     document.addEventListener('click', (event) => {
                         const withinBoundaries = event
@@ -141,6 +143,7 @@
             }
 
             const setFocus = () => {
+                setDropDownPosition()
                 if (!disabled.value) {
                     isAreaFocused.value = true
                 }

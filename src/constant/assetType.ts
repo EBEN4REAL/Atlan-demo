@@ -103,6 +103,17 @@ export const assetTypeList: {
         relationships: [],
     },
     {
+        id: 'Procedure',
+        label: 'Procedure',
+        nameAttribute: 'procedureName',
+        qualifiedNameAttribute: 'procedureQualifiedName',
+        parents: ['Connection', 'Database', 'Schema'],
+        children: [],
+        isDiscoverable: true,
+        count: 0,
+        relationships: [],
+    },
+    {
         id: 'Query',
         label: 'Query',
         nameAttribute: 'queryName',

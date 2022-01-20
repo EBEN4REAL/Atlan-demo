@@ -47,27 +47,14 @@
             </div>
         </div>
 
-        <div
+        <ConnectionInfo
             v-if="
                 !isGTC(selectedAsset) &&
                 !['Connection', 'Process'].includes(selectedAsset.typeName)
             "
-            class="flex flex-col text-sm"
-        >
-            <span class="mb-1 text-gray-500">Connection</span>
-            <div class="flex items-center">
-                <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
-                <router-link
-                    :to="`/assets/${connectionGuid(selectedAsset)}`"
-                    class="font-bold text-primary hover:underline"
-                    >{{
-                        `${connectorName(selectedAsset)}/${connectionName(
-                            selectedAsset
-                        )}`
-                    }}</router-link
-                >
-            </div>
-        </div>
+            :asset="selectedAsset"
+        />
+
         <div
             v-if="
                 isGTC(selectedAsset) &&
@@ -159,12 +146,14 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
 
     export default defineComponent({
         name: 'PropertiesWidget',
         components: {
             UserPill,
             PopOverUser,
+            ConnectionInfo,
         },
         props: {
             selectedAsset: {

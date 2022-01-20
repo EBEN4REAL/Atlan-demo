@@ -34,12 +34,14 @@
         PropType,
         ref,
         onMounted,
+        ComputedRef,
         onUnmounted,
         toRefs,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -63,12 +65,21 @@
             const { disabled, selectedTables } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
+            const isJoinPanelDisabled = ref(true)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
 
             const placeholder = computed(() => {
                 let data = ''
@@ -96,6 +107,33 @@
                 }
                 return data
             })
+
+            watch(
+                () => activeInlineTab.value.playground.vqb.panels,
+                () => {
+                    const joinPanel =
+                        activeInlineTab.value.playground.vqb.panels.find(
+                            (panel) => panel.id.toLowerCase() === 'join'
+                        )
+                    if (!joinPanel?.hide) {
+                        isJoinPanelDisabled.value = true
+                        replaceTableBody(
+                            getTableInitialBody(selectedTables.value)
+                        )
+                    } else {
+                        if (isJoinPanelDisabled.value) {
+                            isJoinPanelDisabled.value = false
+                            replaceTableBody(
+                                getTableInitialBody(selectedTables.value)
+                            )
+                        }
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             return {
                 isColumnLoading,

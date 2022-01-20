@@ -66,6 +66,7 @@
                     :item-index="itemIndex"
                     :preference="preference"
                     :enable-sidebar-drawer="true"
+                    :asset-name-truncate-percentage="'93%'"
                     class="mx-3"
                     @updateDrawer="updateCurrentList"
                 ></AssetItem>

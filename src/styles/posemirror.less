@@ -69,6 +69,10 @@
         margin: 0;
         overflow: hidden;
 
+        ::selection {
+            @apply text-black;
+        }
+
         td,
         th {
             min-width: 1em;
@@ -94,10 +98,8 @@
             position: absolute;
             content: "";
             left: 0; right: 0; top: 0; bottom: 0;
-            @apply bg-primary-selected-focus;
-            @apply opacity-50;
+            background: rgba(200, 200, 255, 0.4);
             pointer-events: none;
-            @apply text-black;
         }
 
         p {

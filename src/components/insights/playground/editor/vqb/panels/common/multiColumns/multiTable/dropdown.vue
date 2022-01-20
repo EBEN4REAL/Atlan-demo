@@ -480,7 +480,9 @@
                 dirtyTableSelected.value = null
                 columnDropdownOption.value = []
                 columnQueryText.value = ''
-                replaceTableBody(getTableInitialBody())
+                replaceTableBody(
+                    getTableInitialBody(selectedTablesQualifiedNames.value)
+                )
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -500,6 +502,7 @@
                         label: item.label,
                         type: item.type,
                         qualifiedName: item.value,
+                        item: item,
                     })
                 } else {
                     delete map.value[item.value]
@@ -553,7 +556,11 @@
                         )
 
                         if (!tableSelected.value) {
-                            replaceTableBody(getTableInitialBody())
+                            replaceTableBody(
+                                getTableInitialBody(
+                                    selectedTablesQualifiedNames.value
+                                )
+                            )
                         } else {
                             replaceColumnBody(
                                 getColumnInitialBody(
@@ -572,7 +579,9 @@
 
             watch(tableQueryText, () => {
                 if (!dirtyIsTableSelected?.value) {
-                    replaceTableBody(getTableInitialBody())
+                    replaceTableBody(
+                        getTableInitialBody(selectedTablesQualifiedNames.value)
+                    )
                 }
             })
             watch(columnQueryText, () => {

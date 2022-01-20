@@ -68,7 +68,7 @@
                     :edit-permission="selectedAssetUpdatePermission(item, true)"
                     @change="handleChangeDescription"
                 />
-                <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
+                <div v-if="list?.length > 0" class="flex flex-wrap gap-1">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"

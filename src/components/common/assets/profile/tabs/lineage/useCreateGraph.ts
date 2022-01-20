@@ -76,7 +76,8 @@ export default function useCreateGraph(
             minScale: 0.5,
             maxScale: 1.2,
             enabled: true,
-            global: true,
+            global: false,
+            factor: 1.04,
             modifiers: ['ctrl', 'meta'],
         },
         minimap: {

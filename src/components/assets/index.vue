@@ -174,6 +174,9 @@
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
+                                :openAssetProfileInNewTab="
+                                    item.typeName.toLowerCase() === 'query'
+                                "
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -365,11 +368,10 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...GlossaryAttributes,
                 ...customMetadataProjections,
             ])
-            if (page.value === 'glossary') {
-                defaultAttributes.value.push(...GlossaryAttributes)
-            }
+
             const relationAttributes = ref([...AssetRelationAttributes])
 
             const activeKey: Ref<string[]> = ref([])

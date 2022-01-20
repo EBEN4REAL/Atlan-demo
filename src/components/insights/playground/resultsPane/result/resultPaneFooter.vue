@@ -34,7 +34,7 @@
             <!-- -------------------------------------------- -->
         </div>
         <div class="flex items-center">
-            <a-tooltip
+            <!-- <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
@@ -54,7 +54,7 @@
                 >
                     <AtlanIcon icon="CopyOutlined" class="w-4 h-4" />
                 </div>
-            </a-tooltip>
+            </a-tooltip> -->
             <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
@@ -65,7 +65,7 @@
             >
                 <template #title>Export data</template>
                 <div
-                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                    class="flex items-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
                     @click="
                         useTableExport(
                             activeInlineTab?.queryId
@@ -76,7 +76,8 @@
                         )
                     "
                 >
-                    <AtlanIcon icon="Download" class="w-4 h-4" />
+                    <AtlanIcon icon="Download" class="w-4 h-4 mr-1" />
+                    <span class="mt-1">Download</span>
                 </div>
             </a-tooltip>
         </div>

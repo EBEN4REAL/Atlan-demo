@@ -6,9 +6,11 @@ import CommandsList from '@common/editor/extensions/slashCommands/CommandsList.v
 
 export default {
     items: (query) =>
-        blockMenu.filter((item) =>
-            item.title.toLowerCase().startsWith(query.toLowerCase())
-        ),
+        query
+            ? blockMenu.filter((item) =>
+                  item.title.toLowerCase().startsWith(query.toLowerCase())
+              )
+            : blockMenu,
     render: () => {
         let component: VueRenderer
         let popup: Instance[]

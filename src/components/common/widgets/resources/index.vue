@@ -22,7 +22,15 @@
                 v-if="links(selectedAsset)?.length > 0"
                 class="flex flex-col gap-y-4"
             >
-                <div v-for="(item, index) in links(selectedAsset)" :key="index">
+                <div
+                    v-for="(item, index) in links(selectedAsset)?.sort((a, b) =>
+                        a.attributes.__timestamp < b.attributes.__timestamp
+                            ? -1
+                            : 1
+                    )"
+                    :key="index"
+                >
+                    <!-- {{ item }} {{ index }} -->
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :edit-permission="linkEditPermission"
@@ -55,7 +63,8 @@
                 <AddResources
                     :asset="selectedAsset"
                     :edit-permission="linkEditPermission"
-                    ><template #trigger>
+                >
+                    <template #trigger>
                         <AtlanButton
                             size="lg"
                             color="primary"
@@ -63,9 +72,9 @@
                         >
                             <AtlanIcon icon="Add" class="inline mb-0.5 mr-1" />
                             Add Resource
-                        </AtlanButton></template
-                    ></AddResources
-                >
+                        </AtlanButton>
+                    </template>
+                </AddResources>
             </div>
         </div>
     </div>
@@ -94,6 +103,7 @@
         isSlackLink,
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
+    // import slackLinkPreview from './previews/slackLinkPreviewCard.vue'
 
     dayjs.extend(relativeTime)
 
@@ -107,6 +117,7 @@
             slackLinkPreview: defineAsyncComponent(
                 () => import('./previews/slackLinkPreviewCard.vue')
             ),
+
             linkPreview: defineAsyncComponent(
                 () => import('./previews/linkPreviewCard.vue')
             ),

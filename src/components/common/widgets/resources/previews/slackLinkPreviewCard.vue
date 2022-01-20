@@ -97,7 +97,8 @@
                                     :asset="selectedAsset"
                                     :item="item"
                                     :edit-permission="editPermission"
-                                    ><template #trigger>
+                                >
+                                    <template #trigger>
                                         <a-menu-item key="delete">
                                             <div
                                                 class="flex items-center text-red-500"
@@ -108,9 +109,9 @@
                                                 />
                                                 Delete
                                             </div>
-                                        </a-menu-item></template
-                                    ></DeleteResource
-                                >
+                                        </a-menu-item>
+                                    </template>
+                                </DeleteResource>
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -160,9 +161,6 @@
         setup(props) {
             const timeAgo = (time: string) => dayjs().from(time, true)
 
-            // todo
-            // todo add loading state whenever missing
-            // todo add simmer effecr
             const { item } = toRefs(props)
             const { link } = item.value.attributes
             const { channelId, messageId } =
@@ -186,6 +184,8 @@
             }
 
             return {
+                channelId,
+                messageId,
                 data,
                 isLoading,
                 error,

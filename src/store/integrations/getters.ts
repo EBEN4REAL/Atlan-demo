@@ -13,7 +13,7 @@ const getters = {
         return state.allIntegrations
     },
     tenantSlackStatus: (state): SlackStatus => {
-        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'tenant')))
+        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'tenant') ?? null))
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
             id: integration?.id || null,
@@ -24,7 +24,7 @@ const getters = {
         }
     },
     userSlackStatus: (state): SlackStatus => {
-        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'user')))
+        const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'user') ?? null))
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
             id: integration?.id || null,

@@ -10,7 +10,7 @@
             </div>
             <!-- <template v-if="slack"> -->
             <div class="">
-                <h3 class="text-lg">Channel</h3>
+                <h3 class="font-bold">Channel</h3>
                 <a-select
                     v-model:value="channel"
                     class="w-full"
@@ -18,7 +18,7 @@
                 />
             </div>
             <div class="">
-                <h3 class="text-lg">Message</h3>
+                <h3 class="font-bold">Message</h3>
                 <a-textarea v-model:value="message" />
             </div>
             <!-- </template> -->
@@ -33,7 +33,11 @@
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
                 <!-- <template v-if="slack"> -->
-                <AtlanButton color="minimal" @click="visible = false">
+                <AtlanButton
+                    color="minimal"
+                    padding="compact"
+                    @click="visible = false"
+                >
                     Cancel
                 </AtlanButton>
                 <AtlanButton

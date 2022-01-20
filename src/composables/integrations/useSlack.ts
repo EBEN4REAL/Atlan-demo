@@ -69,8 +69,6 @@ export const isSlackLink = (link) =>
     link && link.includes('.slack.com/archives')
 
 export const getChannelAndMessageIdFromSlackLink = (link) => {
-    // https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280466031300
-    // https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638283148036400?thread_ts=1638280466.031300&cid=C02CBB6SPDM
     const idPaths = link.split('/archives/')[1]
     const channelId = idPaths.split('/')[0]
     const messageId = getTimestampFromSlackMessageId(

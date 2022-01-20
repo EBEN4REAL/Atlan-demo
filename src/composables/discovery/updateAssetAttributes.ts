@@ -423,12 +423,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
 
         body.value.entities = [...linked, ...unlinked]
-        if(!unlinkedAssets.length)
-            currentMessage.value = 'Assets linked'
-        else if(!linkedAssets.length)
-            currentMessage.value = 'Assets unlinked'
-        else
-            currentMessage.value = 'Linked assets updated'
+        if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
+        else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
+        else currentMessage.value = 'Linked assets updated'
         mutate()
 
         whenever(isUpdateReady, () => {
@@ -525,7 +522,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         )} updated`
         mutate()
         sendTrackEvent('resource', 'updated', {
-            domain: localLResource.value.link.split('/')[2],
+            domain: localResource.value.link.split('/')[2],
         })
     }
 

@@ -5,7 +5,7 @@
 
         {
             "token": "",
-            "foreground": "#000000",
+            "foreground": "#3E4359",
             "background": "fffffe"
         },
         {
@@ -27,7 +27,7 @@
         },
         {
             "token": "field",
-            "foreground": "#000000"
+            "foreground": "#3E4359"
         },
         {
             "token": "variable.predefined",
@@ -65,15 +65,15 @@
 
         {
             "token": "delimiter",
-            "foreground": "#000000"
+            "foreground": "#3E4359"
         },
         {
             "token": "delimiter.html",
-            "foreground": "#000000"
+            "foreground": "#3E4359"
         },
         {
             "token": "delimiter.xml",
-            "foreground": "#000000"
+            "foreground": "#3E4359"
         },
 
         {
@@ -132,7 +132,7 @@
         },
         {
             "token": "attribute.value",
-            "foreground": "000000"
+            "foreground": "3E4359"
         },
         {
             "token": "attribute.value.number",

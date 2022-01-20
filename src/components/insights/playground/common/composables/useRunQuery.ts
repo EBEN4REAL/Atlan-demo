@@ -11,7 +11,6 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
-import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
 export default function useProject() {
     const {
@@ -22,7 +21,6 @@ export default function useProject() {
         getParsedQueryCursor,
     } = useEditor()
 
-    const {setStartTime, setResponseTime} = useTimeEvent();
 
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
@@ -73,31 +71,12 @@ export default function useProject() {
     let keys = ref(0)
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
-        const columns = toRaw(columnList.value)
        
         rows.map((result: any, index1) => {
-          
-
-            let row2 = []
-            result.map((row, rowindex) => {
-                let tmp = {}
-                tmp = {
-                                        
-                    [columns[rowindex].dataIndex]: row,
-                    data: row,
-                    data_type: columns[rowindex].data_type
-                    
-                }
-                // debugger
-                row2.push(tmp)
-
-            })
-            
-            dataList.value.push(row2)
-            // keys.value=keys.value+1;
-            // 
-
+            dataList.value.push(result)
         })
+    
+        
     }
 
     const queryRun = (
@@ -112,7 +91,9 @@ export default function useProject() {
         showVQB: Ref<Boolean> = ref(false)
     ) => {
 
-        setStartTime(new Date())
+        let startTime = new Date()
+
+        // setStartTime(new Date())
 
         const columnList: Ref<
             [
@@ -297,7 +278,7 @@ export default function useProject() {
             console.log('heka request log: ', isLoading.value, error.value)
             try {
                 if (!isLoading.value && error.value === undefined) {
-                    setResponseTime(new Date())
+                    // setResponseTime(new Date())
                     
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
@@ -348,8 +329,17 @@ export default function useProject() {
 
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
+
+                            let endTime = new Date()
+                            activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
+
+                            // console.log('run complete')
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion(activeInlineTab, 'success')
+                            if (onCompletion) {
+                                // activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
+                                onCompletion(activeInlineTab, 'success')
+
+                            }
 
                             /* ------------------- */
                         }
@@ -374,12 +364,14 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion(activeInlineTab, 'error')
+                            if (onCompletion) {
+                                onCompletion(activeInlineTab, 'error')
+                            }
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
                     /* Setting it undefined for new run */
-                    setResponseTime(new Date())
+                    // setResponseTime(new Date())
 
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined

@@ -23,7 +23,7 @@ export const useTableExport = (columnList, rows) => {
 
         // check for each key in the row object
         for (let key in data) {
-            const cell = data[key].data
+            const cell = data[key]
             var value = cell === null ? '' : cell.toString()
 
             // check for Date data

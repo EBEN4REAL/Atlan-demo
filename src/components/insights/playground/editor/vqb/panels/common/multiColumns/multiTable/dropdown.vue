@@ -365,6 +365,9 @@
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
             const tableSelected = inject('tableSelected') as Ref<Object>
+            const isJoinPanelDisabled = inject(
+                'isJoinPanelDisabled'
+            ) as Ref<Boolean>
             const map = inject('map') as Ref<Object>
             const dirtyTableSelected = inject(
                 'dirtyTableSelected'
@@ -596,6 +599,7 @@
             })
 
             return {
+                isJoinPanelDisabled,
                 map,
                 getDataTypeImage,
                 actionClick,

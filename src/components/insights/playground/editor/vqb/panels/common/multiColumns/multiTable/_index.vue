@@ -102,10 +102,13 @@
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
-            const joinPanel = activeInlineTab.value.playground.vqb.panels.find(
-                (panel) => panel.id.toLowerCase() === 'join'
-            )
-            const isJoinPanelDisabled = ref(!joinPanel?.hide ? true : false)
+            const isJoinPanelDisabled = computed(() => {
+                const joinPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+                return !joinPanel?.hide ? true : false
+            })
             const dirtyTableSelected = ref(null)
             const isTableSelected = ref(false)
             const dirtyIsTableSelected = ref(false)
@@ -237,26 +240,6 @@
                 observer?.value?.unobserve(container?.value)
             })
 
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    const joinPanel =
-                        activeInlineTab.value.playground.vqb.panels.find(
-                            (panel) => panel.id.toLowerCase() === 'join'
-                        )
-                    if (!joinPanel?.hide) {
-                        isJoinPanelDisabled.value = true
-                    } else {
-                        if (isJoinPanelDisabled.value)
-                            isJoinPanelDisabled.value = false
-                    }
-                },
-                {
-                    deep: true,
-                    immediate: true,
-                }
-            )
-
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -270,6 +253,7 @@
                 tableQueryText: tableQueryText,
                 TableList: TableList,
                 ColumnList: ColumnList,
+                isJoinPanelDisabled: isJoinPanelDisabled,
                 isAreaFocused: isAreaFocused,
                 isTableSelected: isTableSelected,
                 totalTablesCount: TotalTablesCount,

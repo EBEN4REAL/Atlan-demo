@@ -17,11 +17,21 @@
             <!-- For single table select -->
             <div
                 class="flex flex-col w-full"
-                v-if="selectedTablesQualifiedNames.length < 2"
+                v-if="
+                    isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled,
+                        selectedTablesQualifiedNames
+                    )
+                "
             >
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
-                    v-if="selectedTablesQualifiedNames.length < 2"
+                    v-if="
+                        isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled,
+                            selectedTablesQualifiedNames
+                        )
+                    "
                 >
                     <div
                         class="flex items-center justify-between w-full"
@@ -41,7 +51,10 @@
                     v-if="
                         columnDropdownOption.length !== 0 &&
                         !isColumnLoading &&
-                        selectedTablesQualifiedNames.length < 2
+                        isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled,
+                            selectedTablesQualifiedNames
+                        )
                     "
                 >
                     <template
@@ -122,7 +135,10 @@
                     v-if="
                         columnDropdownOption.length == 0 &&
                         !isColumnLoading &&
-                        selectedTablesQualifiedNames.length < 2
+                        isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled,
+                            selectedTablesQualifiedNames
+                        )
                     "
                 >
                     No Columns found!
@@ -134,7 +150,10 @@
                 class="flex flex-col w-full dropdown-container"
                 v-if="
                     !dirtyIsTableSelected &&
-                    selectedTablesQualifiedNames.length >= 2
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled,
+                        selectedTablesQualifiedNames
+                    )
                 "
             >
                 <div
@@ -243,7 +262,10 @@
                 class="flex flex-col w-full dropdown-container"
                 v-if="
                     dirtyIsTableSelected &&
-                    selectedTablesQualifiedNames.length >= 2
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled,
+                        selectedTablesQualifiedNames
+                    )
                 "
             >
                 <div
@@ -472,6 +494,9 @@
                 selectedTablesQualifiedNames,
             } = toRefs(props)
             const { selectedColumn } = useVModels(props)
+            const isJoinPanelDisabled = inject(
+                'isJoinPanelDisabled'
+            ) as Ref<Boolean>
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
@@ -504,7 +529,7 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-            const { allowedTablesInJoinSelector } = useJoin()
+            const { isJoinPanelStateDisabledComputed } = useJoin()
             const { openAssetInSidebar } = useUtils()
             const { updateVQB } = useVQB()
             const { getDataTypeImage } = useColumn()
@@ -522,7 +547,12 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                if (selectedTablesQualifiedNames.value?.length > 1) {
+                if (
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled.value,
+                        selectedTablesQualifiedNames.value
+                    )
+                ) {
                     if (dirtyIsTableSelected.value) {
                         if (isColumnLoading.value) {
                             data = 'Loading...'
@@ -644,7 +674,12 @@
             watch(
                 () => activeInlineTab.value.playground.editor.context,
                 (newContext) => {
-                    if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (
+                        !isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled.value,
+                            selectedTablesQualifiedNames.value
+                        )
+                    ) {
                         if (
                             !tableSelected.value?.attributes?.qualifiedName?.includes(
                                 newContext.attributeValue
@@ -665,7 +700,7 @@
             watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
-                    if (selectedTablesQualifiedNames.value.length > 1) {
+                    if (!isJoinPanelDisabled.value) {
                         if (newIsAreaFocused) {
                             dirtyTableSelected.value = toRaw(
                                 tableSelected.value
@@ -706,7 +741,12 @@
             )
 
             watch(tableQueryText, () => {
-                if (selectedTablesQualifiedNames.value.length > 1) {
+                if (
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled.value,
+                        selectedTablesQualifiedNames.value
+                    )
+                ) {
                     if (!dirtyIsTableSelected?.value) {
                         replaceTableBody(
                             getTableInitialBody(
@@ -717,7 +757,12 @@
                 }
             })
             watch(columnQueryText, () => {
-                if (selectedTablesQualifiedNames.value.length > 1) {
+                if (
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled.value,
+                        selectedTablesQualifiedNames.value
+                    )
+                ) {
                     if (dirtyIsTableSelected?.value) {
                         replaceColumnBody(
                             getColumnInitialBody(
@@ -737,6 +782,7 @@
             })
 
             return {
+                isJoinPanelDisabled,
                 tableQualfiedName,
                 getDataTypeImage,
                 actionClick,
@@ -765,6 +811,7 @@
                 dirtyTableSelected,
                 dirtyIsTableSelected,
                 selectedTablesQualifiedNames,
+                isJoinPanelStateDisabledComputed,
             }
         },
     })

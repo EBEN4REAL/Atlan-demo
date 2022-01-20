@@ -169,7 +169,7 @@
                             :total-pages="pagination.totalPages"
                             :loading="listLoading"
                             :page-size="pagination.limit"
-                            :defaultPage="defaultPage"
+                            :default-page="defaultPage"
                             @mutate="mutate"
                         />
                     </div>
@@ -193,7 +193,7 @@
                         >Clear search</a-button
                     >
                 </div>
-                <div v-else class="flex flex-col">
+                <div v-else class="flex flex-col mb-12">
                     <atlan-icon icon="NoLinkedAssets" class="h-40" />
                     <span class="mt-4 text-xl font-semibold"
                         >All pending requests have been resolved</span
@@ -253,7 +253,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
-            let timeoutHover = null
+            const timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -405,10 +405,12 @@
                     ? facetsValue.statusRequest
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
+                // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
                     status: status.length > 0 ? status : 'active',
                     createdBy,
+                    // typeName,
                 }
                 filters.value = filterMerge
             }
@@ -543,7 +545,7 @@
         }
     }
     .container-scroll {
-        max-height: 475px;
+        max-height: calc(75vh - 100px);
     }
     .wrapper-filter {
         .ant-select-selector {

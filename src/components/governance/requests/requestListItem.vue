@@ -144,12 +144,12 @@
                             :avatar-name="request.created_by_user?.username"
                             avatar-size="24"
                             :avatar-shape="'circle'"
-                            :image-url="atlanLogo"
+                            :image-url="request.createdBy ? '' : atlanLogo"
                         />
 
                         <div class="flex flex-col">
                             <UserPiece
-                                :user="request.created_by_user"
+                                :user="{ username: request.createdBy }"
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />

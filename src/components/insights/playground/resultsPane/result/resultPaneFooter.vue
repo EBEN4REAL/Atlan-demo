@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex justify-between h-8 py-1 text-xs border-b"
+        class="flex justify-between w-full h-8 py-1 text-xs border-b"
         style="max-height: 8%; background: #fbfbfb"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
@@ -33,34 +33,63 @@
             </span>
             <!-- -------------------------------------------- -->
         </div>
-        <a-tooltip
-            color="#363636"
-            :mouseEnterDelay="
-                lastTooltipPresence !== undefined
-                    ? ADJACENT_TOOLTIP_DELAY
-                    : MOUSE_ENTER_DELAY
-            "
-        >
-            <template #title>Export data</template>
-            <div
-                class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
-                @click="
-                    useTableExport(
-                        activeInlineTab.playground.editor.columnList,
-                        activeInlineTab.playground.editor.dataList
-                    )
+        <div class="flex items-center">
+            <a-tooltip
+                color="#363636"
+                :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
                 "
             >
-                <AtlanIcon icon="Download" class="w-4 h-4" />
-            </div>
-        </a-tooltip>
+                <template #title>Copy data</template>
+                <div
+                    class="p-1 mr-3 rounded cursor-pointer hover:bg-gray-300 group"
+                    @click="
+                        useCopy(
+                            activeInlineTab.playground.editor.columnList,
+                            activeInlineTab.playground.editor.dataList
+                        )
+                    "
+                >
+                    <AtlanIcon icon="CopyOutlined" class="w-4 h-4" />
+                </div>
+            </a-tooltip>
+            <a-tooltip
+                color="#363636"
+                :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
+                "
+            >
+                <template #title>Export data</template>
+                <div
+                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                    @click="
+                        useTableExport(
+                            activeInlineTab?.queryId
+                                ? activeInlineTab?.label
+                                : null,
+                            activeInlineTab.playground.editor.columnList,
+                            activeInlineTab.playground.editor.dataList
+                        )
+                    "
+                >
+                    <AtlanIcon icon="Download" class="w-4 h-4" />
+                </div>
+            </a-tooltip>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
+    import {
+        useTableExport,
+        useCopy,
+    } from '~/components/insights/common/composables/useTableExport'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
 
     export default defineComponent({
@@ -88,6 +117,7 @@
                 activeInlineTab,
                 isQueryRunning,
                 useTableExport,
+                useCopy,
                 getFormattedTimeFromMilliSeconds,
             }
         },

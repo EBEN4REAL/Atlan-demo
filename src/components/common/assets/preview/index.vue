@@ -18,12 +18,14 @@
                         class="h-4 text-gray-500 mb-0.5"
                     />
                 </div>
-
                 <Tooltip
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
                     classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
                     @click="() => $emit('closeDrawer')"
+                    :shouldOpenInNewTab="
+                        selectedAsset.typeName?.toLowerCase() === 'query'
+                    "
                 />
 
                 <CertificateBadge
@@ -399,7 +401,8 @@
                         router.push(getProfilePath(selectedAsset.value))
                         break
                     case 'query':
-                        router.push(getAssetQueryPath(selectedAsset.value))
+                        // router.push(getAssetQueryPath(selectedAsset.value))
+                        handleClick(getAssetQueryPath(selectedAsset.value))
                         break
                     default:
                         break
@@ -426,6 +429,12 @@
                 // )
                 //     tabChildRef.value[activeKey.value]?.handleCancel()
                 // else activeKey.value = k
+            }
+
+            const handleClick = (path) => {
+                const URL = `http://` + window.location.host + path
+
+                window.open(URL, '_blank')?.focus()
             }
 
             const onClickTabIcon = (tabObj: object) => {

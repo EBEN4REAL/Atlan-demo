@@ -181,6 +181,7 @@ import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 import Retry from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
+import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -367,6 +368,7 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import QueryTime from '~/assets/images/icons/query_time.svg'
 
 export default {
     GlowFlash,
@@ -575,6 +577,7 @@ export default {
     Minus,
     Retry,
     Recenter,
+    Refocus,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,
@@ -722,4 +725,5 @@ export default {
     CrossCircle,
     MessageCross,
     AddColumn,
+    QueryTime
 }

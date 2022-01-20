@@ -35,6 +35,29 @@ export default function useCreateGraph(
         true
     )
 
+    Graph.registerConnector(
+        'beizAlt',
+        (s, t) => {
+            let control = 100
+            let offset = 10
+
+            if (s.x > t.x) {
+                control = -control
+                offset = -offset
+            }
+
+            const v1 = { x: s.x + control + offset, y: s.y }
+            const v2 = { x: t.x - control / 2 - offset, y: t.y }
+
+            return `M ${s.x} ${s.y}
+                L ${s.x + offset} ${s.y}
+                C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${t.x - offset} ${t.y}
+                L ${t.x} ${t.y}
+            `
+        },
+        true
+    )
+
     graph.value = new Graph({
         autoResize: true,
         interacting: false,
@@ -53,7 +76,8 @@ export default function useCreateGraph(
             minScale: 0.5,
             maxScale: 1.2,
             enabled: true,
-            global: true,
+            global: false,
+            factor: 1.04,
             modifiers: ['ctrl', 'meta'],
         },
         minimap: {

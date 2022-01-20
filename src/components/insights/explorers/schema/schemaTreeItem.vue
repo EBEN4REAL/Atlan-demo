@@ -1244,23 +1244,24 @@
             }
 
             const playQuery = (newQuery, newText, activeInlineTabCopy) => {
-                activeInlineTabCopy.playground.editor.text = newText
+                if (!readOnly.value) {
+                    activeInlineTabCopy.playground.editor.text = newText
+                    modifyActiveInlineTab(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        activeInlineTabCopy.isSaved
+                    )
+                    selectionObject.value.startLineNumber = 2
+                    selectionObject.value.startColumnNumber = 1
+                    selectionObject.value.endLineNumber = 2
+                    selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
+                    setSelection(
+                        toRaw(editorInstanceRef.value),
+                        toRaw(monacoInstanceRef.value),
+                        selectionObject.value
+                    )
+                }
 
-                modifyActiveInlineTab(
-                    activeInlineTabCopy,
-                    inlineTabs,
-                    activeInlineTabCopy.isSaved
-                )
-
-                selectionObject.value.startLineNumber = 2
-                selectionObject.value.startColumnNumber = 1
-                selectionObject.value.endLineNumber = 2
-                selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                setSelection(
-                    toRaw(editorInstanceRef.value),
-                    toRaw(monacoInstanceRef.value),
-                    selectionObject.value
-                )
                 queryRun(
                     activeInlineTab,
                     getData,

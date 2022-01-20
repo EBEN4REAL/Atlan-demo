@@ -1,11 +1,12 @@
-import {ref, watch, computed} from 'vue'
+import {ref, watch, computed, Ref} from 'vue'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+
+    
+export function useTimeEvent(activeInlineTab: Ref<activeInlineTabInterface>,) {
 
     let startTime = ref(0)
     let responseTime = ref(0)
     let renderTime = ref(0)
-
-
-export function useTimeEvent() {
     
     
     const setStartTime = (time) => {

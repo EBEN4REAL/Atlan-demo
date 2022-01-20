@@ -385,7 +385,12 @@
             const router = useRouter()
 
             const goToInsights = (asset) => {
-                router.push(getAssetQueryPath(asset))
+                // router.push(getAssetQueryPath(asset))
+
+                const URL =
+                    `http://` + window.location.host + getAssetQueryPath(asset)
+
+                window.open(URL, '_blank')?.focus()
             }
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()

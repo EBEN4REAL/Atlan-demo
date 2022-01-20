@@ -13,6 +13,8 @@
         >
             <Loading v-if="isQueryRunning === 'loading'" />
 
+            <!-- <a-spin v-if="isQueryRunning === 'loading'" /> -->
+
             <div
                 class="flex flex-col h-full m-2 overflow-hidden border rounded-lg border-gray-light"
                 v-if="

@@ -47,29 +47,29 @@
                                 Atlan Documentation
                                 <AtlanIcon
                                     icon="External"
-                                    class="mb-1 ml-2 opacity-0 group-hover:opacity-100"
+                                    class="mb-1 ml-2 opacity-0 text-primary group-hover:opacity-100"
                                 />
                             </div>
                         </span>
                     </div>
                 </a>
-                <div>
-                    <div
-                        class="flex items-center w-full p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
-                        @click="toggleHelpWidget"
-                    >
-                        <AtlanIcon class="h-9" icon="CallIcon" />
-                        <span class="flex flex-col w-full text-gray-700">
-                            <div class="relative w-full text-base">
-                                Support
-                                <AtlanIcon
-                                    class="absolute right-0 opacity-0 text-primary top-0.5 group-hover:opacity-100"
-                                    icon="ArrowRight"
-                                />
-                            </div>
-                        </span>
-                    </div>
+
+                <div
+                    class="relative flex items-center w-full p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
+                    @click="toggleHelpWidget"
+                >
+                    <AtlanIcon class="h-9" icon="CallIcon" />
+                    <span class="flex flex-col text-gray-700">
+                        <div class="text-base">
+                            Support
+                            <AtlanIcon
+                                class="absolute opacity-0 right-3 text-primary top-4 group-hover:opacity-100"
+                                icon="ArrowRight"
+                            />
+                        </div>
+                    </span>
                 </div>
+
                 <!-- <router-link to="//notion.so" target="_blank" replace>
                     <div
                         class="flex items-center p-2 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"

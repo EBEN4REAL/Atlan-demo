@@ -13,6 +13,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, inject, computed } from 'vue'
     import { useI18n } from 'vue-i18n'
+    import { useRoute } from 'vue-router'
     import useTypedefs from '~/composables/typedefs/useTypedefs'
 
     import useTenant from '~/composables/tenant/useTenant'
@@ -25,6 +26,7 @@
     import usePurpose from './composables/purpose/usePurpose'
     import useUserData from '~/composables/user/useUserData'
     import Feedback from '~/assets/images/illustrations/feedback.svg?url'
+    import { getLabelsForZendeskArticles } from '~/utils/helper/labelsForZendeskArticles'
 
     export default defineComponent({
         setup(props, context) {
@@ -74,8 +76,12 @@
             //     isTypedefReady.value = true
             // })
 
+            const route = useRoute()
             const toggleHelpWidget = () => {
-                // zE('webWidget', 'open')
+                const labels = getLabelsForZendeskArticles(route?.path ?? '')
+                zE('webWidget', 'helpCenter:setSuggestions', {
+                    labels,
+                })
                 zE('webWidget', 'toggle')
             }
             return { locale, t, toggleHelpWidget, Feedback }

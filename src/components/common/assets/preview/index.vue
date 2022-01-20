@@ -106,8 +106,31 @@
                         </component>
                         <template v-else>
                             <a-tooltip :title="action.label">
+                                <QueryDropdown
+                                    v-if="
+                                        showCTA(action.id) &&
+                                        action.id === 'query' &&
+                                        (assetType(selectedAsset) === 'Table' ||
+                                            assetType(selectedAsset) ===
+                                                'View' ||
+                                            assetType(selectedAsset) ===
+                                                'Column')
+                                    "
+                                    @handleClick="handleQueryAction"
+                                >
+                                    <template #button>
+                                        <a-button
+                                            class="flex items-center justify-center border-l-0 border-r-0"
+                                        >
+                                            <AtlanIcon
+                                                :icon="action.icon"
+                                                class="mb-0.5 h-4 w-auto"
+                                            />
+                                        </a-button>
+                                    </template>
+                                </QueryDropdown>
                                 <a-button
-                                    v-if="showCTA(action.id)"
+                                    v-else-if="showCTA(action.id)"
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -214,6 +237,7 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
+    import QueryDropdown from '@/common/query/queryDropdown.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -223,6 +247,7 @@
             ShareMenu,
             NoAccess,
             Tooltip,
+            QueryDropdown,
 
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
@@ -409,6 +434,14 @@
                 }
             }
 
+            const handleQueryAction = (openVQB) => {
+                handleClick(
+                    `${getAssetQueryPath(
+                        selectedAsset.value
+                    )}&openVQB=${openVQB}`
+                )
+            }
+
             const showCTA = (action) => {
                 return route.path !== '/insights'
                     ? true
@@ -499,6 +532,7 @@
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
+                handleQueryAction,
             }
         },
     })

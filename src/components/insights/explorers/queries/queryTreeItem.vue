@@ -356,16 +356,17 @@
             </div>
         </div>
     </div>
-    <a-popover :visible="showDeletePopover" placement="rightTop">
-        <template #content>
-            <TreeDeletePopover
-                :item="item"
-                @cancel="showDeletePopover = false"
-                @delete="() => delteItem(item?.typeName)"
-                :isSaving="isDeleteLoading"
-            />
-        </template>
-    </a-popover>
+    <!-- <a-popover :visible="showDeletePopover" placement="rightTop">
+        <template #content> -->
+    <TreeDeletePopover
+        :item="item"
+        @cancel="showDeletePopover = false"
+        @delete="() => delteItem(item?.typeName)"
+        :isSaving="isDeleteLoading"
+        :showDeletePopover="showDeletePopover"
+    />
+    <!-- </template>
+    </a-popover> -->
     <!-- <a-popover :visible="showPublishPopover" placement="right">
         <template #content>
             <div class="p-4">

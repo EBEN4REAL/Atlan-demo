@@ -248,16 +248,33 @@
                     v-if="!isGTC(item) && !isBiAsset(item)"
                     title="Query"
                 >
+                    <QueryDropdown
+                        v-if="
+                            assetType(item) === 'Table' ||
+                            assetType(item) === 'View' ||
+                            assetType(item) === 'Column'
+                        "
+                        @handleClick="goToInsights"
+                    >
+                        <template #button>
+                            <a-button
+                                class="flex items-center justify-center rounded-l"
+                                style="margin-right: -1px"
+                            >
+                                <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                            </a-button>
+                        </template>
+                    </QueryDropdown>
+
                     <a-button
+                        v-else
                         block
                         class="flex items-center justify-center"
-                        @click="goToInsights(item)"
+                        @click="handleClick"
                     >
-                        <AtlanIcon
-                            icon="Query"
-                            class="mr-1 mb-0.5"
-                        /> </a-button
-                ></a-tooltip>
+                        <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                    </a-button>
+                </a-tooltip>
 
                 <a-button
                     v-if="isBiAsset(item) && webURL(item)"
@@ -329,6 +346,7 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import QueryDropdown from '@/common/query/queryDropdown.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -338,6 +356,7 @@
             ShareMenu,
             AssetMenu,
             Tooltip,
+            QueryDropdown,
         },
         props: {
             item: {
@@ -384,11 +403,25 @@
 
             const router = useRouter()
 
-            const goToInsights = (asset) => {
+            const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
 
                 const URL =
-                    `http://` + window.location.host + getAssetQueryPath(asset)
+                    `http://` +
+                    window.location.host +
+                    getAssetQueryPath(item.value) +
+                    `&openVQB=${openVQB}`
+
+                window.open(URL, '_blank')?.focus()
+            }
+
+            const handleClick = () => {
+                // router.push(getAssetQueryPath(asset))
+
+                const URL =
+                    `http://` +
+                    window.location.host +
+                    getAssetQueryPath(item.value)
 
                 window.open(URL, '_blank')?.focus()
             }
@@ -456,6 +489,7 @@
                 isBiAsset,
                 webURL,
                 handleBIRedirect,
+                handleClick,
             }
         },
     })

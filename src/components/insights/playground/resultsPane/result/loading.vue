@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full h-full"
+        class="flex items-center justify-center w-full"
         v-if="isQueryRunning === 'loading'"
     >
         <div class="flex flex-col items-center justify-center">

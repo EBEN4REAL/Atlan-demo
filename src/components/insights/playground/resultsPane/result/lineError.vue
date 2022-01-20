@@ -322,7 +322,7 @@
             const editorI = toRaw(editorInstance.value)
             if (activeInlineTab.value) {
                 activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                    editorI.deltaDecorations(errorDecorations.value, [
+                    editorI?.deltaDecorations(errorDecorations.value, [
                         {
                             range: new monacoI.Range(
                                 Number(pos.value.startLine),

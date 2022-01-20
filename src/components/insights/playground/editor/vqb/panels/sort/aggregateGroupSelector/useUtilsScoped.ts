@@ -19,9 +19,10 @@ export function useUtilsScoped() {
                 list[firstOccurences[item.label]] =
                     list[firstOccurences[item.label]]
 
-            if (count[item.label] > 1)
-                list[i].label = list[i].label + (count[item.label] - 1)
-            else firstOccurences[item.label] = i
+            if (count[item.label] > 1) {
+                if (list[i].addedBy !== 'group')
+                    list[i].label = list[i].label + (count[item.label] - 1)
+            } else firstOccurences[item.label] = i
         }
 
         // Return

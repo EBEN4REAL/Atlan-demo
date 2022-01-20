@@ -65,7 +65,7 @@
             >
                 <template #title>Export data</template>
                 <div
-                    class="flex items-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                    class="flex items-center p-1 mr-2 rounded cursor-pointer"
                     @click="
                         useTableExport(
                             activeInlineTab?.queryId

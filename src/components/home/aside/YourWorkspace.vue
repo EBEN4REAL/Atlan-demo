@@ -8,7 +8,6 @@
         :head="l.label"
         :icon="l.icon"
     />
-    <a-button @click="openHelpWidget">Get help</a-button>
 </template>
 
 <script lang="ts">
@@ -76,10 +75,7 @@
             //     //list.push({ ...admin, ...worksplaceListMeta.admin })
             //     return list
             // })
-            const openHelpWidget = () => {
-                zE('webWidget', 'open')
-            }
-            return { worksplaceListMeta, openHelpWidget }
+            return { worksplaceListMeta }
         },
     })
 </script>

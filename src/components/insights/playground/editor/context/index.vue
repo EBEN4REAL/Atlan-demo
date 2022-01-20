@@ -134,7 +134,7 @@
                         <AtlanIcon
                             :icon="
                                 getEntityStatusIcon(
-                                    'query',
+                                    showVQB ? 'vqb' : 'query',
                                     activeInlineTab?.status
                                 )
                             "
@@ -154,7 +154,7 @@
                     <AtlanIcon
                         :icon="
                             getEntityStatusIcon(
-                                'query',
+                                showVQB ? 'vqb' : 'query',
                                 activeInlineTab?.status
                             )
                         "
@@ -727,8 +727,12 @@
                 },
                 { immediate: true }
             )
+            const showVQB = computed(() => {
+                return activeInlineTab?.value?.playground?.isVQB
+            })
 
             return {
+                showVQB,
                 popoverVisible,
                 onPopoverVisibleChange,
                 connectionName,

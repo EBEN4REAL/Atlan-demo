@@ -219,7 +219,7 @@
             const selectedPolicy = ref({})
             usePermissions() // refresh the list of connection user can access
             const authStore = useAuthStore()
-            const { decentralizedRole } = storeToRefs(authStore)
+            const { decentralizedRoles } = storeToRefs(authStore)
             const openEditModal = ref(false)
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
@@ -260,10 +260,10 @@
             })
 
             watch(
-                decentralizedRole,
+                decentralizedRoles,
                 () => {
                     const filteredRoles = (
-                        decentralizedRole.value || []
+                        decentralizedRoles.value || []
                     ).filter(
                         (role) =>
                             role.level === 'connection' &&

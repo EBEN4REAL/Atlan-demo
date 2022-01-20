@@ -26,14 +26,21 @@
                     @change="setQuery"
                     @blur="onBlur"
                     @focus="onFocus"
+                    @keyup.esc="(e) => e.target.blur()"
                 />
             </div>
         </div>
 
         <!-- Search Results -->
         <div v-if="showResults && query" class="search-results">
-            <div class="search-results__count">
+            <div v-if="filteredItems.length" class="search-results__count">
                 {{ filteredItems.length }} results found
+            </div>
+            <div v-else class="flex flex-col items-center p-10">
+                <NoResultIllustration />
+                <span class="text-sm text-center text-gray"
+                    >Sorry, we couldn't find the asset you were looking for
+                </span>
             </div>
 
             <AssetItem
@@ -63,9 +70,10 @@
 
     import { getNodeSourceImage, getSource } from './util'
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
+    import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
     export default defineComponent({
-        components: { AssetItem },
+        components: { AssetItem, NoResultIllustration },
         emits: ['select'],
         setup(_, { emit }) {
             /** DATA */

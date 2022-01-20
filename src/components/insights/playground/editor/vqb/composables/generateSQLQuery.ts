@@ -381,19 +381,6 @@ export function generateSQLQuery(
                         subpanel.column?.columnQualifiedName ??
                         ''
                 )
-                if (index == 0) res = ''
-                if (
-                    tableName &&
-                    subpanel?.column?.label &&
-                    nameMap[subpanel?.filter?.name]
-                ) {
-                    if (contextPrefix !== '') {
-                        res += `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
-                    } else {
-                        res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
-                    }
-                    res += `${nameMap[subpanel?.filter?.name]} `
-                }
 
                 switch (subpanel?.filter?.type) {
                     case 'range_input': {
@@ -445,6 +432,7 @@ export function generateSQLQuery(
                                 subpanel?.filter?.value ?? ''
                             )}`
                         }
+                        debugger
 
                         break
                     }

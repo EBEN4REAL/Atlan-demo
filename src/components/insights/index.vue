@@ -229,6 +229,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+            const openVQB = inject('openVQB')
 
             const collectionGuidFromURL = inject('collectionGuidFromURL')
 
@@ -372,6 +373,7 @@
             watch(
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
+                    console.log('editor data')
                     syncInlineTabsInLocalStorage(tabsArray.value)
                 },
                 { deep: true }
@@ -465,6 +467,61 @@
             // FIXME: refactor it
 
             const detectQuery = () => {
+                let vqbData =
+                    openVQB === 'true'
+                        ? {
+                              selectedTables: [
+                                  {
+                                      tableQualifiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
+                                      addedBy: 'column',
+                                  },
+                              ],
+                              panels: [
+                                  {
+                                      order: 1,
+                                      id: 'columns',
+                                      hide: true,
+                                      subpanels: [
+                                          {
+                                              id: '1',
+                                              columns: ['all'],
+                                              tableData: {
+                                                  item: {},
+                                                  assetType: 'Table',
+                                              },
+                                              columnsData: [],
+                                              tableQualfiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
+                                          },
+                                      ],
+                                      expand: false,
+                                  },
+                              ],
+                          }
+                        : {
+                              selectedTables: [],
+                              panels: [
+                                  {
+                                      order: 1,
+                                      id: 'columns',
+                                      hide: false,
+                                      subpanels: [
+                                          {
+                                              id: '1',
+                                              tableQualifiedName: undefined,
+                                              columns: ['all'],
+                                              tableData: {
+                                                  certificateStatus: undefined,
+                                                  assetType: undefined,
+                                                  item: {},
+                                              },
+                                              columnsData: [],
+                                          },
+                                      ],
+                                      expand: true,
+                                  },
+                              ],
+                          }
+
                 const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),
                     label: `${tableNameFromURL} preview`,
@@ -497,31 +554,8 @@
                         },
                     },
                     playground: {
-                        isVQB: false,
-                        vqb: {
-                            selectedTables: [],
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: false,
-                                    subpanels: [
-                                        {
-                                            id: '1',
-                                            tableQualifiedName: undefined,
-                                            columns: ['all'],
-                                            tableData: {
-                                                certificateStatus: undefined,
-                                                assetType: undefined,
-                                                item: {},
-                                            },
-                                            columnsData: [],
-                                        },
-                                    ],
-                                    expand: true,
-                                },
-                            ],
-                        },
+                        isVQB: openVQB === 'true' ? true : false,
+                        vqb: vqbData,
                         editor: {
                             text: '',
                             context: {
@@ -583,7 +617,9 @@
                 const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
-                queryTab.playground.editor.text = newQuery
+                if (!(openVQB === 'true')) {
+                    queryTab.playground.editor.text = newQuery
+                }
 
                 queryTab.playground.editor.context = {
                     attributeName,
@@ -597,7 +633,7 @@
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
 
-                console.log('detect query: ', newQuery)
+                // console.log('detect query: ', newQuery)
                 queryRun(
                     activeInlineTab,
                     getData,
@@ -676,11 +712,11 @@
                     schemaNameFromURL &&
                     tableNameFromURL
                 ) {
-                    console.log('url params: ', {
-                        databaseQualifiedNameFromURL,
-                        schemaNameFromURL,
-                        tableNameFromURL,
-                    })
+                    // console.log('url params: ', {
+                    //     databaseQualifiedNameFromURL,
+                    //     schemaNameFromURL,
+                    //     tableNameFromURL,
+                    // })
                     // if (columnNameFromURL.value) {
                     // } else {
                     // }

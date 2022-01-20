@@ -35,21 +35,16 @@
             <div class="search-results__count">
                 {{ filteredItems.length }} results found
             </div>
-            <div
+
+            <AssetItem
                 v-for="(item, index) in filteredItems"
                 :key="index"
-                class="search-results__item"
                 :class="{ selected: searchItem === item.guid }"
+                :item="item"
+                class="search-results__item"
                 @click="setSearchItem(item)"
-            >
-                <img
-                    v-if="sourceImg(item)"
-                    class="h-4"
-                    :src="sourceImg(item)"
-                />
-                <div v-else class="w-4 h-4 bg-gray-300" />
-                <span>{{ item.displayText || item.attributes.name }}</span>
-            </div>
+                disableLinks
+            ></AssetItem>
         </div>
     </div>
 </template>
@@ -64,13 +59,13 @@
         watch,
         nextTick,
     } from 'vue'
-
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import { getNodeSourceImage, getSource } from './util'
     import { whenever } from '@vueuse/core'
 
+    import { getNodeSourceImage, getSource } from './util'
+    import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
+
     export default defineComponent({
-        components: { SearchAndFilter },
+        components: { AssetItem },
         emits: ['select'],
         setup(_, { emit }) {
             /** DATA */
@@ -164,10 +159,13 @@
         }
 
         &-results {
+            display: flex;
+            flex-direction: column;
             position: absolute;
             background: white;
             width: 100%;
-            overflow: scroll;
+            overflow-y: scroll;
+            overflow-x: hidden;
             max-height: 300px;
             border: 1px solid #f1f1f1;
             box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.08);
@@ -184,28 +182,10 @@
             }
 
             &__item {
-                padding: 8px 16px;
                 cursor: pointer;
-                display: flex;
-                align-items: center;
-                text-transform: lowercase;
-                column-gap: 8px;
-
-                & > span:first-child {
-                    margin-right: 10px;
-                }
-
-                & > span:last-child {
-                    width: 14rem;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    overflow: hidden;
-                }
-
                 &:hover {
                     background: #e7f4ff;
                 }
-
                 &.selected {
                     background: #e7f4ff;
                 }

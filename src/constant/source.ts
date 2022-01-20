@@ -7,6 +7,7 @@ import databricks from '~/assets/images/source/databricks.png'
 import database from '~/assets/images/assetType/Database.svg'
 import schema from '~/assets/images/assetType/Schema.svg'
 import powerbi from '~/assets/images/source/powerbi.png'
+import bigquery from '~/assets/images/source/bigquery.png'
 
 export const SourceList = [
     {
@@ -89,6 +90,62 @@ export const SourceList = [
         id: 'databricks',
         label: 'Databricks',
         image: databricks,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: database,
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: schema,
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
+        connectionCount: 0,
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'Procedure',
+            'TablePartition',
+            'Query',
+            'Folder',
+        ],
+    },
+    {
+        id: 'bigquery',
+        label: 'BigQuery',
+        image: bigquery,
         hierarchy: [
             {
                 typeName: 'Database',

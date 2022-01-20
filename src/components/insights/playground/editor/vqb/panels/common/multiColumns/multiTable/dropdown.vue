@@ -502,6 +502,7 @@
                         label: item.label,
                         type: item.type,
                         qualifiedName: item.value,
+                        item: item,
                     })
                 } else {
                     delete map.value[item.value]

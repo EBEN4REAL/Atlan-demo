@@ -144,6 +144,18 @@
             ParentDataset: defineAsyncComponent(
                 () => import('./types/parentDataset.vue')
             ),
+            ParentProject: defineAsyncComponent(
+                () => import('./types/parentProject.vue')
+            ),
+            ParentWorkbook: defineAsyncComponent(
+                () => import('./types/parentWorkbook.vue')
+            ),
+            ParentSite: defineAsyncComponent(
+                () => import('./types/parentSite.vue')
+            ),
+            ParentDatasource: defineAsyncComponent(
+                () => import('./types/parentDatasource.vue')
+            ),
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
             ),

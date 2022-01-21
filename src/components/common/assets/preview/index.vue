@@ -443,8 +443,8 @@
                 )
             }
 
-            const showCTA = (action) => {
-                return route.path !== '/insights'
+            const showCTA = (action) =>
+                route.path !== '/insights'
                     ? true
                     : selectedAsset.value.typeName === 'Query'
                     ? false

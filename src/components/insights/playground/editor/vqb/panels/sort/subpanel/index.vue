@@ -111,10 +111,9 @@
                 </div>
             </template>
         </div>
-        {{ readonly }}
         <span>
             <div
-                v-if="!readonly"
+                v-if="!readOnly"
                 class="items-center mt-3 cursor-pointer text-primary"
                 @click="handleAddPanel"
             >

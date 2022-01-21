@@ -34,16 +34,15 @@
                                             <span>{{
                                                 selectedUser?.name
                                             }}</span>
-                                            <span
+                                            <!-- <span
                                                 v-if="userProfiles?.slack"
                                                 class="ml-1 text-sm font-semibold"
-                                            >
-                                                <SlackMessageCta
-                                                    :slack-link="
-                                                        userProfiles.slack
-                                                    "
-                                                />
-                                            </span>
+                                            > -->
+                                            <SlackMessageCta
+                                                :entity="selectedUser"
+                                                class="ml-1 text-sm font-semibold"
+                                            />
+                                            <!-- </span> -->
                                         </div>
                                         <div class="text-sm text-gray-600">
                                             @{{ item }}
@@ -128,7 +127,10 @@
                     v-else
                     class="flex items-center justify-center w-full px-4"
                 >
-                    <AtlanLoader  v-if="isLoading || sessionInfoLoading" class="h-8" />
+                    <AtlanLoader
+                        v-if="isLoading || sessionInfoLoading"
+                        class="h-8"
+                    />
                 </div>
             </div>
         </template>
@@ -214,7 +216,11 @@
                 },
                 { deep: true, immediate: true }
             )
-            
+            const slackUrl = computed(() =>
+                slackEnabled.value
+                    ? getDeepLinkFromUserDmLink(slackEnabled.value)
+                    : '#'
+            )
             return {
                 selectedUser,
                 isLoading,

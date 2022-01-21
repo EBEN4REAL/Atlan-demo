@@ -1,5 +1,6 @@
 <template>
     <div
+        v-if="slackEnabled"
         class="flex items-center px-1 overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
         @click="handleClick"
     >
@@ -14,7 +15,8 @@
 </template>
 
 <script lang="ts">
-    import { toRefs } from 'vue'
+    import { toRefs, computed, ref } from 'vue'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default {
@@ -31,14 +33,73 @@
                 default: 'Say Hi 👋',
                 required: false,
             },
+            entity: {
+                type: Object,
+                default: () => {},
+                required: true,
+            },
         },
         emits: [],
         setup(props) {
-            const { slackLink } = toRefs(props)
+            const { slackLink, entity } = toRefs(props)
+            const type = ref('')
+            if (entity.value.username) type.value = 'user'
+            else if (entity.value.alias) type.value = 'group'
+
+            const userProfiles = computed(() => {
+                if (entity.value && type.value === 'user') {
+                    return entity.value?.attributes?.profiles
+                }
+                return []
+            })
+            const groupChannels = computed(() => {
+                if (entity.value && type.value === 'group') {
+                    return (
+                        entity.value?.attributes?.channels ||
+                        entity.value?.attributes?.profiles
+                    )
+                }
+                return []
+            })
+            const slackProfile = computed(() => {
+                if (userProfiles.value?.length > 0) {
+                    const firstProfile = JSON.parse(userProfiles.value[0])
+                    if (
+                        firstProfile &&
+                        firstProfile.length > 0 &&
+                        firstProfile[0].hasOwnProperty('slack')
+                    ) {
+                        return firstProfile[0].slack
+                    }
+                }
+                return ''
+            })
+            const slackChannel = computed(() => {
+                if (groupChannels.value?.length > 0) {
+                    const firstChannel = JSON.parse(groupChannels.value[0])
+                    if (
+                        firstChannel &&
+                        firstChannel.length > 0 &&
+                        firstChannel[0].hasOwnProperty('slack')
+                    ) {
+                        return firstChannel[0].slack
+                    }
+                }
+                return ''
+            })
+            const slackEnabled = computed(
+                () => slackProfile.value || slackChannel.value
+            )
+            const slackUrl = computed(() =>
+                slackEnabled.value
+                    ? getDeepLinkFromUserDmLink(slackEnabled.value)
+                    : '#'
+            )
             const handleClick = () => {
-                window.open(slackLink.value)
+                window.open(slackUrl.value)
             }
             return {
+                slackEnabled,
                 handleClick,
             }
         },

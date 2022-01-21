@@ -65,8 +65,7 @@
                             >
                                 <span class="mr-1 font-bold">{{ title }}</span>
                                 <SlackMessageCta
-                                    v-if="slackEnabled"
-                                    :slack-link="slackUrl"
+                                    :entity="selectedGroup || selectedUser"
                                 />
                                 <span
                                     v-if="

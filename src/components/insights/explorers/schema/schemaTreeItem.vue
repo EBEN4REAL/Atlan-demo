@@ -16,17 +16,6 @@
                     mouseEnterDelay="0.6"
                 >
                     <template #button>
-                        <!-- <a-button
-                            class="mt-3"
-                            @click="actionClick('info', item)"
-                            block
-                        >
-                            <div class="flex justify-center w-full">
-                                <div class="flex items-center cursor-pointer">
-                                    Open preview sidebar
-                                </div>
-                            </div>
-                        </a-button> -->
                         <AtlanBtn
                             class="flex-none px-0"
                             size="sm"
@@ -334,7 +323,7 @@
                     <!-- <div class="parent-ellipsis-container"> -->
                     <div class="flex items-center justify-between w-full">
                         <div
-                            class="flex items-center parent-ellipsis-container"
+                            class="flex items-center w-11/12 parent-ellipsis-container"
                         >
                             <AtlanIcon
                                 :icon="

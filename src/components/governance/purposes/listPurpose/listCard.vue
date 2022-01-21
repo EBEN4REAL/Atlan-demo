@@ -24,6 +24,7 @@
                         :display-name="classification?.displayName"
                         :allow-delete="false"
                         :color="classification.options?.color"
+                        :created-by="classification?.createdBy"
                     />
                 </Popover>
             </template>
@@ -35,7 +36,7 @@
     import { PropType, Ref, ref, toRefs } from 'vue'
     import { ClassificationInterface as CF } from '~/types/classifications/classification.interface'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
 
     const props = defineProps({
         p: {

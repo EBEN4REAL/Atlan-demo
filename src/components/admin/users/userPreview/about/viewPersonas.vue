@@ -44,7 +44,7 @@
             const { user } = toRefs(props)
             const { personas } = user.value
             const personaList = (personas || []).map(
-                (persona) => persona?.name ?? ''
+                (persona) => persona?.displayName ?? ''
             )
             return {
                 personas: personaList,

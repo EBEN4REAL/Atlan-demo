@@ -59,7 +59,7 @@
                 <template #pillPrefix="{ item }">
                     <AtlanIcon
                         v-if="item && item.type === 'classification'"
-                        icon="Shield"
+                        icon="ClassificationShield"
                         class="text-pink-400"
                     />
                     <AtlanIcon v-else icon="Term" class="text-purple-500" />

@@ -34,16 +34,15 @@
                                             <span>{{
                                                 selectedUser?.name
                                             }}</span>
-                                            <span
+                                            <!-- <span
                                                 v-if="userProfiles?.slack"
                                                 class="ml-1 text-sm font-semibold"
-                                            >
-                                                <SlackMessageCta
-                                                    :slack-link="
-                                                        userProfiles.slack
-                                                    "
-                                                />
-                                            </span>
+                                            > -->
+                                            <SlackMessageCta
+                                                :entity="selectedUser"
+                                                class="ml-1 text-sm font-semibold"
+                                            />
+                                            <!-- </span> -->
                                         </div>
                                         <div class="text-sm text-gray-600">
                                             @{{ item }}
@@ -101,7 +100,7 @@
 
                     <div
                         v-if="selectedUser?.personaList?.length > 0"
-                        class="flex gap-2 mt-3"
+                        class="flex gap-2"
                     >
                         <div class="" style="visibility: hidden">
                             <UserAvatar
@@ -110,14 +109,18 @@
                                 :avatar-size="40"
                             ></UserAvatar>
                         </div>
-                        <div class="z-10 mt-5">
+                        <div class="z-10 mt-3">
                             <div class="text-sm text-gray-500">Personas</div>
                             <div class="flex flex-wrap gap-2">
                                 <span
                                     v-for="persona in selectedUser?.personaList"
                                     :key="persona"
                                     class="flex px-2 tracking-wide text-gray-500 border rounded-full"
-                                    >{{ persona }}</span
+                                    >{{
+                                        persona?.displayName ||
+                                        persona?.name ||
+                                        ''
+                                    }}</span
                                 >
                             </div>
                         </div>
@@ -128,7 +131,10 @@
                     v-else
                     class="flex items-center justify-center w-full px-4"
                 >
-                    <AtlanLoader  v-if="isLoading || sessionInfoLoading" class="h-8" />
+                    <AtlanLoader
+                        v-if="isLoading || sessionInfoLoading"
+                        class="h-8"
+                    />
                 </div>
             </div>
         </template>
@@ -214,7 +220,6 @@
                 },
                 { deep: true, immediate: true }
             )
-            
             return {
                 selectedUser,
                 isLoading,

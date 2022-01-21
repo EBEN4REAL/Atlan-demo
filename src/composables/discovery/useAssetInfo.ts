@@ -50,6 +50,16 @@ export default function useAssetInfo() {
     const parentDashboard = (asset: assetInterface) =>
         attributes(asset)?.dashboard
 
+    const parentProject = (asset: assetInterface) => attributes(asset)?.project
+
+    const parentDatasource = (asset: assetInterface) =>
+        attributes(asset)?.datasource
+
+    const parentWorkbook = (asset: assetInterface) =>
+        attributes(asset)?.workbook
+
+    const parentSite = (asset: assetInterface) => attributes(asset)?.site
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -341,7 +351,9 @@ export default function useAssetInfo() {
             //     attributes(asset).tableName
 
             const name =
-                tableName(asset)?.length > 0 ? tableName(asset) : viewName(asset)
+                tableName(asset)?.length > 0
+                    ? tableName(asset)
+                    : viewName(asset)
             const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -1144,5 +1156,9 @@ export default function useAssetInfo() {
         connectionGuid,
         isProcess,
         getProcessSQL,
+        parentProject,
+        parentDatasource,
+        parentWorkbook,
+        parentSite,
     }
 }

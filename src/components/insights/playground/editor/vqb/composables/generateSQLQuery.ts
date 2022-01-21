@@ -54,7 +54,14 @@ export function getValueStringFromType(subpanel, value) {
                 }
             }
         } else res += `'${value}'`
-    } else if (type === 'date') res += `DATE '${value}'`
+    } else if (type === 'date') {
+        // check if the column type is TIMESTAMP
+        if (subpanel?.column?.type === 'timestamp' || 'TIMESTAMP') {
+            res += `TIMESTAMP '${value}'`
+        } else {
+            res += `DATE '${value}'`
+        }
+    }
     return res
 }
 
@@ -394,7 +401,6 @@ export function generateSQLQuery(
                 const tableName = getTableNameWithQuotes(
                     subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
-                debugger
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {
                         if (

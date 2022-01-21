@@ -36,7 +36,7 @@ export const summaryVariants = [
         includes: ['PowerBIWorkspace'],
     },
     {
-        id: 'datasource',
+        id: 'powerBIDatasource',
         label: 'Datasource',
         components: ['ParentDataset', 'Connection'],
         includes: ['PowerBIDatasource'],
@@ -60,7 +60,7 @@ export const summaryVariants = [
         includes: ['PowerBIReport'],
     },
     {
-        id: 'dashboard',
+        id: 'powerBIDashboard',
         label: 'Dashboard',
         components: ['ParentWorkspace', 'Tiles', 'Connection'],
         includes: ['PowerBIDashboard'],
@@ -68,13 +68,73 @@ export const summaryVariants = [
     {
         id: 'page',
         label: 'Page',
-        components: [/* 'ParentWorkspace', */ 'ParentReport', 'Connection'],
+        components: ['ParentReport', 'Connection'],
         includes: ['PowerBIPage'],
     },
     {
         id: 'tile',
         label: 'Tile',
-        components: [/* 'ParentWorkspace', */ 'ParentDashboard', 'Connection'],
+        components: ['ParentDashboard', 'Connection'],
         includes: ['PowerBITile'],
+    },
+    {
+        id: 'site',
+        label: 'Site',
+        components: ['Connection'],
+        includes: ['TableauSite'],
+    },
+    {
+        id: 'project',
+        label: 'Project',
+        components: ['ParentSite', 'Connection'],
+        includes: ['TableauProject'],
+    },
+    {
+        id: 'workbook',
+        label: 'Workbook',
+        components: ['ParentProject', 'Connection'],
+        includes: ['TableauWorkbook'],
+    },
+    {
+        id: 'worksheet',
+        label: 'Worksheet',
+        components: ['ParentWorkbook', 'Connection'],
+        includes: ['TableauWorksheet'],
+    },
+    {
+        id: 'tableauDashboard',
+        label: 'Dashboard',
+        components: ['ParentWorkbook', 'Connection'],
+        includes: ['TableauDashboard'],
+    },
+    {
+        id: 'tableauDatasource',
+        label: 'Datasource',
+        components: ['ParentWorkbook', 'Connection'],
+        includes: ['TableauDatasource'],
+    },
+    {
+        id: 'calculatedField',
+        label: 'Calculated Field',
+        components: ['ParentDatasource', 'Connection'],
+        includes: ['TableauCalculatedField'],
+    },
+    {
+        id: 'datasourceField',
+        label: 'Datasource Field',
+        components: ['ParentDatasource', 'Connection'],
+        includes: ['TableauDatasourceField'],
+    },
+    {
+        id: 'flow',
+        label: 'Flow',
+        components: ['ParentProject', 'Connection'],
+        includes: ['TableauFlow'],
+    },
+    {
+        id: 'metric',
+        label: 'Metric',
+        components: ['ParentProject', 'Connection'],
+        includes: ['TableauMetric'],
     },
 ]

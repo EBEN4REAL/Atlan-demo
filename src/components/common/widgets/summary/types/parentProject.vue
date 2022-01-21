@@ -1,10 +1,10 @@
 <template>
     <div class="flex flex-col text-sm">
-        <span class="mb-1 text-sm text-gray-500">Report</span>
+        <span class="mb-1 text-sm text-gray-500">Project</span>
         <router-link
-            :to="`/assets/${parentReport(asset)?.guid}`"
+            :to="`/assets/${parentProject(asset)?.guid}`"
             class="font-bold text-primary hover:underline"
-            >{{ parentReport(asset)?.attributes?.name }}</router-link
+            >{{ parentProject(asset)?.attributes?.name }}</router-link
         >
     </div>
 </template>
@@ -26,9 +26,9 @@
             },
         },
         setup() {
-            const { parentReport } = useAssetInfo()
+            const { parentProject } = useAssetInfo()
             return {
-                parentReport,
+                parentProject,
             }
         },
     })

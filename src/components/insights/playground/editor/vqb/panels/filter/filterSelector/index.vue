@@ -246,12 +246,25 @@
                         title: checked.name,
                         value: [undefined, undefined],
                     }
-                } else {
+                } else if (checked.type === 'multi_input') {
                     selectedFilter.value = {
                         ...selectedFilter.value,
                         name: checked.key,
                         type: checked.type,
                         title: checked.name,
+                    }
+                } else {
+                    // debugger
+                    let value = selectedFilter.value.value
+                    if (Array.isArray(selectedFilter.value.value)) {
+                        value = selectedFilter.value.value[0]
+                    }
+                    selectedFilter.value = {
+                        ...selectedFilter.value,
+                        name: checked.key,
+                        type: checked.type,
+                        title: checked.name,
+                        value: value,
                     }
                 }
                 emit('change')

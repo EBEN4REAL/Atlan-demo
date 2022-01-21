@@ -95,9 +95,9 @@
         components: {},
         props: {
             selectedColor: {
-                type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
+                type: String as PropType<'Green' | 'Red' | 'Yellow'>,
                 required: true,
-                default: 'Blue',
+                default: 'Green',
             },
             menuMode: {
                 type: Boolean,

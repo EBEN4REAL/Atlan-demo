@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col text-sm cursor-pointer">
+    <div class="flex flex-col text-sm">
         <span class="mb-1 text-sm text-gray-500">Glossary</span>
         <router-link
             :to="getAnchorProfile(asset)"

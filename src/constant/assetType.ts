@@ -161,7 +161,7 @@ export const assetTypeList: {
         nameAttribute: 'projectName',
         isDiscoverable: true,
         // in order of hierarchy
-        parents: ['TableauProject', 'TableauSite'],
+        parents: ['TableauSite'],
         relationships: ['workbooks', 'site', 'datasources', 'flows', 'metrics'],
     },
     {

@@ -527,6 +527,136 @@
                                 </template>
                             </a-tooltip>
                         </div>
+                        <div
+                            v-if="
+                                [
+                                    'TableauWorkbook',
+                                    'TableauFlow',
+                                    'TableauMetric',
+                                    'TableauDatasource',
+                                ].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentProject(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentProject(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Project -
+                                        {{
+                                            parentProject(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'TableauDatasource',
+                                    'TableauWorksheet',
+                                    'TableauDashboard',
+                                ].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentWorkbook(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentWorkbook(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Workbook -
+                                        {{
+                                            parentWorkbook(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="['TableauProject'].includes(item?.typeName)"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentSite(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ parentSite(item)?.attributes?.name }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Site -
+                                        {{
+                                            parentSite(item)?.attributes?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'TableauCalculatedField',
+                                    'TableauDatasourceField',
+                                ].includes(item?.typeName)
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentDatasource(item)?.attributes?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentDatasource(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Datasource -
+                                        {{
+                                            parentDatasource(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -768,6 +898,10 @@
                 dataflowCount,
                 tileCount,
                 pageCount,
+                parentProject,
+                parentDatasource,
+                parentWorkbook,
+                parentSite,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -906,6 +1040,10 @@
                 dataflowCount,
                 tileCount,
                 pageCount,
+                parentProject,
+                parentDatasource,
+                parentWorkbook,
+                parentSite,
             }
         },
     })

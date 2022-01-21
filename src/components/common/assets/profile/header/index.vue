@@ -251,8 +251,7 @@
                     <QueryDropdown
                         v-if="
                             assetType(item) === 'Table' ||
-                            assetType(item) === 'View' ||
-                            assetType(item) === 'Column'
+                            assetType(item) === 'View'
                         "
                         @handleClick="goToInsights"
                     >

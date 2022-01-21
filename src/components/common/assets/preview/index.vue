@@ -111,10 +111,7 @@
                                         showCTA(action.id) &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) ===
-                                                'View' ||
-                                            assetType(selectedAsset) ===
-                                                'Column')
+                                            assetType(selectedAsset) === 'View')
                                     "
                                     @handleClick="handleQueryAction"
                                 >

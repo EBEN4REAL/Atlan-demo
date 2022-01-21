@@ -23,7 +23,6 @@ function generateRequestListFilters(
             // Check if the value is valid or the length in case of array
             filter[key] = Array.isArray(value) ? { $in: value } : value
     }
-
     return filter
 }
 

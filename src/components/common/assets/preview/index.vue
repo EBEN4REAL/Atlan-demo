@@ -22,10 +22,10 @@
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
                     classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
-                    @click="() => $emit('closeDrawer')"
-                    :shouldOpenInNewTab="
+                    :should-open-in-new-tab="
                         selectedAsset.typeName?.toLowerCase() === 'query'
                     "
+                    @click="() => $emit('closeDrawer')"
                 />
 
                 <CertificateBadge
@@ -187,6 +187,11 @@
                     :is="tab.component"
                     v-else-if="tab.component"
                     :key="selectedAsset.guid"
+                    :ref="
+                        (el) => {
+                            if (el) tabChildRef[index] = el
+                        }
+                    "
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
                     :read-permission="isScrubbed(selectedAsset)"
@@ -194,12 +199,7 @@
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
                     :data="tab.data"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                    :collectionData="{
+                    :collection-data="{
                         collectionInfo,
                         hasCollectionReadPermission,
                         hasCollectionWritePermission,
@@ -225,6 +225,7 @@
 
     import { useRoute, useRouter } from 'vue-router'
     import { debouncedWatch } from '@vueuse/core'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
@@ -234,7 +235,6 @@
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
-    import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
@@ -252,6 +252,7 @@
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
+            request: defineAsyncComponent(() => import('./request/index.vue')),
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
@@ -442,15 +443,12 @@
                 )
             }
 
-            const showCTA = (action) => {
-                return route.path !== '/insights'
+            const showCTA = (action) =>
+                route.path !== '/insights'
                     ? true
                     : selectedAsset.value.typeName === 'Query'
                     ? false
-                    : action === 'query'
-                    ? false
-                    : true
-            }
+                    : action !== 'query'
 
             const tabChildRef = ref([])
 
@@ -465,7 +463,7 @@
             }
 
             const handleClick = (path) => {
-                const URL = `http://` + window.location.host + path
+                const URL = `http://${window.location.host}${path}`
 
                 window.open(URL, '_blank')?.focus()
             }
@@ -527,7 +525,7 @@
                 showCTA,
                 onClickTabIcon,
 
-                //for collection access
+                // for collection access
                 collectionInfo,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,

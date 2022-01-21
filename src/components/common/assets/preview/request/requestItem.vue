@@ -25,6 +25,7 @@
                                 ?.color
                         "
                         :no-hover="true"
+                        :created-by="localClassification(item.payload.typeName)?.createdBy"
                     />
                 </Popover>
             </div>
@@ -210,7 +211,7 @@
         approveRequest,
         declineRequest,
     } from '~/composables/requests/useRequests'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'RequestItem',

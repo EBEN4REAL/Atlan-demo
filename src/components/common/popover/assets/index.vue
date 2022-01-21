@@ -163,6 +163,7 @@
                             :display-name="classification?.displayName"
                             :is-propagated="isPropagated(classification)"
                             :allow-delete="false"
+                            :created-by="classification?.createdBy"
                         ></ClassificationPill>
                     </template>
                     <template
@@ -269,13 +270,11 @@
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid;
+
             }
 
             const list = computed(() => {

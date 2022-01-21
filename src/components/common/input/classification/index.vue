@@ -63,6 +63,7 @@
                         :allow-delete="allowDelete"
                         :color="classification.options?.color"
                         @delete="handleDeleteClassification"
+                        :created-by="classification?.createdBy"
                     />
                 </Popover>
             </template>
@@ -155,10 +156,8 @@
                 if (!guid?.value) {
                     return false
                 }
-                if (guid.value === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return guid.value !== classification.entityGuid;
+
             }
 
             const list = computed(() => {

@@ -673,6 +673,7 @@
                             >
                                 <PopoverClassification
                                     :classification="classification"
+                                    :entity-guid="item.guid"
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -684,8 +685,9 @@
                                         "
                                         :allow-delete="false"
                                         :color="
-                                            classification.options?.color.toLowerCase()
+                                            classification.options?.color?.toLowerCase()
                                         "
+                                        :created-by="classification?.createdBy"
                                     ></ClassificationPill>
                                 </PopoverClassification>
                             </template>
@@ -749,7 +751,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import PopoverClassification from '@/common/popover/classification.vue'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Truncate from '@/common/ellipsis/index.vue'

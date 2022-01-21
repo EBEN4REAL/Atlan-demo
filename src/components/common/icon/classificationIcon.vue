@@ -51,8 +51,8 @@
                 }
                 return "ClassificationShield"
             })
+            const color = computed(() => classification.value?.options?.color?.toLowerCase())
 
-            const color = computed(() => classification.value.options?.color)
             return {
                 icon,
                 color,

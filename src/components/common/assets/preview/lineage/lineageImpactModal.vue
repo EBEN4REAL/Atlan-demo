@@ -107,6 +107,7 @@
                                     :is-propagated="isPropagated(classif)"
                                     :color="classif.options?.color"
                                     :allow-delete="false"
+                                    :created-by="classif?.createdBy"
                                 />
 
                                 <span

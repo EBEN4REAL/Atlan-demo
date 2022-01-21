@@ -36,16 +36,13 @@
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
 
-    import { computed, defineComponent, PropType, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, PropType, ref, watch } from 'vue'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import ClassificationIcon from '@/common/icon/classificationIcon.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import { useUsers } from '~/composables/user/useUsers'
     import UserAvatar from '@/common/avatar/user.vue'
-    import useFetchAssetList from '@common/assetList/usefetchAssetList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { AssetAttributes, InternalAttributes, SQLAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { and } from '@vueuse/core'
 
@@ -65,7 +62,7 @@
             },
             entityGuid: {
                 type: String,
-                required: true,
+                required: false,
                 default: ''
             }
         },
@@ -86,7 +83,7 @@
             const linkedByUserName = ref('')
 
             const isPropagated = computed(() => {
-                if (!guid.value) {
+                if (!guid.value || guid.value.length === 0) {
                     return false
                 }
                 return guid.value !== classification.value.entityGuid;
@@ -125,9 +122,11 @@
                         $and: [{ username: linkedByUserName.value }],
                     },
                 }
+
                 const { userList, isLoading: isUserLoadingInner } = useUsers(params)
                 isUserLoading.value = isUserLoadingInner.value
-                watch(isUserLoading, () => {
+
+                watch(isUserLoadingInner, () => {
                     isUserLoading.value = isUserLoadingInner.value
                     if (!isUserLoading.value && userList.value.length > 0) {
                         linkedUser.value = { ...userList.value[0] }

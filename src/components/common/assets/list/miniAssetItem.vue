@@ -609,6 +609,7 @@
                         >
                             <PopoverClassification
                                 :classification="classification"
+                                :entity-guid="item?.guid"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -616,7 +617,9 @@
                                     :is-propagated="
                                         isPropagated(classification)
                                     "
+                                    :color="classification.options?.color?.toLowerCase()"
                                     :allow-delete="false"
+                                    :created-by="classification?.createdBy"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -636,7 +639,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import PopoverClassification from '@/common/popover/classification.vue'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'MiniAssetListItem',

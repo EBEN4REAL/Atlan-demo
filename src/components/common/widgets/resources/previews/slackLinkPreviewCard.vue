@@ -48,9 +48,8 @@
                         >
                     </div>
                     <!-- message -->
-                    <div>
-                        <ShowLess :text="data.message.text" />
-                        <!-- <a-typography-paragraph
+                    <ShowLess :text="stripSlackText(data.message.text)" />
+                    <!-- <a-typography-paragraph
                             :ellipsis="{
                                 rows: 2,
                                 expandable: true,
@@ -59,8 +58,7 @@
                             :content="data.message.text"
                             class="break-all"
                         /> -->
-                        <!-- <Truncate :tooltip-text="data.message.text" :rows="2" /> -->
-                    </div>
+                    <!-- <Truncate :tooltip-text="data.message.text" :rows="2" /> -->
                     <div class="flex text-sm text-gray-500">
                         <span class="" v-if="data.message.reply_count">
                             {{ data.message.reply_count }}
@@ -138,15 +136,14 @@
 
     import { defineComponent, computed, toRefs } from 'vue'
 
-    import integrationStore from '~/store/integrations/index'
     import {
         getChannelAndMessageIdFromSlackLink,
         UnfurlSlackMessage,
+        stripSlackText,
     } from '~/composables/integrations/useSlack'
     import LinkPreview from '@/common/widgets/resources/previews/linkPreviewCard.vue'
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
-    import Truncate from '@/common/ellipsis/index.vue'
     import ShowLess from '@/UI/ShowLess.vue'
 
     dayjs.extend(relativeTime)
@@ -156,7 +153,6 @@
             LinkPreview,
             DeleteResource,
             EditResource,
-            Truncate,
             ShowLess,
         },
         props: {
@@ -201,6 +197,7 @@
             }
 
             return {
+                stripSlackText,
                 channelId,
                 messageId,
                 data,

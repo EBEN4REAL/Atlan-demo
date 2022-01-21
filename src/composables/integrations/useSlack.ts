@@ -14,6 +14,15 @@ if (origin.includes('localhost')) {
     // origin = `http://localhost:5008`
 }
 
+export const stripSlackText = (text) => {
+    const urlRegex = /<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()|]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>/g
+    const strippedText = text.replace(urlRegex, (match) => {
+        const stripped = match.replace(/<|>/g, '')
+        return stripped.includes('|') ? stripped.split('|')[1] : stripped
+    })
+    return strippedText
+}
+
 export const getSlackInstallUrlState = (isTenant: boolean) => {
     const authStore = useAuthStore()
     const api = `${origin}/api/service/slack/auth`

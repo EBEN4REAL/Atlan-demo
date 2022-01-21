@@ -424,7 +424,6 @@
                     })
                     filterMerge.$or = filterClasification
                 }
-                console.log(facetsValue, ' jhjh')
                 filters.value = filterMerge
             }
             const handleResetEvent = () => {

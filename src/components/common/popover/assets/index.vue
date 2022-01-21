@@ -31,7 +31,6 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '0' &&
                                     rows !== '' &&
                                     (item.typeName?.toLowerCase() === 'table' ||
                                         item.typeName?.toLowerCase() ===
@@ -50,7 +49,6 @@
                             </span>
                             <span
                                 v-if="
-                                    cols !== '0' &&
                                     cols !== '' &&
                                     (item.typeName?.toLowerCase() === 'table' ||
                                         item.typeName?.toLowerCase() ===

@@ -436,39 +436,12 @@
                     <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
-                        <a-sub-menu key="shareQuery" style="min-width: 200px">
-                            <template #title>
-                                <div
-                                    class="flex items-center justify-between w-full mr-2"
-                                >
-                                    <div
-                                        class="flex items-center justify-between w-full text-gray-500"
-                                    >
-                                        <span class="text-gray-700"
-                                            >Share query</span
-                                        >
-                                    </div>
-                                    <AtlanIcon
-                                        icon="ChevronRight"
-                                        class="ml-2 text-gray-500 -mt-0.5"
-                                    />
-                                </div>
-                            </template>
-                            <template #expandIcon />
-                            <div class="text-gray-700" style="min-width: 200px">
-                                <a-menu-item
-                                    key="copyLink"
-                                    class="px-4 py-2 text-sm"
-                                    @click="copyURL"
-                                >
-                                    <div
-                                        class="flex items-center justify-between"
-                                    >
-                                        <span>Copy Link</span>
-                                    </div>
-                                </a-menu-item>
-                            </div>
-                        </a-sub-menu>
+                        <a-menu-item
+                            key="shareSavedQuery"
+                            class="px-4 py-2"
+                            @click="copyURL"
+                            >Share query</a-menu-item
+                        >
 
                         <a-menu-item @click="duplicateQuery" class="px-4 py-2"
                             >Duplicate query</a-menu-item

@@ -421,6 +421,19 @@
                     createdBy,
                     // typeName,
                 }
+                if (facetsValue.__traitNames) {
+                    const filterClasification = []
+                    facetsValue.__traitNames?.classifications?.forEach((el) => {
+                        filterClasification.push({
+                            payload: {
+                                $elemMatch: {
+                                    typeName: el,
+                                },
+                            },
+                        })
+                    })
+                    filterMerge.$or = filterClasification
+                }
                 filters.value = filterMerge
             }
             const handleResetEvent = () => {

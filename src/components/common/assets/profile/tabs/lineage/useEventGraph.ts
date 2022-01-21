@@ -27,7 +27,8 @@ export default function useEventGraph(
     config,
     drawerActiveKey,
     onSelectAsset,
-    onCloseDrawer
+    onCloseDrawer,
+    addSubGraph
 ) {
     /** DATA */
     const edgesHighlighted = ref([])
@@ -35,8 +36,6 @@ export default function useEventGraph(
     const che = ref('') // currentHilightedEdge
     const chp = ref({ portId: '', node: null, expandedNodes: [] }) // currentHilightedPort
     const nodesCaretClicked = ref([])
-    const carets = document.getElementsByClassName('node-caret')
-    const caretsArray = Array.from(carets)
     const activeNodesToggled = ref({})
 
     /** METHODS */
@@ -574,8 +573,61 @@ export default function useEventGraph(
         activeNodesToggled.value[node.id].newEdgesId = Array.from(newEdgesIdSet)
     }
 
+    // getNodeLineage
+    const getNodeLineage = (guid) => {
+        const cell = graph.value.getCellById(guid)
+        const isLeafNode = graph.value.isLeafNode(cell)
+        const nodeConfig = computed(() => ({
+            depth: 1,
+            guid,
+            direction: isLeafNode ? 'OUTPUT' : 'INPUT',
+            hideProcess: true,
+        }))
+        const { data } = useFetchLineage(nodeConfig, true)
+        watch(data, async () => {
+            await addSubGraph(
+                data.value,
+                registerAllListeners,
+                removeAddedNodesShadow
+            )
+            loaderCords.value = {}
+        })
+    }
+
+    // removeAddedNodesShadow
+    const removeAddedNodesShadow = () => {
+        const list = document.getElementsByClassName('node-added-shadow')
+        const listArr = Array.from(list)
+        listArr.forEach((ele) => {
+            ele.classList.remove('node-added-shadow')
+        })
+    }
+
+    // registerLoadCTAListeners
+    const registerLoadCTAListeners = () => {
+        const loadCTAs = document.getElementsByClassName('node-loadCTA')
+        const loadCTAsArray = Array.from(loadCTAs)
+        loadCTAsArray.forEach((x) => {
+            x.addEventListener('mousedown', (e) => {
+                e.stopPropagation()
+                loaderCords.value = { x: e.clientX, y: e.clientY }
+
+                const ele = getEventPath(e).find((x) =>
+                    x.getAttribute('data-cell-id')
+                )
+                const nodeId = ele.getAttribute('data-cell-id')
+
+                getNodeLineage(nodeId)
+            })
+        })
+    }
+    registerLoadCTAListeners()
+
     // registerCaretListeners
     const registerCaretListeners = () => {
+        const carets = document.getElementsByClassName('node-caret')
+        const caretsArray = Array.from(carets)
+
         caretsArray.forEach((x) => {
             x.addEventListener('mousedown', (e) => {
                 e.stopPropagation()
@@ -632,6 +684,11 @@ export default function useEventGraph(
         })
     }
     registerCaretListeners()
+
+    const registerAllListeners = () => {
+        registerLoadCTAListeners()
+        registerCaretListeners()
+    }
 
     // removeCHPEdges
     const removeCHPEdges = () => {
@@ -811,6 +868,7 @@ export default function useEventGraph(
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
+        removeAddedNodesShadow()
         if (chp.value.portId) return
         onSelectAsset(baseEntity.value)
         onCloseDrawer()
@@ -826,6 +884,10 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+    })
+
+    graph.value.on('cell:click', () => {
+        removeAddedNodesShadow()
     })
 
     // Set connector for duplicate relations

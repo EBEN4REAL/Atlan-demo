@@ -1,3 +1,6 @@
+import { _GettersTree } from 'pinia'
+import { State } from './state'
+
 interface SlackStatus {
     created: boolean,
     configured: boolean,
@@ -5,14 +8,19 @@ interface SlackStatus {
     id: string,
     oAuth: string,
     teamName: string
-
 }
 
-const getters = {
-    getIntegrationList(state) {
+export interface Getters {
+    getIntegrationList(state: State): any
+    tenantSlackStatus(state: State): any
+    userSlackStatus(state: State): any
+}
+
+const getters: _GettersTree<State> & Getters = {
+    getIntegrationList(state: State) {
         return state.allIntegrations
     },
-    tenantSlackStatus: (state): SlackStatus => {
+    tenantSlackStatus: (state: State): SlackStatus => {
         const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'tenant') ?? null))
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
@@ -23,7 +31,7 @@ const getters = {
             teamName: integration?.sourceMetadata?.teamName
         }
     },
-    userSlackStatus: (state): SlackStatus => {
+    userSlackStatus: (state: State): SlackStatus => {
         const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'slack' && i.integrationLevel === 'user') ?? null))
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',

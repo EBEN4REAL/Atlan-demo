@@ -47,18 +47,8 @@
                             ago</span
                         >
                     </div>
-                    <!-- message -->
                     <ShowLess :text="stripSlackText(data.message.text)" />
-                    <!-- <a-typography-paragraph
-                            :ellipsis="{
-                                rows: 2,
-                                expandable: true,
-                                symbol: 'more',
-                            }"
-                            :content="data.message.text"
-                            class="break-all"
-                        /> -->
-                    <!-- <Truncate :tooltip-text="data.message.text" :rows="2" /> -->
+
                     <div class="flex text-sm text-gray-500">
                         <span class="" v-if="data.message.reply_count">
                             {{ data.message.reply_count }}
@@ -134,7 +124,7 @@
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
 
-    import { defineComponent, computed, toRefs } from 'vue'
+    import { defineComponent, computed, toRefs, watch } from 'vue'
 
     import {
         getChannelAndMessageIdFromSlackLink,
@@ -145,6 +135,7 @@
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
     import ShowLess from '@/UI/ShowLess.vue'
+    import integrationStore from '~/store/integrations/index'
 
     dayjs.extend(relativeTime)
 
@@ -188,6 +179,18 @@
                 }
             )
             mutate()
+
+            const store = integrationStore()
+
+            const { userSlackStatus } = toRefs(store)
+
+            // ? watch for user level slack integration configuration status and try refresh
+            watch(
+                () => userSlackStatus.value.configured,
+                (v) => {
+                    if (v) mutate()
+                }
+            )
 
             function openLink(url) {
                 if (!url) {

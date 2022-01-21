@@ -8,7 +8,7 @@
         </div>
         <div
             class="flex items-center px-4 py-1 text-white bg-gray-700 rounded cursor-pointer"
-            @click="() => openSlackOAuth()"
+            @click="() => openSlackOAuth({ emit: $emit })"
         >
             <AtlanIcon
                 :icon="'Slack'"

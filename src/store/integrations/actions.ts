@@ -19,7 +19,6 @@ const actions: Actions = {
     },
     removeIntegration(id) {
         this.allIntegrations = this.allIntegrations?.filter(i => i.id !== id) ?? []
-    }
-
+    },
 }
 export default actions

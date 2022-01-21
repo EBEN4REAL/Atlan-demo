@@ -3,7 +3,7 @@ import { message } from 'ant-design-vue'
 import { Integrations } from '~/services/service/integrations'
 import { useAuthStore } from '~/store/auth'
 import integrationStore from '~/store/integrations/index'
-import {
+import useIntegrations, {
     archiveIntegration,
 } from '~/composables/integrations/useIntegrations'
 
@@ -126,23 +126,29 @@ export const userLevelOauthUrl = computed(() => {
 })
 
 
-export function openSlackOAuth(w = 500, h = 600, tenant = false) {
+export function openSlackOAuth({ w = 500, h = 600, tenant = false, emit }) {
     const { width, height } = window.screen
     const leftPosition = width ? (width - w) / 2 : 0
     const topPosition = height ? (height - h) / 2 : 0
+    const windowConfig = `height=600,width=500,left=${leftPosition},top=${topPosition},resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes`
 
     const new_window = window.open(
         tenant
             ? tenantLevelOauthUrl.value
             : userLevelOauthUrl.value,
         'popUpWindow',
-        `height=600,width=500,left=${leftPosition},top=${topPosition},resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes`
+        windowConfig
     )
-    // hack to dete window closing from crossXorigin
+    // *  emit('popupWindowVisible', new_window, true) * use if needed
+    //! hack to detect window closing from crossXorigin
     const timer = setInterval(() => {
-        if (new_window.closed) {
+        if (new_window?.closed) {
             clearInterval(timer);
-            console.log('closed');
+            console.log('popup window closed');
+            // ? recall all integration, (better (when filter support added): use filter and fetch only slack user level integration and update store)
+            useIntegrations(true)
+
+            // *  emit('popupWindowVisible', new_window, false) * use if needed
         }
     }, 1000);
 }

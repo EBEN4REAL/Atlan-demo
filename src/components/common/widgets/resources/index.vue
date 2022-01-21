@@ -30,7 +30,6 @@
                     )"
                     :key="index"
                 >
-                    <!-- {{ item }} {{ index }} -->
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :edit-permission="linkEditPermission"
@@ -91,6 +90,7 @@
         computed,
         toRefs,
         defineAsyncComponent,
+        ref,
     } from 'vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import { assetInterface } from '~/types/assets/asset.interface'

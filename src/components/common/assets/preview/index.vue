@@ -117,7 +117,7 @@
                                 >
                                     <template #button>
                                         <a-button
-                                            class="flex items-center justify-center border-l-0 border-r-0"
+                                            class="flex items-center justify-center"
                                         >
                                             <AtlanIcon
                                                 :icon="action.icon"

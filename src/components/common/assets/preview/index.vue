@@ -142,19 +142,7 @@
             :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
-                v-for="(tab, index) in [
-                    ...getPreviewTabs(selectedAsset, isProfile),
-                    {
-                        name: 'Request',
-                        component: 'request',
-                        icon: 'Overview',
-                        activeIcon: 'OverviewActive',
-                        tooltip: 'Request',
-                        scrubbed: false,
-                        requiredInProfile: true,
-                        analyticsKey: 'info',
-                    },
-                ]"
+                v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
                 :key="index"
                 :destroy-inactive-tab-pane="true"
                 :disabled="isScrubbed(selectedAsset) && tab.scrubbed"

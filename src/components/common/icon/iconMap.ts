@@ -370,6 +370,8 @@ import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
 import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
+import Request from '~/assets/images/icons/Request.svg'
+import RequestActive from '~/assets/images/icons/RequestActive.svg'
 
 export default {
     GlowFlash,
@@ -727,5 +729,7 @@ export default {
     MessageCross,
     AddColumn,
     QueryTime,
-    ThreeDots
+    ThreeDots,
+    Request,
+    RequestActive
 }

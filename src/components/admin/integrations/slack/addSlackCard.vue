@@ -4,14 +4,14 @@
         :destroy-on-close="true"
         :footer="null"
         :closable="false"
-        :width="470"
-        wrap-class-name="inviteModal"
+        :width="692"
+        :class="$style.inviteModal"
         @cancel="closeSlackConfigModal"
     >
         <SlackConfigModal @close="closeSlackConfigModal" />
     </a-modal>
     <section
-        class="flex items-center h-32 p-6 border rounded shadow gap-x-5 addCard"
+        class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5 addCard"
     >
         <div class="">
             <AtlanIcon icon="Slack" class="h-12 bg-white" />
@@ -54,7 +54,7 @@
                 v-auth="access.CREATE_INTEGRATION"
                 @click="openSlackConfigModal"
             >
-                Add to Slack
+                Connect
                 <AtlanIcon icon="ArrowRight" />
             </AtlanButton>
         </div>
@@ -118,10 +118,16 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" module>
     .addCard {
         background: url('~/assets/images/integrations/add-slack-bg.svg')
             no-repeat;
         background-size: contain;
+        background-position-x: right;
+    }
+    .inviteModal {
+        :global(.ant-modal-content) {
+            @apply rounded-lg;
+        }
     }
 </style>

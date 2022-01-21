@@ -169,7 +169,7 @@
                             :total-pages="pagination.totalPages"
                             :loading="listLoading"
                             :page-size="pagination.limit"
-                            :defaultPage="defaultPage"
+                            :default-page="defaultPage"
                             @mutate="mutate"
                         />
                     </div>
@@ -253,7 +253,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
-            let timeoutHover = null
+            const timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -405,11 +405,26 @@
                     ? facetsValue.statusRequest
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
+
                 const filterMerge = {
                     ...filters.value,
                     status: status.length > 0 ? status : 'active',
                     createdBy,
                 }
+                if (facetsValue.__traitNames) {
+                    const filterClasification = []
+                    facetsValue.__traitNames?.classifications?.forEach((el) => {
+                        filterClasification.push({
+                            payload: {
+                                $elemMatch: {
+                                    typeName: el,
+                                },
+                            },
+                        })
+                    })
+                    filterMerge.$or = filterClasification
+                }
+                console.log(facetsValue, ' jhjh')
                 filters.value = filterMerge
             }
             const handleResetEvent = () => {

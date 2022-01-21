@@ -21,7 +21,7 @@ function generateRequestListFilters(
     for (const [key, value] of Object.entries(filters)) {
         if (value?.length ?? value)
             // Check if the value is valid or the length in case of array
-            filter[key] = Array.isArray(value) ? { $in: value } : value
+            filter[key] = (Array.isArray(value) && key !== '$or') ? { $in: value } : value
     }
     return filter
 }

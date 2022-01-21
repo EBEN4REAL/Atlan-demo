@@ -332,7 +332,7 @@
         }
         .actions-container {
             width: 150px;
-            height: 113px;
+            height: 112px;
             right: 0;
             top: 1px;
             display: none;

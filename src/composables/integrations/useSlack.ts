@@ -150,7 +150,7 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, emit }) {
 
             // *  emit('popupWindowVisible', new_window, false) * use if needed
         }
-    }, 1000);
+    }, 500);
 }
 
 export const UnfurlSlackMessage = (body, asyncOptions) => {

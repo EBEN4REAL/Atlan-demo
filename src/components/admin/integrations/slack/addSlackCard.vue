@@ -37,19 +37,18 @@
             </AtlanButton>
         </div>
         <div class="">
-            <a
+            <div
                 v-if="
                     tenantSlackStatus.created &&
                     !tenantSlackStatus.configured &&
                     tenantLevelOauthUrl
                 "
-                :href="tenantLevelOauthUrl"
-                target="_blank"
+                @click="() => openSlackOAuth({ tenant: true, emit: $emit })"
             >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Configure <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
-            </a>
+            </div>
             <AtlanButton
                 v-else
                 v-auth="access.CREATE_INTEGRATION"
@@ -73,6 +72,7 @@
         getSlackInstallUrlState,
         tenantLevelOauthUrl,
         archiveSlack,
+        openSlackOAuth,
     } from '~/composables/integrations/useSlack'
 
     export default defineComponent({
@@ -102,6 +102,7 @@
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
             return {
+                openSlackOAuth,
                 disconnect,
                 tenantSlackStatus,
                 isLoading,

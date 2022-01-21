@@ -55,7 +55,7 @@
             </a-tooltip>
 
             <template v-for="classification in list" :key="classification.guid">
-                <Popover :classification="classification">
+                <Popover :classification="classification" :entity-guid="guid">
                     <ClassificationPill
                         :name="classification.name"
                         :display-name="classification?.displayName"
@@ -63,6 +63,7 @@
                         :allow-delete="allowDelete"
                         :color="classification.options?.color"
                         @delete="handleDeleteClassification"
+                        :created-by="classification?.createdBy"
                     />
                 </Popover>
             </template>
@@ -83,7 +84,7 @@
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
@@ -155,10 +156,8 @@
                 if (!guid?.value) {
                     return false
                 }
-                if (guid.value === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return guid.value !== classification.entityGuid;
+
             }
 
             const list = computed(() => {

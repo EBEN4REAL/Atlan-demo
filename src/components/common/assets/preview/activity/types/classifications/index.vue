@@ -5,8 +5,9 @@
         <Popover :classification="classification">
             <ClassificationPill
                 :name="classification?.name"
-                :displayName="classification?.displayName"
+                :display-name="classification?.displayName"
                 :color="classification?.options?.color"
+                :created-by="classification?.createdBy"
             ></ClassificationPill>
         </Popover>
     </div>
@@ -21,7 +22,7 @@
         ref,
         computed,
     } from 'vue'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'

@@ -31,15 +31,12 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '0' &&
-                                    rows !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
@@ -50,18 +47,14 @@
                             </span>
                             <span
                                 v-if="
-                                    cols !== '0' &&
-                                    cols !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="text-xs text-gray-500"
-                                :class="{ 'ml-3': rows === '-' || rows === '' }"
                             >
                                 <span
                                     class="text-xs font-semibold tracking-tight text-gray-500"
@@ -273,8 +266,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {

@@ -691,6 +691,10 @@ export default function useAssetInfo() {
         return attributes(asset)?.webUrl
     }
 
+    const sourceURL = (asset: assetInterface) => {
+        return attributes(asset)?.sourceURL
+    }
+
     const isBiAsset = (asset: assetInterface) => {
         return (
             assetType(asset)?.includes('Tableau') ||
@@ -1159,6 +1163,7 @@ export default function useAssetInfo() {
         parentProject,
         parentDatasource,
         parentWorkbook,
+        sourceURL,
         parentSite,
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full overflow-hidden border rounded max-profile-width h-96"
+        class="flex items-center justify-center w-full overflow-hidden border rounded max-profile-width h-96 max-h-96"
         :class="
             results.length > 0 && !isLoading
                 ? 'border-gray-light'
@@ -8,10 +8,7 @@
         "
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-8 mr-2 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-8 mr-2" />
             <span>Getting sample data</span>
         </div>
         <div v-else-if="error && !isLoading" class="flex flex-col items-center">
@@ -48,7 +45,7 @@
             </div>
         </div>
         <div v-else class="w-full h-full">
-            <AtlanTable :dataList="results" :columns="tableColumns" />
+            <AtlanPreviewTable :dataList="results" :columns="tableColumns" />
         </div>
     </div>
 </template>
@@ -66,6 +63,7 @@
     } from 'vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanTable from '@/common/table/previewTable/index.vue'
+    import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -73,7 +71,7 @@
     import { Insights } from '~/services/sql/query'
 
     export default defineComponent({
-        components: { Tooltip, AtlanTable },
+        components: { Tooltip, AtlanTable, AtlanPreviewTable },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -111,27 +109,12 @@
                             dataIndex: col.columnName + index,
                             title: col.columnName,
                             data_type: col.type.name,
+                            key: index + 1,
                         }
                         tableColumns.value.push(obj)
                     })
                     data.value.rows.forEach((val) => {
-                        let obj = {}
-
-                        val.map((row, rowindex) => {
-                            obj = {
-                                ...obj,
-                                ...{
-                                    [tableColumns.value[rowindex].dataIndex]: {
-                                        data: row,
-                                        data_type:
-                                            tableColumns.value[rowindex]
-                                                .data_type,
-                                    },
-                                },
-                            }
-                        })
-
-                        results.value.push(obj)
+                        results.value.push(val)
                     })
                 }
             })
@@ -148,6 +131,6 @@
 
 <style lang="less" scoped>
     .max-profile-width {
-        max-width: calc(100vw - 476px);
+        max-width: calc(100vw - 516px);
     }
 </style>

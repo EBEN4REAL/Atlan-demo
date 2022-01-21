@@ -9,6 +9,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { aggregatedAliasMap } from '../constants/aggregation'
 import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+import { VQBPanelType } from '~/types/insights/VQB.interface'
 
 export function useUtils() {
     function getTableNameFromTableQualifiedName(tableQualifiedName: string) {
@@ -22,6 +23,22 @@ export function useUtils() {
             return `"${spiltArray[5]}"`
         }
     }
+
+    function isValidValueArray(arr: any[]) {
+        let res = true
+        arr.forEach((el) => {
+            if (el === '') res = false
+            if (el === null) res = false
+            if (el === undefined) res = false
+        })
+        return res
+    }
+
+    function getQuotesAccordingtoType(value, type) {
+        if (type.toLowerCase() === 'number') return Number(value)
+        else return `'${value}'`
+    }
+
     function getTableNamesStringFromQualfieidNames(
         tableQualfieidNames: string[]
     ) {
@@ -45,19 +62,39 @@ export function useUtils() {
         }
         return ''
     }
-    function getSummarisedInfoOfSortPanel(subpanels: SubpanelSort[]) {
+    function getSummarisedInfoOfSortPanel(
+        subpanels: SubpanelSort[],
+        panel: VQBPanelType
+    ) {
         if (subpanels.length == 0) return 'No Columns Added for Sort'
 
         let res = 'by '
         subpanels.forEach((subpanel, i) => {
-            if (i !== subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}, `
-            else if (i <= subpanels.length - 1 && subpanel.column.label)
-                res += `${
-                    subpanel.column.label
-                } in ${subpanel.order?.toUpperCase()}`
+            if (panel?.active === false) {
+                if (i !== subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (i <= subpanels.length - 1 && subpanel?.column?.label)
+                    res += `${
+                        subpanel?.column?.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            } else {
+                if (
+                    i !== subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn?.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn?.label
+                    } in ${subpanel.order?.toUpperCase()}, `
+                else if (
+                    i <= subpanels.length - 1 &&
+                    subpanel.aggregateORGroupColumn?.label
+                )
+                    res += `${
+                        subpanel.aggregateORGroupColumn?.label
+                    } in ${subpanel.order?.toUpperCase()}`
+            }
         })
         if (res === 'by ') res = 'No Columns Added for Sort'
         return res
@@ -97,43 +134,97 @@ export function useUtils() {
         if (subpanels.length == 0) return 'No Columns Added for filter'
         let res = ' '
         subpanels.forEach((subpanel, i) => {
-            if (subpanel.column.label) res += `${subpanel.column.label} `
-            if (subpanel.filter.title) res += `${subpanel.filter.title}`
-
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
-                    if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value?.length > 0) {
-                            let firstVal = getValueStringFromType(
-                                subpanel,
-                                subpanel?.filter?.value[0] ?? ''
-                            )
-                            let secondVal = getValueStringFromType(
-                                subpanel,
-                                subpanel?.filter?.value[1] ?? ''
-                            )
-                            res += ` ${firstVal} AND ${secondVal}`
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        isValidValueArray(subpanel?.filter?.value)
+                    ) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        if (subpanel?.filter?.name === 'between') {
+                            if (subpanel?.filter?.value?.length > 0) {
+                                let firstVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[0] ?? ''
+                                )
+                                let secondVal = getValueStringFromType(
+                                    subpanel,
+                                    subpanel?.filter?.value[1] ?? ''
+                                )
+                                res += ` ${firstVal} AND ${secondVal}`
+                            }
                         }
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
                     }
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    let value = subpanel?.filter?.value
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        subpanel?.filter?.value[0] &&
+                        isValidValueArray(subpanel?.filter?.value)
+                    ) {
+                        value = subpanel?.filter?.value[0]
+                    }
+                    if (value) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        res += ` ${getValueStringFromType(
+                            subpanel,
+                            value ?? ''
+                        )}`
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
+                    }
 
                     break
                 }
                 case 'multi_input': {
-                    res += ` (${subpanel?.filter?.value?.join(',') ?? ''})`
+                    if (
+                        Array.isArray(subpanel?.filter?.value) &&
+                        subpanel?.filter?.value?.length > 0 &&
+                        isValidValueArray(subpanel?.filter?.value)
+                    ) {
+                        if (subpanel.column.label)
+                            res += `${subpanel.column.label} `
+                        if (subpanel.filter.title)
+                            res += `${subpanel.filter.title}`
+                        res += ` `
+                        subpanel?.filter?.value?.forEach((el, i) => {
+                            if (i !== subpanel?.filter?.value?.length - 1)
+                                res += `${getQuotesAccordingtoType(
+                                    el,
+                                    subpanel?.column?.type
+                                )} or `
+                            else
+                                res += `${getQuotesAccordingtoType(
+                                    el,
+                                    subpanel?.column?.type
+                                )}`
+                        })
+                        if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                            res += ', '
+                    }
                     break
                 }
                 case 'none': {
+                    if (subpanel.column.label)
+                        res += `${subpanel.column.label} `
+                    if (subpanel.filter.title) res += `${subpanel.filter.title}`
+                    if (subpanels?.length > 1 && i !== subpanels.length - 1)
+                        res += ', '
                     break
                 }
             }
-            if (subpanels?.length > 1 && i !== subpanels.length - 1) res += ', '
 
             if (res === ' ' || res === ' , ')
                 res = 'No Columns Added for filter'

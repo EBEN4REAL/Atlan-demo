@@ -232,13 +232,27 @@ const useQueryCollection = () => {
                                 activeInlineTabCopy.explorer.queries.collection
                                     .qualifiedName
                         )
+
+                        if(!col) {
+                            col=collection[0]
+                        }
                     }
                 }
 
-                activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
+                if(!col) {
+                    col=collection[0]
+                }
 
-                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-                    col?.attributes?.qualifiedName
+                activeInlineTabCopy.explorer.queries.collection = {
+                    guid: col?.guid,
+                    qualifiedName: col?.attributes?.qualifiedName
+
+                }
+
+                // activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
+
+                // activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                //     col?.attributes?.qualifiedName
 
                 modifyActiveInlineTab(
                     activeInlineTabCopy,

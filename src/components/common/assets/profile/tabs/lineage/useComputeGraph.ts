@@ -77,8 +77,14 @@ export default async function useComputeGraph(
     }
 
     /* Edges */
+    const fromAndToIdSet = new Set()
     relations.forEach((x) => {
         const { fromEntityId, toEntityId, processId } = x
+
+        let data = {}
+        const fromAndToId = `${fromEntityId}@${toEntityId}`
+        if (fromAndToIdSet.has(fromAndToId)) data = { isDup: true }
+        else fromAndToIdSet.add(fromAndToId)
 
         if (
             columnEntityIds.includes(fromEntityId) ||
@@ -92,9 +98,10 @@ export default async function useComputeGraph(
             sourcePort: `${fromEntityId}-invisiblePort`,
             targetCell: toEntityId,
             targetPort: `${toEntityId}-invisiblePort`,
-            stroke: '#C7C7C7',
+            stroke: '#aaaaaa',
         }
-        const { edgeData } = createEdgeData(relation)
+
+        const { edgeData } = createEdgeData(relation, data)
         edges.value.push(edgeData)
     })
 

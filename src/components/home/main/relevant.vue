@@ -5,7 +5,7 @@
         :class="isLoading ? `flex flex-grow` : `hidden`"
         style="height: 350px"
     >
-        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin" />
+        <AtlanLoader class="h-10" />
     </div>
     <a-tabs
         v-model:activeKey="relevantTab"

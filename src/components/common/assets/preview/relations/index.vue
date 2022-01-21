@@ -30,10 +30,7 @@
             v-if="isLoading || isFetchingGuids"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-if="!isLoading && !isFetchingGuids && error"
@@ -69,6 +66,7 @@
                     :item-index="itemIndex"
                     :preference="preference"
                     :enable-sidebar-drawer="true"
+                    :asset-name-truncate-percentage="'93%'"
                     class="mx-3"
                     @updateDrawer="updateCurrentList"
                 ></AssetItem>

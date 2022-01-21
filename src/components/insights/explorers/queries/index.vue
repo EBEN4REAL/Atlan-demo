@@ -310,7 +310,6 @@
 
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import EmptyView from '@common/empty/index.vue'
-    import EmptyCollection from './collection/EmptyCollection.vue'
 
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
@@ -342,7 +341,6 @@
         name: 'QueryExplorer',
         components: {
             EmptyView,
-            EmptyCollection,
             Loader,
             RaisedTab,
             QueryTree,
@@ -357,6 +355,9 @@
                     import(
                         '~/components/insights/playground/editor/saveQuery/index.vue'
                     )
+            ),
+            EmptyCollection: defineAsyncComponent(
+                () => import('./collection/EmptyCollection.vue')
             ),
             CreateCollectionModal: defineAsyncComponent(
                 () =>

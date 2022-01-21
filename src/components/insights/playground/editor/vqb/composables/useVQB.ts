@@ -38,7 +38,6 @@ export function useVQB() {
             }
         })
         copyTabData.isSaved = false
-
         inlineTabs.value[index] = copyTabData
     }
     function deletePanelsInVQB(
@@ -63,6 +62,7 @@ export function useVQB() {
         const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
         panelCopy.id = type
         panelCopy.hide = true
+        panelCopy.active = false
         panelCopy.order =
             Number(activeInlineTab.value.playground.vqb.panels.length) + 1
         switch (type) {

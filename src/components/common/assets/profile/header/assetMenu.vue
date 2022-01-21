@@ -6,7 +6,7 @@
     >
         <slot></slot>
         <template #overlay>
-            <a-menu mode="vertical">
+            <a-menu class="" style="min-width: 200px" mode="vertical">
                 <!-- <a-sub-menu key="status" :disabled="!editPermission">
                     <template #title>
                         <div class="flex items-center justify-between">
@@ -87,6 +87,7 @@
                 </a-sub-menu>-->
                 <a-menu-item
                     v-if="editPermission"
+                    class="px-4 py-2"
                     key="announcement"
                     @click="closeMenu"
                     ><AnnouncementModal
@@ -109,6 +110,7 @@
                 >
                 <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
                 <a-menu-item
+                    class="px-4 py-2"
                     v-if="asset?.typeName === 'AtlasGlossary' && sandbox"
                     key="bulk upload"
                     @click="closeMenu"
@@ -129,6 +131,7 @@
                 </a-menu-item>
 
                 <a-menu-item
+                    class="px-4 py-2"
                     v-if="isGTC(asset)"
                     key="archive"
                     @click="closeMenu"

@@ -147,7 +147,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; min-height: 92%"
+            style="max-height: 100%; min-height: 92%; height: 100%"
         >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -164,6 +164,7 @@
             </splitpanes>
         </div>
         <ResultPaneFooter v-if="activeInlineTabKey" />
+
         <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"

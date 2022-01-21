@@ -3,7 +3,7 @@
         v-if="isLoading"
         class="flex items-center justify-center text-sm leading-none"
     >
-        <AtlanIcon icon="Loader" class="h-5 mr-2 animate-spin" />
+        <AtlanLoader class="h-5 mr-2" />
         <span>Getting Runs</span>
     </div>
     <div v-else-if="list.length" v-auth="access.LIST_RUNS">
@@ -39,11 +39,7 @@
                             </p>
                             <AtlanIcon icon="ArrowDown" />
                         </template>
-                        <AtlanIcon
-                            v-else
-                            icon="Loader"
-                            class="h-5 animate-spin"
-                        />
+                        <AtlanLoader v-else class="h-5" />
                     </button>
                 </div>
             </template>

@@ -9,14 +9,8 @@ export function useAssetListing(
     params: Object = {}
 ) {
     const list: Ref<assetInterface[]> = ref([])
-    const { replaceBody, body, isReady, error, data } = useIndexSearch(
-        {},
-        '',
-        immediate,
-        params
-    )
-
-    const isLoading = computed(() => !isReady.value && !error.value)
+    const { replaceBody, body, isReady, error, data, isLoading } =
+        useIndexSearch({}, '', immediate, params)
 
     function mutateAssetInList(updatedAsset: assetInterface) {
         const idx = list.value.findIndex(

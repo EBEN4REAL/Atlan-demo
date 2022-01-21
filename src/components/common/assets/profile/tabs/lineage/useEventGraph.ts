@@ -1,5 +1,7 @@
 import { watch, ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
+import { watchOnce, whenever } from '@vueuse/core'
+
 import useLineageStore from '~/store/lineage'
 import useLineageService from '~/services/meta/lineage/lineage_service'
 import useUpdateGraph from './useUpdateGraph'
@@ -492,32 +494,44 @@ export default function useEventGraph(
     }
 
     // controlEdgeHighlight
-    const controlEdgeHighlight = (cell, reset, animate = false) => {
-        if (!cell) return
-        cell.attr('line/stroke', reset ? '#c7c7c7' : '#5277d7')
-        cell.attr('line/strokeWidth', reset ? 1.6 : 3)
-        cell.attr('line/strokeDasharray', reset ? 0 : 5)
-        cell.attr('line/targetMarker/stroke', reset ? '#c7c7c7' : '#5277d7')
-        cell.toFront()
+    const controlEdgeHighlight = (edge, reset, animate = false) => {
+        if (!edge) return
+        edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
+        edge.attr('line/strokeWidth', reset ? 1.6 : 3)
+        edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
+        edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
+        edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        edge.toFront()
+
         if (animate)
-            cell.attr('line/style/animation', 'ant-line 30s infinite linear')
-        else cell.attr('line/style/animation', 'unset')
+            edge.attr('line/style/animation', 'ant-line 30s infinite linear')
+        else edge.attr('line/style/animation', 'unset')
+
+        edge.attr('line/strokeDasharray', reset ? 0 : 5)
+    }
+
+    /** Reset the current highlighted port styling */
+    const resetCHE = () => {
+        if (che.value) {
+            const edge = graph.value.getCellById(che.value)
+            if (edge) controlEdgeHighlight(edge, true)
+            che.value = ''
+        }
     }
 
     // getEventPath
     const getEventPath = (e) => {
-        let path = (e.composedPath && e.composedPath()) || e.path
-        let target = e.target
+        const path = (e.composedPath && e.composedPath()) || e.path
+        const target = e?.target
 
         if (path != null)
             return path.indexOf(window) < 0 ? path.concat(window) : path
         if (target === window) return [window]
 
-        function getParents(node, memo) {
-            memo = memo || []
-            let parentNode = node.parentNode
+        function getParents(node, memo = []) {
+            const parentNode = node?.parentNode
             if (!parentNode) return memo
-            else return getParents(parentNode, memo.concat(parentNode))
+            return getParents(parentNode, memo.concat(parentNode))
         }
 
         return [target].concat(getParents(target), window)
@@ -714,29 +728,38 @@ export default function useEventGraph(
     // EDGE - CLICK
     graph.value.on('edge:click', ({ e, edge, cell }) => {
         if (chp.value.portId) return
+
         loaderCords.value = { x: e.clientX, y: e.clientY }
 
         if (edge.id.includes('port')) {
             loaderCords.value = {}
             return
         }
-        const cheCell = graph.value.getCellById(che.value)
+
+        // If user clicks on selected edge
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
-            controlEdgeHighlight(cheCell, true)
+            controlEdgeHighlight(edge, true)
             highlight(null)
             return
         }
+
+        // If there is an existing highlighted edge
         if (che.value) {
-            controlEdgeHighlight(cheCell, true)
+            resetCHE()
             highlight(null)
         }
+
         che.value = edge.id
-        controlEdgeHighlight(cell, false)
+        controlEdgeHighlight(edge, false)
         const processId = edge.id.split('/')[0]
         const { data } = fetchAsset(processId)
-        watch(data, () => {
+
+        /** Automatically stop the watcher once done.
+         * Added this to stop memory leaks from happening
+         * due to multiple watchers staying active in the memory */
+        watchOnce(data, () => {
             onSelectAsset(data.value)
             const target = edge.id.split('/')[1].split('@')[1]
             highlight(target, false)
@@ -753,7 +776,7 @@ export default function useEventGraph(
         }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(cell, false, true)
+            controlEdgeHighlight(edge, false, true)
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -769,7 +792,7 @@ export default function useEventGraph(
         }
         if (che.value === edge.id) return
         if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(cell, true)
+            controlEdgeHighlight(edge, true)
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -779,15 +802,11 @@ export default function useEventGraph(
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
-        if (che.value) {
-            const cheCell = graph.value.getCellById(che.value)
-            controlEdgeHighlight(cheCell, true)
-            che.value = ''
-        }
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
         highlight(node?.id)
+        resetCHE()
     })
 
     // BLANK - CLICK
@@ -795,7 +814,7 @@ export default function useEventGraph(
         if (chp.value.portId) return
         onSelectAsset(baseEntity.value)
         onCloseDrawer()
-        che.value = ''
+        resetCHE()
         highlight(null)
     })
 
@@ -809,21 +828,27 @@ export default function useEventGraph(
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
 
+    // Set connector for duplicate relations
+    graph.value.getEdges().forEach((edge) => {
+        if (edge.store.data?.data?.isDup) {
+            edge.setConnector('beizAlt')
+        }
+    })
+
     /** WATCHERS */
     watch(assetGuidToHighlight, (newVal) => {
         if (!newVal) highlight(null)
         else highlight(newVal)
     })
 
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            drawerActiveKey.value = 'Info'
-            if (highlightedNode.value) highlight(null)
-            if (chp.value.portId) deselectPort()
+    // Trigger the callback only when the value is true
+    whenever(resetSelections, () => {
+        onSelectAsset(baseEntity.value, false, false)
+        resetCHE()
+        drawerActiveKey.value = 'Info'
+        if (highlightedNode.value) highlight(null)
+        if (chp.value.portId) deselectPort()
 
-            resetSelections.value = false
-        }
+        resetSelections.value = false
     })
 }

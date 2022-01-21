@@ -1,6 +1,7 @@
 <template>
     <a-input
         ref="searchBar"
+        :allowClear="true"
         v-model:value="queryText"
         class="border rounded light-bg child_input"
         :placeholder="placeholder"

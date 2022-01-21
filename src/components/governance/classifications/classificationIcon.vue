@@ -16,9 +16,9 @@
         name: 'ClassificationIcon',
         props: {
             color: {
-                type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
+                type: String as PropType<'Green' | 'Red' | 'Yellow'>,
                 required: true,
-                default: 'Blue',
+                default: 'Green',
             },
             icon: {
                 type: String as PropType<'ClassificationShield' | 'ClassificationPropagated' | 'ClassificationAtlan'>,
@@ -28,8 +28,8 @@
             classNames: {
                 type: String,
                 required: false,
-                default: ''
-            }
+                default: '',
+            },
         },
         setup(props, { emit }) {
             // const { color, icon } = toRefs(props)
@@ -43,3 +43,4 @@
         },
     })
 </script>
+<style></style>

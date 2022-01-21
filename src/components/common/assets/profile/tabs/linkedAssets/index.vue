@@ -31,6 +31,7 @@
                     aggregationTabClass="px-6 "
                     searchBarClass="pl-6 my-1"
                     asset-list-class="mx-6 mt-1"
+                    asset-item-class="group"
                 >
                     <template #searchAction>
                         <AtlanBtn
@@ -41,6 +42,29 @@
                             @click="openLinkDrawer"
                             >Link assets</AtlanBtn
                         >
+                    </template>
+
+                    <template #assetItemCta="{ item }">
+                        <a-dropdown>
+
+                            <AtlanBtn
+                                class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus opacity-0 group-hover:opacity-100"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="(e) => e.stopPropagation()"
+                            >
+                                <AtlanIcon icon="KebabMenu" class="text-gray-700"></AtlanIcon>
+                            </AtlanBtn>
+
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item @click="() => unlinkOneAsset(item)">
+                                        Unlink asset
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </template>
                 </AssetList>
             </div>
@@ -71,6 +95,7 @@
     </a-modal>
 
     <LinkAssetsDrawer
+        v-if="isVisible"
         :isVisible="isVisible"
         :preference="preference"
         :selectedAssetCount="selectedAssetCount"
@@ -199,6 +224,14 @@
 
                 closeDrawer()
             }
+
+            const unlinkOneAsset = (asset: assetInterface) => {
+                handleAssignedEntitiesUpdate({
+                    unlinkedAssets: [asset],
+                    term: selectedAsset.value,
+                })
+            }
+
             const handleModalCancel = () => {
                 isModalVisible.value = false
             }
@@ -234,6 +267,7 @@
                 isModalVisible,
                 handleModalCancel,
                 handleConfirmCancel,
+                unlinkOneAsset
             }
         },
     })

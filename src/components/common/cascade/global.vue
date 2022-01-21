@@ -129,8 +129,8 @@
 
                 persona.children = persona.children.sort(
                     (a, b) =>
-                        personas.findIndex((i) => i.id === b.value) -
-                        personas.findIndex((i) => i.id === a.value)
+                        personas?.findIndex((i) => i.id === b.value) -
+                        personas?.findIndex((i) => i.id === a.value)
                 )
 
                 temp.push(persona)

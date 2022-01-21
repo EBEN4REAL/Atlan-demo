@@ -67,6 +67,7 @@
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
+            @update="handleDrawerUpdate"
         />
     </div>
 </template>
@@ -153,6 +154,9 @@
                 resetSelections.value = true
             }
 
+            const handleDrawerUpdate = (asset) => {
+                control('selectedAsset', asset)
+            }
             // initialize
             const initialize = async () => {
                 // useGraph
@@ -242,6 +246,7 @@
                 drawerActiveKey,
                 onShowAddLineage,
                 onCloseDrawer,
+                handleDrawerUpdate,
             }
         },
     })
@@ -336,7 +341,7 @@
                 @apply flex items-center flex-1 gap-x-1;
 
                 & .control-item {
-                    @apply px-2 py-1 cursor-pointer rounded text-gray-500;
+                    @apply px-2 py-1 cursor-pointer rounded text-gray-700;
 
                     &:hover {
                         @apply text-primary;

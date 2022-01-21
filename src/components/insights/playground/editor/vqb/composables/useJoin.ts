@@ -1,3 +1,4 @@
+import { Boolean } from '~/assets/images/dataType/boolean.svg'
 import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
 import { selectedTables } from '~/types/insights/VQB.interface'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -31,6 +32,17 @@ export function useJoin() {
             name: 'Outer Join',
         },
     ]
+
+    function isJoinPanelStateDisabledComputed(
+        isJoinPanelDisabled: Boolean,
+        selectedTables: any[]
+    ) {
+        if (isJoinPanelDisabled) return true
+        if (!isJoinPanelDisabled) {
+            if (selectedTables.length < 2) return true
+            return false
+        }
+    }
 
     function allowedTablesInJoinSelector(
         panelIndex: number,
@@ -101,5 +113,9 @@ export function useJoin() {
         }
     }
 
-    return { list, allowedTablesInJoinSelector }
+    return {
+        list,
+        allowedTablesInJoinSelector,
+        isJoinPanelStateDisabledComputed,
+    }
 }

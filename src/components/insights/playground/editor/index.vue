@@ -211,7 +211,7 @@
                                         @mouseout="recordTooltipPresence"
                                     >
                                         <AtlanIcon
-                                            icon="Info"
+                                            icon="Query"
                                             class="w-4 h-4 text-gray-500"
                                         />
                                     </div>
@@ -428,12 +428,12 @@
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
 
-    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
+    const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
     export default defineComponent({
         components: {
             VQB,
-            Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
+            Monaco: Monaco,
             CustomVariablesNav,
             SaveQueryModal,
             AtlanBtn,
@@ -992,7 +992,6 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
-                useTableExport,
                 // collectionInfo,
                 // hasCollectionReadPermission,
                 // hasCollectionWritePermission,

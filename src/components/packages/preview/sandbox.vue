@@ -110,12 +110,12 @@
     .jsoneditor-contextmenu {
         @apply hidden;
     }
-    td:first-child {
-        display: none !important;
-    }
-    td:nth-child(2) {
-        display: none !important;
-    }
+    // td:first-child {
+    //     display: none !important;
+    // }
+    // td:nth-child(2) {
+    //     display: none !important;
+    // }
     div.jsoneditor .jsoneditor-expandable {
         td:first-child {
             display: none !important;

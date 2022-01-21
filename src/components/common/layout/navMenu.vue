@@ -40,7 +40,7 @@
             <a-dropdown placement="bottomRight">
                 <template #overlay>
                     <a-menu>
-                        <div class="py-2">
+                        <div class="">
                             <!-- had to replace a-menu-item with divs because v-auth wasn't working with it-->
                             <div
                                 v-auth="[map.CREATE_WORKFLOW]"
@@ -87,7 +87,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, watch } from 'vue'
+    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
@@ -136,9 +136,7 @@
                 return false
             })
 
-            const logoUrl = computed(() => {
-                return `${window.location.origin}/api/service/avatars/_logo_`
-            })
+            const { logoUrl } = toRefs(tenantStore)
 
             const logoName = computed(() => tenantStore.displayName)
 
@@ -193,8 +191,7 @@
 
 <style lang="less" scoped>
     .menu-item {
-        @apply py-1;
-        @apply px-3;
+        @apply px-4 py-2;
         cursor: pointer;
     }
     .menu-item:hover {

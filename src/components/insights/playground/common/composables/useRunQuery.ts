@@ -11,7 +11,6 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
-import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
 
 export default function useProject() {
     const {
@@ -22,64 +21,39 @@ export default function useProject() {
         getParsedQueryCursor,
     } = useEditor()
 
-    const {setStartTime, setResponseTime} = useTimeEvent();
 
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
-    // const columnList: Ref<
-    //     [
-    //         {
-    //             title: string
-    //             dataIndex: string
-    //             width: string
-    //             key: any
-    //         }
-    //     ]
-    // > = ref([])
-    // const dataList = ref([])
-    // const isQueryRunning = ref('')
-    // const queryExecutionTime = ref(-1)
-    // const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
-            columnList.value = []
+
+            columnList.value = [
+            ]
             columns.map((col: any, index) => {
                 columnList.value.push({
-                    title: col.columnName.split('_').join('_'),
+                    title: col.columnName,
                     dataIndex: col.columnName + index,
-                    key: col.columnName,
+                    key: index+1,
                     data_type: col.type.name,
+                    
                 })
             })
         }
 
-        // console.log('table columns: ', columns)
     }
 
-    const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
-        const columns = toRaw(columnList.value)
-        console.log('table columns: ', columns)
-        // console.log('table rows: ', rows)
+    let keys = ref(0)
 
-        rows.map((result: any) => {
-            // console.log(result)
-            let tmp = {}
-            result.map((row, rowindex) => {
-                tmp = {
-                    ...tmp,
-                    ...{
-                        // key: rowindex,
-                        [columns[rowindex].dataIndex]: {data: row, data_type: columns[rowindex].data_type}
-                        // key: rowindex,
-                    },
-                }
-            })
-            dataList.value.push(tmp)
+    const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
+       
+        rows.map((result: any, index1) => {
+            dataList.value.push(result)
         })
-        console.log('table rows: ', dataList)
+    
+        
     }
 
     const queryRun = (
@@ -94,7 +68,9 @@ export default function useProject() {
         showVQB: Ref<Boolean> = ref(false)
     ) => {
 
-        setStartTime(new Date())
+        let startTime = new Date()
+
+        // setStartTime(new Date())
 
         const columnList: Ref<
             [
@@ -111,8 +87,9 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
         
-        resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if(editorInstance?.value) {
+            resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             resetLineDecorations(editorInstance.value)
         }
         // console.log('inside run query: ', activeInlineTab.value)
@@ -262,6 +239,8 @@ export default function useProject() {
             params: search_prms,
         }
 
+        keys.value = 0;
+
         const {
             eventSource,
             data: sse,
@@ -277,7 +256,7 @@ export default function useProject() {
             console.log('heka request log: ', isLoading.value, error.value)
             try {
                 if (!isLoading.value && error.value === undefined) {
-                    setResponseTime(new Date())
+                    // setResponseTime(new Date())
                     
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
@@ -297,7 +276,7 @@ export default function useProject() {
                                 )
                         }
                         /* ---------------------------------- */
-                        console.log('message', message, )
+                        // console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
@@ -328,8 +307,17 @@ export default function useProject() {
 
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
+
+                            let endTime = new Date()
+                            activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
+
+                            // console.log('run complete')
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion(activeInlineTab, 'success')
+                            if (onCompletion) {
+                                // activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
+                                onCompletion(activeInlineTab, 'success')
+
+                            }
 
                             /* ------------------- */
                         }
@@ -354,12 +342,14 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
                             /* Callback will be called when request completed */
-                            if (onCompletion) onCompletion(activeInlineTab, 'error')
+                            if (onCompletion) {
+                                onCompletion(activeInlineTab, 'error')
+                            }
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
                     /* Setting it undefined for new run */
-                    setResponseTime(new Date())
+                    // setResponseTime(new Date())
 
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined

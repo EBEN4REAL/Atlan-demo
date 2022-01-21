@@ -4,6 +4,7 @@ export interface Actions extends State {
     setToken(value: any): void
     setPermissions(value: any): void
     setEvaluations(value: any): void
+    setSecondaryEvaluations(value: any): void
     setFailed(value: any): void
     setPending(value: any): void
     setIsAuthenticated(value: any): void
@@ -72,11 +73,46 @@ export const actions: Actions = {
         }
         this.evaluations.push(...uniqueArray)
     },
+    // For asset drawers and widgets that require temporary evaluations
+    // - to keep it separate from main evaluations
+    setSecondaryEvaluations(value) {
+        const valueMap = value.map(
+            (evaluation) =>
+                `${
+                    evaluation.entityGuid ||
+                    evaluation.entityGuidEnd1 ||
+                    evaluation.entityGuidEnd2
+                }_${evaluation.action}`
+        )
+        const evaluationMap = this.secondaryEvaluations.map(
+            (evaluation) =>
+                `${
+                    evaluation.entityGuid ||
+                    evaluation.entityGuidEnd1 ||
+                    evaluation.entityGuidEnd2
+                }_${evaluation.action}`
+        )
+        const uniqueValues = valueMap.filter(
+            (val) => evaluationMap.indexOf(val) < 0
+        )
+        const uniqueArray = value.filter(
+            (i) =>
+                uniqueValues.indexOf(
+                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${
+                        i.action
+                    }`
+                ) >= 0
+        )
+        if (this.secondaryEvaluations.length + uniqueArray.length > 80) {
+            this.secondaryEvaluations.splice(0, uniqueArray.length)
+        }
+        this.secondaryEvaluations.push(...uniqueArray)
+    },
     setRoles(value) {
         this.roles = value
     },
     setDecentralizedRoles(value) {
-        this.decentralizedRole = value
+        this.decentralizedRoles = value
     },
     setPersonas(value) {
         this.personas = value

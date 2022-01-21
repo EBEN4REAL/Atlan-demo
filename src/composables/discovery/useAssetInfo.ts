@@ -38,6 +38,7 @@ export default function useAssetInfo() {
         asset?.attributes?.parentCategory
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
+    const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -48,6 +49,16 @@ export default function useAssetInfo() {
 
     const parentDashboard = (asset: assetInterface) =>
         attributes(asset)?.dashboard
+
+    const parentProject = (asset: assetInterface) => attributes(asset)?.project
+
+    const parentDatasource = (asset: assetInterface) =>
+        attributes(asset)?.datasource
+
+    const parentWorkbook = (asset: assetInterface) =>
+        attributes(asset)?.workbook
+
+    const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
@@ -179,7 +190,25 @@ export default function useAssetInfo() {
         )
         return activeLinks
     }
-    const link = (asset: assetInterface) => attributes(asset)?.link
+
+    function isValidHttpUrl(string) {
+        let url
+
+        try {
+            url = new URL(string)
+        } catch (_) {
+            return false
+        }
+
+        return url.protocol === 'http:' || url.protocol === 'https:'
+    }
+
+    const link = (asset: assetInterface) => {
+        if (isValidHttpUrl(attributes(asset)?.link)) {
+            return attributes(asset)?.link
+        }
+        return ''
+    }
 
     const queries = (asset: assetInterface) => attributes(asset)?.queries
 
@@ -212,7 +241,7 @@ export default function useAssetInfo() {
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
-        if (cmList(assetType(asset)).length > 0) {
+        if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
@@ -322,7 +351,9 @@ export default function useAssetInfo() {
             //     attributes(asset).tableName
 
             const name =
-                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
+                tableName(asset)?.length > 0
+                    ? tableName(asset)
+                    : viewName(asset)
             const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -691,11 +722,21 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (
         asset: assetInterface,
+        secondaryEvaluation = false,
         action = 'ENTITY_UPDATE',
         typeName?
     ) => {
+        let evaluations: any = []
+
+        // Anything that isn't a selectedAsset in store - any drawer, column items in columns tab
+        if (secondaryEvaluation) {
+            evaluations = authStore?.secondaryEvaluations
+        } else {
+            evaluations = authStore?.evaluations
+        }
+
         if (typeName) {
-            return authStore?.evaluations.find(
+            return evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
@@ -704,7 +745,8 @@ export default function useAssetInfo() {
                         ev?.entityTypeEnd2 === typeName)
             )?.allowed
         }
-        return authStore?.evaluations.find(
+
+        return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
         )?.allowed
     }
@@ -733,6 +775,14 @@ export default function useAssetInfo() {
             return true
         }
         return false
+    }
+
+    const isProcess = (asset: assetInterface) => {
+        return assetType(asset) === 'Process'
+    }
+
+    const getProcessSQL = (asset: assetInterface) => {
+        return attributes(asset)?.sql
     }
 
     const getHierarchy = (asset: assetInterface) => {
@@ -1071,6 +1121,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         isForeign,
         categories,
+        seeAlso,
         parentCategory,
         isGTC,
         getProfilePath,
@@ -1103,5 +1154,11 @@ export default function useAssetInfo() {
         tileCount,
         pageCount,
         connectionGuid,
+        isProcess,
+        getProcessSQL,
+        parentProject,
+        parentDatasource,
+        parentWorkbook,
+        parentSite,
     }
 }

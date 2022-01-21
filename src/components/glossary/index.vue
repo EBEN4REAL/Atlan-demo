@@ -97,6 +97,7 @@
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
                 v-model:checked-guids="checkedGuids"
+                :disabled-guids="disabledGuids"
                 @check="onCheck"
             ></GlossaryTree>
         </div>
@@ -104,10 +105,7 @@
             v-if="isLoading && queryText"
             class="flex items-center justify-center flex-grow"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <AtlanLoader class="h-10" />
         </div>
         <div
             v-else-if="list.length == 0 && !isLoading && queryText"
@@ -143,6 +141,7 @@
             >
                 <template v-slot:default="{ item }">
                     <GlossaryItem
+                        v-if="!disabledGuids?.includes(item.guid)"
                         :item="item"
                         :selectedGuid="selectedGlossary?.guid"
                         :checkable="checkable"
@@ -193,6 +192,7 @@
         InternalAttributes,
         GlossaryAttributes,
     } from '~/constant/projection'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -243,6 +243,10 @@
                 type: Object as PropType<string[]>,
                 required: false,
             },
+            disabledGuids: {
+                type: Object as PropType<string[]>,
+                required: false,
+            }
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
@@ -281,10 +285,13 @@
                 glossary: '__all',
             })
             const dependentKey = ref('DEFAULT_GLOSSARY_ITEMS_LIST')
+            const { customMetadataProjections } = useTypedefData()
+
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...GlossaryAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])
@@ -365,8 +372,10 @@
             }
             // for sidebar
             const handlePreview = (item) => {
-                if (!props.checkable) router.push(`/glossary/${item.guid}`)
-                handleSelectedGlossary(item)
+                if (!props.checkable) {
+                    router.push(`/glossary/${item.guid}`)
+                    handleSelectedGlossary(item)
+                }
                 sendSearchClickeEvent()
             }
 

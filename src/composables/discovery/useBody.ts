@@ -23,11 +23,13 @@ export function useBody(
     const base = bodybuilder()
 
     if (queryText) {
+        // Synonym
         base.orQuery('match', 'name', {
-            query: queryText,
+            query: queryText.toLowerCase(),
             boost: 40,
             analyzer: 'search_synonyms',
         })
+
         base.orQuery('match', 'name', {
             query: queryText,
             boost: 40,
@@ -38,16 +40,18 @@ export function useBody(
             operator: 'AND',
             boost: 40,
         })
+
         base.orQuery('match', 'name.keyword', {
             query: queryText,
-            boost: 100,
+            boost: 120,
         })
+
         base.orQuery('match_phrase', 'name', {
             query: queryText,
             boost: 70,
         })
         base.orQuery('wildcard', 'name', {
-            value: `${queryText}*`,
+            value: `${queryText.toLowerCase()}*`,
         })
         base.orQuery('match', 'description', {
             query: queryText,
@@ -60,7 +64,9 @@ export function useBody(
             boost: 20,
         })
 
-        base.orQuery('match', 'name.stemmed', { query: queryText })
+        base.orQuery('match', 'name.stemmed', {
+            query: queryText.toLowerCase(),
+        })
         base.queryMinimumShouldMatch(1)
     }
 
@@ -367,6 +373,12 @@ export function useBody(
                 }
                 break
             }
+            case 'excludeGtc': {
+                if(filterObject) {
+                    base.notFilter('terms', '__typeName.keyword', ['AtlasGlossary', 'AtlasGlossaryCategory', 'AtlasGlossaryTerm'])
+                }
+                break
+            }
             case 'guid': {
                 if (filterObject) {
                     base.filter('term', '__guid', filterObject)
@@ -435,9 +447,10 @@ export function useBody(
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
+                                        `*${
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
                                         }`
                                     )
                                 }

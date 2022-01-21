@@ -1,6 +1,6 @@
 import { unref, ref, Ref } from 'vue'
 import getSqlKeywords from '~/components/insights/playground/editor/monaco/sqlKeywords'
-import * as monaco from 'monaco-editor'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { useMapping, nextKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
@@ -72,7 +72,6 @@ function generateMarkdown(
     entity: any,
     assetType: string
 ) {
-
     let qualifiedName = entity?.attributes?.qualifiedName?.split('/')
     let db = qualifiedName[3]
     let schema = qualifiedName[4]
@@ -81,30 +80,35 @@ function generateMarkdown(
     let description =
         entity.attributes.userDescription || entity.attributes.description
 
-    let certificateStatus = entity?.attributes?.certificateStatus ? entity?.attributes?.certificateStatus : 'no_certificate'
+    let certificateStatus = entity?.attributes?.certificateStatus
+        ? entity?.attributes?.certificateStatus
+        : 'no_certificate'
     let descriptionHTML = `<div></p><h6>Description:</h6></br>${description}</p></div>`
-    let typeHTML=`<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
+    let typeHTML = `<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
     let ownerString = entity.attributes.ownerUsers.join(', ')
     let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
     // console.log('asset here: ', entity)
 
-    let rowCount, columnCount,rowCountHTML, isPrimaryHTML
+    let rowCount, columnCount, rowCountHTML, isPrimaryHTML
 
     if (assetType === 'TABLE') {
         rowCount = entity?.attributes?.rowCount
         columnCount = entity?.attributes?.columnCount
-        
+
         rowCountHTML = `<div>
             <h5>${db} / ${schema}</h5><h5>${rowCount} Rows / ${columnCount} Columns</h5>
         </div>`
-        
     } else {
         rowCountHTML = `<div>
             <h5>${db} / ${schema} / ${table}</h5>
         </div>`
 
         isPrimaryHTML = `<div>
-            <div>isPrimary: <h5>${entity?.attributes?.isPrimary ? entity?.attributes?.isPrimary : 'false'}</h5></div>
+            <div>isPrimary: <h5>${
+                entity?.attributes?.isPrimary
+                    ? entity?.attributes?.isPrimary
+                    : 'false'
+            }</h5></div>
         </div>`
     }
 
@@ -115,7 +119,7 @@ function generateMarkdown(
         ${description ? descriptionHTML : ''}
         ${ownerString ? ownersHTML : ''}
         ${rowCountHTML}
-        ${assetType==='COLUMN' ? isPrimaryHTML : ''}
+        ${assetType === 'COLUMN' ? isPrimaryHTML : ''}
         </div>
         
         `
@@ -144,12 +148,12 @@ export function entitiesToEditorKeyword(
             // console.log('suggestion: ', {
             //     entities
             // })
-            let sortString='a'
+            let sortString = 'a'
             for (let i = 0; i < len; i++) {
                 // console.log('su counter: ', i)
                 let keyword
-                sortString="a".repeat(i+1)
-                
+                sortString = 'a'.repeat(i + 1)
+
                 switch (type) {
                     case 'TABLE': {
                         // console.log('su type: ', 'table')
@@ -162,7 +166,6 @@ export function entitiesToEditorKeyword(
                         let qualifiedName =
                             entities[i].attributes.qualifiedName.split('/')
                         let tableQN = `${qualifiedName[3]}.${qualifiedName[4]}.${qualifiedName[5]}`
-
 
                         if (connectorsInfo.schemaName) {
                             var spilltedVal = tableQN.split('.')
@@ -197,10 +200,10 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
-                                entity: entities[i]
+                                entity: entities[i],
                             },
                             insertText: insertText,
-                            sortText: sortString
+                            sortText: sortString,
                         }
                         // console.log('su push cn: ', words.length )
                         words.push(keyword)
@@ -224,7 +227,7 @@ export function entitiesToEditorKeyword(
                                     entities[i],
                                     `${type}`
                                 ),
-                                entity: entities[i]
+                                entity: entities[i],
                             },
                             sortText: sortString,
                             insertText: `${entities[i].attributes.name}`,
@@ -318,7 +321,6 @@ const refreshBody = () => {
                                     must: [],
                                 },
                             },
-                            
                         },
                     },
                     functions: [
@@ -393,7 +395,7 @@ const refreshBody = () => {
                                 },
                             },
                             weight: 8,
-                        }
+                        },
                     ],
                     boost_mode: 'sum',
                     score_mode: 'sum',
@@ -444,12 +446,13 @@ async function getSuggestionsUsingType(
 
     switch (type) {
         case 'TABLE': {
-            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
-                terms: {
-                    '__typeName.keyword': ['Table', 'View'],
-                },
-            })
-
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    terms: {
+                        '__typeName.keyword': ['Table', 'View'],
+                    },
+                }
+            )
 
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
@@ -479,11 +482,13 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
-            body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
-                terms: {
-                    '__typeName.keyword': ['Column'],
-                },
-            })
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    terms: {
+                        '__typeName.keyword': ['Column'],
+                    },
+                }
+            )
 
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()

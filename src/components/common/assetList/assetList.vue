@@ -23,7 +23,7 @@
                 </SearchAdvanced>
                 <slot name="searchAction"></slot>
             </div>
-            <div :class="aggregationTabClass">
+            <div v-if="list.length !== 0" :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
                     class="mt-3"
@@ -35,10 +35,7 @@
                 v-if="isValidating && !list.length"
                 class="flex items-center justify-center h-full"
             >
-                <AtlanIcon
-                    icon="Loader"
-                    class="w-auto h-10 animate-spin"
-                ></AtlanIcon>
+                <AtlanLoader class="h-10" />
             </div>
             <div
                 v-else-if="!isValidating && error"
@@ -56,7 +53,7 @@
                             : emptyViewText
                     "
                     :button-text="queryText ? 'Clear search' : null"
-                    class="flex items-center justify-center h-full"
+                    class="flex items-center justify-center h-full mt-4"
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>
@@ -90,12 +87,17 @@
                             :item="item"
                             :show-check-box="selectable"
                             :is-checked="checkIfSelected(item.guid)"
+                            :class="assetItemClass"
                             @updateDrawer="updateList"
                             @preview="$emit('handleAssetCardClick', item)"
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
-                        ></AssetItem>
+                        >
+                            <template #cta>
+                                <slot :item="item" name="assetItemCta"> </slot>
+                            </template>
+                        </AssetItem>
                     </template>
                 </AssetList>
             </div>
@@ -202,6 +204,10 @@
 
             /** Style Props */
             assetListClass: {
+                type: String,
+                default: '',
+            },
+            assetItemClass: {
                 type: String,
                 default: '',
             },

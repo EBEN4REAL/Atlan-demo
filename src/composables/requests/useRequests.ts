@@ -36,12 +36,10 @@ export function useRequestList(
         offset: pagination.value.offset,
         filter: generateRequestListFilters(searchTerm.value, filters.value),
     }))
-    console.log(params, '<<<<<<<<<jshgjhsgj')
     // const { response, error, mutate, isLoading } = getRequests(params)
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
 
     const debouncedMutation = useDebounceFn(() => {
-        console.log(searchTerm)
         mutate()
         useAddEvent('governance', 'requests', 'searched')
     }, 400)

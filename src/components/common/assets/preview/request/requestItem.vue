@@ -85,8 +85,50 @@
             >
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item key="1" @click="handleClickReject">
-                            Approve with comment
+                        <a-menu-item
+                            key="1"
+                            @click="handleClickApproveWithComment"
+                        >
+                            <a-popover
+                                v-model:visible="isVisibleApproveWithComment"
+                                trigger="click"
+                                placement="bottomRight"
+                                :align="{ offset: [15, -70] }"
+                            >
+                                <template #content>
+                                    <div class="comment-delete">
+                                        <div class="flex">
+                                            <a-textarea
+                                                v-model:value="messageApprove"
+                                                placeholder="Message"
+                                                class="border-none"
+                                                :rows="2"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-between mt-4"
+                                        >
+                                            <a-button
+                                                class="text-gray-500"
+                                                size="small"
+                                                type="link"
+                                                @click="cancelApprove"
+                                            >
+                                                Cancel
+                                            </a-button>
+                                            <a-button
+                                                size="small"
+                                                type="link"
+                                                :class="'text-green-500'"
+                                                @click="handleApprove"
+                                            >
+                                                Approve
+                                            </a-button>
+                                        </div>
+                                    </div>
+                                </template>
+                                Approve with comment
+                            </a-popover>
                         </a-menu-item>
 
                         <a-menu-item
@@ -180,6 +222,8 @@
             const isLoading = ref(false)
             const isVisible = ref(false)
             const isVisibleRejectWithComment = ref(false)
+            const isVisibleApproveWithComment = ref(false)
+            const messageApprove = ref('')
             const messageReject = ref('')
             const localClassification = (typeName) =>
                 classificationList.value.find((clsf) => clsf?.name === typeName)
@@ -217,12 +261,31 @@
                 }
                 isLoading.value = false
             }
+            const handleClickApproveWithComment = () => {
+                isVisibleApproveWithComment.value = true
+                messageApprove.value = ''
+                setTimeout(() => {
+                    isVisible.value = false
+                }, 300)
+            }
             const handleClickRejectWithComment = () => {
                 isVisibleRejectWithComment.value = true
                 messageReject.value = ''
                 setTimeout(() => {
                     isVisible.value = false
                 }, 300)
+            }
+            const handleReject = () => {
+                handleRejection(messageReject.value)
+            }
+            const cancelReject = () => {
+                isVisibleRejectWithComment.value = false
+            }
+            const cancelApprove = () => {
+                isVisibleApproveWithComment.value = false
+            }
+            const handleApprove = () => {
+                handleApproval(messageApprove.value)
             }
             return {
                 createdTime,
@@ -234,6 +297,13 @@
                 isVisibleRejectWithComment,
                 handleClickRejectWithComment,
                 messageReject,
+                handleReject,
+                cancelReject,
+                isVisibleApproveWithComment,
+                messageApprove,
+                cancelApprove,
+                handleApprove,
+                handleClickApproveWithComment,
             }
         },
     })

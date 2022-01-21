@@ -280,7 +280,12 @@
             }
 
             // for initial call
-            if (!isJoinPanelDisabled.value) {
+            if (
+                !isJoinPanelStateDisabledComputed(
+                    isJoinPanelDisabled.value,
+                    selectedTablesQualifiedNames.value
+                )
+            ) {
                 replaceTableBody(
                     getTableInitialBody(selectedTablesQualifiedNames.value)
                 )

@@ -580,6 +580,9 @@ export function generateSQLQuery(
             let rightColumnName = getJoinFormattedColumnName(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
+            if (leftColumnName === undefined) return
+            if (rightColumnName === undefined) return
+
             // leftTableName = "TABLENAME"
             let rightTableName = getTableNameWithQuotes(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''

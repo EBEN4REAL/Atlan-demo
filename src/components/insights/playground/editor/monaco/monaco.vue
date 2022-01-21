@@ -1023,4 +1023,29 @@
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
         border: none;
     }
+    :global(.monaco-scrollable-element .mac) {
+        border-radius: 4px !important;
+    }
+    :global(.action-item) {
+        height: 32px !important;
+        display: flex;
+        justify-content: center;
+    }
+    :global(.quick-input-widget.show-file-icons) {
+        margin-top: 50px !important;
+        border-radius: 4px !important;
+        width: 500px !important;
+        // background: white !important;
+    }
+
+    :global(.monaco-list.mouse-support .monaco-list-row) {
+        background: #fff !important;
+    }
+    :global(.monaco-list.list_id_2 .monaco-list-row.focused) {
+        background: #5277d7 !important;
+        color: #ffffff !important;
+    }
+    :global(.monaco-progress-container) {
+        background: #fff !important;
+    }
 </style>

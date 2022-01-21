@@ -153,7 +153,11 @@ export default async function useComputeGraph(
         removeAddedNodesShadow
     ) => {
         const newData = data
-        delete newData.guidEntityMap[data.baseEntityGuid]
+        const guidEntityMapArr = Object.keys(newData.guidEntityMap)
+        nodes.value.forEach((x) => {
+            if (guidEntityMapArr.includes(x.id))
+                delete newData.guidEntityMap[x.id]
+        })
         await createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
         renderLayout()

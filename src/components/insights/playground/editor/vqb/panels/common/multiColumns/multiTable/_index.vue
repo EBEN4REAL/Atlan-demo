@@ -102,6 +102,13 @@
             const isAreaFocused = ref(false)
 
             const tableSelected = ref(null)
+            const isJoinPanelDisabled = computed(() => {
+                const joinPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+                return !joinPanel?.hide ? true : false
+            })
             const dirtyTableSelected = ref(null)
             const isTableSelected = ref(false)
             const dirtyIsTableSelected = ref(false)
@@ -162,9 +169,11 @@
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames.value
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNames: isJoinPanelDisabled.value
+                            ? undefined
+                            : selectedTablesQualifiedNames.value
+                                  ?.filter((x) => x !== null || undefined)
+                                  .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
@@ -191,6 +200,7 @@
 
                     setDropDownPosition()
                     document.addEventListener('click', (event) => {
+                        console.info(event, 'event')
                         const withinBoundaries = event
                             .composedPath()
                             .includes(container.value)
@@ -243,6 +253,7 @@
                 tableQueryText: tableQueryText,
                 TableList: TableList,
                 ColumnList: ColumnList,
+                isJoinPanelDisabled: isJoinPanelDisabled,
                 isAreaFocused: isAreaFocused,
                 isTableSelected: isTableSelected,
                 totalTablesCount: TotalTablesCount,

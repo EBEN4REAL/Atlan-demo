@@ -81,8 +81,8 @@
                         </a-button>
                         <template #content>
                             <ClassificationColorSelector
-                                class="py-1"
                                 v-model:selectedColor="classificationColor"
+                                class="py-1"
                                 menu-mode
                             />
                         </template>
@@ -133,7 +133,6 @@
     import dayjs from 'dayjs'
     import UserPill from '@/common/pills/user.vue'
 
-    // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -172,7 +171,14 @@
             const { classification: selectedClassification } = toRefs(props)
 
             const classificationColor = ref(
-                selectedClassification?.value?.options?.color ?? 'Blue'
+                selectedClassification?.value?.options?.color
+            )
+
+            watch(
+                () => selectedClassification?.value?.options?.color,
+                (v) => {
+                    classificationColor.value = v
+                }
             )
 
             const router = useRouter()

@@ -76,7 +76,8 @@ export default function useCreateGraph(
             minScale: 0.5,
             maxScale: 1.2,
             enabled: true,
-            global: true,
+            global: false,
+            factor: 1.04,
             modifiers: ['ctrl', 'meta'],
         },
         minimap: {
@@ -116,11 +117,11 @@ export default function useCreateGraph(
         type: 'dagre',
         rankdir: 'LR',
         controlPoints: true,
-        nodesepFunc() {
+        nodesepFunc(x) {
             // vertical spacing btw nodes
             return 20
         },
-        ranksepFunc() {
+        ranksepFunc(x) {
             // horizontal spacing btw nodes
             return 190
         },

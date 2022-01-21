@@ -23,7 +23,9 @@
 
         <div
             v-if="
-                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+                isGTC(selectedAsset) ||
+                selectedAsset.typeName === 'Connection' ||
+                selectedAsset.typeName === 'Process'
             "
             class="flex flex-col"
         >
@@ -519,7 +521,7 @@
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                See Also
+                Related Terms
             </p>
             <RelatedTerms
                 v-model="localSeeAlso"

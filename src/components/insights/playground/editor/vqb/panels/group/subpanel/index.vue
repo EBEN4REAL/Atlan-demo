@@ -7,7 +7,12 @@
             >
                 <div class="flex items-center w-full mb-3 pr-9">
                     <SingleTableMutliColumnSelector
-                        v-if="selectedTables.length < 2"
+                        v-if="
+                            isJoinPanelStateDisabledComputed(
+                                isJoinPanelDisabled,
+                                selectedTables
+                            )
+                        "
                         class="flex-1"
                         :selectedItems="subpanel.columns"
                         :selectedTablesQualifiedNames="
@@ -130,6 +135,7 @@
     import SingleTableMutliColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/_index.vue'
     import SingleTableMutliColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/dropdown.vue'
     import SingleTableMutliColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiColumns/singleTable/head.vue'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -164,6 +170,14 @@
         setup(props, { emit }) {
             const { subpanels, columnSubpanels } = useVModels(props)
             const { expand } = toRefs(props)
+            const isJoinPanelDisabled = computed(() => {
+                const joinPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+                return !joinPanel?.hide ? true : false
+            })
+
             const filteredTablesValues = computed(() =>
                 subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
             )
@@ -171,6 +185,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const { getDataTypeImage } = useColumn()
+            const { isJoinPanelStateDisabledComputed } = useJoin()
             const tableQualfiedName = ref(undefined)
             const selectedTables = computed(() => {
                 return activeInlineTab.value.playground.vqb.selectedTables
@@ -254,6 +269,8 @@
                 cols,
                 columnSubpanels,
                 hoverPill,
+                isJoinPanelDisabled,
+                isJoinPanelStateDisabledComputed,
             }
         },
     })

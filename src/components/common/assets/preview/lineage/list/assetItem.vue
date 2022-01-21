@@ -23,7 +23,7 @@
                     @click.stop
                     @change="(e) => $emit('listItem:check', e, item)"
                 />
-                <div class="flex flex-col flex-1 lg:pr-16">
+                <div class="flex flex-col flex-1 overflow-hidden">
                     <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
@@ -57,9 +57,16 @@
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
 
+                        <span
+                            class="flex-shrink mb-0 mr-1 text-sm font-bold truncate cursor-pointer text-primary"
+                            v-if="disableLinks"
+                        >
+                            {{ title(item) }}
+                        </span>
                         <router-link
+                            v-else
                             :to="getLineagePath(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden text-sm font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 text-sm font-bold truncate cursor-pointer text-primary hover:underline"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -415,6 +422,11 @@
                 default: false,
             },
             noBg: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            disableLinks: {
                 type: Boolean,
                 required: false,
                 default: false,

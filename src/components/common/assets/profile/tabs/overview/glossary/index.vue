@@ -14,7 +14,7 @@
                 ></AnnouncementWidget>
             </template>
         </Summary>
-        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
+        <Readme :asset="selectedAsset" :is-edit="readmeEditPermission" />
     </div>
 </template>
 

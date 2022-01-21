@@ -1,5 +1,7 @@
 import { watch, ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
+import { watchOnce, whenever } from '@vueuse/core'
+
 import useLineageStore from '~/store/lineage'
 import useLineageService from '~/services/meta/lineage/lineage_service'
 import useUpdateGraph from './useUpdateGraph'
@@ -25,7 +27,8 @@ export default function useEventGraph(
     config,
     drawerActiveKey,
     onSelectAsset,
-    onCloseDrawer
+    onCloseDrawer,
+    addSubGraph
 ) {
     /** DATA */
     const edgesHighlighted = ref([])
@@ -33,8 +36,6 @@ export default function useEventGraph(
     const che = ref('') // currentHilightedEdge
     const chp = ref({ portId: '', node: null, expandedNodes: [] }) // currentHilightedPort
     const nodesCaretClicked = ref([])
-    const carets = document.getElementsByClassName('node-caret')
-    const caretsArray = Array.from(carets)
     const activeNodesToggled = ref({})
 
     /** METHODS */
@@ -508,6 +509,15 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
     }
 
+    /** Reset the current highlighted port styling */
+    const resetCHE = () => {
+        if (che.value) {
+            const edge = graph.value.getCellById(che.value)
+            if (edge) controlEdgeHighlight(edge, true)
+            che.value = ''
+        }
+    }
+
     // getEventPath
     const getEventPath = (e) => {
         const path = (e.composedPath && e.composedPath()) || e.path
@@ -563,8 +573,61 @@ export default function useEventGraph(
         activeNodesToggled.value[node.id].newEdgesId = Array.from(newEdgesIdSet)
     }
 
+    // getNodeLineage
+    const getNodeLineage = (guid) => {
+        const cell = graph.value.getCellById(guid)
+        const isLeafNode = graph.value.isLeafNode(cell)
+        const nodeConfig = computed(() => ({
+            depth: 1,
+            guid,
+            direction: isLeafNode ? 'OUTPUT' : 'INPUT',
+            hideProcess: true,
+        }))
+        const { data } = useFetchLineage(nodeConfig, true)
+        watch(data, async () => {
+            await addSubGraph(
+                data.value,
+                registerAllListeners,
+                removeAddedNodesShadow
+            )
+            loaderCords.value = {}
+        })
+    }
+
+    // removeAddedNodesShadow
+    const removeAddedNodesShadow = () => {
+        const list = document.getElementsByClassName('node-added-shadow')
+        const listArr = Array.from(list)
+        listArr.forEach((ele) => {
+            ele.classList.remove('node-added-shadow')
+        })
+    }
+
+    // registerLoadCTAListeners
+    const registerLoadCTAListeners = () => {
+        const loadCTAs = document.getElementsByClassName('node-loadCTA')
+        const loadCTAsArray = Array.from(loadCTAs)
+        loadCTAsArray.forEach((x) => {
+            x.addEventListener('mousedown', (e) => {
+                e.stopPropagation()
+                loaderCords.value = { x: e.clientX, y: e.clientY }
+
+                const ele = getEventPath(e).find((x) =>
+                    x.getAttribute('data-cell-id')
+                )
+                const nodeId = ele.getAttribute('data-cell-id')
+
+                getNodeLineage(nodeId)
+            })
+        })
+    }
+    registerLoadCTAListeners()
+
     // registerCaretListeners
     const registerCaretListeners = () => {
+        const carets = document.getElementsByClassName('node-caret')
+        const caretsArray = Array.from(carets)
+
         caretsArray.forEach((x) => {
             x.addEventListener('mousedown', (e) => {
                 e.stopPropagation()
@@ -621,6 +684,11 @@ export default function useEventGraph(
         })
     }
     registerCaretListeners()
+
+    const registerAllListeners = () => {
+        registerLoadCTAListeners()
+        registerCaretListeners()
+    }
 
     // removeCHPEdges
     const removeCHPEdges = () => {
@@ -717,12 +785,15 @@ export default function useEventGraph(
     // EDGE - CLICK
     graph.value.on('edge:click', ({ e, edge, cell }) => {
         if (chp.value.portId) return
+
         loaderCords.value = { x: e.clientX, y: e.clientY }
 
         if (edge.id.includes('port')) {
             loaderCords.value = {}
             return
         }
+
+        // If user clicks on selected edge
         if (che.value === edge.id) {
             che.value = ''
             onCloseDrawer()
@@ -730,15 +801,22 @@ export default function useEventGraph(
             highlight(null)
             return
         }
+
+        // If there is an existing highlighted edge
         if (che.value) {
-            controlEdgeHighlight(edge, true)
+            resetCHE()
             highlight(null)
         }
+
         che.value = edge.id
         controlEdgeHighlight(edge, false)
         const processId = edge.id.split('/')[0]
-        const { data } = fetchAsset(processId, ['sql'])
-        watch(data, () => {
+        const { data } = fetchAsset(processId)
+
+        /** Automatically stop the watcher once done.
+         * Added this to stop memory leaks from happening
+         * due to multiple watchers staying active in the memory */
+        watchOnce(data, () => {
             onSelectAsset(data.value)
             const target = edge.id.split('/')[1].split('@')[1]
             highlight(target, false)
@@ -781,23 +859,20 @@ export default function useEventGraph(
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
-        if (che.value) {
-            const cheCell = graph.value.getCellById(che.value)
-            controlEdgeHighlight(cheCell, true)
-            che.value = ''
-        }
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
         onSelectAsset(node.store.data.entity)
         highlight(node?.id)
+        resetCHE()
     })
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
+        removeAddedNodesShadow()
         if (chp.value.portId) return
         onSelectAsset(baseEntity.value)
         onCloseDrawer()
-        che.value = ''
+        resetCHE()
         highlight(null)
     })
 
@@ -809,6 +884,10 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+    })
+
+    graph.value.on('cell:click', () => {
+        removeAddedNodesShadow()
     })
 
     // Set connector for duplicate relations
@@ -824,15 +903,14 @@ export default function useEventGraph(
         else highlight(newVal)
     })
 
-    watch(resetSelections, (newVal) => {
-        if (newVal) {
-            onSelectAsset(baseEntity.value, false, false)
-            che.value = ''
-            drawerActiveKey.value = 'Info'
-            if (highlightedNode.value) highlight(null)
-            if (chp.value.portId) deselectPort()
+    // Trigger the callback only when the value is true
+    whenever(resetSelections, () => {
+        onSelectAsset(baseEntity.value, false, false)
+        resetCHE()
+        drawerActiveKey.value = 'Info'
+        if (highlightedNode.value) highlight(null)
+        if (chp.value.portId) deselectPort()
 
-            resetSelections.value = false
-        }
+        resetSelections.value = false
     })
 }

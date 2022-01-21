@@ -67,6 +67,7 @@
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
+            @update="handleDrawerUpdate"
         />
     </div>
 </template>
@@ -153,6 +154,9 @@
                 resetSelections.value = true
             }
 
+            const handleDrawerUpdate = (asset) => {
+                control('selectedAsset', asset)
+            }
             // initialize
             const initialize = async () => {
                 // useGraph
@@ -166,7 +170,7 @@
                 )
 
                 // useComputeGraph
-                await useComputeGraph(
+                const { addSubGraph } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -188,7 +192,8 @@
                     config,
                     drawerActiveKey,
                     onSelectAsset,
-                    onCloseDrawer
+                    onCloseDrawer,
+                    addSubGraph
                 )
             }
 
@@ -242,6 +247,7 @@
                 drawerActiveKey,
                 onShowAddLineage,
                 onCloseDrawer,
+                handleDrawerUpdate,
             }
         },
     })
@@ -254,6 +260,22 @@
 </style>
 
 <style lang="less">
+    .node-added-shadow {
+        box-shadow: 0 2.8px 2.2px rgba(0, 179, 138, 0.12),
+            0 6.7px 5.3px rgba(0, 179, 138, 0.12),
+            0 12.5px 10px rgba(0, 179, 138, 0.12),
+            0 22.3px 17.9px rgba(0, 179, 138, 0.12),
+            0 41.8px 33.4px rgba(0, 179, 138, 0.12),
+            0 100px 80px rgba(0, 179, 138, 0.12);
+    }
+    .l-m20px {
+        left: -20px;
+    }
+
+    .r-m20px {
+        right: -20px;
+    }
+
     @keyframes ant-line {
         to {
             stroke-dashoffset: -1000;

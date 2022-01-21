@@ -34,12 +34,15 @@
         PropType,
         ref,
         onMounted,
+        ComputedRef,
         onUnmounted,
         toRefs,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -63,17 +66,38 @@
             const { disabled, selectedTables } = toRefs(props)
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
+            const { isJoinPanelStateDisabledComputed } = useJoin()
+            const isJoinPanelDisabled = inject(
+                'isJoinPanelDisabled'
+            ) as Ref<Boolean>
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
+            const getColumnInitialBody = inject(
+                'getColumnInitialBody'
+            ) as Function
+            const replaceColumnBody = inject('replaceColumnBody') as Function
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
 
             const placeholder = computed(() => {
                 let data = ''
 
-                if (selectedTables.value?.length > 1) {
+                if (
+                    !isJoinPanelStateDisabledComputed(
+                        isJoinPanelDisabled.value,
+                        selectedTables.value
+                    )
+                ) {
                     if (!isTableSelected.value) {
                         if (isTableLoading.value) {
                             data = 'Loading...'
@@ -96,6 +120,28 @@
                 }
                 return data
             })
+
+            watch(
+                [isJoinPanelDisabled, selectedTables],
+                () => {
+                    if (isJoinPanelDisabled.value) {
+                        replaceColumnBody(
+                            getColumnInitialBody(
+                                selectedTables.value,
+                                'initial'
+                            )
+                        )
+                    } else {
+                        replaceTableBody(
+                            getTableInitialBody(selectedTables.value)
+                        )
+                    }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             return {
                 isColumnLoading,

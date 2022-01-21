@@ -146,6 +146,7 @@
                     >
                         <template #default="{ item, itemIndex }">
                             <AssetItem
+                                :id="getAssetId(item)"
                                 :item="item"
                                 :item-index="itemIndex"
                                 :selected-guid="
@@ -155,7 +156,6 @@
                                 "
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
-                                :id="getAssetId(item)"
                                 :bulk-select-mode="
                                     bulkSelectedAssets &&
                                     bulkSelectedAssets.length
@@ -169,13 +169,13 @@
                                         : false
                                 "
                                 :class="page !== 'admin' ? 'mx-3' : 'mx-3'"
+                                :open-asset-profile-in-new-tab="
+                                    item.typeName.toLowerCase() === 'query'
+                                "
                                 @preview="handleClickAssetItem"
                                 @updateDrawer="updateCurrentList"
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
-                                "
-                                :openAssetProfileInNewTab="
-                                    item.typeName.toLowerCase() === 'query'
                                 "
                             ></AssetItem>
                         </template>
@@ -210,6 +210,7 @@
         watchOnce,
     } from '@vueuse/core'
     // import PopOverAsset from '@common/popover/assets/index.vue'
+    import { useRoute } from 'vue-router'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -234,7 +235,6 @@
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
-    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -368,11 +368,10 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...GlossaryAttributes,
                 ...customMetadataProjections,
             ])
-            if (page.value === 'glossary') {
-                defaultAttributes.value.push(...GlossaryAttributes)
-            }
+
             const relationAttributes = ref([...AssetRelationAttributes])
 
             const activeKey: Ref<string[]> = ref([])

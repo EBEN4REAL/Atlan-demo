@@ -5,18 +5,28 @@
         <template v-if="item.requestType === 'attach_classification'">
             <p class="text-gray-500">Link Classification</p>
             <div class="mt-1 w-fit">
-                <ClassificationPill
-                    :name="localClassification(item.payload.typeName).name"
-                    :display-name="
-                        localClassification(item.payload.typeName)?.displayName
-                    "
-                    :allow-delete="false"
-                    :color="
-                        localClassification(item.payload.typeName).options
-                            ?.color
-                    "
-                    :no-hover="true"
-                />
+                <Popover
+                    v-if="localClassification(item.payload.typeName)"
+                    :classification="localClassification(item.payload.typeName)"
+                    label-key="displayName"
+                    popover-trigger="hover"
+                    read-only
+                    :is-plain="true"
+                >
+                    <ClassificationPill
+                        :name="localClassification(item.payload.typeName).name"
+                        :display-name="
+                            localClassification(item.payload.typeName)
+                                ?.displayName
+                        "
+                        :allow-delete="false"
+                        :color="
+                            localClassification(item.payload.typeName).options
+                                ?.color
+                        "
+                        :no-hover="true"
+                    />
+                </Popover>
             </div>
             <div class="mt-1">
                 <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
@@ -200,10 +210,11 @@
         approveRequest,
         declineRequest,
     } from '~/composables/requests/useRequests'
+    import Popover from '@/common/popover/classification.vue'
 
     export default defineComponent({
         name: 'RequestItem',
-        components: { Pill, ClassificationPill },
+        components: { Pill, ClassificationPill, Popover },
         props: {
             selectedAsset: {
                 type: Object,

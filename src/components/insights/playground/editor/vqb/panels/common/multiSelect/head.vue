@@ -124,7 +124,12 @@
             watch(
                 [isJoinPanelDisabled, selectedTables],
                 () => {
-                    if (isJoinPanelDisabled.value) {
+                    if (
+                        isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled.value,
+                            selectedTables.value
+                        )
+                    ) {
                         replaceColumnBody(
                             getColumnInitialBody(
                                 selectedTables.value,

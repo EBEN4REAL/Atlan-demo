@@ -700,7 +700,12 @@
             watch(
                 isAreaFocused,
                 (newIsAreaFocused) => {
-                    if (!isJoinPanelDisabled.value) {
+                    if (
+                        !isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled.value,
+                            selectedTablesQualifiedNames.value
+                        )
+                    ) {
                         if (newIsAreaFocused) {
                             dirtyTableSelected.value = toRaw(
                                 tableSelected.value
@@ -708,6 +713,7 @@
                             dirtyIsTableSelected.value = toRaw(
                                 isTableSelected.value
                             )
+                            // debugger
 
                             if (!tableSelected.value) {
                                 replaceTableBody(

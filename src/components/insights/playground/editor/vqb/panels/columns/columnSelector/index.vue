@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="setFoucs"
+        @click="toggleFoucs"
         @focusout="handleContainerBlur"
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
@@ -373,9 +373,15 @@
             const isAreaFocused = ref(false)
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
-            const setFoucs = () => {
-                if (disabled?.value) return
-                isAreaFocused.value = true
+            const toggleFoucs = () => {
+                if (disabled.value) return
+                if (!disabled.value) {
+                    if (isAreaFocused.value) {
+                        isAreaFocused.value = false
+                    } else {
+                        isAreaFocused.value = true
+                    }
+                }
                 nextTick(() => {
                     console.log(inputRef?.value, 'he')
                     inputRef?.value?.focus()
@@ -508,12 +514,12 @@
             }
 
             const input1Change = () => {
-                setFoucs()
+                toggleFoucs()
                 queryText.value = inputValue1.value
                 // emit('queryTextChange')
             }
             const input2Change = () => {
-                setFoucs()
+                toggleFoucs()
                 queryText.value = inputValue2.value
                 // emit('queryTextChange')
             }
@@ -738,7 +744,7 @@
                 clickPos,
                 container,
                 handleContainerBlur,
-                setFoucs,
+                toggleFoucs,
                 isAreaFocused,
                 getDataTypeImage,
                 isPrimary,

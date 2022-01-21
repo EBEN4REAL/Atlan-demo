@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="setFocus"
+        @click="toggleFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
@@ -203,6 +203,7 @@
 
                     setDropDownPosition()
                     document.addEventListener('click', (event) => {
+                        console.log(event, 'evetmn')
                         const withinBoundaries = event
                             .composedPath()
                             .includes(container.value)
@@ -228,10 +229,14 @@
                     containerPosition.value.height = viewportOffset?.height
             }
 
-            const setFocus = () => {
+            const toggleFocus = () => {
                 setDropDownPosition()
                 if (!disabled.value) {
-                    isAreaFocused.value = true
+                    if (isAreaFocused.value) {
+                        isAreaFocused.value = false
+                    } else {
+                        isAreaFocused.value = true
+                    }
                 }
             }
 
@@ -318,7 +323,7 @@
                 placeholder,
                 dropdownOption,
                 enrichedSelectedItems,
-                setFocus,
+                toggleFocus,
                 specifiedBodyWidth,
                 disabled,
                 container,

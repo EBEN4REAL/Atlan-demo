@@ -95,6 +95,16 @@ export const previewTabs = [
         analyticsKey: 'resources',
     },
     {
+        name: 'Request',
+        component: 'request',
+        icon: 'Request',
+        activeIcon: 'RequestActive',
+        tooltip: 'Request',
+        scrubbed: false,
+        requiredInProfile: true,
+        analyticsKey: 'request',
+    },
+    {
         name: 'Property',
         component: 'property',
         icon: 'Property',

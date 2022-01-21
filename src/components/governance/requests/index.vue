@@ -181,7 +181,7 @@
             >
                 <div
                     v-if="searchTerm?.length > 0"
-                    class="flex flex-col items-center justify-center mt-12"
+                    class="flex flex-col items-center justify-center h-96"
                 >
                     <atlan-icon icon="NoRequestFound" class="h-36" />
                     <span class="mt-4 text-center text-gray-500 w-72">
@@ -195,7 +195,7 @@
                 </div>
                 <div
                     v-else-if="Object.keys(facets).length > 0"
-                    class="flex flex-col items-center justify-center mt-12"
+                    class="flex flex-col items-center justify-center h-96"
                 >
                     <atlan-icon icon="NoRequestFound" class="h-36" />
                     <span class="mt-4 text-center text-gray-500 w-72">

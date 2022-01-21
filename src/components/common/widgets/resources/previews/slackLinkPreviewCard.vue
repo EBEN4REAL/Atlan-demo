@@ -49,7 +49,17 @@
                     </div>
                     <!-- message -->
                     <div>
-                        <Truncate :tooltip-text="data.message.text" :rows="2" />
+                        <ShowLess :text="data.message.text" />
+                        <!-- <a-typography-paragraph
+                            :ellipsis="{
+                                rows: 2,
+                                expandable: true,
+                                symbol: 'more',
+                            }"
+                            :content="data.message.text"
+                            class="break-all"
+                        /> -->
+                        <!-- <Truncate :tooltip-text="data.message.text" :rows="2" /> -->
                     </div>
                     <div class="flex text-sm text-gray-500">
                         <span class="" v-if="data.message.reply_count">
@@ -137,11 +147,18 @@
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
     import Truncate from '@/common/ellipsis/index.vue'
+    import ShowLess from '@/UI/ShowLess.vue'
 
     dayjs.extend(relativeTime)
 
     export default defineComponent({
-        components: { LinkPreview, DeleteResource, EditResource, Truncate },
+        components: {
+            LinkPreview,
+            DeleteResource,
+            EditResource,
+            Truncate,
+            ShowLess,
+        },
         props: {
             item: {
                 type: Object,

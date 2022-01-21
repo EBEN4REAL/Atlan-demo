@@ -216,11 +216,6 @@
                 },
                 { deep: true, immediate: true }
             )
-            const slackUrl = computed(() =>
-                slackEnabled.value
-                    ? getDeepLinkFromUserDmLink(slackEnabled.value)
-                    : '#'
-            )
             return {
                 selectedUser,
                 isLoading,

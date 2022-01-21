@@ -25,32 +25,10 @@ export default function useProject() {
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
-    // const columnList: Ref<
-    //     [
-    //         {
-    //             title: string
-    //             dataIndex: string
-    //             width: string
-    //             key: any
-    //         }
-    //     ]
-    // > = ref([])
-    // const dataList = ref([])
-    // const isQueryRunning = ref('')
-    // const queryExecutionTime = ref(-1)
-    // const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
-            // columnList.value = [
-            //     {
-            //         title: '#',
-            //         dataIndex: 'columnIndex',
-            //         key: 0,
-            //         data_type: 'number'
-            //     }
-            // ]
 
             columnList.value = [
             ]
@@ -65,7 +43,6 @@ export default function useProject() {
             })
         }
 
-        // console.log('table columns: ', columns)
     }
 
     let keys = ref(0)
@@ -110,8 +87,9 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
         
-        resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if(editorInstance?.value) {
+            resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             resetLineDecorations(editorInstance.value)
         }
         // console.log('inside run query: ', activeInlineTab.value)

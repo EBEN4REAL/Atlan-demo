@@ -54,7 +54,14 @@ export function getValueStringFromType(subpanel, value) {
                 }
             }
         } else res += `'${value}'`
-    } else if (type === 'date') res += `DATE '${value}'`
+    } else if (type === 'date') {
+        // check if the column type is TIMESTAMP
+        if (subpanel?.column?.type === 'timestamp' || 'TIMESTAMP') {
+            res += `TIMESTAMP '${value}'`
+        } else {
+            res += `DATE '${value}'`
+        }
+    }
     return res
 }
 
@@ -389,22 +396,40 @@ export function generateSQLQuery(
             } else {
                 let contextPrefix = ''
                 contextPrefix = getContext(
-                    subpanel.aggregateORGroupColumn?.value ?? ''
+                    subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
                 const tableName = getTableNameWithQuotes(
                     subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {
-                        select.order(
-                            `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
-                            order
-                        )
+                        if (
+                            subpanel.aggregateORGroupColumn.addedBy !== 'group'
+                        ) {
+                            select.order(
+                                `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
+                                order
+                            )
+                        } else {
+                            select.order(
+                                `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel.aggregateORGroupColumn.label}${assetQuoteType}`,
+                                order
+                            )
+                        }
                     } else {
-                        select.order(
-                            `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
-                            order
-                        )
+                        if (
+                            subpanel.aggregateORGroupColumn.addedBy !== 'group'
+                        ) {
+                            select.order(
+                                `${assetQuoteType}${subpanel.aggregateORGroupColumn?.label}${assetQuoteType}`,
+                                order
+                            )
+                        } else {
+                            select.order(
+                                `${tableName}.${assetQuoteType}${subpanel.aggregateORGroupColumn.label}${assetQuoteType}`,
+                                order
+                            )
+                        }
                     }
                 }
             }
@@ -453,7 +478,7 @@ export function generateSQLQuery(
                             } else {
                                 res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                             }
-                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += ` ${nameMap[subpanel?.filter?.name]} `
 
                             if (subpanel?.filter?.name === 'between') {
                                 const firstVal = getValueStringFromType(
@@ -482,7 +507,7 @@ export function generateSQLQuery(
                             } else {
                                 res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                             }
-                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += ` ${nameMap[subpanel?.filter?.name]} `
                             res += `${getValueStringFromType(
                                 subpanel,
                                 subpanel?.filter?.value ?? ''
@@ -505,7 +530,7 @@ export function generateSQLQuery(
                             } else {
                                 res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                             }
-                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += ` ${nameMap[subpanel?.filter?.name]} `
 
                             res += ` ( `
                             subpanel?.filter?.value?.forEach((el, i) => {
@@ -530,7 +555,7 @@ export function generateSQLQuery(
                             } else {
                                 res += `${tableName}.${assetQuoteType}${subpanel?.column?.label}${assetQuoteType}`
                             }
-                            res += `${nameMap[subpanel?.filter?.name]} `
+                            res += ` ${nameMap[subpanel?.filter?.name]} `
                         }
 
                         break

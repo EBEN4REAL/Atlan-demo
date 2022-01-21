@@ -428,7 +428,6 @@
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
 
-    import { useTableExport } from '~/components/insights/common/composables/useTableExport'
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
     export default defineComponent({
@@ -993,7 +992,6 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
-                useTableExport,
                 // collectionInfo,
                 // hasCollectionReadPermission,
                 // hasCollectionWritePermission,

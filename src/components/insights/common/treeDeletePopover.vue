@@ -1,14 +1,17 @@
 <template>
-    <div
-        class="p-4 rounded"
-        style="width: 321px"
-        @mouseleave="cancel"
-        @blur="cancel"
+    <a-modal
+        :visible="showDeletePopover"
+        :closable="false"
+        width="400px"
+        :destroyOnClose="true"
     >
-        <div class="mb-6">
-            <p class="mb-2 text-base font-bold text-gray-700">
+        <template #title>
+            <p class="text-base font-bold text-gray-700">
                 Delete {{ item?.attributes?.name }}
             </p>
+        </template>
+
+        <div class="px-4 mb-4">
             <p v-if="item.typeName === 'Folder'" class="mb-0 text-black">
                 Deleting the folder will also
                 <span class="font-bold"
@@ -30,24 +33,26 @@
                 This action can't be undone.
             </p>
         </div>
-        <div class="flex justify-end w-full">
-            <a-button
-                class="px-5 mr-4 text-sm border rounded"
-                style="width: 100px"
-                type="default"
-                @click="cancel"
-                >Cancel</a-button
-            >
-            <a-button
-                class="px-5 text-sm rounded"
-                style="width: 100px"
-                type="danger"
-                :loading="isSaving"
-                @click="deleteItem"
-                >Delete</a-button
-            >
-        </div>
-    </div>
+        <template #footer>
+            <div class="flex justify-end w-full mb-2">
+                <a-button
+                    class="px-5 mr-4 text-sm border rounded"
+                    style="width: 100px"
+                    type="default"
+                    @click="cancel"
+                    >Cancel</a-button
+                >
+                <a-button
+                    class="px-5 text-sm rounded"
+                    style="width: 100px"
+                    type="danger"
+                    :loading="isSaving"
+                    @click="deleteItem"
+                    >Delete</a-button
+                >
+            </div>
+        </template>
+    </a-modal>
 </template>
 
 <script lang="ts">
@@ -66,6 +71,10 @@
                 type: Boolean,
                 required: true,
                 default: false,
+            },
+            showDeletePopover: {
+                type: Boolean,
+                required: true,
             },
         },
         setup(props, { emit }) {

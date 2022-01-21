@@ -261,6 +261,7 @@
                     type: item.type,
                     value: item.label,
                     qualifiedName: item.value,
+                    addedBy: item.addedBy,
                     tableName: getTableNameFromTableQualifiedName(
                         item.qualifiedName
                     ),

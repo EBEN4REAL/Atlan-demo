@@ -6,13 +6,15 @@
     >
         <slot></slot>
         <template #overlay>
-            <a-menu mode="vertical">
-                <a-menu-item key="copyLink" @click="handleCopyProfileLink">
+            <a-menu class="" style="min-width: 200px" mode="vertical">
+                <a-menu-item
+                    class="px-4 py-2"
+                    key="copyLink"
+                    @click="handleCopyProfileLink"
+                >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" />
-                        <span class="pl-2 text-sm">
-                            Copy asset profile link
-                        </span>
+                        <span class="pl-2 text-sm"> Copy link </span>
                     </div>
                 </a-menu-item>
 
@@ -22,7 +24,7 @@
                     "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
-                    class="flex items-center"
+                    class="flex items-center px-4 py-2"
                     @click="closeMenu"
                 >
                     <SlackModal :link="link" @closeParent="closeMenu">

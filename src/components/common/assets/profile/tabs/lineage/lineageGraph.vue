@@ -67,6 +67,7 @@
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
+            @update="handleDrawerUpdate"
         />
     </div>
 </template>
@@ -153,6 +154,9 @@
                 resetSelections.value = true
             }
 
+            const handleDrawerUpdate = (asset) => {
+                control('selectedAsset', asset)
+            }
             // initialize
             const initialize = async () => {
                 // useGraph
@@ -242,6 +246,7 @@
                 drawerActiveKey,
                 onShowAddLineage,
                 onCloseDrawer,
+                handleDrawerUpdate,
             }
         },
     })

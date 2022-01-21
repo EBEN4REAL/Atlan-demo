@@ -75,16 +75,18 @@
             :is-share="true"
             :item="item"
         />
-        <a-popover :visible="showDeletePopover" placement="rightTop">
-            <template #content>
-                <TreeDeletePopover
-                    :item="item"
-                    @cancel="showDeletePopover = false"
-                    @delete="() => delteItem()"
-                    :isSaving="isDeleteLoading"
-                />
-            </template>
-        </a-popover>
+
+        <!-- <a-popover :visible="showDeletePopover" placement="rightTop"> -->
+        <!-- <template #content> -->
+        <TreeDeletePopover
+            :item="item"
+            @cancel="showDeletePopover = false"
+            @delete="() => delteItem()"
+            :isSaving="isDeleteLoading"
+            :showDeletePopover="showDeletePopover"
+        />
+        <!-- </template> -->
+        <!-- </a-popover> -->
     </div>
 </template>
 
@@ -161,7 +163,7 @@
             const showDeletePopover = ref(false)
 
             const toggleDeleteCollectionModal = () => {
-                // collectionModalVisible.value = false
+                collectionModalVisible.value = false
                 showDeletePopover.value = true
             }
 
@@ -203,7 +205,7 @@
                             `${item.value?.attributes?.name} deleted!`
                         )
                     } else {
-                        message.success(
+                        message.error(
                             `${item.value?.attributes?.name} deletion failed!`
                         )
                     }

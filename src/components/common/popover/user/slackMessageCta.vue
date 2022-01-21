@@ -23,11 +23,6 @@
         name: 'PopoverUser',
         components: { AtlanIcon },
         props: {
-            slackLink: {
-                type: String,
-                required: false,
-                default: '',
-            },
             ctaText: {
                 type: String,
                 default: 'Say Hi 👋',
@@ -41,7 +36,7 @@
         },
         emits: [],
         setup(props) {
-            const { slackLink, entity } = toRefs(props)
+            const { entity } = toRefs(props)
             const type = ref('')
             if (entity.value.username) type.value = 'user'
             else if (entity.value.alias) type.value = 'group'

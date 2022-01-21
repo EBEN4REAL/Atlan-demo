@@ -102,7 +102,7 @@ export const assetTypeList: {
         count: 0,
         relationships: [],
     },
-    {
+    /*  {
         id: 'Procedure',
         label: 'Procedure',
         nameAttribute: 'procedureName',
@@ -112,7 +112,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         count: 0,
         relationships: [],
-    },
+    }, */
     {
         id: 'Query',
         label: 'Query',

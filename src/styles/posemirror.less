@@ -154,18 +154,26 @@ ul[data-type="taskList"] {
 
     li {
         display: flex;
+        padding-left: 0 !important;
+        align-items: center;
+        align-content: center;
 
         > label {
+            display: flex;
             flex: 0 0 auto;
             margin-right: 0.5rem;
             user-select: none;
+            margin-top: 0 !important;
+            align-items: center;
+            align-content: center;
         }
 
         > div {
             flex: 1 1 auto;
+            margin-bottom: 0 !important;
         }
 
-        ::before {
+        &::before {
             content: none !important;
         }
     }

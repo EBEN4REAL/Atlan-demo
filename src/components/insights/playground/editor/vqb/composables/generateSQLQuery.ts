@@ -56,7 +56,9 @@ export function getValueStringFromType(subpanel, value) {
         } else res += `'${value}'`
     } else if (type === 'date') {
         // check if the column type is TIMESTAMP
-        if (subpanel?.column?.type === 'timestamp' || 'TIMESTAMP') {
+        if (
+            subpanel?.column.attributes?.dataType?.toUpperCase() === 'TIMESTAMP'
+        ) {
             res += `TIMESTAMP '${value}'`
         } else {
             res += `DATE '${value}'`
@@ -596,7 +598,7 @@ export function generateSQLQuery(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
             if (rightColumnContextPrefix !== '') {
-                rightColumnName = `${leftColumnContextPrefix}.${rightColumnName}`
+                rightColumnName = `${rightColumnContextPrefix}.${rightColumnName}`
             }
 
             let rightTableContextPrefix = ''

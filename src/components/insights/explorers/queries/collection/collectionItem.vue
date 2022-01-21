@@ -12,15 +12,12 @@
                 item?.attributes?.icon ? item?.attributes?.icon : '🗃'
             }}</span>
 
-            <div class="truncate group-hover:text-primary" style="width: 90%">
-                <span class="mr-1 text-sm text-gray-700 truncate">{{
+            <div class="truncate" style="max-width: 210px">
+                <span class="mr-1 text-sm text-gray-700">{{
                     item.attributes.name
                 }}</span>
-                <!-- <AtlanIcon
-                    v-if="isCollectionPrivate(item, username)"
-                    icon="PrivateCollection"
-                    class="self-center w-4 h-4 -mt-1"
-                ></AtlanIcon> -->
+            </div>
+            <div>
                 <AtlanIcon
                     v-if="!isCollectionPrivate(item, username)"
                     icon="PublicCollection"

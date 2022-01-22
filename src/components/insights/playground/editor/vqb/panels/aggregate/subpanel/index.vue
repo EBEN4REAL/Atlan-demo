@@ -63,7 +63,7 @@
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         @checkChange="checkChange"
-                        :disabled="readOnly"
+                        :disabled="!subpanel?.column?.label || readOnly"
                     />
 
                     <AtlanIcon
@@ -81,9 +81,9 @@
         </div>
 
         <span
-            v-if="!readonly"
+            v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
-            @click.stop="handleAddPanel"
+            @click="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
             <span>Add another</span>

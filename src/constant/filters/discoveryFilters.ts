@@ -206,8 +206,8 @@ export const discoveryFilters = [
                 typeName: 'long',
             },
             {
-                name: 'sizeBytes',
-                displayName: 'Size(Bytes)',
+                name: 'sizeMegaBytes',
+                displayName: 'Size (MB)',
                 typeName: 'long',
             },
         ],

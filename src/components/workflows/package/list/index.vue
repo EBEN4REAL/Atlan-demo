@@ -15,6 +15,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs } from 'vue'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import Item from './item.vue'
 
     export default defineComponent({

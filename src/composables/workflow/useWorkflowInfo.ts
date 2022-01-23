@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import cronstrue from 'cronstrue'
+import { useConnectionStore } from '~/store/connection'
 
 dayjs.extend(relativeTime)
 
@@ -157,6 +158,26 @@ export default function useWorkflowInfo() {
         )})`
     }
 
+    const packageType = (item) =>
+        item?.metadata?.labels['orchestration.atlan.com/type']
+
+    const connectorStore = useConnectionStore()
+
+    const displayName = (item, workflowName) => {
+        let suffix = workflowName.split(`${name(item)}-`).pop()
+        if (packageType(item) === 'connector') {
+            suffix = suffix.replaceAll('-', '/')
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === suffix
+            )
+            if (found) {
+                return found?.attributes.name
+            }
+            return suffix
+        }
+        return suffix
+    }
+
     return {
         name,
         creationTimestamp,
@@ -176,5 +197,7 @@ export default function useWorkflowInfo() {
         getRunBorderClass,
         getRunTextClass,
         creatorUsername,
+        packageType,
+        displayName,
     }
 }

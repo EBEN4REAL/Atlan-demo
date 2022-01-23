@@ -7,19 +7,20 @@
         <a-input placeholder="Search workflows"></a-input>
 
         <template v-for="workflow in list" :key="workflow.metadata.name">
-            <Item :item="workflow"></Item>
+            <Item :item="workflow" :packageObject="item"></Item>
         </template>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, provide, ref, toRefs, watch } from 'vue'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import Item from './item.vue'
     import { debouncedWatch } from '@vueuse/core'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -65,10 +66,28 @@
                 preference,
             })
 
+            const dependentKeyRun = ref()
+            const facetRun = ref({})
+            const aggregationRun = ref(['status'])
+
+            const { quickChange: quickChangeRun, runByWorkflowMap } =
+                useRunDiscoverList({
+                    isCache: false,
+                    dependentKey: dependentKeyRun,
+                    facets: facetRun,
+                    limit: ref(0),
+                    offset,
+                    aggregations: aggregationRun,
+                    queryText: ref(''),
+                    source: ref({
+                        excludes: ['spec'],
+                    }),
+                    preference,
+                })
+
             debouncedWatch(
                 item.value?.metadata?.name,
                 (prev) => {
-                    console.log('change')
                     if (prev) {
                         quickChange()
                     }
@@ -76,7 +95,27 @@
                 { debounce: 100 }
             )
 
-            return { item, limit, offset, queryText, facets, list, quickChange }
+            watch(list, () => {
+                const map = list.value.map((i) => i?.metadata?.name)
+                facetRun.value = {
+                    workflowTemplates: map,
+                }
+                quickChangeRun()
+            })
+
+            provide('runMap', runByWorkflowMap)
+
+            return {
+                item,
+                limit,
+                offset,
+                queryText,
+                facets,
+                list,
+                quickChange,
+                quickChangeRun,
+                runByWorkflowMap,
+            }
         },
     })
 </script>

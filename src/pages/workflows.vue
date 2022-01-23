@@ -24,7 +24,6 @@
     import { useRoute } from 'vue-router'
     import WorkflowDiscovery from '@/workflows/index.vue'
     import WorfklowPreview from '@/workflows/preview.vue'
-    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {

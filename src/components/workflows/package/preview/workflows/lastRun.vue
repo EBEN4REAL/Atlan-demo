@@ -9,7 +9,7 @@
 
             <Ellipsis
                 :tooltip-text="displayName(item, workflow)"
-                classes="text-gray-500"
+                classes="text-gray-700"
                 clampPercentage="80%"
                 class="ml-2"
             ></Ellipsis>

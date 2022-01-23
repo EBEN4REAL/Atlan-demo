@@ -99,9 +99,9 @@
         </div>
 
         <div class="flex flex-col gap-y-2">
-            <div class="text-sm text-gray-700" v-if="workflowList.length > 0">
+            <!-- <div class="text-sm text-gray-700" v-if="workflowList.length > 0">
                 {{ workflowList.length }} workflows
-            </div>
+            </div> -->
 
             <template
                 v-for="(workflow, index) in workflowRestrictedList"
@@ -171,7 +171,7 @@
                     selectedItem.value?.metadata.name
             )
 
-            const { creationTimestamp } = useWorkflowInfo()
+            const { creationTimestamp, packageType } = useWorkflowInfo()
 
             const runMap = inject('runMap')
             const workflowMap = inject('workflowMap')
@@ -235,6 +235,7 @@
                 workflowMap,
                 workflowList,
                 workflowRestrictedList,
+                packageType,
             }
         },
     })

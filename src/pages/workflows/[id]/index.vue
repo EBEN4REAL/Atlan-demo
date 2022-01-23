@@ -2,19 +2,121 @@
     <div class="flex flex-col h-full">
         <div class="flex items-center justify-between px-4 py-3 border-b">
             <div class="flex items-center">
-                <a-button class="px-1 mr-2" @click="handleBack">
+                <a-button
+                    class="px-1 mr-2"
+                    @click="handleBack"
+                    v-if="mode === 'monitor'"
+                >
                     <atlan-icon
                         icon="ArrowRight"
                         class="w-auto h-4 text-gray-500 transform rotate-180"
                     />
                 </a-button>
                 <div class="flex flex-col">
-                    <span class="font-semibold"> {{ name(item) }}</span>
-                    {{ creationTimestamp(item, true) }}
+                    <div class="flex items-center" style="padding-bottom: 1px">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="flex items-center flex-grow border-gray-200"
+                                v-if="workflowPackage?.metadata?.annotations"
+                            >
+                                <div
+                                    class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+                                >
+                                    <img
+                                        v-if="
+                                            workflowPackage?.metadata
+                                                ?.annotations[
+                                                'orchestration.atlan.com/icon'
+                                            ]
+                                        "
+                                        class="self-center w-6 h-6"
+                                        :src="
+                                            workflowPackage?.metadata
+                                                ?.annotations[
+                                                'orchestration.atlan.com/icon'
+                                            ]
+                                        "
+                                    />
+                                    <span
+                                        v-else-if="
+                                            workflowPackage?.metadata
+                                                ?.annotations[
+                                                'orchestration.atlan.com/emoji'
+                                            ]
+                                        "
+                                        class="self-center w-6 h-6"
+                                    >
+                                        {{
+                                            workflowPackage?.metadata
+                                                ?.annotations[
+                                                'orchestration.atlan.com/emoji'
+                                            ]
+                                        }}</span
+                                    >
+                                    <span v-else class="self-center w-6 h-6">
+                                        {{ '\ud83d\udce6' }}</span
+                                    >
+
+                                    <div
+                                        v-if="
+                                            workflowPackage?.metadata?.labels[
+                                                'orchestration.atlan.com/certified'
+                                            ] === 'true'
+                                        "
+                                        class="absolute -right-1 -top-2"
+                                    >
+                                        <a-tooltip
+                                            title="Certified"
+                                            placement="left"
+                                        >
+                                            <AtlanIcon
+                                                icon="Verified"
+                                                class="ml-1"
+                                            ></AtlanIcon>
+                                        </a-tooltip>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div
+                                        class="flex items-center font-semibold leading-none truncate overflow-ellipsis"
+                                    >
+                                        {{ name(item) }}
+                                    </div>
+
+                                    <div
+                                        class="flex mt-1 text-gray-500 gap-x-2"
+                                    >
+                                        <span class="text-gray-500">{{
+                                            displayName(
+                                                workflowPackage,
+                                                name(item)
+                                            )
+                                        }}</span>
+                                        <div class="text-gray-500">
+                                            <span
+                                                >created
+                                                {{
+                                                    creationTimestamp(
+                                                        item,
+                                                        true
+                                                    )
+                                                }}
+                                                ago by
+                                                {{
+                                                    creatorUsername(item)
+                                                }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-x-1">
-                <a-button> Edit </a-button>
+
+            <div class="flex gap-x-1" v-if="mode === 'monitor'">
+                <a-button @click="toggleMode"> Edit </a-button>
                 <a-dropdown>
                     <template #overlay>
                         <a-menu>
@@ -26,10 +128,22 @@
                     <a-button> Settings </a-button>
                 </a-dropdown>
             </div>
+            <div class="flex gap-x-1" v-else>
+                <a-button @click="toggleMode" type="danger"> Exit </a-button>
+            </div>
         </div>
 
-        <!-- <MonitorWorkflow :workflowName="id"></MonitorWorkflow> -->
-        <div v-if="workflowPackage.metadata?.name && configMap.metadata?.name">
+        <MonitorWorkflow
+            :workflowName="id"
+            v-if="mode === 'monitor'"
+        ></MonitorWorkflow>
+        <div
+            v-if="
+                workflowPackage.metadata?.name &&
+                configMap.metadata?.name &&
+                mode === 'edit'
+            "
+        >
             <PackagesSetupEdit
                 :workflowTemplate="workflowPackage"
                 :configMap="localConfigMap"
@@ -57,6 +171,8 @@
         props: {},
         emits: ['setup', 'sandbox', 'select'],
         setup(props, { emit }) {
+            const mode = ref('monitor')
+
             const route = useRoute()
             const { id } = route.params
             const router = useRouter()
@@ -154,7 +270,12 @@
                 router.push('/workflows')
             }
 
-            const { name, creationTimestamp } = useWorkflowInfo()
+            const toggleMode = () => {
+                mode.value = mode.value === 'monitor' ? 'edit' : 'monitor'
+            }
+
+            const { name, creationTimestamp, creatorUsername, displayName } =
+                useWorkflowInfo()
 
             return {
                 isLoading,
@@ -179,6 +300,10 @@
                 configMap,
                 localConfigMap,
                 initialValue,
+                mode,
+                toggleMode,
+                creatorUsername,
+                displayName,
             }
         },
     })

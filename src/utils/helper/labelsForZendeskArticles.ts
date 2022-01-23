@@ -47,9 +47,9 @@ export const getLabelsForZendeskArticles = (path) => {
             const secondaryToken = routeTokens[2]
             switch (secondaryToken) {
                 case 'personas':
-                    return ['personas']
+                    return ['personas','access-policies']
                 case 'purposes':
-                    return ['purposes']
+                    return ['purposes','access-policies']
                 case 'groups':
                     return ['groups']
                 case 'classifications':

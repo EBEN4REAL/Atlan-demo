@@ -164,6 +164,12 @@
             ),
             Pages: defineAsyncComponent(() => import('./types/pageCount.vue')),
             Tiles: defineAsyncComponent(() => import('./types/tileCount.vue')),
+            SourceCreated: defineAsyncComponent(
+                () => import('./types/sourceCreated.vue')
+            ),
+            SourceUpdated: defineAsyncComponent(
+                () => import('./types/sourceUpdated.vue')
+            ),
         },
 
         props: {

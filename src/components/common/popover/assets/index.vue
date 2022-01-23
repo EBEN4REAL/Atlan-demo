@@ -40,10 +40,27 @@
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
-                                <span
-                                    class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
-                                    >{{ rows }}</span
-                                >Rows
+                                <a-tooltip placement="bottomLeft">
+                                    <span
+                                        class="mr-1 text-xs font-semibold tracking-tight text-gray-500 cursor-pointer"
+                                        >{{ rows }}</span
+                                    >Rows
+                                    <template #title>
+                                        <span
+                                            v-if="
+                                                sizeBytes(item, false) &&
+                                                rows !== '0'
+                                            "
+                                            class="font-semibold"
+                                            >{{ rows }} rows ({{
+                                                sizeBytes(item, false)
+                                            }})</span
+                                        >
+                                        <span v-else class="font-semibold"
+                                            >0 rows from the source</span
+                                        >
+                                    </template>
+                                </a-tooltip>
                             </span>
                             <span
                                 v-if="
@@ -258,6 +275,7 @@
                 tableName,
                 dataTypeCategoryImage,
                 description,
+                sizeBytes,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -307,6 +325,7 @@
                 path,
                 slots,
                 description,
+                sizeBytes,
             }
         },
     }

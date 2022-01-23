@@ -209,7 +209,7 @@
                                     v-if="
                                         ['table', 'tablepartition'].includes(
                                             item.typeName?.toLowerCase()
-                                        ) && rowCount(item, false) !== '-'
+                                        )
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
@@ -220,11 +220,17 @@
                                 >
                                 <template #title>
                                     <span
-                                        v-if="sizeBytes(item, false)"
+                                        v-if="
+                                            sizeBytes(item, false) &&
+                                            rowCount(item, false) !== '0'
+                                        "
                                         class="font-semibold"
                                         >{{ rowCount(item, true) }} rows ({{
                                             sizeBytes(item, false)
                                         }})</span
+                                    >
+                                    <span v-else class="font-semibold"
+                                        >0 rows from the source</span
                                     >
                                 </template>
                             </a-tooltip>

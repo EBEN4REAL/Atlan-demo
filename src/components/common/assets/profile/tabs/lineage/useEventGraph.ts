@@ -442,12 +442,11 @@ export default function useEventGraph(
             controlTranslate(portId, lineage)
             return
         }
-        const { depth, direction, hideProcess } = config.value
         const portConfig = computed(() => ({
-            depth,
+            depth: 21,
             guid: portId,
-            direction,
-            hideProcess,
+            direction: 'BOTH',
+            hideProcess: true,
         }))
         const { data } = useFetchLineage(portConfig, true)
 
@@ -603,6 +602,16 @@ export default function useEventGraph(
         })
     }
 
+    // resetState
+    const resetState = () => {
+        highlight(null)
+        resetCHE()
+        edgesHighlighted.value = []
+        nodesTranslated.value = []
+        nodesCaretClicked.value = []
+        deselectPort()
+    }
+
     // registerLoadCTAListeners
     const registerLoadCTAListeners = () => {
         const loadCTAs = document.getElementsByClassName('node-loadCTA')
@@ -610,6 +619,9 @@ export default function useEventGraph(
         loadCTAsArray.forEach((x) => {
             x.addEventListener('mousedown', (e) => {
                 e.stopPropagation()
+
+                resetState()
+
                 loaderCords.value = { x: e.clientX, y: e.clientY }
 
                 const ele = getEventPath(e).find((x) =>
@@ -685,6 +697,7 @@ export default function useEventGraph(
     }
     registerCaretListeners()
 
+    // registerAllListeners
     const registerAllListeners = () => {
         registerLoadCTAListeners()
         registerCaretListeners()

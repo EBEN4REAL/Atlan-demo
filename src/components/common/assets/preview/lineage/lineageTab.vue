@@ -126,7 +126,7 @@
 
             const { useFetchLineage } = useLineageService()
 
-            const depth = ref(21)
+            const depth = ref(1)
             const query = ref('')
 
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
@@ -146,19 +146,23 @@
                     selectedAsset.value.attributes.name
             )
 
-            const defaultLineageConfig = {
+            const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
                 attributes: [...AssetAttributes, ...SQLAttributes],
-            }
+            }))
 
             const {
                 data: UpStreamLineage,
                 isLoading: isUpLoading,
                 isReady: isUpReady,
+                mutate: mutateUpstream,
             } = useFetchLineage(
-                { ...defaultLineageConfig, direction: 'INPUT' },
+                computed(() => ({
+                    ...defaultLineageConfig.value,
+                    direction: 'INPUT',
+                })),
                 true
             )
 
@@ -166,8 +170,12 @@
                 data: DownStreamLineage,
                 isLoading: isDownLoading,
                 isReady: isDownReady,
+                mutate: mutateDownstream,
             } = useFetchLineage(
-                { ...defaultLineageConfig, direction: 'OUTPUT' },
+                computed(() => ({
+                    ...defaultLineageConfig.value,
+                    direction: 'OUTPUT',
+                })),
                 true
             )
 
@@ -226,15 +234,15 @@
 
             /** PROVIDERS */
             provide('updateDepth', updateDepth)
+            provide('currentDepth', depth)
             provide('updateFilters', updateFilters)
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            // watch([depth, guid], () => {
-            //     console.log('lineage mutate')
-            //     UpStreamLineage.mutate()
-            //     DownStreamLineage.mutate()
-            // })
+            watch([depth, guid], () => {
+                mutateUpstream()
+                mutateDownstream()
+            })
 
             /** LIFECYCLE */
             return {
@@ -244,6 +252,7 @@
                 assetTypesLengthMap,
                 streams,
                 direction,
+                depth,
                 link,
                 showImpactedAssets,
                 isWithGraph,
@@ -253,6 +262,8 @@
                 isDownLoading,
                 isUpReady,
                 isDownReady,
+                UpStreamLineage,
+                DownStreamLineage,
             }
         },
     })

@@ -3,12 +3,13 @@ import { computed, Ref, watch } from 'vue'
 import { getRequests } from '~/services/service/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export function useRequest(guid,  pagination: Ref) {
+export function useRequest(guid,  pagination: Ref, type) {
+     const filterType = type === 'AtlasGlossaryTerm' ? 'sourceGuid' :'destinationGuid'
      const params = computed(() => ({
         sort: '-createdAt',
         limit: pagination.value.limit,
         offset: pagination.value.offset,
-        filter: { destinationGuid: guid, status: 'active'}, 
+        filter: { [filterType]: guid, status: 'active'}, 
     }))
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
     watch(pagination, () => {

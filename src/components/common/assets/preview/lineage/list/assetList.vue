@@ -79,13 +79,6 @@
                     return {}
                 },
             },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
             isLoading: {
                 type: Boolean,
                 required: true,

@@ -1,79 +1,103 @@
 <template>
-    <div class="flex">
-        <div class="px-3 border-r border-gray-200 border-dashed">
-            <p class="mb-1 text-gray-500">Show/Hide</p>
-            <a-checkbox-group
-                v-model:value="assetTypesSelected"
-                @change="updateFilters"
-            >
-                <div class="flex flex-col space-y-1">
-                    <a-checkbox
-                        v-for="(type, index) in assetTypesFiltered"
-                        :key="index"
-                        :value="type"
-                        >{{ type }} ({{
-                            assetTypesLengthMapInjection[type] || 0
-                        }})</a-checkbox
-                    >
-                </div>
-            </a-checkbox-group>
+    <div class="flex flex-col p-3 rounded gap-y-3">
+        <div class="flex items-center justify-between">
+            <span class="text-gray-500">Depth</span>
+            <a-dropdown :trigger="['click']">
+                <span class="lineage-filter-menu">
+                    {{ currDepthLabel }}
+                    <AtlanIcon
+                        icon="CaretRight"
+                        class="transform rotate-90 outline-none"
+                    ></AtlanIcon>
+                </span>
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item
+                            v-for="item in lineageDepths"
+                            :key="item.id"
+                            :class="{
+                                'ant-dropdown-menu-item-activee':
+                                    currentDepth === item.id,
+                            }"
+                            @click="updateDepth(item.id)"
+                        >
+                            {{ item.label }}
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
         </div>
-        <div class="pl-3">
-            <p class="mb-1 text-gray-500">Depth</p>
-            <a-radio-group v-model:value="level" @change="updateDepth">
-                <div class="flex flex-col space-y-1">
-                    <a-radio :value="1">Level 1</a-radio>
-                    <a-radio :value="2">Level 2</a-radio>
-                    <a-radio :value="3">Level 3</a-radio>
-                    <a-radio :value="4">Max</a-radio>
-                </div>
-            </a-radio-group>
+        <div>
+            <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
+            <div class="flex flex-wrap">
+                <CustomRadioButton
+                    :model-value="display"
+                    :list="displayProperties"
+                    is-multiple
+                    @update:model-value="$emit('update:display', $event)"
+                ></CustomRadioButton>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, ref, computed } from 'vue'
+    import { defineComponent, inject, ref, computed, PropType } from 'vue'
+
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import { displayProperties } from '~/constant/displayProperties'
 
     export default defineComponent({
-        setup() {
-            /** DATA */
-            const level = ref(1)
-            const assetTypes = ['Table', 'View', 'Column', 'Bi Dashboard']
-            const assetTypesSelected = ref([])
-
+        components: { CustomRadioButton },
+        props: {
+            display: {
+                type: Array as PropType<string[]>,
+                default: () => [],
+            },
+        },
+        emits: ['update:display'],
+        setup(props, { emit }) {
             /** INJECTIONS */
             const assetTypesLengthMapInjection = inject('assetTypesLengthMap')
             const depthInjection = inject('updateDepth')
+            const currentDepth = inject('currentDepth')
+
             const filterInjection = inject('updateFilters')
 
-            /** COMPUTED */
-            const assetTypesLengthMap = computed(
-                () => assetTypesLengthMapInjection.value
-            )
-            const assetTypesFiltered = computed(() =>
-                assetTypes.filter((type) => assetTypesLengthMap.value?.[type])
-            )
-            assetTypesSelected.value = assetTypesFiltered.value
+            const lineageDepths = [
+                { id: 1, label: 'Depth 1' },
+                { id: 2, label: 'Depth 2' },
+                { id: 3, label: 'Depth 3' },
+                { id: 21, label: 'Max. Depth' },
+            ]
 
-            /** METHODS */
-            const updateDepth = () => {
-                depthInjection(level.value)
-            }
-            const updateFilters = (e: []) => {
-                assetTypesSelected.value = e
-                filterInjection(e)
+            const currDepthLabel = computed(
+                () =>
+                    lineageDepths.find((x) => x.id === currentDepth.value)
+                        ?.label
+            )
+
+            const updateDepth = (val) => {
+                depthInjection(val)
             }
 
             return {
-                assetTypesSelected,
-                assetTypesLengthMapInjection,
-                assetTypesFiltered,
-                level,
+                displayProperties,
+                lineageDepths,
+                currentDepth,
+                currDepthLabel,
                 updateDepth,
-                updateFilters,
             }
         },
     })
 </script>
+
+<style scoped>
+    .lineage-filter-menu {
+        @apply flex items-center justify-between;
+        @apply h-8 px-3;
+        @apply text-sm border rounded cursor-pointer;
+        min-width: 140px;
+    }
+</style>

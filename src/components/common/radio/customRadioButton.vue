@@ -3,7 +3,7 @@
         <template v-for="item in list" :key="item.id">
             <div
                 :data-test-id="item.id"
-                class="flex items-center justify-center px-5 py-1 text-sm border rounded cursor-pointer  button hover:text-primary hover:border-primary"
+                class="flex items-center justify-center px-5 py-1 text-sm border rounded cursor-pointer button hover:text-primary hover:border-primary"
                 :class="
                     isSelected(item.id)
                         ? 'active-btn border-primary'
@@ -66,6 +66,7 @@
                 }
                 modelValue.value = localValue.value
                 emit('change', id)
+                emit('update:modelValue', localValue.value)
             }
 
             const isSelected = (id) => {

@@ -71,7 +71,21 @@
                 selectedAsset.typeName === 'AtlasGlossaryTerm'
             "
         >
-            <p class="text-gray-500">{{ assetText[0] }}</p>
+            <p class="text-gray-500">
+                {{ assetText[0] }}
+
+                <CertificateBadge
+                    v-if="item.destinationEntity?.attributes?.certificateStatus"
+                    :status="
+                        item.destinationEntity?.attributes?.certificateStatus
+                    "
+                    class="mb-1 ml-1"
+                    :username="
+                        item.destinationEntity?.attributes?.certificateUpdatedBy
+                    "
+                    :timestamp="timeAgo"
+                />
+            </p>
             <div class="mt-1">
                 <div class="flex items-center text-xs">
                     <AssetLogo :selected="false" :asset="assetWrappper" />
@@ -246,8 +260,9 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, computed } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
+    import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
+    import CertificateBadge from '@common/badge/certificate/index.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -261,7 +276,13 @@
 
     export default defineComponent({
         name: 'RequestItem',
-        components: { Pill, ClassificationPill, Popover, AssetLogo },
+        components: {
+            Pill,
+            ClassificationPill,
+            Popover,
+            AssetLogo,
+            CertificateBadge,
+        },
         props: {
             selectedAsset: {
                 type: Object,
@@ -358,6 +379,14 @@
             const handleApprove = () => {
                 handleApproval(messageApprove.value)
             }
+            const timeAgo = useTimeAgo(
+                item.value.destinationEntity?.attributes?.certificateUpdatedAt,
+                {
+                    max: 'day',
+                    fullDateFormatter: (dt: Date): string =>
+                        dt.toDateString().split(' ').slice(1).join(' '),
+                }
+            )
             return {
                 createdTime,
                 localClassification,
@@ -377,6 +406,7 @@
                 handleClickApproveWithComment,
                 assetText,
                 assetWrappper,
+                timeAgo,
             }
         },
     })

@@ -13,36 +13,10 @@
                 @change="handleSelectGlossary"
             ></GlossarySelect>
             <div class="flex" v-auth="map.CREATE_GLOSSARY">
-                <AddGTCModal
-                    :key="selectedGlossaryQf"
-                    :entityType="defaultEntityType"
+                <CreateGtcBtn
+                    :selected-glossary-qf="selectedGlossaryQf"
                     @add="handleAddGTC"
-                    :glossaryQualifiedName="selectedGlossaryQf"
-                    :glossaryName="selectedGlosaryName"
-                >
-                    <template #trigger>
-                        <a-tooltip>
-                            <template #title
-                                >Add new
-                                {{
-                                    `${
-                                        defaultEntityType === 'AtlasGlossary'
-                                            ? 'Glossary'
-                                            : 'Term/Category'
-                                    }`
-                                }}</template
-                            >
-
-                            <a-button class="ml-3" size="small">
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="transition duration-300 text-primary"
-                                />
-                            </a-button>
-                        </a-tooltip>
-                    </template>
-                </AddGTCModal>
-
+                />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
                         :entity="selectedGlossary"
@@ -179,11 +153,10 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
-    import AddGTCModal from './modal/addGtcModal.vue'
     import GlossaryTree from '@/common/tree/glossary/glossaryTree.vue'
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
-
+    import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
 
     import {
@@ -215,11 +188,11 @@
             PreferenceSelector,
             EmptyView,
             AtlanIcon,
-            AddGTCModal,
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
             GlossaryActions,
+            CreateGtcBtn,
         },
         props: {
             showFilters: {
@@ -246,7 +219,7 @@
             disabledGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
-            }
+            },
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
@@ -315,13 +288,6 @@
                     return glossaryBox.value.clientHeight - 150
                 }
                 return 400
-            })
-
-            const defaultEntityType = computed(() => {
-                if (selectedGlossaryQf.value) {
-                    return 'AtlasGlossaryTerm'
-                }
-                return 'AtlasGlossary'
             })
 
             const {
@@ -528,7 +494,6 @@
                 handleSelectGlossary,
                 handleAddTerm,
                 handleAddCategory,
-                defaultEntityType,
                 handleCollapse,
                 onCheck,
                 reInitTree,

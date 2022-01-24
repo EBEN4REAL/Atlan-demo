@@ -111,7 +111,6 @@
             const localValue = ref(props.modelValue)
 
             const { glossaryList } = useGlossaryData()
-            const queryText = ref('')
             const displayText = ref('')
             const isVisible = ref(false)
 
@@ -132,30 +131,12 @@
                 changeDisplayText()
             })
 
-            const filteredList = computed(() =>
-                glossaryList.value
-                    .filter((i) => {
-                        if (queryText?.value !== '') {
-                            return (
-                                i.attributes?.name
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase()) ||
-                                i.attributes?.displayName
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase())
-                            )
-                        }
-                        return true
-                    })
-                    .sort((a, b) =>
-                        // eslint-disable-next-line no-nested-ternary
-                        a.termsCount < b.termsCount
-                            ? 1
-                            : b.termsCount < a.termsCount
-                            ? -1
-                            : 0
-                    )
-            )
+            const filteredList = computed(() => {
+                const sortedList = glossaryList.value
+                return sortedList.sort((a, b) =>
+                    a?.displayText > b?.displayText ? 1 : -1
+                )
+            })
 
             const handleSelect = (key) => {
                 localValue.value = key
@@ -175,7 +156,6 @@
 
             return {
                 filteredList,
-                queryText,
                 handleSelect,
                 displayText,
                 glossaryList,

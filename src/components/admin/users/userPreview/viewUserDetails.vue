@@ -17,7 +17,7 @@
             <div class="pb-6 border-b border-gray-200 border-solid">
                 <div class="mb-6">
                     <ViewPersonas
-                        :user="selectedUser"
+                        :entity="selectedUser"
                         :is-current-user="isCurrentUser"
                     />
                 </div>

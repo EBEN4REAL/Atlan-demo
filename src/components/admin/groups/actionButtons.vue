@@ -2,7 +2,7 @@
     <a-button-group>
         <MemberPopover
             :selected-group="group"
-            @members-added="$emit('membersAdded')"
+            @members-added.stop="$emit('membersAdded')"
         >
             <template #label>
                 <AtlanBtn
@@ -46,6 +46,7 @@
             v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
+            @click.stop=""
             @visibleChange="handleVisibleChange"
         >
             <AtlanBtn

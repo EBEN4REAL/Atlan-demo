@@ -98,7 +98,7 @@
                     <a-tooltip
                         v-if="column.sortKey"
                         placement="top"
-                        class="px-4 py-2"
+                        class="px-4"
                     >
                         <template #title>{{
                             getSortTooltipText(
@@ -115,7 +115,7 @@
                                     : ''
                             "
                         >
-                            <div class="pt-0.5">
+                            <div class="pt-0">
                                 {{ title }}
                             </div>
                             <div
@@ -163,22 +163,24 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex px-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
-                        <div class="pt-0.5">{{ title }}</div>
+                        <div class="pt-0">{{ title }}</div>
                     </div>
                 </template>
 
                 <template #bodyCell="{ text: value, record: group, column }">
-                    <div class="flex items-center h-11">
+                    <div
+                        class="flex items-center h-11"
+                        @click="
+                            () => {
+                                handleGroupClick(group)
+                            }
+                        "
+                    >
                         <div
                             v-if="column.key === 'name'"
                             class="flex items-center"
-                            @click="
-                                () => {
-                                    handleGroupClick(group)
-                                }
-                            "
                         >
                             <Avatar
                                 :avatar-size="32"
@@ -207,7 +209,7 @@
                         </div>
                         <div
                             v-else-if="column.key === 'memberCount'"
-                            @click="handleAddMembers(group)"
+                            @click.stop="handleAddMembers(group)"
                         >
                             <div
                                 class="cursor-pointer text-primary hover:underline"
@@ -220,9 +222,60 @@
                             </div>
                         </div>
                         <div
+                            v-else-if="column.key === 'personas'"
+                            @click.stop=""
+                        >
+                            <a-popover
+                                v-if="group?.personas?.length"
+                                placement="bottom"
+                                :destroy-tooltip-on-hide="true"
+                            >
+                                <template #content>
+                                    <div
+                                        class="p-3 pb-4 content-popover-group-persona"
+                                    >
+                                        <div class="flex justify-between">
+                                            Personas
+                                            <!-- <div>
+                                                <span
+                                                    class="ml-auto text-primary"
+                                                >
+                                                    Manage
+                                                </span>
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="ml-1 text-primary"
+                                                />
+                                            </div> -->
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 mt-3">
+                                            <div
+                                                v-for="persona in group?.personas"
+                                                :key="persona.id"
+                                                class="px-2 border rounded-xl"
+                                            >
+                                                {{ persona.name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div
+                                    class="text-left cursor-pointer text-primary hover:underline"
+                                >
+                                    {{
+                                        group?.personas?.length > 1
+                                            ? group?.personas?.length +
+                                              ' personas'
+                                            : group?.personas?.length +
+                                                  ' persona' || '-'
+                                    }}
+                                </div>
+                            </a-popover>
+                        </div>
+                        <div
                             v-else-if="column.key === 'createdBy'"
                             class="flex items-center cursor-pointer"
-                            @click="handleUserPreview(value)"
+                            @click.stop="handleUserPreview(value)"
                         >
                             <Avatar
                                 v-if="value"
@@ -244,9 +297,11 @@
                                 :group="group"
                                 :mark-as-default-loading="markAsDefaultLoading"
                                 :delete-group-loading="deleteGroupLoading"
-                                @delete-group="handleDeleteGroup(group)"
-                                @toggle-default="handleToggleDefault(group)"
-                                @members-added="refreshTable"
+                                @delete-group.stop="handleDeleteGroup(group)"
+                                @toggle-default.stop="
+                                    handleToggleDefault(group)
+                                "
+                                @members-added.stop="refreshTable"
                             />
                         </div>
                     </div>
@@ -691,6 +746,13 @@
         border-right-color: #e6e6eb;
         border-bottom-color: #e6e6eb;
         border-left-color: #e6e6eb;
+    }
+</style>
+<style lang="less" scoped>
+    .content-popover-group-persona {
+        width: 180px;
+        height: auto;
+        max-height: 170px;
     }
 </style>
 <route lang="yaml">

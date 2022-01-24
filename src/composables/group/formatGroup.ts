@@ -16,7 +16,7 @@ export const getFormattedGroup = (group: any) => {
         memberCount: group.userCount || 0,
         memberCountString: pluralizeString('member', group.userCount || 0),
         isDefault: group?.attributes?.isDefault?.[0] ?? false,
-        personaCount: 2,
+        personas: group?.personas,
         attributes: group?.attributes,
     }
     return formattedGroup || {}

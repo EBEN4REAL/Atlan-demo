@@ -81,7 +81,7 @@
 
                     <div v-if="description(item)" class="flex mt-0.5">
                         <span
-                            v-if="preference?.display?.includes('description')"
+                            v-if="preference?.includes('description')"
                             class="text-xs text-gray-500"
                             >{{ description(item) }}</span
                         >
@@ -330,13 +330,13 @@
 
                     <div
                         v-if="
-                            list.length > 0 &&
-                            preference?.display?.includes('classifications')
+                            clsfList.length > 0 &&
+                            preference?.includes('classifications')
                         "
                         class="flex flex-wrap mt-1 gap-x-1"
                     >
                         <template
-                            v-for="classification in list"
+                            v-for="classification in clsfList"
                             :key="classification.guid"
                         >
                             <PopoverClassification
@@ -399,7 +399,7 @@
                 required: false,
                 default: () => false,
             },
-            // If the list items are selectable or not
+            // If the clsfList items are selectable or not
             showCheckBox: {
                 type: Boolean,
                 required: false,
@@ -412,10 +412,10 @@
                 default: false,
             },
             preference: {
-                type: Object,
+                type: Array,
                 required: false,
                 default() {
-                    return {}
+                    return []
                 },
             },
             showThreeDotMenu: {
@@ -482,8 +482,7 @@
             }
 
             const isSelected = computed(() => {
-                return selectedGuid.value === item?.value?.guid;
-
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
@@ -492,19 +491,16 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
-            const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    classificationList.value,
-                    classifications(item.value),
-                    'name',
-                    'typeName'
+            const clsfList = computed(() =>
+                item.value?.classificationNames?.map((clName) =>
+                    classificationList.value.find(
+                        (clsf) => clsf.name === clName
+                    )
                 )
-                return matchingIdsResult
-            })
+            )
 
             return {
                 isChecked,
@@ -543,7 +539,7 @@
                 categories,
                 parentCategory,
                 isPropagated,
-                list,
+                clsfList,
                 classifications,
                 getLineagePath,
             }

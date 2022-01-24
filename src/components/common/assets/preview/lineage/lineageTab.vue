@@ -87,6 +87,7 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { AssetAttributes, SQLAttributes } from '~/constant/projection'
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
@@ -117,7 +118,7 @@
 
             const { useFetchLineage } = useLineageService()
 
-            const depth = ref(1)
+            const depth = ref(21)
             const query = ref('')
 
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
@@ -137,25 +138,22 @@
                     selectedAsset.value.attributes.name
             )
 
+            const defaultLineageConfig = {
+                depth: depth.value,
+                guid: guid.value,
+                hideProcess: true,
+                attributes: [...AssetAttributes, ...SQLAttributes],
+            }
+
             const { data: UpStreamLineage, isLoading: isUpLoading } =
                 useFetchLineage(
-                    {
-                        depth: 21,
-                        guid: guid.value,
-                        direction: 'INPUT',
-                        hideProcess: true,
-                    },
+                    { ...defaultLineageConfig, direction: 'INPUT' },
                     true
                 )
 
             const { data: DownStreamLineage, isLoading: isDownLoading } =
                 useFetchLineage(
-                    {
-                        depth: 21,
-                        guid: guid.value,
-                        direction: 'OUTPUT',
-                        hideProcess: true,
-                    },
+                    { ...defaultLineageConfig, direction: 'OUTPUT' },
                     true
                 )
 

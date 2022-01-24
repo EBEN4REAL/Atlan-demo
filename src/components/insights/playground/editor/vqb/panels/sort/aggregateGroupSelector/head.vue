@@ -59,16 +59,18 @@
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
-            const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
+            const columnDropdownOption = inject('columnDropdownOption') as Ref<
+                any[]
+            >
 
             const placeholder = computed(() => {
-                if (totalColumnsCount.value > 0) {
+                if (columnDropdownOption.value.length > 0) {
                     return `Select from ${
-                        totalColumnsCount.value
+                        columnDropdownOption.value.length
                     } ${pluralizeString(
                         'column',
-                        totalColumnsCount.value,
+                        columnDropdownOption.value.length,
                         false
                     )}`
                 }

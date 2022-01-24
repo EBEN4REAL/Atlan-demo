@@ -14,8 +14,9 @@
                 @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand
@@ -239,6 +240,7 @@
     import FooterActions from '../action/footer.vue'
     import GroupSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Groups',
@@ -263,6 +265,7 @@
                 getSummarisedInfoOfGroupPanel,
                 getInitialPanelExpandedState,
             } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
 
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
@@ -314,15 +317,6 @@
                         .expand
             )
 
-            // watch(
-            //     activeInlineTab.value.playground.vqb.panels[index.value]
-            //         .subpanels,
-            //     () => {
-            //         activeInlineTab.value.isSaved = false
-            //     },
-            //     { deep: true }
-            // )
-
             const checkbox = ref(true)
             const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
@@ -355,6 +349,7 @@
             }
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             const toggleExpand = () => {
                 activeInlineTab.value.playground.vqb.panels[
@@ -376,16 +371,9 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            watch(
-                activeInlineTab,
-                () => {
-                    console.log('updated data: ', activeInlineTab.value)
-                },
-                { immediate: true }
-            )
-
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
 
             return {

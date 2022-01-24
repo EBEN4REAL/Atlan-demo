@@ -29,6 +29,7 @@
     import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Footer Panels',
@@ -42,6 +43,7 @@
         setup(props, { emit }) {
             const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -165,6 +167,7 @@
                 }
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             return {
                 computedItems,

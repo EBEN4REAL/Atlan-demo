@@ -14,8 +14,9 @@
                 @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand

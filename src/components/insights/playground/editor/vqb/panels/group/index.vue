@@ -314,15 +314,6 @@
                         .expand
             )
 
-            // watch(
-            //     activeInlineTab.value.playground.vqb.panels[index.value]
-            //         .subpanels,
-            //     () => {
-            //         activeInlineTab.value.isSaved = false
-            //     },
-            //     { deep: true }
-            // )
-
             const checkbox = ref(true)
             const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
@@ -375,14 +366,6 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
-
-            watch(
-                activeInlineTab,
-                () => {
-                    console.log('updated data: ', activeInlineTab.value)
-                },
-                { immediate: true }
-            )
 
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)

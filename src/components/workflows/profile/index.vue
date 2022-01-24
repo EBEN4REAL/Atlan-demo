@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full bg-white">
         <WorkflowHeader
             :packageObject="packageObject"
             :workflow-object="workflowObject"

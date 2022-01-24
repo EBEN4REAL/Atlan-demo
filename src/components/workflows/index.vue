@@ -1,89 +1,344 @@
 <template>
-    <div class="flex flex-col w-full h-full bg-primary-light">
-        <div class="flex flex-1 w-full overflow-y-auto">
-            <div class="flex flex-col flex-1 h-full">
-                <div class="flex items-center justify-between px-6 pt-6">
-                    <div class="flex flex-grow">
-                        <a-input
-                            class="w-1/3"
-                            v-model:value="queryText"
-                            placeholder="Search Packages"
-                        ></a-input>
-                    </div>
-                    <a-button type="primary" @click="handleNewWorkflow"
-                        >New Workflow</a-button
-                    >
-                </div>
+    <div class="flex flex-col flex-1 h-full">
+        <div class="flex items-center justify-between px-6 pt-6">
+            <div class="flex flex-grow">
+                <a-input
+                    class="w-1/3"
+                    v-model:value="queryText"
+                    placeholder="Search Packages"
+                ></a-input>
+            </div>
+            <a-button type="primary" @click="handleNewWorkflow"
+                >New Workflow</a-button
+            >
+        </div>
 
-                <!-- <div
-                        class="flex items-center justify-center w-full"
-                        v-if="isLoading"
-                    >
-                        <a-spin></a-spin>
-                    </div>
-                    <div
-                        class="flex items-center justify-center w-full"
-                        v-if="error && !isLoading"
-                    >
-                        <ErrorView></ErrorView>
-                    </div>
-                    <div
-                        class="flex items-center justify-center w-full"
-                        v-if="!error && !isLoading && list.length === 0"
-                    >
-                        <EmptyView
-                            desc="No packages found"
-                            empty-screen="WFEmptyTab"
-                        ></EmptyView>
-                    </div> -->
+        <div class="px-6 py-2">
+            <AggregationTabs
+                :list="getAggregationByType"
+                v-model="postFacets.typeName"
+                @change="handlePackageTypeChange"
+            ></AggregationTabs>
+        </div>
 
-                <PackageWiseDiscovery
-                    :queryText="queryText"
-                ></PackageWiseDiscovery>
+        <div class="flex flex-col h-full overflow-y-auto">
+            <div
+                v-if="isLoading || isLoadingPackage"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanLoader class="h-10" />
+            </div>
+
+            <div
+                v-else-if="list.length === 0 && !isLoading && !isLoadingPackage"
+                class="flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No packages found"
+                    class="mb-10"
+                ></EmptyView>
+            </div>
+            <div
+                v-else-if="
+                    !isLoading && !isLoadingPackage && (error || errorPackage)
+                "
+                class="flex items-center justify-center flex-grow"
+            >
+                <ErrorView></ErrorView>
+            </div>
+
+            <WorkflowList
+                v-else
+                :list="list"
+                class="px-6 mb-4"
+                @select="handleSelect"
+            ></WorkflowList>
+            <div
+                v-if="(isLoadMore || isLoadingPackage) && list.length > 0"
+                class="flex items-center justify-center"
+            >
+                <button
+                    :disabled="isLoadingPackage"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    :class="isLoadingPackage ? 'px-2 w-9' : 'px-2'"
+                    @click="handleLoadMore"
+                >
+                    <template v-if="!isLoadingPackage">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" />
+                    </template>
+                    <AtlanLoader v-else class="h-10" />
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, provide } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        watch,
+        provide,
+        inject,
+        toRefs,
+    } from 'vue'
+
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
-    import PackageFilters from '@/packages/filters/index.vue'
-    import { packageFilters } from '~/constant/filters/packageFilters'
-
-    import PackageWiseDiscovery from '~/components/workflows/package/index.vue'
-    import WorkflowWiseDiscovery from '~/components/workflows/workflows/index.vue'
+    import WorkflowList from './list/index.vue'
+    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
+    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
-        name: 'WorkflowDiscovery',
+        name: 'PackageDiscovery',
         components: {
-            PackageFilters,
-            ErrorView,
+            WorkflowList,
+            AggregationTabs,
             EmptyView,
-            PackageWiseDiscovery,
-            WorkflowWiseDiscovery,
+            ErrorView,
         },
         emits: ['setup', 'sandbox', 'select'],
+
         setup(props, { emit }) {
-            const activeKey = ref(['sourceCategory_0'])
-
-            const discoveryType = ref('packages')
-
             const queryText = ref('')
-
             const router = useRouter()
 
             const handleNewWorkflow = () => {
                 router.push('/workflows/setup')
             }
 
-            return {
-                packageFilters,
-                discoveryType,
+            const activeKey = ref(['sourceCategory_0'])
+
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
+            const handleSetup = (item) => {
+                emit('setup', selectedPackage.value)
+            }
+            const handleSetupSandbox = (item) => {
+                emit('sandbox', selectedPackage.value)
+            }
+
+            const limit = ref(0)
+            const offset = ref(0)
+
+            const facets = ref({
+                ui: true,
+            })
+            const dependentKey = ref('DEFAULT_PACKAGES')
+            const aggregationWorkflow = ref(['package'])
+            const {
+                isLoading,
+                error,
+                quickChange,
+                workflowDistinctList,
+                workflowMapByPackage,
+                packageList: packageListFromWorkflows,
+            } = useWorkflowDiscoverList({
+                isCache: true,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+
+                source: ref({
+                    excludes: ['spec'],
+                }),
+                aggregations: aggregationWorkflow,
+            })
+
+            const packageList = ref([])
+            const dependentKeyPackage = ref('')
+            const facetPackage = ref({})
+            const packageLimit = ref(10)
+            const packageOffset = ref(0)
+            const preference = ref({
+                sort: 'metadata.creationTimestamp-desc',
+            })
+            const postFacets = ref({
+                typeName: 'connector',
+            })
+            const aggregationPackage = ref(['by_type'])
+            watch(packageListFromWorkflows, () => {
+                const map = Object.keys(packageListFromWorkflows.value)
+
+                // Fetch all packages
+                facetPackage.value = {
+                    packageNames: map,
+                }
+                dependentKeyPackage.value = `DEFAULT_PACKAGES_SEARCH`
+                quickChangePackage()
+
+                console.log('workflowDistinct', workflowDistinctList.value)
+
+                // Fetch runs
+                facetRun.value = {
+                    workflowTemplates: workflowDistinctList.value,
+                }
+                quickChangeRun()
+            })
+
+            const handlePreview = inject('preview')
+
+            const {
+                isLoading: isLoadingPackage,
+                error: errorPackage,
+                quickChange: quickChangePackage,
+                list,
+                getAggregationByType,
+                isLoadMore,
+            } = usePackageDiscoverList({
+                isCache: true,
+                dependentKey: dependentKeyPackage,
+                facets: facetPackage,
+                postFacets,
+                limit: packageLimit,
+                offset: packageOffset,
                 queryText,
+                aggregations: aggregationPackage,
+            })
+
+            debouncedWatch(
+                queryText,
+                () => {
+                    quickChangePackage()
+                },
+                { debounce: 100 }
+            )
+
+            // watch(packageFetchList, () => {
+            //     packageList.value = packageList.value.concat(
+            //         packageFetchList.value
+            //     )
+            // })
+
+            const dependentKeyRun = ref('')
+            const facetRun = ref({})
+            const aggregationRun = ref(['status'])
+            const { quickChange: quickChangeRun, runByWorkflowMap } =
+                useRunDiscoverList({
+                    isCache: false,
+                    dependentKey: dependentKeyRun,
+                    facets: facetRun,
+                    limit: ref(0),
+                    offset,
+                    aggregations: aggregationRun,
+                    queryText,
+                    source: ref({
+                        excludes: ['spec'],
+                    }),
+                    preference,
+                })
+
+            provide('runMap', runByWorkflowMap)
+            provide('workflowMap', workflowMapByPackage)
+
+            // watch(list, () => {
+            //     console.log('changed list')
+            //     facetRun.value = {
+            //         workflowTemplates: list.value.map(
+            //             (item) => item.metadata.name
+            //         ),
+            //     }
+            //     quickChangeRun()
+            // })
+
+            const handleFilterChange = () => {
+                offset.value = 0
+
+                quickChange()
+            }
+
+            const placeholder = computed(() => 'Search all packages')
+
+            const selectedPackage = ref<any>(null)
+
+            const handleSelect = (item) => {
+                selectedPackage.value = item
+                handlePreview(item)
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+            }, 150)
+
+            const handleResetEvent = () => {
+                facets.value = {
+                    verified: true,
+                }
+                queryText.value = ''
+                handleFilterChange()
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            }
+
+            const handlePackageTypeChange = (tabName) => {
+                packageOffset.value = 0
+                quickChangePackage()
+            }
+
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    packageOffset.value += packageLimit.value
+                    quickChangePackage()
+                }
+            }
+
+            return {
+                placeholder,
+                dirtyTimestamp,
+                searchDirtyTimestamp,
+                isLoading,
+                list,
+                handleSelect,
+                selectedPackage,
+
+                error,
+
+                facets,
+                handleSetupSandbox,
+                handleSetup,
+                handleFilterChange,
+                handleSearchChange,
+                activeKey,
+                handleResetEvent,
+                preference,
+                quickChangeRun,
+                dependentKeyPackage,
+                facetPackage,
+                quickChangePackage,
+                packageLimit,
+                packageOffset,
+
+                packageList,
+                runByWorkflowMap,
+                aggregationWorkflow,
+                packageListFromWorkflows,
+                workflowDistinctList,
+                workflowMapByPackage,
+                handlePreview,
+                aggregationPackage,
+                postFacets,
+                getAggregationByType,
+                handlePackageTypeChange,
+                isLoadingPackage,
+                errorPackage,
+                isLoadMore,
+                handleLoadMore,
+
                 handleNewWorkflow,
                 router,
             }

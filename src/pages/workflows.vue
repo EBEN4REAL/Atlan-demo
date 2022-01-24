@@ -1,8 +1,7 @@
 <template>
-    <div class="flex w-full h-full overflow-x-hidden bg-white">
+    <div class="flex w-full h-full overflow-x-hidden bg-primary-light">
         <div class="flex-1 border-r border-gray-200">
             <router-view v-if="isItem" />
-
             <WorkflowDiscovery
                 ref="assetdiscovery"
                 :style="isItem ? 'display: none !important;' : ''"
@@ -13,7 +12,10 @@
             class="relative hidden bg-white asset-preview-container md:block"
             v-if="!isItem"
         >
-            <WorfklowPreview :item="localSelected"></WorfklowPreview>
+            <WorfklowPreview
+                :item="localSelected"
+                v-if="localSelected"
+            ></WorfklowPreview>
         </div>
     </div>
 </template>
@@ -23,7 +25,7 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     import WorkflowDiscovery from '@/workflows/index.vue'
-    import WorfklowPreview from '@/workflows/preview.vue'
+    import WorfklowPreview from '@/workflows/preview/index.vue'
 
     export default defineComponent({
         components: {

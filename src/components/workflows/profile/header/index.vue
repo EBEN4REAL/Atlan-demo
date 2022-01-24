@@ -7,7 +7,7 @@
             />
         </a-button>
 
-        <div class="flex items-center justify-between w-full ml-3">
+        <div class="flex items-center justify-between w-full ml-1">
             <div class="flex flex-col">
                 <div class="flex items-center" style="padding-bottom: 1px">
                     <div class="flex items-center justify-between">

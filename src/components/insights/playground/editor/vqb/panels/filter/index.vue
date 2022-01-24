@@ -215,6 +215,8 @@
                 />
             </keep-alive>
             <FooterActions
+                v-model:submenuHovered="submenuHovered"
+                v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-if="

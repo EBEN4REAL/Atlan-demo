@@ -199,6 +199,8 @@
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 :panelInfo="activeInlineTab.playground.vqb.panels[index]"
+                v-model:submenuHovered="submenuHovered"
+                v-model:containerHovered="containerHovered"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===

@@ -424,7 +424,7 @@
         }
         .actions-container {
             width: 150px;
-            height: 112px;
+            height: calc(100% - 2px);
             right: 0;
             top: 1px;
             display: none;

@@ -372,8 +372,12 @@ import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import Integrations from '~/assets/images/icons/integrations.svg'
+import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 
 export default {
+    IntegrationsActive,
+    Integrations,
     SlackToken,
     SafariLock,
     Gear,

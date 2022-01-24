@@ -4,7 +4,7 @@
         class="relative overflow-hidden text-gray-500 break-words"
         :class="trimmed ? 'h-5 flex gap-x-2' : ''"
     >
-        <div class="flex-1" :class="trimmed ? 'break-all' : ''">
+        <div class="flex-1 break-all">
             {{ text }}
         </div>
         <span

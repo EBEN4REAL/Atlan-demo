@@ -41,7 +41,7 @@
         </main>
         <template v-if="status.configured">
             <div
-                class="flex items-center justify-between px-3 bg-gray-100 border-t h-11"
+                class="flex items-center justify-between px-3 bg-gray-100 border-t rounded-b h-11"
             >
                 <div class="">{{ status.teamName }}</div>
                 <span

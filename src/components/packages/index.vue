@@ -24,6 +24,22 @@
                     >
                 </div>
             </div>
+            <div class="px-6">
+                <a-input
+                    class="w-1/2"
+                    v-model:value="queryText"
+                    placeholder="Search Packages"
+                    @change="handleSearchChange"
+                ></a-input>
+            </div>
+
+            <div class="px-6 pt-2 pb-3">
+                <AggregationTabs
+                    :list="getAggregationByType"
+                    v-model="postFacets.typeName"
+                    @change="handlePackageTypeChange"
+                ></AggregationTabs>
+            </div>
 
             <div class="flex flex-1 w-full h-full">
                 <div
@@ -34,13 +50,13 @@
                 </div>
                 <div
                     class="flex items-center justify-center w-full"
-                    v-if="error && !isLoading"
+                    v-else-if="error && !isLoading"
                 >
                     <ErrorView></ErrorView>
                 </div>
                 <div
                     class="flex items-center justify-center w-full"
-                    v-if="!error && !isLoading && list.length === 0"
+                    v-else-if="!error && !isLoading && list.length === 0"
                 >
                     <EmptyView
                         desc="No packages found"
@@ -58,31 +74,12 @@
                         ></PackageFilters>
                     </div> -->
 
-                    <div class="flex flex-col">
-                        <div class="px-6">
-                            <a-input
-                                class="w-1/2"
-                                v-model:value="queryText"
-                                placeholder="Search Packages"
-                                @change="handleSearchChange"
-                            ></a-input>
-                        </div>
-
-                        <div class="px-6 pt-2 pb-3">
-                            <AggregationTabs
-                                :list="getAggregationByType"
-                                v-model="postFacets.typeName"
-                                @change="handlePackageTypeChange"
-                            ></AggregationTabs>
-                        </div>
-
-                        <PackageList
-                            :list="list"
-                            class="px-6"
-                            @select="handleSelect"
-                            @dblClick="handleDoubleClick"
-                        ></PackageList>
-                    </div>
+                    <PackageList
+                        :list="list"
+                        class="px-6"
+                        @select="handleSelect"
+                        @dblClick="handleDoubleClick"
+                    ></PackageList>
                 </div>
             </div>
         </div>

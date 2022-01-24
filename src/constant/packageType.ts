@@ -1,8 +1,8 @@
 export const packageType = [
     {
         id: 'connector',
-        label: 'Assets',
-        description: 'Assets',
+        label: 'Connector',
+        description: 'Connector',
     },
     {
         id: 'miner',

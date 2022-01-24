@@ -80,13 +80,14 @@ export function usePackageBody(
             ...bodybuilder()
                 .query(
                     'wildcard',
-                    'metadata.annotations.orchestration.atlan.com/name.keyword',
+                    'metadata.annotations.orchestration.atlan.com/name',
                     {
-                        value: `${queryText}*`,
+                        value: `${queryText.toLowerCase()}*`,
                     }
                 )
                 .build(),
         })
+
         base.orQuery('nested', {
             path: 'metadata',
             ...bodybuilder()

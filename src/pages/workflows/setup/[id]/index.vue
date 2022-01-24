@@ -1,8 +1,14 @@
 <template>
     <div class="flex flex-col w-full h-full overflow-x-hidden bg-white">
         <div
-            class="flex w-full px-6 py-3 text-lg font-semibold text-gray-700 border-b"
+            class="flex items-center w-full px-6 py-3 text-lg font-semibold text-gray-700 border-b"
         >
+            <a-button class="px-1 mr-2" @click="handleBack">
+                <atlan-icon
+                    icon="ArrowRight"
+                    class="w-auto h-4 text-gray-500 transform rotate-180"
+                />
+            </a-button>
             New Workflow
         </div>
         <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
@@ -38,7 +44,7 @@
 
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
 
     export default defineComponent({
@@ -97,6 +103,11 @@
                 }
             })
 
+            const router = useRouter()
+            const handleBack = () => {
+                router.push('/workflows/setup')
+            }
+
             return {
                 localSelected,
                 localConfig,
@@ -104,6 +115,8 @@
                 isLoadingConfigMap,
                 error,
                 sandbox,
+                router,
+                handleBack,
             }
         },
     })

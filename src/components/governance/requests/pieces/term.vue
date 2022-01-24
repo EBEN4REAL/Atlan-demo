@@ -1,7 +1,7 @@
 <template>
     <div class="term-request">
         <TermPopover
-            :loading="false"
+            :loading="termLoading"
             :fetched-term="getFetchedTerm(request.sourceGuid)"
             :error="termError"
             trigger="hover"

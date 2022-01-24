@@ -87,7 +87,6 @@
             </AtlanButton>
             <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
             <AtlanButton
-                v-auth="access.UPDATE_INTEGRATIONS"
                 :is-loading="updateLoading"
                 class="w-16"
                 :disabled="!isEdit"

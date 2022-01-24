@@ -11,6 +11,7 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
+import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
 export default function useProject() {
     const {
@@ -21,67 +22,41 @@ export default function useProject() {
         getParsedQueryCursor,
     } = useEditor()
 
-
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
-    // const columnList: Ref<
-    //     [
-    //         {
-    //             title: string
-    //             dataIndex: string
-    //             width: string
-    //             key: any
-    //         }
-    //     ]
-    // > = ref([])
-    // const dataList = ref([])
-    // const isQueryRunning = ref('')
-    // const queryExecutionTime = ref(-1)
-    // const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
         if (columns.length > 0) {
-            // columnList.value = [
-            //     {
-            //         title: '#',
-            //         dataIndex: 'columnIndex',
-            //         key: 0,
-            //         data_type: 'number'
-            //     }
-            // ]
-
-            columnList.value = [
-            ]
+            columnList.value = []
             columns.map((col: any, index) => {
                 columnList.value.push({
                     title: col.columnName,
                     dataIndex: col.columnName + index,
-                    key: index+1,
+                    key: index + 1,
                     data_type: col.type.name,
-                    
                 })
             })
         }
-
-        // console.log('table columns: ', columns)
     }
 
     let keys = ref(0)
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
-       
         rows.map((result: any, index1) => {
             dataList.value.push(result)
         })
-    
-        
     }
 
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
-        getData: (activeInlineTab, rows: any[], columns: any[], executionTime: number) => void,
+        getData: (
+            activeInlineTab,
+            rows: any[],
+            columns: any[],
+            executionTime: number
+        ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
         onQueryIdGeneration?: Function,
@@ -90,7 +65,6 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
-
         let startTime = new Date()
 
         // setStartTime(new Date())
@@ -109,9 +83,12 @@ export default function useProject() {
         const isQueryRunning = ref('')
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
-        
-        resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
-        if(editorInstance?.value) {
+
+        const { start, reset } = useTimer(activeInlineTab)
+
+        // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
+        if (editorInstance?.value) {
+            resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             resetLineDecorations(editorInstance.value)
         }
         // console.log('inside run query: ', activeInlineTab.value)
@@ -216,17 +193,18 @@ export default function useProject() {
 
         dataList.value = []
 
-        let query = queryText;
+        let query = queryText
 
         try {
             query = encodeURIComponent(btoa(queryText))
-        } catch(error) {
+        } catch (error) {
             // console.log('query error: ', error)
-            if(error) {
-                activeInlineTab.value.playground.resultsPane.result.isQueryRunning = ''
+            if (error) {
+                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                    ''
                 message.error('Query format not supported')
             }
-            return;
+            return
         }
 
         const params = {
@@ -261,7 +239,10 @@ export default function useProject() {
             params: search_prms,
         }
 
-        keys.value = 0;
+        keys.value = 0
+
+        // start timer
+        start()
 
         const {
             eventSource,
@@ -279,7 +260,7 @@ export default function useProject() {
             try {
                 if (!isLoading.value && error.value === undefined) {
                     // setResponseTime(new Date())
-                    
+
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         /* Saving the queryId */
@@ -331,15 +312,13 @@ export default function useProject() {
                                 undefined
 
                             let endTime = new Date()
-                            activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
+                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                                endTime - startTime
 
-                            // console.log('run complete')
-                            /* Callback will be called when request completed */
                             if (onCompletion) {
-                                // activeInlineTab.value.playground.resultsPane.result.executionTime = endTime-startTime
                                 onCompletion(activeInlineTab, 'success')
-
                             }
+                            reset()
 
                             /* ------------------- */
                         }
@@ -367,6 +346,7 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
+                            reset()
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -417,8 +397,10 @@ export default function useProject() {
 
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined
+
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
+                    reset()
                 }
             } catch (e) {
                 console.error(e)

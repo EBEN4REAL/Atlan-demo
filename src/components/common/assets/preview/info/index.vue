@@ -521,7 +521,7 @@
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
-                See Also
+                Related Terms
             </p>
             <RelatedTerms
                 v-model="localSeeAlso"
@@ -532,6 +532,10 @@
                 @change="handleSeeAlsoUpdate"
             >
             </RelatedTerms>
+        </div>
+        <div v-if="isBiAsset(selectedAsset)" class="flex flex-col px-5 gap-y-4">
+            <SourceUpdated :asset="selectedAsset" />
+            <SourceCreated :asset="selectedAsset" />
         </div>
         <a-modal
             v-model:visible="sampleDataVisible"
@@ -572,6 +576,8 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
+    import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -590,6 +596,8 @@
             TermsWidget,
             Categories,
             RelatedTerms,
+            SourceCreated,
+            SourceUpdated,
             Admins,
             SampleDataTable: defineAsyncComponent(
                 () =>
@@ -658,6 +666,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                isBiAsset,
             } = useAssetInfo()
 
             const {
@@ -776,6 +785,7 @@
                 externalLocation,
                 externalLocationFormat,
                 handleCollectionClick,
+                isBiAsset,
             }
         },
     })

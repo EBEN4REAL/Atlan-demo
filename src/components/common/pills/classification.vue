@@ -1,41 +1,15 @@
 <template>
     <div
-        :class="`
-            flex
-            items-center
-            py-1
-            pl-2
-            pr-2
-            ${bgHover}
-            text-sm text-gray-700
-            bg-white
-            border border-gray-200
-            rounded-full
-            cursor-pointer
-            hover:text-white
-            group
-            classification-pill
-            `"
+        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:text-white group"
         :data-test-id="displayName"
-        @mouseover="
-            () => {
-                if (!noHover) {
-                    shieldColour = 'White'
-                }
-            }
-        "
-        @mouseleave="
-            () => {
-                shieldColour = originalColour
-            }
-        "
+        :style="`background-color: ${bgHover}!important;`"
+        @mouseenter="toggleColor"
+        @mouseleave="toggleColor"
     >
         <ClassificationIcon
-            v-if="isPropagated"
-            icon="ShieldFilled"
+            :icon="icon"
             :color="shieldColour"
         />
-        <ClassificationIcon v-else icon="Shield" :color="shieldColour" />
 
         <div class="ml-1">
             {{ displayName || name }}
@@ -51,8 +25,10 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, unref, ref, defineComponent } from 'vue'
+    import { toRefs, computed, unref, ref, defineComponent, watch } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
+
 
     export default defineComponent({
         components: { ClassificationIcon },
@@ -78,7 +54,7 @@
             color: {
                 type: String,
                 required: false,
-                default: 'blue',
+                default: 'Blue',
             },
             allowDelete: {
                 type: Boolean,
@@ -92,30 +68,37 @@
                     return false
                 },
             },
+            createdBy: {
+                type: String,
+                required: false,
+                default: ''
+            }
         },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, displayName, color } = toRefs(props)
-            const shieldColour = ref(unref(color))
-            const originalColour = ref(unref(color))
+            const { name, displayName, color, createdBy, isPropagated } = toRefs(props)
+            const shieldColour = ref(unref(color).toLowerCase())
+            const originalColour = ref(unref(color).toLowerCase())
+            const bgColor = ref('white')
+            const icon = computed(() => {
+                if (isPropagated.value) {
+                    return "ClassificationPropagated"
+                }
+                if (createdBy.value?.length && createdBy.value?.includes('service-account-atlan')) {
+                    return "ClassificationAtlan"
+                }
+                return "ClassificationShield"
+            })
 
             const handleRemove = () => {
                 emit('delete', name.value)
             }
 
-            const bgHover = computed(() => {
-                const bgColor = color.value?.toLowerCase()
-                switch (bgColor) {
-                    case 'red':
-                        return 'hover:bg-red-400 text-white'
-                    case 'green':
-                        return 'hover:bg-green-400'
-                    case 'yellow':
-                        return 'hover:bg-yellow-400'
-                    default:
-                        return 'hover:bg-primary text-white'
-                }
-            })
+            const toggleColor = () => {
+                bgColor.value = (bgColor.value === 'white') ? originalColour.value : 'white'
+            }
+
+            const bgHover = computed(() => getClassificationColorHex(bgColor.value))
 
             return {
                 name,
@@ -125,6 +108,9 @@
                 bgHover,
                 originalColour,
                 shieldColour,
+                bgColor,
+                toggleColor,
+                icon
             }
         },
     })

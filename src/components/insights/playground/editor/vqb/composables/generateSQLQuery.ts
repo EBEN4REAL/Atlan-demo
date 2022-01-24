@@ -54,7 +54,16 @@ export function getValueStringFromType(subpanel, value) {
                 }
             }
         } else res += `'${value}'`
-    } else if (type === 'date') res += `DATE '${value}'`
+    } else if (type === 'date') {
+        // check if the column type is TIMESTAMP
+        if (
+            subpanel?.column.attributes?.dataType?.toUpperCase() === 'TIMESTAMP'
+        ) {
+            res += `TIMESTAMP '${value}'`
+        } else {
+            res += `DATE '${value}'`
+        }
+    }
     return res
 }
 
@@ -394,7 +403,6 @@ export function generateSQLQuery(
                 const tableName = getTableNameWithQuotes(
                     subpanel.aggregateORGroupColumn?.qualifiedName ?? ''
                 )
-                debugger
                 if (subpanel.aggregateORGroupColumn?.label) {
                     if (contextPrefix !== '') {
                         if (
@@ -572,6 +580,9 @@ export function generateSQLQuery(
             let rightColumnName = getJoinFormattedColumnName(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
+            if (leftColumnName === undefined) return
+            if (rightColumnName === undefined) return
+
             // leftTableName = "TABLENAME"
             let rightTableName = getTableNameWithQuotes(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
@@ -590,7 +601,7 @@ export function generateSQLQuery(
                 subpanel.columnsDataRight?.columnQualifiedName ?? ''
             )
             if (rightColumnContextPrefix !== '') {
-                rightColumnName = `${leftColumnContextPrefix}.${rightColumnName}`
+                rightColumnName = `${rightColumnContextPrefix}.${rightColumnName}`
             }
 
             let rightTableContextPrefix = ''

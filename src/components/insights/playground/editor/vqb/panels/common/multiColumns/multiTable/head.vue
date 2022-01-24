@@ -49,7 +49,7 @@
         <div
             class="absolute right-3 carron-pos"
             @click.stop="clearAllSelected"
-            v-if="enrichedSelectedItems?.length > 0 && mouseOver"
+            v-if="enrichedSelectedItems?.length > 0 && mouseOver && !disabled"
         >
             <AtlanIcon :icon="'Cross'" class="w-4 h-4" />
         </div>

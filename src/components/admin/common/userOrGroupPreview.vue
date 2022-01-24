@@ -65,8 +65,7 @@
                             >
                                 <span class="mr-1 font-bold">{{ title }}</span>
                                 <SlackMessageCta
-                                    v-if="slackEnabled"
-                                    :slack-link="slackUrl"
+                                    :entity="selectedGroup || selectedUser"
                                 />
                                 <span
                                     v-if="
@@ -284,57 +283,9 @@
                 }
                 return ''
             })
-            const userProfiles = computed(() => {
-                if (isValidUser.value) {
-                    return selectedUser.value?.attributes?.profiles
-                }
-                return []
-            })
-            const groupChannels = computed(() => {
-                if (isValidGroup.value) {
-                    return selectedGroup.value?.attributes?.channels
-                }
-                return []
-            })
-            const slackProfile = computed(() => {
-                if (userProfiles.value?.length > 0) {
-                    const firstProfile = JSON.parse(userProfiles.value[0])
-                    if (
-                        firstProfile &&
-                        firstProfile.length > 0 &&
-                        firstProfile[0].hasOwnProperty('slack')
-                    ) {
-                        return firstProfile[0].slack
-                    }
-                }
-                return ''
-            })
-            const slackChannel = computed(() => {
-                if (groupChannels.value?.length > 0) {
-                    const firstChannel = JSON.parse(groupChannels.value[0])
-                    if (
-                        firstChannel &&
-                        firstChannel.length > 0 &&
-                        firstChannel[0].hasOwnProperty('slack')
-                    ) {
-                        return firstChannel[0].slack
-                    }
-                }
-                return ''
-            })
-
             const handleImageUpdate = (newImageUrl) => {
                 updatedImageUrl.value = newImageUrl.value
             }
-
-            const slackEnabled = computed(
-                () => slackProfile.value || slackChannel.value
-            )
-            const slackUrl = computed(() =>
-                slackEnabled.value
-                    ? getDeepLinkFromUserDmLink(slackEnabled.value)
-                    : '#'
-            )
             const handleChangeTab = (tabKey) => {
                 activeKey.value = tabKey
             }
@@ -369,14 +320,10 @@
                 handleUpdate,
                 activeKey,
                 imageUrl,
-                slackEnabled,
-                slackUrl,
                 handleImageUpdate,
                 updatedImageUrl,
                 userUpdated,
                 handleChangeTab,
-                groupChannels,
-                slackChannel,
                 lastActiveTime,
                 lastActiveTimeAgo,
             }

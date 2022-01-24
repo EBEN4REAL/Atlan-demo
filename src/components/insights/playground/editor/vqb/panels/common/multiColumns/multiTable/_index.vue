@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="setFocus"
+        @click="toggleFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
@@ -229,10 +229,14 @@
             // for initial call
             replaceTableBody(getTableInitialBody())
 
-            const setFocus = () => {
+            const toggleFocus = () => {
                 setDropDownPosition()
                 if (!disabled.value) {
-                    isAreaFocused.value = true
+                    if (isAreaFocused.value) {
+                        isAreaFocused.value = false
+                    } else {
+                        isAreaFocused.value = true
+                    }
                 }
             }
 
@@ -269,7 +273,7 @@
             /*-------------------------------------*/
 
             return {
-                setFocus,
+                toggleFocus,
                 disabled,
                 container,
                 isAreaFocused,

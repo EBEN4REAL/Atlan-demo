@@ -6,18 +6,20 @@
     >
         <template #content>
             <div class="relative p-4 user-popover">
-                <div class="absolute top-0 left-0 right-0 z-0 user-cover"></div>
                 <div
                     v-if="
                         !sessionInfoLoading &&
                         !isLoading &&
                         selectedUser.username === item
                     "
-                    class="z-10 flex flex-col"
+                    class="z-10 flex flex-col gap-y-2"
                 >
-                    <div class="z-10 flex items-center justify-between w-full">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
+                    <div
+                        class="absolute top-0 left-0 right-0 user-cover opacity-60"
+                    ></div>
+                    <div class="flex justify-between w-full h-16">
+                        <div class="z-10 flex justify-between">
+                            <div class="flex gap-2">
                                 <UserAvatar
                                     :username="item"
                                     style-class="mr-1 border-none bg-primary-light"
@@ -29,21 +31,20 @@
                                     <!-- name & basic details -->
                                     <div>
                                         <div
-                                            class="flex items-center text-sm font-semibold capitalize"
+                                            class="flex text-sm font-semibold capitalize"
                                         >
                                             <span>{{
                                                 selectedUser?.name
                                             }}</span>
-                                            <span
+                                            <!-- <span
                                                 v-if="userProfiles?.slack"
                                                 class="ml-1 text-sm font-semibold"
-                                            >
-                                                <SlackMessageCta
-                                                    :slack-link="
-                                                        userProfiles.slack
-                                                    "
-                                                />
-                                            </span>
+                                            > -->
+                                            <SlackMessageCta
+                                                :entity="selectedUser"
+                                                class="ml-1 text-sm font-semibold"
+                                            />
+                                            <!-- </span> -->
                                         </div>
                                         <div class="text-sm text-gray-600">
                                             @{{ item }}
@@ -77,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-auto">
+                        <div class="z-10 mb-auto">
                             <AtlanBtn
                                 class="flex-none bg-white text-blueGray p-1.5 border-gray-300 border rounded-md"
                                 size="sm"
@@ -101,7 +102,7 @@
 
                     <div
                         v-if="selectedUser?.personaList?.length > 0"
-                        class="flex gap-2 mt-3"
+                        class="flex gap-2"
                     >
                         <div class="" style="visibility: hidden">
                             <UserAvatar
@@ -110,14 +111,18 @@
                                 :avatar-size="40"
                             ></UserAvatar>
                         </div>
-                        <div class="z-10 mt-5">
+                        <div class="z-10">
                             <div class="text-sm text-gray-500">Personas</div>
                             <div class="flex flex-wrap gap-2">
                                 <span
                                     v-for="persona in selectedUser?.personaList"
                                     :key="persona"
                                     class="flex px-2 tracking-wide text-gray-500 border rounded-full"
-                                    >{{ persona }}</span
+                                    >{{
+                                        persona?.displayName ||
+                                        persona?.name ||
+                                        ''
+                                    }}</span
                                 >
                             </div>
                         </div>
@@ -128,7 +133,10 @@
                     v-else
                     class="flex items-center justify-center w-full px-4"
                 >
-                    <AtlanLoader  v-if="isLoading || sessionInfoLoading" class="h-8" />
+                    <AtlanLoader
+                        v-if="isLoading || sessionInfoLoading"
+                        class="h-8"
+                    />
                 </div>
             </div>
         </template>
@@ -214,7 +222,6 @@
                 },
                 { deep: true, immediate: true }
             )
-            
             return {
                 selectedUser,
                 isLoading,
@@ -235,7 +242,6 @@
         width: 370px;
     }
     .user-cover {
-        opacity: 0.6;
         // curved lines
         background: url('https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/round.png');
 

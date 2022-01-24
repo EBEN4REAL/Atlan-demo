@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="setFocus"
+        @click="toggleFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
@@ -280,7 +280,12 @@
             }
 
             // for initial call
-            if (!isJoinPanelDisabled.value) {
+            if (
+                !isJoinPanelStateDisabledComputed(
+                    isJoinPanelDisabled.value,
+                    selectedTablesQualifiedNames.value
+                )
+            ) {
                 replaceTableBody(
                     getTableInitialBody(selectedTablesQualifiedNames.value)
                 )
@@ -293,10 +298,14 @@
                 )
             }
 
-            const setFocus = () => {
+            const toggleFocus = () => {
                 setDropDownPosition()
                 if (!disabled.value) {
-                    isAreaFocused.value = true
+                    if (isAreaFocused.value) {
+                        isAreaFocused.value = false
+                    } else {
+                        isAreaFocused.value = true
+                    }
                 }
             }
 
@@ -334,7 +343,7 @@
 
             return {
                 isJoinPanelDisabled,
-                setFocus,
+                toggleFocus,
                 specifiedBodyWidth,
                 disabled,
                 container,

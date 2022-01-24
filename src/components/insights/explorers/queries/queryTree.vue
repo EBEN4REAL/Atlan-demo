@@ -351,6 +351,7 @@ TR
                 li
                 .ant-tree-node-content-wrapper) {
             @apply w-full !important;
+            transition: none !important;
         }
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
             @apply bg-gray-light;

@@ -125,7 +125,7 @@
                         style="font-size: 12px"
                         class=""
                     >
-                        <div class="text-gray-500">See Also</div>
+                        <div class="text-gray-500">Related Terms</div>
                         <div
                             class="flex flex-wrap gap-1 leading-5 text-gray-700 truncate overflow-ellipsis"
                         >

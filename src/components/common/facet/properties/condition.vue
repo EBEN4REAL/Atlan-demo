@@ -123,6 +123,11 @@
                 }
             }
 
+            if (localCondition.value.operand === 'sizeBytes') {
+                localCondition.value.value =
+                    condition.value.value / (1024 * 1024)
+            }
+
             const handleRemove = () => {
                 emit('clear')
             }
@@ -156,7 +161,6 @@
             }
 
             const handleValueChange = () => {
-                console.log(localCondition.value.value)
                 if (attribute.value?.typeName === 'boolean') {
                     condition.value.operator = 'boolean'
                     condition.value.value =
@@ -178,8 +182,14 @@
                             condition.value.operator,
                             dataType.value
                         )
+                    else if (condition.value.operand === 'sizeBytes')
+                        // to filter by mb
+
+                        condition.value.value =
+                            localCondition.value.value * 1024 * 1024
                     else condition.value.value = localCondition.value.value
                 }
+                console.log(condition.value.value)
 
                 emit('change')
             }

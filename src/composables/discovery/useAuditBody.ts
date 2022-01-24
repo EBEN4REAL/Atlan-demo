@@ -86,6 +86,12 @@ export function useAuditBody(
                 }
                 break
             }
+            case 'action': {
+                if (filterObject) {
+                    base.filter('term', 'action', filterObject)
+                }
+                break
+            }
         }
     })
 

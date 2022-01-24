@@ -11,7 +11,7 @@
             ]"
         >
             <div
-                @click="toggleExpand"
+                @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
                 <div class="mr-3">
@@ -24,7 +24,10 @@
                         "
                     />
                 </div>
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full"
+                    @click="toggleExpand"
+                >
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 bg-gray-100 border rounded-full p-1.5"

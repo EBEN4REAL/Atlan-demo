@@ -11,7 +11,42 @@
                         : '#ffffff',
             }"
         >
-            <Loading v-if="isQueryRunning === 'loading'" />
+            <div
+                v-if="isQueryRunning === 'loading'"
+                class="flex flex-col justify-center h-full"
+            >
+                <Loading v-if="isQueryRunning === 'loading'" />
+                <QueryTimer :timerId="`${activeInlineTab.key}_timer`" />
+                <div
+                    class="flex justify-center mt-2"
+                    v-if="
+                        isQueryRunning === 'loading' &&
+                        activeInlineTab.playground.resultsPane.result.runQueryId
+                    "
+                >
+                    <AtlanBtn
+                        class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"
+                        size="lg"
+                        color="secondary"
+                        padding="compact"
+                        :disabled="
+                            activeInlineTab.playground.resultsPane.result
+                                .buttonDisable
+                        "
+                        @click="abortRunningQuery"
+                    >
+                        <span
+                            v-if="
+                                !activeInlineTab.playground.resultsPane.result
+                                    .buttonDisable
+                            "
+                            class="text-gray-700"
+                            >Abort</span
+                        >
+                        <span v-else class="text-gray-700">Aborting</span>
+                    </AtlanBtn>
+                </div>
+            </div>
 
             <!-- <a-spin v-if="isQueryRunning === 'loading'" /> -->
 
@@ -74,42 +109,6 @@
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
                 "
             />
-
-            <div
-                class="flex justify-center"
-                v-else-if="
-                    isQueryRunning === 'loading' &&
-                    activeInlineTab.playground.resultsPane.result.runQueryId
-                "
-            >
-                <AtlanBtn
-                    class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"
-                    size="lg"
-                    color="secondary"
-                    padding="compact"
-                    :disabled="
-                        activeInlineTab.playground.resultsPane.result
-                            .buttonDisable
-                    "
-                    @click="abortRunningQuery"
-                >
-                    <span
-                        v-if="
-                            !activeInlineTab.playground.resultsPane.result
-                                .buttonDisable
-                        "
-                        class="text-gray-700"
-                        >Abort</span
-                    >
-                    <span v-else class="text-gray-700">Aborting</span>
-                </AtlanBtn>
-            </div>
-
-            <!-- Loading on running a query -->
-
-            <!-- Output pane footer -->
-
-            <!-- <ResultPaneFooter /> -->
         </div>
     </div>
 </template>
@@ -133,6 +132,8 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
+    import QueryTimer from '~/components/insights/playground/resultsPane/result/timer/queryTimer.vue'
+    // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
     export default defineComponent({
         components: {
@@ -147,6 +148,7 @@
             QueryAbort,
             AtlanIcon,
             AtlanPreviewTable,
+            QueryTimer,
         },
         props: {
             dataList: {
@@ -170,6 +172,7 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const { haveLineNumber } = useResultPane(inlineTabs)
+
             const queryErrorObj = computed(
                 () =>
                     activeInlineTab.value?.playground?.resultsPane?.result

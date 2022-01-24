@@ -13,6 +13,7 @@
                 :index="index"
                 :panel="item"
                 v-if="item"
+                :key="item?.id + index"
             ></component>
         </template>
     </div>

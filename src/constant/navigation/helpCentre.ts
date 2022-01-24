@@ -8,7 +8,7 @@ export const helpCenterList = [
     {
         link: 'https://ask.atlan.com',
         openInANewTab: true,
-        icon: 'AtlanIcon',
+        icon: 'Atlan',
         label: 'Atlan Documentation',
         id: 'documentation',
         isActive: true,

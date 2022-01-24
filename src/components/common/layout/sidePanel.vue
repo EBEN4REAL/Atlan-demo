@@ -89,11 +89,14 @@
                         <AtlanIcon
                             v-if="nav.openInANewTab"
                             icon="External"
-                            class="ml-2 opacity-0 group-hover:opacity-100"
+                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100"
                         />
                     </a>
                     <span v-else class="flex items-center">
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
+                        <atlan-icon
+                            :icon="nav?.icon"
+                            class="h-4 mr-2 text-gray-500"
+                        />
                         {{ nav.label }}
                     </span>
                 </div>
@@ -137,7 +140,6 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import whoami from '~/composables/user/whoami'
-    
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -154,9 +156,7 @@
             const getVersion = process.env.npm_package_version
             const route = useRoute()
 
-            const path = computed(() => {
-                return route.path
-            })
+            const path = computed(() => route.path)
 
             function closeNavDrawer() {
                 emit('closeNavbar')

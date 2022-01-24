@@ -17,6 +17,7 @@ import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
 import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
@@ -457,6 +458,7 @@ export default {
     ChevronDown,
     ChevronUp,
     AtlanIcon,
+    Atlan,
     CallIcon,
     FeedbackIcon,
     AdminCenterIcon,

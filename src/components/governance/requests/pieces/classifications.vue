@@ -28,7 +28,7 @@
                 :color="localClassification[0].options?.color"
                 :no-hover="true"
                 :created-by="localClassification[0]?.createdBy"
-                class="classification-pill"
+                class="pr-3 classification-pill"
             />
         </Popover>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>

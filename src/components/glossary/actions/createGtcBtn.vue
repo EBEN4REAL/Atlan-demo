@@ -1,33 +1,82 @@
 <template>
-    <AddGTCModal
-        :key="selectedGlossaryQf"
-        :entityType="defaultEntityType"
-        @add="handleAdd"
-        :glossaryQualifiedName="selectedGlossaryQf"
-        :glossaryName="selectedGlosaryName"
+    <a-dropdown
+        v-model:visible="isVisible"
+        trigger="click"
+        placement="bottomRight"
     >
-        <template #trigger>
-            <a-tooltip>
-                <template #title
-                    >Add new
-                    {{
-                        `${
-                            defaultEntityType === 'AtlasGlossary'
-                                ? 'Glossary'
-                                : 'Term/Category'
-                        }`
-                    }}</template
-                >
+        <a-tooltip>
+            <template #title
+                >Add new
+                {{
+                    `${
+                        defaultEntityType === 'AtlasGlossary'
+                            ? 'Glossary'
+                            : 'Term/Category'
+                    }`
+                }}</template
+            >
 
-                <a-button class="ml-3" size="small">
-                    <atlan-icon
-                        icon="Add"
-                        class="transition duration-300 text-primary"
-                    />
-                </a-button>
-            </a-tooltip>
+            <a-button class="ml-3" size="small">
+                <atlan-icon
+                    icon="Add"
+                    class="transition duration-300 text-primary"
+                />
+            </a-button>
+        </a-tooltip>
+
+        <template #overlay>
+            <a-menu class="" mode="vertical">
+                <a-menu-item @click="closeMenu">
+                    <AddGTCModal
+                        :key="selectedGlossaryQf"
+                        entityType="AtlasGlossary"
+                        @add="handleAdd"
+                        :glossaryQualifiedName="selectedGlossaryQf"
+                        :glossaryName="selectedGlosaryName"
+                    >
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Glossary" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Add Glossary</p>
+                            </div>
+                        </template>
+                    </AddGTCModal>
+                </a-menu-item>
+                <a-menu-item @click="closeMenu">
+                    <AddGTCModal
+                        :key="selectedGlossaryQf"
+                        entityType="AtlasGlossaryTerm"
+                        @add="handleAdd"
+                        :glossaryQualifiedName="selectedGlossaryQf"
+                        :glossaryName="selectedGlosaryName"
+                    >
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Add Term</p>
+                            </div>
+                        </template>
+                    </AddGTCModal>
+                </a-menu-item>
+                <a-menu-item @click="closeMenu">
+                    <AddGTCModal
+                        :key="selectedGlossaryQf"
+                        entityType="AtlasGlossaryCategory"
+                        @add="handleAdd"
+                        :glossaryQualifiedName="selectedGlossaryQf"
+                        :glossaryName="selectedGlosaryName"
+                    >
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Category" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Add Category</p>
+                            </div>
+                        </template>
+                    </AddGTCModal>
+                </a-menu-item>
+            </a-menu>
         </template>
-    </AddGTCModal>
+    </a-dropdown>
 </template>
 <script lang="ts">
     import { defineComponent, computed, ref } from 'vue'
@@ -49,6 +98,10 @@
         emits: ['add'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const isVisible = ref(false)
+            const closeMenu = () => {
+                isVisible.value = false
+            }
 
             const selectedGlossary = computed(() =>
                 glossaryStore.getGlossaryByQualifiedName(
@@ -72,6 +125,8 @@
                 defaultEntityType,
                 selectedGlosaryName,
                 handleAdd,
+                closeMenu,
+                isVisible,
             }
         },
     })

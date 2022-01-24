@@ -134,7 +134,7 @@
     import LinkPreview from '@/common/widgets/resources/previews/linkPreviewCard.vue'
     import DeleteResource from '../deleteResource.vue'
     import EditResource from '../addResource.vue'
-    import ShowLess from '@/UI/ShowLess.vue'
+    import ShowLess from '@/UI/showLess.vue'
     import integrationStore from '~/store/integrations/index'
 
     dayjs.extend(relativeTime)

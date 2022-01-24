@@ -81,7 +81,8 @@
             })
             const { data, isLoading } = useRequest(
                 selectedAsset.value.guid,
-                pagination
+                pagination,
+                selectedAsset.value.typeName
             )
             const handleLoadMore = () => {
                 pagination.value.offset =

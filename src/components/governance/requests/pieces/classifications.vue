@@ -28,6 +28,7 @@
                 :color="localClassification[0].options?.color"
                 :no-hover="true"
                 :created-by="localClassification[0]?.createdBy"
+                class="classification-pill"
             />
         </Popover>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
@@ -90,12 +91,13 @@
         }
     }
     .classification-pill {
-        padding-left: 0px !important;
-        background: transparent !important;
-        border: none !important;
-        &:hover {
-            background: transparent !important;
-            @apply text-gray-700 !important;
-        }
+        width: fit-content!important
+        // padding-left: 0px !important;
+        // background: transparent !important;
+        // border: none !important;
+        // &:hover {
+        //     background: transparent !important;
+        //     @apply text-gray-700 !important;
+        // }
     }
 </style>

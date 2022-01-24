@@ -43,7 +43,13 @@
         />
 
         <LineageList v-if="computedAssets.length" :assets="computedAssets" />
-
+        <div
+            v-else-if="isUpLoading || isDownLoading"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
+        </div>
+        <ErrorView v-else-if="!isUpReady || !isDownReady" />
         <div v-else class="flex items-center justify-center h-full">
             <EmptyView
                 empty-screen="EmptyLineageTab"
@@ -80,6 +86,7 @@
     // import AssetList from '@/common/assets/list/index.vue'
     // import AssetItem from '@/common/assets/list/assetItem.vue'
     import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AtlanButton from '@/UI/button.vue'
     import LineageImpactModal from './lineageImpactModal.vue'
@@ -100,6 +107,7 @@
             AtlanButton,
             LineageImpactModal,
             RaisedTab,
+            ErrorView,
         },
         props: {
             selectedAsset: {
@@ -145,17 +153,23 @@
                 attributes: [...AssetAttributes, ...SQLAttributes],
             }
 
-            const { data: UpStreamLineage, isLoading: isUpLoading } =
-                useFetchLineage(
-                    { ...defaultLineageConfig, direction: 'INPUT' },
-                    true
-                )
+            const {
+                data: UpStreamLineage,
+                isLoading: isUpLoading,
+                isReady: isUpReady,
+            } = useFetchLineage(
+                { ...defaultLineageConfig, direction: 'INPUT' },
+                true
+            )
 
-            const { data: DownStreamLineage, isLoading: isDownLoading } =
-                useFetchLineage(
-                    { ...defaultLineageConfig, direction: 'OUTPUT' },
-                    true
-                )
+            const {
+                data: DownStreamLineage,
+                isLoading: isDownLoading,
+                isReady: isDownReady,
+            } = useFetchLineage(
+                { ...defaultLineageConfig, direction: 'OUTPUT' },
+                true
+            )
 
             // useComputeGraph
             const allEntities = computed(() => ({
@@ -235,6 +249,10 @@
                 isWithGraph,
                 allEntities,
                 computedAssets,
+                isUpLoading,
+                isDownLoading,
+                isUpReady,
+                isDownReady,
             }
         },
     })

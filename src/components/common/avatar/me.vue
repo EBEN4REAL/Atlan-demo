@@ -28,7 +28,7 @@
                 <a-menu-item style="width: 130px">
                     <a @click="() => handleClickUser(username)">
                         <div class="flex items-center">
-                            <AtlanIcon icon="OpenPreview" class="mr-2" />
+                            <AtlanIcon icon="User" class="mr-2" />
                             <span>Profile</span>
                         </div></a
                     >
@@ -57,8 +57,11 @@
                 <a-menu-divider />
                 <a-menu-item>
                     <a class="text-red-500" @click.stop="handleLogout"
-                        >Logout</a
-                    >
+                        ><div class="flex items-center">
+                            <AtlanIcon icon="Logout" class="mr-2" />
+                            <span>Logout</span>
+                        </div>
+                    </a>
                 </a-menu-item>
             </a-menu>
         </template>

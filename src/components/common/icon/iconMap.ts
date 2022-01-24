@@ -366,6 +366,7 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Logout from '~/assets/images/icons/logout.svg'
 
 export default {
     GlowFlash,
@@ -720,4 +721,5 @@ export default {
     MessageSuccess,
     CrossCircle,
     MessageCross,
+    Logout,
 }

@@ -34,7 +34,6 @@
         setup() {
             const store = integrationStore()
             const route = useRoute()
-            const router = useRouter()
 
             const { tenantSlackStatus } = toRefs(store)
 

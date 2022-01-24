@@ -42,7 +42,7 @@
                 @click="() => openSlackOAuth({ tenant: true, emit: $emit })"
             >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
-                    Install now <AtlanIcon icon="ArrowRight" />
+                    Add to slack <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </div>
             <AtlanButton

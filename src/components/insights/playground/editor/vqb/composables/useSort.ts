@@ -16,7 +16,6 @@ export function useSort() {
             }
         )
         if (!sortPanel) return
-        debugger
         const { isAggregationORGroupPanelColumnsAdded } = useUtils()
         const res = isAggregationORGroupPanelColumnsAdded(activeInlineTab.value)
 

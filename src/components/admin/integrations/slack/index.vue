@@ -1,6 +1,6 @@
 <template>
     <a-modal
-        :visible="showSlackConfigModal"
+        :visible="showSlackConfigModal && !tenantSlackStatus.configured"
         :destroy-on-close="true"
         :footer="null"
         :closable="false"

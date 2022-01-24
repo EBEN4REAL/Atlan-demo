@@ -450,7 +450,7 @@ export default function useAssetInfo() {
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).rowCount, true)
+            : getCountString(attributes(asset).rowCount, false)
 
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw

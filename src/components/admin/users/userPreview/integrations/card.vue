@@ -21,7 +21,11 @@
                 </template>
                 <template v-else>
                     <a-tooltip
-                        title="Slack must be set up in admin first to use this feature."
+                        :title="
+                            disableConnect
+                                ? 'Slack must be set up in admin first to use this feature.'
+                                : ''
+                        "
                     >
                         <span
                             class="flex items-center gap-x-1"

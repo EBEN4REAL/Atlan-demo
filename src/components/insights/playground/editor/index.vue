@@ -39,7 +39,7 @@
                 "
                 :collection="activeTabCollection"
             />
-            <VQB v-if="showVQB" />
+            <VQB v-if="showVQB" :key="activeInlineTab.key" />
             <Monaco @editorInstance="setInstance" />
 
             <!-- START: EDITOR FOOTER -->

@@ -1,6 +1,10 @@
 <template>
     <div v-if="computedItems?.length > 0">
-        <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
+        <a-dropdown
+            :trigger="['hover']"
+            :class="$style.dropdownn"
+            @visibleChange="handleOpenChange"
+        >
             <AtlanBtn
                 class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
                 size="sm"
@@ -40,12 +44,20 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ComputedRef, computed, inject, toRefs } from 'vue'
+    import {
+        defineComponent,
+        ComputedRef,
+        computed,
+        inject,
+        toRefs,
+        onUnmounted,
+    } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Columns',
@@ -71,6 +83,7 @@
             const { submenuHovered, containerHovered } = useVModels(props)
             const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -125,6 +138,9 @@
                 }
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
+                containerHovered.value = false
+                submenuHovered.value = false
+                syncSortAggregateAndGroupPanel(activeInlineTab)
 
                 // emit('add', type)
             }
@@ -205,12 +221,20 @@
                 if (containerHovered.value) containerHovered.value = false
                 if (submenuHovered.value) submenuHovered.value = false
             }
+
+            const handleOpenChange = (state) => {
+                if (!state) {
+                    submenuHovered.value = false
+                }
+                // console.log(e, 'handleOpenChange')
+            }
             return {
                 computedItems,
                 activeInlineTab,
                 handleAdd,
                 handleMouseOut,
                 handleMouseOver,
+                handleOpenChange,
             }
         },
     })

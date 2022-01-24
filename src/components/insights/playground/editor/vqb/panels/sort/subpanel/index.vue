@@ -62,6 +62,9 @@
                         :disabled="readOnly"
                         v-model:selectedColumn="subpanel.aggregateORGroupColumn"
                         v-model:panel="panel"
+                        :mixedSubpanels="
+                            getAggregationORGroupPanelColumns(activeInlineTab)
+                        "
                     >
                         <template #head>
                             <AggregateGroupHead

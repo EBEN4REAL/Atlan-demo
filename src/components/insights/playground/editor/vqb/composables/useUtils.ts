@@ -233,7 +233,7 @@ export function useUtils() {
     }
 
     function getSummarisedInfoOfJoinPanel(subpanels: SubpanelJoin[]) {
-        if (subpanels.length == 0) return 'No Table Added for Join'
+        if (subpanels.length == 0) return 'No Table Added for Joins'
         let res = 'by '
         subpanels.forEach((subpanel, i) => {
             if (i == 0) {
@@ -258,7 +258,7 @@ export function useUtils() {
                 }
             }
 
-            if (res === 'by ') res = 'No Columns Added for Aggregation'
+            if (res === 'by ') res = 'No Columns Added for Joins'
         })
         return res
     }

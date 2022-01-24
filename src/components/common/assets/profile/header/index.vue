@@ -251,16 +251,12 @@
                     <QueryDropdown
                         v-if="
                             assetType(item) === 'Table' ||
-                            assetType(item) === 'View' ||
-                            assetType(item) === 'Column'
+                            assetType(item) === 'View'
                         "
                         @handleClick="goToInsights"
                     >
                         <template #button>
-                            <a-button
-                                class="flex items-center justify-center rounded-l"
-                                style="margin-right: -1px"
-                            >
+                            <a-button class="flex items-center justify-center">
                                 <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
                             </a-button>
                         </template>

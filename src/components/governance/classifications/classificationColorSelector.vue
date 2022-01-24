@@ -13,12 +13,8 @@
                         "
                         @click="selectedColor = option.color"
                     >
-                        <div class="">
-                            <AtlanIcon
-                                icon="Shield"
-                                class="self-center mr-1"
-                                :class="option.text"
-                            />
+                        <div class="text-center">
+                            <ClassificationIcon :color='option.color' :class-names='"self-center mx-1"' />
                         </div>
                         <div class="flex flex-col">
                             <span>{{ option.color }}</span>
@@ -40,7 +36,7 @@
             class="flex items-center py-1 pl-2 pr-1 space-x-1 rounded cursor-pointer"
         >
             <AtlanIcon
-                icon="Shield"
+                icon="ClassificationShield"
                 class="self-center"
                 :class="selectedText"
             />
@@ -61,12 +57,8 @@
                     "
                     @click="selectedColor = option.color"
                 >
-                    <div class="">
-                        <AtlanIcon
-                            icon="Shield"
-                            class="self-center mr-1"
-                            :class="option.text"
-                        />
+                    <div class="text-center">
+                        <ClassificationIcon :color='option.color' :class-names='"self-center mx-1"' />
                     </div>
                     <div class="flex flex-col">
                         <span>{{ option.color }}</span>
@@ -89,10 +81,11 @@
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import ClassificationIcon from './classificationIcon.vue'
 
     export default defineComponent({
         name: 'ClassificationColorSelector',
-        components: {},
+        components: { ClassificationIcon },
         props: {
             selectedColor: {
                 type: String as PropType<'Green' | 'Red' | 'Yellow'>,

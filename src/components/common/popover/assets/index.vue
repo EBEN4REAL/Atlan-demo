@@ -31,37 +31,47 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '0' &&
-                                    rows !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
-                                <span
-                                    class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
-                                    >{{ rows }}</span
-                                >Rows
+                                <a-tooltip placement="bottomLeft">
+                                    <span
+                                        class="mr-1 text-xs font-semibold tracking-tight text-gray-500 cursor-pointer"
+                                        >{{ rows }}</span
+                                    >Rows
+                                    <template #title>
+                                        <span
+                                            v-if="
+                                                sizeBytes(item, false) &&
+                                                rows !== '0'
+                                            "
+                                            class="font-semibold"
+                                            >{{ rows }} rows ({{
+                                                sizeBytes(item, false)
+                                            }})</span
+                                        >
+                                        <span v-else class="font-semibold"
+                                            >0 rows from the source</span
+                                        >
+                                    </template>
+                                </a-tooltip>
                             </span>
                             <span
                                 v-if="
-                                    cols !== '0' &&
-                                    cols !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="text-xs text-gray-500"
-                                :class="{ 'ml-3': rows === '-' || rows === '' }"
                             >
                                 <span
                                     class="text-xs font-semibold tracking-tight text-gray-500"
@@ -163,6 +173,7 @@
                             :display-name="classification?.displayName"
                             :is-propagated="isPropagated(classification)"
                             :allow-delete="false"
+                            :created-by="classification?.createdBy"
                         ></ClassificationPill>
                     </template>
                     <template
@@ -264,18 +275,16 @@
                 tableName,
                 dataTypeCategoryImage,
                 description,
+                sizeBytes,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -316,6 +325,7 @@
                 path,
                 slots,
                 description,
+                sizeBytes,
             }
         },
     }

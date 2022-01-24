@@ -111,16 +111,13 @@
                                         showCTA(action.id) &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) ===
-                                                'View' ||
-                                            assetType(selectedAsset) ===
-                                                'Column')
+                                            assetType(selectedAsset) === 'View')
                                     "
                                     @handleClick="handleQueryAction"
                                 >
                                     <template #button>
                                         <a-button
-                                            class="flex items-center justify-center border-l-0 border-r-0"
+                                            class="flex items-center justify-center"
                                         >
                                             <AtlanIcon
                                                 :icon="action.icon"

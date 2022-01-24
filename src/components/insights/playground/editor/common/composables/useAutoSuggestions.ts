@@ -5,6 +5,8 @@ import { useMapping, nextKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
+import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
 import {
@@ -138,6 +140,16 @@ export function entitiesToEditorKeyword(
         schemaName: string | undefined
     }
 ) {
+    const { getConnectorName } = useConnector()
+    // for assetQuote Info of different sources
+    const assetQuoteType = getDialectInfo(
+        getConnectorName(
+            connectorsInfo?.connectionQualifiedName ||
+                connectorsInfo?.databaseName ||
+                connectorsInfo?.schemaName
+        ) ?? ''
+    )
+
     const sqlKeywords = getSqlKeywords()
     const turndownService = new TurndownService()
     return new Promise((resolve) => {
@@ -160,12 +172,12 @@ export function entitiesToEditorKeyword(
                         /* When Schema Or database not selected TableQN will be used */
                         // let entityType = `${type}`
                         let entityType = ``
-                        let insertText = entities[i].attributes.name
+                        let insertText = `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
                         let label = entities[i].attributes.name
 
                         let qualifiedName =
                             entities[i].attributes.qualifiedName.split('/')
-                        let tableQN = `${qualifiedName[3]}.${qualifiedName[4]}.${qualifiedName[5]}`
+                        let tableQN = `${assetQuoteType}${qualifiedName[3]}${assetQuoteType}.${assetQuoteType}${qualifiedName[4]}${assetQuoteType}.${assetQuoteType}${qualifiedName[5]}${assetQuoteType}`
 
                         if (connectorsInfo.schemaName) {
                             var spilltedVal = tableQN.split('.')
@@ -230,7 +242,7 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: `${entities[i].attributes.name}`,
+                            insertText: `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }

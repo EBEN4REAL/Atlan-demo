@@ -2,23 +2,20 @@ import { Ref, ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import usePurposeService from './usePurposeService'
 
-const usePurposeList = (options) => {
+const usePurposeList = (
+    options,
+    searchParams: URLSearchParams | undefined = undefined
+) => {
     const { list } = usePurposeService()
-    const params = ref(new URLSearchParams())
+    const params = ref(
+        searchParams === undefined ? new URLSearchParams() : searchParams
+    )
     const filter: Ref<object> = ref({})
     const searchText = ref('')
 
-    const {
-        data,
-        isLoading,
-        error,
-        isReady,
-        mutate
-    } = list(params, options)
-
+    const { data, isLoading, error, isReady, mutate } = list(params, options)
 
     const results = ref([])
-
 
     const handleSearch = useDebounceFn(() => {
         if (searchText.value) {
@@ -31,15 +28,10 @@ const usePurposeList = (options) => {
         mutate()
     }, 700)
 
-
     watch([data, error], (a, b) => {
-        if (data.value?.records)
-            results.value = data.value.records
+        if (data.value?.records) results.value = data.value.records
         else results.value = []
     })
-
-
-
 
     return {
         searchText,
@@ -51,7 +43,7 @@ const usePurposeList = (options) => {
         isLoading,
         error,
         isReady,
-        mutate
+        mutate,
     }
 }
 

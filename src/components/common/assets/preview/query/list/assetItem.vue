@@ -334,6 +334,7 @@
                         >
                             <PopoverClassification
                                 :classification="classification"
+                                :entity-guid="item?.guid"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -343,6 +344,7 @@
                                     "
                                     :allow-delete="false"
                                     :color="classification.options?.color"
+                                    :created-by="classification?.createdBy"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -360,7 +362,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import PopoverClassification from '@/common/popover/classification.vue'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -477,13 +479,11 @@
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid;
+
             }
 
             const list = computed(() => {

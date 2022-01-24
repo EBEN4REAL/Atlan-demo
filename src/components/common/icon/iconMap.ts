@@ -291,6 +291,10 @@ import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 import AddColumn from '~/assets/images/icons/add-column.svg'
 
+import ClassificationShield from '~/assets/images/classifications/shield.svg'
+import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
+
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
@@ -712,6 +716,9 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClassificationShield,
+    ClassificationAtlan,
+    ClassificationPropagated,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,
@@ -731,5 +738,5 @@ export default {
     QueryTime,
     ThreeDots,
     Request,
-    RequestActive
+    RequestActive,
 }

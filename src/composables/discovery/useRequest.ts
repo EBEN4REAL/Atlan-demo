@@ -5,9 +5,10 @@ import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export function useRequest(guid,  pagination: Ref) {
      const params = computed(() => ({
+        sort: '-createdAt',
         limit: pagination.value.limit,
         offset: pagination.value.offset,
-        filter: { destinationGuid: guid, status: 'active'},
+        filter: { destinationGuid: guid, status: 'active'}, 
     }))
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
     watch(pagination, () => {

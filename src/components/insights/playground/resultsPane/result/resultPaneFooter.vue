@@ -34,7 +34,7 @@
             <!-- -------------------------------------------- -->
         </div>
         <div class="flex items-center">
-            <!-- <a-tooltip
+            <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
@@ -44,7 +44,7 @@
             >
                 <template #title>Copy data</template>
                 <div
-                    class="p-1 mr-3 rounded cursor-pointer hover:bg-gray-300 group"
+                    class="flex items-center p-1 mr-3 rounded cursor-pointer"
                     @click="
                         useCopy(
                             activeInlineTab.playground.editor.columnList,
@@ -52,9 +52,13 @@
                         )
                     "
                 >
-                    <AtlanIcon icon="CopyOutlined" class="w-4 h-4" />
+                    <AtlanIcon
+                        icon="CopyOutlined"
+                        class="w-4 h-4 mr-1 text-gray-500"
+                    />
+                    <span class="mt-1">Copy</span>
                 </div>
-            </a-tooltip> -->
+            </a-tooltip>
             <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
@@ -76,7 +80,10 @@
                         )
                     "
                 >
-                    <AtlanIcon icon="Download" class="w-4 h-4 mr-1" />
+                    <AtlanIcon
+                        icon="Download"
+                        class="w-4 h-4 mr-1 text-gray-500"
+                    />
                     <span class="mt-1">Download</span>
                 </div>
             </a-tooltip>

@@ -160,13 +160,13 @@
                     attributes: {
                         class: 'prose prose-sm w-full',
                     },
-                    handleClickOn(view, pos, node, nodePos) {
-                        if (node.type.name === 'tableCell') {
-                            const element = view.domAtPos(nodePos)?.node
-                            offsetLeft.value = element?.clientWidth + element?.offsetLeft
-                            offsetTop.value = element?.clientHeight + element?.offsetTop
-                        }
-                    }
+                    // handleClickOn(view, pos, node, nodePos) {
+                    //     if (node.type.name === 'tableCell') {
+                    //         const element = view.domAtPos(nodePos)?.node
+                    //         offsetLeft.value = element?.clientWidth + element?.offsetLeft
+                    //         offsetTop.value = element?.clientHeight + element?.offsetTop
+                    //     }
+                    // }
                     // handleClick(view, pos) {
                     //     const getBlock = view.domAtPos(pos)
                     //

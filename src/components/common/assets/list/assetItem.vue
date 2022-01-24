@@ -209,7 +209,7 @@
                                     v-if="
                                         ['table', 'tablepartition'].includes(
                                             item.typeName?.toLowerCase()
-                                        ) && rowCount(item, false) !== '-'
+                                        )
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
@@ -220,11 +220,17 @@
                                 >
                                 <template #title>
                                     <span
-                                        v-if="sizeBytes(item, false)"
+                                        v-if="
+                                            sizeBytes(item, false) &&
+                                            rowCount(item, false) !== '0'
+                                        "
                                         class="font-semibold"
                                         >{{ rowCount(item, true) }} rows ({{
                                             sizeBytes(item, false)
                                         }})</span
+                                    >
+                                    <span v-else class="font-semibold"
+                                        >0 rows from the source</span
                                     >
                                 </template>
                             </a-tooltip>
@@ -673,6 +679,7 @@
                             >
                                 <PopoverClassification
                                     :classification="classification"
+                                    :entity-guid="item.guid"
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -684,8 +691,9 @@
                                         "
                                         :allow-delete="false"
                                         :color="
-                                            classification.options?.color.toLowerCase()
+                                            classification.options?.color?.toLowerCase()
                                         "
+                                        :created-by="classification?.createdBy"
                                     ></ClassificationPill>
                                 </PopoverClassification>
                             </template>
@@ -749,7 +757,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import PopoverClassification from '@/common/popover/classification.vue'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Truncate from '@/common/ellipsis/index.vue'

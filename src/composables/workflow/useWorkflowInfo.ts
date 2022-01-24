@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import cronstrue from 'cronstrue'
 import { useConnectionStore } from '~/store/connection'
+import parser from 'cron-parser'
 
 dayjs.extend(relativeTime)
 
@@ -24,13 +25,36 @@ export default function useWorkflowInfo() {
 
     const labels = (item: any) => item.metadata?.labels
 
-    const phase = (item: any) => item.status?.phase
+    const isStopped = (item) => item?.spec?.shutdown === 'Stop'
+
+    const phase = (item: any) => {
+        if (isStopped(item)) {
+            return 'Stopped'
+        }
+
+        return item.status?.phase
+    }
+
+    const allowSchedule = (item: any) => {
+        if (
+            item.metadata?.annotations[
+                'orchestration.atlan.com/allowSchedule'
+            ] === 'false'
+        ) {
+            return false
+        }
+        return true
+    }
+
+    const phaseMessage = (item: any) => item.status?.message
 
     const startedAt = (item: any, relative: any) => {
         if (relative) {
-            return dayjs().from(item.status.startedAt, true)
+            return dayjs().from(item.status?.startedAt, true)
         }
-        return dayjs(item.status.startedAt).format('dddd MMMM D YYYY HH:mm:ss')
+        return dayjs(item.status?.startedAt).format(
+            'dddd, MMMM D YYYY, HH:mm:ss'
+        )
     }
     const finishedAt = (item: any, relative: any) => {
         if (relative) {
@@ -39,7 +63,7 @@ export default function useWorkflowInfo() {
             }
         }
         return dayjs(item?.status?.finishedAt).format(
-            'dddd MMMM D YYYY HH:mm:ss'
+            'dddd, MMMM D YYYY, HH:mm:ss'
         )
     }
     const podFinishedAt = (finishedAtProp: any) => {
@@ -73,16 +97,40 @@ export default function useWorkflowInfo() {
         return item?.metadata?.annotations['orchestration.atlan.com/schedule']
     }
 
+    const cronTimezone = (item) => {
+        return item?.metadata?.annotations['orchestration.atlan.com/timezone']
+    }
+
+    const nextRuns = (item) => {
+        const options = {
+            tz: cronTimezone(item),
+        }
+        const interval = parser.parseExpression(cron(item), options)
+        const temp = []
+
+        temp.push(interval.next().toString())
+        temp.push(interval.next().toString())
+        temp.push(interval.next().toString())
+        return temp
+    }
+
     const cronString = (item) => {
         if (cron(item)) {
-            return cronstrue.toString(cron(item))
+            return `${cronstrue.toString(cron(item), {
+                use24HourTimeFormat: true,
+            })}(${cronTimezone(item)})`
         }
     }
 
+    const cronObject = (item) => ({
+        cron: cron(item),
+        timezone: cronTimezone(item),
+    })
+
     const isCronRun = (item) => {
-        if (item?.metadata.ownerReferences?.length > 0) {
+        if (item?.metadata?.ownerReferences?.length > 0) {
             if (
-                item?.metadata.ownerReferences
+                item?.metadata?.ownerReferences
                     .map((i) => i.kind)
                     .includes('CronWorkflow')
             ) {
@@ -96,13 +144,17 @@ export default function useWorkflowInfo() {
         const tempStatus = phase(item)
         if (tempStatus === 'Succeeded') {
             return 'bg-green-500 opacity-75'
-        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+        } else if (
+            tempStatus === 'Failed' ||
+            tempStatus === 'Error' ||
+            tempStatus === 'Stopped' ||
+            tempStatus === 'Error'
+        ) {
             return 'bg-red-500 opacity-75'
         } else if (tempStatus === 'Running') {
             return 'bg-primary opacity-75 animate-pulse'
-        } else {
-            return 'bg-gray-200'
         }
+        return 'bg-gray-200'
     }
     const getRunBorderClass = (item) => {
         const tempStatus = phase(item)
@@ -120,7 +172,11 @@ export default function useWorkflowInfo() {
         const tempStatus = phase(item)
         if (tempStatus === 'Succeeded') {
             return 'text-green-500'
-        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+        } else if (
+            tempStatus === 'Failed' ||
+            tempStatus === 'Error' ||
+            tempStatus === 'Stopped'
+        ) {
             return 'text-red-500'
         } else if (tempStatus === 'Running') {
             return 'text-blue-500 animate-pulse'
@@ -161,6 +217,9 @@ export default function useWorkflowInfo() {
     const packageType = (item) =>
         item?.metadata?.labels['orchestration.atlan.com/type']
 
+    const packageName = (item) =>
+        item?.metadata?.annotations['package.argoproj.io/name']
+
     const connectorStore = useConnectionStore()
 
     const displayName = (item, workflowName) => {
@@ -199,5 +258,11 @@ export default function useWorkflowInfo() {
         creatorUsername,
         packageType,
         displayName,
+        packageName,
+        phaseMessage,
+        isStopped,
+        allowSchedule,
+        cronObject,
+        nextRuns,
     }
 }

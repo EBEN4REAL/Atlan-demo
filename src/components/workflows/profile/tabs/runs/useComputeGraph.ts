@@ -58,77 +58,102 @@ export default function useComputeGraph(
         )
     }
 
+    const newNode = (item, rootNodeName) => {
+        const { id, phase, displayName, startedAt, finishedAt, type } = getNode(
+            item?.nodeName
+        )
+        let displayNameTrunc = displayName
+
+        let width = 190
+        let height = 55
+        let isStart = false
+
+        console.log(rootNodeName)
+        console.log(rootNodeName)
+
+        if (name === `${rootNodeName}.run`) {
+            displayNameTrunc = 'START'
+            width = 55
+            isStart = true
+        }
+
+        return {
+            startedAt: new Date(startedAt),
+            finishedAt: new Date(finishedAt),
+            timecalc: timeDiffCalc(new Date(startedAt), new Date(finishedAt)),
+            id: item?.nodeName,
+            phase,
+            type,
+            width,
+            height,
+            shape: 'html',
+            data: {
+                id,
+            },
+            html: {
+                render(node) {
+                    const data = node.getData() as any
+
+                    if (isStart) {
+                        return ` <div class="start-node leading-none text-primary mb-1 ml-2 font-semibold">${displayNameTrunc}</div>`
+                    }
+
+                    return `
+                            <div class="monitor-node flex items-center bg-white border-primary ${
+                                data?.isSelectedNode === data?.id
+                                    ? 'isSelectedNode'
+                                    : ''
+                            } ${phase} ${type}">
+                                <div>
+                                
+
+<svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
+                        phase === 'Succeeded' && !isStart ? 'block' : 'hidden'
+                    }">
+<path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#00A680"/>
+<path d="M5.25 9L7.75 11.5L12.75 6.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+<svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2 ${
+                        ['Failed', 'Error'].includes(phase) && !isStart
+                            ? 'block'
+                            : 'hidden'
+                    }">
+<path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#E04F1A"/>
+<path d="M5.49988 12.5L12.5001 5.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.49988 5.5L12.4999 12.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+                                  
+
+                                </div>
+                                <div>
+                                    <div class="leading-none text-primary mb-1 ml-2 font-semibold">${displayNameTrunc}</div>
+                
+                                </div>
+                            </div>`
+                },
+                shouldComponentUpdate(node) {
+                    return node.hasChanged('data')
+                },
+            },
+        }
+    }
+
     const traverse = (root: PrepareNode): void => {
         const queue: PrepareNode[] = [root]
         const consideredChildren: Set<string> = new Set<string>()
         let previousCollapsed: string = ''
+
+        const rootNodeName = getNode(root?.nodeName)?.name
 
         while (queue.length > 0) {
             const item = queue.pop()
 
             const name = getNode(item?.nodeName).name
 
-            if (isFirstLevel(name)) {
-                const { id, phase, displayName, startedAt, finishedAt, type } =
-                    getNode(item?.nodeName)
-
-                let displayNameTrunc = displayName
-                const newNode = {
-                    startedAt: new Date(startedAt),
-                    finishedAt: new Date(finishedAt),
-                    timecalc: timeDiffCalc(
-                        new Date(startedAt),
-                        new Date(finishedAt)
-                    ),
-                    id: item?.nodeName,
-                    phase,
-                    type,
-                    width: 190,
-                    height: [
-                        'Running',
-                        'Omitted',
-                        'Pending',
-                        'Skipped',
-                    ].includes(phase)
-                        ? 55
-                        : 55,
-                    shape: 'html',
-                    data: {
-                        id,
-                    },
-                    html: {
-                        render(node) {
-                            const data = node.getData() as any
-                            return `
-                                    <div class="monitor-node flex items-center bg-white border-primary ${
-                                        data?.isSelectedNode === data?.id
-                                            ? 'isSelectedNode'
-                                            : ''
-                                    } ${phase} ${type}">
-                                        <div>
-                                        
-    <svg width="24" height="24" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#F3F3F3"/>
-    <circle cx="5" cy="9" r="1" fill="#6F7590"/>
-    <circle cx="9" cy="9" r="1" fill="#6F7590"/>
-    <circle cx="13" cy="9" r="1" fill="#6F7590"/>
-    </svg>
-    
-                                          
-    
-                                        </div>
-                                        <div>
-                                            <div class="leading-none text-primary mb-1 ml-2 font-semibold">${displayNameTrunc}</div>
-                        
-                                        </div>
-                                    </div>`
-                        },
-                        shouldComponentUpdate(node) {
-                            return node.hasChanged('data')
-                        },
-                    },
-                }
-                nodes.value.push(newNode)
+            if (isFirstLevel(name) && item.parent) {
+                nodes.value.push(newNode(item, rootNodeName))
                 const stroke = '#aaaaaa'
 
                 if (previousCollapsed) {

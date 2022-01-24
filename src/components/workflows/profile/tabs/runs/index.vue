@@ -1,22 +1,27 @@
 <template>
-    <div class="flex flex-grow overflow-hidden">
-        <RunsList
-            :workflowName="workflowName"
-            v-model="selectedRunName"
-            class="h-full border-r"
-            style="min-width: 250px"
-        >
-        </RunsList>
-        <div class="relative flex-grow bg-primary-light">
+    <div class="flex flex-col flex-grow h-full overflow-hidden">
+        <div class="relative flex-grow overflow-hidden bg-primary-light">
             <MonitorGraph
                 :graph-data="selectedRun"
                 class=""
                 @refresh="handleRefresh"
                 @select="handleSelectPod"
             />
-        </div>
-        <div class="w-1/4 h-full p-6 bg-white border-l-2">
-            <Sidebar :selected-pod="selectedPod"></Sidebar>
+            <div class="absolute rounded right-10 top-10">
+                <div class="flex flex-col">
+                    <RunsSelect
+                        v-model="selectedRunName"
+                        :workflowName="workflowName"
+                        style="min-width: 150px"
+                    ></RunsSelect>
+                    <Sidebar
+                        :selected-run="selectedRun"
+                        :selected-pod="selectedPod"
+                        class="mt-3"
+                        style="width: 300px"
+                    ></Sidebar>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -99,6 +104,8 @@
 
     import RunsList from '@/workflows/runs/index.vue'
 
+    // import RunSelector from '@/common/selector/runs.vue'
+
     // Composables
     import {
         getRunList,
@@ -142,6 +149,8 @@
             })
 
             const { item: selectedRun, mutate } = useRunItem(path)
+
+            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
 
             watch(selectedRunName, (newVal) => {
                 if (newVal) {
@@ -221,6 +230,10 @@
                 handleRefresh,
                 handleSelectPod,
                 selectedPod,
+                phase,
+                startedAt,
+                finishedAt,
+                duration,
             }
         },
     })

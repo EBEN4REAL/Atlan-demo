@@ -126,6 +126,8 @@
             const { modelValue } = useVModels(props, emit)
 
             const localModel = reactive(modelValue.value)
+            console.log('global', modelValue.value)
+            console.log('local', localModel)
             if (!localModel.timezone) {
                 localModel.timezone =
                     Intl.DateTimeFormat().resolvedOptions().timeZone

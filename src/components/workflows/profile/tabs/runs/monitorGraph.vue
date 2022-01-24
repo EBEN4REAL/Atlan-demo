@@ -1,20 +1,12 @@
 <template>
-    <div ref="monitorContainer" class="monitor">
-        <!-- Parent Container for Graph and Spinner -->
-        <div class="relative">
-            <!-- Graph Container -->
-            <div ref="graphContainer" style="width: 100%; height: 1000px"></div>
-            <!-- Spinner -->
-        </div>
+    <div ref="monitorContainer" class="h-full monitor">
         <div
-            v-if="!isGraphRendered"
-            class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
+            :class="
+                isFullscreen
+                    ? 'absolute bottom-7 right-5 z-10 shadow-sm p-2 bg-white border'
+                    : 'absolute bottom-4 right-5 z-10 shadow-sm p-2 bg-white border'
+            "
         >
-            <AtlanLoader class="h-5" />
-        </div>
-
-        <!-- Monitor Controls -->
-        <div class="monitor-control" :class="isFullscreen ? 'top-7' : 'top-4'">
             <!-- Minimap Container -->
             <div
                 v-show="showMinimap"
@@ -132,6 +124,20 @@
                 </div>
             </div>
         </div>
+        <!-- Parent Container for Graph and Spinner -->
+        <div class="relative h-full">
+            <!-- Graph Container -->
+            <div ref="graphContainer" style="width: 100%; height: 100%"></div>
+            <!-- Spinner -->
+        </div>
+        <div
+            v-if="!isGraphRendered"
+            class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
+        >
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+        </div>
+
+        <!-- Monitor Controls -->
     </div>
 </template>
 
@@ -338,6 +344,12 @@
 </script>
 
 <style lang="less">
+    .start-node {
+        height: 55px;
+        width: 55px;
+        border-radius: 50%;
+    }
+
     .monitor {
         // Control
         &-control {

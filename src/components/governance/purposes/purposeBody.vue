@@ -42,6 +42,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
+            <PurposeReadme />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"
@@ -240,6 +241,7 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
+    import PurposeReadme from './overview/PurposeReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { filterMethod } from '~/utils/helper/search'
     import {
@@ -273,6 +275,7 @@
             AggregationTabs,
             Addpolicy,
             AssetList,
+            PurposeReadme,
         },
         props: {
             persona: {

@@ -170,7 +170,7 @@
                 )
 
                 // useComputeGraph
-                const { addSubGraph } = await useComputeGraph(
+                await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -192,8 +192,7 @@
                     config,
                     drawerActiveKey,
                     onSelectAsset,
-                    onCloseDrawer,
-                    addSubGraph
+                    onCloseDrawer
                 )
             }
 

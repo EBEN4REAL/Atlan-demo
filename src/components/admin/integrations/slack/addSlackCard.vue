@@ -60,11 +60,9 @@
 <script lang="ts">
     import { defineComponent, ref, computed, toRefs } from 'vue'
     import AtlanButton from '@/UI/button.vue'
-    import useTenantData from '~/composables/tenant/useTenantData'
     import access from '~/constant/accessControl/map'
     import integrationStore from '~/store/integrations/index'
     import {
-        getSlackInstallUrlState,
         tenantLevelOauthUrl,
         archiveSlack,
         openSlackOAuth,
@@ -76,13 +74,9 @@
         components: { AtlanButton },
         emits: ['openConfig'],
         setup() {
-            // store
             const store = integrationStore()
 
             const { tenantSlackStatus } = toRefs(store)
-
-            // variables
-            const { name: tenantName } = useTenantData()
 
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
@@ -96,7 +90,6 @@
                 tenantSlackStatus,
                 isLoading,
                 store,
-                tenantName,
                 access,
                 tenantLevelOauthUrl,
             }
@@ -106,7 +99,7 @@
 
 <style lang="less" module>
     .addCard {
-        background: url('~/assets/images/integrations/add-slack-bg.svg')
+        background: url('~/assets/images/admin/integrations/add-slack-bg.svg')
             no-repeat;
         background-size: contain;
         background-position-x: right;

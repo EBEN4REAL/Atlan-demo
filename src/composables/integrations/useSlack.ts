@@ -29,7 +29,7 @@ export const getSlackInstallUrlState = (isTenant: boolean) => {
     const api = `${origin}/api/service/slack/auth`
     const userId = authStore.id
     const { username } = authStore
-    const redirectUrl = `${origin}/admin/integrations/?closeTab=true`
+    const redirectUrl = `${origin}/admin/integrations/?close_tab=true`
     const state = {
         api,
         origin,

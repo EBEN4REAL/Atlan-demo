@@ -87,6 +87,7 @@
             </AtlanButton>
             <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
             <AtlanButton
+                v-auth="access.UPDATE_INTEGRATIONS"
                 :is-loading="updateLoading"
                 class="w-16"
                 :disabled="!isEdit"
@@ -134,7 +135,6 @@
             const { updateIntegration: updateStore } = store
 
             const { tenantSlackStatus } = toRefs(store)
-            const meta = inject('integrationTypeObject')
 
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
@@ -233,7 +233,6 @@
                 tenantSlackStatus,
                 body,
                 removeChannel,
-                meta,
                 isLoading,
                 tenantName,
                 updateLoading,
@@ -251,7 +250,7 @@
 
 <style scoped>
     .bg-slack {
-        background: url('~/assets/images/integrations/add-slack-bg.svg')
+        background: url('~/assets/images/admin/integrations/add-slack-bg.svg')
             no-repeat;
         background-size: contain;
         background-position-x: right;

@@ -1,5 +1,8 @@
 <template>
-    <div v-if="isLoading" class="flex items-center justify-center h-full">
+    <div
+        v-if="isLoading || route.query.close_tab == 'true'"
+        class="flex items-center justify-center h-full"
+    >
         <AtlanLoader class="h-10" />
     </div>
     <div v-else-if="error" class="flex items-center justify-center h-full">
@@ -14,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import integrationStore from '~/store/integrations/index'
     import ErrorView from '@/common/error/index.vue'
     import { integrations } from '~/constant/integrations'
@@ -31,12 +34,16 @@
         setup() {
             const store = integrationStore()
             const route = useRoute()
+            const router = useRouter()
 
             const { tenantSlackStatus } = toRefs(store)
 
             const { isLoading, error, isReady, call } = useIntegrations(false)
 
+            if (route.query.close_tab == 'true') window.close()
+
             return {
+                route,
                 isLoading,
                 error,
                 isReady,

@@ -70,16 +70,15 @@
                                 </router-link>
                             </span>
                         </div>
+                        <!-- FIXME why is this not working? , component resolve faield-->
                         <!-- <LearnMore>
-                            <template #default>
-                                <Button
-                                    color="secondary"
-                                    size="sm"
-                                    padding="compact"
-                                >
-                                    Learn More
-                                </Button>
-                            </template>
+                            <Button
+                                color="secondary"
+                                size="sm"
+                                padding="compact"
+                            >
+                                Learn More
+                            </Button>
                         </LearnMore> -->
 
                         <a-popover
@@ -161,13 +160,13 @@
                                                     padding-top: 22px;
                                                     padding-bottom: 84px;
                                                 "
-                                                class="px-3 pb-24"
+                                                class="px-3"
                                             >
                                                 <div class="rounded-lg">
-                                                    <img
-                                                        :src="
-                                                            SlackTokenSnapshot
-                                                        "
+                                                    <AtlanIcon
+                                                        class="w-full"
+                                                        style="height: 6.8rem"
+                                                        icon="SlackToken"
                                                     />
                                                 </div>
                                             </div>
@@ -291,7 +290,9 @@
         <footer>
             <div class="flex justify-end px-6 py-6 border-t">
                 <div v-if="tenantSlackStatus.configured" class="">
-                    <Button color="secondary">Close</Button>
+                    <Button color="secondary" @click="$emit('close')"
+                        >Close</Button
+                    >
                 </div>
                 <div v-else class="flex items-center">
                     <a-button class="mr-3 border-0" @click="$emit('close')"
@@ -323,7 +324,6 @@
 
     import useIntegration from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
-    import SlackTokenSnapshot from '~/assets/images/admin/slackTokenSnapshot.png'
 
     export default defineComponent({
         name: 'SlackConfigModal',
@@ -335,12 +335,8 @@
             const { tenantSlackStatus } = toRefs(store)
 
             // variables
-            const accessToken = ref(
-                'xoxe.xoxp-1-Mi0yLTI5NzE0NjYxMTg2MjQtMjk0MTA1MjcyOTMzNC0yOTUwMDM2OTE0Mjc2LTI5ODgwNDM5NzY3MTAtZDZiYWVkOTUyZjFmMjBkZDMxZDgwOWNhYzc3OTZkMThmODNmYzdjNWMwZmY2OTI4NWJiM2Q1Y2U5ODQyODhhYQ'
-            )
-            const refreshToken = ref(
-                'xoxe-1-My0xLTI5NzE0NjYxMTg2MjQtMjk1MDAzNjkxNDI3Ni0yOTkxODA0Njg1MTczLWUwN2Q1NWUzMjg1NmM1MWQ0ZDQ5ZmY2OGY3YTcwYzFjYjkxN2M4NWM5MTEwMGQ0ZTQzNjg1MWM2NzU5M2EwMTU'
-            )
+            const accessToken = ref('')
+            const refreshToken = ref('')
 
             const currentStep = ref(tenantSlackStatus.value.created ? 2 : 1)
 
@@ -366,7 +362,7 @@
                 if (currentStep.value === 1) {
                     await mutate()
                     if (!error.value) currentStep.value += 1
-                }
+                } else emit('close')
             }
 
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
@@ -397,7 +393,6 @@
                 refreshToken,
                 buttonDisabled,
                 buttonCopy,
-                SlackTokenSnapshot,
             }
         },
         data() {

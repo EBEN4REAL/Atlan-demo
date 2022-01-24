@@ -5,13 +5,9 @@
             :placeholder="getPlaceholder"
             size="minimal"
         >
-            <!-- <template #filter>
-                <Preferences
-                    assetType="Column"
-                    v-model="preference"
-                    @change="handleChangePreference"
-                />
-            </template> -->
+            <template #filter>
+                <Preferences v-model:display="preference" />
+            </template>
         </SearchAndFilter>
     </div>
 
@@ -39,7 +35,7 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import Preferences from '@/assets/preference/index.vue'
+    import Preferences from '../preferences.vue'
 
     import AssetList from './assetList.vue'
     import AssetItem from './assetItem.vue'
@@ -71,9 +67,7 @@
             const queryText = ref('')
             const selectedType = ref('__all')
 
-            const preference = ref({
-                display: [],
-            })
+            const preference = ref([])
 
             const { title } = useAssetInfo()
 

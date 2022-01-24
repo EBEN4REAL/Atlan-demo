@@ -1,25 +1,41 @@
 <template>
-    <div class="border shadow-sm drop-shadow wrapper">
-        <section class="flex items-center p-6 border-b gap-x-3">
-            <AtlanIcon icon="Slack" class="h-8" />
-            <h2 class="flex-grow text-lg font-bold">Slack</h2>
+    <div class="border rounded-lg shadow drop-shadow wrapper">
+        <section
+            class="flex items-center h-24 p-6 bg-gray-100 border-b rounded-t-lg bg-slack gap-x-3"
+        >
+            <div class="flex-grow">
+                <div class="flex items-center gap-x-3">
+                    <div
+                        class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded"
+                    >
+                        <AtlanIcon icon="Slack" class="h-8" />
+                    </div>
+                    <div class="">
+                        <h2 class="text-lg font-bold">Slack</h2>
+                        <span class="text-gray-500">{{ description }}</span>
+                    </div>
+                </div>
+            </div>
             <div
-                style="color: #00a680"
-                class="flex items-center h-8 px-3 bg-gray-100 rounded gap-x-2"
+                :style="{
+                    color: '#00a680',
+                    background:
+                        'linear-gradient(90deg,#fafafa 0%,#fafafa 65.62%,rgba(250, 250, 250, 0) 95.54%)',
+                }"
+                class="flex items-center px-3 rounded gap-x-2 h-11"
             >
                 <AtlanIcon icon="Check" />
                 {{ tenantSlackStatus.teamName }} workspace connected
             </div>
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
-            <div class="flex items-center gap-x-1.5">
+            <div class="">
                 <h2 class="text-lg font-bold">Channels</h2>
-                <a-tooltip
-                    title="These are the channels where users will be able share Atlan assets"
-                    ><AtlanIcon class="mb-0.5" icon="Info"
-                /></a-tooltip>
+                <span class="text-gray-500"> {{ channel_description }} </span>
             </div>
-            <div class="flex flex-wrap items-center gap-2 p-1 border rounded">
+            <div
+                class="flex flex-wrap items-center h-12 gap-2 p-1 border rounded"
+            >
                 <Chip
                     v-for="(channel, x) in channels"
                     :index="x"
@@ -106,6 +122,7 @@
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
     import { archiveSlack } from '~/composables/integrations/useSlack'
+    import { integrations } from '~/constant/integrations'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -208,7 +225,11 @@
                 }
             })
 
+            const { description, channel_description } = integrations.slack
+
             return {
+                channel_description,
+                description,
                 tenantSlackStatus,
                 body,
                 removeChannel,
@@ -229,8 +250,10 @@
 </script>
 
 <style scoped>
-    .wrapper {
-        background: url('~/assets/images/integrations/slack-bg.svg') no-repeat
-            99.5% 3%;
+    .bg-slack {
+        background: url('~/assets/images/integrations/add-slack-bg.svg')
+            no-repeat;
+        background-size: contain;
+        background-position-x: right;
     }
 </style>

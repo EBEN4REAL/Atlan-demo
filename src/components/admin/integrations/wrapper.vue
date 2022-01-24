@@ -7,32 +7,26 @@
     </div>
     <main class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
-        <template v-for="i in integrationList" :key="i.id">
-            <IntegrationCardWrapper
-                v-if="tenantSlackStatus.configured"
-                :integration-type-object="i"
-            />
-            <AddIntegrationCardWrapper v-else :integration-type-object="i" />
+        <template v-for="i in integrations" :key="i.id">
+            <component :is="i.component" />
         </template>
     </main>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, watch } from 'vue'
-    import IntegrationCardWrapper from './integrationCardWrapper.vue'
-    import AddIntegrationCardWrapper from './addCardWrapper.vue'
     import integrationStore from '~/store/integrations/index'
     import ErrorView from '@/common/error/index.vue'
-    import { integrationList } from '~/constant/integration'
+    import { integrations } from '~/constant/integrations'
     import useIntegrations from '~/composables/integrations/useIntegrations'
     import { useRouter, useRoute } from 'vue-router'
+    import slack from '@/admin/integrations/slack/index.vue'
 
     export default defineComponent({
         name: 'IntegrationsWrapper',
         components: {
-            IntegrationCardWrapper,
             ErrorView,
-            AddIntegrationCardWrapper,
+            slack,
         },
         setup() {
             const store = integrationStore()
@@ -48,7 +42,7 @@
                 isReady,
                 tenantSlackStatus,
                 store,
-                integrationList,
+                integrations,
             }
         },
     })

@@ -3,14 +3,18 @@
         class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5"
         :class="$style.addCard"
     >
-        <div class="">
-            <AtlanIcon icon="Slack" class="h-12 bg-white" />
-        </div>
         <div class="flex-grow">
-            <h2 class="mb-2 text-xl font-bold">Connect Atlan with Slack</h2>
-            <p class="font-lg tex-gray-500">
-                🚀 Share asset profile, terms, queries with your team
-            </p>
+            <div class="flex items-center gap-x-3">
+                <div
+                    class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded"
+                >
+                    <AtlanIcon icon="Slack" class="h-8" />
+                </div>
+                <div class="">
+                    <h2 class="text-lg font-bold">Slack</h2>
+                    <span class="text-gray-500">{{ description }}</span>
+                </div>
+            </div>
         </div>
         <div class="">
             <AtlanButton
@@ -65,6 +69,7 @@
         archiveSlack,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
+    import { integrations } from '~/constant/integrations'
 
     export default defineComponent({
         name: 'AddSlackIntegrationCard',
@@ -82,8 +87,10 @@
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
+            const { description } = integrations.slack
 
             return {
+                description,
                 openSlackOAuth,
                 disconnect,
                 tenantSlackStatus,

@@ -1,10 +1,10 @@
 <template>
     <span
-        class="flex items-end justify-between p-1 rounded group"
+        class="flex items-end justify-between p-1 px-2 rounded-full group"
         :style="`background: ${background}`"
         :class="class"
     >
-        <AtlanIcon v-if="icon" icon="Number" class="h-3 mb-1 text-gray-500" />
+        <AtlanIcon v-if="icon" icon="Number" class="h-3 mb-1" />
         <div class="">{{ content }}</div>
         <AtlanIcon
             icon="Cross"

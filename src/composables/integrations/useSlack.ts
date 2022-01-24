@@ -5,6 +5,7 @@ import { useAuthStore } from '~/store/auth'
 import integrationStore from '~/store/integrations/index'
 import useIntegrations, {
     archiveIntegration,
+    refetchIntegration,
 } from '~/composables/integrations/useIntegrations'
 
 
@@ -203,3 +204,54 @@ export const archiveSlack = (pV) => {
     }
 }
 
+export const createApp = (body) => {
+
+    const { CreateSlackApp } = Integrations
+
+    const store = integrationStore()
+
+    const {
+        data,
+        isLoading,
+        error,
+        mutate
+    } = CreateSlackApp(body, { asyncOptions: { immediate: false } })
+
+    watch([isLoading, error], () => {
+        if (isLoading.value) {
+            message.loading({
+                content: 'Creating Atlan App...',
+                key: 'create',
+                duration: 2,
+            })
+        } else if (error.value) {
+            const errMsg =
+                error.value?.response?.data?.errorMessage || ''
+            const generalError = 'Error while creating Atlan App'
+            const e = errMsg || generalError
+            message.error({
+                content: e,
+                key: 'create',
+                duration: 2,
+            })
+        } else {
+            const { integrationId } = data.value
+            refetchIntegration(integrationId) // what about loading
+            // useIntegrations()
+            message.success({
+                content: 'Atlan App created successfully',
+                key: 'create',
+                duration: 2,
+            })
+        }
+    })
+
+    return {
+        data,
+        isLoading,
+        error,
+        mutate
+    }
+
+
+}

@@ -368,8 +368,12 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
+import Gear from '~/assets/images/icons/gear.svg'
 
 export default {
+    Gear,
+    Atlan,
     GlowFlash,
     Query24,
     Vqb24,

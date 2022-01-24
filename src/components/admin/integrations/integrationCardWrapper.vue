@@ -8,9 +8,7 @@
     export default defineComponent({
         name: 'IntegrationCardWrapper',
         components: {
-            slack: defineAsyncComponent(
-                () => import('./slack/slackIntegrationCard.vue')
-            ),
+            slack: defineAsyncComponent(() => import('./slack/index.vue')),
         },
         props: {
             integrationTypeObject: { type: Object, required: true },

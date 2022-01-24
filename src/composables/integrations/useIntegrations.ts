@@ -55,6 +55,19 @@ const getIntegrationsList = (immediate = true) => {
     return { data: records, isLoading, error, isReady, call }
 }
 
+export const refetchIntegration = (id) => {
+    const { updateIntegration } = integrationStore()
+    const {
+        data: i,
+        isLoading: loading,
+        error: e,
+    } = getIntegrationById(id)
+
+    watch(i, (v) => {
+        if (v) updateIntegration(v)
+    })
+}
+
 const useIntegrations = (immediate = true) => {
 
     const { setAllIntegrationsList } = integrationStore()

@@ -1,15 +1,4 @@
 <template>
-    <a-modal
-        :visible="showSlackConfigModal"
-        :destroy-on-close="true"
-        :footer="null"
-        :closable="false"
-        :width="692"
-        :class="$style.inviteModal"
-        @cancel="closeSlackConfigModal"
-    >
-        <SlackConfigModal @close="closeSlackConfigModal" />
-    </a-modal>
     <section
         class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5 addCard"
     >
@@ -28,12 +17,13 @@
                     tenantSlackStatus.created && !tenantSlackStatus.configured
                 "
                 v-auth="access.DELETE_INTEGRATION"
-                color="minimal"
-                class="px-0 text-red-500"
+                color="secondary"
+                class=""
                 :is-loading="isLoading"
-                @click="disconnect"
+                size="lg"
+                @click="$emit('openConfig')"
             >
-                Disconnect
+                <AtlanIcon icon="Gear" /> Reconfigure
             </AtlanButton>
         </div>
         <div class="">
@@ -46,13 +36,13 @@
                 @click="() => openSlackOAuth({ tenant: true, emit: $emit })"
             >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
-                    Configure <AtlanIcon icon="ArrowRight" />
+                    Install now <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </div>
             <AtlanButton
                 v-else
                 v-auth="access.CREATE_INTEGRATION"
-                @click="openSlackConfigModal"
+                @click="$emit('openConfig')"
             >
                 Connect
                 <AtlanIcon icon="ArrowRight" />
@@ -66,7 +56,6 @@
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import access from '~/constant/accessControl/map'
-    import SlackConfigModal from './slackConfigModal.vue'
     import integrationStore from '~/store/integrations/index'
     import {
         getSlackInstallUrlState,
@@ -77,25 +66,16 @@
 
     export default defineComponent({
         name: 'AddSlackIntegrationCard',
-        components: { AtlanButton, SlackConfigModal },
-        props: {},
-        setup(props) {
+        components: { AtlanButton },
+        emits: ['openConfig'],
+        setup() {
             // store
             const store = integrationStore()
 
             const { tenantSlackStatus } = toRefs(store)
 
             // variables
-            const showSlackConfigModal = ref(false)
             const { name: tenantName } = useTenantData()
-
-            // methods
-            const closeSlackConfigModal = () => {
-                showSlackConfigModal.value = false
-            }
-            const openSlackConfigModal = () => {
-                showSlackConfigModal.value = true
-            }
 
             const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
 
@@ -109,9 +89,6 @@
                 store,
                 tenantName,
                 access,
-                showSlackConfigModal,
-                closeSlackConfigModal,
-                openSlackConfigModal,
                 tenantLevelOauthUrl,
             }
         },

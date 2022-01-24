@@ -100,6 +100,7 @@
         UpdateIntegration,
         archiveIntegration,
         getIntegrationById,
+        refetchIntegration,
     } from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
@@ -159,18 +160,6 @@
                     if (index > -1) {
                         channels.value[index].invalid = true
                     }
-                })
-            }
-
-            const refetchIntegration = (id) => {
-                const {
-                    data: i,
-                    isLoading: loading,
-                    error: e,
-                } = getIntegrationById(id)
-
-                watch(i, (v) => {
-                    if (v) store.updateIntegration(v)
                 })
             }
 

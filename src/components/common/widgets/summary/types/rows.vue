@@ -2,7 +2,9 @@
     <a-tooltip placement="bottomLeft">
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-sm text-gray-500">Rows</span>
-            <span class="text-gray-700">{{ rowCount(asset, false) }}</span>
+            <span class="text-gray-700 cursor-pointer">{{
+                rowCount(asset, false)
+            }}</span>
         </div>
         <template #title>
             <span

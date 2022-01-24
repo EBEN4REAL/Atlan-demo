@@ -311,5 +311,12 @@ export const menuDataTable: CommandItem[] = [
         icon: 'AddColumn',
         command: ({ editor }) => editor.chain().focus().deleteRow().run(),
     },
+    {
+        title: 'Delete Table',
+        key: 'delete-table',
+        helpText: 'Delete the table',
+        icon: 'AddColumn',
+        command: ({ editor }) => editor.chain().focus().deleteTable().run(),
+    },
     // table
 ]

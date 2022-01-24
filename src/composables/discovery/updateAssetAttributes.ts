@@ -396,8 +396,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
-                    ...assignedEntitiy.attributes,
-                    ...assignedEntitiy.uniqueAttributes,
+                    qualifiedName: assignedEntitiy.uniqueAttributes?.qualifiedName ??  assignedEntitiy.attributes?.qualifiedName ?? '',
+                    name: assignedEntitiy.attributes.name,
                 },
                 relationshipAttributes: {
                     meanings,
@@ -410,8 +410,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 guid: unassignedEntity.guid,
                 typeName: unassignedEntity.typeName,
                 attributes: {
-                    ...unassignedEntity.attributes,
-                    ...unassignedEntity.uniqueAttributes,
+                    qualifiedName: unassignedEntity.uniqueAttributes?.qualifiedName ??  unassignedEntity.attributes?.qualifiedName ?? '',
+                    name: unassignedEntity.attributes.name,
                 },
                 relationshipAttributes: {
                     meanings:
@@ -423,12 +423,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
 
         body.value.entities = [...linked, ...unlinked]
-        if(!unlinkedAssets.length)
-            currentMessage.value = 'Assets linked'
-        else if(!linkedAssets.length)
-            currentMessage.value = 'Assets unlinked'
-        else
-            currentMessage.value = 'Linked assets updated'
+        if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
+        else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
+        else currentMessage.value = 'Linked assets updated'
         mutate()
 
         whenever(isUpdateReady, () => {

@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @click="setFocus"
+        @click="toggleFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
             isAreaFocused
@@ -59,6 +59,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
     import { selectedTables } from '~/types/insights/VQB.interface'
+    import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
 
     import useBody from './useBody'
 
@@ -119,6 +120,15 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const isAreaFocused = ref(false)
+            const { isJoinPanelStateDisabledComputed } = useJoin()
+
+            const isJoinPanelDisabled = computed(() => {
+                const joinPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+                return !joinPanel?.hide ? true : false
+            })
 
             const tableSelected = ref(null)
             const dirtyTableSelected = ref(null)
@@ -201,15 +211,21 @@
             const getTableInitialBody = (
                 selectedTablesQualifiedNames: selectedTables[]
             ) => {
+                // debugger
                 return {
                     dsl: useBody({
                         context:
                             activeInlineTab.value.playground.editor.context,
 
                         searchText: tableQueryText.value,
-                        tableQualifiedNames: selectedTablesQualifiedNames
-                            ?.filter((x) => x !== null || undefined)
-                            .map((t) => t.tableQualifiedName),
+                        tableQualifiedNames: isJoinPanelStateDisabledComputed(
+                            isJoinPanelDisabled.value,
+                            selectedTablesQualifiedNames
+                        )
+                            ? undefined
+                            : selectedTablesQualifiedNames
+                                  ?.filter((x) => x !== null || undefined)
+                                  .map((t) => t.tableQualifiedName),
                     }),
                     attributes: attributes,
                     suppressLogs: true,
@@ -264,7 +280,12 @@
             }
 
             // for initial call
-            if (selectedTablesQualifiedNames.value?.length > 1) {
+            if (
+                !isJoinPanelStateDisabledComputed(
+                    isJoinPanelDisabled.value,
+                    selectedTablesQualifiedNames.value
+                )
+            ) {
                 replaceTableBody(
                     getTableInitialBody(selectedTablesQualifiedNames.value)
                 )
@@ -277,10 +298,14 @@
                 )
             }
 
-            const setFocus = () => {
+            const toggleFocus = () => {
                 setDropDownPosition()
                 if (!disabled.value) {
-                    isAreaFocused.value = true
+                    if (isAreaFocused.value) {
+                        isAreaFocused.value = false
+                    } else {
+                        isAreaFocused.value = true
+                    }
                 }
             }
 
@@ -300,6 +325,7 @@
                 replaceColumnBody: replaceColumnBody,
                 columnQueryText: columnQueryText,
                 tableQueryText: tableQueryText,
+                isJoinPanelDisabled: isJoinPanelDisabled,
                 TableList: TableList,
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,
@@ -316,7 +342,8 @@
             /*-------------------------------------*/
 
             return {
-                setFocus,
+                isJoinPanelDisabled,
+                toggleFocus,
                 specifiedBodyWidth,
                 disabled,
                 container,

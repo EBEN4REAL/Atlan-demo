@@ -11,11 +11,12 @@
             ]"
         >
             <div
-                @click="toggleExpand"
+                @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand
@@ -24,7 +25,10 @@
                         "
                     />
                 </div>
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full"
+                    @click="toggleExpand"
+                >
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
@@ -118,7 +122,11 @@
                             "
                         >
                             <!-- Show dropdown except the last panel -->
-                            <a-tooltip placement="top" title="Add step">
+                            <a-tooltip
+                                placement="top"
+                                title="Add step"
+                                :destroyTooltipOnHide="true"
+                            >
                                 <Actions
                                     @add="
                                         (type, panel) =>
@@ -358,7 +366,6 @@
                 actionPanel.value = !actionPanel.value
             }
             const handleMouseOut = () => {
-                console.log(containerHovered.value && !submenuHovered.value)
                 if (containerHovered.value && !submenuHovered.value) {
                     containerHovered.value = false
                 }

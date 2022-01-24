@@ -13,7 +13,7 @@ interface WhoAmIResponse {
     username: string
     userId: string
     groups: { id: string; name: string; path: string }[]
-    decentralizedRole: {
+    decentralizedRoles: {
         level: string
         roleId: string
         privelage: string

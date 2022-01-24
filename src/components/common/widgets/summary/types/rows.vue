@@ -1,25 +1,30 @@
 <template>
-    <RowInfoHoverCard
-        :image="getConnectorImage(asset)"
-        :row-count="rowCount(asset)"
-        :size-bytes="sizeBytes(asset)"
-        :source-updated-at="sourceUpdatedAt(asset)"
-        :source-updated-at-raw="sourceUpdatedAt(asset, true)"
-        :source-created-at="sourceCreatedAt(asset)"
-        :source-created-at-raw="sourceCreatedAt(asset, true)"
-    >
-        <div class="flex flex-col text-sm cursor-pointer">
+    <a-tooltip placement="bottomLeft">
+        <div class="flex flex-col text-sm">
             <span class="mb-1 text-sm text-gray-500">Rows</span>
-            <span class="text-gray-700">{{ rowCount(asset) }}</span>
+            <span class="text-gray-700 cursor-pointer">{{
+                rowCount(asset, false)
+            }}</span>
         </div>
-    </RowInfoHoverCard>
+        <template #title>
+            <span
+                v-if="sizeBytes(asset, false) && rowCount(asset, false) !== '~'"
+                class="font-semibold"
+                >{{ rowCount(asset, true) }} rows ({{
+                    sizeBytes(asset, false)
+                }})</span
+            >
+            <span v-else class="font-semibold"
+                >Row count is not available for {{ connectorName(asset) }}/{{
+                    connectionName(asset)
+                }}</span
+            >
+        </template>
+    </a-tooltip>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-
-    // Components
-    import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -28,10 +33,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: {
-            RowInfoHoverCard,
-        },
-
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -39,20 +40,14 @@
             },
         },
         setup() {
-            const {
-                rowCount,
-                sizeBytes,
-                sourceUpdatedAt,
-                sourceCreatedAt,
-                getConnectorImage,
-            } = useAssetInfo()
+            const { rowCount, sizeBytes, connectorName, connectionName } =
+                useAssetInfo()
 
             return {
                 rowCount,
                 sizeBytes,
-                sourceUpdatedAt,
-                sourceCreatedAt,
-                getConnectorImage,
+                connectorName,
+                connectionName,
             }
         },
     })

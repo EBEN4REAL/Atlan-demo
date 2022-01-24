@@ -291,6 +291,10 @@ import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 import AddColumn from '~/assets/images/icons/add-column.svg'
 
+import ClassificationShield from '~/assets/images/classifications/shield.svg'
+import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
+
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
@@ -374,6 +378,10 @@ import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
+import QueryTime from '~/assets/images/icons/query_time.svg'
+import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
+import Request from '~/assets/images/icons/Request.svg'
+import RequestActive from '~/assets/images/icons/RequestActive.svg'
 
 export default {
     IntegrationsActive,
@@ -720,6 +728,9 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClassificationShield,
+    ClassificationAtlan,
+    ClassificationPropagated,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,
@@ -736,4 +747,8 @@ export default {
     CrossCircle,
     MessageCross,
     AddColumn,
+    QueryTime,
+    ThreeDots,
+    Request,
+    RequestActive,
 }

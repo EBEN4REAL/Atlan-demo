@@ -96,16 +96,35 @@
                 <div class="flex w-full bg">
                     <div class="flex flex-col w-full">
                         <div class="flex items-center w-11/12">
-                            <Tooltip
-                                :tooltip-text="`${selectedCollection?.attributes?.name}`"
-                                :classes="'mr-1 text-base font-bold text-gray-700 '"
-                                tooltip-color="#363636"
-                            />
+                            <div class="flex w-full">
+                                <!-- <a-typography-text
+                                    class="w-11/12 text-base font-bold text-gray-700"
+                                    :style="ellipsis ? { width: '98%' } : {}"
+                                    tooltip-color="#363636"
+                                    :ellipsis="
+                                        ellipsis
+                                            ? {
+                                                  tooltip: `${selectedCollection?.attributes?.name}`,
+                                              }
+                                            : false
+                                    "
+                                    :content="
+                                        selectedCollection?.attributes?.name
+                                    "
+                                /> -->
 
-                            <AtlanIcon
-                                icon="ChevronDown"
-                                class="self-center w-4 h-4 text-gray-500"
-                            ></AtlanIcon>
+                                <Tooltip
+                                    :tooltip-text="`${selectedCollection?.attributes?.name}`"
+                                    classes="cursor-pointer text-base font-bold mr-1
+                                text-gray-700"
+                                />
+                                <div style="width: 8%">
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="w-4 h-4 text-gray-500"
+                                    ></AtlanIcon>
+                                </div>
+                            </div>
                         </div>
 
                         <span class="mr-1 text-xs text-gray-500 truncate">{{
@@ -336,6 +355,7 @@
                 hasCollectionWritePermission,
                 hasCollectionReadPermission,
                 isCollectionCreatedByCurrentUser,
+                ellipsis: ref(true),
             }
         },
     })

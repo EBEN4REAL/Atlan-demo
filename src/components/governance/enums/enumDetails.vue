@@ -16,7 +16,7 @@
                         class="flex items-center justify-center rounded-md ant-btn ant-btn-primary"
                         @click="() => (isEditing = true)"
                     >
-                      <AtlanIcon icon="Edit" class="h-4"></AtlanIcon>
+                        <AtlanIcon icon="Edit" class="h-4"></AtlanIcon>
                     </a-button>
                     <a-button
                         v-if="isEditing"
@@ -82,6 +82,7 @@
     // import { useAccessStore } from '~/services/access/accessStore'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import map from '~/constant/accessControl/map'
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         components: {
@@ -124,11 +125,15 @@
 
             // Enum Updation flow
             const { updateEnums, updatedEnumDef, reset } = useUpdateEnums()
-            const { error: updateError, isReady, state } = updateEnums
+            const { error: updateError, isReady, state, execute } = updateEnums
 
-            function saveChanges() {
+            async function saveChanges() {
+                const store = useTypedefStore()
                 updatedEnumDef.value = localEnum
-                updateEnums.execute()
+                await execute()
+                const updatedEnum =
+                    state?.value?.enumDefs?.length && state.value.enumDefs[0]
+                store.updateEnum(updatedEnum)
             }
 
             // FIXME: May be simplified

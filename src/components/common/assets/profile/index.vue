@@ -6,7 +6,6 @@
             :class="$style.profiletab"
             class="flex-1"
             :destroy-inactive-tab-pane="true"
-            @change="handleChangeTab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -35,9 +34,7 @@
 <script lang="ts">
     import {
         defineComponent,
-        ref,
         defineAsyncComponent,
-        onMounted,
         PropType,
         toRefs,
         provide,
@@ -102,22 +99,18 @@
 
             const { getProfileTabs, isScrubbed } = useAssetInfo()
 
-            const activeKey = ref()
             const route = useRoute()
-
             const router = useRouter()
-            const handleChangeTab = (key) => {
-                router.replace(`/${page.value}/${route.params.id}/${key}`)
-            }
 
-            onMounted(() => {
-                activeKey.value = route?.params?.tab
+            const activeKey = computed({
+                get: () => route?.params?.tab,
+                set: (key) =>
+                    router.replace(`/${page.value}/${route.params.id}/${key}`),
             })
 
             return {
                 getProfileTabs,
                 activeKey,
-                handleChangeTab,
                 isScrubbed,
             }
         },

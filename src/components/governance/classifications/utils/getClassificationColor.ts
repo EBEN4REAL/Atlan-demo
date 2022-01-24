@@ -1,12 +1,12 @@
 const getClassificationColorHex = (
-    color?: 'Blue' | 'Green' | 'Red' | 'Yellow' | 'White'
+    color?: 'green' | 'red' | 'yellow' | 'white' | 'blue'
 ) => {
-    if (color === 'Blue') return '#2563eb'
-    else if (color === 'Green') return '#00A680'
-    else if (color === 'Yellow') return '#FFB119'
-    else if (color === 'Red') return '#CF592E'
-    else if (color === 'White') return '#FFFFFF'
-    else return '#2563eb'
+    if (color === 'green') return '#00A680'
+    if (color === 'yellow') return '#FFB119'
+    if (color === 'red') return '#CF592E'
+    if (color === 'white') return '#FFFFFF'
+    if (color === 'blue') return '#2251CC'
+    return '#00A680'
 }
 
 export default getClassificationColorHex

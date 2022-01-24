@@ -49,7 +49,7 @@
         <div
             class="absolute right-3 carron-pos"
             @click.stop="clearAllSelected"
-            v-if="enrichedSelectedItems?.length > 0 && mouseOver"
+            v-if="enrichedSelectedItems?.length > 0 && mouseOver && !disabled"
         >
             <AtlanIcon :icon="'Cross'" class="w-4 h-4" />
         </div>
@@ -69,6 +69,7 @@
         inject,
         computed,
         defineComponent,
+        watch,
         PropType,
         ComputedRef,
         toRefs,
@@ -115,6 +116,7 @@
             const { getTableName } = useUtils()
             const { updateVQB } = useVQB()
             const mouseOver = ref(false)
+            const isJoinPanelDisabled = ref(true)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<Number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
@@ -122,6 +124,10 @@
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
             const map = inject('map') as Ref<Object>
+            const getTableInitialBody = inject(
+                'getTableInitialBody'
+            ) as Function
+            const replaceTableBody = inject('replaceTableBody') as Function
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -196,6 +202,17 @@
                 updateVQB(activeInlineTab, inlineTabs)
                 console.log(map.value, 'destroy')
             }
+
+            watch(
+                () => selectedTables,
+                () => {
+                    replaceTableBody(getTableInitialBody())
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             return {
                 mouseOver,

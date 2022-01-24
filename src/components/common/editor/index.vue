@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs, computed } from 'vue'
+    import { defineComponent, ref, watch, toRefs, computed, provide } from 'vue'
     import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
@@ -89,9 +89,6 @@
             const showImageBubble = ref(false)
             const widthOption = ref(1)
             const customWidth = ref(100)
-
-            const selectedRowIndex = ref(0)
-            const selectedColIndex = ref(0)
 
             const { isEditMode } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
@@ -163,6 +160,13 @@
                     attributes: {
                         class: 'prose prose-sm w-full',
                     },
+                    // handleClickOn(view, pos, node, nodePos) {
+                    //     if (node.type.name === 'tableCell') {
+                    //         const element = view.domAtPos(nodePos)?.node
+                    //         offsetLeft.value = element?.clientWidth + element?.offsetLeft
+                    //         offsetTop.value = element?.clientHeight + element?.offsetTop
+                    //     }
+                    // }
                     // handleClick(view, pos) {
                     //     const getBlock = view.domAtPos(pos)
                     //

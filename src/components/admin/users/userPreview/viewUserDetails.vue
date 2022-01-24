@@ -17,9 +17,12 @@
             <div class="pb-6 border-b border-gray-200 border-solid">
                 <div class="mb-6">
                     <ViewPersonas
-                        :user="selectedUser"
+                        :entity="selectedUser"
                         :is-current-user="isCurrentUser"
                     />
+                </div>
+                <div class="mb-6">
+                    <ViewPurposes :entity="selectedUser" />
                 </div>
                 <div class="pb-2">
                     <ViewGroups
@@ -137,6 +140,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import ViewGroups from '@/admin/users/userPreview/about/viewGroups.vue'
     import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    import ViewPurposes from '@/admin/users/userPreview/about/viewPurposes.vue'
 
     export default defineComponent({
         name: 'ViewUser',
@@ -144,6 +148,7 @@
             ViewPersonas,
             ViewGroups,
             UpdateSkills,
+            ViewPurposes,
         },
         props: {
             selectedUser: {

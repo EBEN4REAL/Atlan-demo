@@ -365,6 +365,9 @@
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
             const tableSelected = inject('tableSelected') as Ref<Object>
+            const isJoinPanelDisabled = inject(
+                'isJoinPanelDisabled'
+            ) as Ref<Boolean>
             const map = inject('map') as Ref<Object>
             const dirtyTableSelected = inject(
                 'dirtyTableSelected'
@@ -480,7 +483,9 @@
                 dirtyTableSelected.value = null
                 columnDropdownOption.value = []
                 columnQueryText.value = ''
-                replaceTableBody(getTableInitialBody())
+                replaceTableBody(
+                    getTableInitialBody(selectedTablesQualifiedNames.value)
+                )
                 event.stopPropagation()
                 event.preventDefault()
                 return false
@@ -500,6 +505,7 @@
                         label: item.label,
                         type: item.type,
                         qualifiedName: item.value,
+                        item: item,
                     })
                 } else {
                     delete map.value[item.value]
@@ -553,7 +559,11 @@
                         )
 
                         if (!tableSelected.value) {
-                            replaceTableBody(getTableInitialBody())
+                            replaceTableBody(
+                                getTableInitialBody(
+                                    selectedTablesQualifiedNames.value
+                                )
+                            )
                         } else {
                             replaceColumnBody(
                                 getColumnInitialBody(
@@ -572,7 +582,9 @@
 
             watch(tableQueryText, () => {
                 if (!dirtyIsTableSelected?.value) {
-                    replaceTableBody(getTableInitialBody())
+                    replaceTableBody(
+                        getTableInitialBody(selectedTablesQualifiedNames.value)
+                    )
                 }
             })
             watch(columnQueryText, () => {
@@ -587,6 +599,7 @@
             })
 
             return {
+                isJoinPanelDisabled,
                 map,
                 getDataTypeImage,
                 actionClick,

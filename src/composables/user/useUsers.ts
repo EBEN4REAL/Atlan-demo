@@ -46,17 +46,8 @@ const getWorkspaceRole = (user: any) => {
 }
 
 const getUserPersona = (user: any) => {
-    const { roles } = user
-
-    const roleFilter = roles?.filter(
-        (role: string) =>
-            role !== 'default-roles-default' &&
-            !role.startsWith('$') &&
-            !role.startsWith('connection_admins_') &&
-            !role.startsWith('collection_')
-    )
-
-    return roleFilter
+    const { personas } = user
+    return personas
 }
 
 const getUserRole = (user: any) => {

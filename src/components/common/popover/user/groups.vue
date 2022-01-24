@@ -1,8 +1,8 @@
 <template>
     <a-popover
-        @visibleChange="handleVisibleChange"
-        :mouseEnterDelay="0.4"
+        :mouse-enter-delay="0.4"
         placement="left"
+        @visibleChange="handleVisibleChange"
     >
         <template #content>
             <div class="relative p-4 groups-popover">
@@ -10,8 +10,8 @@
                     class="absolute top-0 left-0 right-0 z-0 group-cover"
                 ></div>
                 <div
-                    class="z-10 flex flex-col"
                     v-if="!isLoading && selectedGroup.alias === item"
+                    class="z-10 flex flex-col gap-y-4"
                 >
                     <div class="z-10 flex items-center justify-between w-full">
                         <div class="flex items-center justify-between w-full">
@@ -19,15 +19,19 @@
                                 <UserAvatar
                                     :username="item"
                                     style-class="mr-1 border-none bg-primary-light"
-                                    className="mb-auto"
-                                    :avatarSize="40"
-                                    :isGroup="true"
+                                    class-name="mb-auto"
+                                    :avatar-size="40"
+                                    :is-group="true"
                                 ></UserAvatar>
                                 <div>
                                     <div
                                         class="flex items-center text-sm font-semibold capitalize"
                                     >
                                         <span>{{ selectedGroup?.name }}</span>
+                                        <SlackMessageCta
+                                            :entity="selectedGroup"
+                                            class="ml-1 text-sm font-semibold"
+                                        />
                                     </div>
                                     <div class="text-sm text-gray-600">
                                         @{{ item }}
@@ -39,28 +43,89 @@
                         </div>
                         <div class="mb-auto">
                             <AtlanBtn
-                                class="flex-none px-0"
+                                class="flex-none bg-white text-blueGray p-1.5 border-gray-300 border rounded-md"
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
                                 style="height: fit-content"
                                 @click="handleClickGroup"
                             >
-                                <span class="text-primary whitespace-nowrap">
+                                <!-- <span class="text-primary whitespace-nowrap">
                                     View Profile</span
                                 >
                                 <AtlanIcon
                                     icon="ArrowRight"
                                     class="text-primary"
-                                />
+                                /> -->
+                                <AtlanIcon icon="OpenPreview" />
                             </AtlanBtn>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-y-2">
+                        <div
+                            v-if="selectedGroup?.personas?.length > 0"
+                            class="flex gap-2"
+                        >
+                            <div class="" style="visibility: hidden">
+                                <UserAvatar
+                                    :username="item"
+                                    class-name="mb-auto"
+                                    :avatar-size="40"
+                                ></UserAvatar>
+                            </div>
+                            <div class="z-10">
+                                <div class="text-sm text-gray-500">
+                                    Personas
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="persona in selectedGroup?.personas"
+                                        :key="persona"
+                                        class="flex px-2 tracking-wide text-gray-500 border rounded-full"
+                                        >{{
+                                            persona?.displayName ||
+                                            persona?.name ||
+                                            ''
+                                        }}</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            v-if="selectedGroup?.purposes?.length > 0"
+                            class="flex gap-2"
+                        >
+                            <div class="" style="visibility: hidden">
+                                <UserAvatar
+                                    :username="item"
+                                    class-name="mb-auto"
+                                    :avatar-size="40"
+                                ></UserAvatar>
+                            </div>
+                            <div class="z-10">
+                                <div class="text-sm text-gray-500">
+                                    Purposes
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="purpose in selectedGroup?.purposes"
+                                        :key="purpose"
+                                        class="flex px-2 tracking-wide text-gray-500 border rounded-full"
+                                        >{{
+                                            purpose?.displayName ||
+                                            purpose?.name ||
+                                            ''
+                                        }}</span
+                                    >
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div
-                    class="flex items-center justify-center w-full px-4"
                     v-else
+                    class="flex items-center justify-center w-full px-4"
                 >
                     <AtlanLoader v-if="isLoading" class="h-8" />
                 </div>
@@ -79,6 +144,7 @@
     import useUserPopover from './composables/useUserPopover'
     import AtlanBtn from '@/UI/button.vue'
     import UserAvatar from '@/common/avatar/user.vue'
+    import SlackMessageCta from './slackMessageCta.vue'
 
     export default {
         name: 'PopoverGroup',
@@ -86,6 +152,7 @@
             UserPill,
             AtlanBtn,
             UserAvatar,
+            SlackMessageCta,
         },
         props: {
             item: {
@@ -133,7 +200,6 @@
 
             return {
                 selectedGroup,
-
                 handleClickGroup,
                 isLoading,
                 handleVisibleChange,

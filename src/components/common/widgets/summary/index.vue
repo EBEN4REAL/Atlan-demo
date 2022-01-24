@@ -10,7 +10,7 @@
         <div class="flex flex-col gap-y-3">
             <div
                 v-if="getSummaryVariants(asset)?.components?.length"
-                class="flex gap-x-16"
+                class="flex flex-wrap gap-x-16 gap-y-3"
             >
                 <div
                     v-for="(component, index) in getSummaryVariants(asset)
@@ -48,12 +48,7 @@
                     @change="handleChangeDescription"
                 />
             </div>
-            <div
-                class="flex"
-                :class="
-                    localCertificate.certificateStatus ? 'gap-x-16' : 'gap-x-32'
-                "
-            >
+            <div class="flex gap-x-16">
                 <div
                     ref="animationPoint"
                     class="flex flex-col max-w-sm"
@@ -144,6 +139,18 @@
             ParentDataset: defineAsyncComponent(
                 () => import('./types/parentDataset.vue')
             ),
+            ParentProject: defineAsyncComponent(
+                () => import('./types/parentProject.vue')
+            ),
+            ParentWorkbook: defineAsyncComponent(
+                () => import('./types/parentWorkbook.vue')
+            ),
+            ParentSite: defineAsyncComponent(
+                () => import('./types/parentSite.vue')
+            ),
+            ParentDatasource: defineAsyncComponent(
+                () => import('./types/parentDatasource.vue')
+            ),
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
             ),
@@ -152,6 +159,12 @@
             ),
             Pages: defineAsyncComponent(() => import('./types/pageCount.vue')),
             Tiles: defineAsyncComponent(() => import('./types/tileCount.vue')),
+            SourceCreated: defineAsyncComponent(
+                () => import('./types/sourceCreated.vue')
+            ),
+            SourceUpdated: defineAsyncComponent(
+                () => import('./types/sourceUpdated.vue')
+            ),
         },
 
         props: {

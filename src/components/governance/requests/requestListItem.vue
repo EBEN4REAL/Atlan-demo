@@ -56,6 +56,7 @@
             <TermPiece
                 v-else-if="request.requestType === 'term_link'"
                 :data="request?.sourceEntity?.attributes"
+                :request="request"
             />
 
             <AttrPiece
@@ -71,7 +72,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3 pr-3">
+        <div class="flex items-center justify-end col-span-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -81,7 +82,7 @@
             <template v-else>
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center font-bold"
+                    class="items-center pr-3 font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -144,12 +145,12 @@
                             :avatar-name="request.created_by_user?.username"
                             avatar-size="24"
                             :avatar-shape="'circle'"
-                            :image-url="atlanLogo"
+                            :image-url="request.createdBy ? '' : atlanLogo"
                         />
 
                         <div class="flex flex-col">
                             <UserPiece
-                                :user="request.created_by_user"
+                                :user="{ username: request.createdBy }"
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />

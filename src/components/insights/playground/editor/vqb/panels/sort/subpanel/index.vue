@@ -62,6 +62,9 @@
                         :disabled="readOnly"
                         v-model:selectedColumn="subpanel.aggregateORGroupColumn"
                         v-model:panel="panel"
+                        :mixedSubpanels="
+                            getAggregationORGroupPanelColumns(activeInlineTab)
+                        "
                     >
                         <template #head>
                             <AggregateGroupHead
@@ -111,10 +114,9 @@
                 </div>
             </template>
         </div>
-        {{ readonly }}
         <span>
             <div
-                v-if="!readonly"
+                v-if="!readOnly"
                 class="items-center mt-3 cursor-pointer text-primary"
                 @click="handleAddPanel"
             >

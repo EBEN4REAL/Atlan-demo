@@ -1,6 +1,21 @@
 <template>
     <div class="term-request">
-        <a-popover :mouse-enter-delay="0.3" placement="leftTop" trigger="hover">
+        <TermPopover
+            :loading="termLoading"
+            :fetched-term="getFetchedTerm(request.sourceGuid)"
+            :error="termError"
+            trigger="hover"
+            :ready="isReady"
+            :term="{ guid: request.sourceGuid }"
+            @visible="handleTermPopoverVisibility"
+        >
+            <Pill :label="data?.name" :has-action="false">
+                <template #prefix>
+                    <AtlanIcon icon="Term"></AtlanIcon>
+                </template>
+            </Pill>
+        </TermPopover>
+        <!-- <a-popover :mouse-enter-delay="0.3" placement="leftTop" trigger="hover">
             <template #content>
                 <div class="flex flex-col w-56 p-4">
                     <div class="flex justify-between mb-2 text-sm">
@@ -10,7 +25,6 @@
                         >
                     </div>
                     <span class="mb-1 text-sm font-bold">{{ data.name }}</span>
-                    <!-- TODO: Change this to a link to the specified glossary -->
                     <span
                         v-if="data.anchor?.displayText"
                         class="mb-4 text-xs text-gray-500"
@@ -35,7 +49,6 @@
                             label-key="displayText"
                             read-only
                         />
-                        <!-- TODO: Link the category on click action -->
                     </div>
                 </div>
             </template>
@@ -44,26 +57,46 @@
                     <AtlanIcon icon="Term"></AtlanIcon>
                 </template>
             </Pill>
-        </a-popover>
+        </a-popover> -->
         <div class="pr-2 mt-1 text-gray-500">Link Term</div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-
+    import TermPopover from '@/common/popover/term/term.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import useTermPopover from '@/common/popover/term/useTermPopover'
 
     export default defineComponent({
-        components: { PillGroup, Pill },
+        components: { PillGroup, Pill, TermPopover },
         props: {
             data: {
                 required: true,
                 default: () => {},
             },
+            request: {
+                required: true,
+                default: () => ({}),
+            },
         },
-        setup(props) {},
+        setup(props) {
+            const {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+            } = useTermPopover()
+            return {
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+                getFetchedTerm,
+            }
+        },
     })
 </script>
 

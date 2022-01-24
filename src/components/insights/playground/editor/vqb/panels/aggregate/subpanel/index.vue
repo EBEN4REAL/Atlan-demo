@@ -63,7 +63,7 @@
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         @checkChange="checkChange"
-                        :disabled="readOnly"
+                        :disabled="!subpanel?.column?.label || readOnly"
                     />
 
                     <AtlanIcon
@@ -81,9 +81,9 @@
         </div>
 
         <span
-            v-if="!readonly"
+            v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
-            @click.stop="handleAddPanel"
+            @click="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
             <span>Add another</span>
@@ -104,7 +104,7 @@
     } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import AggregateSelector from '../aggregateSelector/index.vue'
+    import AggregateSelector from '../aggregateSelector/_index.vue'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'

@@ -121,7 +121,11 @@
                             "
                         >
                             <!-- Show dropdown except the last panel -->
-                            <a-tooltip placement="top" title="Add step">
+                            <a-tooltip
+                                placement="top"
+                                title="Add step"
+                                :destroyTooltipOnHide="true"
+                            >
                                 <Actions
                                     @add="
                                         (type, panel) =>
@@ -361,7 +365,6 @@
                 actionPanel.value = !actionPanel.value
             }
             const handleMouseOut = () => {
-                console.log(containerHovered.value && !submenuHovered.value)
                 if (containerHovered.value && !submenuHovered.value) {
                     containerHovered.value = false
                 }

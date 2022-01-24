@@ -91,6 +91,8 @@
                             }"
                         >
                             <template #content>
+                                <!-- <LearnMore /> -->
+                                <!-- learnMore component is failing import -->
                                 <div class="relative p-4" style="width: 508px">
                                     <div
                                         class="w-full p-4 bg-gray-100 rounded-xl"
@@ -203,6 +205,7 @@
                                         </ol>
                                     </div>
                                 </div>
+                                <!-- learnMore component is failing import -->
                             </template>
                             <Button
                                 color="secondary"

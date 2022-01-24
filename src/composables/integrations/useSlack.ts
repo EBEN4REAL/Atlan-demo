@@ -29,12 +29,14 @@ export const getSlackInstallUrlState = (isTenant: boolean) => {
     const api = `${origin}/api/service/slack/auth`
     const userId = authStore.id
     const { username } = authStore
+    const redirectUrl = 'javascript:close_window();'
     const state = {
         api,
         origin,
         isTenant,
         userId,
-        username
+        username,
+        redirectUrl
     }
 
     console.log('slack auth state', state)

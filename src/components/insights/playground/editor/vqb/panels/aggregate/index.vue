@@ -251,6 +251,7 @@
     import FooterActions from '../action/footer.vue'
     import AggregatorSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -276,6 +277,8 @@
                 getSummarisedInfoOfAggregationPanel,
                 getInitialPanelExpandedState,
             } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
+
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -357,6 +360,7 @@
             }
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             const toggleExpand = () => {
                 activeInlineTab.value.playground.vqb.panels[
@@ -390,6 +394,7 @@
 
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
 
             return {

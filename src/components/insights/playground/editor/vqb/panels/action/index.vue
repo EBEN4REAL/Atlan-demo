@@ -57,6 +57,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Columns',
@@ -82,6 +83,7 @@
             const { submenuHovered, containerHovered } = useVModels(props)
             const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -138,6 +140,7 @@
                 emit('add', type, panel)
                 containerHovered.value = false
                 submenuHovered.value = false
+                syncSortAggregateAndGroupPanel(activeInlineTab)
 
                 // emit('add', type)
             }

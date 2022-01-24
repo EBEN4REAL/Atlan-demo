@@ -265,17 +265,16 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
-            const isTabChanged = ref(false)
             const {
                 getSummarisedInfoOfSortPanel,
                 getInitialPanelExpandedState,
-                isAggregationORGroupPanelColumnsAdded,
             } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         .hide
             )
+
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
             const actionPanel = ref(false)
@@ -288,6 +287,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
             /* Accesss */
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'
@@ -376,114 +376,6 @@
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
             }
-            watch(
-                [activeInlineTab],
-                ([newActiveInlineTab], [oldActiveInlineTab]) => {
-                    // FIXME: Find an alternative way to do this
-
-                    /* LOGIC: Here this condition should only run when we are doing change in the same tab,
-                        if we do not provide the isTabChanged check then it will run on changing the tab too */
-                    if (
-                        !isTabChanged.value &&
-                        newActiveInlineTab.key === oldActiveInlineTab.key
-                    ) {
-                        const res = isAggregationORGroupPanelColumnsAdded(
-                            activeInlineTab.value
-                        )
-
-                        if (res) {
-                            if (
-                                !activeInlineTab.value.playground.vqb.panels[
-                                    index.value
-                                ]?.active
-                            ) {
-                                if (
-                                    activeInlineTab.value.playground.vqb.panels[
-                                        index.value
-                                    ]?.subpanels
-                                ) {
-                                    let copySubPanels = JSON.parse(
-                                        JSON.stringify(
-                                            activeInlineTab.value.playground.vqb
-                                                .panels[index.value]?.subpanels
-                                        )
-                                    )
-                                    copySubPanels = copySubPanels.map(
-                                        (subpanel) => {
-                                            return {
-                                                ...subpanel,
-                                                attributes: {},
-                                                column: {},
-                                                isForeign: undefined,
-                                                isPartition: undefined,
-                                                isPrimary: undefined,
-                                                item: undefined,
-                                                label: undefined,
-                                                order: 'asc',
-                                                qualifiedName: undefined,
-                                                type: undefined,
-                                            }
-                                        }
-                                    )
-                                    activeInlineTab.value.playground.vqb.panels[
-                                        index.value
-                                    ] = {
-                                        ...panel.value,
-                                        subpanels: copySubPanels,
-                                        active: true,
-                                    }
-                                }
-                            }
-                        } else {
-                            if (
-                                activeInlineTab.value.playground.vqb.panels[
-                                    index.value
-                                ]?.active
-                            ) {
-                                let copySubPanels = JSON.parse(
-                                    JSON.stringify(
-                                        activeInlineTab.value.playground.vqb
-                                            .panels[index.value]?.subpanels
-                                    )
-                                )
-                                copySubPanels = copySubPanels.map(
-                                    (subpanel) => {
-                                        return {
-                                            ...subpanel,
-                                            aggregateORGroupColumn: {
-                                                qualifiedName: undefined,
-                                                tableName: undefined,
-                                                type: undefined,
-                                                value: undefined,
-                                                label: undefined,
-                                            },
-                                        }
-                                    }
-                                )
-
-                                activeInlineTab.value.playground.vqb.panels[
-                                    index.value
-                                ] = {
-                                    ...panel.value,
-                                    subpanels: copySubPanels,
-                                    active: false,
-                                }
-                            }
-                        }
-                    } else if (
-                        newActiveInlineTab.key !== oldActiveInlineTab.key
-                    ) {
-                        isTabChanged.value = true
-                    } else if (
-                        newActiveInlineTab.key === oldActiveInlineTab.key
-                    ) {
-                        isTabChanged.value = false
-                    }
-                },
-                {
-                    deep: true,
-                }
-            )
 
             return {
                 readOnly,

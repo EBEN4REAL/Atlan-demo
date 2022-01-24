@@ -21,12 +21,12 @@
                         {{ selectedGroup.description || '-' }}
                     </div>
                 </div>
-                <!-- <div class="mb-6">
-                    <ViewPersonas
-                        :user="selectedUser"
-                        :is-current-user="isCurrentUser"
-                    />
-                </div> -->
+                <div class="mb-7">
+                    <ViewPersonas :entity="selectedGroup" />
+                </div>
+                <div class="mb-7">
+                    <ViewPurposes :entity="selectedGroup" />
+                </div>
                 <div>
                     <div class="mb-1 text-sm text-gray-500">Member Count</div>
                     <div
@@ -109,7 +109,8 @@
 <script>
     import { computed, defineComponent, toRefs, ref, watch } from 'vue'
     import dayjs from 'dayjs'
-    // import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    import ViewPurposes from '@/admin/users/userPreview/about/viewPurposes.vue'
     import map from '~/constant/accessControl/map'
     import PopOverUser from '@/common/popover/user/user.vue'
 
@@ -117,7 +118,8 @@
         name: 'ViewUser',
         components: {
             PopOverUser,
-            // ViewPersonas,
+            ViewPersonas,
+            ViewPurposes,
         },
         props: {
             selectedGroup: {

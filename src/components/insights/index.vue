@@ -161,6 +161,8 @@
     import { message } from 'ant-design-vue'
     import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
     import {
         explorerPaneSize,
@@ -220,6 +222,7 @@
                 // selectCollectionFromUrl,
             } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
+            const { getConnectorName } = useConnector()
             const { fullSreenState } = useFullScreen()
             const savedQueryGuidFromURL = ref(route.query?.id)
 
@@ -467,6 +470,13 @@
             // FIXME: refactor it
 
             const detectQuery = () => {
+                // for assetQuote Info of different sources
+                const assetQuoteType = getDialectInfo(
+                    getConnectorName(
+                        `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`
+                    ) ?? ''
+                )
+
                 let vqbData =
                     openVQB === 'true'
                         ? {
@@ -607,10 +617,10 @@
                 let newQuery
                 if (columnNameFromURL) {
                     // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${tableNameFromURL} preview \nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
                 } else {
                     // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${tableNameFromURL} preview \nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
                 }
 
                 const attributeName = 'schemaQualifiedName'

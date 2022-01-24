@@ -70,9 +70,148 @@
                                 </router-link>
                             </span>
                         </div>
-                        <Button color="secondary" size="sm" padding="compact">
-                            Learn More
-                        </Button>
+                        <!-- <LearnMore>
+                            <template #default>
+                                <Button
+                                    color="secondary"
+                                    size="sm"
+                                    padding="compact"
+                                >
+                                    Learn More
+                                </Button>
+                            </template>
+                        </LearnMore> -->
+
+                        <a-popover
+                            :overlay-class-name="$style.learnMorePopover"
+                            trigger="click"
+                            :overlayStyle="{
+                                width: '508px',
+                                height: '336px',
+                            }"
+                        >
+                            <template #content>
+                                <div class="relative p-4" style="width: 508px">
+                                    <div
+                                        class="w-full p-4 bg-gray-100 rounded-xl"
+                                    >
+                                        <div
+                                            class="bg-white shadow-xl rounded-xl"
+                                        >
+                                            <div
+                                                class="flex items-center p-3 border-b border-gray-100 gap-x-20"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-x-1"
+                                                >
+                                                    <div
+                                                        style="
+                                                            background: #ee6a5f;
+                                                        "
+                                                        class="w-3 h-3 rounded-full"
+                                                    ></div>
+                                                    <div
+                                                        style="
+                                                            background: #f5bd4f;
+                                                        "
+                                                        class="w-3 h-3 rounded-full"
+                                                    ></div>
+                                                    <div
+                                                        style="
+                                                            background: #61c454;
+                                                        "
+                                                        class="w-3 h-3 rounded-full"
+                                                    ></div>
+                                                </div>
+                                                <div
+                                                    class="flex items-center justify-between px-1 bg-gray-100 rounded w-52 h-7"
+                                                >
+                                                    <div class=""></div>
+                                                    <div
+                                                        class="flex items-center gap-x-1"
+                                                    >
+                                                        <div class="mb-1">
+                                                            <AtlanIcon
+                                                                icon="SafariLock"
+                                                                style="
+                                                                    font-color: #797979;
+                                                                "
+                                                                class="rotate-90"
+                                                            />
+                                                        </div>
+                                                        <span>slack.com</span>
+                                                    </div>
+                                                    <div
+                                                        class=""
+                                                        :style="{
+                                                            transform:
+                                                                'rotateZ(-45deg) rotateY(180deg)',
+                                                        }"
+                                                    >
+                                                        <AtlanIcon
+                                                            icon="Refresh"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                style="
+                                                    padding-top: 22px;
+                                                    padding-bottom: 84px;
+                                                "
+                                                class="px-3 pb-24"
+                                            >
+                                                <div class="rounded-lg">
+                                                    <img
+                                                        :src="
+                                                            SlackTokenSnapshot
+                                                        "
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="absolute bottom-0 left-0 right-0 p-4 bg-white rounded-b-lg shadow-xl"
+                                    >
+                                        <ol
+                                            class="flex flex-col text-xs gap-y-2"
+                                        >
+                                            <li>
+                                                1. Open
+                                                <a
+                                                    target="_blank"
+                                                    href="https://api.slack.com/apps"
+                                                    class="text-primary"
+                                                >
+                                                    https://api.slack.com/apps
+                                                </a>
+                                                on your browser.
+                                            </li>
+                                            <li>
+                                                2. Click on
+                                                <b>Generate Token</b>
+                                            </li>
+                                            <li>
+                                                3. Select your
+                                                <b>Slack workspace</b>
+                                            </li>
+                                            <li>
+                                                4. Copy <b>Access Token</b> &
+                                                <b>Refresh Token</b>
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </template>
+                            <Button
+                                color="secondary"
+                                size="sm"
+                                padding="compact"
+                            >
+                                Learn More
+                            </Button>
+                        </a-popover>
                     </div>
                     <div class="">
                         <a-form
@@ -105,7 +244,7 @@
                         <span>Atlan app created</span>
                         <div class="flex-grow" />
                         <span
-                            class="text-red-500 cursor-pointer"
+                            class="cursor-pointer text-primary"
                             @click="handleReconfigure"
                             >Reconfigure</span
                         >
@@ -171,16 +310,17 @@
 </template>
 <script lang="ts">
     import { defineComponent, ref, computed, toRefs, watch } from 'vue'
-    import isForced from 'splitpanes'
-    import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
     import {
         archiveSlack,
         createApp,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
     import { useAuthStore } from '~/store/auth'
+    import LearnMore from '@/admin/integrations/slack/misc/learnMore.vue'
+
     import useIntegration from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
+    import SlackTokenSnapshot from '~/assets/images/admin/slackTokenSnapshot.png'
 
     export default defineComponent({
         name: 'SlackConfigModal',
@@ -193,17 +333,13 @@
 
             // variables
             const accessToken = ref(
-                'xoxe.xoxp-1-Mi0yLTI5NzE0NjYxMTg2MjQtMjk0MTA1MjcyOTMzNC0yOTUwMDM2OTE0Mjc2LTI5OTIwMDk5Njc1MzktZDEwYWE2YTFiMmY3MjllMDNiOGFiOGY5OWYyYzE1ZTQzN2E1NGE5ZjAzOTJlNmQzNDQ1YmY4MWY2MzVmZGFlZg'
+                'xoxe.xoxp-1-Mi0yLTI5NzE0NjYxMTg2MjQtMjk0MTA1MjcyOTMzNC0yOTUwMDM2OTE0Mjc2LTI5ODgwNDM5NzY3MTAtZDZiYWVkOTUyZjFmMjBkZDMxZDgwOWNhYzc3OTZkMThmODNmYzdjNWMwZmY2OTI4NWJiM2Q1Y2U5ODQyODhhYQ'
             )
             const refreshToken = ref(
-                'xoxe-1-My0xLTI5NzE0NjYxMTg2MjQtMjk1MDAzNjkxNDI3Ni0yOTg1MzAzNDk1MTEwLWUxNzYzODEwZGVjYTQwY2UzMmRhZDRjNThiNGJjMzI4YjNlOWIwMDQzOTYyNDU4M2M5N2QwNDdlNWJmYjgxMzM'
+                'xoxe-1-My0xLTI5NzE0NjYxMTg2MjQtMjk1MDAzNjkxNDI3Ni0yOTkxODA0Njg1MTczLWUwN2Q1NWUzMjg1NmM1MWQ0ZDQ5ZmY2OGY3YTcwYzFjYjkxN2M4NWM5MTEwMGQ0ZTQzNjg1MWM2NzU5M2EwMTU'
             )
 
             const currentStep = ref(tenantSlackStatus.value.created ? 2 : 1)
-
-            // watch(tenantSlackStatus, (v) => {
-            //     if (v.created) currentStep.value = 2
-            // })
 
             // computed
             const buttonDisabled = computed(
@@ -257,8 +393,8 @@
                 accessToken,
                 refreshToken,
                 buttonDisabled,
-                SuccessIllustration,
                 buttonCopy,
+                SlackTokenSnapshot,
             }
         },
         data() {
@@ -282,5 +418,13 @@
     }
     .inactive_step {
         @apply bg-gray-100;
+    }
+</style>
+
+<style lang="less" module>
+    .learnMorePopover {
+        :global(.ant-popover-inner) {
+            @apply rounded-lg !important;
+        }
     }
 </style>

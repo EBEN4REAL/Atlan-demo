@@ -370,8 +370,10 @@ import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
 import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
+import SafariLock from '~/assets/images/icons/safari-lock.svg'
 
 export default {
+    SafariLock,
     Gear,
     Atlan,
     GlowFlash,

@@ -1,6 +1,7 @@
 <template>
     <section
-        class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5 addCard"
+        class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5"
+        :class="$style.addCard"
     >
         <div class="">
             <AtlanIcon icon="Slack" class="h-12 bg-white" />
@@ -17,13 +18,14 @@
                     tenantSlackStatus.created && !tenantSlackStatus.configured
                 "
                 v-auth="access.DELETE_INTEGRATION"
-                color="secondary"
-                class=""
+                color="minimal"
+                class="text-red-500"
                 :is-loading="isLoading"
                 size="lg"
-                @click="$emit('openConfig')"
+                @click="disconnect"
             >
-                <AtlanIcon icon="Gear" /> Reconfigure
+                <!-- <AtlanIcon icon="Gear" /> Reconfigure -->
+                Disconnect
             </AtlanButton>
         </div>
         <div class="">

@@ -49,7 +49,7 @@
                                         <span
                                             v-if="
                                                 sizeBytes(item, false) &&
-                                                rows !== '0'
+                                                rows !== '~'
                                             "
                                             class="font-semibold"
                                             >{{ rows }} rows ({{
@@ -57,7 +57,10 @@
                                             }})</span
                                         >
                                         <span v-else class="font-semibold"
-                                            >0 rows from the source</span
+                                            >Row count is not available for
+                                            {{ connectorName(item) }}/{{
+                                                connectionName(item)
+                                            }}</span
                                         >
                                     </template>
                                 </a-tooltip>
@@ -276,6 +279,8 @@
                 dataTypeCategoryImage,
                 description,
                 sizeBytes,
+                connectionName,
+                connectorName,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -326,6 +331,8 @@
                 slots,
                 description,
                 sizeBytes,
+                connectionName,
+                connectorName,
             }
         },
     }

@@ -5,7 +5,7 @@
     >
         <span class="mb-1 text-sm text-gray-500">Source Created</span>
         <div class="flex items-center text-gray-700">
-            <span class="cursor-pointer dotted-underline">
+            <span class="border-b border-gray-500 border-dashed cursor-pointer">
                 <a-tooltip placement="bottom">
                     <template #title>
                         {{ sourceCreatedAt(asset, true) }} </template
@@ -45,10 +45,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .dotted-underline {
-        text-decoration: underline;
-        text-decoration-style: dotted;
-    }
-</style>

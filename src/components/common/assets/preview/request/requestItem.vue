@@ -25,7 +25,10 @@
                                 ?.color
                         "
                         :no-hover="true"
-                        :created-by="localClassification(item.payload.typeName)?.createdBy"
+                        :created-by="
+                            localClassification(item.payload.typeName)
+                                ?.createdBy
+                        "
                     />
                 </Popover>
             </div>
@@ -37,7 +40,12 @@
                 }}</span>
             </div>
         </template>
-        <template v-if="item.requestType === 'term_link'">
+        <template
+            v-if="
+                item.requestType === 'term_link' &&
+                selectedAsset.typeName !== 'AtlasGlossaryTerm'
+            "
+        >
             <p class="text-gray-500">Link Term</p>
             <div class="mt-1">
                 <Pill
@@ -48,6 +56,43 @@
                         <AtlanIcon icon="Term" />
                     </template>
                 </Pill>
+            </div>
+            <div class="mt-1">
+                <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
+                <span class="sparator" />
+                <span class="text-sm text-gray-500">{{
+                    createdTime(item.createdAt)
+                }}</span>
+            </div>
+        </template>
+        <template
+            v-if="
+                item.requestType === 'term_link' &&
+                selectedAsset.typeName === 'AtlasGlossaryTerm'
+            "
+        >
+            <p class="text-gray-500">{{ assetText[0] }}</p>
+            <div class="mt-1">
+                <div class="flex items-center text-xs">
+                    <AssetLogo :selected="false" :asset="assetWrappper" />
+                    <span
+                        class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                        >{{ item.entityType.toUpperCase() }}</span
+                    >
+                    <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+                    <span
+                        class="overflow-hidden text-gray-500 overflow-ellipsis"
+                    >
+                        {{ assetText[2] }}</span
+                    >
+                    <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+
+                    <span
+                        class="overflow-hidden text-gray-500 overflow-ellipsis"
+                    >
+                        {{ assetText[1] }}</span
+                    >
+                </div>
             </div>
             <div class="mt-1">
                 <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
@@ -200,7 +245,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import Pill from '~/components/UI/pill/pill.vue'
@@ -212,10 +257,11 @@
         declineRequest,
     } from '~/composables/requests/useRequests'
     import Popover from '@/common/popover/classification/index.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
 
     export default defineComponent({
         name: 'RequestItem',
-        components: { Pill, ClassificationPill, Popover },
+        components: { Pill, ClassificationPill, Popover, AssetLogo },
         props: {
             selectedAsset: {
                 type: Object,
@@ -237,6 +283,19 @@
             const isVisibleApproveWithComment = ref(false)
             const messageApprove = ref('')
             const messageReject = ref('')
+            const assetText = computed(
+                () =>
+                    item.value?.destinationQualifiedName
+                        ?.split('/')
+                        ?.slice(-3)
+                        ?.reverse() || 'Link Asset'
+            )
+            const assetWrappper = computed(() => ({
+                attributes: {
+                    integrationName:
+                        item.value?.destinationQualifiedName.split('/')[1],
+                },
+            }))
             const localClassification = (typeName) =>
                 classificationList.value.find((clsf) => clsf?.name === typeName)
 
@@ -316,6 +375,8 @@
                 cancelApprove,
                 handleApprove,
                 handleClickApproveWithComment,
+                assetText,
+                assetWrappper,
             }
         },
     })

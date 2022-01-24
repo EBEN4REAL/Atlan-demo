@@ -24,6 +24,7 @@
             <template #default="{ item }">
                 <RequestItem
                     :item="item"
+                    :selected-asset="selectedAsset"
                     @handleUpdateData="handleUpdateData"
                 />
             </template>

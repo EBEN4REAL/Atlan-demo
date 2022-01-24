@@ -21,6 +21,9 @@
                         :is-current-user="isCurrentUser"
                     />
                 </div>
+                <div class="mb-6">
+                    <ViewPurposes :entity="selectedUser" />
+                </div>
                 <div class="pb-2">
                     <ViewGroups
                         :is-current-user="isCurrentUser"
@@ -137,6 +140,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import ViewGroups from '@/admin/users/userPreview/about/viewGroups.vue'
     import ViewPersonas from '@/admin/users/userPreview/about/viewPersonas.vue'
+    import ViewPurposes from '@/admin/users/userPreview/about/viewPurposes.vue'
 
     export default defineComponent({
         name: 'ViewUser',
@@ -144,6 +148,7 @@
             ViewPersonas,
             ViewGroups,
             UpdateSkills,
+            ViewPurposes,
         },
         props: {
             selectedUser: {

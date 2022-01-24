@@ -209,7 +209,7 @@
                     }}
                 </div>
             </a-popover>
-            <div v-else class="text-left text-primary">-</div>
+            <div v-else class="text-left">-</div>
         </template>
         <template #actions="{ text: user }">
             <div class="flex justify-end">
@@ -687,7 +687,8 @@
         margin-right: 8px;
     }
     .content-popover-group-persona {
-        width: 180px;
+        min-width: 180px;
+        // width: auto;
         height: auto;
         max-height: 170px;
     }

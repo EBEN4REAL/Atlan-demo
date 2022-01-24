@@ -61,30 +61,63 @@
                             </AtlanBtn>
                         </div>
                     </div>
-                    <div
-                        v-if="selectedGroup?.personas?.length > 0"
-                        class="flex gap-2"
-                    >
-                        <div class="" style="visibility: hidden">
-                            <UserAvatar
-                                :username="item"
-                                class-name="mb-auto"
-                                :avatar-size="40"
-                            ></UserAvatar>
+                    <div class="flex flex-col gap-y-2">
+                        <div
+                            v-if="selectedGroup?.personas?.length > 0"
+                            class="flex gap-2"
+                        >
+                            <div class="" style="visibility: hidden">
+                                <UserAvatar
+                                    :username="item"
+                                    class-name="mb-auto"
+                                    :avatar-size="40"
+                                ></UserAvatar>
+                            </div>
+                            <div class="z-10">
+                                <div class="text-sm text-gray-500">
+                                    Personas
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="persona in selectedGroup?.personas"
+                                        :key="persona"
+                                        class="flex px-2 tracking-wide text-gray-500 border rounded-full"
+                                        >{{
+                                            persona?.displayName ||
+                                            persona?.name ||
+                                            ''
+                                        }}</span
+                                    >
+                                </div>
+                            </div>
                         </div>
-                        <div class="z-10">
-                            <div class="text-sm text-gray-500">Personas</div>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="persona in selectedGroup?.personas"
-                                    :key="persona"
-                                    class="flex px-2 tracking-wide text-gray-500 border rounded-full"
-                                    >{{
-                                        persona?.displayName ||
-                                        persona?.name ||
-                                        ''
-                                    }}</span
-                                >
+                        <div
+                            v-if="selectedGroup?.purposes?.length > 0"
+                            class="flex gap-2"
+                        >
+                            <div class="" style="visibility: hidden">
+                                <UserAvatar
+                                    :username="item"
+                                    class-name="mb-auto"
+                                    :avatar-size="40"
+                                ></UserAvatar>
+                            </div>
+                            <div class="z-10">
+                                <div class="text-sm text-gray-500">
+                                    Purposes
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="purpose in selectedGroup?.purposes"
+                                        :key="purpose"
+                                        class="flex px-2 tracking-wide text-gray-500 border rounded-full"
+                                        >{{
+                                            purpose?.displayName ||
+                                            purpose?.name ||
+                                            ''
+                                        }}</span
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>

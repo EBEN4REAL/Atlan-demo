@@ -262,15 +262,16 @@
                                 <div
                                     class="text-left cursor-pointer text-primary hover:underline"
                                 >
-                                    {{
+                                    <span>{{
                                         group?.personas?.length > 1
                                             ? group?.personas?.length +
                                               ' personas'
                                             : group?.personas?.length +
                                                   ' persona' || '-'
-                                    }}
+                                    }}</span>
                                 </div>
                             </a-popover>
+                            <div v-else class="text-left">-</div>
                         </div>
                         <div
                             v-else-if="column.key === 'createdBy'"
@@ -750,7 +751,7 @@
 </style>
 <style lang="less" scoped>
     .content-popover-group-persona {
-        width: 180px;
+        min-width: 180px;
         height: auto;
         max-height: 170px;
     }

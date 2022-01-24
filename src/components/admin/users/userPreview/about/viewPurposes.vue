@@ -1,9 +1,9 @@
 <template>
-    <span class="text-sm text-gray-500">Personas</span>
-    <div v-if="personas.length > 0" class="flex flex-wrap mt-1">
+    <span class="text-sm text-gray-500">Purposes</span>
+    <div v-if="purposes.length > 0" class="flex flex-wrap mt-1">
         <Tags
             :allow-update="false"
-            :tags="personas"
+            :tags="purposes"
             icon="Group"
             custom-classes="flex content-center items-center bg-white border border-gray-300 py-0.5 px-2 font-normal text-center text-sm rounded-3xl"
         >
@@ -17,10 +17,10 @@
             >{{
                 isCurrentUser ? `You don't` : `${entity.firstName} doesn't`
             }}
-            have any linked personas.</span
+            have any linked purposes.</span
         >
         <span v-if="type === 'group'"
-            >{{ `${entity.name} doesn't` }} have any linked personas.</span
+            >{{ `${entity.name} doesn't` }} have any linked purposes.</span
         >
     </div>
 </template>
@@ -30,7 +30,7 @@
     import Tags from '~/components/common/badge/tags/index.vue'
 
     export default defineComponent({
-        name: 'ViewPersonas',
+        name: 'ViewPurposes',
         components: {
             Tags,
         },
@@ -50,12 +50,12 @@
             const type = ref('')
             if (entity.value.username) type.value = 'user'
             else if (entity.value.alias) type.value = 'group'
-            const { personas } = entity.value
-            const personaList = (personas || []).map(
-                (persona) => persona?.displayName ?? ''
+            const { purposes } = entity.value
+            const purposeList = (purposes || []).map(
+                (purpose) => purpose?.displayName || purpose?.name || ''
             )
             return {
-                personas: personaList,
+                purposes: purposeList,
                 type,
             }
         },

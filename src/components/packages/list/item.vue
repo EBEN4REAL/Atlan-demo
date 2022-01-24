@@ -52,7 +52,10 @@
                 </div>
             </div>
             <div class="flex flex-col w-2/3">
-                <div class="text-sm font-bold truncate overflow-ellipsis">
+                <div
+                    class="text-sm font-bold truncate cursor-pointer overflow-ellipsis text-primary"
+                    @click="handleClick"
+                >
                     {{
                         item.metadata.annotations[
                             'orchestration.atlan.com/name'
@@ -98,7 +101,7 @@
                 },
             },
         },
-        emits: ['loadMore'],
+        emits: ['loadMore', 'select'],
         setup(props, { emit }) {
             const { item, selectedItem } = toRefs(props)
             const isSelected = computed(
@@ -106,9 +109,15 @@
                     item.value?.metadata.name ===
                     selectedItem.value?.metadata.name
             )
+
+            const handleClick = () => {
+                emit('select', item.value)
+            }
+
             return {
                 item,
                 isSelected,
+                handleClick,
             }
         },
     })

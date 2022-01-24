@@ -4,7 +4,7 @@
     <defs>
         <rect id="path-1" x="0" y="0" width="768" height="1366"></rect>
         <radialGradient cx="50.0931447%" cy="57.0571412%" fx="50.0931447%" fy="57.0571412%" r="58.0332137%" gradientTransform="translate(0.500931,0.570571),rotate(-173.015247),scale(1.000000,1.081419),translate(-0.500931,-0.570571)" id="radialGradient-3">
-            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#f4f6fd" offset="0%"></stop>
             <stop stop-color="#E6E9FF" offset="100%"></stop>
         </radialGradient>
         <circle id="path-4" cx="10.041975" cy="10.041975" r="10.041975"></circle>
@@ -302,7 +302,7 @@
         <g id="home-header-modern-copy-2">
             <rect id="Rectangle" fill="#FCFDFF" x="0" y="768" width="1367" height="768"></rect>
             <g id="bg">
-                <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="1366" height="768"></rect>
+                <rect id="Rectangle" fill="#f4f6fd" x="0" y="0" width="1366" height="768"></rect>
                 <g id="Doubs" opacity="0.6" transform="translate(683.273944, 384.000000) rotate(-270.000000) translate(-683.273944, -384.000000) translate(299.273944, -299.000000)">
                     <mask id="mask-2" fill="white">
                         <use xlink:href="#path-1"></use>

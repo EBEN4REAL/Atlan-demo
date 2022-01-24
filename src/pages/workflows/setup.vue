@@ -19,6 +19,7 @@
             <WorfklowPreview
                 :item="selectedPackage"
                 v-if="selectedPackage"
+                mode="package"
             ></WorfklowPreview>
             <!-- <PackagePreview :selectedPackage="selectedPackage"></PackagePreview> -->
         </div>

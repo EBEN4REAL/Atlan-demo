@@ -1,16 +1,28 @@
 <template>
-    <div class="flex flex-1 metadata-header">
-        <div class="flex flex-col w-full h-full overflow-hidden">
-            <div class="flex items-center px-6 py-3 text-lg font-semibold">
+    <div class="relative flex flex-1">
+        <div class="absolute z-0 metadata-header"></div>
+        <div class="z-10 flex flex-col w-full h-full overflow-hidden">
+            <div class="flex items-center px-6 py-3">
                 <a-tooltip title="Back to Workflow Center">
-                    <a-button class="px-1 mr-2" @click="handleBack">
+                    <a-button
+                        class="px-1 mr-2"
+                        @click="handleBack"
+                        size="large"
+                    >
                         <atlan-icon
                             icon="ArrowRight"
                             class="w-auto h-4 text-gray-500 transform rotate-180"
                         />
                     </a-button>
                 </a-tooltip>
-                Metadata Marketplace
+                <div class="flex flex-col">
+                    <span class="text-xl font-semibold text-gray-700">
+                        Metadata Marketplace</span
+                    >
+                    <span class="text-sm text-gray-500">
+                        Home for all your meta needs</span
+                    >
+                </div>
             </div>
 
             <div class="flex flex-1 w-full h-full">
@@ -36,7 +48,7 @@
                     ></EmptyView>
                 </div>
                 <div v-else class="flex h-full">
-                    <div class="flex ml-6 filters">
+                    <!-- <div class="flex ml-6 filters">
                         <PackageFilters
                             :filter-list="packageFilters"
                             v-model="facets"
@@ -44,12 +56,11 @@
                             @change="handleFilterChange"
                             @reset="handleResetEvent"
                         ></PackageFilters>
-                    </div>
+                    </div> -->
 
                     <div class="flex flex-col">
                         <div class="px-6">
                             <a-input
-                                size="large"
                                 class="w-1/2"
                                 v-model:value="queryText"
                                 placeholder="Search Packages"
@@ -57,7 +68,7 @@
                             ></a-input>
                         </div>
 
-                        <div class="px-6 py-2">
+                        <div class="px-6 pt-2 pb-3">
                             <AggregationTabs
                                 :list="getAggregationByType"
                                 v-model="postFacets.typeName"
@@ -254,8 +265,18 @@
     .metadata-header {
         background: url('~/assets/images/workflows/header.svg');
         background-color: #fff;
-        background-size: cover;
-        background-position: 50%;
+
+        /* Add the blur effect */
+        filter: blur(2px);
+        -webkit-filter: blur(2px);
+
+        /* Full height */
+        height: 100%;
+        width: 100%;
+
+        /* Center and scale the image nicely */
+        background-position: center;
         background-repeat: no-repeat;
+        background-size: cover;
     }
 </style>

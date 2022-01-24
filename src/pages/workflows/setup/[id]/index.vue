@@ -1,5 +1,10 @@
 <template>
-    <div class="flex w-full h-full overflow-x-hidden bg-white">
+    <div class="flex flex-col w-full h-full overflow-x-hidden bg-white">
+        <div
+            class="flex w-full px-6 py-3 text-lg font-semibold text-gray-700 border-b"
+        >
+            New Workflow
+        </div>
         <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
         <div
             v-else-if="!isLoadingPackage && !isLoadingConfigMap && error"
@@ -7,6 +12,7 @@
         >
             <ErrorView></ErrorView>
         </div>
+
         <PackagesSetup
             v-else-if="localConfig"
             :workflowTemplate="localSelected"

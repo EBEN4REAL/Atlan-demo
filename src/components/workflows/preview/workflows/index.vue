@@ -1,14 +1,11 @@
 <template>
-    <div class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-3">
-        <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-500">Workflows</span>
+    <div class="flex flex-col w-full h-full px-5 py-4 overflow-hidden">
+        <a-input placeholder="Search workflows" class="mb-2"></a-input>
+        <div class="flex flex-col flex-1 overflow-y-auto gap-y-3">
+            <template v-for="workflow in list" :key="workflow.metadata.name">
+                <Item :item="workflow" :packageObject="item"></Item>
+            </template>
         </div>
-
-        <a-input placeholder="Search workflows"></a-input>
-
-        <template v-for="workflow in list" :key="workflow.metadata.name">
-            <Item :item="workflow" :packageObject="item"></Item>
-        </template>
     </div>
 </template>
 

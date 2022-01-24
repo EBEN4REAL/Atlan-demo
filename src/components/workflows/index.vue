@@ -1,24 +1,27 @@
 <template>
     <div class="flex flex-col flex-1 h-full">
-        <div class="flex items-center justify-between px-6 pt-6">
-            <div class="flex flex-grow">
+        <div class="flex flex-col">
+            <div
+                class="flex items-center justify-between px-6 pt-4 text-xl font-semibold text-gray-700"
+            >
                 <a-input
-                    class="w-1/3"
                     v-model:value="queryText"
+                    class="w-1/5"
                     placeholder="Search Packages"
                 ></a-input>
+                <a-button type="primary" @click="handleNewWorkflow"
+                    >New Workflow</a-button
+                >
             </div>
-            <a-button type="primary" @click="handleNewWorkflow"
-                >New Workflow</a-button
+            <div
+                class="flex items-center justify-between w-full px-6 pt-2 pb-3"
             >
-        </div>
-
-        <div class="px-6 py-2">
-            <AggregationTabs
-                :list="getAggregationByType"
-                v-model="postFacets.typeName"
-                @change="handlePackageTypeChange"
-            ></AggregationTabs>
+                <AggregationTabs
+                    :list="getAggregationByType"
+                    v-model="postFacets.typeName"
+                    @change="handlePackageTypeChange"
+                ></AggregationTabs>
+            </div>
         </div>
 
         <div class="flex flex-col h-full overflow-y-auto">
@@ -341,6 +344,7 @@
 
                 handleNewWorkflow,
                 router,
+                queryText,
             }
         },
     })

@@ -97,10 +97,24 @@
                     </div>
                 </div>
             </div>
-            <a-button type="primary" class="mt-2"> Setup Workflow</a-button>
+            <div v-if="mode === 'package'">
+                <a-button
+                    type="primary"
+                    class="mt-2"
+                    v-if="!route.params.id"
+                    @click="handleSetupWorkflow"
+                    block
+                >
+                    <span> Setup Workflow</span>
+                </a-button>
+            </div>
         </div>
 
-        <a-tabs
+        <Property :item="item" v-if="mode === 'package'"></Property>
+
+        <Workflows :item="item" v-if="mode === 'workflow'"></Workflows>
+
+        <!-- <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             tab-position="left"
@@ -109,7 +123,7 @@
         >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
-                :key="index"
+                :key="tab.id"
                 :destroy-inactive-tab-pane="true"
             >
                 <template #tab>
@@ -129,7 +143,7 @@
                     :key="item?.metadata.name"
                 ></component>
             </a-tab-pane>
-        </a-tabs>
+        </a-tabs> -->
     </div>
 </template>
 
@@ -147,18 +161,18 @@
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetPreview',
         components: {
             PreviewTabsIcon,
-            property: defineAsyncComponent(
+            Property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            workflows: defineAsyncComponent(
+            Workflows: defineAsyncComponent(
                 () => import('./workflows/index.vue')
             ),
-            AtlanIcon,
         },
 
         props: {
@@ -177,9 +191,18 @@
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const activeKey = ref(1)
-            const filteredTabs = [
+            const activeKey = ref('detail')
+            const { item, mode } = toRefs(props)
+
+            if (mode.value === 'workflow') {
+                activeKey.value = 'workflow'
+            }
+
+            const route = useRoute()
+
+            const tabs = [
                 {
+                    id: 'detail',
                     name: 'Details',
                     component: 'property',
                     icon: 'Property',
@@ -188,8 +211,10 @@
                     scrubbed: false,
                     requiredInProfile: true,
                     analyticsKey: 'property',
+                    mode: ['workflow', 'package'],
                 },
                 {
+                    id: 'workflow',
                     name: 'Workflows',
                     component: 'workflows',
                     icon: 'Relation',
@@ -198,12 +223,30 @@
                     scrubbed: false,
                     requiredInProfile: true,
                     analyticsKey: 'property',
+                    mode: ['workflow'],
                 },
             ]
 
-            const { item, mode } = toRefs(props)
+            const filteredTabs = computed(() =>
+                tabs.filter((tab) => tab.mode.includes(mode.value))
+            )
 
-            return { filteredTabs, activeKey, item, mode }
+            const router = useRouter()
+
+            const handleSetupWorkflow = () => {
+                router.push(`/workflows/setup/${item.value?.metadata?.name}`)
+            }
+
+            return {
+                filteredTabs,
+                activeKey,
+                item,
+                mode,
+                tabs,
+                route,
+                handleSetupWorkflow,
+                router,
+            }
         },
     })
 </script>

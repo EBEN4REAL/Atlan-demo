@@ -161,7 +161,7 @@
                 </template>
             </a-result>
         </div>
-        <a-drawer
+        <!-- <a-drawer
             v-if="isSandbox"
             title="Sandbox Mode"
             placement="right"
@@ -175,7 +175,7 @@
                 v-model:configMap="localConfigMap"
                 @change="handleRefresh"
             ></Sandbox>
-        </a-drawer>
+        </a-drawer> -->
     </div>
 </template>
 
@@ -201,7 +201,7 @@
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    import Sandbox from '../preview/sandbox.vue'
+    // import Sandbox from '../preview/sandbox.vue'
     import Run from './run.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
@@ -222,7 +222,6 @@
             EmptyView,
             DynamicForm,
             Schedule,
-            Sandbox,
         },
         props: {
             workflowTemplate: {

@@ -3,19 +3,7 @@
         <div class="flex items-center justify-between">
             <span class="font-semibold text-gray-500">Details</span>
         </div>
-        <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Name</span>
 
-            <div class="flex flex-col">
-                <div class="flex mb-2">
-                    {{
-                        item?.metadata?.annotations[
-                            'orchestration.atlan.com/name'
-                        ]
-                    }}
-                </div>
-            </div>
-        </div>
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Description</span>
 

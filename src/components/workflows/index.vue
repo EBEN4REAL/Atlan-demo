@@ -93,13 +93,13 @@
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
+    import { useRouter } from 'vue-router'
+    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import WorkflowList from './list/index.vue'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
-    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -137,7 +137,7 @@
             const facets = ref({
                 ui: true,
             })
-            const dependentKey = ref('DEFAULT_PACKAGES')
+            const dependentKey = ref('DEFAULT_PACKAGES_WORKFLOWS')
             const aggregationWorkflow = ref(['package'])
             const {
                 isLoading,
@@ -178,7 +178,7 @@
                 facetPackage.value = {
                     packageNames: map,
                 }
-                dependentKeyPackage.value = `DEFAULT_PACKAGES_SEARCH`
+                dependentKeyPackage.value = `WORKFLOW_PACKAGES_SEARCH`
                 quickChangePackage()
 
                 console.log('workflowDistinct', workflowDistinctList.value)

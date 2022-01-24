@@ -1,7 +1,7 @@
 <template>
     <div
-        class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
-        :class="isSelected ? 'border-primary shadow-lg' : ''"
+        class="flex flex-col p-4 bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
+        :class="isSelected ? 'border-primary shadow-lg ' : ''"
     >
         <div class="flex items-center mb-2" v-if="item.metadata.annotations">
             <div

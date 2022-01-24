@@ -130,7 +130,7 @@
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    import Sandbox from '../preview/sandbox.vue'
+    // import Sandbox from '../preview/sandbox.vue'
     import Run from './run.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
@@ -150,7 +150,6 @@
             EmptyView,
             DynamicForm,
             Schedule,
-            Sandbox,
         },
         props: {
             workflowTemplate: {

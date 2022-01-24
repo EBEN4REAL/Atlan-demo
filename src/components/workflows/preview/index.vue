@@ -97,6 +97,7 @@
                     </div>
                 </div>
             </div>
+            <a-button type="primary" class="mt-2"> Setup Workflow</a-button>
         </div>
 
         <a-tabs
@@ -145,6 +146,7 @@
     } from 'vue'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -156,6 +158,7 @@
             workflows: defineAsyncComponent(
                 () => import('./workflows/index.vue')
             ),
+            AtlanIcon,
         },
 
         props: {
@@ -163,6 +166,13 @@
                 type: Object,
                 required: false,
                 default: () => {},
+            },
+            mode: {
+                type: String,
+                required: false,
+                default() {
+                    return 'workflow'
+                },
             },
         },
         emits: ['assetMutation', 'closeDrawer'],
@@ -191,9 +201,9 @@
                 },
             ]
 
-            const { item } = toRefs(props)
+            const { item, mode } = toRefs(props)
 
-            return { filteredTabs, activeKey, item }
+            return { filteredTabs, activeKey, item, mode }
         },
     })
 </script>

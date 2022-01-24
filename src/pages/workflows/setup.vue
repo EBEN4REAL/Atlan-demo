@@ -16,7 +16,11 @@
         <div
             class="relative hidden h-full overflow-y-auto bg-white border-l border-gray-200 asset-preview-container md:block"
         >
-            <PackagePreview :selectedPackage="selectedPackage"></PackagePreview>
+            <WorfklowPreview
+                :item="selectedPackage"
+                v-if="selectedPackage"
+            ></WorfklowPreview>
+            <!-- <PackagePreview :selectedPackage="selectedPackage"></PackagePreview> -->
         </div>
     </div>
 </template>
@@ -25,17 +29,19 @@
     import { computed, defineComponent, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
+    import WorfklowPreview from '@/workflows/preview/index.vue'
 
     import PackageDiscoveryList from '@/packages/index.vue'
-    import PackagePreview from '@/packages/preview/index.vue'
-    import Sandbox from '@/packages/preview/sandbox.vue'
+
+    // import Sandbox from '@/packages/preview/sandbox.vue'
 
     export default defineComponent({
         name: 'PackageSetupPage',
         components: {
             PackageDiscoveryList,
-            PackagePreview,
-            Sandbox,
+
+            // Sandbox,
+            WorfklowPreview,
         },
         setup(props, { emit }) {
             useHead({

@@ -49,6 +49,9 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
+    import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
+    import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+    import { useUtilsScoped } from './useUtilsScoped'
 
     import {
         useProvide,
@@ -69,6 +72,17 @@
                 required: true,
                 default: () => {},
             },
+            mixedSubpanels: {
+                type: Object as PropType<{
+                    mappedGroupSubpanels: SubpanelColumnData &
+                        { addedBy: string }[]
+                    mappedAggregateSubpanels: SubpanelAggregator &
+                        { addedBy: string }[]
+                    totalCount: number
+                }>,
+                required: true,
+            },
+
             panel: {
                 type: Object as PropType<VQBPanelType>,
                 required: true,
@@ -76,7 +90,7 @@
         },
 
         setup(props, { emit }) {
-            const { disabled } = toRefs(props)
+            const { disabled, mixedSubpanels } = toRefs(props)
             const { selectedColumn, panel } = useVModels(props)
             const container = ref()
 
@@ -93,7 +107,8 @@
             const isColumnLoading = ref(false)
             const columnQueryText = ref('')
             const tableQueryText = ref('')
-            const TotalColumnsCount = ref(0)
+            const totalColumnsCount = ref(0)
+            const { suffixDuplicates } = useUtilsScoped()
 
             const setDropDownPosition = () => {
                 const viewportOffset = container.value?.getBoundingClientRect()
@@ -106,6 +121,56 @@
                 if (viewportOffset?.height)
                     containerPosition.value.height = viewportOffset?.height
             }
+
+            const columnDropdownOption = computed(() => {
+                let _data: any = []
+                let totalCount = mixedSubpanels.value.totalCount
+                ;[
+                    ...mixedSubpanels.value.mappedGroupSubpanels,
+                    ...mixedSubpanels.value.mappedAggregateSubpanels,
+                ].forEach((item) => {
+                    if (item.addedBy === 'group') {
+                        _data.push({
+                            label: item?.label,
+                            value:
+                                item?.columnsQualifiedName ??
+                                item?.qualifiedName,
+                            addedBy: item.addedBy,
+                            type: item?.type,
+                            item: item.item,
+                            /* Reduntant property */
+                            totalCount,
+                        })
+                    } else if (item.addedBy === 'aggregate') {
+                        item?.aggregators?.forEach((aggregator) => {
+                            const aggregatorUpperCase = aggregator.toUpperCase()
+                            _data.push({
+                                label: aggregatedAliasMap[aggregatorUpperCase](
+                                    item?.column?.label
+                                ),
+                                value:
+                                    item?.column?.columnQualifiedName ??
+                                    item?.column?.qualifiedName,
+                                addedBy: item.addedBy,
+                                type: item?.column?.type,
+                                item: item.column.item,
+                                aggregator: aggregator,
+                                /* Reduntant property */
+                                totalCount,
+                            })
+                        })
+                    }
+                })
+
+                _data = suffixDuplicates(_data)
+                // debugger
+
+                const filtered_data = _data.filter((item) =>
+                    item?.label.includes(columnQueryText.value)
+                )
+                totalColumnsCount.value = filtered_data?.length
+                return filtered_data
+            })
 
             onMounted(() => {
                 // const _container = document.getElementById('_container')
@@ -166,8 +231,9 @@
                 tableQueryText: tableQueryText,
                 isAreaFocused: isAreaFocused,
                 isTableSelected: isTableSelected,
-                totalColumnsCount: TotalColumnsCount,
+                totalColumnsCount: totalColumnsCount,
                 isColumnLoading: isColumnLoading,
+                columnDropdownOption: columnDropdownOption,
             }
             useProvide(provideData)
             /*-------------------------------------*/

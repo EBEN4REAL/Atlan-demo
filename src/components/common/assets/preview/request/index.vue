@@ -24,6 +24,7 @@
             <template #default="{ item }">
                 <RequestItem
                     :item="item"
+                    :selected-asset="selectedAsset"
                     @handleUpdateData="handleUpdateData"
                 />
             </template>
@@ -81,7 +82,8 @@
             })
             const { data, isLoading } = useRequest(
                 selectedAsset.value.guid,
-                pagination
+                pagination,
+                selectedAsset.value.typeName
             )
             const handleLoadMore = () => {
                 pagination.value.offset =

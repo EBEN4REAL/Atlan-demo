@@ -14,8 +14,9 @@
                 @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand
@@ -267,13 +268,13 @@
             const {
                 getSummarisedInfoOfSortPanel,
                 getInitialPanelExpandedState,
-                isAggregationORGroupPanelColumnsAdded,
             } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         .hide
             )
+
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
             const actionPanel = ref(false)
@@ -286,6 +287,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
             /* Accesss */
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'
@@ -374,96 +376,6 @@
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
             }
-            watch(
-                () => activeInlineTab.value.playground.vqb.panels,
-                () => {
-                    const res = isAggregationORGroupPanelColumnsAdded(
-                        activeInlineTab.value
-                    )
-
-                    if (res) {
-                        if (
-                            !activeInlineTab.value.playground.vqb.panels[
-                                index.value
-                            ]?.active
-                        ) {
-                            if (
-                                activeInlineTab.value.playground.vqb.panels[
-                                    index.value
-                                ]?.subpanels
-                            ) {
-                                let copySubPanels = JSON.parse(
-                                    JSON.stringify(
-                                        activeInlineTab.value.playground.vqb
-                                            .panels[index.value]?.subpanels
-                                    )
-                                )
-                                copySubPanels = copySubPanels.map(
-                                    (subpanel) => {
-                                        return {
-                                            ...subpanel,
-                                            attributes: {},
-                                            column: {},
-                                            isForeign: undefined,
-                                            isPartition: undefined,
-                                            isPrimary: undefined,
-                                            item: undefined,
-                                            label: undefined,
-                                            order: 'asc',
-                                            qualifiedName: undefined,
-                                            type: undefined,
-                                        }
-                                    }
-                                )
-                                activeInlineTab.value.playground.vqb.panels[
-                                    index.value
-                                ] = {
-                                    ...panel.value,
-                                    subpanels: copySubPanels,
-                                    active: true,
-                                }
-                            }
-                        }
-                    } else {
-                        if (
-                            activeInlineTab.value.playground.vqb.panels[
-                                index.value
-                            ]?.active
-                        ) {
-                            let copySubPanels = JSON.parse(
-                                JSON.stringify(
-                                    activeInlineTab.value.playground.vqb.panels[
-                                        index.value
-                                    ]?.subpanels
-                                )
-                            )
-                            copySubPanels = copySubPanels.map((subpanel) => {
-                                return {
-                                    ...subpanel,
-                                    aggregateORGroupColumn: {
-                                        qualifiedName: undefined,
-                                        tableName: undefined,
-                                        type: undefined,
-                                        value: undefined,
-                                        label: undefined,
-                                    },
-                                }
-                            })
-
-                            activeInlineTab.value.playground.vqb.panels[
-                                index.value
-                            ] = {
-                                ...panel.value,
-                                subpanels: copySubPanels,
-                                active: false,
-                            }
-                        }
-                    }
-                },
-                {
-                    deep: true,
-                }
-            )
 
             return {
                 readOnly,

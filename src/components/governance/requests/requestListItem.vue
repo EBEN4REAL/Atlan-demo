@@ -56,6 +56,7 @@
             <TermPiece
                 v-else-if="request.requestType === 'term_link'"
                 :data="request?.sourceEntity?.attributes"
+                :request="request"
             />
 
             <AttrPiece

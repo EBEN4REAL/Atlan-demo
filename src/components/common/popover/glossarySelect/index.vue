@@ -1,5 +1,5 @@
 <template>
-    <div class="tedt">
+    <div class="w-full">
         <a-popover
             overlayClassName="glossarySelectPopover"
             :get-popup-container="(target) => target.parentNode"
@@ -14,7 +14,7 @@
                         @click="handleSelect('')"
                     >
                         <AtlanIcon
-                            icon="Glossary"
+                            icon="GlossaryGray"
                             class="self-center pr-1"
                         ></AtlanIcon>
                         <div class="overflow-ellipsis group-hover:text-primary">
@@ -56,21 +56,25 @@
                 class="flex items-center cursor-pointer hover:text-primary"
                 style="max-width: 80%"
             >
-                <div class="w-4 mr-1">
+                <div class="w-4 mr-2">
                     <AtlanIcon
-                        icon="Glossary"
-                        class="self-center h-4 mr-1"
+                        :icon="
+                            displayText === 'All Glossaries'
+                                ? 'GlossaryGray'
+                                : 'Glossary'
+                        "
+                        class="self-center h-5"
                     ></AtlanIcon>
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="'w-full font-bold'"
+                    :classes="' font-bold  hover:text-primary text-base '"
                 />
 
                 <div class="w-4 mr-1">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="self-center h-3 ml-1 text-primary"
+                        class="h-3 ml-2 text-primary"
                     ></AtlanIcon>
                 </div>
             </div>

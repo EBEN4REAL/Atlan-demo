@@ -170,8 +170,8 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
-import Slack from '~/assets/images/integrations/slack.svg'
-import Teams from '~/assets/images/integrations/teams.svg'
+import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -217,7 +217,7 @@ import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
 
-import Gdoc from '~/assets/images/integrations/gDoc.svg'
+import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
@@ -372,12 +372,24 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
+import Gear from '~/assets/images/icons/gear.svg'
+import SafariLock from '~/assets/images/icons/safari-lock.svg'
+import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import Integrations from '~/assets/images/icons/integrations.svg'
+import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
 import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
 import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 
 export default {
+    IntegrationsActive,
+    Integrations,
+    SlackToken,
+    SafariLock,
+    Gear,
+    Atlan,
     GlowFlash,
     Query24,
     Vqb24,

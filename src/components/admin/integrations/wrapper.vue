@@ -1,56 +1,54 @@
 <template>
-    <div v-if="isLoading" class="flex items-center justify-center h-full">
+    <div
+        v-if="isLoading || route.query.close_tab == 'true'"
+        class="flex items-center justify-center h-full"
+    >
         <AtlanLoader class="h-10" />
     </div>
     <div v-else-if="error" class="flex items-center justify-center h-full">
         <ErrorView />
     </div>
-    <main v-else-if="isReady" class="mx-4 my-9">
+    <main class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
-        <template v-for="integration in allIntegrations" :key="integration.id">
-            <IntegrationCardWrapper
-                v-if="isIntegrationConfigured(integration.name)"
-                :integration-data="integration"
-            />
-            <AddIntegrationCard v-else :integration="integration" />
+        <template v-for="i in integrations" :key="i.id">
+            <component :is="i.component" />
         </template>
     </main>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch } from 'vue'
-    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-    import AddIntegrationCard from './addIntegrationCard.vue'
-    import IntegrationCardWrapper from './integrationCardWrapper.vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import integrationStore from '~/store/integrations/index'
-    // import { useAuthStore } from '~/store/auth'
     import ErrorView from '@/common/error/index.vue'
+    import { integrations } from '~/constant/integrations'
+    import useIntegrations from '~/composables/integrations/useIntegrations'
+    import { useRouter, useRoute } from 'vue-router'
+    import slack from '@/admin/integrations/slack/index.vue'
 
     export default defineComponent({
         name: 'IntegrationsWrapper',
-        components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
+        components: {
+            ErrorView,
+            slack,
+        },
         setup() {
             const store = integrationStore()
+            const route = useRoute()
 
-            const {
-                data: allIntegrations,
-                isLoading,
-                error,
-                isReady,
-            } = getIntegrationTypes()
+            const { tenantSlackStatus } = toRefs(store)
 
-            const isIntegrationConfigured = (alias): boolean => {
-                const isTenantLevelIntegrationConfigured =
-                    store.hasConfiguredTenantLevelIntegration(alias)
-                return isTenantLevelIntegrationConfigured
-            }
+            const { isLoading, error, isReady, call } = useIntegrations(false)
+
+            if (route.query.close_tab == 'true') window.close()
 
             return {
-                isIntegrationConfigured,
-                allIntegrations,
+                route,
                 isLoading,
                 error,
                 isReady,
+                tenantSlackStatus,
+                store,
+                integrations,
             }
         },
     })

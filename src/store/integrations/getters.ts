@@ -9,7 +9,8 @@ interface SlackStatus {
     id: string,
     oAuth: string,
     teamName: string,
-    createdBy: string
+    createdBy: string,
+    memberID?: string
 }
 
 export interface Getters {
@@ -46,6 +47,7 @@ const getters: _GettersTree<State> & Getters = {
             configured: integration?.isConfigured,
             channels: integration?.config?.channels ?? [],
             teamName: integration?.sourceMetadata?.teamName,
+            memberID: integration?.sourceMetadata?.slackUserId
         }
     }
 }

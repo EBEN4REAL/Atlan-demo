@@ -31,13 +31,18 @@
                 <div
                     class="flex items-center text-xs text-gray-500 gap-x-1.5 justify-center"
                 >
-                    Added by
-                    <div class="flex justify-center text-xs">
-                        <img :src="avatarURL" class="w-4 h-4 rounded-full" />
-                        <div class="self-center ml-1 text-gray-700">
-                            {{ userList[0]?.name }}
+                    <template v-if="userList[0]">
+                        Added by
+                        <div class="flex justify-center text-xs">
+                            <img
+                                :src="avatarURL"
+                                class="w-4 h-4 rounded-full"
+                            />
+                            <div class="self-center ml-1 text-gray-700">
+                                {{ userList[0]?.name }}
+                            </div>
                         </div>
-                    </div>
+                    </template>
                     <span>{{
                         useTimeAgo(tenantSlackStatus.createdAt).value
                     }}</span>

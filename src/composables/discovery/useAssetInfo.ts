@@ -706,6 +706,8 @@ export default function useAssetInfo() {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
+            assetType(asset) === 'MaterialisedView' ||
+            assetType(asset) === 'TablePartition' ||
             assetType(asset) === 'Column'
         )
     }

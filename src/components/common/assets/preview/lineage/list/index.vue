@@ -1,37 +1,26 @@
 <template>
-    <div class="px-5 pt-3 pb-0">
-        <SearchAdvanced
+    <div class="mx-5 mt-3">
+        <SearchAndFilter
             v-model:value="queryText"
-            :autofocus="true"
-            :placeholder="`Search ${totalCount} assets`"
-            class=""
-            @change="handleSearchChange"
+            :placeholder="getPlaceholder"
+            size="minimal"
         >
-            <template #postFilter>
-                <Preferences
-                    assetType="Column"
-                    v-model="preference"
-                    @change="handleChangePreference"
-                />
+            <template #filter>
+                <Preferences v-model:display="preference" />
             </template>
-        </SearchAdvanced>
+        </SearchAndFilter>
     </div>
 
-    <!-- {{ list }} -->
-
     <AggregationTabs
+        v-model="selectedType"
         class="px-4 mb-1"
-        v-model="postFacets.typeName"
-        :list="assetTypeAggregationList"
-        @change="handleDataTypeChange"
+        :list="assetTypes"
     ></AggregationTabs>
 
     <AssetList
         ref="assetlistRef"
         class="overflow-y-auto"
-        :list="list"
-        :isLoadMore="isLoadMore"
-        :isLoading="isLoading"
+        :list="filteredAssets"
     >
         <template v-slot:default="{ item }">
             <AssetItem
@@ -44,172 +33,110 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
-    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Preferences from '@/assets/preference/index.vue'
+    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Preferences from '../preferences.vue'
 
     import AssetList from './assetList.vue'
     import AssetItem from './assetItem.vue'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
-    } from '~/constant/projection'
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
-        name: 'ColumnWidget',
+        name: 'LineageList',
         components: {
-            SearchAdvanced,
+            SearchAndFilter,
             Preferences,
             AggregationTabs,
             AssetList,
             AssetItem,
         },
         props: {
-            selectedGuids: {
-                type: Array,
+            assets: {
+                type: Array as PropType<assetInterface[]>,
+                default: () => [] as assetInterface[],
                 required: true,
-            },
-            showCrossIcon: {
-                type: Boolean,
-                required: false,
-            },
-            direction: {
-                type: String,
-                required: false,
-            },
-            mutateTooltip: {
-                type: Boolean,
-                default: false,
-                required: false,
             },
         },
 
         setup(props, { emit }) {
-            const { selectedGuids } = toRefs(props)
-
-            const aggregationAttributeName = 'typeName'
-            const limit = ref(20)
-            const offset = ref(0)
+            const { assets } = toRefs(props)
             const queryText = ref('')
-            const facets = ref({})
-            const aggregations = ref([aggregationAttributeName])
-            const postFacets = ref({})
-            const dependentKey = ref('default_lineage')
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-            ])
-            const preference = ref({
-                display: [],
-            })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const selectedType = ref('__all')
 
-            const updateFacet = () => {
-                facets.value = {
-                    ...facets.value,
-                    guidList: selectedGuids.value,
+            const preference = ref([])
+
+            const { title } = useAssetInfo()
+
+            const searchedAssets = computed(() => {
+                if (queryText.value) {
+                    return assets.value.filter((asset) =>
+                        title(asset)
+                            .toLowerCase()
+                            .includes(queryText.value.toLowerCase())
+                    )
                 }
-                // facets.value = {}
-                // if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
-                //     facets.value.tableQualifiedName =
-                //         selectedAsset?.value.attributes.qualifiedName
-                // }
-                // if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
-                //     facets.value.viewQualifiedName =
-                //         selectedAsset?.value.attributes.qualifiedName
-                // }
-            }
-
-            updateFacet()
-
-            const {
-                list,
-                isLoading,
-                assetTypeAggregationList,
-                isLoadMore,
-                fetch,
-                quickChange,
-                totalCount,
-                getAggregationList,
-            } = useDiscoverList({
-                isCache: true,
-                dependentKey,
-                queryText,
-                facets,
-                postFacets,
-                aggregations,
-                preference,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                relationAttributes,
-                suppressLogs: true,
+                return assets.value
             })
 
-            const columnDataTypeAggregationList = computed(() =>
-                getAggregationList(
-                    `group_by_${aggregationAttributeName}`,
-                    [],
-                    true
-                )
+            const filteredAssets = computed(() => {
+                if (selectedType.value !== '__all') {
+                    return searchedAssets.value.filter(
+                        (asset) => asset.typeName === selectedType.value
+                    )
+                }
+                return searchedAssets.value
+            })
+
+            const assetMap = computed(() =>
+                searchedAssets.value.reduce((agg, ast) => {
+                    if (agg[ast.typeName]) {
+                        agg[ast.typeName]++
+                    } else agg[ast.typeName] = 1
+                    return agg
+                }, {})
             )
 
-            debouncedWatch(
-                () => props.selectedGuids,
-                (prev, current) => {
-                    if (prev) {
-                        updateFacet()
-                        quickChange()
+            const assetTypes = computed(() => {
+                const aList = []
+                assetTypeList.forEach((aType) => {
+                    if (assetMap.value[aType.id]) {
+                        aList.push({
+                            count: assetMap.value[aType.id],
+                            id: aType.id,
+                            label: aType.label,
+                        })
                     }
-                },
-                { debounce: 100 }
-            )
+                })
+                return aList
+            })
 
-            const handleDataTypeChange = () => {
-                offset.value = 0
-                quickChange()
-            }
+            const getPlaceholder = computed(() => {
+                if (selectedType.value !== '__all') {
+                    const sType = assetTypes.value.find(
+                        (ast) => ast.id === selectedType.value
+                    )
 
-            const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
-            }, 150)
-
-            const handleChangePreference = () => {
-                quickChange()
-            }
+                    return sType?.count
+                        ? `Search ${sType?.count} ${sType?.label}`
+                        : 'No assets to search from'
+                }
+                return assets.value.length
+                    ? `Search ${assets.value.length} assets`
+                    : 'No assets to search from'
+            })
 
             return {
-                isLoading,
                 queryText,
-                assetTypeAggregationList,
-                list,
-                facets,
-                isLoadMore,
-                postFacets,
-                columnDataTypeAggregationList,
-                fetch,
-                quickChange,
-                totalCount,
-                updateFacet,
-                handleDataTypeChange,
-                handleSearchChange,
+                getPlaceholder,
                 preference,
-                handleChangePreference,
-                selectedGuids,
+                filteredAssets,
+                assetTypes,
+                selectedType,
             }
         },
     })
 </script>
-
-<style lang="less" module></style>

@@ -54,9 +54,9 @@
                 </div>
             </template>
             <div
-                class="justify-center w-full bg-white border border-b-0 border-l-0 border-r-0 border-gray-200"
+                class="justify-center w-full bg-white"
             >
-                <a-form layout="vertical" class="p-2">
+                <a-form layout="vertical" class="px-2">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"

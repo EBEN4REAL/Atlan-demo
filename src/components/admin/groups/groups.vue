@@ -298,11 +298,9 @@
                                 :group="group"
                                 :mark-as-default-loading="markAsDefaultLoading"
                                 :delete-group-loading="deleteGroupLoading"
-                                @delete-group.stop="handleDeleteGroup(group)"
-                                @toggle-default.stop="
-                                    handleToggleDefault(group)
-                                "
-                                @members-added.stop="refreshTable"
+                                @delete-group="handleDeleteGroup(group)"
+                                @toggle-default="handleToggleDefault(group)"
+                                @members-added="refreshTable"
                             />
                         </div>
                     </div>

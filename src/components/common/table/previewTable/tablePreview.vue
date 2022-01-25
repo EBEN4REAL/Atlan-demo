@@ -262,7 +262,7 @@
             }
 
             function column_header(i, name) {
-                let title = columns.value[i]?.title.toUpperCase()
+                let title = columns.value[i]?.title
                 return [`${title}`]
             }
 

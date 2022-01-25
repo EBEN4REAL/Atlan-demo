@@ -1,11 +1,9 @@
 import { Ref, ref } from 'vue'
 
-import axios from 'axios'
-
 import { Credential } from '~/services/service/credentials'
 import { useOptions } from '~/services/api/common'
 
-export default function useGetCredential(id: string, immediate) {
+export default function useTestCredentialByID(path: any, immediate) {
     const options: useOptions = {}
 
     options.asyncOptions = ref({
@@ -13,10 +11,8 @@ export default function useGetCredential(id: string, immediate) {
         resetOnExecute: true,
     })
 
-    const { data, mutate, error, isLoading, isReady } = Credential.GetByID(
-        { id },
-        options
-    )
+    const { data, mutate, error, isLoading, isValidating, isReady } =
+        Credential.TestByID(path, options)
 
     return {
         data,
@@ -25,5 +21,6 @@ export default function useGetCredential(id: string, immediate) {
         isReady,
         error,
         isLoading,
+        isValidating,
     }
 }

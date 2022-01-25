@@ -23,9 +23,19 @@ const GetByID = (pathVariables?, options?: useOptions) =>
         },
         options || {}
     )
+const TestByID = (pathVariables?, options?: useOptions) =>
+    useAPI(
+        map.TEST_CREDENTIAL_BY_GUID,
+        'POST',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
 
 export const Credential = {
     Test,
     Query,
+    TestByID,
     GetByID,
 }

@@ -247,6 +247,7 @@
                         <a-popover
                             trigger="click"
                             v-model:visible="reconfigure"
+                            placement="bottom"
                         >
                             <template #content>
                                 <div class="p-4 space-y-5">
@@ -258,7 +259,7 @@
                                             @click="reconfigure = false"
                                             padding="compact"
                                             size="sm"
-                                            color="secondary"
+                                            color="minimal"
                                             >Cancel</Button
                                         >
                                         <Button

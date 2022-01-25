@@ -28,7 +28,6 @@
                 size="lg"
                 @click="handleDisconnect"
             >
-                <!-- <AtlanIcon icon="Gear" /> Reconfigure -->
                 Disconnect
             </AtlanButton>
         </div>
@@ -93,14 +92,14 @@
                             h(
                                 'h1',
                                 {
-                                    class: ['font-bold -mt-4 mb-4'],
+                                    class: ['font-bold -mt-4 mb-3'],
                                 },
-                                ['Disconnect']
+                                ['Disconnect Slack']
                             ),
                             h(
                                 'div',
                                 {
-                                    class: ['font-normal', 'mb-4'],
+                                    class: ['font-normal', 'mb-3'],
                                 },
                                 [
                                     'Are you sure you want to disconnect ',

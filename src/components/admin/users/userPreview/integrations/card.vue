@@ -48,7 +48,11 @@
                 class="flex items-center justify-between px-3 bg-gray-100 border-t rounded-b h-11"
             >
                 <div class="">{{ status.teamName }}</div>
-                <a-popover v-model:visible="popover" trigger="click">
+                <a-popover
+                    v-model:visible="popover"
+                    trigger="click"
+                    placement="bottom"
+                >
                     <template #content>
                         <div class="p-4 space-y-5">
                             <h1>
@@ -60,7 +64,7 @@
                                     @click="popover = false"
                                     padding="compact"
                                     size="sm"
-                                    color="secondary"
+                                    color="minimal"
                                     >Cancel</Button
                                 >
                                 <Button

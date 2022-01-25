@@ -288,9 +288,9 @@
                             h(
                                 'h1',
                                 {
-                                    class: ['font-bold -mt-4 mb-4'],
+                                    class: ['font-bold -mt-4 mb-2'],
                                 },
-                                ['Disconnect']
+                                ['Disconnect Slack']
                             ),
 
                             h(
@@ -313,7 +313,7 @@
                             h(
                                 'div',
                                 {
-                                    class: ['font-normal', 'mb-4'],
+                                    class: ['font-normal', 'mb-2'],
                                 },
                                 [
                                     'This will also disconnect slack integration for other users.',

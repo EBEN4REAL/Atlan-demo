@@ -58,8 +58,8 @@
                                     )}`
                                 }}</span>
                             </template>
-                            <img
-                                :src="getConnectorImage(item)"
+                            <AtlanIcon
+                                :icon="getConnectorImage(item)"
                                 class="h-3 mr-1 mb-0.5"
                             />
                         </a-tooltip>

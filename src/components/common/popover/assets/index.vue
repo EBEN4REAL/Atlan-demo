@@ -101,17 +101,18 @@
                         <span>{{ item.attributes?.dataType }}</span>
                     </div>
                 </div>
-                <div class="flex">
-                    <div class="mb-0.5 font-semibold truncate">
+                <div class="mb-0.5 font-semibold flex items-center break-words">
+                    <span class="break-words line-clamp-3">
                         {{ item?.displayText || item?.attributes?.name }}
-                    </div>
-                    <CertificateBadge
-                        v-if="certificateStatus(item)"
-                        :status="certificateStatus(item)"
-                        :username="certificateUpdatedBy(item)"
-                        :timestamp="certificateUpdatedAt(item)"
-                        class="mb-1 ml-1"
-                    />
+                        <CertificateBadge
+                            v-if="certificateStatus(item)"
+                            :status="certificateStatus(item)"
+                            :username="certificateUpdatedBy(item)"
+                            :timestamp="certificateUpdatedAt(item)"
+                            class="flex mb-1 ml-1"
+                            style="min-width: 16px"
+                        />
+                    </span>
                 </div>
                 <div class="flex flex-wrap items-center gap-x-2">
                     <div

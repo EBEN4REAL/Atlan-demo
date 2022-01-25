@@ -101,7 +101,11 @@
                                 @click="handleClickFilter"
                             >
                                 <AtlanIcon
-                                    :icon="'FilterFunnelDot'"
+                                    :icon="
+                                        Object.keys(facets).length > 0
+                                            ? 'FilterFunnelDot'
+                                            : 'FilterFunnel'
+                                    "
                                     class="w-4 h-4"
                                 />
                             </AtlanBtn>

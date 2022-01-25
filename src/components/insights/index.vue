@@ -12,12 +12,11 @@
                     >
                         <AtlanIcon
                             v-if="tab?.icon"
-                            :icon="
-                                activeTabId === tab.id
-                                    ? `${tab.icon}Active`
-                                    : `${tab.icon}`
-                            "
+                            :icon="`${tab.icon}`"
                             class="w-6 h-6"
+                            :color="
+                                activeTabId === tab.id ? '#5277D7' : '#6f7590'
+                            "
                         />
                         <div
                             class="absolute top-0 right-0 h-full"
@@ -78,7 +77,8 @@
                         "
                         class="absolute h-full full-width"
                     >
-                        <Variables />
+                        <!-- <Variables /> -->
+                        <History />
                     </div>
                     <!--explorer pane end -->
                 </pane>
@@ -133,8 +133,7 @@
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries/index.vue'
-    import Variables from './explorers/variables/index.vue'
-    import History from './explorers/history.vue'
+    import History from './explorers/history/index.vue'
     import Schedule from './explorers/schedule.vue'
 
     import useInsightsTabList from './common/composables/useTabList'
@@ -176,7 +175,6 @@
             AssetSidebar,
             Schema,
             Queries,
-            Variables,
             History,
             Schedule,
         },
@@ -972,9 +970,9 @@
     }
 </style>
 <style lang="less" scoped>
-    .placeholder {
-        background-color: #f4f4f4;
-    }
+    // .placeholder {
+    //     background-color: #f4f4f4;
+    // }
     .active-placeholder {
         @apply bg-primary;
     }

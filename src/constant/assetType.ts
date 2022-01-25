@@ -3,6 +3,7 @@ export const assetTypeList: {
     label: string
     nameAttribute?: string
     qualifiedNameAttribute?: string
+    image?: string
     parents?: string[]
     children?: string[]
     isDiscoverable?: boolean
@@ -52,6 +53,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 90,
         count: 0,
+        image: 'View',
         relationships: [],
     },
     {
@@ -64,6 +66,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,
+        image: 'Table',
         relationships: [],
     },
     {
@@ -100,6 +103,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 80,
         count: 0,
+        image: 'Columns',
         relationships: [],
     },
     /*  {
@@ -123,6 +127,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 70,
         count: 0,
+        image: 'Query',
         relationships: ['tables', 'views', 'columns'],
     },
     /*   {
@@ -139,12 +144,14 @@ export const assetTypeList: {
         id: 'AtlasGlossaryTerm',
         label: 'Term',
         isDiscoverable: true,
+        image: 'Term',
         relationships: [],
     },
     {
         id: 'AtlasGlossaryCategory',
         label: 'Categories',
         isDiscoverable: true,
+        image: 'Category',
         relationships: [],
     },
     {
@@ -153,6 +160,7 @@ export const assetTypeList: {
         nameAttribute: 'siteName',
         isDiscoverable: true,
         parents: [],
+        image: 'Tableau',
         relationships: ['projects'],
     },
     {
@@ -162,6 +170,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         // in order of hierarchy
         parents: ['TableauSite'],
+        image: 'Tableau',
         relationships: ['workbooks', 'site', 'datasources', 'flows', 'metrics'],
     },
     {
@@ -169,6 +178,7 @@ export const assetTypeList: {
         label: 'Tableau Workbook',
         nameAttribute: 'workbookName',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['worksheets', 'datasources', 'project', 'dashboards'],
     },
@@ -176,6 +186,7 @@ export const assetTypeList: {
         id: 'TableauWorksheet',
         label: 'Tableau Worksheet',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'dashboards'],
     },
@@ -183,6 +194,7 @@ export const assetTypeList: {
         id: 'TableauDashboard',
         label: 'Tableau Dashboard',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'worksheets'],
     },
@@ -191,6 +203,7 @@ export const assetTypeList: {
         label: 'Tableau Datasource',
         nameAttribute: 'datasourceName',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'project', 'fields'],
     },
@@ -199,12 +212,14 @@ export const assetTypeList: {
         label: 'Tableau Datasource Field',
         parents: ['TableauWorkbook'],
         isDiscoverable: true,
+        image: 'Tableau',
         relationships: ['datasource'],
     },
     {
         id: 'TableauCalculatedField',
         label: 'Tableau Calculated Field',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['datasource'],
     },
@@ -212,6 +227,7 @@ export const assetTypeList: {
         id: 'TableauFlow',
         label: 'Tableau Flow',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['project'],
     },
@@ -219,6 +235,7 @@ export const assetTypeList: {
         id: 'TableauMetric',
         label: 'Tableau Metric',
         isDiscoverable: true,
+        image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['project'],
     },
@@ -226,6 +243,7 @@ export const assetTypeList: {
         id: 'PowerBIWorkspace',
         label: 'Power BI Workspace',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: [],
         children: ['PowerBIDashboard'],
         relationships: ['reports', 'datasets', 'dashboards', 'dataflows'],
@@ -234,6 +252,7 @@ export const assetTypeList: {
         id: 'PowerBIDashboard',
         label: 'Power BI Dashboard',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
         children: ['PowerBITile'],
         relationships: ['tiles', 'workspace'],
@@ -242,6 +261,7 @@ export const assetTypeList: {
         id: 'PowerBIReport',
         label: 'Power BI Report',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIPage'],
         relationships: ['workspace', 'pages', 'tiles', 'dataset'],
@@ -250,6 +270,7 @@ export const assetTypeList: {
         id: 'PowerBIDataset',
         label: 'Power BI Dataset',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIDatasource'],
         relationships: [
@@ -264,6 +285,7 @@ export const assetTypeList: {
         id: 'PowerBIDataflow',
         label: 'Power BI Dataflow',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
         relationships: ['workspace', 'datasets'],
     },
@@ -271,6 +293,7 @@ export const assetTypeList: {
         id: 'PowerBITile',
         label: 'Power BI Tile',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
         relationships: ['dashboard', 'dataset', 'report'],
     },
@@ -278,6 +301,7 @@ export const assetTypeList: {
         id: 'PowerBIPage',
         label: 'Power BI Page',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIReport'],
         relationships: ['report'],
     },
@@ -285,6 +309,7 @@ export const assetTypeList: {
         id: 'PowerBIDatasource',
         label: 'Power BI Datasource',
         isDiscoverable: true,
+        image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
         relationships: ['datasets'],
     },

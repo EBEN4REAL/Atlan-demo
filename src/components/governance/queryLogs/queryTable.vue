@@ -74,8 +74,8 @@
                                 </span>
                             </div>
                             <div class="flex items-center mt-1 ml-4">
-                                <img
-                                    :src="
+                                <AtlanIcon
+                                    :icon="
                                         getConnectorImagePath(
                                             getConnectorName(
                                                 queryInfo._source.log.message
@@ -129,8 +129,8 @@
                                 >
                             </div>
                             <div class="flex items-center mt-1.5 ml-4">
-                                <img
-                                    :src="
+                                <AtlanIcon
+                                    :icon="
                                         getConnectorImagePath(
                                             getConnectorName(
                                                 queryInfo._source.log.message
@@ -329,10 +329,11 @@
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import { SourceList } from '~/constant/source'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'QueryLogsTable',
-        components: { Avatar, AtlanBtn, PillGroup },
+        components: { Avatar, AtlanBtn, PillGroup, AtlanIcon },
         props: {
             queryLogsList: {
                 type: Array,

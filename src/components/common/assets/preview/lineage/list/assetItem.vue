@@ -100,8 +100,9 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <img
-                                    :src="getConnectorImage(item)"
+
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
@@ -163,8 +164,8 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <img
-                                    :src="getConnectorImage(item)"
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
                                     class="h-3 mr-1 mb-0.5"
                                 />
                                 <span>{{

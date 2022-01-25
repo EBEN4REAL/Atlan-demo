@@ -52,6 +52,7 @@
     import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
     import { useUtilsScoped } from './useUtilsScoped'
+    import { aggregatedAliasMap } from '~/components/insights/playground/editor/vqb/constants/aggregation'
 
     import {
         useProvide,

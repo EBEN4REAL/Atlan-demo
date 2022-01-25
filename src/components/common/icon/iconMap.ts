@@ -159,6 +159,7 @@ import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -216,6 +217,8 @@ import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+import ColumnGray from '~/assets/images/icons/column-gray.svg'
+import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 
 import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
@@ -302,10 +305,14 @@ import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
-import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
-import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Redshift from '~/assets/images/source/svg/Redshift.svg'
+import Postgres from '~/assets/images/source/svg/postgres.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
 import Databricks from '~/assets/images/source/svg/Databricks.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
+
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
@@ -440,8 +447,10 @@ export default {
     EmptyLineage,
     EmptyLineageTab,
     EmptyResource,
+    EmptyResource2,
     IssuesFilled,
     ExplorerTrigger,
+    MaterialisedView,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,
@@ -455,6 +464,7 @@ export default {
     RunSuccess,
     RunFailed,
     Metadata,
+    ColumnGray,
     Relation,
     MorningIcon,
     AfternoonIcon,
@@ -668,6 +678,9 @@ export default {
     Athena,
     PowerBI,
     Tableau,
+    Postgres,
+    Redshift,
+    BigQuery,
     SSO,
     SMTP,
     APIKey,

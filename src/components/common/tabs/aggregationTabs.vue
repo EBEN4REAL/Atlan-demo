@@ -38,6 +38,11 @@
                                 icon="Globe"
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
+                            <AtlanIcon
+                                v-else-if="item.image && !item.hideIcon"
+                                :icon="item.image"
+                                class="self-center mr-1 mb-0.5"
+                            ></AtlanIcon>
 
                             <div class="self-center text-sm font-normal">
                                 {{ item.label }}

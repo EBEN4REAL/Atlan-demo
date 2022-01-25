@@ -91,10 +91,10 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <img
-                                    :src="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
-                                />
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
+                                    class="h-4 mr-1 mb-0.5"
+                                ></AtlanIcon>
                             </a-tooltip>
 
                             <AtlanIcon
@@ -255,10 +255,14 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <img
+                                <!-- <img
                                     :src="getConnectorImage(item)"
                                     class="h-3 mr-1 mb-0.5"
-                                />
+                                /> -->
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
+                                    class="h-4 mr-1 mb-0.5"
+                                ></AtlanIcon>
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
                                         item
@@ -767,6 +771,7 @@
     import TermPopover from '@/common/popover/term/term.vue'
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -779,6 +784,7 @@
             Tooltip,
             Truncate,
             TermPopover,
+            AtlanIcon,
         },
         props: {
             item: {

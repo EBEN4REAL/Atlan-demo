@@ -298,11 +298,9 @@
                                 :group="group"
                                 :mark-as-default-loading="markAsDefaultLoading"
                                 :delete-group-loading="deleteGroupLoading"
-                                @delete-group.stop="handleDeleteGroup(group)"
-                                @toggle-default.stop="
-                                    handleToggleDefault(group)
-                                "
-                                @members-added.stop="refreshTable"
+                                @delete-group="handleDeleteGroup(group)"
+                                @toggle-default="handleToggleDefault(group)"
+                                @members-added="refreshTable"
                             />
                         </div>
                     </div>
@@ -338,6 +336,7 @@
     import { message, Modal } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
+    import axios from 'axios'
     import { Groups } from '~/services/service/groups'
     import DefaultLayout from '@/admin/layout.vue'
     import useGroups from '~/composables/group/useGroups'
@@ -374,6 +373,7 @@
             const deleteGroupLoading = ref(false)
             const showActionsDropdown = ref(false)
             const isGroupDrawerVisible = ref(false)
+            const cancelTokenSource = ref()
             const activeSortObject = ref({
                 order: '',
                 key: '',
@@ -661,6 +661,13 @@
                 })
             }
             const handleToggleDefault = (group: any) => {
+                if (cancelTokenSource.value) {
+                    cancelTokenSource.value.cancel('cancelled')
+                }
+                cancelTokenSource.value = axios.CancelToken.source()
+                const options = ref({
+                    cancelToken: cancelTokenSource.value.token,
+                })
                 const requestPayload = ref()
                 requestPayload.value = {
                     attributes: {
@@ -671,7 +678,8 @@
                 }
                 const { data, isReady, error, isLoading } = Groups.UpdateGroup(
                     group.id,
-                    requestPayload
+                    requestPayload,
+                    { options }
                 )
                 watch(
                     [data, isReady, error, isLoading],
@@ -685,9 +693,11 @@
                                         : 'marked'
                                 } as default`
                             )
-
+                            cancelTokenSource.value = null
                             getGroupList()
                         } else if (error && error.value) {
+                            if (error && error.value.message === 'cancelled')
+                                return
                             message.error(
                                 `Unable to ${
                                     group.isDefault === 'true'

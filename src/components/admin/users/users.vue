@@ -9,7 +9,7 @@
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
-                            totalUserCount || ''
+                            filteredUserCount || ''
                         } users`"
                         class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"

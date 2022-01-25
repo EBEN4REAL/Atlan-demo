@@ -2,7 +2,7 @@
     <div class="flex flex-col text-sm">
         <span class="mb-1 text-sm text-gray-500">Connection</span>
         <div class="flex items-center">
-            <img :src="getConnectorImage(asset)" class="h-4 mr-1" />
+            <AtlanIcon :icon="getConnectorImage(asset)" class="h-4 mr-1" />
 
             <span
                 @click="handleOpenDrawer"

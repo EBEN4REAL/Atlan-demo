@@ -176,8 +176,8 @@
                                         >/{{ connectionName }}</span
                                     >
                                 </template>
-                                <img
-                                    :src="connectorImage"
+                                <AtlanIcon
+                                    :icon="connectorImage"
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>

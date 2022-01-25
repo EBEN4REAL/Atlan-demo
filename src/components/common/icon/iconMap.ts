@@ -302,10 +302,14 @@ import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
-import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
-import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Redshift from '~/assets/images/source/svg/Redshift.svg'
+import Postgres from '~/assets/images/source/svg/postgres.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
 import Databricks from '~/assets/images/source/svg/Databricks.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
+
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
@@ -656,6 +660,9 @@ export default {
     Athena,
     PowerBI,
     Tableau,
+    Postgres,
+    Redshift,
+    BigQuery,
     SSO,
     SMTP,
     APIKey,

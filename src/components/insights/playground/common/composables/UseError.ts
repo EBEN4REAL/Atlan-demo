@@ -27,7 +27,7 @@ export function useError() {
             },
             '004': {
                 action: 'copy',
-                msg: null,
+                msg: 'Command not supported',
             },
         },
         '401': {
@@ -39,7 +39,7 @@ export function useError() {
         '403': {
             '001': {
                 action: 'copy',
-                msg: 'User is not allowed to access the asset',
+                msg: 'No query access',
                 data: true,
             },
         },
@@ -47,6 +47,7 @@ export function useError() {
             '001': {
                 action: 'copy',
                 msg: 'Something went wrong with the system',
+                desc: 'Oops! Something went wrong on our end. Please reach out to Atlan team with error logs',
             },
             '002': {
                 action: 'copy',
@@ -67,14 +68,17 @@ export function useError() {
             '001': {
                 action: 'copy',
                 msg: 'Something went wrong with the system',
+                desc: 'Oops! Something went wrong on our end. Please reach out to Atlan team with error logs',
             },
             '002': {
                 action: 'copy',
                 msg: 'Something went wrong with the system',
+                desc: 'Oops! Something went wrong on our end. Please reach out to Atlan team with error logs',
             },
             '003': {
                 action: 'copy',
                 msg: 'Something went wrong with the system',
+                desc: 'Oops! Something went wrong on our end. Please reach out to Atlan team with error logs',
             },
         },
     }
@@ -130,6 +134,17 @@ export function useError() {
         return errorData?.msg ? errorData?.msg : queryErrorObj?.errorMessage
     }
 
+    const errorDescription = (queryErrorObj) => {
+        let http = httpErrorCode(queryErrorObj?.errorCode)
+        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+        let errorData
+        if (http !== undefined) {
+            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+        }
+
+        return errorData?.desc ? errorData?.desc : queryErrorObj?.errorMessage
+    }
+
     return {
         hekaErrorMap,
         httpErrorCode,
@@ -139,5 +154,6 @@ export function useError() {
         hasErrorAction,
         LINE_ERROR_NAMES,
         SOURCE_ACCESS_ERROR_NAMES,
+        errorDescription,
     }
 }

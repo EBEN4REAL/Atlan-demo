@@ -50,7 +50,7 @@
                 <div class="">{{ status.teamName }}</div>
                 <span
                     class="text-red-500 cursor-pointer hover:underline"
-                    @click="$emit('disconnect')"
+                    @click="disconnect"
                     >Disconnect</span
                 >
             </div></template
@@ -59,6 +59,9 @@
 </template>
 
 <script setup lang="ts">
+    import { Modal } from 'ant-design-vue'
+    import { h } from 'vue'
+
     const props = defineProps({
         integration: {
             type: Object,
@@ -73,6 +76,33 @@
             default: false,
         },
     })
+
+    const emit = defineEmits(['disconnect'])
+
+    const disconnect = () => {
+        Modal.confirm({
+            class: '',
+            icon: null,
+            content: () =>
+                h(
+                    'div',
+                    {
+                        class: ['p-4'],
+                    },
+                    ['Are you sure you want to disconnect?']
+                ),
+            okType: 'danger',
+            autoFocusButton: null,
+            okButtonProps: {
+                type: 'primary',
+            },
+            okText: 'Confirm',
+            cancelText: 'Cancel',
+            onOk() {
+                emit('disconnect')
+            },
+        })
+    }
 </script>
 
 <style scoped></style>

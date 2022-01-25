@@ -83,7 +83,6 @@
 
                         <a-popover
                             :overlay-class-name="$style.learnMorePopover"
-                            trigger="click"
                             :overlayStyle="{
                                 width: '508px',
                                 height: '336px',
@@ -316,7 +315,8 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
+    import { message, Modal } from 'ant-design-vue'
+    import { defineComponent, ref, computed, toRefs, watch, h } from 'vue'
     import {
         archiveSlack,
         createApp,
@@ -379,8 +379,29 @@
             } = archiveSlack(pV)
 
             const handleReconfigure = async () => {
-                await disconnect()
-                if (!e.value) currentStep.value -= 1
+                Modal.confirm({
+                    class: '',
+                    icon: null,
+                    content: () =>
+                        h(
+                            'div',
+                            {
+                                class: ['p-4'],
+                            },
+                            ['Are you sure you want to start again?']
+                        ),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Confirm',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        await disconnect()
+                        if (!e.value) currentStep.value -= 1
+                    },
+                })
             }
 
             return {

@@ -26,7 +26,7 @@
                 class="text-red-500"
                 :is-loading="isLoading"
                 size="lg"
-                @click="disconnect"
+                @click="handleDisconnect"
             >
                 <!-- <AtlanIcon icon="Gear" /> Reconfigure -->
                 Disconnect
@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs } from 'vue'
+    import { defineComponent, ref, computed, toRefs, h } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import access from '~/constant/accessControl/map'
     import integrationStore from '~/store/integrations/index'
@@ -68,6 +68,7 @@
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
     import { integrations } from '~/constant/integrations'
+    import { Modal } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AddSlackIntegrationCard',
@@ -83,7 +84,33 @@
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
             const { description } = integrations.slack
 
+            const handleDisconnect = () => {
+                Modal.confirm({
+                    class: '',
+                    icon: null,
+                    content: () =>
+                        h(
+                            'div',
+                            {
+                                class: ['p-4'],
+                            },
+                            ['Are you sure you want to disconnect?']
+                        ),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Confirm',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        await disconnect()
+                    },
+                })
+            }
+
             return {
+                handleDisconnect,
                 description,
                 openSlackOAuth,
                 disconnect,

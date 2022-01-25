@@ -102,7 +102,7 @@
                 color="minimal"
                 class="px-0 text-red-500"
                 :is-loading="isLoading"
-                @click="disconnect"
+                @click="handleDisconnect"
             >
                 Disconnect
             </AtlanButton>
@@ -123,6 +123,7 @@
     import {
         computed,
         defineComponent,
+        h,
         inject,
         onMounted,
         reactive,
@@ -131,7 +132,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import { message } from 'ant-design-vue'
+    import { message, Modal } from 'ant-design-vue'
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import {
@@ -278,7 +279,35 @@
                 error: uError,
             } = useUsers(userListAPIParams, true)
 
+            const handleDisconnect = () => {
+                Modal.confirm({
+                    class: '',
+                    icon: null,
+                    content: () =>
+                        h(
+                            'div',
+                            {
+                                class: ['p-4'],
+                            },
+                            [
+                                'Are you sure you want to remove this integration?',
+                            ]
+                        ),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Confirm',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        await disconnect()
+                    },
+                })
+            }
+
             return {
+                handleDisconnect,
                 useTimeAgo,
                 avatarURL,
                 userList,

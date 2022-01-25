@@ -554,9 +554,9 @@
         .group {
             background: none !important;
         }
-        .clear-filter-asset {
-            @apply text-gray-500 !important;
-        }
+        // .clear-filter-asset {
+        //     @apply text-gray-500 !important;
+        // }
     }
     .reload-button {
         path {

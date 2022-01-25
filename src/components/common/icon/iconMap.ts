@@ -180,7 +180,8 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
-import Retry from '~/assets/images/icons/retry.svg'
+import Retry from '~/assets/images/icons/retry2.svg'
+import Retry2 from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
 import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
@@ -594,6 +595,7 @@ export default {
     FullScreenBoth,
     Minus,
     Retry,
+    Retry2,
     Recenter,
     Refocus,
     AssetsInactiveLight,
@@ -753,5 +755,5 @@ export default {
     ThreeDots,
     Request,
     RequestActive,
-    FilterFunnelDot
+    FilterFunnelDot,
 }

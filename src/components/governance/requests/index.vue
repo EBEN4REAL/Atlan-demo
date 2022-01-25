@@ -127,9 +127,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <!-- <img :src="logoUrl" /> -->
-                        <!-- <AtlanIcon icon="Retry" /> -->
-                        <img :src="retryImage" />
+                        <AtlanIcon class="" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -259,7 +257,6 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
-    import retryImage from '~/assets/images/Retry.png'
 
     export default defineComponent({
         name: 'RequestList',
@@ -533,7 +530,6 @@
                 activeHover,
                 mouseEnterContainer,
                 response,
-                retryImage,
                 logoUrl,
                 startCountPagination,
                 endCountPagination,

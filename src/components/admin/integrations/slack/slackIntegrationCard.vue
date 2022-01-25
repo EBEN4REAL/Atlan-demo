@@ -284,21 +284,48 @@
                     class: '',
                     icon: null,
                     content: () =>
-                        h(
-                            'div',
-                            {
-                                class: ['p-4'],
-                            },
-                            [
-                                'Are you sure you want to remove this integration?',
-                            ]
-                        ),
+                        h('div', { class: [''] }, [
+                            h(
+                                'h1',
+                                {
+                                    class: ['font-bold -mt-4 mb-4'],
+                                },
+                                ['Disconnect']
+                            ),
+
+                            h(
+                                'div',
+                                {
+                                    class: ['font-normal'],
+                                },
+                                [
+                                    'Are you sure you want to disconnect ',
+                                    h(
+                                        'b',
+                                        {
+                                            class: [''],
+                                        },
+                                        'Slack'
+                                    ),
+                                    ' integration?',
+                                ]
+                            ),
+                            h(
+                                'div',
+                                {
+                                    class: ['font-normal', 'mb-4'],
+                                },
+                                [
+                                    'This will also disconnect slack integration for other users.',
+                                ]
+                            ),
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
                         type: 'primary',
                     },
-                    okText: 'Confirm',
+                    okText: 'Disconnect',
                     cancelText: 'Cancel',
                     async onOk() {
                         await disconnect()

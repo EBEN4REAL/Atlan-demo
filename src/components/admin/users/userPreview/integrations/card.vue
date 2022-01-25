@@ -48,11 +48,34 @@
                 class="flex items-center justify-between px-3 bg-gray-100 border-t rounded-b h-11"
             >
                 <div class="">{{ status.teamName }}</div>
-                <span
-                    class="text-red-500 cursor-pointer hover:underline"
-                    @click="disconnect"
-                    >Disconnect</span
-                >
+                <a-popover v-model:visible="popover" trigger="click">
+                    <template #content>
+                        <div class="p-4 space-y-5">
+                            <h1>
+                                Are you sure you want to disconnect from
+                                <b>Slack</b>?
+                            </h1>
+                            <div class="flex justify-end space-x-2">
+                                <Button
+                                    @click="popover = false"
+                                    padding="compact"
+                                    size="sm"
+                                    color="secondary"
+                                    >Cancel</Button
+                                >
+                                <Button
+                                    @click="disconnect"
+                                    padding="compact"
+                                    size="sm"
+                                    >Confirm</Button
+                                >
+                            </div>
+                        </div>
+                    </template>
+                    <span class="text-red-500 cursor-pointer hover:underline"
+                        >Disconnect</span
+                    >
+                </a-popover>
             </div></template
         >
     </div>
@@ -60,7 +83,7 @@
 
 <script setup lang="ts">
     import { Modal } from 'ant-design-vue'
-    import { h } from 'vue'
+    import { h, ref } from 'vue'
 
     const props = defineProps({
         integration: {
@@ -79,29 +102,11 @@
 
     const emit = defineEmits(['disconnect'])
 
+    const popover = ref(false)
+
     const disconnect = () => {
-        Modal.confirm({
-            class: '',
-            icon: null,
-            content: () =>
-                h(
-                    'div',
-                    {
-                        class: ['p-4'],
-                    },
-                    ['Are you sure you want to disconnect?']
-                ),
-            okType: 'danger',
-            autoFocusButton: null,
-            okButtonProps: {
-                type: 'primary',
-            },
-            okText: 'Confirm',
-            cancelText: 'Cancel',
-            onOk() {
-                emit('disconnect')
-            },
-        })
+        emit('disconnect')
+        popover.value = false
     }
 </script>
 

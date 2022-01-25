@@ -244,12 +244,39 @@
                         <AtlanIcon icon="Atlan" class="h-5" />
                         <span>Atlan app created</span>
                         <div class="flex-grow" />
-                        <span
-                            v-auth="access.DELETE_INTEGRATION"
-                            class="cursor-pointer text-primary"
-                            @click="handleReconfigure"
-                            >Reconfigure</span
+                        <a-popover
+                            trigger="click"
+                            v-model:visible="reconfigure"
                         >
+                            <template #content>
+                                <div class="p-4 space-y-5">
+                                    <h1>
+                                        Are you sure you want to start over?
+                                    </h1>
+                                    <div class="flex justify-end space-x-2">
+                                        <Button
+                                            @click="reconfigure = false"
+                                            padding="compact"
+                                            size="sm"
+                                            color="secondary"
+                                            >Cancel</Button
+                                        >
+                                        <Button
+                                            @click="handleReconfigure"
+                                            padding="compact"
+                                            size="sm"
+                                            >Confirm</Button
+                                        >
+                                    </div>
+                                </div>
+                            </template>
+
+                            <span
+                                v-auth="access.DELETE_INTEGRATION"
+                                class="cursor-pointer text-primary"
+                                >Reconfigure</span
+                            >
+                        </a-popover>
                     </div>
                     <div class="space-y-5">
                         <h3 class="font-bold text-gray-700">
@@ -378,33 +405,15 @@
                 disconnect,
             } = archiveSlack(pV)
 
-            const handleReconfigure = async () => {
-                Modal.confirm({
-                    class: '',
-                    icon: null,
-                    content: () =>
-                        h(
-                            'div',
-                            {
-                                class: ['p-4'],
-                            },
-                            ['Are you sure you want to start again?']
-                        ),
-                    okType: 'danger',
-                    autoFocusButton: null,
-                    okButtonProps: {
-                        type: 'primary',
-                    },
-                    okText: 'Confirm',
-                    cancelText: 'Cancel',
-                    async onOk() {
-                        await disconnect()
-                        if (!e.value) currentStep.value -= 1
-                    },
-                })
+            const reconfigure = ref(false)
+
+            const handleReconfigure = () => {
+                disconnect()
+                reconfigure.value = false
             }
 
             return {
+                reconfigure,
                 access,
                 tenantSlackStatus,
                 handleReconfigure,

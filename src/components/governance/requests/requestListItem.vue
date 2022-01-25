@@ -142,7 +142,7 @@
                     </div>
                 </div>
                 <div v-else class="flex justify-end">
-                    <div class="flex items-center justify-end gap-x-2">
+                    <div class="flex items-center justify-end gap-x-1">
                         <Avatar
                             :allow-upload="false"
                             :avatar-name="request.created_by_user?.username"

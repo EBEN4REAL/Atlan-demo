@@ -65,9 +65,9 @@
                 </div>
             </template>
             <div
-                class="justify-center w-full bg-white border border-b-0 border-l-0 border-r-0 border-gray-200"
+                class="justify-center w-full bg-white"
             >
-                <a-form layout="vertical" class="p-2">
+                <a-form layout="vertical" class="px-2">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
@@ -98,13 +98,7 @@
                                             {{ item.label }}
                                             <span class="text-sm text-gray-500"
                                                 >({{
-                                                    item.label.toLocaleLowerCase() ===
-                                                    'active'
-                                                        ? numberOfActiveUser
-                                                        : item.label.toLocaleLowerCase() ===
-                                                          'disabled'
-                                                        ? numberOfDisableUser
-                                                        : numberOfInvitedUser
+                                                    userTypeAgg[item.id]
                                                 }})</span
                                             >
                                         </span>
@@ -202,20 +196,9 @@
                 type: Array,
                 default: () => null,
             },
-            numberOfActiveUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfDisableUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfInvitedUser: {
-                type: Number,
-                required: false,
-                default: 0,
+            userTypeAgg: {
+                type: Object,
+                default: () => {},
             },
         },
         emits: ['update:modelValue', 'change', 'changeRole'],

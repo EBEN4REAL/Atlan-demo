@@ -9,7 +9,7 @@ export const summaryVariants = [
         id: 'view',
         label: 'View',
         components: ['Definition', 'Columns', 'Connection'],
-        includes: ['View', 'MaterialisedViews'],
+        includes: ['View', 'MaterialisedView'],
     },
     {
         id: 'glossary',

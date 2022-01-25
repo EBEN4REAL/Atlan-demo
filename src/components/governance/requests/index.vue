@@ -90,16 +90,27 @@
                     "
                 >
                     <template #categoryFilter>
-                        <div
-                            class="relative flex items-center px-2 cursor-pointer filter-icon-wrapper"
-                            :class="{
-                                'border-primary border': drawerFilter,
-                            }"
-                            @click="handleClickFilter"
-                        >
-                            <AtlanIcon icon="FilterFunnelDot" />
+                        <div class="relative flex items-center">
+                            <AtlanBtn
+                                color="secondary"
+                                class="px-2 border-r-0 rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                                :class="{
+                                    'text-primary border rounded py-1 border-primary':
+                                        drawerFilter,
+                                }"
+                                @click="handleClickFilter"
+                            >
+                                <AtlanIcon
+                                    :icon="'FilterFunnelDot'"
+                                    class="w-4 h-4"
+                                />
+                            </AtlanBtn>
                             <div
-                                class="absolute border-r border-solid divide-gray-800 devider-filter"
+                                class="absolute border-r divide-gray-800 divider-filter"
+                                :class="{
+                                    'text-primary border-r rounded border-primary top-0':
+                                        drawerFilter,
+                                }"
                             />
                         </div>
                     </template>
@@ -621,9 +632,9 @@
         transform: rotate(180deg);
     }
 
-    .devider-filter {
-        top: 0px;
-        height: 31px;
+    .divider-filter {
+        top: -5px;
+        height: 30px;
         right: 0;
     }
 </style>

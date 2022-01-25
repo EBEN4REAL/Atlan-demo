@@ -4,9 +4,7 @@
     </div>
     <div v-else ref="target" class="flex flex-col pl-5 mb-3">
         <!-- header starts here -->
-        <div
-            class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2 gap-x-4"
-        >
+        <div class="flex justify-between pr-3 mt-4 mb-3 mr-2 gap-x-4">
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
                     <Truncate
@@ -14,6 +12,7 @@
                         :rows="2"
                         width="500px"
                         placement="left"
+                        :should-open-in-new-tab="true"
                         :classes="
                             checkAccess(page.PAGE_GOVERNANCE)
                                 ? 'text-primary hover:underline'
@@ -142,10 +141,10 @@
                                 :key="x"
                             >
                                 <div
-                                    class="flex mb-2 font-normal text-gray-500 gap-x-2"
+                                    class="flex mb-2 font-normal text-gray-600 gap-x-2"
                                 >
                                     <Truncate
-                                        classes="text-gray-500"
+                                        classes="text-gray-600"
                                         clampPercentage="80%"
                                         :tooltipText="a.displayName"
                                         width="500px"

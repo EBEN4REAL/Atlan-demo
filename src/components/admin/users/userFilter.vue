@@ -5,8 +5,8 @@
         v-model="activeCollapse"
         bordered
         :default-active-key="['1', '2']"
-        @change="handleChange"
         class="-mt-3"
+        @change="handleChange"
     >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
@@ -85,15 +85,11 @@
                                         ></div>
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
-                                            <span class="text-sm text-gray-500"
+                                            <span
+                                                v-if="userTypeAgg[item.id]"
+                                                class="text-sm text-gray-500"
                                                 >({{
-                                                    item.label.toLocaleLowerCase() ===
-                                                    'active'
-                                                        ? numberOfActiveUser
-                                                        : item.label.toLocaleLowerCase() ===
-                                                          'disabled'
-                                                        ? numberOfDisableUser
-                                                        : numberOfInvitedUser
+                                                    userTypeAgg[item.id]
                                                 }})</span
                                             >
                                         </span>
@@ -180,20 +176,9 @@
                 type: Array,
                 default: () => null,
             },
-            numberOfActiveUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfDisableUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfInvitedUser: {
-                type: Number,
-                required: false,
-                default: 0,
+            userTypeAgg: {
+                type: Object,
+                default: () => {},
             },
         },
         emits: ['update:modelValue', 'change', 'changeRole'],

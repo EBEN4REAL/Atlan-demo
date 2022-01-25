@@ -85,9 +85,7 @@
                                         ></div>
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
-                                            <span
-                                                v-if="userTypeAgg[item.id]"
-                                                class="text-sm text-gray-500"
+                                            <span class="text-sm text-gray-500"
                                                 >({{
                                                     userTypeAgg[item.id]
                                                 }})</span

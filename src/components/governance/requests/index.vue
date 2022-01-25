@@ -154,9 +154,10 @@
                         />
                     </template>
                 </VirtualList>
-                <div class="h-3" @mouseenter="mouseEnterContainer" />
+                <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
                     class="flex items-center justify-between p-4 bg-white border-t"
+                    @mouseenter="mouseEnterContainer"
                 >
                     <div class="text-gray-500">
                         <strong

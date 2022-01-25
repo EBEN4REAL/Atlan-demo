@@ -43,14 +43,14 @@
             <div class="sparator" />
             <a-dropdown
                 v-model:visible="isVisibleReject"
-                trigger="click"
+                trigger="hover"
                 placement="bottomRight"
             >
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item key="1" @click="handleClickReject">
+                        <!-- <a-menu-item key="1" @click="handleClickReject">
                             Reject
-                        </a-menu-item>
+                        </a-menu-item> -->
 
                         <a-menu-item
                             key="2"
@@ -119,14 +119,14 @@
             <div class="sparator" />
             <a-dropdown
                 v-model:visible="isVisibleApprove"
-                trigger="click"
+                trigger="hover"
                 placement="bottomRight"
             >
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item key="4" @click="$emit('accept')">
+                        <!-- <a-menu-item key="4" @click="$emit('accept')">
                             Approve
-                        </a-menu-item>
+                        </a-menu-item> -->
                         <a-menu-item
                             key="2"
                             @click="handleClickApproveWithComment"

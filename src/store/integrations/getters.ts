@@ -3,11 +3,13 @@ import { State } from './state'
 
 interface SlackStatus {
     created: boolean,
+    createdAt: number,
     configured: boolean,
     channels: [{ name: string, id: string }],
     id: string,
     oAuth: string,
-    teamName: string
+    teamName: string,
+    createdBy: string
 }
 
 export interface Getters {
@@ -25,6 +27,8 @@ const getters: _GettersTree<State> & Getters = {
         return {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
             id: integration?.id || null,
+            createdBy: integration?.createdBy,
+            createdAt: integration?.createdAt,
             created: !!integration,
             configured: integration?.isConfigured,
             channels: integration?.config?.channels ?? [],
@@ -37,9 +41,11 @@ const getters: _GettersTree<State> & Getters = {
             oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
             id: integration?.id || null,
             created: !!integration,
+            createdAt: integration?.createdAt,
+            createdBy: integration?.createdBy,
             configured: integration?.isConfigured,
             channels: integration?.config?.channels ?? [],
-            teamName: integration?.sourceMetadata?.teamName
+            teamName: integration?.sourceMetadata?.teamName,
         }
     }
 }

@@ -22,10 +22,24 @@
                     background:
                         'linear-gradient(90deg,#fafafa 0%,#fafafa 65.62%,rgba(250, 250, 250, 0) 95.54%)',
                 }"
-                class="flex items-center px-3 rounded gap-x-2 h-11"
+                class="px-3 py-1.5 space-y-2"
             >
-                <AtlanIcon icon="Check" />
-                {{ tenantSlackStatus.teamName }} workspace connected
+                <div class="flex items-center rounded gap-x-1">
+                    <AtlanIcon icon="Check" />
+                    {{ tenantSlackStatus.teamName }} workspace connected
+                </div>
+                <div class="flex items-center text-xs text-gray-500 gap-x-1">
+                    Added by
+                    <div class="flex justify-center text-xs">
+                        <img :src="avatarURL" class="w-4 h-4 rounded-full" />
+                        <div class="self-center ml-1 text-gray-700 capitalize">
+                            {{ userList[0]?.name }}
+                        </div>
+                    </div>
+                    <span>{{
+                        useTimeAgo(tenantSlackStatus.createdAt).value
+                    }}</span>
+                </div>
             </div>
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
@@ -104,6 +118,7 @@
         defineComponent,
         inject,
         onMounted,
+        reactive,
         Ref,
         ref,
         toRefs,
@@ -123,6 +138,9 @@
     import access from '~/constant/accessControl/map'
     import { archiveSlack } from '~/composables/integrations/useSlack'
     import { integrations } from '~/constant/integrations'
+    import { useUsers } from '~/composables/user/useUsers'
+    import { useTimeAgo } from '@vueuse/core'
+    import bg from '~/assets/images/admin/integrations/add-slack-bg.svg'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -226,7 +244,39 @@
 
             const { description, channel_description } = integrations.slack
 
+            const userListAPIParams: any = reactive({
+                limit: 1,
+                offset: 0,
+                sort: 'firstName',
+                filter: {
+                    $and: [
+                        {
+                            emailVerified: true,
+                        },
+                        {
+                            username: tenantSlackStatus.value.createdBy,
+                        },
+                    ],
+                },
+            })
+
+            const avatarURL = computed(
+                () =>
+                    `${window.location.origin}/api/service/avatars/${tenantSlackStatus.value.createdBy}`
+            )
+
+            const {
+                userList,
+                isLoading: uLoading,
+                error: uError,
+            } = useUsers(userListAPIParams, true)
+
             return {
+                useTimeAgo,
+                avatarURL,
+                userList,
+                uLoading,
+                uError,
                 channel_description,
                 description,
                 tenantSlackStatus,

@@ -224,7 +224,8 @@
                 router.replace(`/governance/purposes/${purpose.id}`)
             }
             watch(isPersonaListReady, () => {
-                const findedPurpose = personaList.value.find(
+                if(personaList.value.length)
+              {  const findedPurpose = personaList.value.find(
                     (el) => el.id === route.params.id
                 )
                 if (findedPurpose) {
@@ -234,7 +235,7 @@
                     router.replace(
                         `/governance/purposes/${personaList.value[0].id}`
                     )
-                }
+                }}
             })
             onMounted(() => {
                 if (isPersonaListReady.value) {

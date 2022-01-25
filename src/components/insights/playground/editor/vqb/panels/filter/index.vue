@@ -89,7 +89,7 @@
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400 line-through',
-                                    'text-xs truncate',
+                                    'text-xs',
                                 ]"
                                 v-if="!expand"
                             >
@@ -98,7 +98,7 @@
                                         isChecked
                                             ? 'text-gray-500'
                                             : 'text-gray-400 line-through',
-                                        'text-xs truncate',
+                                        'text-xs break-words line-clamp-2',
                                     ]"
                                     v-if="!expand"
                                 >

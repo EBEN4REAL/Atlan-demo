@@ -76,7 +76,7 @@
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400 line-through',
-                                    'text-xs',
+                                    'text-xs break-words line-clamp-2',
                                 ]"
                                 v-if="!expand"
                             >

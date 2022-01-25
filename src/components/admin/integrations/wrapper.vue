@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="isLoading || route.query.close_tab == 'true'"
+        v-if="isLoading || route.query.success == 'true'"
         class="flex items-center justify-center h-full"
     >
         <AtlanLoader class="h-10" />
@@ -39,7 +39,7 @@
 
             const { isLoading, error, isReady, call } = useIntegrations(false)
 
-            if (route.query.close_tab == 'true') window.close()
+            if (route.query.success == 'true') window.close()
 
             return {
                 route,

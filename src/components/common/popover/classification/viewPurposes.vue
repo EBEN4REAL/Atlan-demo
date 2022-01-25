@@ -1,5 +1,5 @@
 <template>
-    <div v-if="purposes && purposes.length > 0" class='mt-0.5'>
+    <div v-if="purposes && purposes.length > 0" v-auth="map.LIST_PURPOSE" class='mt-0.5'>
         <Tags
             :tags="purposes"
             :allow-update='false'
@@ -17,6 +17,7 @@
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import Tags from '~/components/common/badge/tags/index.vue'
     import { usePurpose } from '~/composables/classification/usePurpose'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'ClassificationPurposes',
@@ -40,7 +41,8 @@
 
             return {
                 classification,
-                purposes
+                purposes,
+                map
             }
         }
     })

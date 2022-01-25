@@ -259,10 +259,8 @@
                 if (!guid?.value) {
                     return false
                 }
-                if (guid.value === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return guid.value !== classification.entityGuid;
+
             }
 
             const getSource = (entity) => {

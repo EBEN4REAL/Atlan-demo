@@ -73,20 +73,27 @@
         </div>
 
         <div class="flex items-center justify-end col-span-3">
-            <AtlanIcon
+            <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
-            />
+            /> -->
             <!-- <div v-else-if="selected"> -->
-            <template v-else>
+            <div>
                 <div
                     v-if="activeHover === request.id"
                     class="items-center pr-3 font-bold"
                 >
+                    <!-- <AtlanIcon
+                        v-if="state.isLoading"
+                        icon="CircleLoader"
+                        class="w-5 h-5 text-gray animate-spin"
+                    /> -->
                     <RequestActions
                         v-if="request.status === 'active'"
                         :request="request"
+                        :loading="state.isLoading"
+                        :is-approval-loading="state.isApprovalLoading"
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />
@@ -218,7 +225,7 @@
                         </div>
                     </div> -->
                 </div>
-            </template>
+            </div>
         </div>
     </div>
 </template>
@@ -300,6 +307,7 @@
             const updatedBy = ref({})
             const state = reactive({
                 isLoading: false,
+                isApprovalLoading: false,
                 message: '',
             })
 
@@ -308,7 +316,7 @@
             }
 
             async function handleApproval(messageProp = '') {
-                state.isLoading = true
+                state.isApprovalLoading = true
                 try {
                     await approveRequest(request.value.id, messageProp)
                     request.value.message = state.message
@@ -321,7 +329,7 @@
                 } catch (error) {
                     raiseErrorMessage()
                 }
-                state.isLoading = false
+                state.isApprovalLoading = false
             }
 
             async function handleRejection(messageProp = '') {

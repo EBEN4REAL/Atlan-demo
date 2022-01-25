@@ -36,9 +36,15 @@
             color="secondary"
             padding="compact"
             size="sm"
-            class="btn-actions"
+            class="flex items-center btn-actions"
+            :disabled="loading"
             @click.stop="handleClickReject"
         >
+            <AtlanIcon
+                v-if="loading"
+                icon="CircleLoader"
+                class="w-4 h-3 text-red-500 animate-spin"
+            />
             <span class="text-red-500"> Reject </span>
             <div class="sparator" />
             <a-dropdown
@@ -49,8 +55,8 @@
                 <template #overlay>
                     <a-menu>
                         <!-- <a-menu-item key="1" @click="handleClickReject">
-                            Reject
-                        </a-menu-item> -->
+                                Reject
+                            </a-menu-item> -->
 
                         <a-menu-item
                             key="2"
@@ -109,12 +115,18 @@
             </a-dropdown>
         </AtlanButton>
         <AtlanButton
-            class="btn-actions"
+            class="flex items-center btn-actions"
             color="secondary"
             padding="compact"
             size="sm"
+            :disabled="isApprovalLoading"
             @click.stop="$emit('accept')"
         >
+            <AtlanIcon
+                v-if="isApprovalLoading"
+                icon="CircleLoader"
+                class="w-4 h-3 text-green-500 animate-spin"
+            />
             <span class="text-green-500"> Approve </span>
             <div class="sparator" />
             <a-dropdown
@@ -209,6 +221,16 @@
                 type: Object as PropType<RequestAttributes>,
                 required: true,
             },
+            loading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            isApprovalLoading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
@@ -251,6 +273,7 @@
             const handleApprove = () => {
                 emit('accept', messageApprove.value)
             }
+
             return {
                 isVisibleReject,
                 handleClickReject,

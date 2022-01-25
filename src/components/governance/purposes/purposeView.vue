@@ -224,18 +224,19 @@
                 router.replace(`/governance/purposes/${purpose.id}`)
             }
             watch(isPersonaListReady, () => {
-                if(personaList.value.length)
-              {  const findedPurpose = personaList.value.find(
-                    (el) => el.id === route.params.id
-                )
-                if (findedPurpose) {
-                    selectedPersonaId.value = findedPurpose.id
-                } else {
-                    selectedPersonaId.value = personaList.value[0].id
-                    router.replace(
-                        `/governance/purposes/${personaList.value[0].id}`
+                if (personaList?.value?.length) {
+                    const findedPurpose = personaList.value.find(
+                        (el) => el.id === route.params.id
                     )
-                }}
+                    if (findedPurpose) {
+                        selectedPersonaId.value = findedPurpose.id
+                    } else {
+                        selectedPersonaId.value = personaList.value[0].id
+                        router.replace(
+                            `/governance/purposes/${personaList.value[0].id}`
+                        )
+                    }
+                }
             })
             onMounted(() => {
                 if (isPersonaListReady.value) {

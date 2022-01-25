@@ -159,6 +159,7 @@ import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -434,6 +435,7 @@ export default {
     EmptyLineage,
     EmptyLineageTab,
     EmptyResource,
+    EmptyResource2,
     IssuesFilled,
     ExplorerTrigger,
     MaterialisedView,

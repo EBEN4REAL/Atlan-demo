@@ -1,10 +1,12 @@
 <template>
     <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
-        <div class="flex items-center justify-between">
+        <div
+            v-if="links(selectedAsset)?.length > 0"
+            class="flex items-center justify-between"
+        >
             <span class="font-semibold text-gray-500">Resources</span>
 
             <AddResources
-                v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"
                 :edit-permission="linkEditPermission"
                 ><template #trigger>
@@ -40,16 +42,26 @@
             </div>
             <div
                 v-else
-                class="flex flex-col items-center justify-center h-full gap-y-3"
+                class="flex flex-col items-center justify-center h-full mt-4 text-center text-gray-700"
             >
-                <AtlanIcon
-                    icon="EmptyResource"
-                    alt="EmptyResource"
-                    class="w-auto h-32"
-                />
-                <p class="text-sm text-center text-gray-700">
-                    Add URLs related to this asset
+                <p class="mb-2 text-xl font-bold">Resources</p>
+                <p class="text-sm">
+                    Resources is the place to document all <br />knowledge
+                    around the asset
                 </p>
+                <AtlanIcon
+                    icon="EmptyResource2"
+                    alt="EmptyResource"
+                    class="w-auto my-10 h-44"
+                />
+                <div
+                    class="flex flex-col mb-5 text-xs font-bold tracking-wide text-gray-500 gap-y-4"
+                >
+                    <span>Paul's Slack discussion around data type</span>
+                    <span>The confluence doc that John wrote</span>
+                    <span>The pdf that Ringo created</span>
+                    <span>The Github issue that George started</span>
+                </div>
                 <AddResources
                     :asset="selectedAsset"
                     :edit-permission="linkEditPermission"
@@ -60,7 +72,7 @@
                             padding="compact"
                         >
                             <AtlanIcon icon="Add" class="inline mb-0.5 mr-1" />
-                            Add Resource
+                            Add a Resource
                         </AtlanButton></template
                     ></AddResources
                 >

@@ -43,13 +43,13 @@ const getIntegrationsList = (immediate = true) => {
         if (v) records.value = data.value ?? null
     })
 
-    const call = () => {
+    const call = async () => {
         if (cancel.value) {
             cancel.value.cancel('get cancelled')
         }
         cancel.value = axios.CancelToken.source()
         options.options.value.cancelToken = cancel.value.token
-        mutate()
+        await mutate()
 
     }
     return { data: records, isLoading, error, isReady, call }

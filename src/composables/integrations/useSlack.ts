@@ -128,8 +128,20 @@ export const userLevelOauthUrl = computed(() => {
     return slackOauth
 })
 
+const handlePopupClose = async (userSlackStatus, tenantSlackStatus, callback, tenant) => {
+    console.log('popup window closed');
+    // ? recall all integration, (better (when filter support added): use filter and fetch only slack user level integration and update store)
+    const { call } = useIntegrations(false)
+    await call()
+    // callback with status
+    if ((!tenant && userSlackStatus.value.configured) || (tenant && tenantSlackStatus.value.configured))
+        callback('success')
+    else callback('failure')
+}
 
-export function openSlackOAuth({ w = 500, h = 600, tenant = false, emit }) {
+export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (status) => ({}) }) {
+    const store = integrationStore()
+    const { userSlackStatus, tenantSlackStatus } = toRefs(store)
     const { width, height } = window.screen
     const leftPosition = width ? (width - w) / 2 : 0
     const topPosition = height ? (height - h) / 2 : 0
@@ -137,7 +149,7 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, emit }) {
 
     const new_window = window.open(
         tenant
-            ? tenantLevelOauthUrl.value
+            ? tenantSlackStatus.value
             : userLevelOauthUrl.value,
         'popUpWindow',
         windowConfig
@@ -147,11 +159,8 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, emit }) {
     const timer = setInterval(() => {
         if (new_window?.closed) {
             clearInterval(timer);
-            console.log('popup window closed');
-            // ? recall all integration, (better (when filter support added): use filter and fetch only slack user level integration and update store)
-            useIntegrations(true)
+            handlePopupClose(userSlackStatus, tenantSlackStatus, callback, tenant)
 
-            // *  emit('popupWindowVisible', new_window, false) * use if needed
         }
     }, 500);
 }

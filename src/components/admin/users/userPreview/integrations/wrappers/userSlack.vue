@@ -2,7 +2,13 @@
     <Card
         :integration="props.integration"
         :status="userSlackStatus"
-        @connect="() => openSlackOAuth({ tenant: false })"
+        @connect="
+            () =>
+                openSlackOAuth({
+                    tenant: false,
+                    callback: (s) => call(s),
+                })
+        "
         @disconnect="disconnect"
         :disableConnect="!tenantSlackStatus.configured"
     />
@@ -16,6 +22,12 @@
         archiveSlack,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
+    const emit = defineEmits(['refresh'])
+
+    const call = (s) => {
+        console.log('callback called', s)
+        if (s === 'success') emit('refresh')
+    }
 
     const props = defineProps({
         integration: { type: Object, required: true },

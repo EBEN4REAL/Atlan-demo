@@ -112,7 +112,7 @@ export const requestFilter = [
     //     exclude: false,
     // },
     {
-        id: 'requestor',
+        id: 'owners',
         label: 'Requestor',
         component: 'owners',
         overallCondition: 'OR',

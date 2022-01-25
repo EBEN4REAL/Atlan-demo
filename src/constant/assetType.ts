@@ -29,6 +29,7 @@ export const assetTypeList: {
         parents: ['AtlanConnection'],
         children: ['Column'],
         isDiscoverable: false,
+        image: 'DatabaseGray',
         count: 0,
         relationships: [],
     },
@@ -40,6 +41,7 @@ export const assetTypeList: {
         parents: ['AtlanConnection', 'AtlanDatabase'],
         children: ['Column'],
         isDiscoverable: false,
+        image: 'SchemaGray',
         count: 0,
         relationships: [],
     },
@@ -53,7 +55,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 90,
         count: 0,
-        image: 'View',
+        image: 'ViewGray',
         relationships: [],
     },
     {
@@ -66,7 +68,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,
-        image: 'Table',
+        image: 'TableGray',
         relationships: [],
     },
     {
@@ -156,7 +158,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauSite',
-        label: 'Tableau Site',
+        label: 'Site',
         nameAttribute: 'siteName',
         isDiscoverable: true,
         parents: [],
@@ -165,7 +167,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauProject',
-        label: 'Tableau Project',
+        label: 'Project',
         nameAttribute: 'projectName',
         isDiscoverable: true,
         // in order of hierarchy
@@ -175,7 +177,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauWorkbook',
-        label: 'Tableau Workbook',
+        label: 'Workbook',
         nameAttribute: 'workbookName',
         isDiscoverable: true,
         image: 'Tableau',
@@ -184,7 +186,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauWorksheet',
-        label: 'Tableau Worksheet',
+        label: 'Worksheet',
         isDiscoverable: true,
         image: 'Tableau',
         parents: ['TableauWorkbook'],
@@ -192,7 +194,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauDashboard',
-        label: 'Tableau Dashboard',
+        label: 'Dashboard',
         isDiscoverable: true,
         image: 'Tableau',
         parents: ['TableauWorkbook'],
@@ -200,7 +202,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauDatasource',
-        label: 'Tableau Datasource',
+        label: 'Datasource',
         nameAttribute: 'datasourceName',
         isDiscoverable: true,
         image: 'Tableau',
@@ -209,7 +211,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauDatasourceField',
-        label: 'Tableau Datasource Field',
+        label: 'Datasource Field',
         parents: ['TableauWorkbook'],
         isDiscoverable: true,
         image: 'Tableau',
@@ -217,7 +219,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauCalculatedField',
-        label: 'Tableau Calculated Field',
+        label: 'Calculated Field',
         isDiscoverable: true,
         image: 'Tableau',
         parents: ['TableauWorkbook'],
@@ -225,7 +227,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauFlow',
-        label: 'Tableau Flow',
+        label: 'Flow',
         isDiscoverable: true,
         image: 'Tableau',
         parents: ['TableauProject'],
@@ -233,7 +235,7 @@ export const assetTypeList: {
     },
     {
         id: 'TableauMetric',
-        label: 'Tableau Metric',
+        label: 'Metric',
         isDiscoverable: true,
         image: 'Tableau',
         parents: ['TableauProject'],
@@ -241,7 +243,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIWorkspace',
-        label: 'Power BI Workspace',
+        label: 'Workspace',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: [],
@@ -250,7 +252,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIDashboard',
-        label: 'Power BI Dashboard',
+        label: 'Dashboard',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
@@ -259,7 +261,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIReport',
-        label: 'Power BI Report',
+        label: 'Report',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
@@ -268,7 +270,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIDataset',
-        label: 'Power BI Dataset',
+        label: 'Dataset',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
@@ -283,7 +285,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIDataflow',
-        label: 'Power BI Dataflow',
+        label: 'Dataflow',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
@@ -291,7 +293,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBITile',
-        label: 'Power BI Tile',
+        label: 'Tile',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
@@ -299,7 +301,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIPage',
-        label: 'Power BI Page',
+        label: 'Page',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIReport'],
@@ -307,7 +309,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIDatasource',
-        label: 'Power BI Datasource',
+        label: 'Datasource',
         isDiscoverable: true,
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],

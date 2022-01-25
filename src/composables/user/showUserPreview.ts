@@ -1,25 +1,38 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { allTabs } from '~/constant/users'
+import { useAuthStore } from '~/store/auth'
 
 const showPreview = ref(false)
 const userId = ref('')
 const username = ref('')
 const uniqueAttribute = ref('')
 const defaultTab = ref('about')
-const blacklistedTabs = ref([])
+const blacklistedTabs = ref<string[]>([])
 const allowedTabs = ref([])
 const finalTabs = computed(() => {
-    if (allowedTabs.value && allowedTabs.value.length)
-        return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
+    if (allowedTabs.value && allowedTabs.value.length) {
+        if (blacklistedTabs.value.length)
+            return allTabs.filter((tab) => allowedTabs.value.includes(tab.key) && !blacklistedTabs.value.includes(tab.key))
+        else return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
+    }
     return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
 })
 const userUpdated = ref(false)
 
+const isPreviewUserMyself = computed(() => {
+    const authStore = useAuthStore()
+    return (userId.value === authStore.id) || (username.value === authStore.username)
+})
+
 export function useUserPreview() {
-    const showUserPreview = (config?: { allowed?: any; blacklisted?: any }, activeTab: String) => {
+
+    const showUserPreview = (config?: { allowed?: any; blacklisted?: any }, activeTab?: String) => {
         defaultTab.value = activeTab || 'about'
         blacklistedTabs.value = [...(config?.blacklisted || [])]
+        //?  if Integrations tab if preview user is not me
+        if (!isPreviewUserMyself.value)
+            blacklistedTabs.value.push('Integrations')
         allowedTabs.value = [...(config?.allowed || [])]
         showPreview.value = true
     }

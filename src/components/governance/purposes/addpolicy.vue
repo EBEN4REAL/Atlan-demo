@@ -1,7 +1,7 @@
 <template>
     <div class="relative add-policy-container">
         <div>
-            <div class="relative p-5 border-b border-bottom border-slate-300">
+            <div class="relative px-4 pt-5 pb-5">
                 <div
                     v-if="showDrawer"
                     class="close-btn-sidebar"
@@ -9,12 +9,21 @@
                 >
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
-                <div class="flex justify-between">
-                    <div class="text-lg font-bold">
-                        {{ isEdit ? selectedPolicy.name : 'New policy' }}
-                    </div>
-                </div>
                 <div class="flex items-center">
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                    <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
+                    <span class="ml-1 font-semibold"
+                        >{{
+                            policyType === 'meta'
+                                ? 'Metadata Policy'
+                                : 'Data Policy'
+                        }}
+                    </span>
+                    <!-- <div class="ml-1 font-semibold">
+                        {{ isEdit ? selectedPolicy.name : 'New policy' }}
+                    </div> -->
+                </div>
+                <!-- <div class="flex items-center">
                     <AtlanIcon icon="Policies" class="mr-1" />
                     <span class="mr-1 text-neutral-600"
                         >{{
@@ -27,12 +36,12 @@
                     <span class="text-neutral-600">
                         {{ persona?.displayName }}
                     </span>
-                </div>
+                </div> -->
             </div>
-            <div class="p-5">
-                <div class="relative mt-4">
+            <div class="px-4">
+                <div class="relative">
                     <div class="relative mb-2 text-sm text-gray-500 required">
-                        Name <span class="text-red-500">*</span>
+                        Name<span class="text-red-500">*</span>
                     </div>
                     <div>
                         <a-input
@@ -91,6 +100,24 @@
                 <div v-if="policyType === 'meta'" class="mt-6">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
+                            Select permissions
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <a-button
+                            v-if="selectedPermission.length > 0"
+                            size="small"
+                            class="text-primary"
+                            @click="handleToggleManage"
+                        >
+                            Edit
+                            <AtlanIcon
+                                icon="ArrowRight"
+                                class="ml-1 text-primary"
+                            />
+                        </a-button>
+                    </div>
+                    <!-- <div class="flex justify-between">
+                        <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
                         </div>
                         <AtlanBtn
@@ -106,29 +133,35 @@
                                 class="ml-1 text-primary"
                             />
                         </AtlanBtn>
-                    </div>
+                    </div> -->
                     <div
-                        class="flex items-center p-2 mt-1 border rounded border-bottom border-slate-300"
-                        :class="
-                            selectedPermission.length === 0
-                                ? 'border-dashed'
-                                : 'border-solid'
-                        "
+                        class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
                     >
-                        <span
-                            v-if="selectedPermission.length === 0"
-                            class="p-2 text-xs text-gray-500"
-                        >
-                            Select from set of permissions for your policy
+                        <span v-if="selectedPermission.length === 0">
+                            <a-button
+                                size="small"
+                                class="text-primary"
+                                @click="handleToggleManage"
+                            >
+                                Edit
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                            </a-button>
                         </span>
                         <div v-else>
                             <div
                                 v-for="el in selectedPermission"
                                 :key="el"
-                                class="h-auto overflow-auto tag-permission max-h-32"
+                                class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                             >
-                                <div class="title-tag">{{ el.title }}</div>
-                                <div class="value-tag">{{ el.value }}</div>
+                                <div class="text-gray-500 title-tag">
+                                    {{ el.title }}
+                                </div>
+                                <div class="font-mono tracking-wide value-tag">
+                                    {{ el.value }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -140,7 +173,20 @@
                         {{ rules.metadata.text }}
                     </div>
                 </div>
-                <div v-else>
+                <div v-if="policyType === 'data'">
+                    <div class="flex items-center mt-3 mb-2 gap-x-1">
+                        <span class="text-sm text-gray-500"
+                            >Masking(Optional)</span
+                        >
+                    </div>
+
+                    <DataMaskingSelector
+                        v-model:maskType="policy.mask"
+                        class="mb-6 w-80"
+                        :type="'purpose'"
+                    />
+                </div>
+                <!-- <div v-else>
                     <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
                             <AtlanIcon class="text-gray-500" icon="Lock" />
@@ -168,7 +214,7 @@
                         class="mb-6 w-80"
                         :type="'purpose'"
                     />
-                </div>
+                </div> -->
 
                 <div class="">
                     <div class="flex justify-between mt-4">
@@ -405,7 +451,14 @@
                     policyType.value = type.value
                     if (type.value === 'meta') {
                         policy.value = {
-                            actions: [],
+                            actions: [
+                                'entity-read',
+                                'entity-update',
+                                'entity-create',
+                                'entity-delete',
+                                'entity-update-business-metadata',
+                                'entity-update-classification',
+                            ],
                             allow: true,
                             name: '',
                             description: '',
@@ -605,20 +658,20 @@
         transition: all ease 0.3s;
     }
     .tag-permission {
-        padding: 4px 8px;
-        padding-top: 0px;
-        display: flex;
+        // padding: 4px 8px;
+        // padding-top: 0px;
+        // display: flex;
         text-transform: capitalize;
-        margin-top: 4px;
-        .title-tag {
-            min-width: 100px;
-        }
-        .value-tag {
-            border-radius: 4px;
-            padding: 4px 8px;
-            background-color: #f3f3f3;
-            @apply font-mono;
-        }
+        // margin-top: 4px;
+        // .title-tag {
+        //     min-width: 100px;
+        // }
+        // .value-tag {
+        //     border-radius: 4px;
+        //     padding: 4px 8px;
+        //     background-color: #f3f3f3;
+        //     @apply font-mono;
+        // }
     }
     .dot {
         height: 4px;

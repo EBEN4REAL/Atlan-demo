@@ -18,18 +18,22 @@ export function useJoin() {
         {
             type: 'inner_join',
             name: 'Inner Join',
+            url: 'https://dataschool.com/how-to-teach-people-sql/inner-join-animated/',
         },
         {
             type: 'left_join',
             name: 'Left Join',
+            url: 'https://dataschool.com/how-to-teach-people-sql/left-right-join-animated/',
         },
         {
             type: 'right_join',
             name: 'Right Join',
+            url: 'https://dataschool.com/how-to-teach-people-sql/left-right-join-animated/',
         },
         {
             type: 'outer_join',
             name: 'Outer Join',
+            url: 'https://dataschool.com/how-to-teach-people-sql/full-outer-join-animated/',
         },
     ]
 

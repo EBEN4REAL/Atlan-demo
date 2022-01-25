@@ -31,9 +31,7 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
-                                :number-of-active-user="numberOfActiveUser"
-                                :number-of-disable-user="numberOfDisableUser"
-                                :number-of-invited-user="numberOfInvitedUser"
+                                :user-type-agg="userTypeAgg"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
                             />
@@ -116,6 +114,7 @@
                     :show-change-role-popover="showChangeRolePopover"
                     :show-disable-enable-popover="showDisableEnablePopover"
                     :show-revoke-invite-popover="showRevokeInvitePopover"
+                    :is-preview="showPreview"
                     @toggleDisableEnablePopover="toggleDisableEnablePopover"
                     @handleRevokeInvite="handleRevokeInvite"
                     @revokeInvite="revokeInvite"
@@ -128,7 +127,6 @@
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
                     @refetch="refetchData"
-                    :isPreview="showPreview"
                 />
                 <div
                     v-if="pagination.total > 1 || isLoading"
@@ -183,6 +181,8 @@
     import map from '~/constant/accessControl/map'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Pagination from '@/common/list/pagination.vue'
+    import useRoles from '~/composables/roles/useRoles'
+    import useUserStore from '~/store/users'
 
     export default defineComponent({
         name: 'UsersView',
@@ -213,6 +213,7 @@
             const showUserPreview = ref(false)
             const showDisableEnablePopover = ref<boolean>(false)
             const isFirstLoad = ref(true)
+            const userTypeAgg = ref({})
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -230,7 +231,15 @@
                 error,
                 isReady,
                 totalUserCount,
+                getUserTypeAggregations,
             } = useUsers(userListAPIParams)
+            const { roleList, getRoleList } = useRoles()
+
+            const updateRolesList = async () => {
+                await getRoleList()
+                const storeUser = useUserStore()
+                storeUser.setRoles(roleList.value)
+            }
 
             const numberOfActiveUser = ref(0)
             const numberOfDisableUser = ref(0)
@@ -414,6 +423,7 @@
                 message.success('User role updated.')
                 closeChangeRolePopover()
                 reloadTable()
+                updateRolesList()
             }
             const handleErrorUpdateRole = () => {
                 message.error(
@@ -428,6 +438,8 @@
                     invitationComponentRef.value
                 )
                     invitationComponentRef.value.getInvitationList()
+                // update user type aggregations in filter dropdown
+                userTypeAgg.value = getUserTypeAggregations().value
                 closeInviteUserModal()
             }
 
@@ -455,6 +467,8 @@
                             content: 'Invitation revoked.',
                         })
                         reloadTable()
+                        // update user type aggregations in filter dropdown
+                        userTypeAgg.value = getUserTypeAggregations().value
                     } else if (error && error.value) {
                         message.error({
                             key: 'remoke_invite',
@@ -491,6 +505,8 @@
                                 }`,
                                 duration: 2,
                             })
+                            // update user type aggregations in filter dropdown
+                            userTypeAgg.value = getUserTypeAggregations().value
                         } else if (error && error.value) {
                             message.error({
                                 key: 'enableDisable',
@@ -552,6 +568,8 @@
             const handleClickFilter = (v) => {
                 visible.value = v
             }
+            // update user type aggregations in filter dropdown
+            userTypeAgg.value = getUserTypeAggregations().value
 
             return {
                 showPreview,
@@ -585,7 +603,6 @@
                 handleInviteUsers,
                 handleInviteSent,
                 reloadTable,
-
                 filteredUserCount,
                 showPreview,
                 handleRevokeInvite,
@@ -608,6 +625,7 @@
                 filtersLength,
                 handleClickFilter,
                 visible,
+                userTypeAgg,
             }
         },
     })

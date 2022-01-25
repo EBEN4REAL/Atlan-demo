@@ -1,16 +1,14 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import axios from 'axios'
-import { mutate } from 'swrv'
 import swrvState from '~/utils/swrvState'
 
 import { pluralizeString } from '~/utils/string'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
-import { LIST_USERS } from '~/services/service/users/key'
 import { useOptions } from '~/services/api/common'
+import { userStatusOptions } from '~/constant/users'
 
 export const getUserName = (user: any) => {
     const { firstName } = user
@@ -210,6 +208,26 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         mutate()
     }
 
+    const getUserTypeAggregations = () => {
+        const result = ref({
+            active: 0,
+            disabled: 0,
+            invited: 0,
+        })
+        userStatusOptions.forEach((status) => {
+            const payload = {
+                limit: 1,
+                offset: 0,
+                sort: 'firstName',
+                filter: { $and: [JSON.parse(status.value)] },
+            }
+            const { data } = Users.List(payload)
+            watch(data, () => {
+                result.value[status.id] = data?.value?.filterRecord
+            })
+        })
+        return result
+    }
     return {
         total,
         state,
@@ -225,6 +243,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         error,
         cancelRequest,
         mutate,
+        getUserTypeAggregations,
     }
 }
 interface params {

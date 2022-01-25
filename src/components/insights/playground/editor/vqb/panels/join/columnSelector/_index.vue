@@ -24,9 +24,11 @@
                         : `width:${containerPosition?.width}px;`
                 }top:${
                     containerPosition?.top + containerPosition?.height
-                }px;left:${containerPosition?.left}px;height:280px`"
+                }px;left:${
+                    containerPosition?.left
+                }px;height:280px;min-height:0`"
                 :class="[
-                    'absolute z-10 overflow-auto bg-white rounded custom-shadow position',
+                    'absolute z-10 flex flex-col bg-white rounded custom-shadow position',
                 ]"
             >
                 <slot name="body"> </slot>

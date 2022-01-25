@@ -76,7 +76,7 @@
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400 line-through',
-                                    'text-xs',
+                                    'text-xs break-words line-clamp-2',
                                 ]"
                                 v-if="!expand"
                             >
@@ -199,6 +199,8 @@
             <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 :panelInfo="activeInlineTab.playground.vqb.panels[index]"
+                v-model:submenuHovered="submenuHovered"
+                v-model:containerHovered="containerHovered"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===

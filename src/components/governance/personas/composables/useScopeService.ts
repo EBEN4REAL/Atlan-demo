@@ -32,7 +32,7 @@ const purposeScopeList = [
         scopes: [
             {
                 value: 'entity-update-business-metadata',
-                label: 'update: Custom Metadata',
+                label: 'Update Custom Metadata',
                 desc: 'Update classifications for selected assets',
             },
             // {
@@ -47,7 +47,7 @@ const purposeScopeList = [
             // },
             {
                 value: 'entity-update-classification',
-                label: 'update: Classifications',
+                label: 'Update Classifications',
                 desc: 'Update values for BM attributes for selected assets',
             },
 

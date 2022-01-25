@@ -69,10 +69,10 @@
                 assetQfName.value.split('/').slice(-3).reverse()
             )
             const assetIcon = computed(() => {
-                let name = assetQfName.value.split('/')[1]
+                let name = assetQfName.value?.split('/')[1] || ''
                 name = name.toLowerCase()
                 // name[0] = name[0].toUpperCase()
-                const result = `${name[0].toUpperCase()}${name.slice(
+                const result = `${name[0]?.toUpperCase() || ''}${name.slice(
                     1,
                     name.length
                 )}`

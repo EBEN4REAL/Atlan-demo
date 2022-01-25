@@ -91,6 +91,7 @@ export const assetTypeList: {
         parents: ['Connection', 'Database', 'Schema'],
         children: ['Column'],
         isDiscoverable: true,
+        image: 'MaterialisedView',
         orderWeight: 100,
         count: 0,
         relationships: [],

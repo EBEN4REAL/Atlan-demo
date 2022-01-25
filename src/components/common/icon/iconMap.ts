@@ -217,6 +217,7 @@ import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
 import ColumnGray from '~/assets/images/icons/column-gray.svg'
+import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
@@ -435,6 +436,7 @@ export default {
     EmptyResource,
     IssuesFilled,
     ExplorerTrigger,
+    MaterialisedView,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,

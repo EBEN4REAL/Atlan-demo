@@ -5,8 +5,8 @@
         v-model="activeCollapse"
         bordered
         :default-active-key="['1', '2']"
-        @change="handleChange"
         class="-mt-3"
+        @change="handleChange"
     >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
@@ -38,12 +38,23 @@
             <template #header>
                 <div class="flex justify-between w-48 hover:text-primary">
                     <span
-                        class="text-sm text-gray-500 uppercase hover:text-primary"
-                        :class="`${
-                            activeCollapse.includes('1') ? 'text-primary' : ''
-                        }`"
-                        >status</span
+                        ><span
+                            class="text-sm text-gray-500 uppercase hover:text-primary"
+                            :class="`${
+                                activeCollapse.includes('1')
+                                    ? 'text-primary'
+                                    : ''
+                            }`"
+                            >status</span
+                        >
+                    </span>
+                    <span
+                        v-if="statusFilter.length"
+                        class="ml-auto text-sm text-gray-500 opacity-100 hover:text-red-500"
+                        @click.stop.prevent="handleClearStatusFilter"
                     >
+                        clear
+                    </span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
@@ -115,12 +126,23 @@
                     class="flex justify-between w-48 border-t-0 hover:text-primary"
                 >
                     <span
-                        class="text-sm text-gray-500 uppercase border-t-0"
-                        :class="`${
-                            activeCollapse.includes('2') ? 'text-primary' : ''
-                        }`"
-                        >role</span
+                        ><span
+                            class="text-sm text-gray-500 uppercase border-t-0"
+                            :class="`${
+                                activeCollapse.includes('2')
+                                    ? 'text-primary'
+                                    : ''
+                            }`"
+                            >role</span
+                        ></span
                     >
+                    <span
+                        v-if="role"
+                        class="ml-auto text-sm text-gray-500 opacity-100 hover:text-red-500"
+                        @click.stop.prevent="handleClearRoleFilter"
+                    >
+                        clear
+                    </span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
@@ -220,12 +242,21 @@
             const handleChangeRoleFilter = () => {
                 emit('changeRole', role.value)
             }
+            const handleClearStatusFilter = () => {
+                statusFilter.value = []
+                handleStatusFilterChange()
+            }
+            const handleClearRoleFilter = () => {
+                role.value = ''
+                emit('changeRole', role.value)
+            }
             const handleClearFilter = () => {
                 role.value = ''
                 statusFilter.value = []
                 emit('update:modelValue', [])
                 emit('changeRole', role.value)
             }
+
             const storeUser = useUserStore()
             const { roles } = storeToRefs(storeUser)
             const rolesWithCount = computed(() =>
@@ -250,9 +281,8 @@
                 handleClearFilter,
                 roles,
                 rolesWithCount,
-                numberOfActiveUser,
-                numberOfDisableUser,
-                numberOfInvitedUser,
+                handleClearRoleFilter,
+                handleClearStatusFilter,
                 handleChange,
             }
         },

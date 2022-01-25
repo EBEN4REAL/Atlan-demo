@@ -12,7 +12,7 @@ export const previewTabs = [
     {
         name: 'Columns',
         component: 'columns',
-        includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
+        includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
         scrubbed: false,
@@ -72,7 +72,7 @@ export const previewTabs = [
             'AtlasGlossaryTerm',
             'Table',
             'View',
-            'MaterialisedViews',
+            'MaterialisedView',
             'PartitionTable',
             'Column',
             'Process',

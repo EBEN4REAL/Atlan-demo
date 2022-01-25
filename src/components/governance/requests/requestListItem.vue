@@ -79,7 +79,7 @@
                 class="w-5 h-5 text-gray animate-spin"
             /> -->
             <!-- <div v-else-if="selected"> -->
-            <div v-else class="pr-5">
+            <div class="pr-5">
                 <div
                     v-if="activeHover === request.id"
                     class="flex items-center justify-end font-bold"

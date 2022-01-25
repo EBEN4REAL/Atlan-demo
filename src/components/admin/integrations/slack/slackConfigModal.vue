@@ -246,6 +246,7 @@
                         <span>Atlan app created</span>
                         <div class="flex-grow" />
                         <span
+                            v-auth="access.DELETE_INTEGRATION"
                             class="cursor-pointer text-primary"
                             @click="handleReconfigure"
                             >Reconfigure</span
@@ -266,6 +267,7 @@
                                 Installed
                             </div>
                             <Button
+                                v-auth="access.CREATE_INTEGRATION"
                                 v-else
                                 class="text-primary"
                                 color="secondary"
@@ -299,6 +301,7 @@
                         >Cancel
                     </a-button>
                     <Button
+                        v-auth="access.CREATE_INTEGRATION"
                         :disabled="buttonDisabled"
                         :loading="isLoading"
                         type="primary"
@@ -324,6 +327,7 @@
 
     import useIntegration from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'SlackConfigModal',
@@ -380,6 +384,7 @@
             }
 
             return {
+                access,
                 tenantSlackStatus,
                 handleReconfigure,
                 disconnect,

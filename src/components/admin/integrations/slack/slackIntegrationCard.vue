@@ -24,15 +24,17 @@
                 }"
                 class="px-3 py-1.5 space-y-2"
             >
-                <div class="flex items-center rounded gap-x-1">
+                <div class="flex items-center justify-center rounded gap-x-1">
                     <AtlanIcon icon="Check" />
                     {{ tenantSlackStatus.teamName }} workspace connected
                 </div>
-                <div class="flex items-center text-xs text-gray-500 gap-x-1">
+                <div
+                    class="flex items-center text-xs text-gray-500 gap-x-1.5 justify-center"
+                >
                     Added by
                     <div class="flex justify-center text-xs">
                         <img :src="avatarURL" class="w-4 h-4 rounded-full" />
-                        <div class="self-center ml-1 text-gray-700 capitalize">
+                        <div class="self-center ml-1 text-gray-700">
                             {{ userList[0]?.name }}
                         </div>
                     </div>

@@ -211,6 +211,7 @@
                 requestPayload.value = {
                     firstName: formData.value.firstName,
                     lastName: formData.value.lastName,
+                    email: selectedUser.value.email,
                 }
                 if (Object.keys(attributes).length > 0) {
                     requestPayload.value = {

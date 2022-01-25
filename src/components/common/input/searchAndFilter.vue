@@ -18,16 +18,15 @@
                 class="flex-1 text-sm bg-transparent focus:outline-none"
                 @keyup.esc="$event.target.blur()"
             />
-            <div v-if="value?.length" class="flex-none h-7 w-7">
-                <button class="text-gray-500 hover:text-gray">
-                    <AtlanIcon
-                        icon="Cancel"
-                        class="h-3 m-2"
-                        @click="clearInput"
-                        @keyup.enter="clearInput"
-                    />
+            <template v-if="value?.length">
+                <button
+                    class="flex-none text-gray-500 hover:text-gray"
+                    @click="clearInput"
+                    @keyup.enter="clearInput"
+                >
+                    <AtlanIcon icon="Cancel" class="h-3 m-1 mr-2" />
                 </button>
-            </div>
+            </template>
 
             <a-popover
                 v-if="$slots.filter"

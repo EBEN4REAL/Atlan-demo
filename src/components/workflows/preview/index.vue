@@ -110,9 +110,17 @@
             </div>
         </div>
 
-        <Property :item="item" v-if="mode === 'package'"></Property>
+        <Property
+            :item="item"
+            v-if="mode === 'package'"
+            :key="item.metadata.name"
+        ></Property>
 
-        <Workflows :item="item" v-if="mode === 'workflow'"></Workflows>
+        <Workflows
+            :item="item"
+            v-if="mode === 'workflow'"
+            :key="item.metadata.name"
+        ></Workflows>
 
         <!-- <a-tabs
             v-model:activeKey="activeKey"

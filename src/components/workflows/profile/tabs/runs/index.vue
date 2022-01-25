@@ -51,6 +51,11 @@
                 required: false,
                 default: '',
             },
+            workflowObject: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
             // selectedPod: {
             //     type: Object,
             //     required: true,

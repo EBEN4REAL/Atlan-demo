@@ -46,6 +46,8 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
+    import useGetCredential from '~/composables/credential/useGetCredential'
+
     import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
@@ -81,7 +83,7 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { property } = toRefs(props)
+            const { property, modelValue } = toRefs(props)
 
             const formState = inject('formState')
             const validateForm = inject('validateForm')
@@ -96,6 +98,13 @@
                 `${property.value.ui?.credentialType}`,
                 true
             )
+
+            if (
+                typeof modelValue.value === 'string' ||
+                modelValue.value instanceof String
+            ) {
+                const {} = useGetCredential(modelValue.value, true)
+            }
 
             const resetError = () => {
                 testMessage.value = ''

@@ -34,7 +34,7 @@
         },
         setup() {
             useHead({
-                title: 'Assets',
+                title: 'Workflows Center',
             })
             const route = useRoute()
             const assetdiscovery = ref()

@@ -46,6 +46,7 @@
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
     import { useRoute, useRouter } from 'vue-router'
     import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
+    import { useHead } from '@vueuse/head'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
@@ -79,6 +80,15 @@
                 isLoading: isLoadingPackage,
                 error,
             } = usePackageByName(id, fetch.value)
+
+            useHead({
+                title: computed(
+                    () =>
+                        localSelected.value?.metadata?.annotations[
+                            'orchestration.atlan.com/name'
+                        ]
+                ),
+            })
 
             const { data, isLoading: isLoadingConfigMap } = useConfigMapByName(
                 `${id.value}`,

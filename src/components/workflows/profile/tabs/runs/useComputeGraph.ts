@@ -153,6 +153,7 @@ export default function useComputeGraph(
             const name = getNode(item?.nodeName).name
 
             if (isFirstLevel(name) && item.parent) {
+                console.log(rootNodeName, item)
                 nodes.value.push(newNode(item, rootNodeName))
                 const stroke = '#aaaaaa'
 

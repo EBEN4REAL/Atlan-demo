@@ -20,6 +20,8 @@
                 <component
                     :is="tab.component"
                     :key="`${tab.id}_${runName}`"
+                    :workflowObject="workflowObject"
+                    :packageObject="packageObject"
                     :workflowName="workflowObject?.metadata?.name"
                 ></component>
             </a-tab-pane>
@@ -49,6 +51,9 @@
             WorkflowHeader,
 
             Runs: defineAsyncComponent(() => import('./tabs/runs/index.vue')),
+            Config: defineAsyncComponent(
+                () => import('./tabs/config/index.vue')
+            ),
         },
         props: {
             workflowObject: {
@@ -72,7 +77,7 @@
 
             const router = useRouter()
             const handleChangeTab = (key) => {
-                router.replace(`/workflow/${route.params.id}/${key}`)
+                router.replace(`/workflows/${route.params.id}/${key}`)
             }
 
             onMounted(() => {

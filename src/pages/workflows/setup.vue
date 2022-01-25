@@ -46,7 +46,7 @@
         },
         setup(props, { emit }) {
             useHead({
-                title: 'Worfklow Setup',
+                title: 'Metadata Marketplace',
             })
             const selectedPackage = ref(null)
 

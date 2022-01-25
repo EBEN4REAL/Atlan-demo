@@ -237,6 +237,22 @@ export default function useWorkflowInfo() {
         return suffix
     }
 
+    const getGlobalArguments = (item) => {
+        const map = {}
+
+        if (item?.spec?.templates?.length > 0) {
+            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
+                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
+                    (element) => {
+                        map[element.name] = element.value
+                    }
+                )
+            }
+        }
+
+        return map
+    }
+
     return {
         name,
         creationTimestamp,
@@ -264,5 +280,6 @@ export default function useWorkflowInfo() {
         allowSchedule,
         cronObject,
         nextRuns,
+        getGlobalArguments,
     }
 }

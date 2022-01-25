@@ -4,7 +4,7 @@
             <a-steps
                 v-if="steps.length > 0"
                 :current="currentStep"
-                class="px-6 py-3 border-b border-gray-200"
+                class="px-6 py-3 bg-gray-100 border-b border-gray-200"
             >
                 <template v-for="(step, index) in steps" :key="step.id">
                     <a-step @click="handleStepClick(index)">
@@ -29,7 +29,7 @@
             </div>
 
             <div
-                class="flex justify-between px-6 py-3 border-t"
+                class="flex justify-between px-6 py-3 bg-gray-100 border-t"
                 v-if="currentStep < steps.length"
             >
                 <a-button @click="handlePrevious" v-if="currentStep !== 0">
@@ -39,6 +39,7 @@
                 <div v-if="currentStep == 0">
                     <a-button
                         @click="handleExit"
+                        v-if="!isEdit"
                         class="font-bold text-red-500"
                     >
                         Exit
@@ -198,7 +199,7 @@
 
     // Components
     import EmptyView from '@common/empty/index.vue'
-    import SetupGraph from './setupGraph.vue'
+
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
     // import Sandbox from '../preview/sandbox.vue'
@@ -210,7 +211,6 @@
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
 
     import { getEnv } from '~/modules/__env'
-    import parser from 'cron-parser'
 
     // Composables
 
@@ -218,7 +218,7 @@
         name: 'WorkflowSetupTab',
         components: {
             Run,
-            SetupGraph,
+
             EmptyView,
             DynamicForm,
             Schedule,
@@ -235,6 +235,20 @@
                     return {}
                 },
             },
+            isEdit: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
+            defaultValue: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
@@ -242,13 +256,14 @@
 
             const stepForm = ref()
             const currentStep = ref(0)
-            const { workflowTemplate, configMap } = toRefs(props)
+            const { workflowTemplate, configMap, isEdit, defaultValue } =
+                toRefs(props)
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
             const sandboxVisible = ref(false)
-            const modelValue = ref({})
+            const modelValue = ref(defaultValue.value)
             const selectedStep = ref('')
 
             const cron = ref({
@@ -477,27 +492,30 @@
 
                 const parameters = []
                 if (workflowTemplate.value.spec.templates.length > 0) {
-                    workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
-                        (p) => {
-                            if (modelValue.value[p.name]) {
-                                if (
-                                    typeof modelValue.value[p.name] === 'object'
-                                ) {
-                                    parameters.push({
-                                        name: p.name,
-                                        value: JSON.stringify(
-                                            modelValue.value[p.name]
-                                        ),
-                                    })
-                                } else {
-                                    parameters.push({
-                                        name: p.name,
-                                        value: modelValue.value[p.name],
-                                    })
+                    if (!defaultValue.value) {
+                        workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
+                            (p) => {
+                                if (modelValue.value[p.name]) {
+                                    if (
+                                        typeof modelValue.value[p.name] ===
+                                        'object'
+                                    ) {
+                                        parameters.push({
+                                            name: p.name,
+                                            value: JSON.stringify(
+                                                modelValue.value[p.name]
+                                            ),
+                                        })
+                                    } else {
+                                        parameters.push({
+                                            name: p.name,
+                                            value: modelValue.value[p.name],
+                                        })
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 } else {
                     message.error('Something went wrong. Package is not valid.')
                 }
@@ -599,6 +617,8 @@
                 pause,
                 resume,
                 handleTrackLink,
+                isEdit,
+                defaultValue,
             }
         },
     })

@@ -14,7 +14,18 @@ const Query = (
     options?: useOptions
 ) => useAPI(map.QUERY_CREDENTIAL, 'POST', { body }, options || {})
 
+const GetByID = (pathVariables?, options?: useOptions) =>
+    useAPI(
+        map.GET_CREDENTIAL,
+        'GET',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+
 export const Credential = {
     Test,
     Query,
+    GetByID,
 }

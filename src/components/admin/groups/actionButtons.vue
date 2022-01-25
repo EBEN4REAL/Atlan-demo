@@ -2,7 +2,7 @@
     <a-button-group>
         <MemberPopover
             :selected-group="group"
-            @members-added.stop="$emit('membersAdded')"
+            @members-added="$emit('membersAdded')"
         >
             <template #label>
                 <AtlanBtn

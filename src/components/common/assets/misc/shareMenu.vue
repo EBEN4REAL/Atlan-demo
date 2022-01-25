@@ -6,26 +6,33 @@
     >
         <slot></slot>
         <template #overlay>
-            <a-menu mode="vertical">
-                <a-menu-item key="copyLink" @click="handleCopyProfileLink">
+            <a-menu class="" style="min-width: 200px" mode="vertical">
+                <a-menu-item
+                    class="px-4 py-2"
+                    key="copyLink"
+                    @click="handleCopyProfileLink"
+                >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" />
-                        <span class="pl-2 text-sm">
-                            Copy asset profile link
-                        </span>
+                        <span class="pl-2 text-sm"> Copy link </span>
                     </div>
                 </a-menu-item>
 
                 <a-menu-item
                     v-if="
-                        !!intStore.hasConfiguredTenantLevelIntegration('slack')
+                        tenantSlackStatus.configured &&
+                        tenantSlackStatus.channels.length
                     "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
-                    class="flex items-center"
+                    class="flex items-center px-4 py-2"
                     @click="closeMenu"
                 >
-                    <SlackModal :link="link" @closeParent="closeMenu">
+                    <SlackModal
+                        :link="link"
+                        :asset-i-d="asset.guid"
+                        @closeParent="closeMenu"
+                    >
                         <div class="flex items-center">
                             <AtlanIcon icon="Slack" />
                             <span class="pl-2 text-sm">Slack</span>
@@ -67,7 +74,8 @@
             const isVisible = ref(false)
             const { getProfilePath } = useAssetInfo()
 
-            const intStore = integrationStore()
+            const store = integrationStore()
+            const { tenantSlackStatus } = toRefs(store)
 
             const { asset } = toRefs(props)
             const closeMenu = () => {
@@ -85,7 +93,7 @@
             }
 
             return {
-                intStore,
+                tenantSlackStatus,
                 access,
                 link,
                 handleCopyProfileLink,

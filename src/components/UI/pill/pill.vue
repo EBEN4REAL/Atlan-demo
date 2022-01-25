@@ -3,7 +3,7 @@
     <button
         :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
         :data-test-id="dataTestId"
-        class="relative flex items-center text-gray-700 transition duration-300 rounded-full cursor-pointer gap-x-1 group"
+        class="relative flex items-center text-gray-700 transition duration-300 rounded-full cursor-pointer gap-x-1 group pill-ui"
         :style="{ height: size === 'sm' ? '22px' : '30px' }"
         :class="{
             'border border-gray-300 hover:border-primary hover:bg-primary hover:text-white':

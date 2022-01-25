@@ -27,6 +27,8 @@
                 :allow-delete="false"
                 :color="localClassification[0].options?.color"
                 :no-hover="true"
+                :created-by="localClassification[0]?.createdBy"
+                class="pr-3 classification-pill"
             />
         </Popover>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
@@ -35,7 +37,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, PropType } from 'vue'
-    import Popover from '@/common/popover/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
@@ -89,12 +91,13 @@
         }
     }
     .classification-pill {
-        padding-left: 0px !important;
-        background: transparent !important;
-        border: none !important;
-        &:hover {
-            background: transparent !important;
-            @apply text-gray-700 !important;
-        }
+        width: fit-content!important
+        // padding-left: 0px !important;
+        // background: transparent !important;
+        // border: none !important;
+        // &:hover {
+        //     background: transparent !important;
+        //     @apply text-gray-700 !important;
+        // }
     }
 </style>

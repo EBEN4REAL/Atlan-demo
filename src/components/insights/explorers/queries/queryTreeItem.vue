@@ -12,34 +12,24 @@
                     v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    <div class="parent-ellipsis-container py-1.5">
-                        <div class="flex w-full">
+                    <div class="py-1.5 w-full">
+                        <div class="flex w-11/12 parent-ellipsis-container">
                             <AtlanIcon
                                 :icon="
                                     expandedKeys.find((key) => key === item.key)
                                         ? 'FolderOpen'
                                         : 'FolderClosed'
                                 "
-                                class="w-4 h-4 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
                                 color="#5277D7"
                             ></AtlanIcon>
                             <span
                                 class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
-                            <!-- <AtlanIcon
-                                icon="Reload"
-                                class="w-4 h-4 my-auto"
-                                v-if="
-                                    !isNodeLoading &&
-                                    nodeError &&
-                                    errorNode?.guid === item?.guid
-                                "
-                            ></AtlanIcon> -->
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
-                                <!-- {{ errorNode?.guid }} : {{ item?.guid }} -->
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
@@ -63,13 +53,6 @@
                                                 @click="newQuery"
                                                 >New query</a-menu-item
                                             >
-                                            <!-- <a-menu-item
-                                                key="public"
-                                                @click="
-                                                    showPublishPopover = true
-                                                "
-                                                >Make folder public</a-menu-item
-                                            > -->
 
                                             <a-menu-item
                                                 key="ChangeFolder"
@@ -218,7 +201,7 @@
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
-                        <div class="parent-ellipsis-container py-1.5">
+                        <div class="parent-ellipsis-container py-1.5 w-11/12">
                             <AtlanIcon
                                 :icon="
                                     item?.attributes?.isVisualQuery
@@ -231,7 +214,7 @@
                                               certificateStatus(item)
                                           )
                                 "
-                                class="w-4 h-4 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
                                 color="#5277D7"
                             ></AtlanIcon>
                             <span
@@ -240,7 +223,7 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -293,7 +276,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -356,16 +339,17 @@
             </div>
         </div>
     </div>
-    <a-popover :visible="showDeletePopover" placement="rightTop">
-        <template #content>
-            <TreeDeletePopover
-                :item="item"
-                @cancel="showDeletePopover = false"
-                @delete="() => delteItem(item?.typeName)"
-                :isSaving="isDeleteLoading"
-            />
-        </template>
-    </a-popover>
+    <!-- <a-popover :visible="showDeletePopover" placement="rightTop">
+        <template #content> -->
+    <TreeDeletePopover
+        :item="item"
+        @cancel="showDeletePopover = false"
+        @delete="() => delteItem(item?.typeName)"
+        :isSaving="isDeleteLoading"
+        :showDeletePopover="showDeletePopover"
+    />
+    <!-- </template>
+    </a-popover> -->
     <!-- <a-popover :visible="showPublishPopover" placement="right">
         <template #content>
             <div class="p-4">

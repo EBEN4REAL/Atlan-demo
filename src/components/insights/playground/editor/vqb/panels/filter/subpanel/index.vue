@@ -17,32 +17,79 @@
                             :disabled="readOnly"
                         />
                         <span v-else class="flex flex-row-reverse text-gray-500"
-                            >Where</span
+                            >WHERE</span
                         >
                     </div>
                     <div class="w-full grid-container group">
                         <div class="item-1">
                             <ColumnSelector
                                 class="flex-1"
-                                v-model:selectedItem="subpanel.column"
-                                :tableQualfiedName="
+                                v-model:selectedColumn="subpanel.column"
+                                :disabled="readOnly"
+                                :tableQualifiedName="
                                     columnSubpanels[0]?.tableQualfiedName
                                 "
-                                :disabled="readOnly"
                                 :selectedTablesQualifiedNames="
                                     activeInlineTab.playground.vqb
                                         .selectedTables
                                 "
-                                @change="
-                                    (val) =>
-                                        handleColumnChange(val, index, subpanel)
-                                "
-                            />
+                            >
+                                <template #head>
+                                    <ColumnSelectorHead
+                                        v-model:selectedColumn="subpanel.column"
+                                        :selectedTables="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
+                                    />
+                                </template>
+
+                                <template #body>
+                                    <ColumnSelectorDropdown
+                                        v-model:selectedColumn="subpanel.column"
+                                        :disabled="readOnly"
+                                        :tableQualifiedName="
+                                            columnSubpanels[0]
+                                                ?.tableQualfiedName
+                                        "
+                                        :selectedTablesQualifiedNames="
+                                            activeInlineTab.playground.vqb
+                                                .selectedTables
+                                        "
+                                        @change="
+                                            (val) =>
+                                                handleColumnChange(
+                                                    val,
+                                                    index,
+                                                    subpanel
+                                                )
+                                        "
+                                    />
+                                </template>
+                            </ColumnSelector>
                         </div>
 
                         <div class="item-2">
+                            <!-- Will appear when there is only one column -->
+                            <div class="flex items-center text-gray-500">
+                                <AtlanIcon
+                                    v-if="
+                                        isSubpanelClosable(subpanels) &&
+                                        !readOnly &&
+                                        !subpanel?.filter?.type
+                                    "
+                                    @click.stop="
+                                        () => handleDelete(index, subpanel)
+                                    "
+                                    icon="Close"
+                                    class="w-6 h-6 text-gray-500 opacity-0 mt-0.5 cursor-pointer group-hover:opacity-100"
+                                />
+                                <div style="width: 32px" v-else></div>
+                            </div>
+                            <!-- ------------ -->
                             <FilterSelector
                                 class="w-full"
+                                v-if="subpanel?.filter?.type"
                                 :columnName="subpanel?.column?.label"
                                 :columnType="subpanel?.column?.type"
                                 v-model:selectedFilter="subpanel.filter"
@@ -94,12 +141,13 @@
                                 v-model:inputValue="subpanel.filter.value"
                             />
 
-                            <!--  -->
+                            <!-- Will appear when there are 3 columns visible on screen -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon
                                     v-if="
                                         isSubpanelClosable(subpanels) &&
-                                        !readOnly
+                                        !readOnly &&
+                                        subpanel?.filter?.type
                                     "
                                     @click.stop="
                                         () => handleDelete(index, subpanel)
@@ -107,7 +155,7 @@
                                     icon="Close"
                                     class="w-6 h-6 text-gray-500 opacity-0 ml-2 mt-0.5 cursor-pointer group-hover:opacity-100"
                                 />
-                                <!-- <div style="width: 32px" v-else></div> -->
+                                <div style="width: 32px" v-else></div>
                             </div>
                         </div>
                     </div>
@@ -118,7 +166,7 @@
         <span
             v-if="!readOnly"
             class="items-center mt-3 cursor-pointer text-primary"
-            @click.stop="handleAddPanel"
+            @click="handleAddPanel"
         >
             <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
             <span>Add another</span>
@@ -147,7 +195,9 @@
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
-    import ColumnSelector from '../../common/columnSelector/index.vue'
+    import ColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/index.vue'
+    import ColumnSelectorDropdown from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/dropdown.vue'
+    import ColumnSelectorHead from '~/components/insights/playground/editor/vqb/panels/common/multiSelect/head.vue'
     import Input from '../filterComponents/input.vue'
     import MultiInput from '../filterComponents/multiInput.vue'
     import FilterType from '../filterComponents/filterType.vue'
@@ -169,6 +219,8 @@
             FilterType,
             RangeInput,
             Input,
+            ColumnSelectorDropdown,
+            ColumnSelectorHead,
         },
         props: {
             expand: {
@@ -282,16 +334,6 @@
                         })
                     }
                 )
-                if (variables?.length > 0) {
-                    variables.forEach((variable) => {
-                        changeVariableTypeFromVQB(
-                            activeInlineTab,
-                            tabs,
-                            variable,
-                            val?.type?.toLowerCase() ?? 'string'
-                        )
-                    })
-                }
             }
 
             const handleAddPanel = () => {
@@ -415,24 +457,27 @@
         margin-top: 9px;
     }
     .grid-container {
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 0.65fr 1.5fr;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
     }
     .item-1 {
-        grid-column-start: 1;
-        grid-column-end: 2;
+        flex: 0.35;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-2 {
-        grid-column-start: 2;
-        grid-column-end: 3;
+        flex: 0.2;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .item-3 {
-        grid-column-start: 3;
-        grid-column-end: 4;
-    }
-    .item-4 {
-        grid-column-start: 4;
-        grid-column-end: 5;
+        flex: 0.45;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
 </style>

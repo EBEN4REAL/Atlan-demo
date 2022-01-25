@@ -64,6 +64,7 @@
 <script lang="ts">
     import { ref, watch, PropType } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
+    import { useTenantStore } from '~/store/tenant'
     import uploadLogo from '~/composables/avatar/updateLogo'
 
     export default {
@@ -95,6 +96,8 @@
             },
         },
         setup(props, context) {
+            const tenantStore = useTenantStore()
+
             const uploadStarted = ref(false)
             const updatedImageUrl = ref(props.imageUrl)
 
@@ -117,6 +120,7 @@
             }
             watch(uploadKey, () => {
                 context.emit('imageUpdated', updatedImageUrl)
+                tenantStore.setLogo(updatedImageUrl.value)
             })
             return {
                 handleUploadAvatar,

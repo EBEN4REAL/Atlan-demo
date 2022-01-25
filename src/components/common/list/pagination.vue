@@ -57,12 +57,17 @@
             type: Boolean,
             required: true,
         },
+        defaultPage: {
+            type: Number,
+            required: false,
+            default: 1,
+        },
     })
     const emit = defineEmits(['mutate'])
     const { offset } = useVModels(props, emit)
-    const { pageSize } = toRefs(props)
+    const { pageSize, defaultPage } = toRefs(props)
 
-    const current = ref(1)
+    const current = ref(defaultPage.value)
 
     // const upperOffset = computed(
     //     () => (current.value - 1 || 1) * pageSize.value + offset.value

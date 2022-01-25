@@ -32,6 +32,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         readmeContent,
         meanings,
         categories,
+        seeAlso,
         assignedEntities,
         allowQuery,
         allowQueryPreview,
@@ -118,6 +119,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localMeanings = ref(meanings(selectedAsset.value))
     const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
+    const localSeeAlso = ref(seeAlso(selectedAsset.value))
     const localParentCategory = ref(
         selectedAsset.value?.attributes?.parentCategory
     )
@@ -283,9 +285,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-                certificateStatus(selectedAsset.value) ||
+            certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-                certificateStatusMessage(selectedAsset.value)
+            certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -394,8 +396,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
-                    ...assignedEntitiy.attributes,
-                    ...assignedEntitiy.uniqueAttributes,
+                    qualifiedName: assignedEntitiy.uniqueAttributes?.qualifiedName ??  assignedEntitiy.attributes?.qualifiedName ?? '',
+                    name: assignedEntitiy.attributes.name,
                 },
                 relationshipAttributes: {
                     meanings,
@@ -408,8 +410,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 guid: unassignedEntity.guid,
                 typeName: unassignedEntity.typeName,
                 attributes: {
-                    ...unassignedEntity.attributes,
-                    ...unassignedEntity.uniqueAttributes,
+                    qualifiedName: unassignedEntity.uniqueAttributes?.qualifiedName ??  unassignedEntity.attributes?.qualifiedName ?? '',
+                    name: unassignedEntity.attributes.name,
                 },
                 relationshipAttributes: {
                     meanings:
@@ -421,12 +423,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
 
         body.value.entities = [...linked, ...unlinked]
-        if(!unlinkedAssets.length)
-            currentMessage.value = 'Assets linked'
-        else if(!linkedAssets.length)
-            currentMessage.value = 'Assets unlinked'
-        else
-            currentMessage.value = 'Linked assets updated'
+        if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
+        else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
+        else currentMessage.value = 'Linked assets updated'
         mutate()
 
         whenever(isUpdateReady, () => {
@@ -447,6 +446,21 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Categories have been updated'
+        mutate()
+    }
+    const handleSeeAlsoUpdate = () => {
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                seeAlso: localSeeAlso.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Related terms have been updated'
         mutate()
     }
     const handleParentCategoryUpdate = () => {
@@ -508,7 +522,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         )} updated`
         mutate()
         sendTrackEvent('resource', 'updated', {
-            domain: localLResource.value.link.split('/')[2],
+            domain: localResource.value.link.split('/')[2],
         })
     }
 
@@ -518,8 +532,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         whenever(error, () => {
             message.error(
-                `${error.value?.response?.data?.errorCode} ${
-                    error.value?.response?.data?.errorMessage.split(':')[0]
+                `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
                 }` ?? 'Something went wrong'
             )
         })
@@ -598,10 +611,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         if (meanings(selectedAsset?.value) !== localMeanings.value) {
             localMeanings.value = meanings(selectedAsset.value)
         }
+        if (seeAlso(selectedAsset?.value) !== localSeeAlso.value) {
+            localSeeAlso.value = seeAlso(selectedAsset.value)
+        }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -679,8 +694,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -696,6 +710,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localAnnouncement,
         localMeanings,
         localCategories,
+        localSeeAlso,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
@@ -718,6 +733,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleUpdateResource,
         handleMeaningsUpdate,
         handleCategoriesUpdate,
+        handleSeeAlsoUpdate,
         shouldDrawerUpdate,
         asset,
         localAssignedEntities,

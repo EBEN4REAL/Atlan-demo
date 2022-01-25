@@ -11,11 +11,12 @@
             ]"
         >
             <div
-                @click="toggleExpand"
+                @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand
@@ -24,7 +25,10 @@
                         "
                     />
                 </div>
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full"
+                    @click="toggleExpand"
+                >
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
@@ -175,6 +179,7 @@
                 </div>
 
                 <div
+                    @click.self="toggleExpand"
                     :class="[
                         expand
                             ? 'absolute bg-gray-300 opacity-0'
@@ -246,6 +251,7 @@
     import FooterActions from '../action/footer.vue'
     import AggregatorSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -271,6 +277,8 @@
                 getSummarisedInfoOfAggregationPanel,
                 getInitialPanelExpandedState,
             } = useUtils()
+            const { syncSortAggregateAndGroupPanel } = useSort()
+
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -352,6 +360,7 @@
             }
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             const toggleExpand = () => {
                 activeInlineTab.value.playground.vqb.panels[
@@ -385,6 +394,7 @@
 
             const handleCheckboxChange = () => {
                 updateVQB(activeInlineTab, inlineTabs)
+                syncSortAggregateAndGroupPanel(activeInlineTab)
             }
 
             return {

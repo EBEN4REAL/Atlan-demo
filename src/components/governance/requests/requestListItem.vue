@@ -12,20 +12,28 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <AssetPiece
-                v-if="request.destinationQualifiedName"
-                :asset-qf-name="request.destinationQualifiedName"
-                :entity-type="request?.entityType"
-            />
-            <span v-else class="text-sm overflow-ellipsis">
-                {{
-                    primaryText[request.requestType]
-                        ? primaryText[request.requestType](request)
-                        : ''
-                }}
-            </span>
+            <Popover :item="item">
+                <div
+                    class="cursor-pointer"
+                    @mouseenter="$emit('mouseEnterAsset')"
+                >
+                    <AssetPiece
+                        v-if="request.destinationQualifiedName"
+                        :asset-qf-name="request.destinationQualifiedName"
+                        :entity-type="request?.entityType"
+                        :destination-entity="request.destinationEntity"
+                    />
+                    <span v-else class="text-sm overflow-ellipsis">
+                        {{
+                            primaryText[request.requestType]
+                                ? primaryText[request.requestType](request)
+                                : ''
+                        }}
+                    </span>
+                </div>
+            </Popover>
         </div>
-        <div class="flex items-center col-span-3">
+        <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -48,6 +56,7 @@
             <TermPiece
                 v-else-if="request.requestType === 'term_link'"
                 :data="request?.sourceEntity?.attributes"
+                :request="request"
             />
 
             <AttrPiece
@@ -63,7 +72,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3 pr-3">
+        <div class="flex items-center justify-end col-span-3">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -73,7 +82,7 @@
             <template v-else>
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center justify-center w-full font-bold"
+                    class="items-center pr-3 font-bold"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -86,7 +95,7 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center justify-end font-light"
+                        class="flex items-center justify-end font-light w-96"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'
@@ -126,7 +135,7 @@
                     </div>
                 </div>
                 <div v-else class="flex">
-                    <div class="flex items-center gap-x-2">
+                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"
@@ -136,12 +145,12 @@
                             :avatar-name="request.created_by_user?.username"
                             avatar-size="24"
                             :avatar-shape="'circle'"
-                            :image-url="atlanLogo"
+                            :image-url="request.createdBy ? '' : atlanLogo"
                         />
 
                         <div class="flex flex-col">
                             <UserPiece
-                                :user="request.created_by_user"
+                                :user="{ username: request.createdBy }"
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
@@ -241,7 +250,7 @@
     import TermPiece from './pieces/term.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
-
+    import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
         approveRequest,
@@ -262,6 +271,7 @@
             TermPiece,
             Avatar,
             IconStatus,
+            Popover,
         },
         props: {
             request: {
@@ -361,6 +371,39 @@
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
+            const item = computed(() => {
+                const name = request?.value?.destinationQualifiedName
+                    .split('/')
+                    .slice(-3)
+                    .reverse()
+                return {
+                    ...request.value,
+                    guid: request.value.destinationGuid,
+                    displayText:
+                        request.value?.destinationEntity?.attributes?.name,
+                    typeName: request.value?.entityType,
+                    attributes: {
+                        connectorName:
+                            request.value?.destinationEntity?.attributes.qualifiedName.split(
+                                '/'
+                            )[1],
+                        rowCount: 0,
+                        columnCount: 0,
+                        schemaName: name[1],
+                        ownerUsers: [],
+                        tableName: name[2],
+                        certificateStatus:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateStatus,
+                        certificateUpdatedBy:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedBy,
+                        certificateUpdatedAt:
+                            request.value?.destinationEntity?.attributes
+                                ?.certificateUpdatedAt,
+                    },
+                }
+            })
             return {
                 handleApproval,
                 handleRejection,
@@ -369,6 +412,7 @@
                 state,
                 atlanLogo,
                 nameUpdater,
+                item,
             }
         },
     })

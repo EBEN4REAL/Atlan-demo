@@ -2,13 +2,13 @@
     <a-modal
         :visible="modalVisible"
         width="40%"
-        @cancel="closeModal"
         :class="$style.modal"
         :destroy-on-close="true"
         :closable="false"
-        okText="Save"
-        cancelText=""
+        ok-text="Save"
+        cancel-text=""
         :footer="null"
+        @cancel="closeModal"
     >
         <!-- <template #title>
             <div class="flex justify-between">
@@ -50,13 +50,13 @@
         <div
             class="flex items-center justify-end mt-4 space-x-3 border-gray-200"
         >
-            <a-button @click="closeModal" class="border-0 shadow-none"
+            <a-button class="border-0 shadow-none" @click="closeModal"
                 >Cancel
             </a-button>
             <a-button
                 type="primary"
-                @click="handleOk"
                 :loading="mode === 'create' ? createLoading : editLoading"
+                @click="handleOk"
             >
                 {{ mode === 'create' ? 'Create' : 'Update' }}
             </a-button>
@@ -119,7 +119,7 @@
                 selectedClassification.value?.description ?? ''
             )
             const classificationColor = ref(
-                selectedClassification?.value?.options?.color ?? 'Blue'
+                selectedClassification?.value?.options?.color ?? 'Green'
             )
 
             const body = ref<Record<string, any>>({})
@@ -140,13 +140,13 @@
                 if (props.mode === 'create') {
                     name.value = ''
                     description.value = ''
-                    classificationColor.value = 'Blue'
+                    classificationColor.value = 'Green'
                 } else {
                     name.value = selectedClassification.value?.displayName ?? ''
                     description.value =
                         selectedClassification.value?.description ?? ''
                     classificationColor.value =
-                        selectedClassification.value?.options?.color ?? 'Blue'
+                        selectedClassification.value?.options?.color ?? 'Green'
                 }
             }
 
@@ -204,7 +204,7 @@
                     description.value =
                         newSelectedClassification?.description ?? ''
                     classificationColor.value =
-                        newSelectedClassification?.options?.color ?? 'Blue'
+                        newSelectedClassification?.options?.color ?? 'Green'
                 }
             })
 

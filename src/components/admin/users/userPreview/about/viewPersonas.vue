@@ -1,5 +1,5 @@
 <template>
-    <span class="text-sm text-gray-500">Persona</span>
+    <span class="text-sm text-gray-500">Personas</span>
     <div v-if="personas.length > 0" class="flex flex-wrap mt-1">
         <Tags
             :allow-update="false"
@@ -13,15 +13,20 @@
         </Tags>
     </div>
     <div v-else class="mt-1">
-        <span>{{
-            isCurrentUser ? `You don't` : `${user.firstName} doesn't`
-        }}</span>
-        have any linked personas.
+        <span v-if="type === 'user'"
+            >{{
+                isCurrentUser ? `You don't` : `${entity.firstName} doesn't`
+            }}
+            have any linked personas.</span
+        >
+        <span v-if="type === 'group'"
+            >{{ `${entity.name} doesn't` }} have any linked personas.</span
+        >
     </div>
 </template>
 
 <script lang="ts">
-    import { toRefs, defineComponent } from 'vue'
+    import { toRefs, defineComponent, ref } from 'vue'
     import Tags from '~/components/common/badge/tags/index.vue'
 
     export default defineComponent({
@@ -30,7 +35,7 @@
             Tags,
         },
         props: {
-            user: {
+            entity: {
                 type: Object,
                 default: () => {},
                 required: true,
@@ -41,13 +46,17 @@
             },
         },
         setup(props) {
-            const { user } = toRefs(props)
-            const { personas } = user.value
+            const { entity } = toRefs(props)
+            const type = ref('')
+            if (entity.value.username) type.value = 'user'
+            else if (entity.value.alias) type.value = 'group'
+            const { personas } = entity.value
             const personaList = (personas || []).map(
-                (persona) => persona?.name ?? ''
+                (persona) => persona?.displayName ?? ''
             )
             return {
                 personas: personaList,
+                type,
             }
         },
     })

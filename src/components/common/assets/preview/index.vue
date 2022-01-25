@@ -18,11 +18,13 @@
                         class="h-4 text-gray-500 mb-0.5"
                     />
                 </div>
-
                 <Tooltip
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
                     classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
+                    :should-open-in-new-tab="
+                        selectedAsset.typeName?.toLowerCase() === 'query'
+                    "
                     @click="() => $emit('closeDrawer')"
                 />
 
@@ -104,8 +106,28 @@
                         </component>
                         <template v-else>
                             <a-tooltip :title="action.label">
+                                <QueryDropdown
+                                    v-if="
+                                        showCTA(action.id) &&
+                                        action.id === 'query' &&
+                                        (assetType(selectedAsset) === 'Table' ||
+                                            assetType(selectedAsset) === 'View')
+                                    "
+                                    @handleClick="handleQueryAction"
+                                >
+                                    <template #button>
+                                        <a-button
+                                            class="flex items-center justify-center"
+                                        >
+                                            <AtlanIcon
+                                                :icon="action.icon"
+                                                class="mb-0.5 h-4 w-auto"
+                                            />
+                                        </a-button>
+                                    </template>
+                                </QueryDropdown>
                                 <a-button
-                                    v-if="showCTA(action.id)"
+                                    v-else-if="showCTA(action.id)"
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -162,19 +184,19 @@
                     :is="tab.component"
                     v-else-if="tab.component"
                     :key="selectedAsset.guid"
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset)
-                    "
-                    :data="tab.data"
                     :ref="
                         (el) => {
                             if (el) tabChildRef[index] = el
                         }
                     "
-                    :collectionData="{
+                    :selected-asset="selectedAsset"
+                    :is-drawer="isDrawer"
+                    :read-permission="isScrubbed(selectedAsset)"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
+                    "
+                    :data="tab.data"
+                    :collection-data="{
                         collectionInfo,
                         hasCollectionReadPermission,
                         hasCollectionWritePermission,
@@ -200,18 +222,19 @@
 
     import { useRoute, useRouter } from 'vue-router'
     import { debouncedWatch } from '@vueuse/core'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-
+    import { useAuthStore } from '~/store/auth'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
-    import Tooltip from '@common/ellipsis/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
+    import QueryDropdown from '@/common/query/queryDropdown.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -221,10 +244,12 @@
             ShareMenu,
             NoAccess,
             Tooltip,
+            QueryDropdown,
 
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
+            request: defineAsyncComponent(() => import('./request/index.vue')),
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
@@ -346,19 +371,31 @@
             )
 
             const body = ref({})
+            const authStore = useAuthStore()
+
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
-                false
+                false,
+                isDrawer.value
             )
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
                     if (prev) {
+                        if (
+                            authStore?.evaluations?.some(
+                                (ev) =>
+                                    ev?.entityGuid === selectedAsset.value?.guid
+                            )
+                        ) {
+                            return
+                        }
                         body.value = {
                             entities: getAssetEvaluationsBody(
                                 selectedAsset.value
                             ),
                         }
+
                         refresh()
                     }
                 },
@@ -387,22 +424,28 @@
                         router.push(getProfilePath(selectedAsset.value))
                         break
                     case 'query':
-                        router.push(getAssetQueryPath(selectedAsset.value))
+                        // router.push(getAssetQueryPath(selectedAsset.value))
+                        handleClick(getAssetQueryPath(selectedAsset.value))
                         break
                     default:
                         break
                 }
             }
 
-            const showCTA = (action) => {
-                return route.path !== '/insights'
+            const handleQueryAction = (openVQB) => {
+                handleClick(
+                    `${getAssetQueryPath(
+                        selectedAsset.value
+                    )}&openVQB=${openVQB}`
+                )
+            }
+
+            const showCTA = (action) =>
+                route.path !== '/insights'
                     ? true
                     : selectedAsset.value.typeName === 'Query'
                     ? false
-                    : action === 'query'
-                    ? false
-                    : true
-            }
+                    : action !== 'query'
 
             const tabChildRef = ref([])
 
@@ -414,6 +457,12 @@
                 // )
                 //     tabChildRef.value[activeKey.value]?.handleCancel()
                 // else activeKey.value = k
+            }
+
+            const handleClick = (path) => {
+                const URL = `http://${window.location.host}${path}`
+
+                window.open(URL, '_blank')?.focus()
             }
 
             const onClickTabIcon = (tabObj: object) => {
@@ -473,11 +522,12 @@
                 showCTA,
                 onClickTabIcon,
 
-                //for collection access
+                // for collection access
                 collectionInfo,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
+                handleQueryAction,
             }
         },
     })
@@ -492,6 +542,12 @@
             }
             :global(.ant-tabs-tab) {
                 padding: 3px 8px !important;
+                &:hover {
+                    path {
+                        stroke: #5277d6 !important;
+                    }
+                }
+
                 @apply justify-center;
             }
 

@@ -16,17 +16,6 @@
                     mouseEnterDelay="0.6"
                 >
                     <template #button>
-                        <!-- <a-button
-                            class="mt-3"
-                            @click="actionClick('info', item)"
-                            block
-                        >
-                            <div class="flex justify-center w-full">
-                                <div class="flex items-center cursor-pointer">
-                                    Open preview sidebar
-                                </div>
-                            </div>
-                        </a-button> -->
                         <AtlanBtn
                             class="flex-none px-0"
                             size="sm"
@@ -334,7 +323,7 @@
                     <!-- <div class="parent-ellipsis-container"> -->
                     <div class="flex items-center justify-between w-full">
                         <div
-                            class="flex items-center parent-ellipsis-container"
+                            class="flex items-center w-11/12 parent-ellipsis-container"
                         >
                             <AtlanIcon
                                 :icon="
@@ -659,19 +648,35 @@
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { useRouter } from 'vue-router'
-    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
     import { generateUUID } from '~/utils/helper/generator'
-    import {
-        useMapping,
-        nextKeywords,
-    } from '~/components/insights/playground/editor/common/composables/useMapping'
+    import { useMapping } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+
+    export function getLastMappedKeyword(
+        token_param: string[],
+        mappingKeywords,
+        mappingKeywordsKeys
+    ) {
+        // console.log(tokens)
+        let tokens = token_param.map((token) => token?.toUpperCase())
+        for (let i = tokens.length - 1; i >= 0; i--) {
+            /* type- TABLE/COLUMN/SQL keyword */
+            if (mappingKeywordsKeys.includes(tokens[i])) {
+                return {
+                    token: tokens[i],
+                    index: i,
+                    type: mappingKeywords[tokens[i]],
+                }
+            }
+        }
+        return undefined
+    }
 
     export default defineComponent({
         components: { StatusBadge, PopoverAsset, AtlanBtn, ColumnKeys },
@@ -722,6 +727,8 @@
             } = useAssetInfo()
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { focusEditor, setSelection } = useEditor()
+            const { getConnectorName } = useConnector()
+
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
@@ -807,6 +814,13 @@
             }
 
             const actionClick = (action: string, t: assetInterface) => {
+                // for assetQuote Info of different sources
+                const assetQuoteType = getDialectInfo(
+                    getConnectorName(
+                        activeInlineTab.value.playground.editor.context
+                            .attributeValue
+                    ) ?? ''
+                )
                 switch (action) {
                     case 'add': {
                         /* If typename is column then add a comma with insertion */
@@ -864,9 +878,9 @@
 
                         let newQuery = `-- ${title(
                             item.value
-                        )} preview \nSELECT * FROM \"${title(
+                        )} preview \nSELECT * FROM ${assetQuoteType}${title(
                             item.value
-                        )}\" LIMIT 50;\n`
+                        )}${assetQuoteType} LIMIT 50;\n`
 
                         // console.log('selected query: ', item.value)
 
@@ -928,14 +942,14 @@
                         switch (editorContextType) {
                             case 'connectionQualifiedName': {
                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
-                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                 if (
                                     editorContextValue !==
                                     queryConnectionQualifiedName
                                 ) {
                                     // openContextModal()
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     let newText = `${newQuery}`
                                     handleAddNewTab(
                                         newText,
@@ -973,7 +987,7 @@
                             }
                             case 'databaseQualifiedName': {
                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
-                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
                                 if (
                                     editorContextValue !==
@@ -996,7 +1010,7 @@
                                         // open in new tab
                                         // openContextModal()
                                         // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                        newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                         let newText = `${newQuery}`
                                         handleAddNewTab(
                                             newText,
@@ -1028,7 +1042,7 @@
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
-                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -1041,7 +1055,7 @@
                                     // here, check db--->connection
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
-                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1055,7 +1069,7 @@
                             case 'schemaQualifiedName':
                             case 'defaultSchemaQualifiedName': {
                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                 // console.log(
                                 //     'defaultSchemaQualifiedName',
                                 //     newQuery
@@ -1112,7 +1126,7 @@
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
-                                            newQuery = `-- ${tableName} preview \nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
@@ -1125,7 +1139,7 @@
                                                 sqn !== querySchemaQualifiedName
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
-                                                newQuery = `-- ${tableName} preview \nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                                 const newText = `${newQuery}${prevText}`
                                                 playQuery(
                                                     newQuery,
@@ -1141,7 +1155,7 @@
                                 } else {
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                    newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
                                     playQuery(
                                         newQuery,
@@ -1185,7 +1199,7 @@
                             if (!Object.keys(activeInlineTabCopy).length) {
                                 let tableName = title(item.value)
                                 // let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                let newQuery = `-- ${tableName} preview \nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                let newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                 let updatedEditorSchemaQualifiedName =
                                     item.value?.databaseQualifiedName +
                                     '/' +
@@ -1226,23 +1240,24 @@
             }
 
             const playQuery = (newQuery, newText, activeInlineTabCopy) => {
-                activeInlineTabCopy.playground.editor.text = newText
+                if (!readOnly.value) {
+                    activeInlineTabCopy.playground.editor.text = newText
+                    modifyActiveInlineTab(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        activeInlineTabCopy.isSaved
+                    )
+                    selectionObject.value.startLineNumber = 2
+                    selectionObject.value.startColumnNumber = 1
+                    selectionObject.value.endLineNumber = 2
+                    selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
+                    setSelection(
+                        toRaw(editorInstanceRef.value),
+                        toRaw(monacoInstanceRef.value),
+                        selectionObject.value
+                    )
+                }
 
-                modifyActiveInlineTab(
-                    activeInlineTabCopy,
-                    inlineTabs,
-                    activeInlineTabCopy.isSaved
-                )
-
-                selectionObject.value.startLineNumber = 2
-                selectionObject.value.startColumnNumber = 1
-                selectionObject.value.endLineNumber = 2
-                selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                setSelection(
-                    toRaw(editorInstanceRef.value),
-                    toRaw(monacoInstanceRef.value),
-                    selectionObject.value
-                )
                 queryRun(
                     activeInlineTab,
                     getData,

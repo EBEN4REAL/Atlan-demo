@@ -54,7 +54,8 @@
             // // glossary list
             useGlossary()
 
-            useIntegration()
+            const { call } = useIntegration(true)
+            // if (!route.fullPath.includes('/admin/integrations')) call()
 
             usePersona()
 

@@ -28,8 +28,11 @@
                     class="mt-0.5 text-xs text-gray-500 truncate"
                     style="max-width: 90%"
                 >
-                    <span v-if="selectedColumn?.tableName" class="truncate">
-                        {{ selectedColumn?.tableName }}
+                    <span
+                        v-if="selectedColumn?.columnQualifiedName"
+                        class="truncate"
+                    >
+                        {{ tableName }}
                     </span>
                     <span v-else>
                         {{ placeholder }}
@@ -116,12 +119,28 @@
                 let data = !isTableSelected.value
                     ? isTableLoading.value
                         ? 'Loading...'
-                        : `${totalTablesCount.value} tables available`
+                        : `Select from ${totalTablesCount.value} tables`
                     : isColumnLoading.value
                     ? 'Loading...'
                     : `Select from ${totalColumnsCount.value} columns`
 
                 return data
+            })
+
+            function getTableName(columnQualifiedName: string) {
+                const spiltArray = columnQualifiedName?.split('/')
+                if (spiltArray?.length > 5) {
+                    return `${spiltArray[5]}`
+                }
+                return ''
+            }
+
+            const tableName = computed(() => {
+                let t =
+                    getTableName(selectedColumn.value?.columnQualifiedName) ??
+                    '-'
+
+                return t
             })
 
             // const getTableInitialBody = () => {
@@ -142,6 +161,7 @@
             // }
 
             return {
+                tableName,
                 isColumnLoading,
                 isTableLoading,
                 subIndex,

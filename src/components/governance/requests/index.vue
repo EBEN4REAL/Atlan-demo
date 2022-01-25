@@ -84,6 +84,8 @@
                                       ? 'requests'
                                       : 'request'
                               }`
+                            : listLoading
+                            ? 'Loading..'
                             : 'search'
                     "
                 >
@@ -138,13 +140,14 @@
                 >
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
-                        <!-- :selected="isSelected(item.id)" -->
                         <RequestListItem
                             :request="item"
                             :active-hover="activeHover"
                             :active="index === selectedIndex"
-                            @mouseenter="handleMouseEnter(item.id)"
+                            :selected="isSelected(item.id)"
+                            @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
+                            @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
                     </template>
                 </VirtualList>
@@ -166,6 +169,7 @@
                             :total-pages="pagination.totalPages"
                             :loading="listLoading"
                             :page-size="pagination.limit"
+                            :default-page="defaultPage"
                             @mutate="mutate"
                         />
                     </div>
@@ -173,11 +177,11 @@
             </div>
             <div
                 v-if="!listLoading && !requestList.length"
-                class="flex items-center justify-center h-full mb-12"
+                class="flex items-center justify-center h-full mt-5 mb-10"
             >
                 <div
                     v-if="searchTerm?.length > 0"
-                    class="flex flex-col items-center justify-center mt-12"
+                    class="flex flex-col items-center justify-center h-96"
                 >
                     <atlan-icon icon="NoRequestFound" class="h-36" />
                     <span class="mt-4 text-center text-gray-500 w-72">
@@ -189,7 +193,16 @@
                         >Clear search</a-button
                     >
                 </div>
-                <div v-else class="flex flex-col">
+                <div
+                    v-else-if="Object.keys(facets).length > 0"
+                    class="flex flex-col items-center justify-center h-96"
+                >
+                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <span class="mt-4 text-center text-gray-500 w-72">
+                        Oops… we didn’t find any requests that match this filter
+                    </span>
+                </div>
+                <div v-else class="flex flex-col mt-10 mb-5">
                     <atlan-icon icon="NoLinkedAssets" class="h-40" />
                     <span class="mt-4 text-xl font-semibold"
                         >All pending requests have been resolved</span
@@ -249,6 +262,7 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const showPagination = ref(true)
+            const timeoutHover = null
             const activeHover = ref('')
             const connectorsData = ref({
                 attributeName: undefined,
@@ -257,7 +271,7 @@
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(0)
+            const selectedIndex = ref(-1)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
@@ -265,6 +279,7 @@
             })
             const paginationRef = ref('')
             const searchTerm = ref('')
+            const defaultPage = ref(1)
             const filters = ref({
                 status: 'active' as RequestStatus,
                 request_type: [],
@@ -272,7 +287,7 @@
             const requestList = ref([])
 
             const pagination = ref({
-                limit: 20,
+                limit: 40,
                 offset: 0,
                 totalPages: 1,
                 totalData: 0,
@@ -360,6 +375,21 @@
                 } else {
                     requestList.value.splice(idx, 1)
                 }
+                if (!requestList.value.length) {
+                    pagination.value.offset =
+                        pagination.value.offset - pagination.value.limit
+                    defaultPage.value =
+                        Math.ceil(pagination.value.totalPages) - 1
+                    showPagination.value = false
+                    setTimeout(() => {
+                        showPagination.value = true
+                    }, 200)
+                    mutate()
+                } else {
+                    pagination.value.totalData = pagination.value.totalData - 1
+                    pagination.value.totalPages =
+                        pagination.value.totalData / pagination.value.limit
+                }
             }
 
             watch(listError, () => {
@@ -369,7 +399,7 @@
             watch(
                 filters,
                 () => {
-                    selectedIndex.value = 0
+                    selectedIndex.value = -1
                 },
                 { deep: true }
             )
@@ -384,10 +414,25 @@
                     ? facetsValue.statusRequest
                     : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
+                // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
                     status: status.length > 0 ? status : 'active',
                     createdBy,
+                    // typeName,
+                }
+                if (facetsValue.__traitNames) {
+                    const filterClasification = []
+                    facetsValue.__traitNames?.classifications?.forEach((el) => {
+                        filterClasification.push({
+                            payload: {
+                                $elemMatch: {
+                                    typeName: el,
+                                },
+                            },
+                        })
+                    })
+                    filterMerge.$or = filterClasification
                 }
                 filters.value = filterMerge
             }
@@ -411,13 +456,16 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
-            const handleMouseEnter = (itemId) => {
+            const handleMouseEnter = (itemId, idx) => {
+                selectedIndex.value = idx
                 if (activeHover.value !== itemId) {
                     activeHover.value = itemId
                 }
             }
             const mouseEnterContainer = () => {
+                clearTimeout(timeoutHover)
                 activeHover.value = ''
+                selectedIndex.value = -1
             }
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
@@ -430,6 +478,12 @@
                     ? requestList.value.length
                     : pagination.value.offset + requestList.value.length
             )
+            const mouseEnterAsset = (itemId, idx) => {
+                // clearTimeout(timeoutHover)
+                // timeoutHover = setTimeout(() => {
+                //     selectRequest(itemId, idx)
+                // }, 1000)
+            }
             return {
                 mutate,
                 pagination,
@@ -466,6 +520,8 @@
                 endCountPagination,
                 paginationRef,
                 showPagination,
+                mouseEnterAsset,
+                defaultPage,
                 // listPermission
             }
         },
@@ -511,7 +567,7 @@
         }
     }
     .container-scroll {
-        max-height: 500px;
+        max-height: calc(75vh - 100px);
     }
     .wrapper-filter {
         .ant-select-selector {

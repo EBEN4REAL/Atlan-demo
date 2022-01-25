@@ -53,6 +53,7 @@ import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
+import TableBlack from '~/assets/images/icons/table-black.svg'
 import View from '~/assets/images/icons/view.svg'
 import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
 import ViewDraft from '~/assets/images/icons/view_draft.svg'
@@ -170,8 +171,8 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
-import Slack from '~/assets/images/integrations/slack.svg'
-import Teams from '~/assets/images/integrations/teams.svg'
+import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -181,6 +182,7 @@ import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 import Retry from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
+import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -216,7 +218,7 @@ import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
 
-import Gdoc from '~/assets/images/integrations/gDoc.svg'
+import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
@@ -288,6 +290,11 @@ import EmptyCollections from '~/assets/images/illustrations/empty-collections.sv
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
+import AddColumn from '~/assets/images/icons/add-column.svg'
+
+import ClassificationShield from '~/assets/images/classifications/shield.svg'
+import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -367,8 +374,24 @@ import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
 import Logout from '~/assets/images/icons/logout.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
+import Gear from '~/assets/images/icons/gear.svg'
+import SafariLock from '~/assets/images/icons/safari-lock.svg'
+import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import Integrations from '~/assets/images/icons/integrations.svg'
+import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
+import QueryTime from '~/assets/images/icons/query_time.svg'
+import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
+import Request from '~/assets/images/icons/Request.svg'
+import RequestActive from '~/assets/images/icons/RequestActive.svg'
 
 export default {
+    IntegrationsActive,
+    Integrations,
+    SlackToken,
+    SafariLock,
+    Gear,
+    Atlan,
     GlowFlash,
     Query24,
     Vqb24,
@@ -480,6 +503,7 @@ export default {
     Schema,
     Table,
     TableGray,
+    TableBlack,
     View,
     ViewGray,
     Notification,
@@ -575,6 +599,7 @@ export default {
     Minus,
     Retry,
     Recenter,
+    Refocus,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,
@@ -706,6 +731,9 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClassificationShield,
+    ClassificationAtlan,
+    ClassificationPropagated,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,
@@ -722,4 +750,9 @@ export default {
     CrossCircle,
     MessageCross,
     Logout,
+    AddColumn,
+    QueryTime,
+    ThreeDots,
+    Request,
+    RequestActive,
 }

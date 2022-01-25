@@ -119,16 +119,16 @@ export function useFilter() {
                         type: 'range_input',
                         name: 'Between',
                     },
-                    // {
-                    //     key: 'is_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is one of',
-                    // },
-                    // {
-                    //     key: 'is_not_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is not one of',
-                    // },
+                    {
+                        key: 'is_one_of',
+                        type: 'multi_input',
+                        name: 'Is one of',
+                    },
+                    {
+                        key: 'is_not_one_of',
+                        type: 'multi_input',
+                        name: 'Is not one of',
+                    },
                 ],
             },
             {
@@ -172,16 +172,6 @@ export function useFilter() {
                         type: 'range_input',
                         name: 'Between',
                     },
-                    // {
-                    //     key: 'is_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is one of',
-                    // },
-                    // {
-                    //     key: 'is_not_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is not one of',
-                    // },
                 ],
             },
             {
@@ -227,6 +217,16 @@ export function useFilter() {
                         key: 'end_like',
                         type: 'input',
                         name: 'Ends with',
+                    },
+                    {
+                        key: 'is_one_of',
+                        type: 'multi_input',
+                        name: 'Is one of',
+                    },
+                    {
+                        key: 'is_not_one_of',
+                        type: 'multi_input',
+                        name: 'Is not one of',
                     },
                 ],
             },
@@ -287,13 +287,14 @@ export function useFilter() {
     }
 
     function getInputTypeFromColumnType(columnType: string) {
-        if (numbers.includes(columnType)) return 'number'
-        else if (text.includes(columnType)) return 'text'
-        else if (date.includes(columnType)) return 'date'
-        else if (boolean.includes(columnType)) return 'number'
-        else if (array.includes(columnType)) return 'array'
-        else if (object.includes(columnType)) return 'text'
-        else if (geography.includes(columnType)) return 'geography'
+        if (numbers.includes(columnType?.toUpperCase())) return 'number'
+        else if (text.includes(columnType?.toUpperCase())) return 'text'
+        else if (date.includes(columnType?.toUpperCase())) return 'date'
+        else if (boolean.includes(columnType?.toUpperCase())) return 'number'
+        else if (array.includes(columnType?.toUpperCase())) return 'array'
+        else if (object.includes(columnType?.toUpperCase())) return 'text'
+        else if (geography.includes(columnType?.toUpperCase()))
+            return 'geography'
         return 'text'
     }
 

@@ -31,37 +31,50 @@
                         <div>
                             <span
                                 v-if="
-                                    rows !== '0' &&
-                                    rows !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="ml-3 text-xs text-gray-500"
                             >
-                                <span
-                                    class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
-                                    >{{ rows }}</span
-                                >Rows
+                                <a-tooltip placement="bottomLeft">
+                                    <span
+                                        class="mr-1 text-xs font-semibold tracking-tight text-gray-500 cursor-pointer"
+                                        >{{ rows }}</span
+                                    >Rows
+                                    <template #title>
+                                        <span
+                                            v-if="
+                                                sizeBytes(item, false) &&
+                                                rows !== '~'
+                                            "
+                                            class="font-semibold"
+                                            >{{ rows }} rows ({{
+                                                sizeBytes(item, false)
+                                            }})</span
+                                        >
+                                        <span v-else class="font-semibold"
+                                            >Row count is not available for
+                                            {{ connectorName(item) }}/{{
+                                                connectionName(item)
+                                            }}</span
+                                        >
+                                    </template>
+                                </a-tooltip>
                             </span>
                             <span
                                 v-if="
-                                    cols !== '0' &&
-                                    cols !== '' &&
-                                    (item.typeName?.toLowerCase() === 'table' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'view' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'tablepartition' ||
-                                        item.typeName?.toLowerCase() ===
-                                            'materialisedview')
+                                    item.typeName?.toLowerCase() === 'table' ||
+                                    item.typeName?.toLowerCase() === 'view' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'tablepartition' ||
+                                    item.typeName?.toLowerCase() ===
+                                        'materialisedview'
                                 "
                                 class="text-xs text-gray-500"
-                                :class="{ 'ml-3': rows === '-' || rows === '' }"
                             >
                                 <span
                                     class="text-xs font-semibold tracking-tight text-gray-500"
@@ -153,7 +166,7 @@
                 <div v-if="description(item)" class="mt-1 text-sm">
                     {{ description(item) }}
                 </div>
-                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-3">
+                <div v-if="list?.length > 0" class="flex flex-wrap gap-1 mt-3">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"
@@ -163,6 +176,7 @@
                             :display-name="classification?.displayName"
                             :is-propagated="isPropagated(classification)"
                             :allow-delete="false"
+                            :created-by="classification?.createdBy"
                         ></ClassificationPill>
                     </template>
                     <template
@@ -173,7 +187,7 @@
                     </template>
                 </div>
                 <div
-                    v-if="item?.attributes?.ownerUsers.length > 0"
+                    v-if="item?.attributes?.ownerUsers?.length > 0"
                     class="mt-4"
                 >
                     <div class="mb-1 text-sm text-gray-500">Owners</div>
@@ -264,18 +278,18 @@
                 tableName,
                 dataTypeCategoryImage,
                 description,
+                sizeBytes,
+                connectionName,
+                connectorName,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -316,6 +330,9 @@
                 path,
                 slots,
                 description,
+                sizeBytes,
+                connectionName,
+                connectorName,
             }
         },
     }

@@ -23,7 +23,9 @@
 
         <div
             v-if="
-                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+                isGTC(selectedAsset) ||
+                selectedAsset.typeName === 'Connection' ||
+                selectedAsset.typeName === 'Process'
             "
             class="flex flex-col"
         >
@@ -353,6 +355,14 @@
                 @change="handleChangeDescription"
             />
         </div>
+        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
@@ -418,12 +428,14 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_ADD_CLASSIFICATION'
                     )
                 "
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'ENTITY_REMOVE_CLASSIFICATION'
                     )
                 "
@@ -453,6 +465,7 @@
                 :edit-permission="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_ADD',
                         'AtlasGlossaryTerm'
                     ) && editPermission
@@ -460,6 +473,7 @@
                 :allowDelete="
                     selectedAssetUpdatePermission(
                         selectedAsset,
+                        isDrawer,
                         'RELATIONSHIP_REMOVE',
                         'AtlasGlossaryTerm'
                     ) && editPermission
@@ -500,6 +514,29 @@
             </Categories>
         </div>
 
+        <div
+            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                Related Terms
+            </p>
+            <RelatedTerms
+                v-model="localSeeAlso"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :edit-permission="editPermission"
+                :allow-delete="editPermission"
+                @change="handleSeeAlsoUpdate"
+            >
+            </RelatedTerms>
+        </div>
+        <div v-if="isBiAsset(selectedAsset)" class="flex flex-col px-5 gap-y-4">
+            <SourceUpdated :asset="selectedAsset" />
+            <SourceCreated :asset="selectedAsset" />
+        </div>
         <a-modal
             v-model:visible="sampleDataVisible"
             :footer="null"
@@ -525,6 +562,7 @@
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
+    import SQLSnippet from '@/common/sql/snippet.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
@@ -535,8 +573,11 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
+    import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -551,8 +592,12 @@
             Certificate,
             RowInfoHoverCard,
             SQL,
+            SQLSnippet,
             TermsWidget,
             Categories,
+            RelatedTerms,
+            SourceCreated,
+            SourceUpdated,
             Admins,
             SampleDataTable: defineAsyncComponent(
                 () =>
@@ -611,6 +656,8 @@
                 definition,
                 webURL,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
@@ -619,6 +666,7 @@
                 attributes,
                 externalLocation,
                 externalLocationFormat,
+                isBiAsset,
             } = useAssetInfo()
 
             const {
@@ -632,6 +680,8 @@
                 localClassifications,
                 localMeanings,
                 localCategories,
+                localSeeAlso,
+                handleSeeAlsoUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -703,6 +753,8 @@
                 webURL,
                 handlePreviewClick,
                 assetTypeLabel,
+                isProcess,
+                getProcessSQL,
                 handleOwnersChange,
                 localCertificate,
                 handleChangeCertificate,
@@ -718,8 +770,10 @@
                 localMeanings,
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
+                handleSeeAlsoUpdate,
                 isUserDescription,
                 localCategories,
+                localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
                 selectedAssetUpdatePermission,
@@ -731,6 +785,7 @@
                 externalLocation,
                 externalLocationFormat,
                 handleCollectionClick,
+                isBiAsset,
             }
         },
     })

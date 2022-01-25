@@ -1,45 +1,49 @@
 <template>
     <AtlanIcon
         :icon="icon"
-        :style="`color: ${getClassificationColorHex(color)};`"
+        :style="`stroke: ${getClassificationColorHex(stroke)};`"
         :class="classNames"
     ></AtlanIcon>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, ref, computed } from 'vue'
 
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
-    import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
         name: 'ClassificationIcon',
         props: {
             color: {
-                type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
+                type: String as PropType<'green' | 'red' | 'yellow' | 'white' | 'blue'>,
                 required: true,
-                default: 'Blue',
+                default: 'green',
             },
             icon: {
-                type: String as PropType<'ShieldFilled' | 'Shield'>,
+                type: String as PropType<'ClassificationShield' | 'ClassificationPropagated' | 'ClassificationAtlan'>,
                 required: false,
-                default: 'Shield',
+                default: 'ClassificationShield',
             },
             classNames: {
                 type: String,
                 required: false,
-                default: ''
-            }
+                default: '',
+            },
         },
         setup(props, { emit }) {
             // const { color, icon } = toRefs(props)
-            const color = computed(() => capitalizeFirstLetter(props.color))
+            const stroke = ref(props.color.toLowerCase())
+            const fill = ref('white')
             const icon = computed(() => props.icon)
+            const originalColour = ref(props.color.toLowerCase())
             return {
                 getClassificationColorHex,
-                color,
                 icon,
+                originalColour,
+                stroke,
+                fill
             }
         },
     })
 </script>
+<style></style>

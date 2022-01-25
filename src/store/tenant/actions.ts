@@ -3,6 +3,7 @@ import { State } from './state'
 export interface Actions extends State {
     setTenant(value: any): void
     setSMTPConfig(value: any): void
+    setLogo(value: string): void
 }
 
 export const actions: Actions = {
@@ -24,4 +25,7 @@ export const actions: Actions = {
     setSMTPConfig(payload) {
         this.smtpServer = payload
     },
+    setLogo(url) {
+        this.logo = url
+    }
 }

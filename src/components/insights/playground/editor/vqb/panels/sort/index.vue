@@ -11,11 +11,12 @@
             ]"
         >
             <div
-                @click="toggleExpand"
+                @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3">
+                <div class="mr-3" @click.self="toggleExpand">
                     <AtlanIcon
+                        @click.self="toggleExpand"
                         icon="ChevronRight"
                         :class="
                             expand
@@ -24,7 +25,10 @@
                         "
                     />
                 </div>
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full"
+                    @click="toggleExpand"
+                >
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 border border-gray-300 rounded-full p-1.5"
@@ -80,7 +84,10 @@
                                     getSummarisedInfoOfSortPanel(
                                         activeInlineTab.playground.vqb.panels[
                                             index
-                                        ].subpanels
+                                        ].subpanels,
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ]
                                     )
                                 }}
                             </p>
@@ -178,6 +185,7 @@
             <!-- Show on expand -->
             <keep-alive>
                 <SortSubPanel
+                    v-model:panel="panel"
                     v-model:subpanels="
                         activeInlineTab.playground.vqb.panels[index].subpanels
                     "
@@ -225,6 +233,7 @@
         Ref,
         inject,
         PropType,
+        onUpdated,
         toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -265,6 +274,7 @@
                     activeInlineTab.value.playground.vqb.panels[index.value]
                         .hide
             )
+
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
             const actionPanel = ref(false)
@@ -277,6 +287,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
             /* Accesss */
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'

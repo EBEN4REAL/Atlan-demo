@@ -21,54 +21,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- can extract below lines into a show more show less component -->
-                <!-- <div
-                    v-if="
-                        selectedClassification?.description &&
-                        selectedClassification?.description?.length > 80
-                    "
-                    class="relative w-3/4 overflow-hidden text-gray-500"
-                    :class="descTrim ? 'h-5 flex' : ''"
-                >
-                    {{ selectedClassification?.description }}
-                    <span
-                        class="right-0 pl-2 bg-white rounded cursor-pointer text-primary hover:underline"
-                        :class="descTrim ? 'absolute' : ''"
-                        @click="descTrim = !descTrim"
-                    >
-                        {{ descTrim ? 'show more' : 'show less' }}
-                    </span>
-                </div>
-                <div v-else class="text-gray-500">
-                    {{ selectedClassification?.description }}
-                </div> -->
-                <!-- <div class="flex items-center gap-2 text-gray-500">
-                    <div class="flex items-center gap-2">
-                        Last Updated
-                        <span class="text-gray-700"> {{ lastUpdatedAt }}</span>
-                        by
-                        <UserPill
-                            :username="selectedClassification.updatedBy"
-                            :allow-delete="false"
-                            :enable-hover="false"
-                            class=""
-                            :border="false"
-                        />
-                    </div>
-                    <span class="text-gray-200">&bull;</span>
-                    <div class="flex items-center gap-2">
-                        Created by
-                        <UserPill
-                            :username="selectedClassification.createdBy"
-                            :allow-delete="false"
-                            :enable-hover="false"
-                            class=""
-                            :border="false"
-                        />
-                        on
-                        <span class="text-gray-700">{{ createdOn }}</span>
-                    </div>
-                </div> -->
             </div>
             <div v-auth="map.UPDATE_CLASSIFICATION" class="">
                 <a-button-group class="">
@@ -81,8 +33,8 @@
                         </a-button>
                         <template #content>
                             <ClassificationColorSelector
-                                class="py-1"
                                 v-model:selectedColor="classificationColor"
+                                class="py-1"
                                 menu-mode
                             />
                         </template>
@@ -133,7 +85,6 @@
     import dayjs from 'dayjs'
     import UserPill from '@/common/pills/user.vue'
 
-    // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -172,7 +123,14 @@
             const { classification: selectedClassification } = toRefs(props)
 
             const classificationColor = ref(
-                selectedClassification?.value?.options?.color ?? 'Blue'
+                selectedClassification?.value?.options?.color
+            )
+
+            watch(
+                () => selectedClassification?.value?.options?.color,
+                (v) => {
+                    classificationColor.value = v
+                }
             )
 
             const router = useRouter()

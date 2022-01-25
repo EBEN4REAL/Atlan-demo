@@ -161,7 +161,8 @@
     import { message } from 'ant-design-vue'
     import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
-    import { useTimeEvent } from '~/components/insights/common/composables/useTimeEvent'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
     import {
         explorerPaneSize,
@@ -221,6 +222,7 @@
                 // selectCollectionFromUrl,
             } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
+            const { getConnectorName } = useConnector()
             const { fullSreenState } = useFullScreen()
             const savedQueryGuidFromURL = ref(route.query?.id)
 
@@ -230,6 +232,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+            const openVQB = inject('openVQB')
 
             const collectionGuidFromURL = inject('collectionGuidFromURL')
 
@@ -296,30 +299,6 @@
             const monacoInstance: Ref<any> = ref()
 
             const editorContentSelectionState: Ref<boolean> = ref(false)
-
-            const { dataResponse, renderResponse, totalRenderTime } =
-                useTimeEvent()
-
-            watch([dataResponse, renderResponse], () => {
-                console.log(
-                    'time dataResponse(in sec): ',
-                    dataResponse.value / 1000
-                )
-                console.log(
-                    'time renderResponse(in sec): ',
-                    renderResponse.value / 1000
-                )
-
-                console.log(
-                    'time totalRenderTime(in sec): ',
-                    totalRenderTime.value / 1000
-                )
-                // console.log('time: ', {
-                //     startTime,
-                //     responseTime,
-                //     renderTime,
-                // })
-            })
 
             const setEditorInstance = (
                 editorInstanceParam: any,
@@ -397,6 +376,7 @@
             watch(
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
+                    console.log('editor data')
                     syncInlineTabsInLocalStorage(tabsArray.value)
                 },
                 { deep: true }
@@ -490,6 +470,68 @@
             // FIXME: refactor it
 
             const detectQuery = () => {
+                // for assetQuote Info of different sources
+                const assetQuoteType = getDialectInfo(
+                    getConnectorName(
+                        `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`
+                    ) ?? ''
+                )
+
+                let vqbData =
+                    openVQB === 'true'
+                        ? {
+                              selectedTables: [
+                                  {
+                                      tableQualifiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
+                                      addedBy: 'column',
+                                  },
+                              ],
+                              panels: [
+                                  {
+                                      order: 1,
+                                      id: 'columns',
+                                      hide: true,
+                                      subpanels: [
+                                          {
+                                              id: '1',
+                                              columns: ['all'],
+                                              tableData: {
+                                                  item: {},
+                                                  assetType: 'Table',
+                                              },
+                                              columnsData: [],
+                                              tableQualfiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
+                                          },
+                                      ],
+                                      expand: false,
+                                  },
+                              ],
+                          }
+                        : {
+                              selectedTables: [],
+                              panels: [
+                                  {
+                                      order: 1,
+                                      id: 'columns',
+                                      hide: false,
+                                      subpanels: [
+                                          {
+                                              id: '1',
+                                              tableQualifiedName: undefined,
+                                              columns: ['all'],
+                                              tableData: {
+                                                  certificateStatus: undefined,
+                                                  assetType: undefined,
+                                                  item: {},
+                                              },
+                                              columnsData: [],
+                                          },
+                                      ],
+                                      expand: true,
+                                  },
+                              ],
+                          }
+
                 const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),
                     label: `${tableNameFromURL} preview`,
@@ -522,31 +564,8 @@
                         },
                     },
                     playground: {
-                        isVQB: false,
-                        vqb: {
-                            selectedTables: [],
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: false,
-                                    subpanels: [
-                                        {
-                                            id: '1',
-                                            tableQualifiedName: undefined,
-                                            columns: ['all'],
-                                            tableData: {
-                                                certificateStatus: undefined,
-                                                assetType: undefined,
-                                                item: {},
-                                            },
-                                            columnsData: [],
-                                        },
-                                    ],
-                                    expand: true,
-                                },
-                            ],
-                        },
+                        isVQB: openVQB === 'true' ? true : false,
+                        vqb: vqbData,
                         editor: {
                             text: '',
                             context: {
@@ -598,17 +617,19 @@
                 let newQuery
                 if (columnNameFromURL) {
                     // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${tableNameFromURL} preview \nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
                 } else {
                     // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${tableNameFromURL} preview \nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
                 }
 
                 const attributeName = 'schemaQualifiedName'
                 const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
-                queryTab.playground.editor.text = newQuery
+                if (!(openVQB === 'true')) {
+                    queryTab.playground.editor.text = newQuery
+                }
 
                 queryTab.playground.editor.context = {
                     attributeName,
@@ -622,7 +643,7 @@
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
 
-                console.log('detect query: ', newQuery)
+                // console.log('detect query: ', newQuery)
                 queryRun(
                     activeInlineTab,
                     getData,
@@ -701,11 +722,11 @@
                     schemaNameFromURL &&
                     tableNameFromURL
                 ) {
-                    console.log('url params: ', {
-                        databaseQualifiedNameFromURL,
-                        schemaNameFromURL,
-                        tableNameFromURL,
-                    })
+                    // console.log('url params: ', {
+                    //     databaseQualifiedNameFromURL,
+                    //     schemaNameFromURL,
+                    //     tableNameFromURL,
+                    // })
                     // if (columnNameFromURL.value) {
                     // } else {
                     // }

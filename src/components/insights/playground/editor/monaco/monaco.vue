@@ -25,8 +25,7 @@
     } from 'vue'
 
     import { languageTokens } from './sqlTokens'
-    import TurndownService from 'turndown'
-    import * as monaco from 'monaco-editor'
+    import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -38,14 +37,11 @@
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
     import { loadThemes } from './themeLoader'
-    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
-    const turndownService = new TurndownService({})
 
     import Column from '~/assets/images/insights/autocomplete/Column.png'
     import Default from '~/assets/images/insights/autocomplete/default.png'
@@ -1026,5 +1022,30 @@
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12) !important;
         border: none;
+    }
+    :global(.monaco-scrollable-element .mac) {
+        border-radius: 4px !important;
+    }
+    :global(.action-item) {
+        height: 32px !important;
+        display: flex;
+        justify-content: center;
+    }
+    :global(.quick-input-widget.show-file-icons) {
+        margin-top: 50px !important;
+        border-radius: 4px !important;
+        width: 500px !important;
+        // background: white !important;
+    }
+
+    :global(.monaco-list.mouse-support .monaco-list-row) {
+        background: #fff !important;
+    }
+    :global(.monaco-list.list_id_2 .monaco-list-row.focused) {
+        background: #5277d7 !important;
+        color: #ffffff !important;
+    }
+    :global(.monaco-progress-container) {
+        background: #fff !important;
     }
 </style>

@@ -23,7 +23,7 @@
                     @click.stop
                     @change="(e) => $emit('listItem:check', e, item)"
                 />
-                <div class="flex flex-col flex-1 lg:pr-16">
+                <div class="flex flex-col flex-1 overflow-hidden">
                     <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
@@ -57,9 +57,16 @@
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
 
+                        <span
+                            class="flex-shrink mb-0 mr-1 text-sm font-bold truncate cursor-pointer text-primary"
+                            v-if="disableLinks"
+                        >
+                            {{ title(item) }}
+                        </span>
                         <router-link
+                            v-else
                             :to="getLineagePath(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden text-sm font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 text-sm font-bold truncate cursor-pointer text-primary hover:underline"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -74,7 +81,7 @@
 
                     <div v-if="description(item)" class="flex mt-0.5">
                         <span
-                            v-if="preference?.display?.includes('description')"
+                            v-if="preference?.includes('description')"
                             class="text-xs text-gray-500"
                             >{{ description(item) }}</span
                         >
@@ -323,17 +330,18 @@
 
                     <div
                         v-if="
-                            list.length > 0 &&
-                            preference?.display?.includes('classifications')
+                            clsfList.length > 0 &&
+                            preference?.includes('classifications')
                         "
                         class="flex flex-wrap mt-1 gap-x-1"
                     >
                         <template
-                            v-for="classification in list"
+                            v-for="classification in clsfList"
                             :key="classification.guid"
                         >
                             <PopoverClassification
                                 :classification="classification"
+                                :entity-guid="item?.guid"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -343,6 +351,7 @@
                                     "
                                     :allow-delete="false"
                                     :color="classification.options?.color"
+                                    :created-by="classification?.createdBy"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -360,7 +369,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import PopoverClassification from '@/common/popover/classification.vue'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -390,7 +399,7 @@
                 required: false,
                 default: () => false,
             },
-            // If the list items are selectable or not
+            // If the clsfList items are selectable or not
             showCheckBox: {
                 type: Boolean,
                 required: false,
@@ -403,10 +412,10 @@
                 default: false,
             },
             preference: {
-                type: Object,
+                type: Array,
                 required: false,
                 default() {
-                    return {}
+                    return []
                 },
             },
             showThreeDotMenu: {
@@ -415,6 +424,11 @@
                 default: false,
             },
             noBg: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            disableLinks: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -468,33 +482,25 @@
             }
 
             const isSelected = computed(() => {
-                if (selectedGuid.value === item?.value?.guid) {
-                    return true
-                }
-                return false
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid
             }
 
-            const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    classificationList.value,
-                    classifications(item.value),
-                    'name',
-                    'typeName'
+            const clsfList = computed(() =>
+                item.value?.classificationNames?.map((clName) =>
+                    classificationList.value.find(
+                        (clsf) => clsf.name === clName
+                    )
                 )
-                return matchingIdsResult
-            })
+            )
 
             return {
                 isChecked,
@@ -533,7 +539,7 @@
                 categories,
                 parentCategory,
                 isPropagated,
-                list,
+                clsfList,
                 classifications,
                 getLineagePath,
             }

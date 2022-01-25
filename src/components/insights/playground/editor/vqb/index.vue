@@ -6,13 +6,14 @@
     >
         <template
             v-for="(item, index) in activeInlineTab?.playground?.vqb?.panels"
-            :key="item?.id + index"
+            :key="item?.id + index + activeInlineTab.key"
         >
             <component
                 :is="item?.id"
                 :index="index"
                 :panel="item"
                 v-if="item"
+                :key="item?.id + index + activeInlineTab.key"
             ></component>
         </template>
     </div>

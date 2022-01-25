@@ -10,6 +10,7 @@
         >
             <AtlanIcon icon="Add" class="text-white" />
         </div>
+
         <AssetPreview
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
@@ -136,12 +137,12 @@
                 // let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
                 //     JSON.stringify(toRaw(activeInlineTab.value))
                 // )
-                console.log('updated asset: ', asset)
+                // console.log('updated asset: ', asset)
 
                 let activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
 
-                // console.log('updated asset: ', asset)
+                console.log('updated asset: ', asset)
                 assetSidebarUpdatedData.value = asset
 
                 if (asset?.typeName === 'Query') {
@@ -158,6 +159,7 @@
                             status: asset?.attributes.certificateStatus,
                             attributes: asset?.attribute,
                         }
+                        activeInlineTabCopy.assetSidebar.assetInfo = asset
                     }
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }

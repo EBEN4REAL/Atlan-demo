@@ -13,9 +13,11 @@ export interface State {
     announcementUpdatedBy: string
     // need to send the whole tenant in updateTenant Request
     tenantRaw: any
+    logo: string,
 }
 
 export const state: State = {
+    logo: `${window.location.origin}/api/service/avatars/_logo_`,
     displayName: useStorage('tenant_displayName', ''),
     loginWithEmailAllowed: false,
     smtpServer: {},

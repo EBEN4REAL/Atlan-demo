@@ -1,7 +1,7 @@
-import { getRequests, actOnRequest } from '~/services/service/requests'
 import { Ref, computed, watch, ref } from 'vue'
-import { RequestStatus } from '~/types/atlas/requests'
 import { useDebounceFn } from '@vueuse/core'
+import { getRequests, actOnRequest } from '~/services/service/requests'
+import { RequestStatus } from '~/types/atlas/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export interface RequestListFilters {
@@ -14,16 +14,15 @@ function generateRequestListFilters(
 ) {
     const filter: Record<string, any> = {}
     if (searchTerm) {
-        filter['$or'] = [
+        filter.$or = [
             { destination_qualified_name: { $ilike: `%${searchTerm}%` } },
         ]
     }
     for (const [key, value] of Object.entries(filters)) {
         if (value?.length ?? value)
             // Check if the value is valid or the length in case of array
-            filter[key] = Array.isArray(value) ? { $in: value } : value
+            filter[key] = (Array.isArray(value) && key !== '$or') ? { $in: value } : value
     }
-
     return filter
 }
 
@@ -32,16 +31,16 @@ export function useRequestList(
     filters: Ref<RequestListFilters>,
     pagination: Ref
 ) {
-    let params = computed(() => ({
+    const params = computed(() => ({
         limit: pagination.value.limit,
         offset: pagination.value.offset,
         filter: generateRequestListFilters(searchTerm.value, filters.value),
+        sort: '-createdAt',
     }))
     // const { response, error, mutate, isLoading } = getRequests(params)
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
 
     const debouncedMutation = useDebounceFn(() => {
-        console.log(searchTerm)
         mutate()
         useAddEvent('governance', 'requests', 'searched')
     }, 400)

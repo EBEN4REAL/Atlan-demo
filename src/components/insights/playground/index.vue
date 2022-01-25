@@ -98,7 +98,7 @@
                                             >{{ tab.label }}</span
                                         >
                                     </div>
-                                    <div
+                                    <!-- <div
                                         v-if="!tab.isSaved"
                                         class="flex items-center unsaved-dot"
                                     >
@@ -107,9 +107,9 @@
                                                 tab.playground.editor.text
                                                     .length > 0 || tab?.queryId
                                             "
-                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3"
+                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5"
                                         ></div>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -128,6 +128,18 @@
                         </template>
 
                         <template #closeIcon>
+                            <div
+                                v-if="!tab.isSaved"
+                                class="flex items-center unsaved-dot"
+                            >
+                                <div
+                                    v-if="
+                                        tab.playground.editor.text.length > 0 ||
+                                        tab?.queryId
+                                    "
+                                    class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
+                                ></div>
+                            </div>
                             <AtlanIcon
                                 v-if="tabs.length >= 2"
                                 icon="Close"
@@ -147,7 +159,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; min-height: 92%"
+            style="max-height: 100%; min-height: 92%; height: 100%"
         >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -164,6 +176,7 @@
             </splitpanes>
         </div>
         <ResultPaneFooter v-if="activeInlineTabKey" />
+
         <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"

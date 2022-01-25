@@ -91,7 +91,10 @@
                 >
                     <template #categoryFilter>
                         <div
-                            class="relative px-2 cursor-pointer"
+                            class="relative flex items-center px-2 cursor-pointer filter-icon-wrapper"
+                            :class="{
+                                'border-primary border': drawerFilter,
+                            }"
                             @click="handleClickFilter"
                         >
                             <AtlanIcon icon="FilterFunnelDot" />
@@ -151,9 +154,10 @@
                         />
                     </template>
                 </VirtualList>
-                <div class="h-3" @mouseenter="mouseEnterContainer" />
+                <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
                     class="flex items-center justify-between p-4 bg-white border-t"
+                    @mouseenter="mouseEnterContainer"
                 >
                     <div class="text-gray-500">
                         <strong
@@ -583,6 +587,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .filter-icon-wrapper {
+        height: 28px !important;
+    }
     .wrapper-scoll {
         position: absolute;
         width: 16px;
@@ -615,7 +622,7 @@
     }
 
     .devider-filter {
-        top: -5px;
+        top: 0px;
         height: 31px;
         right: 0;
     }

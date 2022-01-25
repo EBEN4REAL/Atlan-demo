@@ -436,16 +436,54 @@
                     <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
-                        <a-menu-item
-                            key="shareSavedQuery"
-                            class="px-4 py-2"
-                            @click="copyURL"
-                            >Share query</a-menu-item
-                        >
+                        <a-sub-menu key="shareQueryMenu" class="text-gray-500">
+                            <template #title>
+                                <div
+                                    class="flex items-center justify-between w-full mr-2 text-gray-500"
+                                >
+                                    <div
+                                        class="flex items-center justify-between w-full"
+                                    >
+                                        <span class="text-gray-700">Share</span>
+                                    </div>
+                                </div>
+                            </template>
+                            <template #expandIcon />
+                            <div class="text-gray-700" style="min-width: 200px">
+                                <a-menu-item
+                                    key="shareSavedQuery"
+                                    class="px-4 py-2 text-sm"
+                                    @click="copyURL"
+                                >
+                                    Share query
+                                </a-menu-item>
+                                <a-menu-item
+                                    v-if="
+                                        tenantSlackStatus.configured &&
+                                        tenantSlackStatus.channels.length
+                                    "
+                                    key="shareSlack"
+                                    class="flex items-center px-4 py-2"
+                                >
+                                    <SlackModal
+                                        :link="link"
+                                        :asset-i-d="activeInlineTab?.queryId"
+                                    >
+                                        <div class="flex items-center">
+                                            <AtlanIcon icon="Slack" />
+                                            <span class="pl-2 text-sm"
+                                                >Slack</span
+                                            >
+                                        </div>
+                                    </SlackModal>
+                                </a-menu-item>
+                            </div>
+                        </a-sub-menu>
 
-                        <a-menu-item @click="duplicateQuery" class="px-4 py-2"
-                            >Duplicate query</a-menu-item
-                        >
+                        <a-menu-item @click="duplicateQuery" class="px-4 py-2">
+                            Duplicate query
+                        </a-menu-item>
+
                         <!-- <a-menu-item class="px-4 py-2"
                             >Edit saved query</a-menu-item
                         >
@@ -489,9 +527,11 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import SlackModal from '@/common/assets/misc/slackModal.vue'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
-        components: {},
+        components: { SlackModal },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
@@ -505,6 +545,8 @@
 
             const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const { inlineTabAdd, setVQBInInlineTab } = useInlineTab()
+            const store = integrationStore()
+            const { tenantSlackStatus } = toRefs(store)
 
             themes.sort(function (a: object, b: object) {
                 return a.label - b.label
@@ -685,8 +727,9 @@
                 )
             }
 
+            const link = computed(() => window.location.href)
             const copyURL = () => {
-                const URL = window.location.href
+                const URL = link.value
                 copyToClipboard(URL)
                 message.success({
                     content: 'Link Copied!',
@@ -694,6 +737,8 @@
                 useAddEvent('insights', 'query', 'link_copied', undefined)
             }
             return {
+                tenantSlackStatus,
+                link,
                 vqbQueryRoute,
                 showVQB,
                 getThemeLabelFromName,

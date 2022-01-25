@@ -13,7 +13,8 @@
             />
         </span>
         <div class="flex items-center text-xs">
-            <AssetLogo :selected="selected" :asset="assetWrappper" />
+            <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
+            <AtlanIcon class="mr-1" :icon="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
@@ -67,6 +68,16 @@
             const assetText = computed(() =>
                 assetQfName.value.split('/').slice(-3).reverse()
             )
+            const assetIcon = computed(() => {
+                let name = assetQfName.value.split('/')[1]
+                name = name.toLowerCase()
+                // name[0] = name[0].toUpperCase()
+                const result = `${name[0].toUpperCase()}${name.slice(
+                    1,
+                    name.length
+                )}`
+                return result
+            })
             const timeAgo = useTimeAgo(
                 destinationEntity.value?.attributes?.certificateUpdatedAt,
                 {
@@ -76,7 +87,7 @@
                 }
             )
 
-            return { assetWrappper, assetText, timeAgo }
+            return { assetWrappper, assetText, timeAgo, assetIcon }
         },
     })
 </script>

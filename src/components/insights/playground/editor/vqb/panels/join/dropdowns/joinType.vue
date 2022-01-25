@@ -55,7 +55,12 @@
                             <div
                                 class="flex items-center mt-3 text-sm cursor-pointer text-primary"
                             >
-                                Learn more
+                                <a
+                                    class="text-primary"
+                                    :href="item.url"
+                                    target="_blank"
+                                    >Learn more</a
+                                >
                                 <AtlanIcon
                                     icon="ArrowRight"
                                     class="w-4 h-4 ml-1"
@@ -132,6 +137,7 @@
                     label: ls.name,
                     key: ls.type,
                     icon: ls.name.replace(' ', ''),
+                    url: ls.url,
                 }))
 
                 return data

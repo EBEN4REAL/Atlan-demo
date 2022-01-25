@@ -98,7 +98,6 @@ export const previewTabs = [
         name: 'Request',
         component: 'request',
         icon: 'Request',
-        activeIcon: 'RequestActive',
         tooltip: 'Request',
         scrubbed: false,
         requiredInProfile: true,

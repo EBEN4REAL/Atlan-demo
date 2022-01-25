@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-solid border-style-500 group gap-x-4 request-card"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,

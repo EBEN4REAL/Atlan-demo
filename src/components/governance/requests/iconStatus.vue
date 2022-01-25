@@ -23,20 +23,20 @@
             </div>
         </template>
         <AtlanIcon
-            class="ml-3 mr-4 text-success check-icon"
+            class="ml-3 text-success check-icon icon-status"
             icon="MessageSuccess"
         />
     </a-popover>
     <AtlanIcon
         v-else-if="request.status === 'approved'"
-        class="ml-3 mr-4 text-success check-icon"
+        class="ml-3 text-success check-icon icon-status"
         icon="Check"
     />
     <AtlanIcon
         v-else-if="
             request.status === 'rejected' && !request.rejectedBy[0].message
         "
-        class="ml-3 mr-4 cross-icon"
+        class="ml-3 cross-icon icon-status"
         icon="CrossCircle"
     />
     <a-popover
@@ -48,7 +48,7 @@
         <template #content>
             <div class="comment-delete">
                 <div class="flex">
-                    <component :is="iconQuotes" class="mr-4" />
+                    <component :is="iconQuotes" class="mr-3" />
                     <p>{{ request.rejectedBy[0].message }}</p>
                 </div>
                 <div class="flex items-center mt-4">
@@ -62,11 +62,14 @@
                 </div>
             </div>
         </template>
-        <AtlanIcon class="ml-3 mr-4 message-cross-icon" icon="MessageCross" />
+        <AtlanIcon
+            class="ml-3 message-cross-icon icon-status"
+            icon="MessageCross"
+        />
     </a-popover>
     <AtlanIcon
         v-else-if="request.message"
-        class="ml-3 mr-4 message-icon"
+        class="ml-3 message-icon icon-status"
         icon="Message"
     />
     <div v-else class="w-7" />
@@ -99,7 +102,10 @@
         },
     })
 </script>
-
+<style lang="less">
+    .icon-status {
+    }
+</style>
 <style lang="less" scoped>
     .comment-delete {
         // height: 90px;

@@ -79,10 +79,10 @@
                 class="w-5 h-5 text-gray animate-spin"
             /> -->
             <!-- <div v-else-if="selected"> -->
-            <div>
+            <div v-else class="pr-5">
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center pr-3 font-bold"
+                    class="flex items-center justify-end font-bold"
                 >
                     <!-- <AtlanIcon
                         v-if="state.isLoading"
@@ -102,7 +102,7 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center justify-end font-light w-96"
+                        class="flex items-center justify-end font-light whitespace-nowrap"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'
@@ -141,8 +141,8 @@
                         />
                     </div>
                 </div>
-                <div v-else class="flex">
-                    <div class="flex items-center pl-8 w-52 gap-x-2">
+                <div v-else class="flex justify-end">
+                    <div class="flex items-center justify-end gap-x-2">
                         <Avatar
                             :allow-upload="false"
                             :avatar-name="request.created_by_user?.username"
@@ -151,7 +151,7 @@
                             :image-url="request.createdBy ? '' : atlanLogo"
                         />
 
-                        <div class="flex flex-col">
+                        <div class="flex flex-col ml-2 avatar-name">
                             <UserPiece
                                 :user="{ username: request.createdBy }"
                                 :is-pill="false"
@@ -437,6 +437,10 @@
 </style>
 
 <style lang="less">
+    .avatar-name {
+        width: 85px !important;
+        margin-right: 10px !important;
+    }
     .message-icon {
         transform: scale(1.4) !important;
     }

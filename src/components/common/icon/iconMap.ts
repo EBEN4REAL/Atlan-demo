@@ -216,6 +216,7 @@ import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+import ColumnGray from '~/assets/images/icons/column-gray.svg'
 
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
@@ -447,6 +448,7 @@ export default {
     RunSuccess,
     RunFailed,
     Metadata,
+    ColumnGray,
     Relation,
     MorningIcon,
     AfternoonIcon,

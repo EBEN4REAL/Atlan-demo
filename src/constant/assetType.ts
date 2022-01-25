@@ -105,7 +105,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 80,
         count: 0,
-        image: 'Columns',
+        image: 'ColumnGray',
         relationships: [],
     },
     /*  {

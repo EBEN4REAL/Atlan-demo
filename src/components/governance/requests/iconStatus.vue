@@ -2,8 +2,8 @@
     <a-popover
         v-if="request.status === 'approved' && request.approvedBy[0]?.message"
         trigger="hover"
-        placement="bottomRight"
-        :align="{ offset: [90] }"
+        placement="bottomLeft"
+        :align="{ offset: [0] }"
     >
         <template #content>
             <div class="comment-delete">
@@ -22,25 +22,28 @@
                 </div>
             </div>
         </template>
-        <AtlanIcon class="mr-3 text-success check-icon" icon="MessageSuccess" />
+        <AtlanIcon
+            class="ml-3 mr-4 text-success check-icon"
+            icon="MessageSuccess"
+        />
     </a-popover>
     <AtlanIcon
         v-else-if="request.status === 'approved'"
-        class="mr-3 text-success check-icon"
+        class="ml-3 mr-4 text-success check-icon"
         icon="Check"
     />
     <AtlanIcon
         v-else-if="
             request.status === 'rejected' && !request.rejectedBy[0].message
         "
-        class="mr-3 cross-icon"
+        class="ml-3 mr-4 cross-icon"
         icon="CrossCircle"
     />
     <a-popover
         v-else-if="request.status === 'rejected'"
         trigger="hover"
-        placement="bottomRight"
-        :align="{ offset: [90] }"
+        placement="bottomLeft"
+        :align="{ offset: [0] }"
     >
         <template #content>
             <div class="comment-delete">
@@ -59,11 +62,11 @@
                 </div>
             </div>
         </template>
-        <AtlanIcon class="mr-3 message-cross-icon" icon="MessageCross" />
+        <AtlanIcon class="ml-3 mr-4 message-cross-icon" icon="MessageCross" />
     </a-popover>
     <AtlanIcon
         v-else-if="request.message"
-        class="mr-3 message-icon"
+        class="ml-3 mr-4 message-icon"
         icon="Message"
     />
     <div v-else class="w-7" />

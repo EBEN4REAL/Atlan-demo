@@ -94,7 +94,7 @@
                             class="relative px-2 cursor-pointer"
                             @click="handleClickFilter"
                         >
-                            <AtlanIcon icon="FilterFunnel" />
+                            <AtlanIcon icon="FilterFunnelDot" />
                             <div
                                 class="absolute border-r border-solid divide-gray-800 devider-filter"
                             />

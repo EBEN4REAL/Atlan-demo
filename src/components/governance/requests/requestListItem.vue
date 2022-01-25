@@ -102,10 +102,6 @@
                                 : 'text-error'
                         "
                     >
-                        <IconStatus
-                            :request="request"
-                            :name-updater="nameUpdater"
-                        />
                         {{
                             request.status === 'approved'
                                 ? 'Approved by'
@@ -132,14 +128,14 @@
                                     : request.rejectedBy[0].timestamp
                             "
                         />
-                    </div>
-                </div>
-                <div v-else class="flex">
-                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"
                         />
+                    </div>
+                </div>
+                <div v-else class="flex">
+                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <Avatar
                             :allow-upload="false"
                             :avatar-name="request.created_by_user?.username"
@@ -160,6 +156,10 @@
                                 class="text-gray-500"
                             />
                         </div>
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
                     </div>
                     <!-- <div class="flex items-center">
                         <AtlanIcon
@@ -366,16 +366,16 @@
                     )
                     watch(data, () => {
                         updatedBy.value = data.value.records[0]
-                        console.log('updated', updatedBy.value)
                     })
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
             const item = computed(() => {
-                const name = request?.value?.destinationQualifiedName
-                    .split('/')
-                    .slice(-3)
-                    .reverse()
+                const name =
+                    request?.value?.destinationQualifiedName
+                        ?.split('/')
+                        ?.slice(-3)
+                        ?.reverse() || []
                 return {
                     ...request.value,
                     guid: request.value.destinationGuid,

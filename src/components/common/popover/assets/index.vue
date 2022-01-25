@@ -4,7 +4,7 @@
             <div class="relation-ship">
                 <div class="flex justify-between">
                     <div class="flex items-center mb-1 text-gray-500">
-                        <img :src="logoTitle" class="h-3 mr-1 mb-0.5" />
+                        <AtlanIcon :icon="logoTitle" class="h-3 mr-1 mb-0.5" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(

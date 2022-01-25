@@ -1,19 +1,8 @@
-import snowflake from '~/assets/images/source/snowflake.png'
-import tableau from '~/assets/images/source/tableau.png'
-import redshift from '~/assets/images/source/redshift.png'
-import postgres from '~/assets/images/source/postgres.png'
-import athena from '~/assets/images/source/athena.png'
-import databricks from '~/assets/images/source/databricks.png'
-import database from '~/assets/images/assetType/Database.svg'
-import schema from '~/assets/images/assetType/Schema.svg'
-import powerbi from '~/assets/images/source/powerbi.png'
-import bigquery from '~/assets/images/source/bigquery.png'
-
 export const SourceList = [
     {
         id: 'snowflake',
         label: 'Snowflake',
-        image: snowflake,
+        image: 'Snowflake',
         filterMaxLevel: 2,
         connectionCount: 0,
         dialectConfig: {
@@ -26,7 +15,7 @@ export const SourceList = [
                 parent: '',
                 attribute: 'databaseQualifiedName',
                 level: 1,
-                image: database,
+                image: 'Database',
             },
             {
                 typeName: 'Schema',
@@ -34,7 +23,7 @@ export const SourceList = [
                 parent: 'Database',
                 attribute: 'schemaQualifiedName',
                 level: 2,
-                image: schema,
+                image: 'Schema',
             },
             {
                 typeName: 'Table',
@@ -66,7 +55,7 @@ export const SourceList = [
     {
         id: 'tableau',
         label: 'Tableau',
-        image: tableau,
+        image: 'Tableau',
         hierarchy: [],
         types: [
             'TableauSite',
@@ -82,14 +71,14 @@ export const SourceList = [
     {
         id: 'redshift',
         label: 'Redshift',
-        image: redshift,
+        image: 'Redshift',
         hierarchy: [],
         connectionCount: 0,
     },
     {
         id: 'databricks',
         label: 'Databricks',
-        image: databricks,
+        image: 'Databricks',
         hierarchy: [
             {
                 typeName: 'Database',
@@ -97,7 +86,7 @@ export const SourceList = [
                 parent: '',
                 attribute: 'databaseQualifiedName',
                 level: 1,
-                image: database,
+                image: 'Database',
             },
             {
                 typeName: 'Schema',
@@ -105,7 +94,7 @@ export const SourceList = [
                 parent: 'Database',
                 attribute: 'schemaQualifiedName',
                 level: 2,
-                image: schema,
+                image: 'Schema',
             },
             {
                 typeName: 'Table',
@@ -145,7 +134,7 @@ export const SourceList = [
     {
         id: 'bigquery',
         label: 'BigQuery',
-        image: bigquery,
+        image: 'BigQuery',
         hierarchy: [
             {
                 typeName: 'Database',
@@ -153,7 +142,7 @@ export const SourceList = [
                 parent: '',
                 attribute: 'databaseQualifiedName',
                 level: 1,
-                image: database,
+                image: 'Database',
             },
             {
                 typeName: 'Schema',
@@ -161,7 +150,7 @@ export const SourceList = [
                 parent: 'Database',
                 attribute: 'schemaQualifiedName',
                 level: 2,
-                image: schema,
+                image: 'Schema',
             },
             {
                 typeName: 'Table',
@@ -194,7 +183,7 @@ export const SourceList = [
     {
         id: 'postgres',
         label: 'Postgres',
-        image: postgres,
+        image: 'Postgres',
         hierarchy: [],
         connectionCount: 0,
         types: [
@@ -212,7 +201,7 @@ export const SourceList = [
     {
         id: 'athena',
         label: 'Athena',
-        image: athena,
+        image: 'Athena',
         filterMaxLevel: 2,
         hierarchy: [
             {
@@ -221,7 +210,7 @@ export const SourceList = [
                 parent: '',
                 attribute: 'databaseQualifiedName',
                 level: 1,
-                image: database,
+                image: 'Database',
             },
             {
                 typeName: 'Schema',
@@ -229,7 +218,7 @@ export const SourceList = [
                 parent: 'Database',
                 attribute: 'schemaQualifiedName',
                 level: 2,
-                image: schema,
+                image: 'Schema',
             },
             {
                 typeName: 'Table',
@@ -261,7 +250,7 @@ export const SourceList = [
     {
         id: 'powerbi',
         label: 'Power BI',
-        image: powerbi,
+        image: 'PowerBI',
         connectionCount: 0,
         hierarchy: [],
         types: [

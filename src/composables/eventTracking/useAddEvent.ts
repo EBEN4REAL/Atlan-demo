@@ -81,36 +81,54 @@ export const identifyUser = async () => {
 export const identifyGroup = async () => {
     await addDelay(1800)
     if (window?.analytics) {
+        const tenantStore = useTenantStore()
+        const purposeStore = usePurposeStore()
+        const personaStore = usePersonaStore()
+
+        const purposeCount = (purposeStore.list || []).length
+        const personaCount = (personaStore.list || []).length
+
+        const domain = window.location.host
+        const groupId = domain
+        // group
+        if (window?.analytics?.group) {
+            window?.analytics?.group(groupId, {
+                domain,
+                name: tenantStore.displayName,
+                purpose_count: purposeCount,
+                persona_count: personaCount,
+            })
+        }
         // const groupTraits = window?.analytics?.group()?.traits()
-        const { data, isReady, error, isLoading } = Replicated.getLicense()
-        watch(
-            isLoading,
-            (value) => {
-                if (!value) {
-                    console.log('replicated value loaded', data.value)
-                    const tenantStore = useTenantStore()
-                    const purposeStore = usePurposeStore()
-                    const personaStore = usePersonaStore()
+        // const { data, isReady, error, isLoading } = Replicated.getLicense()
+        // watch(
+        //     isLoading,
+        //     (value) => {
+        //         if (!value) {
+        //             console.log('replicated value loaded', data.value)
+        //             const tenantStore = useTenantStore()
+        //             const purposeStore = usePurposeStore()
+        //             const personaStore = usePersonaStore()
 
-                    const purposeCount = (purposeStore.list || []).length
-                    const personaCount = (personaStore.list || []).length
+        //             const purposeCount = (purposeStore.list || []).length
+        //             const personaCount = (personaStore.list || []).length
 
-                    const domain = window.location.host
-                    const groupId = domain
-                    // group
-                    if (window?.analytics?.group) {
-                        window?.analytics?.group(groupId, {
-                            domain,
-                            name: tenantStore.displayName,
-                            purpose_count: purposeCount,
-                            persona_count: personaCount,
-                            license_type: data?.value?.license || '',
-                        })
-                    }
-                }
-            },
-            { immediate: true }
-        )
+        //             const domain = window.location.host
+        //             const groupId = domain
+        //             // group
+        //             if (window?.analytics?.group) {
+        //                 window?.analytics?.group(groupId, {
+        //                     domain,
+        //                     name: tenantStore.displayName,
+        //                     purpose_count: purposeCount,
+        //                     persona_count: personaCount,
+        //                     license_type: data?.value?.license || '',
+        //                 })
+        //             }
+        //         }
+        //     },
+        //     { immediate: true }
+        // )
     }
 }
 

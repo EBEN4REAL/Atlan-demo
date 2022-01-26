@@ -1,341 +1,373 @@
 <template>
-    <div
-        class="relative p-3 mx-1 border-b cursor-pointer hover:bg-primary-light card-container"
-    >
-        <div class="flex items-center justify-between">
-            <div class="flex">
-                <Avatar
-                    :allow-upload="false"
-                    :avatar-name="item.created_by_user?.username"
-                    :avatar-size="16"
-                    :avatar-shape="'circle'"
-                    :image-url="item.createdBy ? '' : atlanLogo"
-                />
-                <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
-                <span class="ml-1 text-gray-400">has requested to</span>
-                <span class="ml-1 font-bold text-gray-700"
-                    >{{
-                        item?.requestType === 'attach_classification'
-                            ? 'Link Classification'
-                            : 'Link Term'
-                    }}
-                </span>
-                <span
-                    v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
-                    class="ml-1 text-gray-400"
-                    >on</span
-                >
-            </div>
-            <div
-                v-if="item.status === 'active'"
-                class="flex hover-action bg-primary-light"
-            >
-                <AtlanButton
-                    class="flex items-center pr-0 mr-2 btn-actions"
-                    color="secondary"
-                    padding="compact"
-                    size="sm"
-                    @click.stop="handleApproval('')"
-                    ><span class="text-green-500"> Approve </span>
-                    <a-dropdown
-                        v-model:visible="isVisible"
-                        trigger="click"
-                        placement="bottomRight"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    key="1"
-                                    @click="handleClickApproveWithComment"
-                                >
-                                    <a-popover
-                                        v-model:visible="
-                                            isVisibleApproveWithComment
-                                        "
-                                        trigger="click"
-                                        placement="bottomRight"
-                                        :align="{ offset: [15, -70] }"
-                                    >
-                                        <template #content>
-                                            <div class="comment-delete">
-                                                <div class="flex">
-                                                    <a-textarea
-                                                        v-model:value="
-                                                            messageApprove
-                                                        "
-                                                        placeholder="Message"
-                                                        class="border-none"
-                                                        :rows="2"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex items-center justify-between mt-4"
-                                                >
-                                                    <a-button
-                                                        class="text-gray-500"
-                                                        size="small"
-                                                        type="link"
-                                                        @click="cancelApprove"
-                                                    >
-                                                        Cancel
-                                                    </a-button>
-                                                    <a-button
-                                                        size="small"
-                                                        type="link"
-                                                        :class="'text-green-500'"
-                                                        @click="handleApprove"
-                                                    >
-                                                        Approve
-                                                    </a-button>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        Approve with comment
-                                    </a-popover>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <div
-                            class="chevron-icon"
-                            @click.stop="isVisibleApprove = !isVisibleApprove"
-                        >
-                            <AtlanIcon
-                                icon="ChevronDown"
-                                :class="'icon-drop'"
-                            />
-                        </div>
-                    </a-dropdown>
-                </AtlanButton>
-                <AtlanButton
-                    class="flex items-center pr-0 btn-actions"
-                    color="secondary"
-                    padding="compact"
-                    size="sm"
-                    @click.stop="handleReject('')"
-                    ><span class="text-red-500"> Reject </span>
-                    <a-dropdown
-                        v-model:visible="isVisibleReject"
-                        trigger="click"
-                        placement="bottomRight"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    key="2"
-                                    @click="handleClickRejectWithComment"
-                                >
-                                    <a-popover
-                                        v-model:visible="
-                                            isVisibleRejectWithComment
-                                        "
-                                        trigger="click"
-                                        placement="bottomRight"
-                                        :align="{ offset: [15, -60] }"
-                                    >
-                                        <template #content>
-                                            <div class="comment-delete">
-                                                <div class="flex">
-                                                    <a-textarea
-                                                        v-model:value="
-                                                            messageReject
-                                                        "
-                                                        placeholder="Message"
-                                                        class="border-none"
-                                                        :rows="2"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex items-center justify-between mt-4"
-                                                >
-                                                    <a-button
-                                                        class="text-gray-500"
-                                                        size="small"
-                                                        type="link"
-                                                        @click="cancelReject"
-                                                    >
-                                                        Cancel
-                                                    </a-button>
-                                                    <a-button
-                                                        size="small"
-                                                        type="link"
-                                                        :class="'text-red-500'"
-                                                        @click="handleReject"
-                                                    >
-                                                        Reject
-                                                    </a-button>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        Reject with comment
-                                    </a-popover>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <div
-                            class="chevron-icon"
-                            @click.stop="isVisibleApprove = !isVisibleApprove"
-                        >
-                            <AtlanIcon
-                                icon="ChevronDown"
-                                :class="'icon-drop'"
-                            />
-                        </div>
-                    </a-dropdown>
-                </AtlanButton>
-            </div>
-            <div
-                v-if="item.status === 'rejected' || item.status === 'approved'"
-                class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve bg-primary-light"
-                :class="
-                    item.status === 'approved' ? 'text-success' : 'text-error'
-                "
-            >
-                {{ item.status === 'approved' ? 'Approved by' : 'Rejected by' }}
-                <div class="flex items-center mx-2 truncate">
+    <div class="px-1 my-0.5">
+        <div
+            class="relative px-2 py-3 mx-1 rounded cursor-pointer hover:bg-primary-light card-container"
+        >
+            <div class="flex items-center justify-between">
+                <div class="flex">
                     <Avatar
                         :allow-upload="false"
-                        :avatar-name="nameUpdater"
-                        :avatar-size="18"
+                        :avatar-name="item.created_by_user?.username"
+                        :avatar-size="16"
                         :avatar-shape="'circle'"
-                        class="mr-2"
+                        :image-url="item.createdBy ? '' : atlanLogo"
                     />
-
-                    <span class="text-gray-700">{{ nameUpdater }}</span>
-                </div>
-            </div>
-            <AtlanIcon
-                v-if="item.status === 'rejected' || item.status === 'approved'"
-                :class="{
-                    'approved-icon text-success': item.status === 'approved',
-                    'rejected-icon': item.status === 'rejected',
-                }"
-                :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
-            />
-        </div>
-        <div
-            v-if="
-                item.status === 'active' &&
-                selectedAsset.typeName === 'AtlasGlossaryTerm'
-            "
-        >
-            <div
-                class="flex items-center p-3 my-2 mr-1 text-xs bg-gray-100 rounded"
-            >
-                <AtlanIcon class="mr-1" :icon="assetIcon" />
-                <span
-                    class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
-                    >{{ item.entityType.toUpperCase() }}</span
-                >
-                <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
-                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
-                    {{ assetText[2] }}</span
-                >
-                <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
-
-                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
-                    {{ assetText[1] }}</span
-                >
-            </div>
-            <div class="ml-auto text-sm text-right text-gray-500">
-                {{ createdTime(item.createdAt) }}
-            </div>
-        </div>
-        <div v-else class="flex items-center justify-between mt-2">
-            <div
-                v-if="item.requestType === 'attach_classification'"
-                class="w-fit"
-            >
-                <Popover
-                    v-if="localClassification(item.payload.typeName)"
-                    :classification="localClassification(item.payload.typeName)"
-                    label-key="displayName"
-                    popover-trigger="hover"
-                    read-only
-                    :is-plain="true"
-                >
-                    <ClassificationPill
-                        class="clasification-pill"
-                        :name="localClassification(item.payload.typeName).name"
-                        :display-name="
-                            localClassification(item.payload.typeName)
-                                ?.displayName
-                        "
-                        :allow-delete="false"
-                        :color="
-                            localClassification(item.payload.typeName).options
-                                ?.color
-                        "
-                        :no-hover="true"
-                        :created-by="
-                            localClassification(item.payload.typeName)
-                                ?.createdBy
-                        "
-                    />
-                </Popover>
-            </div>
-            <div v-else-if="item.requestType === 'term_link'">
-                <TermPopover
-                    :loading="termLoading"
-                    :fetched-term="getFetchedTerm(item.sourceGuid)"
-                    :error="termError"
-                    trigger="hover"
-                    :ready="isReady"
-                    :term="{ guid: item.sourceGuid }"
-                    @visible="handleTermPopoverVisibility"
-                >
-                    <Pill
-                        :label="item?.sourceEntity?.attributes?.name"
-                        :has-action="false"
+                    <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
+                    <span class="ml-1 text-gray-400">has requested to</span>
+                    <span class="ml-1 font-bold text-gray-700"
+                        >{{
+                            item?.requestType === 'attach_classification'
+                                ? 'Link Classification'
+                                : 'Link Term'
+                        }}
+                    </span>
+                    <span
+                        v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+                        class="ml-1 text-gray-400"
+                        >on</span
                     >
-                        <template #prefix>
-                            <AtlanIcon icon="Term" />
-                        </template>
-                    </Pill>
-                </TermPopover>
-            </div>
-            <div class="flex items-center">
-                <a-popover
-                    v-if="messageUpdate"
-                    trigger="hover"
-                    placement="bottomLeft"
-                    :align="{ offset: [0] }"
+                </div>
+                <div
+                    v-if="item.status === 'active'"
+                    class="flex hover-action bg-primary-light"
                 >
-                    <template #content>
-                        <div class="comment-delete">
-                            <div class="flex">
-                                <component :is="iconQuotes" class="mr-4" />
-                                <p>{{ messageUpdate }}</p>
-                            </div>
-                            <div class="flex items-center mt-4">
-                                <Avatar
-                                    :allow-upload="false"
-                                    :avatar-size="16"
-                                    :avatar-shape="'circle'"
-                                    class="mr-2"
+                    <AtlanButton
+                        class="flex items-center pr-0 mr-2 btn-actions"
+                        color="secondary"
+                        padding="compact"
+                        size="sm"
+                        @click.stop="handleApproval('')"
+                        ><span class="text-green-500"> Approve </span>
+                        <a-dropdown
+                            v-model:visible="isVisible"
+                            trigger="click"
+                            placement="bottomRight"
+                        >
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        key="1"
+                                        @click="handleClickApproveWithComment"
+                                    >
+                                        <a-popover
+                                            v-model:visible="
+                                                isVisibleApproveWithComment
+                                            "
+                                            trigger="click"
+                                            placement="bottomRight"
+                                            :align="{ offset: [15, -70] }"
+                                        >
+                                            <template #content>
+                                                <div class="comment-delete">
+                                                    <div class="flex">
+                                                        <a-textarea
+                                                            v-model:value="
+                                                                messageApprove
+                                                            "
+                                                            placeholder="Message"
+                                                            class="border-none"
+                                                            :rows="2"
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center justify-between mt-4"
+                                                    >
+                                                        <a-button
+                                                            class="text-gray-500"
+                                                            size="small"
+                                                            type="link"
+                                                            @click="
+                                                                cancelApprove
+                                                            "
+                                                        >
+                                                            Cancel
+                                                        </a-button>
+                                                        <a-button
+                                                            size="small"
+                                                            type="link"
+                                                            :class="'text-green-500'"
+                                                            @click="
+                                                                handleApprove
+                                                            "
+                                                        >
+                                                            Approve
+                                                        </a-button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            Approve with comment
+                                        </a-popover>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                            <div
+                                class="chevron-icon"
+                                @click.stop="
+                                    isVisibleApprove = !isVisibleApprove
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    :class="'icon-drop'"
                                 />
-                                <span class="text-gray-700">{{
-                                    nameUpdater
-                                }}</span>
                             </div>
-                        </div>
-                    </template>
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Comment" />
-                        <div class="ml-1 text-sm text-right text-gray-500">
-                            1
-                        </div>
-                        <div class="mx-2 text-sm text-right text-gray-500">
-                            -
-                        </div>
+                        </a-dropdown>
+                    </AtlanButton>
+                    <AtlanButton
+                        class="flex items-center pr-0 btn-actions"
+                        color="secondary"
+                        padding="compact"
+                        size="sm"
+                        @click.stop="handleReject('')"
+                        ><span class="text-red-500"> Reject </span>
+                        <a-dropdown
+                            v-model:visible="isVisibleReject"
+                            trigger="click"
+                            placement="bottomRight"
+                        >
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        key="2"
+                                        @click="handleClickRejectWithComment"
+                                    >
+                                        <a-popover
+                                            v-model:visible="
+                                                isVisibleRejectWithComment
+                                            "
+                                            trigger="click"
+                                            placement="bottomRight"
+                                            :align="{ offset: [15, -60] }"
+                                        >
+                                            <template #content>
+                                                <div class="comment-delete">
+                                                    <div class="flex">
+                                                        <a-textarea
+                                                            v-model:value="
+                                                                messageReject
+                                                            "
+                                                            placeholder="Message"
+                                                            class="border-none"
+                                                            :rows="2"
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center justify-between mt-4"
+                                                    >
+                                                        <a-button
+                                                            class="text-gray-500"
+                                                            size="small"
+                                                            type="link"
+                                                            @click="
+                                                                cancelReject
+                                                            "
+                                                        >
+                                                            Cancel
+                                                        </a-button>
+                                                        <a-button
+                                                            size="small"
+                                                            type="link"
+                                                            :class="'text-red-500'"
+                                                            @click="
+                                                                handleReject
+                                                            "
+                                                        >
+                                                            Reject
+                                                        </a-button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            Reject with comment
+                                        </a-popover>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                            <div
+                                class="chevron-icon"
+                                @click.stop="
+                                    isVisibleApprove = !isVisibleApprove
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    :class="'icon-drop'"
+                                />
+                            </div>
+                        </a-dropdown>
+                    </AtlanButton>
+                </div>
+                <div
+                    v-if="
+                        item.status === 'rejected' || item.status === 'approved'
+                    "
+                    class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve bg-primary-light"
+                    :class="
+                        item.status === 'approved'
+                            ? 'text-success'
+                            : 'text-error'
+                    "
+                >
+                    {{
+                        item.status === 'approved'
+                            ? 'Approved by'
+                            : 'Rejected by'
+                    }}
+                    <div class="flex items-center mx-2 truncate">
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="nameUpdater"
+                            :avatar-size="18"
+                            :avatar-shape="'circle'"
+                            class="mr-2"
+                        />
+
+                        <span class="text-gray-700">{{ nameUpdater }}</span>
                     </div>
-                </a-popover>
+                </div>
+                <AtlanIcon
+                    v-if="
+                        item.status === 'rejected' || item.status === 'approved'
+                    "
+                    :class="{
+                        'approved-icon text-success':
+                            item.status === 'approved',
+                        'rejected-icon': item.status === 'rejected',
+                    }"
+                    :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
+                />
+            </div>
+            <div
+                v-if="
+                    item.status === 'active' &&
+                    selectedAsset.typeName === 'AtlasGlossaryTerm'
+                "
+            >
+                <div
+                    class="flex items-center p-3 my-2 mr-1 text-xs bg-gray-100 rounded"
+                >
+                    <AtlanIcon class="mr-1" :icon="assetIcon" />
+                    <span
+                        class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                        >{{ item.entityType.toUpperCase() }}</span
+                    >
+                    <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+                    <span
+                        class="overflow-hidden text-gray-500 overflow-ellipsis"
+                    >
+                        {{ assetText[2] }}</span
+                    >
+                    <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+
+                    <span
+                        class="overflow-hidden text-gray-500 overflow-ellipsis"
+                    >
+                        {{ assetText[1] }}</span
+                    >
+                </div>
                 <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
                 </div>
             </div>
-        </div>
+            <div v-else class="flex items-center justify-between mt-2">
+                <div
+                    v-if="item.requestType === 'attach_classification'"
+                    class="w-fit"
+                >
+                    <Popover
+                        v-if="localClassification(item.payload.typeName)"
+                        :classification="
+                            localClassification(item.payload.typeName)
+                        "
+                        label-key="displayName"
+                        popover-trigger="hover"
+                        read-only
+                        :is-plain="true"
+                    >
+                        <ClassificationPill
+                            class="clasification-pill"
+                            :name="
+                                localClassification(item.payload.typeName).name
+                            "
+                            :display-name="
+                                localClassification(item.payload.typeName)
+                                    ?.displayName
+                            "
+                            :allow-delete="false"
+                            :color="
+                                localClassification(item.payload.typeName)
+                                    .options?.color
+                            "
+                            :no-hover="true"
+                            :created-by="
+                                localClassification(item.payload.typeName)
+                                    ?.createdBy
+                            "
+                        />
+                    </Popover>
+                </div>
+                <div v-else-if="item.requestType === 'term_link'">
+                    <TermPopover
+                        :loading="termLoading"
+                        :fetched-term="getFetchedTerm(item.sourceGuid)"
+                        :error="termError"
+                        trigger="hover"
+                        :ready="isReady"
+                        :term="{ guid: item.sourceGuid }"
+                        @visible="handleTermPopoverVisibility"
+                    >
+                        <Pill
+                            :label="item?.sourceEntity?.attributes?.name"
+                            :has-action="false"
+                        >
+                            <template #prefix>
+                                <AtlanIcon icon="Term" />
+                            </template>
+                        </Pill>
+                    </TermPopover>
+                </div>
+                <div class="flex items-center">
+                    <a-popover
+                        v-if="messageUpdate"
+                        trigger="hover"
+                        placement="bottomLeft"
+                        :align="{ offset: [0] }"
+                    >
+                        <template #content>
+                            <div class="comment-delete">
+                                <div class="flex">
+                                    <component :is="iconQuotes" class="mr-4" />
+                                    <p>{{ messageUpdate }}</p>
+                                </div>
+                                <div class="flex items-center mt-4">
+                                    <Avatar
+                                        :allow-upload="false"
+                                        :avatar-size="16"
+                                        :avatar-shape="'circle'"
+                                        class="mr-2"
+                                    />
+                                    <span class="text-gray-700">{{
+                                        nameUpdater
+                                    }}</span>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Comment" />
+                            <div class="ml-1 text-sm text-right text-gray-500">
+                                1
+                            </div>
+                            <div class="mx-2 text-sm text-right text-gray-500">
+                                -
+                            </div>
+                        </div>
+                    </a-popover>
+                    <div class="ml-auto text-sm text-right text-gray-500">
+                        {{ createdTime(item.createdAt) }}
+                    </div>
+                </div>
+            </div>
 
-        <!-- <template v-if="item.requestType === 'attach_classification'">
+            <!-- <template v-if="item.requestType === 'attach_classification'">
             <p class="text-gray-500">Link Classification</p>
             <div class="mt-1 w-fit">
                 <Popover
@@ -588,6 +620,8 @@
                 </div>
             </a-dropdown>
         </div> -->
+        </div>
+        <div class="mx-4 mt-1 border-b border-gray-300" />
     </div>
 </template>
 

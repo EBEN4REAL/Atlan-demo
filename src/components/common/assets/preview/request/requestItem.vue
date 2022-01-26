@@ -1,8 +1,58 @@
 <template>
     <div
-        class="relative p-4 border-b cursor-pointer hover:bg-gray-100 card-container"
+        class="relative p-3 border-b cursor-pointer hover:bg-gray-100 card-container"
     >
-        <template v-if="item.requestType === 'attach_classification'">
+        <div class="flex items-center justify-between">
+            <div class="flex">
+                <Avatar
+                    :allow-upload="false"
+                    :avatar-name="item.created_by_user?.username"
+                    :avatar-size="16"
+                    :avatar-shape="'circle'"
+                    :image-url="item.createdBy ? '' : atlanLogo"
+                />
+                <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
+                <span class="ml-1 text-gray-400">has requested to</span>
+                <span class="ml-1 font-bold text-gray-700"
+                    >{{
+                        item?.requestType === 'attach_classification'
+                            ? 'Link Classification'
+                            : 'Link Term'
+                    }}
+                </span>
+                <span v-if="item.status === 'active'" class="ml-1 text-gray-400"
+                    >on</span
+                >
+            </div>
+            <AtlanIcon
+                v-if="item.status === 'rejected' || item.status === 'approved'"
+                class=""
+                :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
+            />
+        </div>
+        <div v-if="item.status === 'active'">
+            <div class="flex items-center p-3 my-2 text-xs bg-gray-100 rounded">
+                <AtlanIcon class="mr-1" :icon="assetIcon" />
+                <span
+                    class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                    >{{ item.entityType.toUpperCase() }}</span
+                >
+                <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                    {{ assetText[2] }}</span
+                >
+                <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+
+                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                    {{ assetText[1] }}</span
+                >
+            </div>
+            <div class="ml-auto text-sm text-right text-gray-500">
+                {{ createdTime(item.createdAt) }}
+            </div>
+        </div>
+
+        <!-- <template v-if="item.requestType === 'attach_classification'">
             <p class="text-gray-500">Link Classification</p>
             <div class="mt-1 w-fit">
                 <Popover
@@ -254,7 +304,7 @@
                     <AtlanIcon icon="ThreeDots" />
                 </div>
             </a-dropdown>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -263,6 +313,7 @@
     import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
+    import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -273,6 +324,7 @@
     } from '~/composables/requests/useRequests'
     import Popover from '@/common/popover/classification/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -282,6 +334,7 @@
             Popover,
             AssetLogo,
             CertificateBadge,
+            Avatar,
         },
         props: {
             selectedAsset: {
@@ -387,6 +440,17 @@
                         dt.toDateString().split(' ').slice(1).join(' '),
                 }
             )
+            const assetIcon = computed(() => {
+                let name =
+                    item.value?.destinationQualifiedName.split('/')[1] || ''
+                name = name.toLowerCase()
+                // name[0] = name[0].toUpperCase()
+                const result = `${name[0]?.toUpperCase() || ''}${name.slice(
+                    1,
+                    name.length
+                )}`
+                return result
+            })
             return {
                 createdTime,
                 localClassification,
@@ -407,6 +471,8 @@
                 assetText,
                 assetWrappper,
                 timeAgo,
+                atlanLogo,
+                assetIcon,
             }
         },
     })

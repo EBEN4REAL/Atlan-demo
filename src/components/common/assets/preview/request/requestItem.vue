@@ -37,7 +37,13 @@
                         padding="compact"
                         size="sm"
                         @click.stop="handleApproval('')"
-                        ><span class="text-green-500"> Approve </span>
+                    >
+                        <AtlanIcon
+                            v-if="loadingApproval"
+                            icon="CircleLoader"
+                            class="w-4 h-3 text-green-500 animate-spin"
+                        />
+                        <span class="text-green-500"> Approve </span>
                         <a-dropdown
                             v-model:visible="isVisible"
                             trigger="click"
@@ -119,7 +125,11 @@
                         padding="compact"
                         size="sm"
                         @click.stop="handleReject('')"
-                        ><span class="text-red-500"> Reject </span>
+                        ><AtlanIcon
+                            v-if="isLoading"
+                            icon="CircleLoader"
+                            class="w-4 h-3 text-red-500 animate-spin"
+                        /><span class="text-red-500"> Reject </span>
                         <a-dropdown
                             v-model:visible="isVisibleReject"
                             trigger="click"
@@ -683,6 +693,7 @@
             const { classificationList } = useTypedefData()
             const createdTime = (time) => useTimeAgo(time).value
             const isLoading = ref(false)
+            const loadingApproval = ref(false)
             const isVisible = ref(false)
             const isVisibleRejectWithComment = ref(false)
             const isVisibleApproveWithComment = ref(false)
@@ -709,7 +720,7 @@
             }
             async function handleApproval(messageProp = '') {
                 isVisibleApproveWithComment.value = false
-                isLoading.value = true
+                loadingApproval.value = true
                 try {
                     await approveRequest(item.value.id, messageProp)
                     message.success('Request approved')
@@ -720,7 +731,7 @@
                 } catch (error) {
                     raiseErrorMessage(error.response.data.message)
                 }
-                isLoading.value = false
+                loadingApproval.value = false
             }
 
             async function handleRejection(messageProp = '') {
@@ -867,6 +878,7 @@
                 messageUpdate,
                 nameUpdater,
                 isVisibleReject,
+                loadingApproval,
             }
         },
     })

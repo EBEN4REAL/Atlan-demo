@@ -111,18 +111,18 @@ export const requestFilter = [
     //     isDisabled: false,
     //     exclude: false,
     // },
-    {
-        id: 'assetType',
-        label: 'ASSETS',
-        component: 'CheckBoxOption',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        class: 'bg-transparent',
-        data: assetTypes
-    },
+    // {
+    //     id: 'assetType',
+    //     label: 'ASSETS',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: assetTypes
+    // },
     {
         id: 'owners',
         label: 'Requestor',

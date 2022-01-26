@@ -389,6 +389,14 @@
                                 ?.name,
                     })
 
+                    selectFirstCollectionByDefault(
+                        queryCollections.value,
+                        activeInlineTab,
+                        tabsArray,
+                        false,
+                        undefined
+                    )
+
                     // console.log('run query: ', savedQueryInfo.value)
 
                     if (runQuery.value === 'true') {

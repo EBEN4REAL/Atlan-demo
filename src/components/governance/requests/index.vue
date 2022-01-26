@@ -23,7 +23,7 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <div class="px-2 filter-container">
+            <div class="filter-container">
                 <AssetFilters
                     v-model="facets"
                     :filter-list="requestFilter"
@@ -34,7 +34,7 @@
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
-                    <div class="mt-4 mb-4 wrapper-filter">
+                    <div class="px-2 mt-4 mb-4 wrapper-filter">
                         <Connector
                             v-model:data="connectorsData"
                             class=""

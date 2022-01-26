@@ -20,9 +20,168 @@
                             : 'Link Term'
                     }}
                 </span>
-                <span v-if="item.status === 'active'" class="ml-1 text-gray-400"
+                <span
+                    v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+                    class="ml-1 text-gray-400"
                     >on</span
                 >
+            </div>
+            <div
+                v-if="item.status === 'active'"
+                class="flex hover-action bg-primary-light"
+            >
+                <AtlanButton
+                    class="flex items-center pr-0 mr-2 btn-actions"
+                    color="secondary"
+                    padding="compact"
+                    size="sm"
+                    @click.stop="handleApproval('')"
+                    ><span class="text-green-500"> Approve </span>
+                    <a-dropdown
+                        v-model:visible="isVisible"
+                        trigger="click"
+                        placement="bottomRight"
+                    >
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    key="1"
+                                    @click="handleClickApproveWithComment"
+                                >
+                                    <a-popover
+                                        v-model:visible="
+                                            isVisibleApproveWithComment
+                                        "
+                                        trigger="click"
+                                        placement="bottomRight"
+                                        :align="{ offset: [15, -70] }"
+                                    >
+                                        <template #content>
+                                            <div class="comment-delete">
+                                                <div class="flex">
+                                                    <a-textarea
+                                                        v-model:value="
+                                                            messageApprove
+                                                        "
+                                                        placeholder="Message"
+                                                        class="border-none"
+                                                        :rows="2"
+                                                    />
+                                                </div>
+                                                <div
+                                                    class="flex items-center justify-between mt-4"
+                                                >
+                                                    <a-button
+                                                        class="text-gray-500"
+                                                        size="small"
+                                                        type="link"
+                                                        @click="cancelApprove"
+                                                    >
+                                                        Cancel
+                                                    </a-button>
+                                                    <a-button
+                                                        size="small"
+                                                        type="link"
+                                                        :class="'text-green-500'"
+                                                        @click="handleApprove"
+                                                    >
+                                                        Approve
+                                                    </a-button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        Approve with comment
+                                    </a-popover>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                        <div
+                            class="chevron-icon"
+                            @click.stop="isVisibleApprove = !isVisibleApprove"
+                        >
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                :class="'icon-drop'"
+                            />
+                        </div>
+                    </a-dropdown>
+                </AtlanButton>
+                <AtlanButton
+                    class="flex items-center pr-0 btn-actions"
+                    color="secondary"
+                    padding="compact"
+                    size="sm"
+                    @click.stop="handleReject('')"
+                    ><span class="text-red-500"> Reject </span>
+                    <a-dropdown
+                        v-model:visible="isVisibleReject"
+                        trigger="click"
+                        placement="bottomRight"
+                    >
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    key="2"
+                                    @click="handleClickRejectWithComment"
+                                >
+                                    <a-popover
+                                        v-model:visible="
+                                            isVisibleRejectWithComment
+                                        "
+                                        trigger="click"
+                                        placement="bottomRight"
+                                        :align="{ offset: [15, -60] }"
+                                    >
+                                        <template #content>
+                                            <div class="comment-delete">
+                                                <div class="flex">
+                                                    <a-textarea
+                                                        v-model:value="
+                                                            messageReject
+                                                        "
+                                                        placeholder="Message"
+                                                        class="border-none"
+                                                        :rows="2"
+                                                    />
+                                                </div>
+                                                <div
+                                                    class="flex items-center justify-between mt-4"
+                                                >
+                                                    <a-button
+                                                        class="text-gray-500"
+                                                        size="small"
+                                                        type="link"
+                                                        @click="cancelReject"
+                                                    >
+                                                        Cancel
+                                                    </a-button>
+                                                    <a-button
+                                                        size="small"
+                                                        type="link"
+                                                        :class="'text-red-500'"
+                                                        @click="handleReject"
+                                                    >
+                                                        Reject
+                                                    </a-button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        Reject with comment
+                                    </a-popover>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                        <div
+                            class="chevron-icon"
+                            @click.stop="isVisibleApprove = !isVisibleApprove"
+                        >
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                :class="'icon-drop'"
+                            />
+                        </div>
+                    </a-dropdown>
+                </AtlanButton>
             </div>
             <div
                 v-if="item.status === 'rejected' || item.status === 'approved'"
@@ -53,7 +212,12 @@
                 :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
             />
         </div>
-        <div v-if="item.status === 'active'">
+        <div
+            v-if="
+                item.status === 'active' &&
+                selectedAsset.typeName === 'AtlasGlossaryTerm'
+            "
+        >
             <div
                 class="flex items-center p-3 my-2 mr-1 text-xs bg-gray-100 rounded"
             >
@@ -454,6 +618,7 @@
     import TermPopover from '@/common/popover/term/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import { Users } from '~/services/service/users/index'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -465,6 +630,7 @@
             CertificateBadge,
             Avatar,
             TermPopover,
+            AtlanButton,
         },
         props: {
             selectedAsset: {
@@ -480,6 +646,7 @@
         setup(props, { emit }) {
             const { item } = toRefs(props)
             const updatedBy = ref({})
+            const isVisibleReject = ref(false)
             const { classificationList } = useTypedefData()
             const createdTime = (time) => useTimeAgo(time).value
             const isLoading = ref(false)
@@ -505,37 +672,38 @@
                 classificationList.value.find((clsf) => clsf?.name === typeName)
 
             function raiseErrorMessage(msg?: string) {
-                message.value.error(
-                    msg || 'Request modification failed, try again'
-                )
+                message.error(msg || 'Request modification failed, try again')
             }
             async function handleApproval(messageProp = '') {
+                isVisibleApproveWithComment.value = false
                 isLoading.value = true
                 try {
                     await approveRequest(item.value.id, messageProp)
-                    message.value.success('Request approved')
+                    message.success('Request approved')
                     useAddEvent('governance', 'requests', 'resolved', {
                         action: 'approve',
                     })
                     emit('handleUpdateData', item.value)
                 } catch (error) {
-                    raiseErrorMessage()
+                    raiseErrorMessage(error.response.data.message)
                 }
                 isLoading.value = false
             }
 
             async function handleRejection(messageProp = '') {
+                isVisibleRejectWithComment.value = false
                 isLoading.value = true
                 try {
                     await declineRequest(item.value.id, messageProp)
                     // emit('action', item.value)
-                    message.value.success('Request declined')
+                    message.success('Request declined')
                     useAddEvent('governance', 'requests', 'resolved', {
                         action: 'decline',
                     })
                     emit('handleUpdateData', item.value)
                 } catch (error) {
-                    raiseErrorMessage()
+                    raiseErrorMessage(error.response.data.message)
+                    // raiseErrorMessage()
                 }
                 isLoading.value = false
             }
@@ -550,7 +718,7 @@
                 isVisibleRejectWithComment.value = true
                 messageReject.value = ''
                 setTimeout(() => {
-                    isVisible.value = false
+                    isVisibleReject.value = false
                 }, 300)
             }
             const handleReject = () => {
@@ -665,6 +833,7 @@
                 termError,
                 messageUpdate,
                 nameUpdater,
+                isVisibleReject,
             }
         },
     })
@@ -682,6 +851,9 @@
     }
     .card-container {
         &:hover {
+            .hover-action {
+                display: flex !important;
+            }
             .hover-reject-approve {
                 display: flex !important;
             }
@@ -719,6 +891,13 @@
     }
 </style>
 <style lang="less" scoped>
+    .chevron-icon {
+        height: 28px;
+        // background: red;
+        width: 25px;
+        padding-top: 2px;
+        // padding-right: 7px;
+    }
     .sparator {
         border-right: 1px solid #e6e6eb;
         height: 10px;
@@ -746,5 +925,11 @@
         z-index: 2;
         padding-left: 20px;
         display: none !important;
+    }
+    .hover-action {
+        display: none !important;
+        position: absolute !important;
+        right: 15px;
+        padding-left: 20px;
     }
 </style>

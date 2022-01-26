@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex justify-between p-4">
-            <p class="text-lg font-semibold">Requests</p>
+            <p class="font-semibold text-gray-500">Requests</p>
             <a-dropdown trigger="click" placement="bottomRight">
                 <template #overlay>
                     <a-menu class="p-1">

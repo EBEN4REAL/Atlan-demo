@@ -874,7 +874,7 @@
 
 <style lang="less">
     .clasification-pill {
-        @apply hover:text-gray-700 !important;
+        // @apply hover:text-gray-700 !important;
     }
     .approved-icon {
         transform: scale(1.1);

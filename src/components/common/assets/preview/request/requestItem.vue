@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative p-3 border-b cursor-pointer hover:bg-gray-100 card-container"
+        class="relative p-3 mx-1 border-b cursor-pointer hover:bg-primary-light card-container"
     >
         <div class="flex items-center justify-between">
             <div class="flex">
@@ -24,9 +24,32 @@
                     >on</span
                 >
             </div>
+            <div
+                v-if="item.status === 'rejected' || item.status === 'approved'"
+                class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve bg-primary-light"
+                :class="
+                    item.status === 'approved' ? 'text-success' : 'text-error'
+                "
+            >
+                {{ item.status === 'approved' ? 'Approved by' : 'Rejected by' }}
+                <div class="flex items-center mx-2 truncate">
+                    <Avatar
+                        :allow-upload="false"
+                        :avatar-name="nameUpdater"
+                        :avatar-size="18"
+                        :avatar-shape="'circle'"
+                        class="mr-2"
+                    />
+
+                    <span class="text-gray-700">{{ nameUpdater }}</span>
+                </div>
+            </div>
             <AtlanIcon
                 v-if="item.status === 'rejected' || item.status === 'approved'"
-                class=""
+                :class="{
+                    'approved-icon text-success': item.status === 'approved',
+                    'rejected-icon': item.status === 'rejected',
+                }"
                 :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
             />
         </div>
@@ -49,6 +72,99 @@
             </div>
             <div class="ml-auto text-sm text-right text-gray-500">
                 {{ createdTime(item.createdAt) }}
+            </div>
+        </div>
+        <div v-else class="flex items-center justify-between mt-2">
+            <div
+                v-if="item.requestType === 'attach_classification'"
+                class="w-fit"
+            >
+                <Popover
+                    v-if="localClassification(item.payload.typeName)"
+                    :classification="localClassification(item.payload.typeName)"
+                    label-key="displayName"
+                    popover-trigger="hover"
+                    read-only
+                    :is-plain="true"
+                >
+                    <ClassificationPill
+                        :name="localClassification(item.payload.typeName).name"
+                        :display-name="
+                            localClassification(item.payload.typeName)
+                                ?.displayName
+                        "
+                        :allow-delete="false"
+                        :color="
+                            localClassification(item.payload.typeName).options
+                                ?.color
+                        "
+                        :no-hover="true"
+                        :created-by="
+                            localClassification(item.payload.typeName)
+                                ?.createdBy
+                        "
+                    />
+                </Popover>
+            </div>
+            <div v-else-if="item.requestType === 'term_link'">
+                <TermPopover
+                    :loading="termLoading"
+                    :fetched-term="getFetchedTerm(item.sourceGuid)"
+                    :error="termError"
+                    trigger="hover"
+                    :ready="isReady"
+                    :term="{ guid: item.sourceGuid }"
+                    @visible="handleTermPopoverVisibility"
+                >
+                    <Pill
+                        :label="item?.sourceEntity?.attributes?.name"
+                        :has-action="false"
+                    >
+                        <template #prefix>
+                            <AtlanIcon icon="Term" />
+                        </template>
+                    </Pill>
+                </TermPopover>
+            </div>
+            <div class="flex items-center">
+                <a-popover
+                    v-if="messageUpdate"
+                    trigger="hover"
+                    placement="bottomLeft"
+                    :align="{ offset: [0] }"
+                >
+                    <template #content>
+                        <div class="comment-delete">
+                            <div class="flex">
+                                <component :is="iconQuotes" class="mr-4" />
+                                <p>{{ messageUpdate }}</p>
+                            </div>
+                            <div class="flex items-center mt-4">
+                                <Avatar
+                                    :allow-upload="false"
+                                    :avatar-size="16"
+                                    :avatar-shape="'circle'"
+                                    class="mr-2"
+                                />
+                                <span class="text-gray-700">{{
+                                    nameUpdater
+                                }}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Comment" />
+                        <div class="ml-1 text-sm text-right text-gray-500">
+                            1
+                        </div>
+                        <div class="mx-2 text-sm text-right text-gray-500">
+                            -
+                        </div>
+                    </div>
+                </a-popover>
+                <div class="ml-auto text-sm text-right text-gray-500">
+                    {{ createdTime(item.createdAt) }}
+                </div>
             </div>
         </div>
 
@@ -309,7 +425,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        watch,
+        onMounted,
+    } from 'vue'
     import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
@@ -325,6 +448,9 @@
     import Popover from '@/common/popover/classification/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import Avatar from '~/components/common/avatar/index.vue'
+    import TermPopover from '@/common/popover/term/term.vue'
+    import useTermPopover from '@/common/popover/term/useTermPopover'
+    import { Users } from '~/services/service/users/index'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -335,6 +461,7 @@
             AssetLogo,
             CertificateBadge,
             Avatar,
+            TermPopover,
         },
         props: {
             selectedAsset: {
@@ -349,6 +476,7 @@
         emits: ['handleUpdateData'],
         setup(props, { emit }) {
             const { item } = toRefs(props)
+            const updatedBy = ref({})
             const { classificationList } = useTypedefData()
             const createdTime = (time) => useTimeAgo(time).value
             const isLoading = ref(false)
@@ -374,13 +502,15 @@
                 classificationList.value.find((clsf) => clsf?.name === typeName)
 
             function raiseErrorMessage(msg?: string) {
-                message.error(msg || 'Request modification failed, try again')
+                message.value.error(
+                    msg || 'Request modification failed, try again'
+                )
             }
             async function handleApproval(messageProp = '') {
                 isLoading.value = true
                 try {
                     await approveRequest(item.value.id, messageProp)
-                    message.success('Request approved')
+                    message.value.success('Request approved')
                     useAddEvent('governance', 'requests', 'resolved', {
                         action: 'approve',
                     })
@@ -395,8 +525,8 @@
                 isLoading.value = true
                 try {
                     await declineRequest(item.value.id, messageProp)
-                    // emit('action', request.value)
-                    message.success('Request declined')
+                    // emit('action', item.value)
+                    message.value.success('Request declined')
                     useAddEvent('governance', 'requests', 'resolved', {
                         action: 'decline',
                     })
@@ -451,6 +581,58 @@
                 )}`
                 return result
             })
+            const messageUpdate = computed(() => {
+                if (item.value.approvedBy) {
+                    return item.value.approvedBy[0]?.message
+                }
+                if (item.value.rejectedBy) {
+                    return item.value.rejectedBy[0].message
+                }
+                return ''
+            })
+            const {
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+            } = useTermPopover()
+            onMounted(() => {
+                if (
+                    item.value.status === 'approved' ||
+                    item.value.status === 'rejected'
+                ) {
+                    const userId =
+                        item.value.status === 'approved'
+                            ? `${item.value.approvedBy[0].userId}`
+                            : `${item.value.rejectedBy[0].userId}`
+                    const payloadFilter = {
+                        $and: [
+                            {
+                                id: userId,
+                            },
+                        ],
+                    }
+                    const { data } = Users.List(
+                        {
+                            limit: 1,
+                            offset: 0,
+                            filter: JSON.stringify(payloadFilter),
+                        },
+                        { cacheKey: userId }
+                    )
+                    watch(data, () => {
+                        if (!data?.value?.records) {
+                            updatedBy.value = {
+                                username: '',
+                            }
+                        } else {
+                            updatedBy.value = data?.value?.records[0]
+                        }
+                    })
+                }
+            })
+            const nameUpdater = computed(() => updatedBy?.value?.username)
             return {
                 createdTime,
                 localClassification,
@@ -473,13 +655,31 @@
                 timeAgo,
                 atlanLogo,
                 assetIcon,
+                getFetchedTerm,
+                handleTermPopoverVisibility,
+                termLoading,
+                isReady,
+                termError,
+                messageUpdate,
+                nameUpdater,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .approved-icon {
+        transform: scale(1.1);
+    }
+    .rejected-icon {
+        transform: scale(0.8);
+    }
     .card-container {
+        &:hover {
+            .hover-reject-approve {
+                display: flex !important;
+            }
+        }
         .classification-pill {
             width: fit-content;
         }
@@ -533,5 +733,12 @@
         width: 200px;
         padding: 12px 12px;
         border-radius: 8px !important;
+    }
+    .hover-reject-approve {
+        position: absolute;
+        right: 35px;
+        z-index: 2;
+        padding-left: 20px;
+        display: none !important;
     }
 </style>

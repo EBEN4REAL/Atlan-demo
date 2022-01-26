@@ -385,6 +385,7 @@ import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
 import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
+import Comment from '~/assets/images/icons/Comment.svg'
 
 export default {
     GlowFlash,
@@ -756,4 +757,5 @@ export default {
     Request,
     RequestActive,
     FilterFunnelDot,
+    Comment
 }

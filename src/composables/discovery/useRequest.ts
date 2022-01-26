@@ -9,7 +9,7 @@ export function useRequest(guid,  pagination: Ref, type) {
         sort: '-createdAt',
         limit: pagination.value.limit,
         offset: pagination.value.offset,
-        filter: { [filterType]: guid, status: 'active'}, 
+        filter: { [filterType]: guid}, 
     }))
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
     watch(pagination, () => {

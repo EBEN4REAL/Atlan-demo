@@ -278,11 +278,7 @@
                                                             ? `border-red-300`
                                                             : ``
                                                     "
-                                                    @change="
-                                                        onChange(
-                                                            variableList[i]
-                                                        )
-                                                    "
+                                                    @change="onChange(variable)"
                                                 />
                                             </a-form-item>
 
@@ -327,7 +323,7 @@
 
                                             <a-form-item
                                                 :label="
-                                                    variableList[i].type ===
+                                                    variableList[i]?.type ===
                                                     `dropdown`
                                                         ? 'Dropdown values'
                                                         : 'Default value'
@@ -582,7 +578,7 @@
                     activeInlineTab,
                     tabs,
                     currVariable.value,
-                    currVariable.value
+                    currVariable
                 )
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
@@ -631,7 +627,7 @@
                             activeInlineTab,
                             tabs,
                             variable,
-                            currVariable.value
+                            currVariable
                         )
                     ) {
                         /* If successfully variable saved then close the dropdown */
@@ -664,7 +660,7 @@
                 ) {
                     variable.value = [variable.value[0]]
                 }
-                saveVariable(activeInlineTab, tabs, variable, variable)
+                saveVariable(activeInlineTab, tabs, variable, ref(variable))
             }
 
             const handleSelectInputChange = (
@@ -694,7 +690,7 @@
                     variable.value = []
                     variable.dummy = []
                 } else if (variable.type === 'date') {
-                    variable.value = dayjs()
+                    variable.value = dayjs().format()
                 } else if (variable.type === 'string') {
                     variable.value = ''
                     variable.dummy = ''

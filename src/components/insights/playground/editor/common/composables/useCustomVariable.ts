@@ -80,6 +80,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             allowMultiple: variable.allowMultiple,
             dummy: variable.dummy,
         }
+        // debugger
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         return true
     }
@@ -96,17 +97,21 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             return
         }
 
+        // console.log('hello: ', {
+        //     activeInlineTab: activeInlineTab.value.playground.editor.variables,
+        //     curr_variable: curr_variable,
+        // })
+
         let index = activeInlineTab.value.playground.editor.variables.findIndex(
-            (variable) => variable.name === curr_variable.name
+            (variable) => variable.key === curr_variable.key
         )
         let savedIndex =
             activeInlineTab.value.playground.editor.savedVariables.findIndex(
-                (variable) => variable.name === curr_variable.name
+                (variable) => variable.key === curr_variable.key
             )
 
-        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-            {},
-            activeInlineTab.value
+        const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+            JSON.stringify(toRaw(activeInlineTab.value))
         )
         activeInlineTabCopy.playground.editor.variables[index] = {
             ...activeInlineTabCopy.playground.editor.variables[index],
@@ -116,6 +121,8 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             ...activeInlineTabCopy.playground.editor.savedVariables[savedIndex],
             value: curr_variable.value,
         }
+
+        // debugger
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
 

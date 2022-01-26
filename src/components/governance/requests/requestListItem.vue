@@ -129,11 +129,7 @@
                             label="Created At"
                             :no-popover="true"
                             class="font-light text-gray-500"
-                            :date="
-                                request.status === 'approved'
-                                    ? request.approvedBy[0].timestamp
-                                    : request.rejectedBy[0].timestamp
-                            "
+                            :date="timeUpdated"
                         />
                         <IconStatus
                             :request="request"
@@ -373,11 +369,28 @@
                         { cacheKey: userId }
                     )
                     watch(data, () => {
-                        updatedBy.value = data.value.records[0]
+                        if(!data?.value?.records){
+                            updatedBy.value = {
+                                username: ''
+                            }
+                        }else {
+                            updatedBy.value = data?.value?.records[0]
+                        }
                     })
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
+            const timeUpdated = computed(() => {
+                if (request.value.status === 'approved') {
+                    const time = request.value?.approvedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                if (request.value.status === 'rejected') {
+                    const time = request.value?.rejectedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                return ''
+            })
             const item = computed(() => {
                 const name =
                     request?.value?.destinationQualifiedName
@@ -421,6 +434,7 @@
                 atlanLogo,
                 nameUpdater,
                 item,
+                timeUpdated,
             }
         },
     })

@@ -316,12 +316,13 @@
             } = useRequestList(searchTerm, filters, pagination)
 
             watch(response, () => {
-                requestList.value =
-                    response.value?.records?.filter((req) =>
-                        Array.isArray(filters.value.status)
-                            ? filters.value.status.includes(req.status)
-                            : req.status === filters.value.status
-                    ) || []
+                // requestList.value =
+                //     response.value?.records?.filter((req) =>
+                //         Array.isArray(filters.value.status)
+                //             ? filters.value.status.includes(req.status)
+                //             : req.status === filters.value.status
+                //     ) || []
+                requestList.value = response.value?.records || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
                 pagination.value.totalData = response.value.filterRecord
@@ -433,7 +434,8 @@
                 // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
-                    status: status.length > 0 ? status : 'active',
+                    // status: status.length > 0 ? status : 'active',
+                    status,
                     createdBy,
                     // typeName,
                 }

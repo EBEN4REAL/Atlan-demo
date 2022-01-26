@@ -10,6 +10,16 @@
 
         <template #overlay>
             <a-menu>
+                <a-menu-item v-if="showGtcCrud" key="edit" @click="closeMenu">
+                    <div
+                        class="flex items-center"
+                        @click="$emit('edit', entity)"
+                    >
+                        <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                        <p class="p-0 m-0">Rename</p>
+                    </div>
+                </a-menu-item>
+
                 <div v-auth="map.CREATE_CATEGORY">
                     <a-menu-item
                         v-if="
@@ -205,7 +215,7 @@
                 default: true,
             },
         },
-        emits: ['unlinkAsset', 'add'],
+        emits: ['unlinkAsset', 'add', 'edit'],
         setup(props, { emit }) {
             // data
             const {

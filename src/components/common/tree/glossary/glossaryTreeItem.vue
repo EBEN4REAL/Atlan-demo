@@ -110,7 +110,12 @@
                         class="self-center align-text-bottom"
                     />
                 </div>
+                <div v-if="isEditMode">
+                    {{ isEditMode }}
+                    <Name v-model="isEditMode" :selected-asset="item" />
+                </div>
                 <Tooltip
+                    v-else
                     :tooltip-text="`${title(item)}`"
                     :classes="'w-full '"
                 />
@@ -136,6 +141,7 @@
                     :categoryName="title(item)"
                     :categoryGuid="categoryId"
                     :entity="item"
+                    @edit="handleEdit"
                 ></Actions>
             </div>
         </div>
@@ -152,13 +158,24 @@
         ref,
         watch,
         onMounted,
+        watchEffect,
     } from 'vue'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useTimeoutFn,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
+
+    import { useRouter, useRoute } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import { useRouter, useRoute } from 'vue-router'
+    import Name from '@/glossary/common/name.vue'
 
     import {
         Glossary,
@@ -170,7 +187,7 @@
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
-        components: { Actions, AtlanIcon, AddGtcModal, Tooltip },
+        components: { Actions, AtlanIcon, AddGtcModal, Tooltip, Name },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,
@@ -195,6 +212,7 @@
             const route = useRoute()
             const router = useRouter()
             const profileId = computed(() => route?.params?.id || null)
+            const isEditMode = ref(false)
             const { checkAccess } = useAuth()
 
             const { getEntityStatusIcon } = useGlossaryData()
@@ -266,6 +284,16 @@
             const hasCreateAccess = computed(() =>
                 checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
             )
+
+            const handleEdit = (asset) => {
+                isEditMode.value = true
+            }
+            const handleEditCancel = () => {
+                if (isEditMode.value) {
+                    isEditMode.value = false
+                }
+            }
+
             return {
                 getEntityStatusIcon,
                 certificateStatus,
@@ -281,6 +309,9 @@
                 ctaToProfile,
                 map,
                 hasCreateAccess,
+                handleEdit,
+                isEditMode,
+                handleEditCancel,
             }
         },
     })

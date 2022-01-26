@@ -297,7 +297,6 @@
                                 localClassification(item.payload.typeName)
                                     .options?.color
                             "
-                            :no-hover="true"
                             :created-by="
                                 localClassification(item.payload.typeName)
                                     ?.createdBy

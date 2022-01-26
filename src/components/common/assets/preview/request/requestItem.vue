@@ -54,7 +54,9 @@
             />
         </div>
         <div v-if="item.status === 'active'">
-            <div class="flex items-center p-3 my-2 text-xs bg-gray-100 rounded">
+            <div
+                class="flex items-center p-3 my-2 mr-1 text-xs bg-gray-100 rounded"
+            >
                 <AtlanIcon class="mr-1" :icon="assetIcon" />
                 <span
                     class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
@@ -88,6 +90,7 @@
                     :is-plain="true"
                 >
                     <ClassificationPill
+                        class="clasification-pill"
                         :name="localClassification(item.payload.typeName).name"
                         :display-name="
                             localClassification(item.payload.typeName)
@@ -668,6 +671,9 @@
 </script>
 
 <style lang="less">
+    .clasification-pill {
+        @apply hover:text-gray-700 !important;
+    }
     .approved-icon {
         transform: scale(1.1);
     }
@@ -736,7 +742,7 @@
     }
     .hover-reject-approve {
         position: absolute;
-        right: 35px;
+        right: 32px;
         z-index: 2;
         padding-left: 20px;
         display: none !important;

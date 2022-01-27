@@ -47,7 +47,7 @@
                             ago</span
                         >
                     </div>
-                    <ShowLess :text="stripSlackText(data.message.text)" />
+                    <ShowLess :text="stripSlackText(data.message.text ?? '')" />
 
                     <div class="flex text-sm text-gray-500">
                         <span class="" v-if="data.message.reply_count">

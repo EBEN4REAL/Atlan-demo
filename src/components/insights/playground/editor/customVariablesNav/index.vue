@@ -16,7 +16,11 @@
                         <AtlanIcon icon="Add"></AtlanIcon>
                         <p
                             class="m-0 ml-1"
-                            v-if="variableList && variableList?.length == 0"
+                            v-if="
+                                activeInlineTab.playground.editor.variables &&
+                                activeInlineTab.playground.editor.variables
+                                    ?.length == 0
+                            "
                         >
                             Add variable
                         </p>
@@ -24,7 +28,7 @@
                 </AtlanBtn>
             </div>
             <div
-                v-if="variableList?.length === 0"
+                v-if="activeInlineTab.playground.editor.variables?.length === 0"
                 class="flex items-center mb-1 ml-2"
             >
                 <!-- <span class="flex items-center justify-center text-gray-500">
@@ -40,7 +44,8 @@
             </div>
             <div
                 v-else
-                v-for="(variable, i) in variableList"
+                v-for="(variable, i) in activeInlineTab.playground.editor
+                    .variables"
                 :key="`${variable.key}`"
                 class="flex flex-col mx-1 my-3"
             >
@@ -82,8 +87,10 @@
                                         <div
                                             class="flex flex-col w-full"
                                             @change="
-                                                () =>
+                                                () => {
                                                     onCheckAllOptions(variable)
+                                                    onChange(variable)
+                                                }
                                             "
                                         >
                                             <a-checkbox
@@ -97,20 +104,19 @@
                                         <div class="checkbox-border"></div>
 
                                         <a-checkbox-group
-                                            v-model:value="
-                                                variableList[i].value
-                                            "
+                                            v-model:value="variable.value"
                                             @change="
-                                                (checked) =>
+                                                (checked) => {
                                                     checkedGroup(
                                                         checked,
-                                                        variableList[i]
+                                                        variable
                                                     )
+                                                    onChange(variable)
+                                                }
                                             "
                                         >
                                             <div
-                                                v-for="item in variableList[i]
-                                                    .options"
+                                                v-for="item in variable.options"
                                                 :key="item.label"
                                                 class="flex items-center justify-between px-4 pt-2 pb-2"
                                             >
@@ -127,12 +133,12 @@
                                     <div v-else>
                                         <a-menu
                                             v-model:selectedKeys="
-                                                variableList[i].value
+                                                variable.value
                                             "
+                                            @select="onChange(variable)"
                                         >
                                             <div
-                                                v-for="item in variableList[i]
-                                                    .options"
+                                                v-for="item in variable.options"
                                                 :key="item.label"
                                             >
                                                 <a-menu-item
@@ -145,18 +151,17 @@
                                                         <span>{{
                                                             item.label
                                                         }}</span>
-                                                        <AtlanIcon
+                                                        <!-- <AtlanIcon
                                                             icon="Check"
                                                             class="text-primary"
                                                             v-if="
-                                                                variableList[i]
-                                                                    .value
+                                                                variable.value
                                                                     .length &&
-                                                                variableList[i]
+                                                                variable
                                                                     .value[0] ===
                                                                     item.value
                                                             "
-                                                        />
+                                                        /> -->
                                                     </div>
                                                 </a-menu-item>
 
@@ -176,6 +181,7 @@
                         :class="$style.date_picker"
                         :show-time="{ format: 'HH:mm' }"
                         v-model:value="variable.value"
+                        @change="onChange(variable)"
                         :bordered="false"
                         style="padding-right: 0 !important; max-width: 127px"
                         class="truncate border-0 focus:border-0 focus:outline-none"
@@ -211,14 +217,15 @@
                             </span>
                         </div>
                         <template #overlay>
-                            <a-menu :key="variableList[i].key">
+                            <a-menu :key="variable.key">
+                                <!-- {{ activeVariable }} -->
                                 <div class="p-4" style="width: 240px">
                                     <div
                                         class="flex items-center justify-between mb-3"
                                     >
-                                        <span class="font-bold text-gray-700">{{
-                                            variableList[i].name
-                                        }}</span>
+                                        <span class="font-bold text-gray-700"
+                                            >Edit</span
+                                        >
                                         <div class="flex items-center">
                                             <a-tooltip
                                                 placement="bottom"
@@ -229,7 +236,7 @@
                                                     @click="
                                                         () =>
                                                             onCopyVariable(
-                                                                variableList[i]
+                                                                activeVariable
                                                             )
                                                     "
                                                     class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
@@ -248,7 +255,7 @@
                                                     @click="
                                                         () =>
                                                             onDeleteVariable(
-                                                                variableList[i]
+                                                                activeVariable
                                                             )
                                                     "
                                                     class="w-4 h-4 text-gray-500 cursor-pointer"
@@ -260,7 +267,7 @@
                                     <div class>
                                         <a-form
                                             layout="vertical"
-                                            :model="variableList[i]"
+                                            :model="activeVariable"
                                             ref="formRef"
                                         >
                                             <a-form-item
@@ -270,7 +277,7 @@
                                             >
                                                 <a-input
                                                     v-model:value="
-                                                        variableList[i].name
+                                                        activeVariable.name
                                                     "
                                                     placeholder="Name"
                                                     :class="
@@ -278,7 +285,6 @@
                                                             ? `border-red-300`
                                                             : ``
                                                     "
-                                                    @change="onChange(variable)"
                                                 />
                                             </a-form-item>
 
@@ -289,16 +295,11 @@
                                             >
                                                 <a-select
                                                     v-model:value="
-                                                        variableList[i].type
+                                                        activeVariable.type
                                                     "
                                                     @change="
                                                         () => {
-                                                            handleVariableTypeChange(
-                                                                variableList[i]
-                                                            )
-                                                            onChange(
-                                                                variableList[i]
-                                                            )
+                                                            handleVariableTypeChange()
                                                         }
                                                     "
                                                 >
@@ -323,7 +324,7 @@
 
                                             <a-form-item
                                                 :label="
-                                                    variableList[i]?.type ===
+                                                    activeVariable?.type ===
                                                     `dropdown`
                                                         ? 'Dropdown values'
                                                         : 'Default value'
@@ -333,7 +334,7 @@
                                             >
                                                 <a-date-picker
                                                     v-if="
-                                                        variableList[i].type ===
+                                                        activeVariable.type ===
                                                         'date'
                                                     "
                                                     placeholder="Select Date"
@@ -341,22 +342,17 @@
                                                         format: 'HH:mm',
                                                     }"
                                                     v-model:value="
-                                                        variableList[i].value
-                                                    "
-                                                    @change="
-                                                        onChange(
-                                                            variableList[i]
-                                                        )
+                                                        activeVariable.value
                                                     "
                                                     class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                                                 />
 
                                                 <a-select
                                                     v-model:value="
-                                                        variableList[i].dummy
+                                                        activeVariable.dummy
                                                     "
                                                     v-else-if="
-                                                        variableList[i].type ===
+                                                        activeVariable.type ===
                                                         `dropdown`
                                                     "
                                                     mode="tags"
@@ -366,14 +362,13 @@
                                                     @change="
                                                         () => {
                                                             handleSelectInputChange(
-                                                                variableList[i]
-                                                            )
-                                                            onChange(
-                                                                variableList[i]
+                                                                activeVariable
                                                             )
                                                         }
                                                     "
-                                                    :options="variable.options"
+                                                    :options="
+                                                        activeVariable.options
+                                                    "
                                                     :dropdownStyle="{
                                                         visibility: 'hidden',
                                                     }"
@@ -386,33 +381,21 @@
                                                 <a-input
                                                     v-else
                                                     v-model:value="
-                                                        variableList[i].value
+                                                        activeVariable.value
                                                     "
                                                     :placeholder="`Enter a value`"
                                                     :type="
-                                                        variableList[i].type ===
+                                                        activeVariable.type ===
                                                         'number'
                                                             ? 'number'
                                                             : 'text'
                                                     "
-                                                    @change="onChange(variable)"
                                                 />
                                             </a-form-item>
 
-                                            <!-- <a-form-item
-                                                    class="text-gray-700 tex-sm"
-                                                >
-                                                    <a-input
-                                                        type="checkbox"
-                                                        v-model:value="
-                                                            variable.allowMultiple
-                                                        "
-                                                    />
-                                                    Allow multiple values
-                                                </a-form-item> -->
                                             <a-form-item
                                                 v-if="
-                                                    variableList[i].type ===
+                                                    activeVariable.type ===
                                                     `dropdown`
                                                 "
                                                 class="mb-2 -mt-4"
@@ -422,17 +405,11 @@
                                                         $style.checkbox_style
                                                     "
                                                     v-model:checked="
-                                                        variableList[i]
-                                                            .allowMultiple
+                                                        activeVariable.allowMultiple
                                                     "
                                                     @change="
                                                         () => {
-                                                            onChange(
-                                                                variableList[i]
-                                                            )
-                                                            onChangeAllowMultiple(
-                                                                variableList[i]
-                                                            )
+                                                            onChangeAllowMultiple()
                                                         }
                                                     "
                                                 >
@@ -513,30 +490,18 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
-            let variableList = computed(() => {
-                console.log(
-                    'list update: ',
-                    activeInlineTab.value.playground.editor.variables
-                )
-                return activeInlineTab.value.playground.editor.variables
-            })
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
-            // const activeInlineTabKey = inject(
-            //     'activeInlineTabKey'
-            // ) as ComputedRef<activeInlineTabInterface>
-            // const sqlVariables: Ref<CustomVaribaleInterface[]> = ref([])
-            // watch(
-            //     [activeInlineTabKey],
-            //     () => {
-            //         console.log('custom var input')
+            // let variableList = computed(() => {
+            //     return activeInlineTab.value.playground.editor.variables
+            // })
 
-            //         if (activeInlineTabKey.value) {
-            //             sqlVariables.value =
-            //                 activeInlineTab.value.playground.editor.variables
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
+            let variableList = ref()
+
+            let activeVariable = ref()
+
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
             const editorInstanceRef = inject(
@@ -566,14 +531,11 @@
                 currVariable.value = undefined
                 inputError.value = false
             }
-            const cancelEdit = () => {
-                // const index =
-                // activeInlineTab.value.playground.editor.variables.findIndex(
-                //     (v) => v.key === currVariable.value.key
-                // )
-                // activeInlineTab.value.playground.editor.variables[index] =
-                //     currVariable.value
 
+            const cancelEdit = () => {
+                // if (variable.type === 'dropdown') {
+                //     variable.value = [variable.options[0].value]
+                // }
                 saveVariable(
                     activeInlineTab,
                     tabs,
@@ -581,6 +543,8 @@
                     currVariable
                 )
                 customVariableOpenKey.value = undefined
+                // activeVariable.value = null
+
                 currVariable.value = undefined
                 inputError.value = false
             }
@@ -592,6 +556,7 @@
 
             const openDropdown = (variable: CustomVaribaleInterface) => {
                 customVariableOpenKey.value = variable.key
+                activeVariable.value = { ...variable } // track the new variable
                 currVariable.value = { ...variable }
                 if (varTest.test(variable.name)) {
                     inputError.value = false
@@ -602,37 +567,28 @@
 
             const onDeleteVariable = (variable: CustomVaribaleInterface) => {
                 deleteVariable(activeInlineTab, tabs, variable)
+                // activeVariable.value = null
                 closeDropdown()
             }
 
             const onSaveVariable = () => {
-                const index =
-                    activeInlineTab.value.playground.editor.variables.findIndex(
-                        (v) => v.key === currVariable.value.key
-                    )
-                // console.log('variable update: ', {
-                //     variable,
-                //     currVariable: currVariable.value,
-                // })
-                let variable =
-                    activeInlineTab.value.playground.editor.variables[index]
-
-                if (varTest.test(variable.name)) {
-                    console.log('variable update2: ', {
-                        variable,
-                        currVariable: currVariable.value,
-                    })
+                if (varTest.test(activeVariable.value.name)) {
                     if (
                         saveVariable(
                             activeInlineTab,
                             tabs,
-                            variable,
+                            activeVariable.value,
                             currVariable
                         )
                     ) {
                         /* If successfully variable saved then close the dropdown */
                         checkAll.value = false
                         inputError.value = false
+
+                        // if (variable.type === 'dropdown') {
+                        //     variable.value = [variable.options[0].value]
+                        // }
+                        // activeVariable.value = null
                         closeDropdown()
                     }
                 } else {
@@ -648,19 +604,17 @@
             }
 
             const onChange = (variable: CustomVaribaleInterface) => {
+                console.log('var: ', variable)
                 editVariable(activeInlineTab, tabs, variable)
             }
 
-            const onChangeAllowMultiple = (
-                variable: CustomVaribaleInterface
-            ) => {
+            const onChangeAllowMultiple = () => {
                 if (
-                    Array.isArray(variable.value) &&
-                    variable.value.length > 1
+                    Array.isArray(activeVariable.value.value) &&
+                    activeVariable.value.value.length > 1
                 ) {
-                    variable.value = [variable.value[0]]
+                    activeVariable.value.value = [activeVariable.value.value[0]]
                 }
-                saveVariable(activeInlineTab, tabs, variable, ref(variable))
             }
 
             const handleSelectInputChange = (
@@ -682,23 +636,21 @@
                 variable.value = dayjs(event)
             }
 
-            const handleVariableTypeChange = (
-                variable: CustomVaribaleInterface
-            ) => {
-                console.log(`selected type: `, variable.type)
-                if (variable.type === 'dropdown') {
-                    variable.value = []
-                    variable.dummy = []
-                } else if (variable.type === 'date') {
-                    variable.value = dayjs().format()
-                } else if (variable.type === 'string') {
-                    variable.value = ''
-                    variable.dummy = ''
-                    variable.allowMultiple = false
+            const handleVariableTypeChange = () => {
+                // console.log(`selected type: `, variable.type)
+                if (activeVariable.value.type === 'dropdown') {
+                    activeVariable.value.value = []
+                    activeVariable.value.dummy = []
+                } else if (activeVariable.value.type === 'date') {
+                    activeVariable.value.value = dayjs().format()
+                } else if (activeVariable.value.type === 'string') {
+                    activeVariable.value.value = ''
+                    activeVariable.value.dummy = ''
+                    activeVariable.value.allowMultiple = false
                 } else {
-                    variable.value = 0
-                    variable.dummy = 0
-                    variable.allowMultiple = false
+                    activeVariable.value.value = 0
+                    activeVariable.value.dummy = 0
+                    activeVariable.value.allowMultiple = false
                 }
             }
 
@@ -759,6 +711,7 @@
                 checkedGroup,
                 variableList,
                 onChangeAllowMultiple,
+                activeVariable,
             }
         },
     })

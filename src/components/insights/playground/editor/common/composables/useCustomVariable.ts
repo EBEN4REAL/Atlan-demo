@@ -116,10 +116,22 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         activeInlineTabCopy.playground.editor.variables[index] = {
             ...activeInlineTabCopy.playground.editor.variables[index],
             value: curr_variable.value,
+
+            name: curr_variable.name,
+            type: curr_variable.type,
+            options: curr_variable.options,
+            allowMultiple: curr_variable.allowMultiple,
+            dummy: curr_variable.dummy,
         }
         activeInlineTabCopy.playground.editor.savedVariables[savedIndex] = {
             ...activeInlineTabCopy.playground.editor.savedVariables[savedIndex],
             value: curr_variable.value,
+
+            name: curr_variable.name,
+            type: curr_variable.type,
+            options: curr_variable.options,
+            allowMultiple: curr_variable.allowMultiple,
+            dummy: curr_variable.dummy,
         }
 
         // debugger

@@ -455,7 +455,8 @@
                                     class="px-4 py-2 text-sm"
                                     @click="copyURL"
                                 >
-                                    Share query
+                                    <AtlanIcon icon="CopyOutlined" />
+                                    Copy link
                                 </a-menu-item>
                                 <a-menu-item
                                     v-if="

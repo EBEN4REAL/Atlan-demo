@@ -319,7 +319,7 @@
                                             <a-menu-item
                                                 key="shareQuery"
                                                 @click="copyURL"
-                                                >Share query</a-menu-item
+                                                >Copy link</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"

@@ -197,7 +197,7 @@ export default function useProject() {
         let query = queryText
 
         try {
-            query = encodeURIComponent(btoa(queryText))
+            // query = encodeURIComponent(btoa(queryText))
         } catch (error) {
             // console.log('query error: ', error)
             if (error) {
@@ -209,15 +209,17 @@ export default function useProject() {
         }
 
         const params = {
-            sql: query,
-            dataSourceName: encodeURIComponent(
-                getConnectionQualifiedName(attributeValue) as string
-            ),
             length: 10,
+        }
+        const sqlBody = {
+            sql: query,
+            dataSourceName: getConnectionQualifiedName(
+                attributeValue
+            ) as string,
         }
         /* This means it is a saved query */
         if (getSchemaWithDataSourceName(attributeValue)) {
-            params.defaultSchema = getSchemaWithDataSourceName(attributeValue)
+            sqlBody.defaultSchema = getSchemaWithDataSourceName(attributeValue)
         }
         /* This means it is a saved query */
         if (activeInlineTab.value?.queryId) {
@@ -254,6 +256,7 @@ export default function useProject() {
             path: map.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
+            body: sqlBody,
         })
 
         watch([isLoading, error], () => {

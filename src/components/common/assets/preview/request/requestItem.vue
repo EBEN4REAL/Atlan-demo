@@ -246,33 +246,31 @@
                     :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
                 />
             </div>
-            <div
-                v-if="
-                    item.status === 'active' &&
-                    selectedAsset.typeName === 'AtlasGlossaryTerm'
-                "
-            >
-                <div
-                    class="flex items-center p-3 my-2 mr-1 text-xs bg-gray-100 rounded"
-                >
-                    <AtlanIcon class="mr-1" :icon="assetIcon" />
-                    <span
-                        class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
-                        >{{ item.entityType.toUpperCase() }}</span
-                    >
-                    <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
-                    <span
-                        class="overflow-hidden text-gray-500 overflow-ellipsis"
-                    >
-                        {{ assetText[2] }}</span
-                    >
-                    <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+            <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
+                <div class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term">
+                    <div class="mb-1 text-primary">
+                        {{ assetText[0] }}
+                    </div>
+                    <div class="flex items-center">
+                        <AtlanIcon class="mr-1" :icon="assetIcon" />
+                        <span
+                            class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                            >{{ item.entityType.toUpperCase() }}</span
+                        >
+                        <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+                        <span
+                            class="overflow-hidden text-gray-500 overflow-ellipsis"
+                        >
+                            {{ assetText[2] }}</span
+                        >
+                        <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
 
-                    <span
-                        class="overflow-hidden text-gray-500 overflow-ellipsis"
-                    >
-                        {{ assetText[1] }}</span
-                    >
+                        <span
+                            class="overflow-hidden text-gray-500 overflow-ellipsis"
+                        >
+                            {{ assetText[1] }}</span
+                        >
+                    </div>
                 </div>
                 <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
@@ -896,6 +894,9 @@
     }
     .card-container {
         &:hover {
+            .asset-term{
+                background: transparent!important;
+            }
             .hover-action {
                 display: flex !important;
             }

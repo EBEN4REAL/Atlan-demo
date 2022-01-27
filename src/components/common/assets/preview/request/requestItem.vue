@@ -247,9 +247,27 @@
                 />
             </div>
             <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
-                <div class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term">
+                <div
+                    class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term"
+                >
                     <div class="mb-1 text-primary">
                         {{ assetText[0] }}
+                        <CertificateBadge
+                            v-if="
+                                item.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            :status="
+                                item.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            class="mb-1 ml-1"
+                            :username="
+                                item.destinationEntity?.attributes
+                                    ?.certificateUpdatedBy
+                            "
+                            :timestamp="timeAgo"
+                        />
                     </div>
                     <div class="flex items-center">
                         <AtlanIcon class="mr-1" :icon="assetIcon" />
@@ -894,8 +912,8 @@
     }
     .card-container {
         &:hover {
-            .asset-term{
-                background: transparent!important;
+            .asset-term {
+                background: transparent !important;
             }
             .hover-action {
                 display: flex !important;

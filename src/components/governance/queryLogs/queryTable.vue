@@ -186,8 +186,8 @@
                                           (1000 * 60)
                                       }s`
                                     : `${
-                                          queryInfo._source.log.message
-                                              .totalTime / 1000
+                                          +(queryInfo._source.log.message
+                                              .totalTime / 1000).toFixed(2)
                                       }s`
                             }}
                         </span>

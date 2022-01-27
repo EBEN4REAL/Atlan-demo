@@ -1,4 +1,3 @@
-<!-- This component works in 3 modes/views: 1/ form to generate a key 2/ form to update/delete a key 3/ info for generated key; generatedAPIKey (3) is the first level of distinction bw these modes/views, if value exists for that we show the third screen; If not we check if the passed in key (props) that we take in this component as apiKeyDirty has an id or not; if it has id, we are in edit mode i.e. 2nd screen (form is prefilled) else new key generation mode (form is empty)-->
 <template>
     <div class="h-full">
         <div
@@ -159,21 +158,21 @@ export default defineComponent({
             if (query?.value?._source?.message?.executionTime) {
                 const time = query?.value?._source?.message?.executionTime
 
-                if (time < 1000) result.executionTimeString = `${time}ms`
-                else if (time / 1000 < 60)
-                    result.executionTimeString = `${time / 1000}s`
-                else
-                    result.executionTimeString = `${time / (1000 * 60)}m${
+                 if (time < 1000) result.executionTimeString = `${time}ms`
+                 else if (time / 1000 < 60)
+                    result.executionTimeString = `${+(time / 1000).toFixed(2)}s`
+                 else
+                    result.executionTimeString = `${+(time / (1000 * 60)).toFixed(2)}m${
                         time % (1000 * 60)
                     }s`
             } else result.executionTimeString = ''
             if (query?.value?._source?.message?.totalTime) {
                 const time = query?.value?._source?.message?.totalTime
-                if (time < 1000) result.totalTimeString = `${time}ms`
-                else if (time / 1000 < 60)
-                    result.totalTimeString = `${time / 1000}s`
-                else
-                    result.totalTimeString = `${time / (1000 * 60)}m${
+                 if (time < 1000) result.totalTimeString = `${time}ms`
+                 else if (time / 1000 < 60)
+                    result.totalTimeString = `${+(time / 1000).toFixed(2)}s`
+                 else
+                    result.totalTimeString = `${+(time / (1000 * 60)).toFixed(2)}m${
                         time % (1000 * 60)
                     }s`
             } else result.totalTimeString = ''

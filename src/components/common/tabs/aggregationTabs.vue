@@ -266,6 +266,9 @@
             @apply border-primary !important;
             -webkit-text-stroke: 0px !important;
             -moz-text-stroke: 0px !important;
+            &:hover {
+                @apply border-primary !important;
+            }
 
             .chip {
                 @apply text-primary !important;

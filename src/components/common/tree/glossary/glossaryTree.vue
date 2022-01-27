@@ -310,6 +310,7 @@
                 handleAddSelectedKey,
                 dragAndDropNode,
                 isTreeNodeAnimating,
+                checkDuplicateCategoryNames
             }
         },
     })

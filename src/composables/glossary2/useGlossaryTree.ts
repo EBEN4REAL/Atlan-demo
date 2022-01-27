@@ -1187,10 +1187,12 @@ const useGlossaryTree = ({
          
             // if the target node is reached
             if (node.key === parentCategoryGuid || !currentPath || node.guid === parentCategoryGuid) {
-                const index = node.children?.findIndex((child) => {
-                    return child?.attributes?.name === name 
-                }) ?? 0
-                nameExists = index > -1
+                if(node.children && node.children.length) {
+                    const index = node.children.findIndex((child) => {
+                        return child?.attributes?.name === name 
+                    }) ?? 0
+                    nameExists = index > -1
+                }
             }
 
             // eslint-disable-next-line no-restricted-syntax

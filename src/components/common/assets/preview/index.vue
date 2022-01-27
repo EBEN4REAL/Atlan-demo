@@ -481,7 +481,7 @@
                 })
             }
 
-            provide('isProfile', isProfile.value)
+            provide('isProfile', isProfile)
 
             return {
                 tabChildRef,

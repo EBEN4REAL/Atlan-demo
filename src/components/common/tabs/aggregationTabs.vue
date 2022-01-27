@@ -44,7 +44,7 @@
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
 
-                            <div class="self-center text-sm font-normal">
+                            <div class="self-center text-sm">
                                 {{ item.label }}
                             </div>
                             <div
@@ -264,6 +264,8 @@
             @apply bg-primary-menu !important;
             @apply text-primary !important;
             @apply border-primary !important;
+            -webkit-text-stroke: 0px !important;
+            -moz-text-stroke: 0px !important;
 
             .chip {
                 @apply text-primary !important;

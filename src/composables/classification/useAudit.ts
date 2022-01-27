@@ -7,9 +7,12 @@ export function useAudit(classification: Ref<ClassificationInterface>) {
     const limit = ref(1)
     const offset = ref(0)
     const facets = ref({
-        entityId: classification.value.entityGuid,
         action: 'CLASSIFICATION_ADD',
     })
+    if (classification.value.entityGuid) {
+        facets.value.entityId = classification.value.entityGuid
+    }
+
     const preference = ref({
         sort: 'created-desc',
     })

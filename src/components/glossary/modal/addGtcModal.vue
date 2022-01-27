@@ -331,14 +331,12 @@
                     body.value = {
                         entities: [entity],
                     }
-                    console.log('bruh log', checkDuplicateCategoryNames)
                     const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
-                    if(entity.typeName === 'AtlasGlossaryTerm' || (entity.typeName === 'AtlasGlossaryCategory' && !duplicateExists)) {
-                        mutateAsset()
-                    } 
-                    if(duplicateExists){
+                    if(entity.typeName === 'AtlasGlossaryCategory' && duplicateExists) {
                         message.warning(`A category with the same name already exists on this level!`)
-                    }
+                        return                    
+                    } 
+                    mutateAsset()
                 } else {
                     message.warning(`Please enter the mandatory name`)
                 }

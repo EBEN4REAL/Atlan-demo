@@ -166,7 +166,7 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...jumpCloudDefaultConfig,
         },
-        imageClass: 'w-8 h-6',
+        imageClass: 'w-8 h-5',
     },
 ]
 export const customSamlProvider = {

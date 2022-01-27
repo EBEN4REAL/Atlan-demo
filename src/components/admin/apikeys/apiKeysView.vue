@@ -249,7 +249,7 @@
                 const localAPIKey = {
                     displayName: apikey?.displayName,
                     description: apikey?.attributes?.description,
-                    validitySeconds: apikey?.attributes?.accessTokenLifespan,
+                    validitySeconds: apikey?.attributes?.['access.token.lifespan'],
                     personas: apikey?.attributes?.personas || [],
                     id: apikey?.id,
                     rawKey: { ...(apikey || {}) },

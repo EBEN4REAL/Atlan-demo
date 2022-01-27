@@ -122,6 +122,10 @@ export const SourceList = [
                 level: 3,
             },
         ],
+        dialectConfig: {
+            // does not support abortQuery for now
+            abortQuery: false,
+        },
         connectionCount: 0,
         types: [
             'Database',
@@ -171,6 +175,10 @@ export const SourceList = [
                 level: 3,
             },
         ],
+        dialectConfig: {
+            // does not support abortQuery for now
+            abortQuery: false,
+        },
         connectionCount: 0,
         types: [
             'Database',

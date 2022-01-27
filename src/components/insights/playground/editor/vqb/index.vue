@@ -1,6 +1,6 @@
 <template>
     <div
-        class="absolute w-full px-4 py-3 bg-white rounded vqb ml-0.5"
+        class="absolute w-full px-3 py-3 bg-white rounded vqb"
         :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
         style="z-index: 3"
     >
@@ -14,6 +14,7 @@
                 :panel="item"
                 v-if="item"
                 :key="item?.id + index + activeInlineTab.key"
+                class="mb-4"
             ></component>
         </template>
     </div>

@@ -5,8 +5,8 @@
             @mouseout="handleMouseOut"
             :class="[
                 expand
-                    ? 'border-gray-300 rounded  border '
-                    : 'border-white  rounded border ',
+                    ? 'border-gray-300 rounded-lg border '
+                    : 'border-white  rounded-lg border ',
                 containerHovered ? 'border-gray-300' : '',
             ]"
         >
@@ -14,17 +14,6 @@
                 @click="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"
             >
-                <div class="mr-3" @click="toggleExpand">
-                    <AtlanIcon
-                        @click="toggleExpand"
-                        icon="ChevronRight"
-                        :class="
-                            expand
-                                ? 'w-4 h-4 chevron rotate-90'
-                                : 'w-4 h-4 chevron rotate-0'
-                        "
-                    />
-                </div>
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
@@ -95,18 +84,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div
-                    :class="[
-                        expand
-                            ? 'absolute bg-gray-300 opacity-0'
-                            : 'absolute bg-gray-300 ',
-                        containerHovered ? 'opacity-0' : '',
-                    ]"
-                    :style="`width: 1px; left: 55px; z-index: 1; ${findTimeLineHeight(
-                        Number(index)
-                    )}`"
-                ></div>
             </div>
             <!-- Show on expand -->
             <keep-alive>
@@ -133,18 +110,6 @@
                     !readOnly
                 "
             />
-        </div>
-        <div
-            @click.stop="() => {}"
-            class="relative w-full h-4"
-            v-if="
-                Number(index) < activeInlineTab.playground.vqb.panels.length - 1
-            "
-        >
-            <div
-                class="absolute h-4 bg-gray-300 left-14"
-                style="width: 1px; top: -1px"
-            ></div>
         </div>
     </div>
 </template>

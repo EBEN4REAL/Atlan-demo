@@ -129,7 +129,7 @@
                             label="Created At"
                             :no-popover="true"
                             class="font-light text-gray-500"
-                            :date="timeUpdated"
+                            :date="updatedAt"
                         />
                         <IconStatus
                             :request="request"
@@ -153,11 +153,14 @@
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
-                            <DatePiece
+                            <div class="font-light text-gray-500">
+                                {{ createdAt }}
+                            </div>
+                            <!-- <DatePiece
                                 label="Created At"
                                 :date="request.createdAt"
                                 class="text-gray-500"
-                            />
+                            /> -->
                         </div>
                         <IconStatus
                             :request="request"
@@ -239,6 +242,7 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useTimeAgo } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -369,11 +373,11 @@
                         { cacheKey: userId }
                     )
                     watch(data, () => {
-                        if(!data?.value?.records){
+                        if (!data?.value?.records) {
                             updatedBy.value = {
-                                username: ''
+                                username: '',
                             }
-                        }else {
+                        } else {
                             updatedBy.value = data?.value?.records[0]
                         }
                     })
@@ -425,6 +429,8 @@
                     },
                 }
             })
+            const createdAt = useTimeAgo(request.value.createdAt)
+            const updatedAt = useTimeAgo(timeUpdated.value)
             return {
                 handleApproval,
                 handleRejection,
@@ -435,6 +441,8 @@
                 nameUpdater,
                 item,
                 timeUpdated,
+                createdAt,
+                updatedAt,
             }
         },
     })

@@ -31,7 +31,9 @@
                 class="pr-3 classification-pill"
             />
         </Popover>
-        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
+        <span class="pt-1 pr-2 text-gray-500 hover:border-b border-gray-light"
+            >Link Classification</span
+        >
     </div>
 </template>
 
@@ -98,6 +100,9 @@
         &:hover {
             background: transparent !important;
             @apply text-gray-700 !important;
+            div {
+                border-bottom: 1px solid rgba(111, 117, 144, 1) !important;
+            }
         }
     }
 </style>

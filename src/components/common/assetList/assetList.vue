@@ -122,6 +122,7 @@
     import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
+    import useAssetStore from '~/store/asset'
     import useFetchAssetList from './usefetchAssetList'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
@@ -267,6 +268,17 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
+
+            // Preferences are to be shared for all asset lists
+            const discoveryStore = useAssetStore()
+
+            if (discoveryStore.preferences) {
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
+            }
 
             const {
                 filters,

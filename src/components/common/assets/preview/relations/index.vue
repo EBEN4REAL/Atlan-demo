@@ -107,6 +107,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useRelations } from '~/composables/discovery/useRelations'
     import { whenever } from '@vueuse/core'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'RelationshipsTab',
@@ -161,6 +162,16 @@
                 facets.value.guidList = guidList.value
             }
             updateFacet()
+
+            const discoveryStore = useAssetStore()
+
+            if (discoveryStore.preferences) {
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
+            }
 
             const {
                 list,

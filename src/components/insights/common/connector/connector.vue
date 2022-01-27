@@ -299,12 +299,15 @@
             }
 
             const iconName = (node) => {
+                console.log(node.title)
                 if (
                     node.title === 'athena' ||
                     node.title === 'snowflake' ||
                     node.title === 'powerbi' ||
                     node.title === 'tableau' ||
-                    node.title === 'databricks'
+                    node.title === 'databricks' ||
+                    node.title === 'redshift' ||
+                    node.title === 'bigquery'
                 ) {
                     switch (node.title) {
                         case 'snowflake':
@@ -317,6 +320,10 @@
                             return 'Tableau'
                         case 'databricks':
                             return 'Databricks'
+                        case 'redshift':
+                            return 'Redshift'
+                        case 'bigquery':
+                            return 'BigQuery'
                     }
                 } else {
                     let el = node?.key?.split('/')
@@ -332,6 +339,10 @@
                                 return 'Tableau'
                             case 'databricks':
                                 return 'Databricks'
+                            case 'redshift':
+                                return 'Redshift'
+                            case 'bigquery':
+                                return 'BigQuery'
                         }
                     } else {
                         return ''

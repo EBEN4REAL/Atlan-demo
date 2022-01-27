@@ -159,6 +159,7 @@ import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -179,7 +180,8 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
-import Retry from '~/assets/images/icons/retry.svg'
+import Retry from '~/assets/images/icons/retry2.svg'
+import Retry2 from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
 import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
@@ -216,6 +218,8 @@ import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+import ColumnGray from '~/assets/images/icons/column-gray.svg'
+import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 
 import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
@@ -380,6 +384,7 @@ import QueryTime from '~/assets/images/icons/query_time.svg'
 import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
 import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
+import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 
 export default {
     GlowFlash,
@@ -432,8 +437,10 @@ export default {
     EmptyLineage,
     EmptyLineageTab,
     EmptyResource,
+    EmptyResource2,
     IssuesFilled,
     ExplorerTrigger,
+    MaterialisedView,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,
@@ -447,6 +454,7 @@ export default {
     RunSuccess,
     RunFailed,
     Metadata,
+    ColumnGray,
     Relation,
     MorningIcon,
     AfternoonIcon,
@@ -587,6 +595,7 @@ export default {
     FullScreenBoth,
     Minus,
     Retry,
+    Retry2,
     Recenter,
     Refocus,
     AssetsInactiveLight,
@@ -746,4 +755,5 @@ export default {
     ThreeDots,
     Request,
     RequestActive,
+    FilterFunnelDot,
 }

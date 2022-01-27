@@ -93,7 +93,7 @@
                                 </template>
                                 <AtlanIcon
                                     :icon="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
+                                    class="h-4 mr-1 mb-0.5"
                                 ></AtlanIcon>
                             </a-tooltip>
 
@@ -261,7 +261,7 @@
                                 /> -->
                                 <AtlanIcon
                                     :icon="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
+                                    class="h-4 mr-1 mb-0.5"
                                 ></AtlanIcon>
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(

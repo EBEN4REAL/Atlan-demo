@@ -98,7 +98,7 @@ export const insightsFilters = [
         id: 'table',
         label: 'Table/View',
         component: 'properties',
-        includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
+        includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         attributes: [
             {
                 name: 'rowCount',

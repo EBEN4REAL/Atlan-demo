@@ -317,9 +317,9 @@
                             class="w-4 h-4 mr-1"
                             v-if="readOnly"
                         />
-                        <img
+                        <AtlanIcon
                             v-if="connectionName"
-                            :src="connectorAsset?.image"
+                            :icon="connectorAsset?.image"
                             class="w-4 h-4 mx-1 connector_icon"
                         />
                     </div>

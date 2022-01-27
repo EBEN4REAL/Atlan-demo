@@ -90,13 +90,31 @@
                     "
                 >
                     <template #categoryFilter>
-                        <div
-                            class="relative px-2 cursor-pointer"
-                            @click="handleClickFilter"
-                        >
-                            <AtlanIcon icon="FilterFunnel" />
+                        <div class="relative flex items-center">
+                            <AtlanBtn
+                                color="secondary"
+                                class="px-2 border-r-0 rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                                :class="{
+                                    'text-primary border rounded py-1 border-primary':
+                                        drawerFilter,
+                                }"
+                                @click="handleClickFilter"
+                            >
+                                <AtlanIcon
+                                    :icon="
+                                        Object.keys(facets).length > 0
+                                            ? 'FilterFunnelDot'
+                                            : 'FilterFunnel'
+                                    "
+                                    class="w-4 h-4"
+                                />
+                            </AtlanBtn>
                             <div
-                                class="absolute border-r border-solid divide-gray-800 devider-filter"
+                                class="absolute border-r divide-gray-800 divider-filter"
+                                :class="{
+                                    'text-primary border-r rounded border-primary top-0':
+                                        drawerFilter,
+                                }"
                             />
                         </div>
                     </template>
@@ -109,9 +127,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <!-- <img :src="logoUrl" /> -->
-                        <!-- <AtlanIcon icon="Retry" /> -->
-                        <img :src="retryImage" />
+                        <AtlanIcon class="" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -151,9 +167,10 @@
                         />
                     </template>
                 </VirtualList>
-                <div class="h-3" @mouseenter="mouseEnterContainer" />
+                <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
                     class="flex items-center justify-between p-4 bg-white border-t"
+                    @mouseenter="mouseEnterContainer"
                 >
                     <div class="text-gray-500">
                         <strong
@@ -240,7 +257,6 @@
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
-    import retryImage from '~/assets/images/Retry.png'
 
     export default defineComponent({
         name: 'RequestList',
@@ -514,7 +530,6 @@
                 activeHover,
                 mouseEnterContainer,
                 response,
-                retryImage,
                 logoUrl,
                 startCountPagination,
                 endCountPagination,
@@ -539,9 +554,9 @@
         .group {
             background: none !important;
         }
-        .clear-filter-asset {
-            @apply text-gray-500 !important;
-        }
+        // .clear-filter-asset {
+        //     @apply text-gray-500 !important;
+        // }
     }
     .reload-button {
         path {
@@ -583,6 +598,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .filter-icon-wrapper {
+        height: 28px !important;
+    }
     .wrapper-scoll {
         position: absolute;
         width: 16px;
@@ -614,9 +632,9 @@
         transform: rotate(180deg);
     }
 
-    .devider-filter {
+    .divider-filter {
         top: -5px;
-        height: 31px;
+        height: 30px;
         right: 0;
     }
 </style>

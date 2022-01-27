@@ -56,9 +56,9 @@
 
                 <transition v-if="isFiltered && !isActive" name="fade">
                     <div class="flex items-center">
-                        <img
+                        <AtlanIcon
                             v-if="item.id === 'hierarchy'"
-                            :src="
+                            :icon="
                                 getConnectorImageMap[
                                     getFilterValue.toLowerCase()
                                 ]
@@ -265,6 +265,12 @@
                 }
 
                 if (id === 'certificateStatus' && facetMap.value[id]) {
+                    return facetMap.value[id]?.length < 3
+                        ? facetMap.value[id].join(',')
+                        : `${facetMap.value[id]?.length} applied`
+                }
+
+                if (id === 'statusRequest' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
                         ? facetMap.value[id].join(',')
                         : `${facetMap.value[id]?.length} applied`

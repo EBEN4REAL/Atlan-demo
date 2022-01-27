@@ -261,8 +261,10 @@
                 return Array.from(Array(x1 - x0).keys()).map((x) => f(x + x0))
             }
 
-            function column_header(i, name) {
-                let title = columns.value[i]?.title.toUpperCase()
+            function column_header(i) {
+                let title = columns.value[i]?.title
+                    ? columns.value[i]?.title
+                    : '-'
                 return [`${title}`]
             }
 

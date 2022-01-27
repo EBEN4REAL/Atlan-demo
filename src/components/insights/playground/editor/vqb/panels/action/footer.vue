@@ -27,6 +27,8 @@
     import { defineComponent, toRefs, ComputedRef, computed, inject } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { generateUUID } from '~/utils/helper/generator'
+    import { useVModels } from '@vueuse/core'
+
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
@@ -39,9 +41,20 @@
                 type: Object,
                 reqruied: true,
             },
+            submenuHovered: {
+                type: Boolean,
+                reqruied: true,
+                default: false,
+            },
+            containerHovered: {
+                type: Boolean,
+                reqruied: true,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const { panelInfo } = toRefs(props)
+            const { submenuHovered, containerHovered } = useVModels(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
             const { syncSortAggregateAndGroupPanel } = useSort()
             const activeInlineTab = inject(
@@ -168,6 +181,8 @@
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
+                containerHovered.value = false
+                submenuHovered.value = false
             }
             return {
                 computedItems,

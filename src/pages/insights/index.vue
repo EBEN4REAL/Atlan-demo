@@ -135,6 +135,14 @@
                             // savedQueryInfo.value = data.value.entit
                             if (list.value && list.value?.length > 0) {
                                 savedQueryInfo.value = list.value[0]
+
+                                const queryParams = {
+                                    id: list.value[0]?.guid,
+                                }
+                                router.push({
+                                    path: `insights`,
+                                    query: queryParams,
+                                })
                             } else {
                                 message.error({
                                     content: `Saved query not found`,

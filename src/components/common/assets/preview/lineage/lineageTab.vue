@@ -40,14 +40,16 @@
             v-model:active="direction"
             class="mx-5 mt-4"
             :data="streams"
-            @update:active="handleChangeDirection"
         />
 
-        <Assets
-            v-if="selectedGuids.length > 0"
-            :selectedGuids="selectedGuids"
-            ref="assetList"
-        ></Assets>
+        <LineageList v-if="computedAssets.length" :assets="computedAssets" />
+        <div
+            v-else-if="isUpLoading || isDownLoading"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
+        </div>
+        <ErrorView v-else-if="!isUpReady || !isDownReady" />
         <div v-else class="flex items-center justify-center h-full">
             <EmptyView
                 empty-screen="EmptyLineageTab"
@@ -69,6 +71,7 @@
         computed,
         PropType,
     } from 'vue'
+    import { useRoute } from 'vue-router'
 
     // Components
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -83,27 +86,28 @@
     // import AssetList from '@/common/assets/list/index.vue'
     // import AssetItem from '@/common/assets/list/assetItem.vue'
     import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AtlanButton from '@/UI/button.vue'
     import LineageImpactModal from './lineageImpactModal.vue'
-    import Assets from './list/index.vue'
+    import LineageList from './list/index.vue'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { AssetAttributes, SQLAttributes } from '~/constant/projection'
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
-    import useLineage from '~/composables/discovery/useLineage'
-    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: {
-            Assets,
+            LineageList,
             EmptyView,
             AtlanButton,
             LineageImpactModal,
             RaisedTab,
+            ErrorView,
         },
         props: {
             selectedAsset: {
@@ -114,28 +118,22 @@
         setup(props) {
             /** DATA */
             const { selectedAsset } = toRefs(props)
-            const activeKeys = ref([])
             const showImpactedAssets = ref(false)
 
             const assetTypesLengthMap = ref({})
 
             const route = useRoute()
 
-            // const path = computed(() => {
-            //     console.log(route)
-            //     return route.path
-            // })
+            const { useFetchLineage } = useLineageService()
 
             const depth = ref(1)
             const query = ref('')
-            const assetList = ref(null)
 
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
 
             const direction = ref('BOTH')
 
             const link = computed(() => {
-                const baseUrl = window.location.origin
                 const text = `/assets/${guid.value}/lineage`
                 return text
             })
@@ -148,18 +146,48 @@
                     selectedAsset.value.attributes.name
             )
 
-            const { data, guidList, upstreamGuids, downstreamGuids } =
-                useLineage(
-                    guid.value,
-                    {
-                        depth: depth.value,
-                        direction: direction.value,
-                        hideProcess: true,
-                    },
-                    guid
-                )
+            const defaultLineageConfig = computed(() => ({
+                depth: depth.value,
+                guid: guid.value,
+                hideProcess: true,
+                attributes: [...AssetAttributes, ...SQLAttributes],
+            }))
 
-            const selectedGuids = ref([])
+            const {
+                data: UpStreamLineage,
+                isLoading: isUpLoading,
+                isReady: isUpReady,
+                mutate: mutateUpstream,
+            } = useFetchLineage(
+                computed(() => ({
+                    ...defaultLineageConfig.value,
+                    direction: 'INPUT',
+                })),
+                true
+            )
+
+            const {
+                data: DownStreamLineage,
+                isLoading: isDownLoading,
+                isReady: isDownReady,
+                mutate: mutateDownstream,
+            } = useFetchLineage(
+                computed(() => ({
+                    ...defaultLineageConfig.value,
+                    direction: 'OUTPUT',
+                })),
+                true
+            )
+
+            // useComputeGraph
+            const allEntities = computed(() => ({
+                upstream: Object.values(
+                    UpStreamLineage.value?.guidEntityMap || {}
+                ).filter((a) => a.guid !== guid.value),
+                downstream: Object.values(
+                    DownStreamLineage.value?.guidEntityMap || {}
+                ).filter((a) => a.guid !== guid.value),
+            }))
 
             const streams = computed(() => [
                 {
@@ -169,128 +197,30 @@
                 {
                     key: 'UPSTREAM',
                     label: 'Upstream',
-                    count: upstreamGuids.value?.length,
+                    count: allEntities.value.upstream.length,
                 },
                 {
                     key: 'DOWNSTREAM',
                     label: 'Downstream',
-                    count: downstreamGuids.value?.length,
+                    count: allEntities.value.downstream.length,
                 },
             ])
 
-            watch(data, () => {
-                // console.log(guidList.value)
-                selectedGuids.value = guidList.value.filter(
-                    (guid) => guid !== selectedAsset.value.guid
-                )
-
-                // initialFilters.value = {
-                //     guidList: guidList.value,
-                // }
-                // if (assetList.value) {
-                //     assetList.value.forceFilterChange(initialFilters.value)
-                // }
-            })
-
-            const handleChangeDirection = () => {
-                console.log(
-                    direction,
-                    guidList,
-                    upstreamGuids.value,
-                    downstreamGuids.value
-                )
-                if (direction.value === 'UPSTREAM') {
-                    console.log(upstreamGuids.value, selectedAsset.value.guid)
-                    console.log(
-                        upstreamGuids.value.filter(
-                            (guid) => guid !== selectedAsset.value.guid
-                        )
-                    )
-                    selectedGuids.value = upstreamGuids.value.filter(
-                        (guid) => guid !== selectedAsset.value.guid
-                    )
-                } else if (direction.value === 'DOWNSTREAM') {
-                    console.log(downstreamGuids.value, selectedAsset.value.guid)
-                    console.log(
-                        downstreamGuids.value.filter(
-                            (guid) => guid !== selectedAsset.value.guid
-                        )
-                    )
-                    selectedGuids.value = downstreamGuids.value.filter(
-                        (guid) => guid !== selectedAsset.value.guid
-                    )
-                } else {
-                    selectedGuids.value = guidList.value.filter(
-                        (guid) => guid !== selectedAsset.value.guid
-                    )
+            const computedAssets = computed(() => {
+                switch (direction.value) {
+                    case 'BOTH':
+                        return [
+                            ...allEntities.value.upstream,
+                            ...allEntities.value.downstream,
+                        ]
+                    case 'UPSTREAM':
+                        return allEntities.value.upstream
+                    case 'DOWNSTREAM':
+                        return allEntities.value.downstream
+                    default:
+                        return []
                 }
-            }
-
-            // computed(() => ({
-            //     depth: depth.value,
-            //     guid: guid.value,
-            //     direction: 'INPUT',
-            // }))
-            // const { data: downStreamData } = useLineage(
-            //     guid.value,
-            //     {
-            //         depth: depth.value,
-            //         direction: 'OUTPUT',
-            //         hideProcess: true,
-            //     },
-            //     guid
-            // )
-            // computed(() => ({
-            //     depth: depth.value,
-            //     guid: guid.value,
-            //     direction: 'OUTPUT',
-            // }))
-
-            // useComputeGraph
-            const allEntities = computed(() => ({
-                // upstream: Object.values(data.value.guidEntityMap.value),
-                // downstream: Object.values(
-                //     DownStreamLineage.guidEntityMap.value
-                // ),
-            }))
-
-            const filteredLineageList = computed(() => {
-                const lineageMap = {}
-                // Object.entries(allEntities.value).forEach(
-                //     ([key, assetList]) => {
-                //         lineageMap[key] = assetList.filter((et) =>
-                //             et.displayText
-                //                 .toLowerCase()
-                //                 .includes(query.value.toLowerCase())
-                //         )
-                //     }
-                // )
-                return lineageMap
             })
-
-            const totalCount = computed(() =>
-                Object.values(allEntities.value).reduce(
-                    (acc, assetList) => assetList.length + acc,
-                    0
-                )
-            )
-
-            const placeholderText = computed(() => {
-                // if (
-                //     UpStreamLineage.isLoading.value ||
-                //     DownStreamLineage.isLoading.value
-                // )
-                return 'Loading lineage'
-
-                // return totalCount.value
-                //     ? `Search ${totalCount.value} assets`
-                //     : 'No assets found'
-            })
-
-            const isLoading = computed(() => ({
-                // upstream: UpStreamLineage.isLoading.value,
-                // downstream: DownStreamLineage.isLoading.value,
-            }))
 
             const isWithGraph = computed(() => route.params?.tab === 'lineage')
 
@@ -304,38 +234,36 @@
 
             /** PROVIDERS */
             provide('updateDepth', updateDepth)
+            provide('currentDepth', depth)
             provide('updateFilters', updateFilters)
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            // watch([depth, guid], () => {
-            //     console.log('lineage mutate')
-            //     UpStreamLineage.mutate()
-            //     DownStreamLineage.mutate()
-            // })
+            watch([depth, guid], () => {
+                mutateUpstream()
+                mutateDownstream()
+            })
 
             /** LIFECYCLE */
             return {
                 guid,
                 assetName,
                 query,
-                filteredLineageList,
                 assetTypesLengthMap,
-                activeKeys,
                 streams,
-                totalCount,
-                placeholderText,
-                isLoading,
-                selectedGuids,
-                guidList,
-                assetList,
                 direction,
-                handleChangeDirection,
-                upstreamGuids,
-                downstreamGuids,
+                depth,
                 link,
                 showImpactedAssets,
                 isWithGraph,
+                allEntities,
+                computedAssets,
+                isUpLoading,
+                isDownLoading,
+                isUpReady,
+                isDownReady,
+                UpStreamLineage,
+                DownStreamLineage,
             }
         },
     })

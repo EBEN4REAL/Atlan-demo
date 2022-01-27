@@ -86,7 +86,7 @@ export function useSSE({
     config,
     headers = {},
     pathVariables = {},
-}: useSSEParams): any {
+}: useSSEParams) {
     const keycloack = appInstance.config.globalProperties.$keycloak
     const { token } = keycloack
     const intialState = {
@@ -96,7 +96,8 @@ export function useSSE({
         unsubscribe: null,
         close: null,
     }
-    let eventSource: eventSrcObj
+    const eventSource: Ref<eventSrcObj> = ref()
+    const error = ref()
 
     // supports only standard headers like Authorization etc.
     let reqHeaders: { [index: string]: string } = {
@@ -117,14 +118,14 @@ export function useSSE({
     }
 
     // setTimeout(() => {
-    //     // eventSource.close()
+    //     // eventSource.value.close()
     //     console.log('closed', eventSource)
     // }, heartbeatTimeout)
 
     const URL: any = resolveUrl(path, pathVariables)
 
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
-        eventSource = new EventSourcePolyfill(URL, {
+        eventSource.value = new EventSourcePolyfill(URL, {
             headers: reqHeaders,
             withCredentials: cfg.withCredentials,
             heartbeatTimeout: heartbeatTimeout,
@@ -133,12 +134,13 @@ export function useSSE({
 
         // }, 4000)
 
-        eventSource.onerror = (e) => {
-            eventSource.close()
+        eventSource.value.onerror = (e) => {
+            eventSource.value.close()
             console.log(e)
+            error.value = e
             reject(e)
         }
-        eventSource.onopen = () => {
+        eventSource.value.onopen = () => {
             const subscribers: {
                 [index: string]: Array<(e?: any) => any>
             } = {}
@@ -148,8 +150,8 @@ export function useSSE({
                 },
 
                 onError(handler) {
-                    eventSource.close()
-                    eventSource.onerror = handler
+                    eventSource.value.close()
+                    eventSource.value.onerror = handler
                     return this
                 },
 
@@ -159,7 +161,9 @@ export function useSSE({
                         try {
                             if (cfg.format) data = formatters(cfg.format, e)
                         } catch (err) {
-                            if (typeof eventSource.onerror === 'function') {
+                            if (
+                                typeof eventSource.value.onerror === 'function'
+                            ) {
                                 console.log('subscribe error')
                             }
                         }
@@ -173,16 +177,16 @@ export function useSSE({
 
                     if (event === '') {
                         // Catches messages without any event specified
-                        eventSource.onmessage = listener
+                        eventSource.value.onmessage = listener
                     } else {
-                        eventSource.addEventListener(event, listener)
+                        eventSource.value.addEventListener(event, listener)
                     }
                     return this
                 },
 
                 unsubscribe(event) {
                     if (event === '') {
-                        eventSource.onmessage = null
+                        eventSource.value.onmessage = null
                         return this
                     }
                     // Check if there are any subscribers for this event
@@ -190,14 +194,14 @@ export function useSSE({
                         return this
                     }
                     subscribers[event].forEach((listener) => {
-                        eventSource.removeEventListener(event, listener)
+                        eventSource.value.removeEventListener(event, listener)
                     })
                     subscribers[event] = []
                     return this
                 },
 
                 close() {
-                    eventSource.close()
+                    eventSource.value.close()
                     // Make sure listeners are cleared (nobody likes mem leaks, right?)
                     Object.keys(subscribers).forEach((event) => {
                         subscribers[event] = []
@@ -208,7 +212,8 @@ export function useSSE({
     })
     // Variable to check if the promise has been executed atleast once
     let isExecuted = ref(false)
-    const { state, isReady, error } = useAsyncState(() => {
+
+    const { state, isReady } = useAsyncState(() => {
         isExecuted.value = true
         return promise
     }, intialState)

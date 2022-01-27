@@ -94,7 +94,12 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { AssetAttributes, SQLAttributes } from '~/constant/projection'
+    import {
+        AssetAttributes,
+        SQLAttributes,
+        GlossaryAttributes,
+        AssetRelationAttributes,
+    } from '~/constant/projection'
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
@@ -150,7 +155,11 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
-                attributes: [...AssetAttributes, ...SQLAttributes],
+                attributes: [
+                    ...AssetAttributes,
+                    ...SQLAttributes,
+                    ...GlossaryAttributes,
+                ],
             }))
 
             const {

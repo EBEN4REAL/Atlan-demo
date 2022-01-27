@@ -584,14 +584,14 @@ const useQueryTree = ({
         }
     }
 
-    watch(
-        () => loadedKeys.value.length,
-        () => {
-            console.log('loaded keys: ', loadedKeys.value)
-            console.log('loaded keys: exp:', expandedKeys.value)
-        },
-        { immediate: true }
-    )
+    // watch(
+    //     () => loadedKeys.value.length,
+    //     () => {
+    //         console.log('loaded keys: ', loadedKeys.value)
+    //         console.log('loaded keys: exp:', expandedKeys.value)
+    //     },
+    //     { immediate: true }
+    // )
     /**
      * Locally updates the attributes of a node inside the tree
      *

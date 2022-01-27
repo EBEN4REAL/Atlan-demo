@@ -76,6 +76,26 @@ const azureDefaultConfig = {
         },
     ],
 }
+const jumpCloudDefaultConfig = {
+    displayName: 'Sign in with JumpCloud',
+    attributeList: [
+        {
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
+        },
+        {
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
+        },
+        {
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
+}
 
 export const customSAMLDefaultConfig = {
     displayName: 'Login with SAML',
@@ -134,6 +154,19 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...oktaDefaultConfig,
         },
+    },
+    {
+        title: 'Jumpcloud',
+        alias: 'jumpcloud',
+        isCustomSaml: false,
+        image: '/logo/jumpcloud.png',
+        ctaText: {
+            default: 'Add',
+        },
+        defaultConfig: {
+            ...jumpCloudDefaultConfig,
+        },
+        imageClass: 'w-8 h-6',
     },
 ]
 export const customSamlProvider = {

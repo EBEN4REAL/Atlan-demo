@@ -170,7 +170,9 @@ export function useDiscoverList({
 
             temp.sort(
                 (a, b) =>
-                    a.groupOrder - b.groupOrder || a.id.localeCompare(b.id)
+                    a?.groupOrder - b?.groupOrder ||
+                    a?.priorityOrder - b?.priorityOrder ||
+                    a.id.localeCompare(b.id)
             )
         }
 

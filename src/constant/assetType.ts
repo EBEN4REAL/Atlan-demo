@@ -11,6 +11,7 @@ export const assetTypeList: {
     count?: number
     relationships?: string[]
     groupOrder?: number
+    priorityOrder?: number
 }[] = [
     {
         id: 'Connection',
@@ -21,7 +22,7 @@ export const assetTypeList: {
         children: ['Column'],
         count: 0,
         relationships: [],
-        groupOrder: 1, // For grouping according to asset types
+        groupOrder: 5, // For grouping according to asset types
     },
     {
         id: 'Database',
@@ -34,7 +35,7 @@ export const assetTypeList: {
         image: 'DatabaseGray',
         count: 0,
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 5,
     },
     {
         id: 'Schema',
@@ -47,7 +48,7 @@ export const assetTypeList: {
         image: 'SchemaGray',
         count: 0,
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 5,
     },
     {
         id: 'View',
@@ -61,7 +62,8 @@ export const assetTypeList: {
         count: 0,
         image: 'ViewGray',
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 2, // For deciding the priority within this group
     },
     {
         id: 'Table',
@@ -75,7 +77,8 @@ export const assetTypeList: {
         count: 0,
         image: 'TableGray',
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 1,
     },
     {
         id: 'TablePartition',
@@ -88,7 +91,8 @@ export const assetTypeList: {
         orderWeight: 100,
         count: 0,
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 3,
     },
     {
         id: 'MaterialisedView',
@@ -102,7 +106,8 @@ export const assetTypeList: {
         orderWeight: 100,
         count: 0,
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 4,
     },
     {
         id: 'Column',
@@ -116,7 +121,8 @@ export const assetTypeList: {
         count: 0,
         image: 'ColumnGray',
         relationships: [],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 5,
     },
     /*  {
         id: 'Procedure',
@@ -128,7 +134,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         count: 0,
         relationships: [],
-         groupOrder: 2,
+         groupOrder: 1,priorityOrder: 5,
     }, */
     {
         id: 'Query',
@@ -142,7 +148,8 @@ export const assetTypeList: {
         count: 0,
         image: 'Query',
         relationships: ['tables', 'views', 'columns'],
-        groupOrder: 2,
+        groupOrder: 1,
+        priorityOrder: 5,
     },
     /*   {
         id: 'Folder',
@@ -153,7 +160,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 60,
         count: 0,
-         groupOrder: 2,
+         groupOrder: 1,priorityOrder: 5,
     }, */
     {
         id: 'AtlasGlossaryTerm',
@@ -161,7 +168,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Term',
         relationships: [],
-        groupOrder: 3,
+        groupOrder: 2,
     },
     {
         id: 'AtlasGlossaryCategory',
@@ -169,7 +176,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Category',
         relationships: [],
-        groupOrder: 3,
+        groupOrder: 2,
     },
     {
         id: 'TableauSite',
@@ -179,7 +186,7 @@ export const assetTypeList: {
         parents: [],
         image: 'Tableau',
         relationships: ['projects'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauProject',
@@ -190,7 +197,7 @@ export const assetTypeList: {
         parents: ['TableauSite'],
         image: 'Tableau',
         relationships: ['workbooks', 'site', 'datasources', 'flows', 'metrics'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauWorkbook',
@@ -200,7 +207,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['worksheets', 'datasources', 'project', 'dashboards'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauWorksheet',
@@ -209,7 +216,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'dashboards'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauDashboard',
@@ -218,7 +225,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'worksheets'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauDatasource',
@@ -228,7 +235,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['workbook', 'project', 'fields'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauDatasourceField',
@@ -237,7 +244,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Tableau',
         relationships: ['datasource'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauCalculatedField',
@@ -246,7 +253,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauWorkbook'],
         relationships: ['datasource'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauFlow',
@@ -255,7 +262,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['project'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'TableauMetric',
@@ -264,7 +271,7 @@ export const assetTypeList: {
         image: 'Tableau',
         parents: ['TableauProject'],
         relationships: ['project'],
-        groupOrder: 4,
+        groupOrder: 3,
     },
     {
         id: 'PowerBIWorkspace',
@@ -274,7 +281,7 @@ export const assetTypeList: {
         parents: [],
         children: ['PowerBIDashboard'],
         relationships: ['reports', 'datasets', 'dashboards', 'dataflows'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIDashboard',
@@ -284,7 +291,7 @@ export const assetTypeList: {
         parents: ['PowerBIWorkspace'],
         children: ['PowerBITile'],
         relationships: ['tiles', 'workspace'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIReport',
@@ -294,7 +301,7 @@ export const assetTypeList: {
         parents: ['PowerBIWorkspace'],
         children: ['PowerBIPage'],
         relationships: ['workspace', 'pages', 'tiles', 'dataset'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIDataset',
@@ -310,7 +317,7 @@ export const assetTypeList: {
             'tiles',
             'dataflows',
         ],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIDataflow',
@@ -319,7 +326,7 @@ export const assetTypeList: {
         image: 'PowerBI',
         parents: ['PowerBIWorkspace'],
         relationships: ['workspace', 'datasets'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBITile',
@@ -328,7 +335,7 @@ export const assetTypeList: {
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
         relationships: ['dashboard', 'dataset', 'report'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIPage',
@@ -337,7 +344,7 @@ export const assetTypeList: {
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIReport'],
         relationships: ['report'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
     {
         id: 'PowerBIDatasource',
@@ -346,6 +353,6 @@ export const assetTypeList: {
         image: 'PowerBI',
         parents: ['PowerBIWorkspace', 'PowerBIDataset'],
         relationships: ['datasets'],
-        groupOrder: 5,
+        groupOrder: 4,
     },
 ]

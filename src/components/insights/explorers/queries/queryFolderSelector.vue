@@ -32,7 +32,7 @@
                     class="w-full h-full pt-3 overflow-y-hidden"
                     v-if="queryCollections?.length"
                 >
-                    <div class="flex items-center justify-between px-4">
+                    <div class="flex items-center justify-between px-4 mb-2">
                         <span class="text-sm font-bold text-gray-700"
                             >Save query to</span
                         >
@@ -47,65 +47,88 @@
                             />
                         </a-tooltip>
                     </div>
+
                     <div
-                        class="flex items-center justify-between w-full h-8 px-4 mt-2"
-                        :class="`${
-                            selectedFolderContext?.guid ===
-                            selectedCollection?.guid
-                                ? 'bg-primary-light'
-                                : 'bg-white hover:bg-gray-100'
-                        }`"
+                        v-for="collection in queryCollections"
+                        :key="collection.guid"
                     >
                         <div
-                            @click="onSelect('root', 'root')"
-                            class="flex items-center w-full cursor-pointer"
+                            class="flex items-center justify-between w-full h-8 px-4"
+                            :class="`${
+                                selectedFolderContext?.guid === collection?.guid
+                                    ? 'bg-primary-light'
+                                    : 'bg-white hover:bg-gray-100'
+                            }`"
                         >
+                            <div
+                                @click="onSelect(collection, 'root')"
+                                class="flex items-center w-11/12 cursor-pointer parent-ellipsis-container"
+                            >
+                                <AtlanIcon
+                                    :icon="
+                                        treeSelectedCollection?.guid ===
+                                        collection?.guid
+                                            ? 'CaretDown'
+                                            : 'CaretRight'
+                                    "
+                                    class="w-4 h-4 my-auto outline-none cursor-pointer parent-ellipsis-container-extension"
+                                    @click.stop="
+                                        expandCollection(collection, $event)
+                                    "
+                                ></AtlanIcon>
+                                <AtlanIcon
+                                    icon="CollectionIconSmall"
+                                    class="w-4 h-4 my-auto mr-2 parent-ellipsis-container-extension"
+                                ></AtlanIcon>
+                                <span
+                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    >{{ collection?.attributes.name }}</span
+                                >
+                            </div>
+
                             <AtlanIcon
-                                icon="CollectionIconSmall"
-                                class="w-4 h-4 my-auto mr-2"
-                            ></AtlanIcon>
-                            <span
-                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ selectedCollection?.attributes.name }}</span
-                            >
+                                v-if="
+                                    selectedFolderContext?.guid ===
+                                    collection?.guid
+                                "
+                                icon="Check"
+                                class="w-4 h-4 text-primary parent-ellipsis-container-extension"
+                            />
                         </div>
-
-                        <AtlanIcon
-                            v-if="
-                                selectedFolderContext?.guid ===
-                                selectedCollection?.guid
-                            "
-                            icon="Check"
-                            class="w-4 h-4 text-primary"
-                        />
-                    </div>
-
-                    <div class="w-full h-full overflow-y-scroll bg-white">
-                        <query-tree-list
-                            @createFolderInput="createFolderInput"
-                            :savedQueryType="savedQueryType2"
-                            :tree-data="newTreeData"
-                            :on-load-data="onLoadData"
-                            :select-node="onSelect"
-                            :expand-node="expandNode"
-                            :is-loading="isInitingTree"
-                            :loaded-keys="loadedKeys"
-                            :selected-keys="selectedKey"
-                            :expanded-keys="expandedKeys"
-                            v-if="newTreeData.length"
-                            :selectedNewFolder="selectedFolderContext"
-                            class="pb-4 collection-list"
-                        />
                         <div
-                            v-else
-                            class="flex flex-col items-center justify-center mt-4 collection-list"
+                            class="w-full h-full ml-1 overflow-y-scroll bg-white"
+                            v-if="
+                                treeSelectedCollection?.guid ===
+                                collection?.guid
+                            "
                         >
-                            <!-- <p
-                                class="my-2 mb-0 mb-6 text-xs text-center text-gray-700 max-width-text"
+                            <query-tree-list
+                                @createFolderInput="createFolderInput"
+                                :savedQueryType="savedQueryType2"
+                                :tree-data="newTreeData"
+                                :on-load-data="onLoadData"
+                                :select-node="onSelect"
+                                :expand-node="expandNode"
+                                :is-loading="isInitingTree"
+                                :loaded-keys="loadedKeys"
+                                :selected-keys="selectedKey"
+                                :expanded-keys="expandedKeys"
+                                v-if="newTreeData.length"
+                                :selectedNewFolder="selectedFolderContext"
+                                class="collection-list"
+                            />
+                            <div
+                                v-else
+                                class="flex flex-col items-center justify-center h-8 collection-list"
                             >
-                                Sorry, no data found <br />in selected
-                                collection
-                            </p> -->
+                                <a-spin size="small" v-if="isQueriesLoading" />
+                                <p
+                                    v-else
+                                    class="text-xs text-center text-gray-500"
+                                >
+                                    No folder found
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -203,6 +226,14 @@
                 QueryCollection[] | undefined
             >
 
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+
             const selectedFolder = ref()
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
@@ -216,6 +247,8 @@
                 )
                 return collection
             })
+
+            let treeSelectedCollection = ref(selectedCollection.value)
 
             const refreshQueryTree = inject<
                 (guid: string, type: 'query' | 'Folder') => void
@@ -273,10 +306,20 @@
                 { immediate: true }
             )
 
+            const expandCollection = (selected, event) => {
+                console.log('event: ', event)
+                treeSelectedCollection.value = selected
+            }
+
             const onSelect = (selected: any, event: any) => {
                 if (event === 'root') {
-                    console.log('selected folder: ', selectedCollection.value)
-                    const rootData = selectedCollection.value
+                    treeSelectedCollection.value = selected
+
+                    // console.log(
+                    //     'selected folder: ',
+                    //     treeSelectedCollection.value
+                    // )
+                    const rootData = selected
 
                     const data = {
                         dataRef: {
@@ -284,8 +327,9 @@
                         },
                     }
 
-                    selectedKey.value = [selectedCollection?.value?.guid]
-                    selectedFolder.value = selectedCollection.value?.displayText
+                    selectedKey.value = [selected?.guid]
+                    selectedFolder.value =
+                        treeSelectedCollection.value?.displayText
                     dropdownVisible.value = false
                     // selectedFolderContext.value = data
                     selectedFolderContext.value = {
@@ -335,13 +379,6 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-            const activeInlineTab = inject(
-                'activeInlineTab'
-            ) as ComputedRef<activeInlineTabInterface>
-
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as Ref<string>
 
             const { openSavedQueryInNewTab, createFolder } = useSavedQuery(
                 inlineTabs,
@@ -367,6 +404,7 @@
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 currentSelectedNode: currentSelectedNode,
+                isLoading: isQueriesLoading,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -377,7 +415,7 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
-                collection: selectedCollection,
+                collection: treeSelectedCollection,
             })
 
             const newTreeData = computed(() => {
@@ -390,7 +428,7 @@
 
             onMounted(() => {
                 if (!parentFolder.value || !parentFolder.value.guid) {
-                    onSelect('root', 'root')
+                    onSelect(selectedCollection.value, 'root')
                 }
             })
 
@@ -412,14 +450,14 @@
             let saveFolderLoading = ref(false)
 
             const createFolderInput = () => {
-                const inputClassName = `${selectedCollection?.value?.guid}_folder_input`
+                const inputClassName = `${treeSelectedCollection?.value?.guid}_folder_input`
 
                 const existingInputs =
                     document.getElementsByClassName(inputClassName)
 
-                let parentGuid = ref(selectedCollection?.value?.guid)
+                let parentGuid = ref(treeSelectedCollection?.value?.guid)
                 let parentQualifiedName = ref(
-                    selectedCollection?.value?.attributes.qualifiedName
+                    treeSelectedCollection?.value?.attributes.qualifiedName
                 )
 
                 const appendInput = () => {
@@ -475,7 +513,7 @@
                                 '',
                                 parentQualifiedName,
                                 parentGuid,
-                                selectedCollection
+                                treeSelectedCollection
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
@@ -584,11 +622,14 @@
                 selectedFolderContext,
                 queryFolderNamespace,
                 selectedCollection,
+                treeSelectedCollection,
                 newTreeData,
                 queryCollections,
                 showCollectionModal,
                 toggleCollectionModal,
                 createFolderInput,
+                expandCollection,
+                isQueriesLoading,
             }
         },
     })
@@ -649,5 +690,19 @@
     }
     .selected-underline {
         border-bottom: 2px solid #5277d7;
+    }
+
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
     }
 </style>

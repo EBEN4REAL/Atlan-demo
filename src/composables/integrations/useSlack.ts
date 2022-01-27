@@ -149,7 +149,7 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (s
 
     const new_window = window.open(
         tenant
-            ? tenantSlackStatus.value
+            ? tenantLevelOauthUrl.value
             : userLevelOauthUrl.value,
         'popUpWindow',
         windowConfig

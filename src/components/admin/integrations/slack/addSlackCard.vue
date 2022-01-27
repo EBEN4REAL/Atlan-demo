@@ -38,7 +38,7 @@
                     !tenantSlackStatus.configured &&
                     tenantLevelOauthUrl
                 "
-                @click="() => openSlackOAuth({ tenant: true, emit: $emit })"
+                @click="() => openSlackOAuth({ tenant: true })"
             >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Add to slack <AtlanIcon icon="ArrowRight" />

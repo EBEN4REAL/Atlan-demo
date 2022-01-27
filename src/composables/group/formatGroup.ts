@@ -6,7 +6,7 @@ export const getFormattedGroup = (group: any) => {
     const formattedGroup = {
         ...group,
         id: group.id,
-        name: group?.alias ?? '-',
+        name: group?.alias || group?.attributes?.alias?.[0] || '-',
         alias: group?.name ?? '-',
         createdAt: group?.attributes?.createdAt?.[0] ?? '-',
         createdAtTimeAgo: group?.attributes?.createdAt?.[0]

@@ -315,7 +315,7 @@
     import { SourceList } from '~/constant/source'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import { getDurationStringFromMilliSec } from '~/utils/duration'
+    import { getDurationStringFromMilliSec } from '~/utils/time'
 
     export default defineComponent({
         name: 'QueryLogsTable',
@@ -433,7 +433,7 @@
                 getConnectionName,
                 getConnectorImagePath,
                 getConnectorName,
-                getDurationStringFromMilliSec
+                getDurationStringFromMilliSec,
             }
         },
     })

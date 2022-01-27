@@ -113,7 +113,7 @@
 import { defineComponent, ref, watch, toRefs, computed } from 'vue'
 import SQLSnippet from '@common/sql/snippet.vue'
 import { getQueryMetadata } from '@/governance/queryLogs/composables/useQueryLogs'
-import { getDurationStringFromMilliSec } from '~/utils/duration'
+import { getDurationStringFromMilliSec } from '~/utils/time'
 
 export default defineComponent({
     name: 'QueryPreviewDrawer',

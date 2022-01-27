@@ -1,5 +1,5 @@
 <template>
-    <div :class="[' mx-3 mt-1 mb-4']">
+    <div :class="[' mx-3 pb-3']">
         <div class="">
             <template
                 v-for="(subpanel, index) in subpanels"

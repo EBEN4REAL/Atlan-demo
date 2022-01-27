@@ -1,15 +1,6 @@
 <template>
     <div>
-        <div
-            @mouseover="handleMouseOver"
-            @mouseout="handleMouseOut"
-            :class="[
-                expand
-                    ? 'border-gray-300 rounded-lg border '
-                    : 'border-white  rounded-lg border ',
-                containerHovered ? 'border-gray-300' : '',
-            ]"
-        >
+        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
             <div
                 @click.self="toggleExpand"
                 class="box-border relative flex items-center p-3 cursor-pointer"

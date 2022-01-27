@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="computedItems?.length > 0"
-        class="flex items-center w-full p-3 bg-gray-100 border-t border-gray-300 rounded-b group-hover:border-white"
+        class="flex items-center w-full p-3 bg-white border-t border-gray-300 rounded-b group-hover:border-white"
     >
         <template v-for="item in computedItems" :key="item.label">
             <AtlanBtn

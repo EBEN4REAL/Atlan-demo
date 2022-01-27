@@ -1,22 +1,25 @@
 <template>
-    <div
-        class="absolute w-full px-3 py-3 bg-white rounded vqb"
-        :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
-        style="z-index: 3"
-    >
-        <template
-            v-for="(item, index) in activeInlineTab?.playground?.vqb?.panels"
-            :key="item?.id + index + activeInlineTab.key"
+    <div class="h-full p-3">
+        <div
+            class="w-full h-full p-3 rounded-lg"
+            :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
+            style="z-index: 3; background-color: #f6f8fd"
         >
-            <component
-                :is="item?.id"
-                :index="index"
-                :panel="item"
-                v-if="item"
+            <template
+                v-for="(item, index) in activeInlineTab?.playground?.vqb
+                    ?.panels"
                 :key="item?.id + index + activeInlineTab.key"
-                class="mb-4"
-            ></component>
-        </template>
+            >
+                <component
+                    :is="item?.id"
+                    :index="index"
+                    :panel="item"
+                    v-if="item"
+                    :key="item?.id + index + activeInlineTab.key"
+                    class="mb-4 bg-white rounded-lg"
+                ></component>
+            </template>
+        </div>
     </div>
 </template>
 

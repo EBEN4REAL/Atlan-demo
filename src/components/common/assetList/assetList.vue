@@ -17,6 +17,7 @@
                             <PreferenceSelector
                                 v-model="preference"
                                 @change="fetchList(0)"
+                                @display="handleDisplayChange"
                             />
                         </div>
                     </template>
@@ -353,6 +354,10 @@
                 return selectedItems.value.includes(guid)
             }
 
+            const handleDisplayChange = () => {
+                discoveryStore.setPreferences(preference.value)
+            }
+
             watch(
                 [filters, postFilters, aggregations],
                 () => {
@@ -382,6 +387,7 @@
                 handleClearSearch,
                 checkIfSelected,
                 quickChange,
+                handleDisplayChange,
             }
         },
     })

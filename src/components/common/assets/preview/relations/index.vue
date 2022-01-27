@@ -13,6 +13,7 @@
                         <PreferenceSelector
                             v-model="preference"
                             @change="handleChangePreference"
+                            @display="handleDisplayChange"
                         />
                     </div>
                 </template>
@@ -239,6 +240,10 @@
                 quickChange()
             }
 
+            const handleDisplayChange = () => {
+                discoveryStore.setPreferences(preference.value)
+            }
+
             whenever(isGuidArrayReady, () => {
                 dependentKey.value = 'RELATED_ASSET_LIST'
 
@@ -261,6 +266,7 @@
                 totalCount,
                 updateFacet,
                 handleAssetTypeChange,
+                handleDisplayChange,
                 handleSearchChange,
                 preference,
                 handleChangeSort,

@@ -17,6 +17,7 @@ interface useSSEParams {
         format?: string
         [index: string]: any
     }
+    body: Object
 }
 
 interface useSSEReturnObj {
@@ -86,7 +87,8 @@ export function useSSE({
     config,
     headers = {},
     pathVariables = {},
-}: useSSEParams) {
+    body = {},
+}: useSSEParams): any {
     const keycloack = appInstance.config.globalProperties.$keycloak
     const { token } = keycloack
     const intialState = {
@@ -127,8 +129,10 @@ export function useSSE({
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
         eventSource.value = new EventSourcePolyfill(URL, {
             headers: reqHeaders,
+            method: 'POST',
             withCredentials: cfg.withCredentials,
             heartbeatTimeout: heartbeatTimeout,
+            body,
         })
         // setInterval(() => {
 

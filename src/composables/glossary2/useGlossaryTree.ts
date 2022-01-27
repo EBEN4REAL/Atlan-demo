@@ -1178,6 +1178,46 @@ const useGlossaryTree = ({
         }
     }
 
+    const checkDuplicateCategoryNames = (parentCategoryGuid: string, name: string): boolean => {
+        let parentStack: string[]
+        let nameExists: boolean = false;
+
+        const checkDuplicate = (node: TreeDataItem) => {
+            const currentPath = parentStack.pop()
+         
+            // if the target node is reached
+            if (node.key === parentCategoryGuid || !currentPath || node.guid === parentCategoryGuid) {
+                const index = node.children?.findIndex((child) => {
+                    return child?.attributes?.name === name 
+                }) ?? 0
+                nameExists = index > -1
+            }
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const childNode of node?.children ?? []) {
+                // if the current node is in the path that is needed to reach the target node
+                if (
+                    childNode.key === currentPath ||
+                    childNode.guid === currentPath
+                ) {
+                    checkDuplicate(childNode)
+                } 
+            }
+        }
+
+        // find the path to the node
+        parentStack = recursivelyFindPath(parentCategoryGuid)[0]
+        const parent = parentStack?.pop()
+        for (const node of treeData.value) {
+            if (node.key === parent || node.guid === parent) {
+                checkDuplicate(node)
+            }
+        }
+
+        return nameExists;
+    }
+
+
     watch(parentGlossaryQualifiedName, (newParentGlossaryQF) => {
         offset.value = 0
         queryText.value = ''
@@ -1212,6 +1252,7 @@ const useGlossaryTree = ({
         dragAndDropNode,
         nodeToParentKeyMap,
         allKeys,
+        checkDuplicateCategoryNames
     }
 }
 

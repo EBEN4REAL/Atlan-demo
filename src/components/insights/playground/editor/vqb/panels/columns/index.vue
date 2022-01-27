@@ -107,6 +107,7 @@
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
                         Number(index) &&
+                    activeInlineTab.playground.vqb.selectedTables.length > 0 &&
                     !readOnly
                 "
             />

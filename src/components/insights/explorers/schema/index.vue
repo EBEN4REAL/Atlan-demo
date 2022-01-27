@@ -248,8 +248,8 @@
             // }
 
             const facets = ref({})
-            const sortOrderTable = ref('')
-            const sortOrderColumn = ref('')
+            const sortOrderTable = ref('name.keyword-asc')
+            const sortOrderColumn = ref('order-asc')
             const onFilterChange = (type, value) => {
                 if (type === 'sortOrderTable') {
                     sortOrderTable.value = value

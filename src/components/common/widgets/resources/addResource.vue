@@ -104,6 +104,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import AtlanButton from '@/UI/button.vue'
+    import { getDomain } from '~/utils/url'
 
     const emojiIndex = new EmojiIndex(data)
 
@@ -147,7 +148,9 @@
             const linkURL = ref(updating.value ? link(item.value) : '')
             const faviconLink = ref(
                 updating.value
-                    ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
+                    ? `https://www.google.com/s2/favicons?domain=${getDomain(
+                          linkURL.value
+                      )}&sz=64`
                     : ''
             )
 
@@ -218,7 +221,9 @@
             watch(linkURL, () => {
                 if (isValidUrl.value) {
                     imageNotFound.value = false
-                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
+                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${getDomain(
+                        linkURL.value
+                    )}&sz=64`
                 }
             })
 

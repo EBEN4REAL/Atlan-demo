@@ -1,4 +1,6 @@
 import { isNumber } from '@vueuse/core'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { Ref } from 'vue'
 
 export function useError() {
     // msg: null meaning take msg from error Object from Heka
@@ -142,7 +144,75 @@ export function useError() {
             if (heka !== undefined) errorData = hekaErrorMap[http][heka]
         }
 
-        return errorData?.desc ? errorData?.desc : queryErrorObj?.errorMessage
+        return errorData?.desc
+            ? errorData?.desc
+            : queryErrorObj?.errorDescription ?? ''
+    }
+
+    const setStreamErrorInActiveInlineTab = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        error: Ref<any>
+    ) => {
+        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+            undefined
+        activeInlineTab.value.playground.resultsPane.result.totalRowsCount = -1
+        activeInlineTab.value.playground.resultsPane.result.executionTime = -1
+        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+            'error'
+        debugger
+        /* ------------------- */
+        /* USE SSE ERROR */
+        if (error.value?.statusText) {
+            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                {
+                    requestId: '',
+                    errorName: '',
+                    errorMessage:
+                        error.value?.statusText ?? 'Oops! Something went wrong',
+                    errorCode: error.value?.status,
+                    developerMessage: error.value?.statusText,
+                    errorDescription: 'Oops! Something went wrong',
+                }
+        } else if (error.value?.error) {
+            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                {
+                    requestId: '',
+                    errorName: '',
+                    errorMessage:
+                        error.value?.error?.message?.toUpperCase() ??
+                        'Oops! Something went wrong',
+                    errorCode: '000',
+                    developerMessage: error.value?.statusText,
+                    errorDescription: 'Oops! Something went wrong',
+                }
+        }
+
+        /* Setting it undefined for new run */
+
+        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+            undefined
+    }
+
+    const setHekaErrorInActiveInlineTab = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        eventSource: Ref<any>,
+        message: any
+    ) => {
+        if (eventSource.value?.close) {
+            eventSource.value.close()
+        }
+        /* Query related data */
+        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+            message
+        activeInlineTab.value.playground.resultsPane.result.totalRowsCount = -1
+        activeInlineTab.value.playground.resultsPane.result.executionTime = -1
+        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+            'error'
+        /* ------------------- */
+        /* Setting it undefined for new run */
+
+        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+            undefined
     }
 
     return {
@@ -155,5 +225,7 @@ export function useError() {
         LINE_ERROR_NAMES,
         SOURCE_ACCESS_ERROR_NAMES,
         errorDescription,
+        setStreamErrorInActiveInlineTab,
+        setHekaErrorInActiveInlineTab,
     }
 }

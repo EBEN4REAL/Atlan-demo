@@ -11,16 +11,7 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="[
-                                isChecked
-                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
-                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
-                                isChecked && expand
-                                    ? 'border-primary-focus bg-primary-light text-primary '
-                                    : '',
-                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
-                            ]"
+                            class="flex items-center justify-center mr-2 bg-gray-100 rounded-full p-1.5"
                             style="z-index: 2"
                         >
                             <div
@@ -30,11 +21,9 @@
                                     icon="Trigger"
                                     :class="[
                                         isChecked
-                                            ? 'text-gray-500'
+                                            ? 'text-gray'
                                             : 'text-gray-400',
-                                        isChecked && expand
-                                            ? 'text-primary'
-                                            : '',
+                                        isChecked && expand ? 'text-gray' : '',
                                         'absolute w-4 h-4 dead-center',
                                     ]"
                                 />

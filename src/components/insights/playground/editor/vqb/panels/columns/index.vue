@@ -8,24 +8,12 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="
-                                !expand
-                                    ? [
-                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
-                                      ]
-                                    : [
-                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
-                                      ]
-                            "
+                            class="flex items-center justify-center mr-2 bg-gray-100 rounded-full p-1.5"
                             style="z-index: 2"
                         >
                             <AtlanIcon
                                 icon="Columns"
-                                class="w-4 h-4"
-                                :class="[
-                                    expand ? 'text-primary' : 'text-gray-500',
-                                ]"
+                                class="w-4 h-4 text-gray"
                             />
                         </div>
                         <div class="">

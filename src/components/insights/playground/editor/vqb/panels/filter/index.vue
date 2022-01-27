@@ -11,13 +11,13 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center relative justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
+                            class="flex items-center justify-center mr-2 bg-gray-100 rounded-full p-1.5"
                             :class="[
                                 isChecked
-                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
-                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
+                                    ? 'text-gray bg-gray-100'
+                                    : 'text-gray-400 bg-gray-100',
                                 isChecked && expand
-                                    ? 'border-primary-focus bg-primary-light text-primary '
+                                    ? 'border-primary-focus text-gray '
                                     : '',
                                 'flex items-center justify-center mr-2  rounded-full p-1.5 ',
                             ]"
@@ -38,10 +38,8 @@
                             <AtlanIcon
                                 icon="FilterFunnel"
                                 :class="[
-                                    isChecked
-                                        ? 'text-gray-500'
-                                        : 'text-gray-400',
-                                    isChecked && expand ? 'text-primary' : '',
+                                    isChecked ? 'text-gray' : 'text-gray-400',
+                                    isChecked && expand ? 'text-gray' : '',
                                     ' w-4 h-4 ',
                                 ]"
                             />

@@ -1,7 +1,8 @@
 import bodybuilder from 'bodybuilder'
-import { Ref, ref, watch } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import { ClassificationInterface } from '~/types/classifications/classification.interface'
 import { Search } from '~/services/meta/search'
+import useFetchAssetList from '@common/assetList/usefetchAssetList'
 
 /**
  * A composable for getting the count of assets which have this particular
@@ -10,24 +11,44 @@ import { Search } from '~/services/meta/search'
  * @param classification
  */
 export function useLinkedAssets(classification: Ref<ClassificationInterface>) {
-    const query = bodybuilder()
-        .filter('terms', '__traitNames', [classification.value.name])
-        .build()
-    const assetCount = ref(0)
-    const { data, isLoading, error } = Search.IndexSearch(
-        { dsl: query },
-        {
-            cacheKey: 'CLASSIFICATION_LINKED_ASSETS_COUNT',
-        }
-    )
-    watch(isLoading, () => {
-        if (!isLoading.value && !error.value) {
-            assetCount.value = data.value?.approximateCount || 0
-        }
+    const dependentKey = ref('CLASSIFICATION_LINKED_ASSETS_COUNT')
+    const postFilters = ref({
+        typeName: '__all',
     })
+    const filter = computed(() => ({
+        __traitNames: {
+            classifications: [classification.value.name],
+        },
+    }))
+    const limit = ref(20)
+    const offset = ref(0)
+    const queryText = ref('')
+    const preference = ref({ sort: 'default', display: [] })
+    const aggregations = ref(['typeName'])
+    const isCache = ref(true)
+    const attributes = ref([])
+    const { isLoading, assetTypeAggregationList } = useFetchAssetList({
+        queryText,
+        limit,
+        attributes,
+        offset,
+        facets: filter,
+        postFacets: postFilters,
+        aggregations,
+        preference,
+        isCache,
+        dependentKey,
+        suppressLogs: true,
+    })
+    const totalCount = computed(() =>
+        assetTypeAggregationList.value.reduce(
+            (prev, curr, index, arr) => prev + arr[index].count,
+            0
+        )
+    )
 
     return {
-        assetCount,
+        assetCount: totalCount,
         isLoading,
     }
 }

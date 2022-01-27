@@ -1,5 +1,5 @@
 <template>
-    <a-popover placement="left">
+    <a-popover placement="left" @click='togglePreview'>
         <template #content>
             <div>
                 <div>
@@ -37,9 +37,10 @@
 <script lang="ts">
     import { PropType, defineComponent, ref } from 'vue'
     import ClassificationHead from '@common/popover/classification/head.vue'
-    import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import ClassificationBody from '@common/popover/classification/body.vue'
     import ClassificationDrawer from '@common/drawer/classification/index.vue'
+
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: "ClassificationPopover",

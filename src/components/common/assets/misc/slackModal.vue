@@ -108,6 +108,8 @@
         message.value = ''
     }
     const open = () => {
+        clearAll()
+        channel.value = channels.value[0].value
         visible.value = true
         emit('closeParent')
     }

@@ -68,7 +68,7 @@ specifiers:
   eslint-plugin-import: ^2.25.4
   eslint-plugin-prettier: ^4.0.0
   eslint-plugin-vue: ^8.2.0
-  event-source-polyfill: git://github.com/inishchith/EventSource.git
+  event-source-polyfill: git://github.com/atlanhq/EventSource.git
   highlight.js: ^11.4.0
   https-localhost: ^4.7.0
   husky: ^7.0.4
@@ -163,7 +163,7 @@ dependencies:
   dagrejs: 0.2.1
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.2.1_vue@3.2.27
-  event-source-polyfill: github.com/inishchith/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
+  event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
   highlight.js: 11.4.0
   json-2-csv: 3.16.0
   keycloak-js: 16.1.0
@@ -8273,8 +8273,8 @@ packages:
       commander: 2.20.3
     dev: false
 
-  github.com/inishchith/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7:
-    resolution: {tarball: https://codeload.github.com/inishchith/EventSource/tar.gz/f12e560428065c00f61c7eb2a8ae773115e6e7c7}
+  github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7:
+    resolution: {tarball: https://codeload.github.com/atlanhq/EventSource/tar.gz/f12e560428065c00f61c7eb2a8ae773115e6e7c7}
     name: event-source-polyfill
     version: 1.0.13
     dev: false

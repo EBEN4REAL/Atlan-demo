@@ -198,6 +198,8 @@
                         :placeholder="`Enter a ${variable.type}`"
                         :type="variable.type === 'number' ? 'number' : 'text'"
                     />
+                    <!-- {{ variable.value }} -->
+
                     <!-- <template #suffix> -->
                     <a-dropdown
                         :visible="customVariableOpenKey === variable.key"

@@ -186,7 +186,6 @@
                         class="truncate border-0 focus:border-0 focus:outline-none"
                         :allowClear="false"
                     >
-                        <template #suffixIcon></template>
                     </a-date-picker>
                     <a-input
                         v-else
@@ -208,8 +207,8 @@
                             class="absolute right-0 z-10 p-1 px-1.5 rounded opacity-0 group-hover:opacity-100"
                         >
                             <span
-                                @click="() => openDropdown(variable)"
-                                class="p-1 rounded cursor-pointer hover:bg-gray-light"
+                                @click="() => toggleDropdown(variable)"
+                                class="p-1 rounded cursor-pointer group-hover:bg-gray-light"
                             >
                                 <AtlanIcon
                                     class="w-4 h-4 text-gray-500 mb-0.5"
@@ -557,7 +556,11 @@
                 addVariable(activeInlineTab, tabs)
             }
 
-            const openDropdown = (variable: CustomVaribaleInterface) => {
+            const toggleDropdown = (variable: CustomVaribaleInterface) => {
+                if (customVariableOpenKey.value) {
+                    closeDropdown()
+                    return
+                }
                 customVariableOpenKey.value = variable.key
                 activeVariable.value = { ...variable } // track the new variable
                 currVariable.value = { ...variable }
@@ -707,7 +710,7 @@
                 // sqlVariables,
                 currVariable,
                 activeInlineTab,
-                openDropdown,
+                toggleDropdown,
                 onAddVariable,
                 deleteVariable,
                 closeDropdown,
@@ -785,7 +788,7 @@
     }
     .date_picker {
         padding-right: 2px !important;
-        width: 100%;
+        width: 95%;
     }
 
     input::-webkit-inner-spin-button,

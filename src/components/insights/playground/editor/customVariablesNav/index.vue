@@ -332,6 +332,7 @@
                                                 class="text-gray-700 tex-sm"
                                                 name="value"
                                             >
+                                                {{ activeVariable.value }}
                                                 <a-date-picker
                                                     v-if="
                                                         activeVariable.type ===
@@ -637,12 +638,11 @@
             }
 
             const handleVariableTypeChange = () => {
-                // console.log(`selected type: `, variable.type)
                 if (activeVariable.value.type === 'dropdown') {
                     activeVariable.value.value = []
                     activeVariable.value.dummy = []
                 } else if (activeVariable.value.type === 'date') {
-                    activeVariable.value.value = dayjs().format()
+                    activeVariable.value.value = dayjs()
                 } else if (activeVariable.value.type === 'string') {
                     activeVariable.value.value = ''
                     activeVariable.value.dummy = ''

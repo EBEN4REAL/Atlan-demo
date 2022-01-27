@@ -179,11 +179,10 @@
                         v-else-if="variable.type === 'date'"
                         placeholder="Select Date"
                         :class="$style.date_picker"
-                        :show-time="{ format: 'HH:mm' }"
-                        v-model:value="variable.value"
-                        @change="onChange(variable)"
+                        :value="getDaysJsWrappedValue(variable.value)"
+                        @change="(e) => onChange(variable, e)"
                         :bordered="false"
-                        style="padding-right: 0 !important; max-width: 127px"
+                        style="padding-right: 0 !important"
                         class="truncate border-0 focus:border-0 focus:outline-none"
                         :allowClear="false"
                     >
@@ -334,18 +333,19 @@
                                                 class="text-gray-700 tex-sm"
                                                 name="value"
                                             >
-                                                {{ activeVariable.value }}
                                                 <a-date-picker
                                                     v-if="
                                                         activeVariable.type ===
                                                         'date'
                                                     "
                                                     placeholder="Select Date"
-                                                    :show-time="{
-                                                        format: 'HH:mm',
-                                                    }"
-                                                    v-model:value="
-                                                        activeVariable.value
+                                                    :value="
+                                                        getDaysJsWrappedValue(
+                                                            activeVariable.value
+                                                        )
+                                                    "
+                                                    @change="
+                                                        hanldeActiveVariableDateChange
                                                     "
                                                     class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                                                 />
@@ -606,9 +606,13 @@
                 })
             }
 
-            const onChange = (variable: CustomVaribaleInterface) => {
-                console.log('var: ', variable)
-                editVariable(activeInlineTab, tabs, variable)
+            const onChange = (variable: CustomVaribaleInterface, val) => {
+                const copy_variable = JSON.parse(JSON.stringify(variable))
+                if (copy_variable.type === 'date') {
+                    copy_variable.value = val
+                }
+                // console.log('var: ', variable)
+                editVariable(activeInlineTab, tabs, copy_variable)
             }
 
             const onChangeAllowMultiple = () => {
@@ -683,8 +687,16 @@
                     checkAll.value = false
                 }
             }
+            const getDaysJsWrappedValue = (value) => {
+                return dayjs(value)
+            }
+
+            const hanldeActiveVariableDateChange = (val) => {
+                activeVariable.value.value = val
+            }
 
             return {
+                getDaysJsWrappedValue,
                 onChange,
                 onCopyVariable,
                 onDeleteVariable,
@@ -714,6 +726,7 @@
                 variableList,
                 onChangeAllowMultiple,
                 activeVariable,
+                hanldeActiveVariableDateChange,
             }
         },
     })

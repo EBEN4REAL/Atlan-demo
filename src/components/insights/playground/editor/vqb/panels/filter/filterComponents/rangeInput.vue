@@ -67,7 +67,7 @@
             v-model:value="secondValue"
             :disabled="readOnly && !subpanel?.filter?.isVariable"
             placeholder="Enter value"
-            class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
+            class="flex-1 w-full ml-3 border-gray-200 rounded focus:border-primary-focus"
             style="height: 32px !important"
             @change="(event) => onChange(event, 'second', type)"
         >

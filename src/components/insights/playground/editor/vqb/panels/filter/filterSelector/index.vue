@@ -10,9 +10,9 @@
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
-                : 'border-gray-300 border border-plus',
+                : 'border-gray-200 border border-plus',
             ,
-            'flex flex-wrap items-center  rounded box-shadow selector-height px-3 cursor-pointer',
+            'flex flex-wrap items-center  rounded selector-height px-3 cursor-pointer',
             disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
     >

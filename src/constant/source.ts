@@ -7,6 +7,7 @@ export const SourceList = [
         connectionCount: 0,
         dialectConfig: {
             assetQuoteType: '"',
+            abortQuery: true,
         },
         hierarchy: [
             {
@@ -74,6 +75,9 @@ export const SourceList = [
         image: 'Redshift',
         hierarchy: [],
         connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
     },
     {
         id: 'databricks',
@@ -186,6 +190,9 @@ export const SourceList = [
         image: 'Postgres',
         hierarchy: [],
         connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
         types: [
             'Database',
             'Schema',
@@ -203,6 +210,9 @@ export const SourceList = [
         label: 'Athena',
         image: 'Athena',
         filterMaxLevel: 2,
+        dialectConfig: {
+            abortQuery: true,
+        },
         hierarchy: [
             {
                 typeName: 'Database',

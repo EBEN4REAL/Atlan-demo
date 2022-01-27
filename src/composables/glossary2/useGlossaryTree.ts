@@ -1207,13 +1207,18 @@ const useGlossaryTree = ({
             }
         }
 
-        // find the path to the node
-        parentStack = recursivelyFindPath(parentCategoryGuid)[0]
-        const parent = parentStack?.pop()
-        for (const node of treeData.value) {
-            if (node.key === parent || node.guid === parent) {
-                checkDuplicate(node)
+        if(parentCategoryGuid) {
+            // find the path to the node
+            parentStack = recursivelyFindPath(parentCategoryGuid)[0]
+            const parent = parentStack?.pop()
+            for (const node of treeData.value) {
+                if (node.key === parent || node.guid === parent) {
+                    checkDuplicate(node)
+                }
             }
+        } else {
+            const index = treeData.value.findIndex((child) => child?.attributes.name === name) ?? 0
+            nameExists = index > -1
         }
 
         return nameExists;

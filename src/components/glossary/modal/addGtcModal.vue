@@ -331,6 +331,7 @@
                     body.value = {
                         entities: [entity],
                     }
+                    console.log('bruh log', checkDuplicateCategoryNames)
                     const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
                     if(entity.typeName === 'AtlasGlossaryTerm' || (entity.typeName === 'AtlasGlossaryCategory' && !duplicateExists)) {
                         mutateAsset()

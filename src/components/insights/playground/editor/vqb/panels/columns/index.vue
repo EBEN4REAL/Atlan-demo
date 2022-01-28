@@ -12,7 +12,7 @@
                             style="z-index: 2"
                         >
                             <AtlanIcon
-                                icon="Columns"
+                                icon="TableGray"
                                 class="w-4 h-4 text-gray"
                             />
                         </div>

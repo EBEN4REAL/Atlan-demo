@@ -54,7 +54,7 @@
                     </ColumnSelector>
 
                     <span class="px-3 text-sm text-gray-500"
-                        >Calculate the</span
+                        >calculate the</span
                     >
 
                     <AggregateSelector

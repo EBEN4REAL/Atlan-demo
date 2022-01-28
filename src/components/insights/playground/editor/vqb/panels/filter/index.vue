@@ -55,7 +55,7 @@
                                     <div class="relative font-bold">Filter</div>
                                     <div
                                         v-if="!isChecked && expand"
-                                        class="px-3 py-1 ml-2 text-gray-500 rounded-full bg-gray-light"
+                                        class="px-3 ml-2 text-gray-500 rounded-full bg-gray-light"
                                     >
                                         Disabled
                                     </div>
@@ -100,7 +100,7 @@
                         ]"
                     >
                         <div
-                            class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
+                            class="px-3 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
                             <a-tooltip
@@ -152,7 +152,7 @@
                             <a-tooltip placement="top" title="Delete step">
                                 <AtlanBtn
                                     @click.stop="() => handleDelete(index)"
-                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
+                                    class="flex-none border-none px-3.5 text-gray hover:text-red-500"
                                     size="sm"
                                     color="secondary"
                                     padding="compact"

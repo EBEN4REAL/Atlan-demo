@@ -82,7 +82,7 @@
                                         class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                         :value="item.value"
                                     >
-                                        <div
+                                        <!-- <div
                                             class="inline-flex -mt-1 align-middle dot"
                                             :class="`${
                                                 item.label.toLocaleLowerCase() ===
@@ -93,7 +93,7 @@
                                                     ? 'bg-error'
                                                     : 'bg-alert'
                                             }`"
-                                        ></div>
+                                        ></div> -->
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
                                             <span class="text-sm text-gray-500"

@@ -77,7 +77,6 @@
 
     const handleNumberKeyPress = (v) => {
         if (v.key === delimiter.value) {
-            debugger
             const element = document.getElementById(randomId.value)
             element.dispatchEvent(
                 new KeyboardEvent('keydown', {

@@ -270,5 +270,16 @@ export const SourceList = [
         image: 'Looker',
         connectionCount: 0,
         hierarchy: [],
+        types: [
+            'LookerDashboard',
+            'LookerExplore',
+            'LookerField',
+            'LookerFolder',
+            'LookerLook',
+            'LookerModel',
+            'LookerProject',
+            'LookerQuery',
+            'LookerTile',
+        ],
     },
 ]

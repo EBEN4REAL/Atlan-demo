@@ -442,6 +442,7 @@
                 setTimeout(() => {
                     showPagination.value = true
                 }, 200)
+                // destinationQualifiedName
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
@@ -454,6 +455,14 @@
                     status,
                     createdBy,
                     // typeName,
+                }
+                if (facetsValue.hierarchy?.connectorName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectorName
+                }
+                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectionQualifiedName
                 }
                 if (facetsValue.__traitNames) {
                     const filterClasification = []

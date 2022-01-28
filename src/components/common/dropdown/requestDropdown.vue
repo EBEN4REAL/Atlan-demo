@@ -53,11 +53,12 @@
                                     </div>
                                     <div class="p-2 border rounded-md">
                                         <div class="flex">
-                                            <a-textarea
-                                                v-model:value="message"
-                                                placeholder="Message"
-                                                class="border-none outline-none focus:border-none focus:outline-none hover:border-none hover:outline-none"
+                                            <textarea
+                                                v-model="message"
+                                                placeholder="|Type your comment..."
+                                                class="border-none outline-none focus:border-none focus:outline-none hover:border-none hover:outline-none text-message"
                                                 :rows="2"
+                                                ref="refTextArea"
                                             />
                                         </div>
                                         <div
@@ -135,6 +136,7 @@
         setup(props, { emit }) {
             const visible = ref(false)
             const visibleComment = ref(false)
+            const refTextArea = ref()
             const message = ref('')
             const handleCancel = () => {
                 visibleComment.value = false
@@ -143,6 +145,7 @@
                 visibleComment.value = true
                 message.value = ''
                 setTimeout(() => {
+                    refTextArea.value.focus()
                     visible.value = false
                 }, 300)
             }
@@ -159,11 +162,20 @@
                 handleSubmitWithComment,
                 name,
                 avatarUrl,
+                refTextArea,
             }
         },
     })
 </script>
 
+<style lang="less">
+    .text-message {
+        &:focus {
+            outline: none !important;
+            border: none !important;
+        }
+    }
+</style>
 <style scoped>
     .sparator {
         width: 1px;

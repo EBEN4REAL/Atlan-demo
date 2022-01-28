@@ -50,12 +50,15 @@
                     <ShowLess :text="stripSlackText(data.message.text ?? '')" />
 
                     <div class="flex text-sm text-gray-500">
-                        <span class="" v-if="data.message.reply_count">
+                        <span v-if="data.message.reply_count" class="">
                             {{ data.message.reply_count }}
                             replies
                             <span class="ml-1 mr-1 text-gray-300">•</span>
                         </span>
-                        <span> #{{ data?.channel?.name }} </span>
+                        <span v-if="data?.channel?.name">
+                            #{{ data?.channel?.name }}
+                        </span>
+                        <span v-else> Private dm</span>
                     </div>
                 </div>
                 <div class="flex-grow"></div>

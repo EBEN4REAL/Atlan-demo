@@ -456,6 +456,7 @@
                     createdBy,
                     // typeName,
                 }
+                delete filterMerge.destinationQualifiedName
                 if (facetsValue.hierarchy?.connectorName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectorName

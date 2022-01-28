@@ -11,15 +11,9 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 rounded-full p-1.5"
+                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
                             :class="[
-                                isChecked
-                                    ? 'text-gray bg-gray-100'
-                                    : 'text-gray-400 bg-gray-100',
-                                isChecked && expand
-                                    ? 'border-primary-focus text-gray '
-                                    : '',
-                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
+                                expand ? 'bg-primary-light' : 'bg-gray-100',
                             ]"
                             style="z-index: 2"
                         >
@@ -39,8 +33,8 @@
                                 icon="FilterFunnel"
                                 :class="[
                                     isChecked ? 'text-gray' : 'text-gray-400',
-                                    isChecked && expand ? 'text-gray' : '',
-                                    ' w-4 h-4 ',
+                                    isChecked && expand ? 'text-primary' : '',
+                                    'w-4 h-4',
                                 ]"
                             />
                         </div>
@@ -100,7 +94,7 @@
                         ]"
                     >
                         <div
-                            class="px-3 border-gray-300 flex items-center justify-center border-r"
+                            class="flex items-center justify-center px-3 border-r border-gray-300"
                             @click.stop="() => {}"
                         >
                             <a-tooltip

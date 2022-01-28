@@ -11,7 +11,10 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 rounded-full p-1.5"
+                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
+                            :class="[
+                                expand ? 'bg-primary-light' : 'bg-gray-100',
+                            ]"
                             style="z-index: 2"
                         >
                             <div
@@ -23,11 +26,12 @@
                                         isChecked
                                             ? 'text-gray'
                                             : 'text-gray-400',
-                                        isChecked && expand ? 'text-gray' : '',
-                                        'absolute w-4 h-4 dead-center',
+                                        isChecked && expand
+                                            ? 'text-primary'
+                                            : '',
+                                        'w-4 h-4',
                                     ]"
                                 />
-                                <div class="w-4 h-4"></div>
                             </div>
                         </div>
                         <div class="">
@@ -77,7 +81,7 @@
                         ]"
                     >
                         <div
-                            class="px-3 border-gray-300 flex items-center justify-center border-r"
+                            class="flex items-center justify-center px-3 border-r border-gray-300"
                             @click.stop="() => {}"
                         >
                             <a-tooltip

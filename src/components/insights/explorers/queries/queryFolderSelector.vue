@@ -27,13 +27,13 @@
         </AtlanBtn>
 
         <template #overlay>
-            <div class="popover-container">
+            <div class="overflow-y-scroll rounded-sm popover-container">
                 <div
-                    class="w-full h-full overflow-y-hidden"
+                    class="w-full h-full"
                     v-if="writeAccessCollections?.length"
                 >
                     <div
-                        class="flex items-center justify-between px-4 pt-3 pb-2"
+                        class="absolute top-0 left-0 z-10 flex items-center justify-between w-full px-4 pt-3 pb-2 bg-white"
                     >
                         <span class="text-sm font-bold text-gray-700"
                             >Save query to</span
@@ -50,126 +50,135 @@
                         </a-tooltip>
                     </div>
 
-                    <div
-                        v-for="collection in finalCollectionList"
-                        :key="collection.guid"
-                    >
+                    <div class="mt-10 mb-32 overflow-x-hidden">
                         <div
-                            class="flex items-center justify-between w-full h-8 px-4"
-                            :class="`${
-                                selectedFolderContext?.guid === collection?.guid
-                                    ? 'bg-primary-light'
-                                    : 'bg-white hover:bg-gray-100'
-                            }`"
+                            v-for="collection in finalCollectionList"
+                            :key="collection?.guid"
                         >
                             <div
-                                @click="onSelect(collection, 'root')"
-                                class="flex items-center w-11/12 cursor-pointer parent-ellipsis-container"
-                            >
-                                <AtlanIcon
-                                    :icon="
-                                        treeSelectedCollection?.guid ===
-                                        collection?.guid
-                                            ? 'CaretDown'
-                                            : 'CaretRight'
-                                    "
-                                    class="w-4 h-4 my-auto outline-none cursor-pointer parent-ellipsis-container-extension"
-                                    @click.stop="
-                                        expandCollection(collection, $event)
-                                    "
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    icon="CollectionIconSmall"
-                                    class="w-4 h-4 my-auto mr-2 parent-ellipsis-container-extension"
-                                ></AtlanIcon>
-                                <span
-                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >{{ collection?.attributes.name }}</span
-                                >
-                            </div>
-
-                            <AtlanIcon
-                                v-if="
+                                class="flex items-center justify-between w-full h-8 px-4"
+                                :class="`${
                                     selectedFolderContext?.guid ===
                                     collection?.guid
-                                "
-                                icon="Check"
-                                class="w-4 h-4 text-primary parent-ellipsis-container-extension"
-                            />
-                        </div>
-                        <div
-                            class="w-full h-full ml-1 overflow-y-scroll bg-white"
-                            v-if="
-                                treeSelectedCollection?.guid ===
-                                collection?.guid
-                            "
-                        >
-                            <query-tree-list
-                                @createFolderInput="createFolderInput"
-                                :savedQueryType="savedQueryType2"
-                                :tree-data="newTreeData"
-                                :on-load-data="onLoadData"
-                                :select-node="onSelect"
-                                :expand-node="expandNode"
-                                :is-loading="isInitingTree"
-                                :loaded-keys="loadedKeys"
-                                :selected-keys="selectedKey"
-                                :expanded-keys="expandedKeys"
-                                v-if="newTreeData.length"
-                                :selectedNewFolder="selectedFolderContext"
-                                :id="`${collection.attributes.qualifiedName}-selector`"
-                            />
-
-                            <div
-                                v-else
-                                class="flex flex-col justify-center h-8"
-                                :id="`${collection.attributes.qualifiedName}-selector`"
+                                        ? 'bg-primary-light'
+                                        : 'bg-white hover:bg-gray-100'
+                                }`"
                             >
-                                <a-spin size="small" v-if="isQueriesLoading" />
-                                <p
-                                    v-else-if="!folderCreated"
-                                    class="text-xs text-center text-gray-500"
+                                <div
+                                    @click="onSelect(collection, 'root')"
+                                    class="flex items-center w-11/12 cursor-pointer parent-ellipsis-container"
                                 >
-                                    No folder found
-                                </p>
+                                    <AtlanIcon
+                                        :icon="
+                                            treeSelectedCollection?.guid ===
+                                            collection?.guid
+                                                ? 'CaretDown'
+                                                : 'CaretRight'
+                                        "
+                                        class="w-4 h-4 my-auto outline-none cursor-pointer parent-ellipsis-container-extension"
+                                        @click.stop="
+                                            expandCollection(collection, $event)
+                                        "
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        icon="CollectionIconSmall"
+                                        class="w-4 h-4 my-auto mr-2 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
+                                    <span
+                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >{{ collection?.attributes.name }}</span
+                                    >
+                                </div>
+
+                                <AtlanIcon
+                                    v-if="
+                                        selectedFolderContext?.guid ===
+                                        collection?.guid
+                                    "
+                                    icon="Check"
+                                    class="w-4 h-4 text-primary parent-ellipsis-container-extension"
+                                />
+                            </div>
+                            <div
+                                class="w-full h-full ml-1 overflow-y-scroll bg-white"
+                                v-if="
+                                    treeSelectedCollection?.guid ===
+                                    collection?.guid
+                                "
+                            >
+                                <query-tree-list
+                                    @createFolderInput="createFolderInput"
+                                    :savedQueryType="savedQueryType2"
+                                    :tree-data="newTreeData"
+                                    :on-load-data="onLoadData"
+                                    :select-node="onSelect"
+                                    :expand-node="expandNode"
+                                    :is-loading="isInitingTree"
+                                    :loaded-keys="loadedKeys"
+                                    :selected-keys="selectedKey"
+                                    :expanded-keys="expandedKeys"
+                                    v-if="newTreeData.length"
+                                    :selectedNewFolder="selectedFolderContext"
+                                    :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                />
+
+                                <div
+                                    v-else
+                                    class="flex flex-col justify-center h-8"
+                                    :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                >
+                                    <a-spin
+                                        size="small"
+                                        v-if="isQueriesLoading"
+                                    />
+                                    <p
+                                        v-else-if="!folderCreated"
+                                        class="text-xs text-center text-gray-500"
+                                    >
+                                        No folder found
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div
-                        class="flex p-2 m-2 text-xs text-gray-500 bg-gray-100 rounded item-center"
-                    >
-                        <AtlanIcon
-                            icon="Info"
-                            class="w-4 h-4 mt-1.5 mr-2 text-primary parent-ellipsis-container-extension"
-                        />
-                        <div>
-                            You can only view the collections you have access
-                            to.
+
+                    <div class="absolute bottom-0 left-0 z-10 bg-white">
+                        <div
+                            class="flex p-2 mx-4 text-xs text-gray-500 bg-gray-100 rounded item-center"
+                        >
+                            <AtlanIcon
+                                icon="Info"
+                                class="w-4 h-4 mt-1.5 mr-2 text-primary parent-ellipsis-container-extension"
+                            />
+                            <div>
+                                You can only view the collections you have
+                                access to.
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="flex p-2 m-2">
-                        <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            class="h-6 py-1 text-center border-none cursor-pointer hover:text-primary"
-                            style="width: 102px"
-                            @click="closeDropdown"
-                        >
-                            <span>Cancel</span>
-                        </AtlanBtn>
+                        <div class="flex mt-3 mb-4 ml-4">
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                class="h-6 py-1 text-center border-none cursor-pointer hover:text-primary"
+                                style="width: 102px"
+                                @click="closeDropdown('cancel')"
+                            >
+                                <span>Cancel</span>
+                            </AtlanBtn>
 
-                        <AtlanBtn
-                            size="sm"
-                            color="primary"
-                            padding="compact"
-                            class="h-6 py-1 ml-2 text-center text-white border-none cursor-pointer"
-                            style="width: 102px"
-                            @click="closeDropdown()"
-                        >
-                            <span class="text-center">Save</span>
-                        </AtlanBtn>
+                            <AtlanBtn
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                class="h-6 py-1 ml-3 text-center text-white border-none cursor-pointer"
+                                style="width: 102px"
+                                @click="closeDropdown('save')"
+                            >
+                                <span class="text-center">Save</span>
+                            </AtlanBtn>
+                        </div>
                     </div>
                 </div>
                 <div
@@ -305,7 +314,7 @@
                     (col) => col.guid !== selectedCollection.value?.guid
                 )
 
-                if (selectedCollection) {
+                if (selectedCollection.value) {
                     return [selectedCollection.value, ...collections]
                 } else return collections
             })
@@ -317,50 +326,26 @@
             // console.log('already selected: ', props.selectedFolderQF)
             // console.log('already selected: ', parentFolder)
 
+            let previousContext = ref(selectedFolderContext.value)
+
             watch(
                 parentFolder,
                 () => {
                     let item = parentFolder.value
                     // console.log('parent folder 1: ', parentFolder.value)
 
-                    if (item?.typeName === 'QueryFolderNamespace') {
-                        let rootData = {
-                            ...item,
-                            attributes: {
-                                ...item.attributes,
-                                parentQualifiedName: 'namespace',
-                            },
-                        }
-
-                        let data = {
-                            dataRef: {
-                                ...rootData,
-                            },
-                        }
-                        if (savedQueryType.value) {
-                            selectedFolder.value = `${savedQueryType.value?.displayName} folder`
-                        }
-                        selectedKey.value = [rootData.guid]
+                    if (item?.typeName === 'Folder') {
+                        selectedKey.value = [item.guid]
+                        selectedFolder.value = item.title
                         dropdownVisible.value = false
+
                         selectedFolderContext.value = {
-                            ...rootData,
+                            ...parentFolder.value,
                         }
 
-                        emit('folderChange', data)
-                    } else {
-                        if (item?.typeName === 'Folder') {
-                            selectedKey.value = [item.guid]
-                            selectedFolder.value = item.title
-                            dropdownVisible.value = false
-
-                            selectedFolderContext.value = {
-                                ...parentFolder.value,
-                            }
-
-                            emit('folderChange', {
-                                dataRef: parentFolder.value,
-                            })
-                        }
+                        emit('folderChange', {
+                            dataRef: parentFolder.value,
+                        })
                     }
                 },
                 { immediate: true }
@@ -375,11 +360,7 @@
                 if (event === 'root') {
                     treeSelectedCollection.value = selected
 
-                    // console.log(
-                    //     'selected folder: ',
-                    //     treeSelectedCollection.value
-                    // )
-                    const rootData = selected
+                    let rootData = selected
 
                     const data = {
                         dataRef: {
@@ -398,15 +379,21 @@
                     emit('folderChange', data)
                 } else {
                     const item = event.node.dataRef.entity
+                    console.log('folder: ', event.node.dataRef)
 
                     if (item.typeName === 'Folder') {
                         selectedKey.value = [item.guid]
-                        selectedFolder.value = event?.node?.dataRef.title
+                        selectedFolder.value = event?.node?.dataRef?.title
+                            ? event?.node?.dataRef?.title
+                            : event?.node?.dataRef?.entity?.displayText
                         // dropdownVisible.value = false
                     }
+                    console.log('folder: ', event.node)
+
                     selectedFolderContext.value = {
                         ...item,
                     }
+
                     emit('folderChange', {
                         dataRef: event.node,
                     })
@@ -414,10 +401,45 @@
             }
 
             const toggleDropdown = () => {
+                previousContext.value = {
+                    ...selectedFolderContext.value,
+                }
+
+                console.log('data: ', previousContext.value)
                 dropdownVisible.value = !dropdownVisible.value
             }
 
-            const closeDropdown = () => {
+            const closeDropdown = (action) => {
+                // console.log('close: ', {
+                //     action,
+                //     previousContext: previousContext.value,
+                // })
+
+                if (action === 'cancel') {
+                    if (previousContext.value?.typeName === 'Collection') {
+                        onSelect(previousContext.value, 'root')
+                    } else {
+                        let data = {
+                            node: {
+                                dataRef: {
+                                    entity: previousContext.value,
+                                },
+                                entity: previousContext.value,
+                                attributes: previousContext.value.attributes,
+                                typeName: previousContext.value.typeName,
+                                title: previousContext.value.displayText,
+                                qualifiedName:
+                                    previousContext.value.attributes
+                                        .qualifiedName,
+                                guid: previousContext.value.guid,
+                                key: previousContext.value.guid,
+                            },
+                        }
+                        onSelect(previousContext.value, data)
+                    }
+                    // emit('folderChange', { dataRef: previousContext.value })
+                } else {
+                }
                 dropdownVisible.value = false
             }
             const showDropdown = () => {
@@ -493,7 +515,8 @@
 
             const showCollectionModal = ref(false)
             const toggleCollectionModal = () => {
-                closeDropdown()
+                dropdownVisible.value = false
+
                 showCollectionModal.value = !showCollectionModal.value
             }
 
@@ -757,6 +780,13 @@
         },
     })
 </script>
+<style lang="less" module>
+    .dropdown {
+        :global(.ant-dropdown-content) {
+            border-radius: 4px !important;
+        }
+    }
+</style>
 
 <style lang="less" scoped>
     .popover-container {
@@ -767,7 +797,7 @@
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
         border-radius: 4px;
-        overflow-y: scroll;
+        // overflow-y: scroll;
         padding: 0px !important;
     }
     .folderBtn {

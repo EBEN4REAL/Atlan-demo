@@ -22,7 +22,7 @@ export const assetTypeList: {
         children: ['Column'],
         count: 0,
         relationships: [],
-        groupOrder: 5, // For grouping according to asset types
+        groupOrder: 6, // For grouping according to asset types
     },
     {
         id: 'Database',
@@ -35,7 +35,7 @@ export const assetTypeList: {
         image: 'DatabaseGray',
         count: 0,
         relationships: [],
-        groupOrder: 5,
+        groupOrder: 6,
     },
     {
         id: 'Schema',
@@ -48,7 +48,7 @@ export const assetTypeList: {
         image: 'SchemaGray',
         count: 0,
         relationships: [],
-        groupOrder: 5,
+        groupOrder: 6,
     },
     {
         id: 'View',
@@ -362,7 +362,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: ['LookerFolder'],
         relationships: ['folder', 'looks', 'tiles'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerExplore',
@@ -371,7 +371,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['project', 'model'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerField',
@@ -380,7 +380,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['project', 'model'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerFolder',
@@ -389,7 +389,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['looks', 'dashboards'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerLook',
@@ -398,7 +398,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['folder', 'query', 'model', 'tile', 'dashboard'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerModel',
@@ -407,7 +407,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['explores', 'query', 'project', 'fields', 'look'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerProject',
@@ -416,7 +416,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['explores', 'models', 'fields'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerQuery',
@@ -425,7 +425,7 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['tile', 'model', 'look'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
     {
         id: 'LookerTile',
@@ -434,6 +434,6 @@ export const assetTypeList: {
         image: 'Looker',
         parents: [],
         relationships: ['query', 'dashboard', 'look'],
-        groupOrder: 6,
+        groupOrder: 5,
     },
 ]

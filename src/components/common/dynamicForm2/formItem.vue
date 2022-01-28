@@ -227,6 +227,41 @@
                 return name
             }
 
+            const isImplied = () => {
+                if (configMap.value?.anyOf) {
+                    configMap.value.anyOf.forEach((item) => {
+                        item.required.forEach((i) => {
+                            if (configMap.value.properties[i]) {
+                                configMap.value.properties[i].ui.hidden = true
+                            }
+                        })
+                    })
+
+                    configMap.value.anyOf.forEach((item) => {
+                        const loopStop = Object.keys(item.properties).some(
+                            (i) => {
+                                if (
+                                    formState[getName(i)] ===
+                                    item.properties[i]?.const
+                                ) {
+                                    return true
+                                }
+                            }
+                        )
+                        if (loopStop) {
+                            item.required.forEach((i) => {
+                                console.log(i)
+                                console.log(configMap.value.properties[i])
+
+                                configMap.value.properties[i].ui.hidden = false
+
+                                console.log(configMap.value)
+                            })
+                        }
+                    })
+                }
+            }
+
             const list = ref([])
             const calculateList = () => {
                 isImplied()
@@ -267,43 +302,6 @@
                 }
 
                 list.value = temp
-            }
-
-            const isImplied = () => {
-                if (configMap.value?.anyOf) {
-                    configMap.value.anyOf.forEach((item) => {
-                        let loopStop = false
-                        Object.keys(item.properties).some((i) => {
-                            if (loopStop) {
-                                return
-                            }
-                            if (
-                                formState[getName(i)] !==
-                                item.properties[i]?.const
-                            ) {
-                                loopStop = true
-                            }
-                        })
-
-                        if (!loopStop) {
-                            item.required.forEach((i) => {
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = false
-                                }
-                            })
-                        } else {
-                            item.required.forEach((i) => {
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = true
-                                }
-                            })
-                        }
-                    })
-                }
             }
 
             return {

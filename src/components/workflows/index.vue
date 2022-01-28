@@ -43,7 +43,7 @@
             >
                 <EmptyView
                     empty-screen="EmptyDiscover"
-                    desc="No packages found"
+                    desc="No workflows found"
                     class="mb-10"
                 ></EmptyView>
             </div>
@@ -160,7 +160,6 @@
                 facets,
                 limit,
                 offset,
-
                 source: ref({
                     excludes: ['spec'],
                 }),
@@ -179,17 +178,19 @@
                 typeName: 'connector',
             })
             const aggregationPackage = ref(['by_type'])
+
             watch(packageListFromWorkflows, () => {
                 const map = Object.keys(packageListFromWorkflows.value)
-
+                console.log('maps', map)
+                if (map.length === 0) {
+                    handleNewWorkflow()
+                }
                 // Fetch all packages
                 facetPackage.value = {
                     packageNames: map,
                 }
                 dependentKeyPackage.value = `WORKFLOW_PACKAGES_SEARCH`
                 quickChangePackage()
-
-                console.log('workflowDistinct', workflowDistinctList.value)
 
                 // Fetch runs
                 facetRun.value = {

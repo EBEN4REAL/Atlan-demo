@@ -11,7 +11,7 @@
         notFoundContent="No connection found"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-1" />
+            <AtlanIcon icon="CaretDown" class="" />
         </template>
         <template
             v-for="item in filteredList"

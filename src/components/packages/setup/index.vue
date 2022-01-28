@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full overflow-hidden" v-if="!status">
         <div class="flex flex-col flex-grow h-full">
-            <div class="p-3 bg-gray-100">
+            <div class="p-6">
                 <a-steps v-if="steps.length > 0" :current="currentStep">
                     <template v-for="(step, index) in steps" :key="step.id">
                         <a-step @click="handleStepClick(index)">
@@ -40,7 +40,8 @@
                         v-if="!isEdit"
                         class="font-bold text-red-500"
                     >
-                        Exit
+                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon>
+                        Exit to Marketplace
                     </a-button>
                     <a-button
                         v-if="isSandbox"
@@ -62,7 +63,7 @@
                     ></AtlanIcon
                 ></a-button>
                 <a-popconfirm
-                    v-if="currentStep === steps.length - 1 && !isEdit"
+                    v-if="currentStep === steps.length - 1 && isEdit"
                     ok-text="Yes"
                     :overlay-class-name="$style.popConfirm"
                     cancel-text="Cancel"
@@ -133,17 +134,23 @@
             </div>
         </div>
     </div>
-    <div
-        class="flex flex-col items-center justify-center w-full h-full"
-        v-if="status"
-    >
-        <div class="flex flex-col justify-center" v-if="isLoading">
+    <div class="flex flex-col items-center justify-center w-full h-full" v-else>
+        <div
+            class="flex flex-col justify-center"
+            v-if="isLoading || (!run.status && runLoading)"
+        >
             <a-spin size="large" />
-            <div>Setting up Workflow</div>
+            <div>Setting up your workflow</div>
         </div>
-        <a-result :status="status" :title="title" :sub-title="subTitle" v-else>
+
+        <a-result
+            :status="status"
+            :title="title"
+            :sub-title="subTitle"
+            v-else-if="run"
+        >
             <template #extra>
-                <div v-if="run">
+                <div>
                     <Run
                         :run="run"
                         :isLoading="runLoading"
@@ -359,7 +366,7 @@
             const limit = ref(1)
             const offset = ref(0)
             const facets = ref({
-                templateName: '',
+                workflowTemplate: '',
             })
             const {
                 list: runList,
@@ -426,7 +433,7 @@
                     'You can also track the progress of workflows in the Workflow Center'
                 status.value = 'success'
                 facets.value = {
-                    templateName: data.value.metadata.name,
+                    workflowTemplate: data.value.metadata.name,
                 }
                 fetchRun()
                 resume()

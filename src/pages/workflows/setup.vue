@@ -13,7 +13,6 @@
         </div>
 
         <div
-            v-if="!isItem"
             class="relative hidden h-full overflow-y-auto bg-white border-l border-gray-200 asset-preview-container md:block"
         >
             <WorfklowPreview

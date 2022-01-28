@@ -138,21 +138,33 @@
 
     <div v-else>
         <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-        <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0 && !isEdit">
-            <p class="font-bold">
-                Existing Connections ({{ approximateCount }})
-            </p>
-            <div class="flex flex-col">
-                <div v-for="(connection, index) in list" :key="connection.guid">
-                    {{ connection.attributes.name }}
-
+        <div class="flex" v-if="list.length > 0 && !isEdit">
+            <div class="flex flex-col p-3 bg-gray-100 rounded">
+                <p class="mb-2 font-bold">
+                    <AtlanIcon icon="Connection"></AtlanIcon>
+                    Existing
+                    <span class="capitalize">{{ connector }}</span> Connections
+                    ({{ approximateCount }})
+                </p>
+                <div
+                    v-for="(connection, index) in list"
+                    :key="connection.guid"
+                    class="flex gap-x-3"
+                >
                     <span>
-                        ({{
-                            getMap(aggregationMap('group_by_connection'))[
-                                connection.attributes.qualifiedName
-                            ]
-                        }}
-                        Assets)</span
+                        {{ connection.attributes?.name }}
+
+                        <span>
+                            ({{
+                                getMap(aggregationMap('group_by_connection'))[
+                                    connection.attributes.qualifiedName
+                                ]
+                            }}
+                            Assets)</span
+                        ></span
+                    >
+                    <span class="text-gray-500"
+                        >created by {{ createdBy(connection) }}</span
                     >
                 </div>
             </div>
@@ -179,11 +191,12 @@
     import { useConfigMapList } from '~/composables/package/useConfigMapList'
     import ErrorView from '@common/error/index.vue'
     import { useConnectionStore } from '~/store/connection'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+
     import { shortUUID } from '~/utils/helper/generator'
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -193,7 +206,6 @@
                 import('@/common/dynamicForm2/formItem.vue')
             ),
             ErrorView,
-            AtlanIcon,
         },
         props: {
             property: {
@@ -221,6 +233,8 @@
             const formState = inject('formState')
             const validateForm = inject('validateForm')
             const workflowTemplate = inject('workflowTemplate')
+
+            const { name, createdBy, createdAt } = useAssetInfo()
 
             const testMessage = ref('')
             const testIcon = ref('')
@@ -419,6 +433,7 @@
                             start: 1,
                             help: 'Users will be run SQL query on the assets',
                             grid: 3,
+                            hidden: true,
                             rules: [
                                 {
                                     required: true,
@@ -435,6 +450,7 @@
                             label: 'Allow Data Preview',
                             help: 'Users will be view sample preview of the assets',
                             grid: 3,
+                            hidden: true,
                             rules: [
                                 {
                                     required: true,
@@ -447,6 +463,7 @@
                         type: 'number',
                         default: 10000,
                         ui: {
+                            hidden: true,
                             label: 'Max Row Limit',
                             help: 'Maximum number of rows that can be returned by a query. This is to prevent users from running large queries.',
                             grid: 3,
@@ -501,11 +518,7 @@
                                 const: 'warehouse',
                             },
                         },
-                        required: [
-                            'allowQuery',
-                            'allowQueryPreview',
-                            'rowLimit',
-                        ],
+                        required: ['allowQuery', 'allowQueryPreview'],
                     },
                     {
                         properties: {
@@ -513,11 +526,7 @@
                                 const: 'rdbms',
                             },
                         },
-                        required: [
-                            'allowQuery',
-                            'allowQueryPreview',
-                            'rowLimit',
-                        ],
+                        required: ['allowQuery', 'allowQueryPreview'],
                     },
                     {
                         properties: {
@@ -525,11 +534,7 @@
                                 const: 'queryengine',
                             },
                         },
-                        required: [
-                            'allowQuery',
-                            'allowQueryPreview',
-                            'rowLimit',
-                        ],
+                        required: ['allowQuery', 'allowQueryPreview'],
                     },
                     {
                         properties: {
@@ -570,6 +575,9 @@
                 connectionRowLimit,
                 allowQuery,
                 allowQueryPreview,
+                name,
+                createdBy,
+                createdAt,
             }
         },
     })

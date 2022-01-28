@@ -220,6 +220,18 @@ export default function useWorkflowInfo() {
     const packageName = (item) =>
         item?.metadata?.annotations['package.argoproj.io/name']
 
+    const useCases = (item) => {
+        let temp =
+            item?.metadata?.annotations[
+                'orchestration.atlan.com/usecases'
+            ]?.split(',')
+
+        return temp?.map((i) => i.trim()) || []
+    }
+
+    const supportLink = (item) =>
+        item?.metadata?.annotations['orchestration.atlan.com/supportLink']
+
     const connectorStore = useConnectionStore()
 
     const displayName = (item, workflowName) => {
@@ -281,5 +293,7 @@ export default function useWorkflowInfo() {
         cronObject,
         nextRuns,
         getGlobalArguments,
+        useCases,
+        supportLink,
     }
 }

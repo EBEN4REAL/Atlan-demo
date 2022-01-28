@@ -2,7 +2,7 @@
 <template>
     <a-input-group compact class="flex w-full mb-0">
         <a-tree-select
-            style="width: 80%"
+            class="flex-1 flex-grow w-full"
             :dropdown-style="{
                 maxHeight: '400px',
                 maxWidth: '300px;',
@@ -20,6 +20,28 @@
             @dropdownVisibleChange="handleDropdownVisibleChange"
             @change="handleChange"
         >
+            <template
+                #notFoundContent
+                v-if="isLoading || isLoadingByID || errorByID || error"
+            >
+                <div
+                    class="flex items-center justify-center w-full h-10"
+                    v-if="isLoading || isLoadingByID"
+                >
+                    <a-spin size="small" class="mt-1 mr-2" /> Loading
+                </div>
+                <div
+                    class="flex items-center justify-center w-full h-10 text-red-500"
+                    v-if="errorByID || error"
+                >
+                    <AtlanIcon icon="Error" class="mr-1"></AtlanIcon> Please
+                    check your credential and try again.
+                </div>
+            </template>
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+
             <template #tagRender="{ label, closable, onClose, option }">
                 <a-tag
                     :closable="closable"
@@ -44,18 +66,14 @@
                 {{ node.title }}
             </template>
         </a-tree-select>
-        <a-button style="width: 20%" @click="handleClick">
+
+        <a-button @click="handleClick" class="px-2">
             <a-spin
                 size="small"
-                v-if="isLoading || isLoadingByID"
                 class="mt-1"
+                v-if="isLoading || isLoadingByID"
             ></a-spin>
-            <AtlanIcon
-                icon="Error"
-                v-else-if="(error || errorByID) && !isLoading && !isLoadingByID"
-                style="height: 12px"
-            ></AtlanIcon>
-            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
+            <AtlanIcon icon="Retry" class="text-primary" v-else></AtlanIcon>
         </a-button>
     </a-input-group>
 </template>

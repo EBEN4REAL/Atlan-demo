@@ -50,10 +50,12 @@
                                 class="absolute -right-1 -top-2"
                             >
                                 <a-tooltip title="Certified" placement="left">
-                                    <AtlanIcon
-                                        icon="Verified"
-                                        class="ml-1"
-                                    ></AtlanIcon>
+                                    <span>
+                                        <AtlanIcon
+                                            icon="Verified"
+                                            class="ml-1"
+                                        ></AtlanIcon
+                                    ></span>
                                 </a-tooltip>
                             </div>
                         </div>
@@ -66,19 +68,6 @@
                                         'orchestration.atlan.com/name'
                                     ]
                                 }}
-                                <a-tooltip
-                                    placement="right"
-                                    :title="
-                                        item?.metadata?.annotations[
-                                            'package.argoproj.io/description'
-                                        ]
-                                    "
-                                >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="h-3 ml-1"
-                                    ></AtlanIcon
-                                ></a-tooltip>
                             </div>
 
                             <div class="flex text-gray-500">

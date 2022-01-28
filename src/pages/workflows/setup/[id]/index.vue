@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full overflow-hidden bg-white">
-        <div
+        <!--     <div
             class="flex items-center w-full px-6 py-3 text-lg font-semibold text-gray-700 border-b"
         >
             <a-button class="px-1 mr-2" @click="handleBack">
@@ -106,7 +106,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
         <div
             v-else-if="!isLoadingPackage && !isLoadingConfigMap && error"

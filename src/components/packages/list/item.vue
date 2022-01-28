@@ -47,7 +47,9 @@
                     class="absolute -right-1 -top-2"
                 >
                     <a-tooltip title="Certified" placement="left">
-                        <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
+                        <span>
+                            <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon
+                        ></span>
                     </a-tooltip>
                 </div>
             </div>

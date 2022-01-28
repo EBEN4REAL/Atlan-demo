@@ -445,6 +445,10 @@
                                         class="flex items-center justify-between w-full"
                                     >
                                         <span class="text-gray-700">Share</span>
+                                        <AtlanIcon
+                                            icon="ChevronRight"
+                                            class="ml-2 text-gray-500 -mt-0.5"
+                                        />
                                     </div>
                                 </div>
                             </template>

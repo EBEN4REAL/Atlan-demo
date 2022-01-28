@@ -264,4 +264,11 @@ export const SourceList = [
             'PowerBIDatasource',
         ],
     },
+    {
+        id: 'looker',
+        label: 'Looker',
+        image: 'Looker',
+        connectionCount: 0,
+        hierarchy: [],
+    },
 ]

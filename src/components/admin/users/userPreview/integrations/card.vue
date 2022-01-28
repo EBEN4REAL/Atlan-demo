@@ -23,7 +23,7 @@
                     <a-tooltip
                         :title="
                             disableConnect
-                                ? 'Slack must be set up in admin first to use this feature.'
+                                ? 'Please ask your admin to setup Slack integration from admin center first'
                                 : ''
                         "
                     >

@@ -139,8 +139,9 @@
                 // )
                 // console.log('updated asset: ', asset)
 
-                let activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
 
                 console.log('updated asset: ', asset)
                 assetSidebarUpdatedData.value = asset
@@ -161,6 +162,9 @@
                         }
                         activeInlineTabCopy.assetSidebar.assetInfo = asset
                     }
+                    modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
+                } else {
+                    activeInlineTabCopy.assetSidebar.assetInfo = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }
                 // console.log('old data update: ', asset)

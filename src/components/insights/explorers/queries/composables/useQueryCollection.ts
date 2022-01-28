@@ -1,10 +1,6 @@
-import { Ref, ref, watch } from 'vue'
-
-// import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
-// import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
+import { Ref, ref, watch, toRaw } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
-// import { map } from '~/services/meta/insights/key'
 import { map } from '~/services/meta/search/key'
 import { InternalAttributes } from '~/constant/projection'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -184,12 +180,20 @@ const useQueryCollection = () => {
         isCollectionCreated: Ref<Boolean>,
         collectionGuid: Ref
     ) => {
+        //cases taken under consideration:
+        // 1. when collection is created, select that
+        // 2. if url has a collection guid, look for it, if found, select. else select another
+        // 3. if a saved query is created/opened from tab, select corresponding collection
+        // 4. for unsaved query opened in tab, select the collection corresponding to that
+
         if (collection?.length > 0) {
             if (activeInlineTab.value?.key) {
+                // console.log('activeInlineTab in if: ', activeInlineTab)
+
                 let col = collection[0]
 
                 const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
                 if (isCollectionCreated.value) {
                     let l = collection.length
@@ -198,19 +202,17 @@ const useQueryCollection = () => {
 
                     console.log('set collection create :')
                 } else {
-                    if(collectionGuid?.value) {
+                    if (collectionGuid?.value) {
                         console.log('set collection guid collection:')
-                        col = collection.find((col) => col?.guid == collectionGuid.value)
+                        col = collection.find(
+                            (col) => col?.guid == collectionGuid.value
+                        )
 
                         if (col) {
                         } else {
                             col = collection[0]
-                            // message.info(
-                            //     `Either collection does not exist or you don't have the access to it`
-                            // )
                         }
-                        // collectionGuid.value = null
-                    } else if (activeInlineTab.value?.queryId) {
+                    } else if (activeInlineTabCopy?.queryId) {
                         col = collection.find(
                             (col) =>
                                 col?.attributes?.qualifiedName ===
@@ -233,26 +235,20 @@ const useQueryCollection = () => {
                                     .qualifiedName
                         )
 
-                        if(!col) {
-                            col=collection[0]
+                        if (!col) {
+                            col = collection[0]
                         }
                     }
                 }
 
-                if(!col) {
-                    col=collection[0]
+                if (!col) {
+                    col = collection[0]
                 }
 
                 activeInlineTabCopy.explorer.queries.collection = {
                     guid: col?.guid,
-                    qualifiedName: col?.attributes?.qualifiedName
-
+                    qualifiedName: col?.attributes?.qualifiedName,
                 }
-
-                // activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
-
-                // activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-                //     col?.attributes?.qualifiedName
 
                 modifyActiveInlineTab(
                     activeInlineTabCopy,
@@ -262,50 +258,6 @@ const useQueryCollection = () => {
             }
         }
     }
-
-    // const selectCollectionFromUrl = (
-    //     collection: QueryCollection[],
-    //     activeInlineTab: Ref<activeInlineTabInterface>,
-    //     tabs: Ref<activeInlineTabInterface[]>,
-    //     collectionGuid
-    // ) => {
-    //     if (collection?.length > 0) {
-    //         if (activeInlineTab.value?.key) {
-    //             let col = undefined
-
-    //             console.log('collections: ', collection)
-
-    //             const activeInlineTabCopy: activeInlineTabInterface =
-    //                 Object.assign({}, activeInlineTab.value)
-
-    //             if (collectionGuid.value) {
-    //                 col = collection.find((col) => col?.guid == collectionGuid.value)
-
-    //                 if (col) {
-    //                 } else {
-    //                     col = collection[0]
-    //                     message.info(
-    //                         `Either collection does not exist or you don't have the access to it`
-    //                     )
-    //                 }
-    //                 collectionGuid.value = null
-    
-    //                 activeInlineTabCopy.explorer.queries.collection.guid = col.guid
-    
-    //                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-    //                     col?.attributes?.qualifiedName
-    
-    //                 modifyActiveInlineTab(
-    //                     activeInlineTabCopy,
-    //                     tabs,
-    //                     activeInlineTabCopy.isSaved
-    //                 )
-    //             }
-
-                
-    //         }
-    //     } 
-    // }
 
     return {
         queryCollectionsError,
@@ -317,7 +269,6 @@ const useQueryCollection = () => {
         setCollectionsDataInInlineTab,
         createCollection,
         updateCollection,
-        // selectCollectionFromUrl,
     }
 }
 

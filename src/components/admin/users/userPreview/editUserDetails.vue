@@ -135,24 +135,18 @@
             })
 
             const { selectedUser } = toRefs(props)
-            const userProfiles = computed(
-                () => selectedUser.value?.attributes?.profiles
-            )
-            const slackProfile = computed(() => {
-                if (userProfiles.value?.length > 0) {
-                    const firstProfile = JSON.parse(userProfiles.value[0])
-                    if (
-                        firstProfile &&
-                        firstProfile.length > 0 &&
-                        firstProfile[0].hasOwnProperty('slack')
-                    ) {
-                        return firstProfile[0].slack
-                    }
+
+            const slackMemberID = computed(() => {
+                if (selectedUser.value?.attributes?.slack?.length) {
+                    const memberID = JSON.parse(
+                        selectedUser.value.attributes.slack[0]
+                    )?.userId
+                    return memberID
                 }
                 return ''
             })
 
-            const slackEnabled = computed(() => slackProfile.value)
+            const slackEnabled = computed(() => slackMemberID.value)
             const slackUrl = computed(() =>
                 slackEnabled.value ? slackEnabled.value : ''
             )
@@ -204,9 +198,9 @@
                     designation: [formData.value.designation],
                     skills: formData.value.skills,
                 }
-                attributes.profiles =
+                attributes.slack =
                     formData.value.slack.length > 0
-                        ? [`[{"slack": "${formData.value.slack}"}]`]
+                        ? [JSON.stringify({ userId: formData.value.slack })]
                         : []
                 requestPayload.value = {
                     firstName: formData.value.firstName,
@@ -244,8 +238,8 @@
                                     formData.value.designation,
                                 ]
                                 if (formData.value.slack.length > 0) {
-                                    selectedUser.value.attributes.profiles = [
-                                        `[{"slack": "${formData.value.slack}"}]`,
+                                    selectedUser.value.attributes.slack = [
+                                        `[{"userId": "${formData.value.slack}"}]`,
                                     ]
                                 } else {
                                     selectedUser.value.attributes.profiles = []
@@ -255,11 +249,11 @@
                                     designation: formData?.value?.designation
                                         ? [formData?.value?.designation]
                                         : [],
-                                    profiles:
+                                    slack:
                                         formData.value.slack &&
                                         formData.value.slack.length > 0
                                             ? [
-                                                  `[{"slack": "${formData.value.slack}"}]`,
+                                                  `[{"userId": "${formData.value.slack}"}]`,
                                               ]
                                             : [],
                                 }

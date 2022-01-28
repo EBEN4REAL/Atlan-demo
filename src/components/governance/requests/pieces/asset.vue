@@ -19,11 +19,11 @@
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
             >
-            <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+            <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[2] }}</span
             >
-            <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+            <AtlanIcon class="mx-1 ml-2 text-gray-500" icon="SchemaGray" />
 
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[1] }}</span
@@ -91,3 +91,10 @@
         },
     })
 </script>
+<style lang="less">
+    .icon-table {
+        path {
+            stroke: rgba(111, 117, 144, 1) !important;
+        }
+    }
+</style>

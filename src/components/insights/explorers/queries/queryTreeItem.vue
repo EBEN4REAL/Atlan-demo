@@ -3,6 +3,7 @@
         class="h-8"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
+        :id="`${item.qualifiedName}`"
     >
         <!-- {{ errorNode }} -->
 
@@ -29,10 +30,12 @@
                             >
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                :id="`${item.qualifiedName}-menu`"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
+                                    @visibleChange="addBackground"
                                 >
                                     <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
@@ -57,7 +60,10 @@
                                             <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
-                                                    showFolderPopover = true
+                                                    () => {
+                                                        removeBackground()
+                                                        showFolderPopover = true
+                                                    }
                                                 "
                                                 >Move folder</a-menu-item
                                             >
@@ -66,7 +72,10 @@
                                                 key="deleteFolder"
                                                 class="text-red-600"
                                                 @click="
-                                                    showDeletePopover = true
+                                                    () => {
+                                                        removeBackground()
+                                                        showDeletePopover = true
+                                                    }
                                                 "
                                                 >Delete folder</a-menu-item
                                             >
@@ -177,13 +186,6 @@
                     </template>
 
                     <template #button>
-                        <!-- <a-button class="mt-3" @click="openSidebar" block>
-                            <div class="flex justify-center w-full">
-                                <div class="flex items-center cursor-pointer">
-                                    Open preview sidebar
-                                </div>
-                            </div>
-                        </a-button> -->
                         <AtlanBtn
                             class="flex-none px-0"
                             size="sm"
@@ -200,6 +202,7 @@
                     </template>
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                        :id="`${item.qualifiedName}`"
                     >
                         <div class="parent-ellipsis-container py-1.5 w-11/12">
                             <AtlanIcon
@@ -277,10 +280,12 @@
                             </div>
                             <div
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                :id="`${item.qualifiedName}-menu`"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
+                                    @visibleChange="addBackground"
                                 >
                                     <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
@@ -299,11 +304,13 @@
                                             <a-menu-item
                                                 key="edit"
                                                 @click="
-                                                    () =>
+                                                    () => {
+                                                        removeBackground()
                                                         actionClick(
                                                             'info',
                                                             item
                                                         )
+                                                    }
                                                 "
                                                 >Edit query</a-menu-item
                                             >
@@ -311,7 +318,10 @@
                                             <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
-                                                    showFolderPopover = true
+                                                    () => {
+                                                        removeBackground()
+                                                        showFolderPopover = true
+                                                    }
                                                 "
                                                 >Move query</a-menu-item
                                             >
@@ -319,13 +329,16 @@
                                             <a-menu-item
                                                 key="shareQuery"
                                                 @click="copyURL"
-                                                >Share query</a-menu-item
+                                                >Copy link</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
                                                 @click="
-                                                    showDeletePopover = true
+                                                    () => {
+                                                        removeBackground()
+                                                        showDeletePopover = true
+                                                    }
                                                 "
                                                 >Delete query</a-menu-item
                                             >
@@ -431,7 +444,6 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
-    import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
     import QueryFolderSelector from './queryFolderSelector2.vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -463,7 +475,6 @@
         components: {
             StatusBadge,
             TreeDeletePopover,
-            PublishFolderPopover,
             QueryFolderSelector,
             PopoverAsset,
             AtlanBtn,
@@ -659,6 +670,11 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
 
+            let el1 = document.getElementById(`${item.value.qualifiedName}`)
+            let el2 = document.getElementById(
+                `${item.value.qualifiedName}-menu`
+            )
+
             const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -690,36 +706,42 @@
             }
 
             const newQuery = () => {
+                removeBackground()
                 if (toggleCreateQueryModal) {
                     toggleCreateQueryModal(item)
                 }
             }
-            const publishFolder = () => {
-                // const payload = ref([
-                //     {
-                //         entityGuid: props.item.guid as string,
-                //         attributes: {},
-                //         propagate: true,
-                //         removePropagationsOnEntityDelete: true,
-                //         typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                //         validityPeriods: [],
-                //     },
-                // ])
-                // const { error, isLoading } = Classification.linkClassification({
-                //     cache: undefined,
-                //     payload,
-                //     entityGuid: props.item.guid,
-                // })
-                // watch([isLoading], () => {
-                //     if (isLoading.value == false && !error.value) {
-                //         message.success({
-                //             content: `${item.value?.attributes?.name} was made public!`,
-                //         })
-                //         refetchParentNode(props.item.guid, 'Folder')
-                //     }
-                // })
+
+            const addBackground = (visible) => {
+                console.log('element: ', visible)
+                let el1 = document.getElementById(`${item.value.qualifiedName}`)
+                let el2 = document.getElementById(
+                    `${item.value.qualifiedName}-menu`
+                )
+
+                if (visible) {
+                    // el1.classList.add('bg-gray-light')
+                    el2.classList.add('opacity-100')
+                } else {
+                    // el1.classList.remove('bg-gray-light')
+                    el2.classList.remove('opacity-100')
+                }
+            }
+
+            const removeBackground = () => {
+                let el1 = document.getElementById(`${item.value.qualifiedName}`)
+                let el2 = document.getElementById(
+                    `${item.value.qualifiedName}-menu`
+                )
+                if (el1) {
+                    // el1.classList.remove('bg-gray-light')
+                }
+                if (el2) {
+                    el2.classList.remove('opacity-100')
+                }
             }
             const renameFolder = () => {
+                removeBackground()
                 const orignalName = item.value.attributes.name
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
@@ -769,6 +791,7 @@
                 input.value = item.value.attributes?.name
 
                 input.addEventListener('keydown', (e) => {
+                    // console.log('event: ', e)
                     if (e.key === 'Escape') {
                         // parentNode?.removeChild(div)
                         try {
@@ -1172,6 +1195,7 @@
             }
 
             const openSidebar = () => {
+                removeBackground()
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
@@ -1180,6 +1204,7 @@
             }
 
             const copyURL = () => {
+                removeBackground()
                 const URL =
                     window.location.host +
                     window.location.pathname +
@@ -1197,7 +1222,6 @@
                 certificateStatus,
                 renameFolder,
                 delteItem,
-                publishFolder,
                 newQuery,
                 savedQueryType,
                 item,
@@ -1227,6 +1251,8 @@
                 hasWritePermission,
                 copyURL,
                 collectionName,
+                addBackground,
+                removeBackground,
                 // input,
                 // newFolderName,
             }

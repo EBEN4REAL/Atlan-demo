@@ -817,7 +817,7 @@
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
                     getConnectorName(
-                        activeInlineTab.value.playground.editor.context
+                        activeInlineTab.value.explorer.schema.connectors
                             .attributeValue
                     ) ?? ''
                 )

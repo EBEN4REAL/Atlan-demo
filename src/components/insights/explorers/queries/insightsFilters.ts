@@ -22,21 +22,21 @@ export const insightsFilters = [
     {
         id: 'terms',
         label: 'Terms',
-        component: 'governance',
+        component: 'terms',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,
     },
-    {
-        id: '__traitNames',
-        label: 'Classifications',
-        component: 'classifications',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    }
+    // {
+    //     id: '__traitNames',
+    //     label: 'Classifications',
+    //     component: 'classifications',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
 ]

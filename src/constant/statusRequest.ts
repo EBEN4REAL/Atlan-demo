@@ -18,3 +18,17 @@ export const statusRequest = [
         colorDot: '#DC5252'
     },
 ]
+
+export const assetTypes = [
+    {
+        id: 'Governance',
+        label: 'Governance',
+        description: 'Governance',
+    },
+    {
+        id: 'Metadata',
+        label: 'Metadata',
+        description: 'Metadata',
+    },
+]
+

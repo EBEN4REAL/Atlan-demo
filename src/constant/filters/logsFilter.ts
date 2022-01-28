@@ -1,5 +1,5 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
-import { statusRequest } from '~/constant/statusRequest'
+import { statusRequest, assetTypes } from '~/constant/statusRequest'
 
 export const queryLogsFilter = [
     {
@@ -101,6 +101,17 @@ export const accessLogsFilter = [
 ]
 
 export const requestFilter = [
+    {
+        id: 'hierarchy',
+        label: 'Connection',
+        component: 'hierarchy',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        analyticsKey: 'connection',
+    },
     //   {
     //     id: 'hierarchy',
     //     label: 'Connection',
@@ -110,6 +121,18 @@ export const requestFilter = [
     //     isDeleted: false,
     //     isDisabled: false,
     //     exclude: false,
+    // },
+    // {
+    //     id: 'assetType',
+    //     label: 'ASSETS',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: assetTypes
     // },
     {
         id: 'owners',

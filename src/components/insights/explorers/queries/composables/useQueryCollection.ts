@@ -50,6 +50,7 @@ const useQueryCollection = () => {
                 createdBy: username.value,
                 groups: groups.value,
             }),
+            suppressLogs: true,
             attributes,
         }
     }

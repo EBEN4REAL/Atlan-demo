@@ -6,7 +6,7 @@ import { Ref, ref } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
 // import { map } from '~/services/meta/insights/key'
-import {map} from '~/services/meta/search/key'
+import { map } from '~/services/meta/search/key'
 import {
     InternalAttributes,
     BasicSearchAttributes,
@@ -67,16 +67,18 @@ const useQueryFolderNamespace = () => {
                                 must: [
                                     {
                                         term: {
-                                            "__typeName.keyword": "QueryFolderNamespace"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
+                                            '__typeName.keyword':
+                                                'QueryFolderNamespace',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
             },
-            attributes
+            attributes,
+            suppressLogs: true,
         }
     }
 
@@ -94,7 +96,8 @@ const useQueryFolderNamespace = () => {
     // }
     const getQueryFolderNamespace = () => {
         refreshBody()
-        return useAPI(map.INDEX_SEARCH,
+        return useAPI(
+            map.INDEX_SEARCH,
             'POST',
             {
                 body,

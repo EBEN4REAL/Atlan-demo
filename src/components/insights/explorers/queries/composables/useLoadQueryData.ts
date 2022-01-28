@@ -8,14 +8,14 @@ import { SavedQuery, Folder } from '~/types/insights/savedQuery.interface'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 // import { map } from '~/services/meta/insights/key'
-import {map} from '~/services/meta/search/key'
+import { map } from '~/services/meta/search/key'
 
 import {
     InternalAttributes,
     BasicSearchAttributes,
     SavedQueryAttributes,
     AssetAttributes,
-    AssetRelationAttributes
+    AssetRelationAttributes,
 } from '~/constant/projection'
 
 import whoami from '~/composables/user/whoami'
@@ -27,9 +27,8 @@ interface useLoadQueryDataProps {
 }
 
 const useLoadQueryData = ({
-    collectionQualifiedName
+    collectionQualifiedName,
 }: useLoadQueryDataProps) => {
-
     const { username } = whoami()
 
     const defaultLimit = 50
@@ -68,25 +67,22 @@ const useLoadQueryData = ({
         body.value = {
             dsl: {
                 size: 100,
-                sort : [
-                    { "name.keyword" : {"order" : "asc"}}
-                ],
+                sort: [{ 'name.keyword': { order: 'asc' } }],
                 query: {
                     bool: {
                         must: [
                             {
                                 term: {
-                                    "__state": "ACTIVE"
-                                }
-                            }
-                        ]
-                    }
-                }
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                        ],
+                    },
+                },
             },
             attributes,
-            relationAttributes: [
-                ...AssetRelationAttributes
-            ]
+            suppressLogs: true,
+            relationAttributes: [...AssetRelationAttributes],
         }
     }
 
@@ -94,44 +90,40 @@ const useLoadQueryData = ({
 
     const getQueryFolders = (offset?: number) => {
         refreshBody()
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": "Folder"
-                }
-            }
-        )
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "parentQualifiedName": collectionQualifiedName.value ? collectionQualifiedName.value : ""
-                }
-            }
-        )
+        body.value.dsl.query.bool.must.push({
+            term: {
+                '__typeName.keyword': 'Folder',
+            },
+        })
+        body.value.dsl.query.bool.must.push({
+            term: {
+                parentQualifiedName: collectionQualifiedName.value
+                    ? collectionQualifiedName.value
+                    : '',
+            },
+        })
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body
+            body,
         })
     }
 
     const getQueries = (offset?: number) => {
         refreshBody()
 
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": "Query"
-                }
-            }
-        )
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "parentQualifiedName": collectionQualifiedName.value ? collectionQualifiedName.value : ""
-                }
-            }
-        )
+        body.value.dsl.query.bool.must.push({
+            term: {
+                '__typeName.keyword': 'Query',
+            },
+        })
+        body.value.dsl.query.bool.must.push({
+            term: {
+                parentQualifiedName: collectionQualifiedName.value
+                    ? collectionQualifiedName.value
+                    : '',
+            },
+        })
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body
+            body,
         })
     }
 
@@ -141,22 +133,18 @@ const useLoadQueryData = ({
         limit?: number
     ) => {
         refreshBody()
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": "Folder"
-                }
-            }
-        )
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "parentQualifiedName": folderGuid
-                }
-            }
-        )
+        body.value.dsl.query.bool.must.push({
+            term: {
+                '__typeName.keyword': 'Folder',
+            },
+        })
+        body.value.dsl.query.bool.must.push({
+            term: {
+                parentQualifiedName: folderGuid,
+            },
+        })
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body
+            body,
         })
     }
 
@@ -166,24 +154,19 @@ const useLoadQueryData = ({
         limit?: number
     ) => {
         refreshBody()
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": "Query"
-                }
-            }
-        )
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "parentQualifiedName": folderGuid
-                }
-            }
-        )
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body
+        body.value.dsl.query.bool.must.push({
+            term: {
+                '__typeName.keyword': 'Query',
+            },
         })
-        
+        body.value.dsl.query.bool.must.push({
+            term: {
+                parentQualifiedName: folderGuid,
+            },
+        })
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
+            body,
+        })
     }
 
     return {

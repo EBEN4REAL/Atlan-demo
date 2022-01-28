@@ -75,7 +75,7 @@
                     <input
                         v-model="channelValue"
                         class="w-full focus:outline-none"
-                        placeholder="Add channels"
+                        placeholder="Add public channels"
                         @keydown.enter="addChannel"
                         @blur="addChannel"
                         @keydown.backspace="

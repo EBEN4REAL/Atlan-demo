@@ -23,7 +23,7 @@
                     placeholder="Enter enum values"
                     :value="form.elementDefs"
                     :open="false"
-                    @change="form.elementDefs = $event"
+                    @change="handleChange"
                 />
             </a-form-item>
         </a-form>
@@ -120,8 +120,17 @@
                     },
                 ],
             }
+            function handleChange(values: String[]) {
+                const finalValue = values.reduce((acc, cur) => {
+                    acc.push(...cur.split(','))
+                    return acc
+                }, [])
+
+                form.value.elementDefs = finalValue
+            }
 
             return {
+                handleChange,
                 form,
                 enumDetailsComponent,
                 handleCreateEnum,

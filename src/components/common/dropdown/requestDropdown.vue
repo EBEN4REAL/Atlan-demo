@@ -45,20 +45,18 @@
                                             class="mr-2"
                                             :image-url="avatarUrl"
                                         />
-                                        <div
-                                            class="mt-1 text-sm text-gray-500 capitalize"
-                                        >
+                                        <div class="mt-1 text-sm text-gray-500">
                                             {{ username }}
                                         </div>
                                     </div>
                                     <div class="p-2 border rounded-md">
                                         <div class="flex">
                                             <textarea
+                                                ref="refTextArea"
                                                 v-model="message"
                                                 placeholder="|Type your comment..."
                                                 class="border-none outline-none focus:border-none focus:outline-none hover:border-none hover:outline-none text-message"
                                                 :rows="2"
-                                                ref="refTextArea"
                                             />
                                         </div>
                                         <div

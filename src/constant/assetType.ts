@@ -360,7 +360,7 @@ export const assetTypeList: {
         label: 'Dashboard',
         isDiscoverable: true,
         image: 'Looker',
-        parents: [],
+        parents: ['LookerFolder'],
         relationships: ['folder', 'looks', 'tiles'],
         groupOrder: 6,
     },

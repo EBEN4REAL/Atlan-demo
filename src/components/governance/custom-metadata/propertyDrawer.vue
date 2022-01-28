@@ -163,12 +163,10 @@
                                 </div>
                             </div>
                             <template v-if="enumEdit">
-                                <a-select
-                                    class="w-full"
-                                    mode="tags"
-                                    placeholder="Enter enum values"
+                                <MultiInput
+                                    placeholder='Enter values separated by a "," or "↵"'
                                     :value="enumValueModel"
-                                    :open="false"
+                                    delimiter=","
                                     @change="handleChange"
                                 />
                             </template>
@@ -445,11 +443,13 @@
     import access from '~/constant/accessControl/map'
     import { useUpdateEnums } from '../enums/composables/useModifyEnums'
     import { useTypedefStore } from '~/store/typedef'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
+            MultiInput,
             NewEnumForm,
             Truncate,
             VNodes: (_, { attrs }) => attrs.vnodes,
@@ -752,11 +752,7 @@
             }
 
             function handleChange(values: String[]) {
-                const finalValue = values.reduce((acc, cur) => {
-                    acc.push(...cur.split(','))
-                    return acc
-                }, [])
-                enumValueModel.value = finalValue
+                enumValueModel.value = values
             }
 
             // Enum Updation flow

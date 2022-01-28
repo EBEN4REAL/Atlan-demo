@@ -8,7 +8,6 @@
             class="z-10 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
             style="height: 32px !important"
             placeholder="Enter multi values 1,2,3"
-            :token-separators="[',']"
             @change="handleChange"
         />
         <div class="absolute z-20 right-2 trigger-icon">

@@ -699,7 +699,7 @@
 
             const duplicateQuery = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                 const label = `Copy ${activeInlineTabCopy.label}`
                 activeInlineTabCopy.label = label
                 /* IMP TO RESET */

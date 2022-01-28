@@ -1,4 +1,3 @@
-<!-- This component works in 3 modes/views: 1/ form to generate a key 2/ form to update/delete a key 3/ info for generated key; generatedAPIKey (3) is the first level of distinction bw these modes/views, if value exists for that we show the third screen; If not we check if the passed in key (props) that we take in this component as apiKeyDirty has an id or not; if it has id, we are in edit mode i.e. 2nd screen (form is prefilled) else new key generation mode (form is empty)-->
 <template>
     <div class="h-full">
         <div
@@ -114,6 +113,7 @@
 import { defineComponent, ref, watch, toRefs, computed } from 'vue'
 import SQLSnippet from '@common/sql/snippet.vue'
 import { getQueryMetadata } from '@/governance/queryLogs/composables/useQueryLogs'
+import { getDurationStringFromMilliSec } from '~/utils/time'
 
 export default defineComponent({
     name: 'QueryPreviewDrawer',
@@ -151,35 +151,17 @@ export default defineComponent({
             }
             return 0
         }
-        const durationDetails = computed(() => {
-            const result = {
-                executionTimeString: '',
-                totalTimeString: '',
-            }
-            if (query?.value?._source?.message?.executionTime) {
-                const time = query?.value?._source?.message?.executionTime
-
-                if (time < 1000) result.executionTimeString = `${time}ms`
-                else if (time / 1000 < 60)
-                    result.executionTimeString = `${time / 1000}s`
-                else
-                    result.executionTimeString = `${time / (1000 * 60)}m${
-                        time % (1000 * 60)
-                    }s`
-            } else result.executionTimeString = ''
-            if (query?.value?._source?.message?.totalTime) {
-                const time = query?.value?._source?.message?.totalTime
-                if (time < 1000) result.totalTimeString = `${time}ms`
-                else if (time / 1000 < 60)
-                    result.totalTimeString = `${time / 1000}s`
-                else
-                    result.totalTimeString = `${time / (1000 * 60)}m${
-                        time % (1000 * 60)
-                    }s`
-            } else result.totalTimeString = ''
-
-            return result
-        })
+       const durationDetails = computed(() => {
+                const result = {
+                    executionTimeString: getDurationStringFromMilliSec(
+                        query?.value?._source?.message?.executionTime ?? ''
+                    ),
+                    totalTimeString: getDurationStringFromMilliSec(
+                        query?.value?._source?.message?.totalTime ?? ''
+                    ),
+                }
+                return result
+            })
 
         const durationObj = computed(() => ({
             percent: getDurationPercent(),

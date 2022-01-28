@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-solid border-style-500 group gap-x-4 request-card"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -73,20 +73,27 @@
         </div>
 
         <div class="flex items-center justify-end col-span-3">
-            <AtlanIcon
+            <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
-            />
+            /> -->
             <!-- <div v-else-if="selected"> -->
-            <template v-else>
+            <div class="pr-5">
                 <div
                     v-if="activeHover === request.id"
-                    class="items-center pr-3 font-bold"
+                    class="flex items-center justify-end font-bold"
                 >
+                    <!-- <AtlanIcon
+                        v-if="state.isLoading"
+                        icon="CircleLoader"
+                        class="w-5 h-5 text-gray animate-spin"
+                    /> -->
                     <RequestActions
                         v-if="request.status === 'active'"
                         :request="request"
+                        :loading="state.isLoading"
+                        :is-approval-loading="state.isApprovalLoading"
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />
@@ -95,17 +102,13 @@
                             request.status === 'approved' ||
                             request.status === 'rejected'
                         "
-                        class="flex items-center justify-end font-light w-96"
+                        class="flex items-center justify-end font-light whitespace-nowrap"
                         :class="
                             request.status === 'approved'
                                 ? 'text-success'
                                 : 'text-error'
                         "
                     >
-                        <IconStatus
-                            :request="request"
-                            :name-updater="nameUpdater"
-                        />
                         {{
                             request.status === 'approved'
                                 ? 'Approved by'
@@ -126,20 +129,16 @@
                             label="Created At"
                             :no-popover="true"
                             class="font-light text-gray-500"
-                            :date="
-                                request.status === 'approved'
-                                    ? request.approvedBy[0].timestamp
-                                    : request.rejectedBy[0].timestamp
-                            "
+                            :date="updatedAt"
                         />
-                    </div>
-                </div>
-                <div v-else class="flex">
-                    <div class="flex items-center pl-8 w-52 gap-x-2">
                         <IconStatus
                             :request="request"
                             :name-updater="nameUpdater"
                         />
+                    </div>
+                </div>
+                <div v-else class="flex justify-end">
+                    <div class="flex items-center justify-end gap-x-1">
                         <Avatar
                             :allow-upload="false"
                             :avatar-name="request.created_by_user?.username"
@@ -148,18 +147,25 @@
                             :image-url="request.createdBy ? '' : atlanLogo"
                         />
 
-                        <div class="flex flex-col">
+                        <div class="flex flex-col ml-2 avatar-name">
                             <UserPiece
                                 :user="{ username: request.createdBy }"
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
-                            <DatePiece
+                            <div class="font-light text-gray-500">
+                                {{ createdAt }}
+                            </div>
+                            <!-- <DatePiece
                                 label="Created At"
                                 :date="request.createdAt"
                                 class="text-gray-500"
-                            />
+                            /> -->
                         </div>
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
                     </div>
                     <!-- <div class="flex items-center">
                         <AtlanIcon
@@ -218,7 +224,7 @@
                         </div>
                     </div> -->
                 </div>
-            </template>
+            </div>
         </div>
     </div>
 </template>
@@ -236,6 +242,7 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useTimeAgo } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -300,6 +307,7 @@
             const updatedBy = ref({})
             const state = reactive({
                 isLoading: false,
+                isApprovalLoading: false,
                 message: '',
             })
 
@@ -308,7 +316,7 @@
             }
 
             async function handleApproval(messageProp = '') {
-                state.isLoading = true
+                state.isApprovalLoading = true
                 try {
                     await approveRequest(request.value.id, messageProp)
                     request.value.message = state.message
@@ -321,7 +329,7 @@
                 } catch (error) {
                     raiseErrorMessage()
                 }
-                state.isLoading = false
+                state.isApprovalLoading = false
             }
 
             async function handleRejection(messageProp = '') {
@@ -365,17 +373,34 @@
                         { cacheKey: userId }
                     )
                     watch(data, () => {
-                        updatedBy.value = data.value.records[0]
-                        console.log('updated', updatedBy.value)
+                        if (!data?.value?.records) {
+                            updatedBy.value = {
+                                username: '',
+                            }
+                        } else {
+                            updatedBy.value = data?.value?.records[0]
+                        }
                     })
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
+            const timeUpdated = computed(() => {
+                if (request.value.status === 'approved') {
+                    const time = request.value?.approvedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                if (request.value.status === 'rejected') {
+                    const time = request.value?.rejectedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                return ''
+            })
             const item = computed(() => {
-                const name = request?.value?.destinationQualifiedName
-                    .split('/')
-                    .slice(-3)
-                    .reverse()
+                const name =
+                    request?.value?.destinationQualifiedName
+                        ?.split('/')
+                        ?.slice(-3)
+                        ?.reverse() || []
                 return {
                     ...request.value,
                     guid: request.value.destinationGuid,
@@ -404,6 +429,8 @@
                     },
                 }
             })
+            const createdAt = useTimeAgo(request.value.createdAt)
+            const updatedAt = useTimeAgo(timeUpdated.value)
             return {
                 handleApproval,
                 handleRejection,
@@ -413,6 +440,9 @@
                 atlanLogo,
                 nameUpdater,
                 item,
+                timeUpdated,
+                createdAt,
+                updatedAt,
             }
         },
     })
@@ -429,6 +459,10 @@
 </style>
 
 <style lang="less">
+    .avatar-name {
+        width: 85px !important;
+        margin-right: 10px !important;
+    }
     .message-icon {
         transform: scale(1.4) !important;
     }

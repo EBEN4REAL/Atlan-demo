@@ -54,7 +54,7 @@
                         <PopoverAsset
                             :item="item.item"
                             placement="right"
-                            :mouseEnterDelay="0.85"
+                            :mouseEnterDelay="1"
                         >
                             <template #button>
                                 <AtlanBtn
@@ -204,7 +204,7 @@
                             <PopoverAsset
                                 :item="item.item"
                                 placement="left"
-                                :mouseEnterDelay="0.85"
+                                :mouseEnterDelay="1"
                                 class="dropdown-container"
                             >
                                 <template #button>

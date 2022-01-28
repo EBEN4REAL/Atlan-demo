@@ -248,7 +248,7 @@
                                         class="flex items-center px-1.5 py-1 cursor-pointer text-red-600"
                                     >
                                         <AtlanIcon
-                                            class="mr-2 icon-disabled-user"
+                                            class="mr-2"
                                             icon="DisableUser"
                                         />
                                         Disable user
@@ -695,14 +695,6 @@
 </style>
 
 <style lang="less">
-    .icon-disabled-user {
-        path {
-            stroke: #dc2626;
-        }
-        circle {
-            stroke: #dc2626;
-        }
-    }
     .caret-role {
         path {
             stroke: #374151;

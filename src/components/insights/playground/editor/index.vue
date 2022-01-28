@@ -174,6 +174,7 @@
                             <a-popover
                                 placement="bottom"
                                 trigger="click"
+                                v-model:visible="showQueryPreview"
                                 :overlayStyle="{ padding: '0px !important' }"
                                 :destroyTooltipOnHide="true"
                                 @visibleChange="
@@ -186,7 +187,11 @@
                             >
                                 <template #content>
                                     <div>
-                                        <VQBSQLPreview />
+                                        <VQBSQLPreview
+                                            v-model:showQueryPreview="
+                                                showQueryPreview
+                                            "
+                                        />
                                     </div>
                                 </template>
                                 <a-tooltip

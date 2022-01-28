@@ -11,7 +11,7 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
-import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
+// import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
 export default function useProject() {
     const {
@@ -84,7 +84,7 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
 
-        const { start, reset } = useTimer(activeInlineTab)
+        // const { start, reset } = useTimer(activeInlineTab)
 
         // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if (editorInstance?.value) {
@@ -196,7 +196,7 @@ export default function useProject() {
         let query = queryText
 
         try {
-            query = encodeURIComponent(btoa(queryText))
+            // query = encodeURIComponent(btoa(queryText))
         } catch (error) {
             // console.log('query error: ', error)
             if (error) {
@@ -208,15 +208,17 @@ export default function useProject() {
         }
 
         const params = {
-            sql: query,
-            dataSourceName: encodeURIComponent(
-                getConnectionQualifiedName(attributeValue) as string
-            ),
             length: 10,
+        }
+        const sqlBody = {
+            sql: query,
+            dataSourceName: getConnectionQualifiedName(
+                attributeValue
+            ) as string,
         }
         /* This means it is a saved query */
         if (getSchemaWithDataSourceName(attributeValue)) {
-            params.defaultSchema = getSchemaWithDataSourceName(attributeValue)
+            sqlBody.defaultSchema = getSchemaWithDataSourceName(attributeValue)
         }
         /* This means it is a saved query */
         if (activeInlineTab.value?.queryId) {
@@ -242,7 +244,7 @@ export default function useProject() {
         keys.value = 0
 
         // start timer
-        start()
+        // start()
 
         const {
             eventSource,
@@ -253,14 +255,12 @@ export default function useProject() {
             path: map.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
+            body: sqlBody,
         })
 
         watch([isLoading, error], () => {
-            console.log('heka request log: ', isLoading.value, error.value)
             try {
                 if (!isLoading.value && error.value === undefined) {
-                    // setResponseTime(new Date())
-
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         /* Saving the queryId */
@@ -275,11 +275,10 @@ export default function useProject() {
                                 onQueryIdGeneration(
                                     activeInlineTab,
                                     message?.queryId,
-                                    eventSource
+                                    eventSource.value
                                 )
                         }
                         /* ---------------------------------- */
-                        // console.log('message', message, )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
@@ -291,9 +290,9 @@ export default function useProject() {
                                 toRaw(columnList.value),
                                 message?.details.executionTime
                             )
-                            if (eventSource?.close) {
+                            if (eventSource.value?.close) {
                                 // for closing the connection
-                                eventSource.close()
+                                eventSource.value.close()
                             }
                             /* Query related data */
                             activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -318,92 +317,35 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'success')
                             }
-                            reset()
+                            // reset()
 
                             /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {
-                            if (eventSource?.close) {
-                                console.log('coonection closed')
-                                eventSource.close()
-                            }
-                            console.log('error data: ', message)
-                            /* Query related data */
-                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                            const { setHekaErrorInActiveInlineTab } = useError()
+                            setHekaErrorInActiveInlineTab(
+                                activeInlineTab,
+                                eventSource,
                                 message
-                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
-                                -1
-                            activeInlineTab.value.playground.resultsPane.result.executionTime =
-                                -1
-                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                                'error'
-                            /* ------------------- */
-                            /* Setting it undefined for new run */
-
-                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                                undefined
+                            )
                             /* Callback will be called when request completed */
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
-                            reset()
+                            // reset()
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
-                    /* Setting it undefined for new run */
-                    // setResponseTime(new Date())
-
-                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                        undefined
-                    setColumns(columnList, [])
-                    setRows(dataList, columnList, [])
-                    getData([], [], -1)
-                    /* Query related data */
-                    /* Query related data */
-                    activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
-                        -1
-                    activeInlineTab.value.playground.resultsPane.result.executionTime =
-                        -1
-                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                        'error'
-                    /* ------------------- */
-                    /* USE SSE ERROR */
-                    console.log('HEKA ERROR: ', error.value)
-                    if (error.value?.statusText) {
-                        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                            {
-                                requestId: '',
-                                errorName: '',
-                                errorMessage:
-                                    error.value?.statusText ??
-                                    'Something went wrong',
-                                errorCode: error.value?.status,
-                                developerMessage: error.value?.statusText,
-                            }
-                    } else if (error.value?.error) {
-                        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                            {
-                                requestId: '',
-                                errorName: '',
-                                errorMessage:
-                                    error.value?.error?.message ??
-                                    'Something went wrong',
-                                errorCode: '000',
-                                developerMessage: error.value?.statusText,
-                            }
-                    }
-
-                    /* Setting it undefined for new run */
-
-                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                        undefined
-
+                    const { setStreamErrorInActiveInlineTab } = useError()
+                    setStreamErrorInActiveInlineTab(activeInlineTab, error)
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
-                    reset()
+                    // reset()
                 }
             } catch (e) {
-                console.error(e)
+                console.log(e)
+                if (onCompletion) onCompletion(activeInlineTab, 'error')
+                // reset()
             }
         })
     }

@@ -79,7 +79,7 @@ export const previewTabs = [
             'Procedure',
         ],
         icon: 'Relation',
-        tooltip: 'Relationships',
+        tooltip: 'Related Assets',
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'relations',

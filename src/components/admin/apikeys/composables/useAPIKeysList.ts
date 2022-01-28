@@ -18,12 +18,12 @@ export interface APIKeyParams {
 const getAPIKeyValidity = (apikey) => {
     if (
         apikey?.attributes?.createdAt &&
-        apikey.attributes['accessTokenLifespan']
+        apikey?.attributes?.['access.token.lifespan']
     ) {
         // createdAt is unix timestamp in ms
         const validityUnixEpoch =
             parseInt(apikey?.attributes?.createdAt) / 1000 +
-            parseInt(apikey.attributes['accessTokenLifespan'])
+            parseInt(apikey.attributes['access.token.lifespan'])
         // getting dayjs obj from the calculated unix epoch to pass in datepicker
         return dayjs.unix(validityUnixEpoch)
     }

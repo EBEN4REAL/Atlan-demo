@@ -13,16 +13,17 @@
             />
         </span>
         <div class="flex items-center text-xs">
-            <AssetLogo :selected="selected" :asset="assetWrappper" />
+            <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
+            <AtlanIcon class="mr-1" :icon="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
             >
-            <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
+            <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[2] }}</span
             >
-            <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
+            <AtlanIcon class="mx-1 ml-2 text-gray-500" icon="SchemaGray" />
 
             <span class="overflow-hidden text-gray-500 overflow-ellipsis">
                 {{ assetText[1] }}</span
@@ -67,6 +68,16 @@
             const assetText = computed(() =>
                 assetQfName.value.split('/').slice(-3).reverse()
             )
+            const assetIcon = computed(() => {
+                let name = assetQfName.value?.split('/')[1] || ''
+                name = name.toLowerCase()
+                // name[0] = name[0].toUpperCase()
+                const result = `${name[0]?.toUpperCase() || ''}${name.slice(
+                    1,
+                    name.length
+                )}`
+                return result
+            })
             const timeAgo = useTimeAgo(
                 destinationEntity.value?.attributes?.certificateUpdatedAt,
                 {
@@ -76,7 +87,14 @@
                 }
             )
 
-            return { assetWrappper, assetText, timeAgo }
+            return { assetWrappper, assetText, timeAgo, assetIcon }
         },
     })
 </script>
+<style lang="less">
+    .icon-table {
+        path {
+            stroke: rgba(111, 117, 144, 1) !important;
+        }
+    }
+</style>

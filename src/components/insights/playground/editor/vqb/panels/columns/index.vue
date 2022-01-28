@@ -52,7 +52,10 @@
                             <p class="text-sm font-bold capitalize text-gray">
                                 Select from
                             </p>
-                            <p class="text-xs text-gray-500" v-if="!expand">
+                            <p
+                                class="text-xs text-gray-500 break-words line-clamp-2"
+                                v-if="!expand"
+                            >
                                 {{
                                     getTableNamesStringFromQualfieidNames(
                                         panel?.subpanels?.map(
@@ -119,6 +122,8 @@
                 />
             </keep-alive>
             <FooterActions
+                v-model:submenuHovered="submenuHovered"
+                v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-if="

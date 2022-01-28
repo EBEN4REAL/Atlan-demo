@@ -54,33 +54,10 @@ export function useLocalStorageSync() {
     }
     function getInlineTabsFromLocalStorage(): activeInlineTabInterface[] {
         if (localStorage.getItem(InsightsLocalStorageKeys.inlinetabs)) {
-            /* NOTE: we have to convert the plain date string to dayjs object.
-            JSON.stringify change the dayjs object to plain string, so on retreving we have 
-            to convert it again otherwise flow will break as antdday picker takes only dayjs object not plain string
-            */
-
             const parsedInlineTabs = JSON.parse(
                 localStorage.getItem(InsightsLocalStorageKeys.inlinetabs)
             )
-
-            const alteredTabsArray = parsedInlineTabs?.map((tab) => {
-                const t = JSON.parse(JSON.stringify(tab))
-                // console.log('type of: ', Array.isArray(t?.playground?.editor?.variables))
-                if (Array.isArray(t?.playground?.editor?.variables)) {
-                    t.playground.editor.variables =
-                        t?.playground?.editor?.variables?.map((_variable) => {
-                            const copy__variable = { ..._variable }
-                            if (copy__variable.type === 'date')
-                                copy__variable.value = dayjs(
-                                    copy__variable.value
-                                )
-                            return copy__variable
-                        })
-                }
-
-                return t
-            })
-            return alteredTabsArray
+            return parsedInlineTabs
         } else return []
     }
     function getActiveInlineTabKeyFromLocalStorage() {

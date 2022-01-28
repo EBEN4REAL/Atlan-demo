@@ -5,7 +5,7 @@
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div class="flex items-center mb-3">
+                <div class="flex items-center mb-1">
                     <div
                         class="flex items-center justify-end mr-3 item-1"
                         style="min-width: 91px"
@@ -465,18 +465,21 @@
     .item-1 {
         flex: 0.35;
         flex-shrink: 0;
+        padding: 2px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }
     .item-2 {
         flex: 0.2;
         flex-shrink: 0;
+        padding: 2px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }
     .item-3 {
         flex: 0.45;
         flex-shrink: 0;
+        padding: 2px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }

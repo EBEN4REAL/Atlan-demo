@@ -134,11 +134,13 @@ export const userStatusOptions = [
     {
         label: 'Active',
         value: JSON.stringify({ enabled: true, emailVerified: true }),
+        id: 'active'
     },
-    { label: 'Disabled', value: JSON.stringify({ enabled: false }) },
+    { label: 'Disabled', value: JSON.stringify({ enabled: false }), id: 'disabled' },
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
+        id: 'invited'
     },
 ]
 

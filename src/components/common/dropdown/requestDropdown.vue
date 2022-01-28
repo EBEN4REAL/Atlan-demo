@@ -48,7 +48,7 @@
                                         <div
                                             class="mt-1 text-sm text-gray-500 capitalize"
                                         >
-                                            {{ name }}
+                                            {{ username }}
                                         </div>
                                     </div>
                                     <div class="p-2 border rounded-md">
@@ -152,7 +152,7 @@
             const handleSubmitWithComment = () => {
                 emit('submit', message.value)
             }
-            const { name, avatar: avatarUrl } = useUserData()
+            const { username, avatar: avatarUrl } = useUserData()
             return {
                 visible,
                 visibleComment,
@@ -160,7 +160,7 @@
                 handleCancel,
                 handleAddComment,
                 handleSubmitWithComment,
-                name,
+                username,
                 avatarUrl,
                 refTextArea,
             }

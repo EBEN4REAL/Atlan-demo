@@ -4,11 +4,11 @@
         class="flex items-center px-3 py-2 bg-white group-hover:border-white float-btn-container"
     >
         <div
-            class="flex items-center justify-center w-8 h-8 mr-2 rounded-full cursor-pointer plus-button bg-primary"
+            class="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer plus-button bg-primary"
         >
             <AtlanIcon class="w-3 h-3" icon="PlusWhite"></AtlanIcon>
         </div>
-        <div class="flex gap-x-1">
+        <div class="ml-2 gap-x-1 action-buttons-container">
             <template v-for="item in computedItems" :key="item.label">
                 <div
                     class="flex items-center px-2 rounded-lg cursor-pointer hover:bg-primary-light hover:text-primary panel-action"
@@ -66,7 +66,6 @@
                         id: 'aggregate',
                         icon: 'Trigger',
                         label: 'Aggregate',
-                        class: 'mt-0.5',
                     })
                 }
 
@@ -78,7 +77,6 @@
                         id: 'join',
                         icon: 'Union',
                         label: 'Join data',
-                        class: '',
                     })
                 }
                 const filter = activeInlineTab.value.playground.vqb.panels.find(
@@ -89,7 +87,6 @@
                         id: 'filter',
                         icon: 'Filter',
                         label: 'Filter',
-                        class: '',
                     })
                 }
 
@@ -102,7 +99,6 @@
                         id: 'group',
                         icon: 'BuilderGroup',
                         label: 'Group',
-                        class: '',
                     })
                 }
                 const sortPanel =
@@ -114,7 +110,6 @@
                         id: 'sort',
                         icon: 'Sort',
                         label: 'Sort',
-                        class: '',
                     })
                 }
 
@@ -186,6 +181,21 @@
     .float-btn-container {
         width: fit-content;
         border-radius: 50px;
+        max-width: 56px;
+        height: 49px;
+        // transition: max-width 1s ease;
+        &:hover {
+            max-width: 100% !important;
+            .action-buttons-container {
+                display: flex;
+            }
+            .plus-button {
+                transform: rotate(135deg);
+            }
+        }
+        .action-buttons-container {
+            display: none;
+        }
         .panel-action {
             padding-top: 6px;
             padding-bottom: 6px;
@@ -193,9 +203,9 @@
         .plus-button {
             transform: rotate(90deg);
             transition: all 250ms ease-out;
-            &:hover {
-                transform: rotate(135deg);
-            }
+            // &:hover {
+            //     transform: rotate(135deg);
+            // }
         }
     }
 </style>

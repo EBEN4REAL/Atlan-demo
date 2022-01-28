@@ -171,24 +171,9 @@
 
                         <span class="text-sm text-gray-700">
                             {{
-                                queryInfo._source.log.message.totalTime < 1000
-                                    ? `${queryInfo._source.log.message.totalTime}ms`
-                                    : queryInfo._source.log.message.totalTime /
-                                          1000 >
-                                      60
-                                    ? `${Math.floor(
-                                          queryInfo._source.log.message
-                                              .totalTime /
-                                              (1000 * 60)
-                                      )}m ${
-                                          queryInfo._source.log.message
-                                              .totalTime %
-                                          (1000 * 60)
-                                      }s`
-                                    : `${
-                                          +(queryInfo._source.log.message
-                                              .totalTime / 1000).toFixed(2)
-                                      }s`
+                                getDurationStringFromMilliSec(
+                                    queryInfo._source.log.message.totalTime
+                                )
                             }}
                         </span>
                         <div
@@ -330,6 +315,7 @@
     import { SourceList } from '~/constant/source'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import { getDurationStringFromMilliSec } from '~/utils/time'
 
     export default defineComponent({
         name: 'QueryLogsTable',
@@ -447,6 +433,7 @@
                 getConnectionName,
                 getConnectorImagePath,
                 getConnectorName,
+                getDurationStringFromMilliSec,
             }
         },
     })

@@ -13,6 +13,7 @@
                         <PreferenceSelector
                             v-model="preference"
                             @change="handleChangePreference"
+                            @display="handleDisplayChange"
                         />
                     </div>
                 </template>
@@ -107,6 +108,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useRelations } from '~/composables/discovery/useRelations'
     import { whenever } from '@vueuse/core'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'RelationshipsTab',
@@ -161,6 +163,16 @@
                 facets.value.guidList = guidList.value
             }
             updateFacet()
+
+            const discoveryStore = useAssetStore()
+
+            if (discoveryStore.preferences) {
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
+            }
 
             const {
                 list,
@@ -228,6 +240,10 @@
                 quickChange()
             }
 
+            const handleDisplayChange = () => {
+                discoveryStore.setPreferences(preference.value)
+            }
+
             whenever(isGuidArrayReady, () => {
                 dependentKey.value = 'RELATED_ASSET_LIST'
 
@@ -250,6 +266,7 @@
                 totalCount,
                 updateFacet,
                 handleAssetTypeChange,
+                handleDisplayChange,
                 handleSearchChange,
                 preference,
                 handleChangeSort,

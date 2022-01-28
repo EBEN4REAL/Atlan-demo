@@ -75,6 +75,7 @@
             :is="item.component"
             :key="componentKey"
             v-model="facetMap[item.id]"
+            :show-none="item.showNone"
             :item="item"
             v-bind="item.propsToComponent"
             :select-user-key="item.selectUserKey || 'username'"

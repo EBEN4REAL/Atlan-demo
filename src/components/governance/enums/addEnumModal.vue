@@ -24,7 +24,7 @@
                         placeholder="Enter enum values"
                         :value="form.elementDefs"
                         :open="false"
-                        @change="form.elementDefs = $event"
+                        @change="handleChange"
                     />
                 </a-form-item>
                 <div class="flex items-center justify-end space-x-3">
@@ -82,6 +82,15 @@
             const { newEnum, addEnum, reset } = useAddEnums()
             const { error: updateError, isReady, state } = addEnum
 
+            function handleChange(values: String[]) {
+                const finalValue = values.reduce((acc, cur) => {
+                    acc.push(...cur.split(','))
+                    return acc
+                }, [])
+
+                form.value.elementDefs = finalValue
+            }
+
             function handleOK() {
                 const tempForm = { ...form.value }
                 tempForm.elementDefs = tempForm.elementDefs.map((x, index) => ({
@@ -109,6 +118,7 @@
             })
 
             return {
+                handleChange,
                 form,
                 enumDetailsComponent,
                 handleOK,

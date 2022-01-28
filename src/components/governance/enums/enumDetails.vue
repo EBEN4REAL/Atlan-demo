@@ -117,7 +117,12 @@
             }
 
             function handleChange(values: String[]) {
-                localEnum.elementDefs = values.map((value, ordinal) => ({
+                const finalValue = values.reduce((acc, cur) => {
+                    acc.push(...cur.split(','))
+                    return acc
+                }, [])
+
+                localEnum.elementDefs = finalValue.map((value, ordinal) => ({
                     value,
                     ordinal,
                 }))

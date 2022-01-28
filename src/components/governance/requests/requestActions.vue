@@ -304,7 +304,7 @@
         .chevron-icon {
             height: 28px;
             // background: red;
-            padding-top: 5px;
+            padding-top: 3px;
             padding-right: 7px;
         }
     }

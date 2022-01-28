@@ -420,6 +420,7 @@
                     'AtlasGlossary',
                     'AtlasGlossaryCategory',
                     'Connection',
+                    'Query',
                 ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"

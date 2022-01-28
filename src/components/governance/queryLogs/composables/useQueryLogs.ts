@@ -12,7 +12,8 @@ export function useQueryLogs(
     gte: Ref<string>,
     lt: Ref<string>,
     from = ref(0),
-    size = ref(6)
+    size = ref(6),
+    usernames: Ref<Array<string>>
 ) {
     const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
@@ -24,6 +25,7 @@ export function useQueryLogs(
         limit: size.value,
         gte: gte.value,
         lt: lt.value,
+        usernames: usernames?.value ? usernames?.value : undefined,
     })
 
     body.value = dsl
@@ -39,7 +41,7 @@ export function useQueryLogs(
             {
                 dsl: { ...requestBody },
                 attributes: ['name'],
-                suppressLogs: true
+                suppressLogs: true,
             },
             ref('GET_SAVED_QUERY_META'),
             false

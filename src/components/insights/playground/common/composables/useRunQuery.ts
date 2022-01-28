@@ -11,8 +11,7 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
-import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
-import { useError } from './UseError'
+// import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
 export default function useProject() {
     const {
@@ -85,7 +84,7 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
 
-        const { start, reset } = useTimer(activeInlineTab)
+        // const { start, reset } = useTimer(activeInlineTab)
 
         // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if (editorInstance?.value) {
@@ -245,7 +244,7 @@ export default function useProject() {
         keys.value = 0
 
         // start timer
-        start()
+        // start()
 
         const {
             eventSource,
@@ -318,7 +317,9 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'success')
                             }
-                            reset()
+                            // reset()
+
+                            /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {
                             const { setHekaErrorInActiveInlineTab } = useError()
@@ -331,7 +332,7 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
-                            reset()
+                            // reset()
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -339,12 +340,12 @@ export default function useProject() {
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
-                    reset()
+                    // reset()
                 }
             } catch (e) {
                 console.log(e)
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
-                reset()
+                // reset()
             }
         })
     }

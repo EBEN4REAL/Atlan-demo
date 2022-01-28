@@ -12,7 +12,7 @@ export default function useInsightsTabList(): {
             component: 'schema',
             icon: 'Schema2',
             isVisible: true,
-            title: 'Schema Explorer'
+            title: 'Schema Explorer',
         },
         {
             id: 'queries',
@@ -20,7 +20,7 @@ export default function useInsightsTabList(): {
             component: 'queries',
             icon: 'CollectionIconLarge',
             isVisible: true,
-            title: 'Query'
+            title: 'Query',
         },
         {
             id: 'variables',
@@ -28,15 +28,15 @@ export default function useInsightsTabList(): {
             component: 'variables',
             icon: 'Queries',
             isVisible: false,
-            title: 'Variables'
+            title: 'Variables',
         },
         {
             id: 'history',
             name: 'History',
             component: 'history',
             icon: 'History',
-            isVisible: false,
-            title: 'History'
+            isVisible: true,
+            title: 'History',
         },
         {
             id: 'schedule',
@@ -44,7 +44,7 @@ export default function useInsightsTabList(): {
             component: 'schedule',
             icon: undefined,
             isVisible: false,
-            title: 'Schedule'
+            title: 'Schedule',
         },
     ]
 

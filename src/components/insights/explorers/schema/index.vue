@@ -248,8 +248,8 @@
             // }
 
             const facets = ref({})
-            const sortOrderTable = ref('')
-            const sortOrderColumn = ref('')
+            const sortOrderTable = ref('name.keyword-asc')
+            const sortOrderColumn = ref('order-asc')
             const onFilterChange = (type, value) => {
                 if (type === 'sortOrderTable') {
                     sortOrderTable.value = value
@@ -337,9 +337,9 @@
             watch(
                 activeInlineTab,
                 () => {
-                    checkConnection(
-                        activeInlineTab?.value?.explorer?.schema?.connectors
-                    )
+                    // checkConnection(
+                    //     activeInlineTab?.value?.explorer?.schema?.connectors
+                    // )
                     if (activeInlineTab.value) {
                         // console.log(
                         //     'location activeTab: ',
@@ -347,12 +347,18 @@
                         // )
                         if (
                             activeInlineTab?.value?.explorer?.schema?.connectors
+                                ?.attributeName &&
+                            activeInlineTab?.value?.playground?.editor?.context
                                 ?.attributeName
                         ) {
                             if (
                                 checkConnection(
                                     activeInlineTab?.value?.explorer?.schema
                                         ?.connectors
+                                ) &&
+                                checkConnection(
+                                    activeInlineTab?.value?.playground?.editor
+                                        ?.context
                                 )
                             ) {
                                 connectorsData.value =
@@ -396,6 +402,12 @@
                                     'connectionQualifiedName'
                                 activeInlineTabCopy.explorer.schema.connectors.attributeValue =
                                     firstConnection?.attributes?.qualifiedName
+
+                                activeInlineTabCopy.playground.editor.context.attributeName =
+                                    'connectionQualifiedName'
+                                activeInlineTabCopy.playground.editor.context.attributeValue =
+                                    firstConnection?.attributes?.qualifiedName
+
                                 if (connectorsData.value?.attributeName) {
                                     activeInlineTabCopy.explorer.schema.connectors =
                                         connectorsData.value

@@ -38,7 +38,7 @@
                                 :src="avatarURL"
                                 class="w-4 h-4 rounded-full"
                             /> -->
-                            <div class="self-center ml-1 text-gray-700">
+                            <div class="self-center text-gray-700">
                                 {{ userList[0]?.name }}
                             </div>
                         </div>

@@ -15,10 +15,9 @@ export const getUserName = (user: any) => {
     const { lastName } = user
     /** remove ` (me) string if present from last name`; we add it here @see {@link src/composables/user/useFacetUsers.ts} */
     const lastNameArray = lastName?.split(' ') || []
-    if (firstName) {
-        return `${firstName} ${
-            lastNameArray.length ? lastNameArray[0] || '' : lastName
-        }`
+    if (firstName && lastName) {
+        return `${firstName} ${lastNameArray.length ? lastNameArray[0] || '' : lastName
+            }`
     }
     return user.username
 }
@@ -157,8 +156,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 

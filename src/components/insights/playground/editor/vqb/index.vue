@@ -19,6 +19,7 @@
                     class="mb-4 bg-white rounded-lg"
                 ></component>
             </template>
+            <FloatingAddAction />
         </div>
     </div>
 </template>
@@ -34,6 +35,7 @@
         watch,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import FloatingAddAction from '~/components/insights/playground/editor/vqb/panels/action/floatingAddAction.vue'
     import {
         useProvide,
         provideDataInterface,
@@ -42,6 +44,7 @@
     export default defineComponent({
         name: 'VQB',
         components: {
+            FloatingAddAction,
             columns: defineAsyncComponent(
                 () => import('./panels/columns/index.vue')
             ),

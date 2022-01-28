@@ -337,14 +337,7 @@
             watch(
                 activeInlineTab,
                 () => {
-                    checkConnection(
-                        activeInlineTab?.value?.explorer?.schema?.connectors
-                    )
                     if (activeInlineTab.value) {
-                        // console.log(
-                        //     'location activeTab: ',
-                        //     activeInlineTab.value
-                        // )
                         if (
                             activeInlineTab?.value?.explorer?.schema?.connectors
                                 ?.attributeName
@@ -396,31 +389,17 @@
                                     'connectionQualifiedName'
                                 activeInlineTabCopy.explorer.schema.connectors.attributeValue =
                                     firstConnection?.attributes?.qualifiedName
-                                if (connectorsData.value?.attributeName) {
-                                    activeInlineTabCopy.explorer.schema.connectors =
-                                        connectorsData.value
-                                    activeInlineTabCopy.playground.editor.context =
-                                        connectorsData.value
-                                }
-                                // console.log(
-                                //     'location activetab updated: ',
-                                //     activeInlineTabCopy
-                                // )
+
+                                activeInlineTabCopy.playground.editor.context.attributeName =
+                                    'connectionQualifiedName'
+                                activeInlineTabCopy.playground.editor.context.attributeValue =
+                                    firstConnection?.attributes?.qualifiedName
                                 modifyActiveInlineTab(
                                     activeInlineTabCopy,
                                     tabs,
                                     activeInlineTabCopy.isSaved
                                 )
-                            } else {
                             }
-
-                            /* Insert the already selected connector */
-
-                            // modifyActiveInlineTab(
-                            //     activeInlineTabCopy,
-                            //     tabs,
-                            //     activeInlineTabCopy.isSaved
-                            // )
                         }
                     } else {
                         connectorsData.value = {
@@ -429,7 +408,7 @@
                         }
                     }
                 },
-                { immediate: true }
+                { immediate: true, deep: true }
             )
             console.log(selectedKeys.value, 'out')
 

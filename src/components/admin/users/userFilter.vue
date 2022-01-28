@@ -5,8 +5,8 @@
         v-model="activeCollapse"
         bordered
         :default-active-key="['1', '2']"
-        @change="handleChange"
         class="-mt-3"
+        @change="handleChange"
     >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
@@ -71,7 +71,7 @@
                                         class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                         :value="item.value"
                                     >
-                                        <div
+                                        <!-- <div
                                             class="inline-flex -mt-1 align-middle dot"
                                             :class="`${
                                                 item.label.toLocaleLowerCase() ===
@@ -82,7 +82,7 @@
                                                     ? 'bg-error'
                                                     : 'bg-alert'
                                             }`"
-                                        ></div>
+                                        ></div> -->
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
                                             <span class="text-sm text-gray-500"

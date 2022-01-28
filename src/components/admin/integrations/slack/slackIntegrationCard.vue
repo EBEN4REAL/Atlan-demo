@@ -34,11 +34,11 @@
                     <template v-if="userList[0]">
                         Added by
                         <div class="flex justify-center text-xs">
-                            <img
+                            <!-- <img
                                 :src="avatarURL"
                                 class="w-4 h-4 rounded-full"
-                            />
-                            <div class="self-center ml-1 text-gray-700">
+                            /> -->
+                            <div class="self-center text-gray-700">
                                 {{ userList[0]?.name }}
                             </div>
                         </div>
@@ -215,7 +215,7 @@
             watch([updateLoading, updateError], () => {
                 if (updateLoading.value) {
                     message.loading({
-                        content: 'Adding channel(s)...',
+                        content: 'Adding channels...',
                         key: 'addChannel',
                         duration: 2,
                     })
@@ -243,7 +243,7 @@
                     }
                     refetchIntegration(pV.value.id)
                     message.success({
-                        content: 'Updated channel(s) successfully.',
+                        content: 'Updated channels successfully.',
                         key: 'addChannel',
                         duration: 2,
                     })

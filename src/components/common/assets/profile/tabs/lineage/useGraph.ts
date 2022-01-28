@@ -273,12 +273,15 @@ export default function useGraph() {
     }
 
     const createPortData = (item) => {
-        const text =
+        let text =
             item.displayText.charAt(0).toUpperCase() +
             item.displayText.slice(1).toLowerCase()
         const dataType = dataTypeCategoryList.find((d) =>
             d.type.includes(item.attributes?.dataType?.toUpperCase())
         )?.imageText
+
+        if (text.length > 23) text = `${text.slice(0, 23)}...`
+
         const portData = {
             id: item.guid,
             group: 'columnList',

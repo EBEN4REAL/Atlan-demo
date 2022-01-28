@@ -79,7 +79,7 @@
             <a-table
                 id="groupList"
                 class="overflow-hidden rounded-b-lg users-groups-table"
-                :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
+                :scroll="{ y: 'calc(100vh - 20rem)', x: false }"
                 :pagination="false"
                 :data-source="groupList"
                 :columns="columns"
@@ -180,7 +180,7 @@
                     >
                         <div
                             v-if="column.key === 'name'"
-                            class="flex items-center"
+                            class="flex items-center truncate pr-6"
                         >
                             <Avatar
                                 :avatar-size="32"
@@ -188,11 +188,11 @@
                                 class="mr-3"
                                 :is-group="true"
                             />
-                            <div>
+                            <div class="w-full truncate">
                                 <div
-                                    class="flex capitalize truncate cursor-pointer text-primary"
+                                    class="flex capitalize cursor-pointer text-primary"
                                 >
-                                    <div class="mr-2 truncate max-w-3/4">
+                                    <div class="mr-2 truncate">
                                         {{ group.name }}
                                     </div>
                                     <div
@@ -203,7 +203,14 @@
                                     </div>
                                 </div>
                                 <p class="mb-0 text-gray-500 truncate">
-                                    {{ group.description }}
+                                    <a-tooltip placement="bottom">
+                                        <template #title>alias</template>
+                                        {{ group.alias }}</a-tooltip
+                                    ><span v-if="group.description"
+                                        ><span class="mx-1 text-gray-300"
+                                            >•</span
+                                        >{{ group.description }}</span
+                                    >
                                 </p>
                             </div>
                         </div>

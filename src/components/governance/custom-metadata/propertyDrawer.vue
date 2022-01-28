@@ -782,7 +782,7 @@
                 )
 
                 updatedEnumDef.value = enumObject
-                message.success('Updating Enum...')
+                message.success({ key: 'enum', content: 'Updating Enum...' })
                 await execute()
                 const updatedEnum =
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
@@ -792,11 +792,19 @@
             // FIXME: May be simplified
             watch([updateError, isReady], () => {
                 if (isReady && state.value.enumDefs.length) {
-                    message.success('Enum updated.')
+                    message.success({
+                        key: 'enum',
+                        content: 'Enum updated.',
+                        duration: 2,
+                    })
                     enumEdit.value = false
                 }
                 if (updateError.value) {
-                    message.error('Failed to update Enum.')
+                    message.error({
+                        key: 'enum',
+                        content: 'Failed to update Enum.',
+                        duration: 2,
+                    })
                     reset()
                 }
             })

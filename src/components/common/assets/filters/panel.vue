@@ -275,6 +275,11 @@
                         ? facetMap.value[id].join(',')
                         : `${facetMap.value[id]?.length} applied`
                 }
+                if (id === 'assetType' && facetMap.value[id]) {
+                    return facetMap.value[id]?.length < 3
+                        ? facetMap.value[id].join(',')
+                        : `${facetMap.value[id]?.length} applied`
+                }
 
                 if (id === 'owners') {
                     let usersLength = 0

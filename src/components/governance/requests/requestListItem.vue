@@ -129,11 +129,7 @@
                             label="Created At"
                             :no-popover="true"
                             class="font-light text-gray-500"
-                            :date="
-                                request.status === 'approved'
-                                    ? request.approvedBy[0].timestamp
-                                    : request.rejectedBy[0].timestamp
-                            "
+                            :date="updatedAt"
                         />
                         <IconStatus
                             :request="request"
@@ -157,11 +153,14 @@
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
-                            <DatePiece
+                            <div class="font-light text-gray-500">
+                                {{ createdAt }}
+                            </div>
+                            <!-- <DatePiece
                                 label="Created At"
                                 :date="request.createdAt"
                                 class="text-gray-500"
-                            />
+                            /> -->
                         </div>
                         <IconStatus
                             :request="request"
@@ -243,6 +242,7 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useTimeAgo } from '@vueuse/core'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -373,11 +373,28 @@
                         { cacheKey: userId }
                     )
                     watch(data, () => {
-                        updatedBy.value = data.value.records[0]
+                        if (!data?.value?.records) {
+                            updatedBy.value = {
+                                username: '',
+                            }
+                        } else {
+                            updatedBy.value = data?.value?.records[0]
+                        }
                     })
                 }
             })
             const nameUpdater = computed(() => updatedBy?.value?.username)
+            const timeUpdated = computed(() => {
+                if (request.value.status === 'approved') {
+                    const time = request.value?.approvedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                if (request.value.status === 'rejected') {
+                    const time = request.value?.rejectedBy || []
+                    return time[0]?.timestamp || ''
+                }
+                return ''
+            })
             const item = computed(() => {
                 const name =
                     request?.value?.destinationQualifiedName
@@ -412,6 +429,8 @@
                     },
                 }
             })
+            const createdAt = useTimeAgo(request.value.createdAt)
+            const updatedAt = useTimeAgo(timeUpdated.value)
             return {
                 handleApproval,
                 handleRejection,
@@ -421,6 +440,9 @@
                 atlanLogo,
                 nameUpdater,
                 item,
+                timeUpdated,
+                createdAt,
+                updatedAt,
             }
         },
     })

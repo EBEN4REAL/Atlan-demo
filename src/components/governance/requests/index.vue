@@ -23,7 +23,7 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <div class="px-2 filter-container">
+            <div class="filter-container">
                 <AssetFilters
                     v-model="facets"
                     :filter-list="requestFilter"
@@ -34,7 +34,7 @@
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
-                    <div class="mt-4 mb-4 wrapper-filter">
+                    <!-- <div class="px-2 mt-4 mb-4 wrapper-filter">
                         <Connector
                             v-model:data="connectorsData"
                             class=""
@@ -60,7 +60,7 @@
                             @change="handleChangeConnector"
                             @update:data="setConnector"
                         />
-                    </div>
+                    </div> -->
                 </AssetFilters>
             </div>
         </div>
@@ -169,7 +169,7 @@
                 </VirtualList>
                 <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
-                    class="flex items-center justify-between p-4 bg-white border-t"
+                    class="flex items-center justify-between p-4 bg-white border-t border-gray-light"
                     @mouseenter="mouseEnterContainer"
                 >
                     <div class="text-gray-500">
@@ -316,12 +316,13 @@
             } = useRequestList(searchTerm, filters, pagination)
 
             watch(response, () => {
-                requestList.value =
-                    response.value?.records?.filter((req) =>
-                        Array.isArray(filters.value.status)
-                            ? filters.value.status.includes(req.status)
-                            : req.status === filters.value.status
-                    ) || []
+                // requestList.value =
+                //     response.value?.records?.filter((req) =>
+                //         Array.isArray(filters.value.status)
+                //             ? filters.value.status.includes(req.status)
+                //             : req.status === filters.value.status
+                //     ) || []
+                requestList.value = response.value?.records || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
                 pagination.value.totalData = response.value.filterRecord
@@ -433,7 +434,8 @@
                 // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
-                    status: status.length > 0 ? status : 'active',
+                    // status: status.length > 0 ? status : 'active',
+                    status,
                     createdBy,
                     // typeName,
                 }

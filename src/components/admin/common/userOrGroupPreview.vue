@@ -192,6 +192,12 @@
             Assets: defineAsyncComponent(
                 () => import('@/admin/users/userPreview/assets.vue')
             ),
+            Integrations: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/admin/users/userPreview/integrations/integrations.vue'
+                    )
+            ),
             Avatar,
             ErrorView,
             SidePanelTabHeaders,

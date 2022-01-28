@@ -25,19 +25,19 @@ export const getLabelsForZendeskArticles = (path) => {
                 case 'users':
                     return ['users']
                 case 'groups':
-                    return ['groups']
+                    return ['groups', 'quick-guide']
                 case 'apikeys':
-                    return ['apikeys']
+                    return ['apikeys', 'quick-guide']
                 case 'sso':
-                    return ['sso']
+                    return ['sso', 'quick-guide']
                 case 'smtp':
-                    return ['smtp']
+                    return ['smtp', 'quick-guide']
                 case 'integrations':
-                    return ['integrations']
+                    return ['integrations', 'quick-guide']
                 case 'query-logs':
-                    return ['query-logs']
+                    return ['query-logs', 'quick-guide']
                 case 'access-logs':
-                    return ['access-logs']
+                    return ['access-logs', 'quick-guide']
                 default:
                     return ['admin']
             }
@@ -47,15 +47,15 @@ export const getLabelsForZendeskArticles = (path) => {
             const secondaryToken = routeTokens[2]
             switch (secondaryToken) {
                 case 'personas':
-                    return ['personas','access-policies']
+                    return ['personas', 'access-policies']
                 case 'purposes':
-                    return ['purposes','access-policies']
+                    return ['purposes', 'access-policies']
                 case 'groups':
                     return ['groups']
                 case 'classifications':
                     return ['classifications']
                 case 'requests':
-                    return ['requests']
+                    return ['requests', 'quick-guide']
                 case 'custom-metadata':
                     return ['custom-metadata']
                 case 'enums':

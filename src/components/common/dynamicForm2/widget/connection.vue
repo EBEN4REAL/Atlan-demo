@@ -1,7 +1,7 @@
 <template>
     <div v-if="isEdit" class="flex flex-col w-2/3">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
-            <div class="flex flex-col" v-if="selectedConnection.guid">
+            <div class="flex flex-col" v-if="selectedConnection?.guid">
                 <div class="flex items-center justify-between">
                     <div class="flex flex-col">
                         <div class="flex items-center font-semibold">
@@ -24,101 +24,114 @@
                         </div>
                     </div>
                     <div class="flex gap-x-2">
-                        <a-button @click="toggleEdit"
-                            ><span v-if="isEditVisible">Cancel</span
-                            ><span v-else>View</span></a-button
+                        <a-button
+                            ><span
+                                ><AtlanIcon
+                                    icon="SidebarSwitch"
+                                    class="mr-1"
+                                ></AtlanIcon
+                                >Edit</span
+                            ></a-button
                         >
                     </div>
                 </div>
-            </div>
-            <div v-else class="items-center justify-center p-6 py-4">
-                No connection found. Please delete the workflow
-            </div>
-            <div class="flex flex-col gap-y-2">
-                <div class="flex gap-x-3">
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Name</div>
-                        <div class="text-gray-700">
-                            {{ title(selectedConnection) }}
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Qualified Name</div>
-                        <div class="text-gray-700">
-                            {{ selectedConnection.attributes.qualifiedName }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col">
-                    <div class="text-gray-500">Guid</div>
-                    <div class="text-gray-700">
-                        {{ selectedConnection.guid }}
-                    </div>
-                </div>
-                <div
-                    class="flex flex-col mt-2"
-                    v-if="
-                        selectedConnection?.attributes?.category?.toLowerCase() !=
-                        'bi'
-                    "
-                >
-                    <div class="flex items-center mb-3 gap-x-6">
-                        <p class="flex items-center text-gray-500">
-                            <AtlanIcon
-                                icon="RunSuccess"
-                                class="mr-1"
-                                v-if="allowQuery(selectedConnection)"
-                            ></AtlanIcon>
-                            <AtlanIcon
-                                icon="Error"
-                                class="mr-1"
-                                v-else
-                            ></AtlanIcon>
-                            Allow Query
-                        </p>
-
-                        <p class="flex items-center text-gray-500">
-                            <AtlanIcon
-                                icon="RunSuccess"
-                                class="mr-1"
-                                v-if="allowQueryPreview(selectedConnection)"
-                            ></AtlanIcon>
-                            <AtlanIcon
-                                icon="Error"
-                                class="mr-1"
-                                v-else
-                            ></AtlanIcon>
-                            Allow Preview
-                        </p>
-                    </div>
-
-                    <div class="flex items-center mb-3 gap-x-6">
+                <div class="flex flex-col gap-y-2">
+                    <div class="flex gap-x-3">
                         <div class="flex flex-col">
-                            <p
-                                class="flex items-center justify-between mb-1 text-sm text-gray-500"
-                            >
-                                Credential
-                            </p>
-                            <div class="uppercase">
+                            <div class="text-gray-500">Name</div>
+                            <div class="text-gray-700">
+                                {{ title(selectedConnection) }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="text-gray-500">Qualified Name</div>
+                            <div class="text-gray-700">
                                 {{
-                                    selectedConnection.attributes
-                                        ?.credentialStrategy
+                                    selectedConnection.attributes.qualifiedName
                                 }}
                             </div>
                         </div>
-                        <div class="flex flex-col">
-                            <p
-                                class="flex items-center justify-between mb-1 text-sm text-gray-500"
-                            >
-                                Row Limit
+                    </div>
+
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Guid</div>
+                        <div class="text-gray-700">
+                            {{ selectedConnection.guid }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col mt-2"
+                        v-if="
+                            selectedConnection?.attributes?.category?.toLowerCase() !=
+                            'bi'
+                        "
+                    >
+                        <div class="flex items-center mb-3 gap-x-6">
+                            <p class="flex items-center text-gray-500">
+                                <AtlanIcon
+                                    icon="RunSuccess"
+                                    class="mr-1"
+                                    v-if="allowQuery(selectedConnection)"
+                                ></AtlanIcon>
+                                <AtlanIcon
+                                    icon="Error"
+                                    class="mr-1"
+                                    v-else
+                                ></AtlanIcon>
+                                Allow Query
                             </p>
-                            <div class="uppercase">
-                                {{ connectionRowLimit(selectedConnection) }}
+
+                            <p class="flex items-center text-gray-500">
+                                <AtlanIcon
+                                    icon="RunSuccess"
+                                    class="mr-1"
+                                    v-if="allowQueryPreview(selectedConnection)"
+                                ></AtlanIcon>
+                                <AtlanIcon
+                                    icon="Error"
+                                    class="mr-1"
+                                    v-else
+                                ></AtlanIcon>
+                                Allow Preview
+                            </p>
+                        </div>
+
+                        <div class="flex items-center mb-3 gap-x-6">
+                            <div class="flex flex-col">
+                                <p
+                                    class="flex items-center justify-between mb-1 text-sm text-gray-500"
+                                >
+                                    Credential
+                                </p>
+                                <div class="uppercase">
+                                    {{
+                                        selectedConnection.attributes
+                                            ?.credentialStrategy
+                                    }}
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <p
+                                    class="flex items-center justify-between mb-1 text-sm text-gray-500"
+                                >
+                                    Row Limit
+                                </p>
+                                <div class="uppercase">
+                                    {{ connectionRowLimit(selectedConnection) }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center p-6 py-4 text-xl text-center"
+                style="min-height: 150px"
+            >
+                <AtlanIcon icon="Error" class="h-6 mr-2"></AtlanIcon>
+                No connection found - delete the worklow and try setting up a
+                new connection
             </div>
         </div>
     </div>

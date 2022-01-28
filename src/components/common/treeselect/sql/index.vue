@@ -20,15 +20,39 @@
             @dropdownVisibleChange="handleDropdownVisibleChange"
             @change="handleChange"
         >
+            <template #tagRender="{ label, closable, onClose, option }">
+                <a-tag
+                    :closable="closable"
+                    color="blue"
+                    style="margin-right: 3px"
+                    @close="onClose"
+                >
+                    <AtlanIcon
+                        icon="Schema"
+                        class="mr-1 text-gray-500"
+                        v-if="isSchema(label, option)"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        icon="Database"
+                        class="mr-1 text-gray-500"
+                        v-else
+                    ></AtlanIcon>
+                    <span>{{ displayLabel(label) }}</span>
+                </a-tag>
+            </template>
             <template #title="node">
                 {{ node.title }}
             </template>
         </a-tree-select>
         <a-button style="width: 20%" @click="handleClick">
-            <a-spin size="small" v-if="isLoading" class="mt-1"></a-spin>
+            <a-spin
+                size="small"
+                v-if="isLoading || isLoadingByID"
+                class="mt-1"
+            ></a-spin>
             <AtlanIcon
                 icon="Error"
-                v-else-if="error && !isLoading"
+                v-else-if="(error || errorByID) && !isLoading && !isLoadingByID"
                 style="height: 12px"
             ></AtlanIcon>
             <AtlanIcon icon="Refresh" v-else></AtlanIcon>
@@ -52,6 +76,7 @@
 
     import { useQueryCredential } from '~/composables/credential/useQueryCredential'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
+    import { useQueryCredentialByID } from '~/composables/credential/useQueryCredentialByID'
 
     export default defineComponent({
         props: {
@@ -84,6 +109,12 @@
             const { credential, query, exclude, include, credentialID } =
                 toRefs(props)
 
+            const path = computed(() => {
+                return {
+                    id: credentialID.value,
+                }
+            })
+
             const body = computed(() => ({
                 ...credential?.value,
                 query: query?.value,
@@ -92,11 +123,34 @@
             }))
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
+            const {
+                data: credByID,
+                refresh: refreshCredByID,
+                isLoading: isLoadingByID,
+                error: errorByID,
+            } = useQueryCredentialByID(path, { query: query?.value }, false)
+
             onMounted(() => {
-                if (modelValue.value.length > 0) {
+                if (credentialID.value) {
+                    // refreshCredByID()
+                } else if (modelValue.value.length > 0) {
                     refresh()
                 }
             })
+
+            const displayLabel = (label) => {
+                if (label.includes(':')) {
+                    return label.split(':').pop()
+                }
+                return label
+            }
+
+            const isSchema = (label, options) => {
+                if (label.includes(':') || options.isLeaf) {
+                    return true
+                }
+                return false
+            }
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -104,11 +158,14 @@
             }
 
             const handleClick = () => {
-                refresh()
+                if (credentialID.value) {
+                    refreshCredByID()
+                } else {
+                    refresh()
+                }
             }
-
             const treeData = ref([])
-            watch(data, () => {
+            const transformData = (data) => {
                 treeData.value = []
                 const db = [
                     ...new Set(
@@ -116,29 +173,45 @@
                     ),
                 ]
                 db.forEach((element) => {
-                    treeData.value.push({
-                        id: element,
+                    if (element) {
+                        treeData.value.push({
+                            id: element,
 
-                        value: element,
-                        isLeaf: false,
-                        title: element,
-                    })
+                            value: element,
+                            isLeaf: false,
+                            title: element,
+                        })
+                    }
                 })
                 data.value.results?.forEach((element) => {
-                    treeData.value.push({
-                        id: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
+                    if (element.TABLE_CATALOG) {
+                        treeData.value.push({
+                            id: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
 
-                        isLeaf: true,
-                        pId: element.TABLE_CATALOG,
-                        value: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
-                        title: element.TABLE_SCHEM,
-                    })
+                            isLeaf: true,
+                            pId: element.TABLE_CATALOG,
+                            value: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
+                            title: element.TABLE_SCHEM,
+                        })
+                    }
                 })
+            }
+
+            watch(data, () => {
+                transformData(data)
+            })
+
+            watch(credByID, () => {
+                transformData(credByID)
             })
 
             const handleDropdownVisibleChange = (open) => {
                 if (treeData.value?.length === 0 && open) {
-                    refresh()
+                    if (credentialID.value) {
+                        refreshCredByID()
+                    } else {
+                        refresh()
+                    }
                 }
             }
 
@@ -197,6 +270,14 @@
                 localValue,
                 handleClick,
                 credentialID,
+                path,
+                credByID,
+                refreshCredByID,
+                isLoadingByID,
+                errorByID,
+                transformData,
+                displayLabel,
+                isSchema,
             }
         },
     })

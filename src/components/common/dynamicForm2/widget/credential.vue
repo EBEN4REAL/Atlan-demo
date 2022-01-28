@@ -41,8 +41,8 @@
                         :loading="isLoadingTestByID"
                         @click="handleTestAuthentication(false)"
                         class="text-white bg-success border-success"
-                        >Test Authentication</a-button
-                    >
+                        >Test
+                    </a-button>
                     <a-button @click="toggleEdit"
                         ><span v-if="isEditVisible">Cancel</span
                         ><span v-else>Edit</span></a-button

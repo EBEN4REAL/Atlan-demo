@@ -43,6 +43,14 @@ const worfklowIndex = (pathVariables?, body?, options?: useOptions) =>
         options || {}
     )
 
+const updateWorkflowByName = (pathVariables?, body?, options?: useOptions) =>
+    useAPI(
+        map.WORKFLOW_UPDATE_BY_NAME,
+        'POST',
+        { pathVariables, body },
+        options || {}
+    )
+
 // const List = (params?: any, options?: AxiosRequestConfig) =>
 //     getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {
 //         params,
@@ -136,20 +144,6 @@ const getWorkflowConfigMap = ({ pathVariables, immediate, options, params }) =>
             pathVariables,
             options,
             params,
-        },
-        { options, asyncOptions: { immediate } }
-    )
-
-const updateWorkflowByName = (name, body, { immediate, options }) =>
-    useAPI(
-        map.WORKFLOW_UPDATE_BY_NAME,
-        'POST',
-        {
-            options,
-            body,
-            pathVariables: {
-                name,
-            },
         },
         { options, asyncOptions: { immediate } }
     )

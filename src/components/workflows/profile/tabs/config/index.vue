@@ -10,7 +10,8 @@
 
         <div class="flex-1 h-full overflow-y-hidden" v-else-if="configMap">
             <Setup
-                :workflowTemplate="workflowObject"
+                :workflowTemplate="packageObject"
+                :workflowObject="workflowObject"
                 :configMap="configMapParsed"
                 :isEdit="true"
                 :defaultValue="getGlobalArguments(workflowObject)"

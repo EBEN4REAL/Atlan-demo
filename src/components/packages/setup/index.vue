@@ -61,10 +61,37 @@
                         class="ml-1 text-primary"
                     ></AtlanIcon
                 ></a-button>
+                <a-popconfirm
+                    v-if="currentStep === steps.length - 1 && !isEdit"
+                    ok-text="Yes"
+                    :overlay-class-name="$style.popConfirm"
+                    cancel-text="Cancel"
+                    placement="topRight"
+                    @confirm="handleSubmit(false)"
+                    :ok-button-props="{
+                        size: 'default',
+                    }"
+                    :cancel-button-props="{
+                        size: 'default',
+                    }"
+                >
+                    <template #icon> </template>
+                    <template #title>
+                        <p class="font-bold">
+                            Are you sure you want to update the configuration
+                            for this workflow?
+                        </p>
+                        <p class="text-gray-500">
+                            All future runs will use this new configuration
+                        </p>
+                        <a-checkbox class="mt-3">Start a new run</a-checkbox>
+                    </template>
+                    <a-button type="primary"> Update </a-button>
+                </a-popconfirm>
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep === steps.length - 1"
+                    v-if="currentStep === steps.length - 1 && !isEdit"
                 >
                     <a-button
                         class="px-6"
@@ -185,6 +212,7 @@
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
 
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
 
@@ -203,6 +231,10 @@
         },
         props: {
             workflowTemplate: {
+                type: Object,
+                required: false,
+            },
+            workflowObject: {
                 type: Object,
                 required: false,
             },
@@ -234,8 +266,13 @@
 
             const stepForm = ref()
             const currentStep = ref(0)
-            const { workflowTemplate, configMap, isEdit, defaultValue } =
-                toRefs(props)
+            const {
+                workflowTemplate,
+                configMap,
+                isEdit,
+                defaultValue,
+                workflowObject,
+            } = toRefs(props)
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
@@ -311,6 +348,13 @@
 
             const { isLoading, execute, error, data, workflow } =
                 createWorkflow(body)
+
+            const path = ref({})
+            const { mutate: updateWorkflow } = useWorkflowUpdate(
+                path,
+                body,
+                false
+            )
 
             const limit = ref(1)
             const offset = ref(0)
@@ -409,91 +453,99 @@
             }
 
             const handleSubmit = (isCron) => {
-                // Copy labels and annotations of the worfklow template
-                body.value.metadata.labels =
-                    workflowTemplate.value.metadata.labels
-                body.value.metadata.annotations =
-                    workflowTemplate.value.metadata.annotations
-
-                if (cron.value && isCron) {
-                    body.value.metadata.annotations[
-                        'orchestration.atlan.com/schedule'
-                    ] = cron.value.cron
-                    body.value.metadata.annotations[
-                        'orchestration.atlan.com/timezone'
-                    ] = cron.value.timezone
-                }
-
-                // find if there is a connection in the form
-                const connectionBody = getConnectionBody(
-                    configMap.value,
-                    modelValue.value
-                )
-
-                let connectionQualifiedName = ''
-                const credentialParam = 'credentialGuid'
-                // iterate and set the object
-                connectionBody.forEach((i) => {
-                    const temp = i.body
-                    temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
-
-                    modelValue.value[i.parameter] = i.body
-                    connectionQualifiedName =
-                        i.body.attributes.qualifiedName?.replaceAll('/', '-')
-                    // add qualifiedname to label
-                    if (connectionQualifiedName) {
-                        body.value.metadata.labels[
-                            `orchestration.atlan.com/${connectionQualifiedName}`
-                        ] = 'true'
-                    }
-                })
-                const seconds = Math.round(new Date().getTime() / 1000)
-
-                let workflowName = workflowTemplate.value.metadata.name
-                if (connectionQualifiedName) {
-                    workflowName = `${workflowName}-${connectionQualifiedName}`
+                if (isEdit.value) {
+                    body.value.metadata = workflowTemplate.value.metadata
                 } else {
-                    workflowName = `${workflowName}-${seconds.toString()}`
+                    // Copy labels and annotations of the worfklow template
+                    body.value.metadata.labels =
+                        workflowTemplate.value.metadata.labels
+                    body.value.metadata.annotations =
+                        workflowTemplate.value.metadata.annotations
+
+                    // Schedule Changes
+                    if (cron.value && isCron) {
+                        body.value.metadata.annotations[
+                            'orchestration.atlan.com/schedule'
+                        ] = cron.value.cron
+                        body.value.metadata.annotations[
+                            'orchestration.atlan.com/timezone'
+                        ] = cron.value.timezone
+                    }
+
+                    // New Connection Body
+                    const connectionBody = getConnectionBody(
+                        configMap.value,
+                        modelValue.value
+                    )
+                    let connectionQualifiedName = ''
+                    const credentialParam = 'credentialGuid'
+
+                    connectionBody.forEach((i) => {
+                        const temp = i.body
+                        temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
+
+                        modelValue.value[i.parameter] = i.body
+                        connectionQualifiedName =
+                            i.body.attributes.qualifiedName?.replaceAll(
+                                '/',
+                                '-'
+                            )
+                        // add qualifiedname to label
+                        if (connectionQualifiedName) {
+                            body.value.metadata.labels[
+                                `orchestration.atlan.com/${connectionQualifiedName}`
+                            ] = 'true'
+                        }
+                    })
+
+                    const seconds = Math.round(new Date().getTime() / 1000)
+                    let workflowName = workflowTemplate.value.metadata.name
+                    if (connectionQualifiedName) {
+                        workflowName = `${workflowName}-${connectionQualifiedName}`
+                    } else {
+                        workflowName = `${workflowName}-${seconds.toString()}`
+                    }
+
+                    body.value.metadata.name = workflowName.replaceAll('/', '-')
+                    body.value.metadata.namespace = 'default'
+                    const credentialBody = getCredentialBody(
+                        configMap.value,
+                        modelValue.value,
+                        connectionQualifiedName || workflowName,
+                        credentialParam
+                    )
+                    body.value.payload = [...credentialBody]
                 }
-
-                body.value.metadata.name = workflowName
-                body.value.metadata.namespace = 'default'
-                body.value.metadata.name = workflowName.replaceAll('/', '-')
-                body.value.metadata.namespace = 'default' // FIXME: change this to tenant name
-
-                const credentialBody = getCredentialBody(
-                    configMap.value,
-                    modelValue.value,
-                    connectionQualifiedName || workflowName,
-                    credentialParam
-                )
 
                 const parameters = []
+
                 if (workflowTemplate.value.spec.templates.length > 0) {
-                    if (!defaultValue.value) {
-                        workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
-                            (p) => {
-                                if (modelValue.value[p.name]) {
-                                    if (
-                                        typeof modelValue.value[p.name] ===
-                                        'object'
-                                    ) {
-                                        parameters.push({
-                                            name: p.name,
-                                            value: JSON.stringify(
-                                                modelValue.value[p.name]
-                                            ),
-                                        })
-                                    } else {
-                                        parameters.push({
-                                            name: p.name,
-                                            value: modelValue.value[p.name],
-                                        })
-                                    }
+                    workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
+                        (p) => {
+                            if (typeof modelValue.value[p.name] === 'boolean') {
+                                parameters.push({
+                                    name: p.name,
+                                    value: modelValue.value[p.name],
+                                })
+                            } else if (modelValue.value[p.name]) {
+                                if (
+                                    typeof modelValue.value[p.name] === 'object'
+                                ) {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: JSON.stringify(
+                                            modelValue.value[p.name]
+                                        ),
+                                    })
+                                } else {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: modelValue.value[p.name],
+                                    })
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
                 } else {
                     message.error('Something went wrong. Package is not valid.')
                 }
@@ -524,11 +576,18 @@
                     ],
                     entrypoint: 'main',
                 }
-                body.value.payload = [...credentialBody]
 
                 status.value = 'loading'
                 errorMesssage.value = ''
-                execute(true)
+
+                if (isEdit.value) {
+                    path.value = {
+                        name: workflowObject.value.metadata.name,
+                    }
+                    updateWorkflow()
+                } else {
+                    execute(true)
+                }
             }
 
             const handleBackToSetup = () => {
@@ -597,6 +656,8 @@
                 handleTrackLink,
                 isEdit,
                 defaultValue,
+                updateWorkflow,
+                path,
             }
         },
     })

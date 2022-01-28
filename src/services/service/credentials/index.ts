@@ -14,6 +14,18 @@ const Query = (
     options?: useOptions
 ) => useAPI(map.QUERY_CREDENTIAL, 'POST', { body }, options || {})
 
+const QueryByID = (
+    pathVariables,
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
+    useAPI(
+        map.QUERY_CREDENTIAL_BY_ID,
+        'POST',
+        { pathVariables, body },
+        options || {}
+    )
+
 const GetByID = (pathVariables?, options?: useOptions) =>
     useAPI(
         map.GET_CREDENTIAL,
@@ -25,7 +37,7 @@ const GetByID = (pathVariables?, options?: useOptions) =>
     )
 const TestByID = (pathVariables?, options?: useOptions) =>
     useAPI(
-        map.TEST_CREDENTIAL_BY_GUID,
+        map.TEST_CREDENTIAL_BY_ID,
         'POST',
         {
             pathVariables,
@@ -39,7 +51,7 @@ const UpdateByID = (
     options?: useOptions
 ) =>
     useAPI(
-        map.UPDATE_CREDENTIAL_BY_GUID,
+        map.UPDATE_CREDENTIAL_BY_ID,
         'POST',
         {
             pathVariables,
@@ -54,4 +66,5 @@ export const Credential = {
     TestByID,
     GetByID,
     UpdateByID,
+    QueryByID,
 }

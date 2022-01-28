@@ -71,6 +71,10 @@
         setup(props) {
             const { workflowObject, packageObject } = toRefs(props)
 
+            console.log('workflow', workflowObject)
+
+            console.log('workflow', packageObject)
+
             // const { getProfileTabs, isScrubbed } = useWorkflowInfo()
 
             const activeKey = ref()

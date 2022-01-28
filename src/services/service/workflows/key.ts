@@ -1,3 +1,4 @@
+import { isRef, Ref } from 'vue'
 import { getAPIPath, PathParams } from '~/services/api/common'
 
 import { BASE_PATH } from '..'
@@ -41,8 +42,7 @@ export const map = {
     [RUN_WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows/submit'),
     [DELETE_WORKFLOW]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/workflows/${name}/archive`),
-    [WORKFLOW_UPDATE_BY_NAME]: ({ name }: PathParams) =>
-        getAPIPath(BASE_PATH, `/workflows/${name}`),
+
     [WORKFLOW_RUN]: () => getAPIPath(BASE_PATH, '/runs'),
     [GET_ARTIFACTS]: ({ workflowName, nodeName, outputName }: PathParams) =>
         getAPIPath(
@@ -68,4 +68,11 @@ export const map = {
         getAPIPath(BASE_PATH, `/workflowtemplates/indexsearch`),
     [WORKFLOW_RUN_INDEX]: () => getAPIPath(BASE_PATH, `/runs/indexsearch`),
     [WORKFLOW_INDEX]: () => getAPIPath(BASE_PATH, `/workflows/indexsearch`),
+
+    [WORKFLOW_UPDATE_BY_NAME]: (path: PathParams | Ref<PathParams>) => {
+        if (isRef(path)) {
+            return getAPIPath(BASE_PATH, `/workflows/${path.value.name}`)
+        }
+        return getAPIPath(BASE_PATH, `/workflows/${path.name}`)
+    },
 }

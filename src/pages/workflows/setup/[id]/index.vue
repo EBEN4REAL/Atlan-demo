@@ -170,6 +170,7 @@
             }
 
             const localSelected = ref(props.selectedPackage)
+
             const localConfig = ref(null)
             const {
                 workflowPackage,

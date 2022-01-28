@@ -111,7 +111,7 @@
                         user.email || '-'
                     }}</span>
                     <p class="mb-0 text-gray-500 truncate">
-                        @{{ user.username || '-' }}
+                        {{ user.username || '-' }}
                     </p>
                 </div>
             </div>

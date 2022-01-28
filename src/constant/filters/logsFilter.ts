@@ -160,6 +160,7 @@ export const requestFilter = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        showNone: false
     },
     {
         id: 'statusRequest',

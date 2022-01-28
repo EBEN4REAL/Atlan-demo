@@ -215,6 +215,8 @@
                 queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
+                readAccessCollections,
+                writeAccessCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
                 // selectCollectionFromUrl,
@@ -360,6 +362,8 @@
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
+                readAccessCollections,
+                writeAccessCollections,
             }
             useProvide(provideData)
             /*-------------------------------------*/

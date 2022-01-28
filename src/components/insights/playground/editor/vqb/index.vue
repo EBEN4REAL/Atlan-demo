@@ -19,7 +19,11 @@
                     class="mb-4 bg-white rounded-lg"
                 ></component>
             </template>
-            <FloatingAddAction />
+
+            <FloatingAddAction
+                @add="(type, panel) => handleAddPanel(type, panel)"
+                :panelInfo="panelInfo"
+            />
         </div>
     </div>
 </template>
@@ -33,6 +37,7 @@
         inject,
         ref,
         watch,
+        computed,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import FloatingAddAction from '~/components/insights/playground/editor/vqb/panels/action/floatingAddAction.vue'
@@ -40,6 +45,7 @@
         useProvide,
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'VQB',
@@ -80,6 +86,31 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<string>
+
+            const lastIndex = computed(
+                () => activeInlineTab.value?.playground?.vqb?.panels?.length - 1
+            )
+            const panelInfo = computed(() => {
+                activeInlineTab.value?.playground?.vqb?.panels[lastIndex.value]
+            })
+            const { handleAdd } = useVQB()
+            const handleAddPanel = (type, panel) => {
+                console.log('handleAddPanel', { lastIndex: lastIndex.value })
+                if (lastIndex.value === -1) {
+                    return
+                }
+                handleAdd(
+                    lastIndex.value,
+                    type,
+                    panel,
+                    activeInlineTab,
+                    activeInlineTabKey,
+                    inlineTabs
+                )
+            }
 
             // watch(
             //     () => activeInlineTab.value.playground.vqb.panels,
@@ -100,6 +131,8 @@
             return {
                 // vqb,
                 activeInlineTab,
+                handleAddPanel,
+                panelInfo,
             }
         },
     })

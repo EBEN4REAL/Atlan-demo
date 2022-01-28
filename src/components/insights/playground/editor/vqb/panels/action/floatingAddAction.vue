@@ -40,13 +40,13 @@
         name: 'FloatingAddAction',
         emits: ['add'],
         props: {
-            // panelInfo: {
-            //     type: Object,
-            //     reqruied: true,
-            // }
+            panelInfo: {
+                type: Object,
+                reqruied: true,
+            },
         },
         setup(props, { emit }) {
-            // const { panelInfo } = toRefs(props)
+            const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
             const { syncSortAggregateAndGroupPanel } = useSort()
             const activeInlineTab = inject(
@@ -165,7 +165,7 @@
                         expand: true,
                     }
                 }
-                // collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
+                collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
             }

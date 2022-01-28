@@ -359,6 +359,7 @@ import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
+import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
 
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
@@ -769,5 +770,6 @@ export default {
     Request,
     RequestActive,
     FilterFunnelDot,
-    Comment
+    Comment,
+    EmptyRequest
 }

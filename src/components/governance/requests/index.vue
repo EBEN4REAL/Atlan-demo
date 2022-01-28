@@ -194,10 +194,26 @@
             </div>
             <div
                 v-if="!listLoading && !requestList.length"
-                class="flex items-center justify-center h-full mt-5 mb-10"
+                class="flex items-center justify-center h-full mt-5 mb-10 container-empty"
             >
                 <div
-                    v-if="searchTerm?.length > 0"
+                    v-if="
+                        searchTerm?.length > 0 && Object.keys(facets).length > 0
+                    "
+                    class="flex flex-col items-center"
+                >
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
+                    <div
+                        class="px-10 mx-10 mt-2 text-xl font-bold text-center text-gray-700"
+                    >
+                        All caught up!!
+                    </div>
+                    <div class="px-10 mx-10 mt-2 text-center text-gray-400">
+                        There are no requests at this time
+                    </div>
+                </div>
+                <div
+                    v-else-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center h-96"
                 >
                     <atlan-icon icon="NoRequestFound" class="h-36" />
@@ -600,6 +616,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .container-empty {
+        height: 65vh !important;
+    }
     .filter-icon-wrapper {
         height: 28px !important;
     }

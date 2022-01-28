@@ -156,7 +156,7 @@
                     v-if="expand"
                 />
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
                 :panelInfo="activeInlineTab.playground.vqb.panels[index]"
                 v-model:submenuHovered="submenuHovered"
@@ -167,7 +167,7 @@
                         Number(index) &&
                     !readOnly
                 "
-            />
+            /> -->
         </div>
     </div>
 </template>

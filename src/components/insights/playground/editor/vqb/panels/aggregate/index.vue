@@ -164,7 +164,7 @@
                     v-if="expand"
                 />
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
                 v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
@@ -175,7 +175,7 @@
                         Number(index) &&
                     !readOnly
                 "
-            />
+            /> -->
         </div>
     </div>
 </template>

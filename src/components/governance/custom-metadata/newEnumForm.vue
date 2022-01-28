@@ -17,12 +17,11 @@
             </a-form-item>
 
             <a-form-item label="Values" name="elementDefs">
-                <a-select
+                <MultiInput
                     ref="valuesRef"
-                    mode="tags"
-                    placeholder="Enter enum values"
+                    placeholder='Enter values separated by a "," or "↵"'
                     :value="form.elementDefs"
-                    :open="false"
+                    delimiter=","
                     @change="handleChange"
                 />
             </a-form-item>
@@ -43,8 +42,10 @@
     import { message } from 'ant-design-vue'
 
     import { useAddEnums } from '@/governance/enums/composables/useModifyEnums'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     export default defineComponent({
+        components: { MultiInput },
         props: { enumSearchValue: { type: String, default: '' } },
         emits: ['success', 'changedLoading'],
         setup(props, { emit }) {
@@ -121,12 +122,7 @@
                 ],
             }
             function handleChange(values: String[]) {
-                const finalValue = values.reduce((acc, cur) => {
-                    acc.push(...cur.split(','))
-                    return acc
-                }, [])
-
-                form.value.elementDefs = finalValue
+                form.value.elementDefs = values
             }
 
             return {

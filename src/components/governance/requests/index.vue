@@ -139,14 +139,14 @@
                 <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <RequestModal
+                <!-- <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                />
+                /> -->
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"
@@ -157,9 +157,9 @@
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
                         <RequestListItem
+                            :active="index === selectedIndex"
                             :request="item"
                             :active-hover="activeHover"
-                            :active="index === selectedIndex"
                             :selected="isSelected(item.id)"
                             @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"

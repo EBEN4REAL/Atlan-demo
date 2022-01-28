@@ -13,12 +13,12 @@
                             <div
                                 class="flex items-center rounded hover:bg-primary-light menu-status"
                             >
-                                <div
+                                <!-- <div
                                     class="mr-2 dot"
                                     :style="{
                                         background: stat.color,
                                     }"
-                                />
+                                /> -->
                                 {{ stat.name }}
                                 <AtlanIcon
                                     v-if="selctedFilter.key === stat.key"
@@ -35,12 +35,12 @@
                     padding="compact"
                 >
                     <div class="flex items-center">
-                        <div
+                        <!-- <div
                             :style="{
                                 background: selctedFilter.color,
                             }"
                             class="mr-2 dot"
-                        />
+                        /> -->
                         {{ selctedFilter.name }}
                     </div>
                     <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />

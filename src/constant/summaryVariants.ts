@@ -224,4 +224,58 @@ export const summaryVariants = [
         ],
         includes: ['TableauMetric'],
     },
+    {
+        id: 'lookerDashboard',
+        label: 'Dashboard',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerDashboard'],
+    },
+    {
+        id: 'lookerExplore',
+        label: 'Explore',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerExplore'],
+    },
+    {
+        id: 'lookerField',
+        label: 'Field',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerField'],
+    },
+    {
+        id: 'lookerFolder',
+        label: 'Folder',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerFolder'],
+    },
+    {
+        id: 'lookerLook',
+        label: 'Look',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerLook'],
+    },
+    {
+        id: 'lookerModel',
+        label: 'LookerModel',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerModel'],
+    },
+    {
+        id: 'lookerProject',
+        label: 'Project',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerProject'],
+    },
+    {
+        id: 'lookerQuery',
+        label: 'Query',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerQuery'],
+    },
+    {
+        id: 'lookerTile',
+        label: 'Tile',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerTile'],
+    },
 ]

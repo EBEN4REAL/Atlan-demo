@@ -698,7 +698,8 @@ export default function useAssetInfo() {
     const isBiAsset = (asset: assetInterface) => {
         return (
             assetType(asset)?.includes('Tableau') ||
-            assetType(asset)?.includes('BI')
+            assetType(asset)?.includes('BI') ||
+            assetType(asset)?.includes('Looker')
         )
     }
 

@@ -73,12 +73,16 @@
             include: {
                 required: false,
             },
+            credentialID: {
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { credential, query, exclude, include } = toRefs(props)
+            const { credential, query, exclude, include, credentialID } =
+                toRefs(props)
 
             const body = computed(() => ({
                 ...credential?.value,
@@ -93,10 +97,6 @@
                     refresh()
                 }
             })
-
-            // watch(credential, () => {
-            //     refresh()
-            // })
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -196,6 +196,7 @@
                 handleChange,
                 localValue,
                 handleClick,
+                credentialID,
             }
         },
     })

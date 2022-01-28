@@ -1,18 +1,15 @@
 <template>
-    <div class="flex flex-1 border-r border-gray-200">
-        <div class="flex flex-col w-full h-full" v-if="!status">
-            <a-steps
-                v-if="steps.length > 0"
-                :current="currentStep"
-                class="px-6 py-3 bg-gray-100 border-b border-gray-200"
-            >
-                <template v-for="(step, index) in steps" :key="step.id">
-                    <a-step @click="handleStepClick(index)">
-                        <template #title>{{ step.title }}</template>
-                    </a-step>
-                </template>
-            </a-steps>
-
+    <div class="flex w-full h-full overflow-hidden" v-if="!status">
+        <div class="flex flex-col flex-grow h-full">
+            <div class="p-3 bg-gray-100">
+                <a-steps v-if="steps.length > 0" :current="currentStep">
+                    <template v-for="(step, index) in steps" :key="step.id">
+                        <a-step @click="handleStepClick(index)">
+                            <template #title>{{ step.title }}</template>
+                        </a-step>
+                    </template>
+                </a-steps>
+            </div>
             <div
                 class="flex-1 px-6 py-8 overflow-y-auto bg-white"
                 v-if="workflowTemplate && currentStep < steps.length"
@@ -25,6 +22,7 @@
                     :workflowTemplate="workflowTemplate"
                     v-model="modelValue"
                     labelAlign="left"
+                    :isEdit="isEdit"
                 ></DynamicForm>
             </div>
 
@@ -107,76 +105,56 @@
                 </div>
             </div>
         </div>
-        <div
-            class="flex flex-col items-center justify-center w-full h-full"
-            v-if="status"
-        >
-            <div class="flex flex-col justify-center" v-if="isLoading">
-                <a-spin size="large" />
-                <div>Setting up Workflow</div>
-            </div>
-            <a-result
-                :status="status"
-                :title="title"
-                :sub-title="subTitle"
-                v-else
-            >
-                <template #extra>
-                    <div v-if="run">
-                        <Run
-                            :run="run"
-                            :isLoading="runLoading"
-                            v-if="run"
-                            class="mb-3"
-                        ></Run>
+    </div>
+    <div
+        class="flex flex-col items-center justify-center w-full h-full"
+        v-if="status"
+    >
+        <div class="flex flex-col justify-center" v-if="isLoading">
+            <a-spin size="large" />
+            <div>Setting up Workflow</div>
+        </div>
+        <a-result :status="status" :title="title" :sub-title="subTitle" v-else>
+            <template #extra>
+                <div v-if="run">
+                    <Run
+                        :run="run"
+                        :isLoading="runLoading"
+                        v-if="run"
+                        class="mb-3"
+                    ></Run>
 
-                        <div calss="flex">
-                            <a-button v-if="status === 'success'">
-                                <router-link to="/assets">
-                                    Back to Assets</router-link
-                                >
-                            </a-button>
-                            <a-button
-                                class="ml-3"
-                                @click="handleTrackLink"
-                                v-if="run?.metadata"
+                    <div calss="flex">
+                        <a-button v-if="status === 'success'">
+                            <router-link to="/assets">
+                                Back to Assets</router-link
                             >
-                                Monitor Run
-                            </a-button>
-                        </div>
-                    </div>
-
-                    <div
-                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                        v-if="errorMesssage"
-                    >
-                        <span>{{ errorMesssage }}</span>
+                        </a-button>
                         <a-button
-                            v-if="status === 'error'"
-                            @click="handleBackToSetup"
+                            class="ml-3"
+                            @click="handleTrackLink"
+                            v-if="run?.metadata"
                         >
-                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                            Back to setup
+                            Monitor Run
                         </a-button>
                     </div>
-                </template>
-            </a-result>
-        </div>
-        <!-- <a-drawer
-            v-if="isSandbox"
-            title="Sandbox Mode"
-            placement="right"
-            :closable="true"
-            :visible="sandboxVisible"
-            @close="toggleSandbox"
-            :mask="false"
-        >
-            <Sandbox
-                v-model:workflowTemplate="localTemplate"
-                v-model:configMap="localConfigMap"
-                @change="handleRefresh"
-            ></Sandbox>
-        </a-drawer> -->
+                </div>
+
+                <div
+                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                    v-if="errorMesssage"
+                >
+                    <span>{{ errorMesssage }}</span>
+                    <a-button
+                        v-if="status === 'error'"
+                        @click="handleBackToSetup"
+                    >
+                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
+                        Back to setup
+                    </a-button>
+                </div>
+            </template>
+        </a-result>
     </div>
 </template>
 

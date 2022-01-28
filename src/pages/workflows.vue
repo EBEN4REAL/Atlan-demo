@@ -1,17 +1,14 @@
 <template>
-    <div class="flex w-full h-full overflow-x-hidden bg-primary-light">
+    <router-view v-if="isItem" />
+    <div
+        class="flex w-full h-full overflow-x-hidden bg-primary-light"
+        :style="isItem ? 'display: none !important;' : ''"
+    >
         <div class="flex-1 border-r border-gray-200">
-            <router-view v-if="isItem" />
-            <WorkflowDiscovery
-                ref="assetdiscovery"
-                :style="isItem ? 'display: none !important;' : ''"
-            ></WorkflowDiscovery>
+            <WorkflowDiscovery ref="assetdiscovery"></WorkflowDiscovery>
         </div>
 
-        <div
-            class="relative hidden bg-white asset-preview-container md:block"
-            v-if="!isItem"
-        >
+        <div class="relative hidden bg-white asset-preview-container md:block">
             <WorfklowPreview
                 :item="localSelected"
                 v-if="localSelected"

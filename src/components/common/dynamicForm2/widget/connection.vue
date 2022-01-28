@@ -1,19 +1,147 @@
 <template>
-    <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-    <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0">
-        <p class="font-bold">Existing Connections ({{ approximateCount }})</p>
-        <div class="flex flex-col">
-            <div v-for="(connection, index) in list" :key="connection.guid">
-                {{ connection.attributes.name }}
+    <div v-if="isEdit" class="flex flex-col w-2/3">
+        <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
+            <div class="flex flex-col" v-if="selectedConnection.guid">
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <div class="flex items-center font-semibold">
+                            <div class="flex items-center mr-1">
+                                <AtlanIcon
+                                    :icon="getImage(connector)"
+                                    class="w-auto h-4 mr-1"
+                                />
 
-                <span>
-                    ({{
-                        getMap(aggregationMap('group_by_connection'))[
-                            connection.attributes.qualifiedName
-                        ]
-                    }}
-                    Assets)</span
+                                <span class="ml-1 capitalize">{{
+                                    connector
+                                }}</span>
+                            </div>
+                            Connection
+                        </div>
+                        <div class="text-gray-500">
+                            last updated
+                            {{ modifiedAt(selectedConnection) }} ago by
+                            {{ modifiedBy(selectedConnection) }}
+                        </div>
+                    </div>
+                    <div class="flex gap-x-2">
+                        <a-button @click="toggleEdit"
+                            ><span v-if="isEditVisible">Cancel</span
+                            ><span v-else>View</span></a-button
+                        >
+                    </div>
+                </div>
+            </div>
+            <div v-else class="items-center justify-center p-6 py-4">
+                No connection found. Please delete the workflow
+            </div>
+            <div class="flex flex-col gap-y-2">
+                <div class="flex gap-x-3">
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Name</div>
+                        <div class="text-gray-700">
+                            {{ title(selectedConnection) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Qualified Name</div>
+                        <div class="text-gray-700">
+                            {{ selectedConnection.attributes.qualifiedName }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="text-gray-500">Guid</div>
+                    <div class="text-gray-700">
+                        {{ selectedConnection.guid }}
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col mt-2"
+                    v-if="
+                        selectedConnection?.attributes?.category?.toLowerCase() !=
+                        'bi'
+                    "
                 >
+                    <div class="flex items-center mb-3 gap-x-6">
+                        <p class="flex items-center text-gray-500">
+                            <AtlanIcon
+                                icon="RunSuccess"
+                                class="mr-1"
+                                v-if="allowQuery(selectedConnection)"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                icon="Error"
+                                class="mr-1"
+                                v-else
+                            ></AtlanIcon>
+                            Allow Query
+                        </p>
+
+                        <p class="flex items-center text-gray-500">
+                            <AtlanIcon
+                                icon="RunSuccess"
+                                class="mr-1"
+                                v-if="allowQueryPreview(selectedConnection)"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                icon="Error"
+                                class="mr-1"
+                                v-else
+                            ></AtlanIcon>
+                            Allow Preview
+                        </p>
+                    </div>
+
+                    <div class="flex items-center mb-3 gap-x-6">
+                        <div class="flex flex-col">
+                            <p
+                                class="flex items-center justify-between mb-1 text-sm text-gray-500"
+                            >
+                                Credential
+                            </p>
+                            <div class="uppercase">
+                                {{
+                                    selectedConnection.attributes
+                                        ?.credentialStrategy
+                                }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <p
+                                class="flex items-center justify-between mb-1 text-sm text-gray-500"
+                            >
+                                Row Limit
+                            </p>
+                            <div class="uppercase">
+                                {{ connectionRowLimit(selectedConnection) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else>
+        <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
+        <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0 && !isEdit">
+            <p class="font-bold">
+                Existing Connections ({{ approximateCount }})
+            </p>
+            <div class="flex flex-col">
+                <div v-for="(connection, index) in list" :key="connection.guid">
+                    {{ connection.attributes.name }}
+
+                    <span>
+                        ({{
+                            getMap(aggregationMap('group_by_connection'))[
+                                connection.attributes.qualifiedName
+                            ]
+                        }}
+                        Assets)</span
+                    >
+                </div>
             </div>
         </div>
     </div>
@@ -37,10 +165,12 @@
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import { useConfigMapList } from '~/composables/package/useConfigMapList'
     import ErrorView from '@common/error/index.vue'
+    import { useConnectionStore } from '~/store/connection'
     import AtlanIcon from '../../icon/atlanIcon.vue'
     import { shortUUID } from '~/utils/helper/generator'
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -67,10 +197,13 @@
                     return {}
                 },
             },
+            isEdit: {
+                required: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { property } = toRefs(props)
+            const { property, isEdit } = toRefs(props)
 
             const formState = inject('formState')
             const validateForm = inject('validateForm')
@@ -85,6 +218,7 @@
                     'orchestration.atlan.com/source'
                 ]
             })
+
             const connectorImage = computed(() => {
                 return workflowTemplate.value?.metadata.annotations[
                     'orchestration.atlan.com/icon'
@@ -95,6 +229,23 @@
                 return workflowTemplate.value?.metadata.labels[
                     'orchestration.atlan.com/sourceCategory'
                 ]
+            })
+
+            const selectedConnection = computed(() => {
+                if (formState[property.value.id]) {
+                    try {
+                        const temp = JSON.parse(formState[property.value.id])
+                        const found = getList.find(
+                            (i) =>
+                                i.attributes.qualifiedName ===
+                                temp?.attributes?.qualifiedName
+                        )
+                        return found
+                    } catch (e) {
+                        return {}
+                    }
+                }
+                return {}
             })
 
             const { data, approximateCount, aggregationMap, getMap } =
@@ -172,6 +323,17 @@
             })
 
             const seconds = Math.round(new Date().getTime() / 1000)
+
+            const {
+                title,
+                modifiedAt,
+                modifiedBy,
+                connectionRowLimit,
+                allowQuery,
+                allowQueryPreview,
+            } = useAssetInfo()
+
+            const { getImage, getList } = useConnectionStore()
 
             const configMap = ref({
                 properties: {
@@ -384,6 +546,17 @@
                 list,
                 aggregationMap,
                 getMap,
+                selectedConnection,
+                isEdit,
+                getImage,
+                modifiedAt,
+                modifiedBy,
+                getList,
+
+                title,
+                connectionRowLimit,
+                allowQuery,
+                allowQueryPreview,
             }
         },
     })

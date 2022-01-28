@@ -1,8 +1,7 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <router-view v-if="isItem" @select="handleSelect"></router-view>
         <div class="flex flex-1 h-full">
-            <router-view v-if="isItem" @select="handleSelect"></router-view>
-
             <keep-alive>
                 <PackageDiscoveryList
                     :style="displayStyle"
@@ -14,6 +13,7 @@
         </div>
 
         <div
+            v-if="!isItem"
             class="relative hidden h-full overflow-y-auto bg-white border-l border-gray-200 asset-preview-container md:block"
         >
             <WorfklowPreview

@@ -33,9 +33,25 @@ const TestByID = (pathVariables?, options?: useOptions) =>
         options || {}
     )
 
+const UpdateByID = (
+    pathVariables,
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
+    useAPI(
+        map.UPDATE_CREDENTIAL_BY_GUID,
+        'POST',
+        {
+            pathVariables,
+            body,
+        },
+        options || {}
+    )
+
 export const Credential = {
     Test,
     Query,
     TestByID,
     GetByID,
+    UpdateByID,
 }

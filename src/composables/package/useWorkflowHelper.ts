@@ -84,11 +84,25 @@ export function useWorkflowHelper() {
         }
     }
 
+    const getCredentialState = (propertyId, credential, formState) => {
+        const { authType } = credential
+
+        formState[`${propertyId}.host`] = credential.host
+        formState[`${propertyId}.port`] = credential.port?.toString()
+        formState[`${propertyId}.auth-type`] = authType
+        formState[`${propertyId}.${authType}.username`] = credential.username
+        formState[`${propertyId}.${authType}.password`] = credential.password
+        Object.keys(credential.extra).forEach((key) => {
+            formState[`${propertyId}.extra.${key}`] = credential.extra[key]
+        })
+    }
+
     return {
         getCredentialPropertyList,
         getCredentialBody,
         getConnectionPropertyList,
         getConnectionBody,
         buildCredentialBody,
+        getCredentialState,
     }
 }

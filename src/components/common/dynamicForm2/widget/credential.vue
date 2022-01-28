@@ -15,96 +15,105 @@
     </div>
     <div v-else-if="isCredential && credential" class="flex flex-col w-2/3">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
-            <div class="flex items-center font-semibold">
-                <div class="flex items-center mr-1">
-                    <img
-                        :src="getImage(connector(credential))"
-                        class="w-4 h-4"
-                    />
-                    <span class="ml-1 capitalize">{{
-                        connector(credential)
-                    }}</span>
-                </div>
-                Credential
-            </div>
-
-            <div class="flex gap-x-3">
-                <div class="flex flex-col">
-                    <div class="text-gray-500">Host</div>
-                    <div class="text-gray-700">
-                        {{ host(credential) }}
-                    </div>
-                </div>
-                <div class="flex flex-col">
-                    <div class="text-gray-500">Port</div>
-                    <div class="text-gray-700">
-                        {{ port(credential) }}
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-x-3">
-                <div class="flex flex-col">
-                    <div class="text-gray-500">Auth Type</div>
-                    <div class="text-gray-700 capitalize">
-                        <AtlanIcon
-                            icon="Lock"
-                            class="mb-0.5 text-yellow-400"
-                        ></AtlanIcon>
-                        {{ authType(credential) }}
-                    </div>
-                </div>
-                <div class="flex flex-col">
-                    <div class="text-gray-500">Reference</div>
-                    <div class="text-gray-700">
-                        {{ credential.id }}
-                    </div>
-                </div>
-            </div>
-
             <div class="flex items-center justify-between">
-                <div class="text-gray-500">
-                    last updated {{ updatedAt(credential, true) }} by
-                    {{ updatedBy(credential) }}
+                <div class="flex flex-col">
+                    <div class="flex items-center font-semibold">
+                        <div class="flex items-center mr-1">
+                            <AtlanIcon
+                                :icon="getImage(connector(credential))"
+                                class="w-auto h-4 mr-1"
+                            />
+
+                            <span class="ml-1 capitalize">{{
+                                connector(credential)
+                            }}</span>
+                        </div>
+                        Credential
+                    </div>
+                    <div class="text-gray-500">
+                        last updated {{ updatedAt(credential, true) }} ago by
+                        {{ updatedBy(credential) }}
+                    </div>
                 </div>
-                <a-button @click="toggleEdit">Edit</a-button>
-            </div>
-        </div>
-        <div class="flex mt-3">
-            <a-button
-                :loading="isLoadingTestByID"
-                @click="handleTestAuthentication"
-                class="text-white bg-success border-success"
-                >Test Authentication</a-button
-            >
-            <div class="flex items-center ml-2" v-if="testMessage">
-                <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
-                <span :class="testClass">{{ testMessage }}</span>
-            </div>
-        </div>
-        <a-modal
-            v-model:visible="isEditVisible"
-            okText="Update"
-            title="Edit Credential"
-        >
-            <div class="px-4 py-3">
-                <FormItem
-                    :configMap="configMap"
-                    :baseKey="property.id"
-                ></FormItem>
-                <div class="flex">
+                <div class="flex gap-x-2">
                     <a-button
-                        :loading="isLoadingTest"
-                        @click="handleTestAuthentication"
+                        v-if="!isEditVisible"
+                        :loading="isLoadingTestByID"
+                        @click="handleTestAuthentication(false)"
                         class="text-white bg-success border-success"
                         >Test Authentication</a-button
                     >
-                    <div class="flex items-center ml-2" v-if="testMessage">
-                        <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
-                        <span :class="testClass">{{ testMessage }}</span>
+                    <a-button @click="toggleEdit"
+                        ><span v-if="isEditVisible">Cancel</span
+                        ><span v-else>Edit</span></a-button
+                    >
+                    <a-button
+                        :loading="isLoadingTest || isLoadingUpdate"
+                        v-if="isEditVisible"
+                        :disabled="!isDirty"
+                        type="primary"
+                        @click="handleUpdate"
+                        >Test & Update</a-button
+                    >
+                </div>
+            </div>
+            <div class="flex text-gray-500" v-if="isEditVisible">
+                <AtlanIcon
+                    icon="Lock"
+                    class="h-5 mr-1 text-yellow-500"
+                ></AtlanIcon>
+                Sensitive details are not displayed for security reasons. Any
+                changes to these fields will be override existing data.
+            </div>
+            <div class="flex items-center my-2" v-if="testMessage">
+                <div class="flex items-center">
+                    <AtlanIcon :icon="testIcon" class="h-5 mr-1"></AtlanIcon>
+                    <span :class="testClass">{{ testMessage }}</span>
+                </div>
+            </div>
+            <div v-if="isEditVisible" class="mt-2">
+                <FormItem
+                    :configMap="configMap"
+                    :baseKey="property.id"
+                    :isEdit="isCredential"
+                ></FormItem>
+            </div>
+
+            <div class="flex flex-col gap-y-2" v-else>
+                <div class="flex gap-x-3">
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Host</div>
+                        <div class="text-gray-700">
+                            {{ host(credential) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Port</div>
+                        <div class="text-gray-700">
+                            {{ port(credential) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-x-3">
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Auth Type</div>
+                        <div class="text-gray-700 capitalize">
+                            <AtlanIcon
+                                icon="Lock"
+                                class="mb-0.5 text-yellow-400"
+                            ></AtlanIcon>
+                            {{ authType(credential) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="text-gray-500">Reference</div>
+                        <div class="text-gray-700">
+                            {{ credential.id }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </a-modal>
+        </div>
     </div>
 
     <template v-else-if="configMap && !isCredential">
@@ -152,6 +161,8 @@
     import useTestCredentialByID from '~/composables/credential/useTestCredentialByID'
 
     import { useConnectionStore } from '~/store/connection'
+    import useUpdateCredential from '~/composables/credential/useUpdateCredential'
+    import { message } from 'ant-design-vue'
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -173,17 +184,13 @@
             },
             modelValue: {
                 required: false,
-                type: Object,
-                default() {
-                    return {}
-                },
             },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property, modelValue } = toRefs(props)
 
-            const formState = inject('formState')
+            let formState = inject('formState')
             const validateForm = inject('validateForm')
 
             const testMessage = ref('')
@@ -192,6 +199,7 @@
 
             const isCredential = ref(false)
             const isEditVisible = ref(false)
+            const isDirty = ref(false)
 
             const configMap = ref()
 
@@ -213,6 +221,8 @@
             } = useCredentialInfo()
 
             const { getImage } = useConnectionStore()
+            const { buildCredentialBody, getCredentialState } =
+                useWorkflowHelper()
 
             if (
                 typeof modelValue.value === 'string' ||
@@ -223,6 +233,12 @@
 
                 watch(cred, () => {
                     credential.value = cred.value
+
+                    getCredentialState(property.value.id, cred.value, formState)
+
+                    console.log('credBody', formState)
+
+                    //convert body into formState
                 })
             }
 
@@ -368,7 +384,7 @@
             // })
 
             const successMessage = () => {
-                testMessage.value = 'Success'
+                testMessage.value = 'Authentication Successful'
                 testIcon.value = 'RunSuccess'
                 testClass.value = ''
             }
@@ -379,13 +395,12 @@
                 testClass.value = 'text-red-500'
             }
 
-            const { buildCredentialBody } = useWorkflowHelper()
-
             const credentialBody = computed(() =>
                 buildCredentialBody(
                     formState,
                     property.value.id,
-                    property.value.ui.credentialType
+                    property.value.ui.credentialType,
+                    credential.value.name
                 )
             )
 
@@ -401,7 +416,9 @@
             }))
 
             const toggleEdit = () => {
+                resetError()
                 isEditVisible.value = !isEditVisible.value
+                isDirty.value = false
             }
 
             const {
@@ -411,42 +428,96 @@
                 mutate: testByID,
             } = useTestCredentialByID(testPath, false)
 
+            const {
+                data: newCredential,
+                mutate: updateByID,
+                isLoading: isLoadingUpdate,
+                error: errorUpdate,
+            } = useUpdateCredential(testPath, credentialBody, false)
+
             provide('credentialBody', credentialBody)
 
-            const handleTestAuthentication = async () => {
-                if (isCredential.value) {
+            const handleTestAuthentication = async (skipId) => {
+                if (isCredential.value && !skipId) {
                     testByID()
                 } else {
                     resetError()
-                    const e = await validateForm()
-                    if (!e) {
+                    if (skipId) {
                         refresh()
                     } else {
-                        testMessage.value = 'Please enter correct credentials'
-                        testIcon.value = 'Error'
-                        testClass.value = 'text-red-500'
+                        const e = await validateForm()
+                        if (!e) {
+                            refresh()
+                        } else {
+                            testMessage.value =
+                                'Please enter the required credentials'
+                            testIcon.value = 'Error'
+                            testClass.value = 'text-red-500'
+                        }
                     }
                 }
             }
 
-            watch([testData, testDataByID], () => {
-                successMessage()
+            watch(testData, () => {
+                if (testData.value?.message) {
+                    successMessage()
+                    message.success('Test Authentication was succesful')
+                }
             })
-            watch([errorTest, errorTestByID], () => {
-                if (isCredential.value && !isLoadingTestByID.value) {
+
+            watch(testDataByID, () => {
+                if (testDataByID.value?.message) {
+                    successMessage()
+                    message.success('Test Authentication was succesful')
+                }
+            })
+            watch(errorTestByID, () => {
+                if (!isLoadingTestByID.value) {
                     if (errorTestByID) {
                         errorMessage(
                             `Not able to authenticate your credentials - ${errorTestByID.value?.response?.data?.message}`
                         )
+                        message.error(
+                            'Test authentication failed. Please check your credentials'
+                        )
                     }
                 }
+            })
+
+            watch(errorTest, () => {
                 if (!isLoadingTest.value) {
                     if (errorTest) {
                         errorMessage(
                             `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
                         )
+                        message.error(
+                            'Test authentication failed. Please check your credentials'
+                        )
                     }
                 }
+            })
+
+            const handleUpdate = async () => {
+                await handleTestAuthentication(true)
+                // if (!errorTest.value) {
+                //     updateByID()
+                // }
+            }
+
+            watch(
+                formState,
+                () => {
+                    console.log('changed state', isEditVisible.value)
+                    if (isEditVisible.value) {
+                        isDirty.value = true
+                    }
+                },
+                { deep: true }
+            )
+
+            watch(newCredential, () => {
+                isEditVisible.value = false
+                message.success('Credential was succesful updated')
             })
 
             return {
@@ -470,6 +541,7 @@
                 credentialBody,
                 credential,
                 isCredential,
+                getCredentialState,
 
                 host,
                 port,
@@ -487,6 +559,11 @@
                 testPath,
                 isEditVisible,
                 toggleEdit,
+                handleUpdate,
+                isLoadingUpdate,
+                errorUpdate,
+                newCredential,
+                isDirty,
             }
         },
     })

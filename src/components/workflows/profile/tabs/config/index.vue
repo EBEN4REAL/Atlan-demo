@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col flex-grow h-full overflow-hidden">
+    <div class="flex h-full overflow-y-hidden">
         <Loader v-if="isLoading"></Loader>
         <div
             v-else-if="!isLoading && error"
@@ -7,16 +7,17 @@
         >
             <ErrorView></ErrorView>
         </div>
-        <div class="flex h-full" v-else-if="configMap">
+
+        <div class="flex-1 h-full overflow-y-hidden" v-else-if="configMap">
             <Setup
                 :workflowTemplate="workflowObject"
                 :configMap="configMapParsed"
                 :isEdit="true"
                 :defaultValue="getGlobalArguments(workflowObject)"
             ></Setup>
-            <div class="bg-white" style="max-width: 360px">
-                <Preview :item="packageObject"></Preview>
-            </div>
+        </div>
+        <div>
+            <Preview :item="packageObject"></Preview>
         </div>
     </div>
 </template>

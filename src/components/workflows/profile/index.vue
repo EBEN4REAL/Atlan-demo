@@ -16,6 +16,7 @@
                 v-for="tab in workflowTabs"
                 :key="tab.id"
                 :tab="tab.label"
+                class="h-auto"
             >
                 <component
                     :is="tab.component"
@@ -125,10 +126,10 @@ meta:
         }
 
         :global(.ant-tabs-content-holder) {
-            @apply bg-primary-light overflow-y-auto !important;
+            @apply bg-primary-light h-full overflow-y-hidden  !important;
         }
         :global(.ant-tabs-content) {
-            @apply min-h-full !important;
+            @apply h-full overflow-y-hidden  !important;
         }
     }
 </style>

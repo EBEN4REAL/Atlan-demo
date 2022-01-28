@@ -1,27 +1,32 @@
 <template>
     <div class="flex flex-col flex-1 h-full">
-        <div class="flex flex-col">
-            <div
-                class="flex items-center justify-between px-6 pt-4 text-xl font-semibold text-gray-700"
-            >
-                <a-input
-                    v-model:value="queryText"
-                    class="w-1/5"
-                    placeholder="Search Packages"
-                ></a-input>
-                <a-button type="primary" @click="handleNewWorkflow"
-                    >New Workflow</a-button
-                >
+        <div class="flex items-center justify-between px-6 py-3">
+            <div class="flex flex-col">
+                <div class="text-xl font-semibold text-gray-700">
+                    Workflow Center
+                </div>
+                <div class="text-sm text-gray-500">
+                    Manage and monitor all your metadata workflows
+                </div>
             </div>
-            <div
-                class="flex items-center justify-between w-full px-6 pt-2 pb-3"
+            <a-button type="primary" @click="handleNewWorkflow"
+                >New Workflow</a-button
             >
+        </div>
+
+        <div class="flex items-center justify-between px-6 mb-2">
+            <div class="flex items-center justify-between w-full">
                 <AggregationTabs
                     :list="getAggregationByType"
                     v-model="postFacets.typeName"
                     @change="handlePackageTypeChange"
                 ></AggregationTabs>
             </div>
+            <a-input
+                v-model:value="queryText"
+                placeholder="Search Workflows"
+                class="w-1/3"
+            ></a-input>
         </div>
 
         <div class="flex flex-col h-full overflow-y-auto">

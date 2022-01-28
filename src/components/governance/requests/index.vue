@@ -139,14 +139,14 @@
                 <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <RequestModal
+                <!-- <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                />
+                /> -->
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
                 <VirtualList
                     :data="requestList"
@@ -157,9 +157,9 @@
                     <template #default="{ item, index }">
                         <!-- @select="selectRequest(item.id, index)" -->
                         <RequestListItem
+                            :active="index === selectedIndex"
                             :request="item"
                             :active-hover="activeHover"
-                            :active="index === selectedIndex"
                             :selected="isSelected(item.id)"
                             @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
@@ -194,10 +194,26 @@
             </div>
             <div
                 v-if="!listLoading && !requestList.length"
-                class="flex items-center justify-center h-full mt-5 mb-10"
+                class="flex items-center justify-center h-full mt-5 mb-10 container-empty"
             >
                 <div
-                    v-if="searchTerm?.length > 0"
+                    v-if="
+                        searchTerm?.length > 0 && Object.keys(facets).length > 0
+                    "
+                    class="flex flex-col items-center"
+                >
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
+                    <div
+                        class="px-10 mx-10 mt-2 text-xl font-bold text-center text-gray-700"
+                    >
+                        All caught up!!
+                    </div>
+                    <div class="px-10 mx-10 mt-2 text-center text-gray-400">
+                        There are no requests at this time
+                    </div>
+                </div>
+                <div
+                    v-else-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center h-96"
                 >
                     <atlan-icon icon="NoRequestFound" class="h-36" />
@@ -426,6 +442,7 @@
                 setTimeout(() => {
                     showPagination.value = true
                 }, 200)
+                // destinationQualifiedName
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
@@ -438,6 +455,15 @@
                     status,
                     createdBy,
                     // typeName,
+                }
+                delete filterMerge.destinationQualifiedName
+                if (facetsValue.hierarchy?.connectorName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectorName
+                }
+                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectionQualifiedName
                 }
                 if (facetsValue.__traitNames) {
                     const filterClasification = []
@@ -600,6 +626,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .container-empty {
+        height: 65vh !important;
+    }
     .filter-icon-wrapper {
         height: 28px !important;
     }

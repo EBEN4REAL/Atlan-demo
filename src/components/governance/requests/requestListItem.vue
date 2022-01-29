@@ -1,177 +1,173 @@
 <template>
-    <transition name="slide-out">
-        <div
-            class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
-            style="height: 72px"
-            :class="{
-                'bg-primary-light': selected,
-                'active-request outline-1 bg-primary-light': active,
-                'bg-primary-light': activeHover === request.id,
-            }"
-            @click="$emit('select')"
-        >
-            <div class="flex items-center col-span-4 overflow-hidden">
-                <!-- TODO: Uncomment for bulk selection -->
-                <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-                <Popover :item="item">
-                    <div
-                        class="cursor-pointer"
-                        @mouseenter="$emit('mouseEnterAsset')"
-                    >
-                        <AssetPiece
-                            v-if="request.destinationQualifiedName"
-                            :asset-qf-name="request.destinationQualifiedName"
-                            :entity-type="request?.entityType"
-                            :destination-entity="request.destinationEntity"
-                        />
-                        <span v-else class="text-sm overflow-ellipsis">
-                            {{
-                                primaryText[request.requestType]
-                                    ? primaryText[request.requestType](request)
-                                    : ''
-                            }}
-                        </span>
-                    </div>
-                </Popover>
-            </div>
-            <div class="flex items-center col-span-3 ml-24">
-                <ClassificationPiece
-                    v-if="
-                        request?.requestType === 'create_typedef' &&
-                        request?.payload?.classificationDefs
-                    "
-                    :data="request.payload.classificationDefs"
-                />
-                <ClassificationPiece
-                    v-else-if="request?.requestType === 'attach_classification'"
-                    :type-name="request.payload.typeName"
-                />
+    <div
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
+        style="height: 72px"
+        :class="{
+            'bg-primary-light': selected,
+            'active-request outline-1 bg-primary-light': active,
+            'bg-primary-light': activeHover === request.id,
+        }"
+        @click="$emit('select')"
+    >
+        <div class="flex items-center col-span-4 overflow-hidden">
+            <!-- TODO: Uncomment for bulk selection -->
+            <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
+            <Popover :item="item">
+                <div
+                    class="cursor-pointer"
+                    @mouseenter="$emit('mouseEnterAsset')"
+                >
+                    <AssetPiece
+                        v-if="request.destinationQualifiedName"
+                        :asset-qf-name="request.destinationQualifiedName"
+                        :entity-type="request?.entityType"
+                        :destination-entity="request.destinationEntity"
+                    />
+                    <span v-else class="text-sm overflow-ellipsis">
+                        {{
+                            primaryText[request.requestType]
+                                ? primaryText[request.requestType](request)
+                                : ''
+                        }}
+                    </span>
+                </div>
+            </Popover>
+        </div>
+        <div class="flex items-center col-span-3 ml-24">
+            <ClassificationPiece
+                v-if="
+                    request?.requestType === 'create_typedef' &&
+                    request?.payload?.classificationDefs
+                "
+                :data="request.payload.classificationDefs"
+            />
+            <ClassificationPiece
+                v-else-if="request?.requestType === 'attach_classification'"
+                :type-name="request.payload.typeName"
+            />
 
-                <TermPiece
-                    v-else-if="
-                        request?.requestType === 'create_term' &&
-                        request?.payload
-                    "
-                    :data="request.payload"
-                />
+            <TermPiece
+                v-else-if="
+                    request?.requestType === 'create_term' && request?.payload
+                "
+                :data="request.payload"
+            />
 
-                <TermPiece
-                    v-else-if="request.requestType === 'term_link'"
-                    :data="request?.sourceEntity?.attributes"
-                    :request="request"
-                />
+            <TermPiece
+                v-else-if="request.requestType === 'term_link'"
+                :data="request?.sourceEntity?.attributes"
+                :request="request"
+            />
 
-                <AttrPiece
-                    v-else-if="request.destinationAttribute"
-                    :name="request.destinationAttribute"
-                    :value="request.destinationValue"
-                />
+            <AttrPiece
+                v-else-if="request.destinationAttribute"
+                :name="request.destinationAttribute"
+                :value="request.destinationValue"
+            />
 
-                <AssetPiece
-                    v-else-if="request.sourceQualifiedName"
-                    :asset-qf-name="request.sourceQualifiedName"
-                    :entity-type="request?.entityType"
-                />
-            </div>
+            <AssetPiece
+                v-else-if="request.sourceQualifiedName"
+                :asset-qf-name="request.sourceQualifiedName"
+                :entity-type="request?.entityType"
+            />
+        </div>
 
-            <div class="flex items-center justify-end col-span-3">
-                <!-- <AtlanIcon
+        <div class="flex items-center justify-end col-span-3">
+            <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
             /> -->
-                <!-- <div v-else-if="selected"> -->
-                <div class="pr-5">
-                    <div
-                        v-if="activeHover === request.id"
-                        class="flex items-center justify-end font-bold"
-                    >
-                        <!-- <AtlanIcon
+            <!-- <div v-else-if="selected"> -->
+            <div class="pr-5">
+                <div
+                    v-if="activeHover === request.id"
+                    class="flex items-center justify-end font-bold"
+                >
+                    <!-- <AtlanIcon
                         v-if="state.isLoading"
                         icon="CircleLoader"
                         class="w-5 h-5 text-gray animate-spin"
                     /> -->
-                        <RequestActions
-                            v-if="request.status === 'active'"
-                            :request="request"
-                            :loading="state.isLoading"
-                            :is-approval-loading="state.isApprovalLoading"
-                            @accept="handleApproval"
-                            @reject="handleRejection"
-                        />
-                        <div
-                            v-else-if="
-                                request.status === 'approved' ||
-                                request.status === 'rejected'
-                            "
-                            class="flex items-center justify-end font-light whitespace-nowrap"
-                            :class="
-                                request.status === 'approved'
-                                    ? 'text-success'
-                                    : 'text-error'
-                            "
-                        >
-                            {{
-                                request.status === 'approved'
-                                    ? 'Approved by'
-                                    : 'Rejected by'
-                            }}
-                            <div class="flex items-center mx-2 truncate">
-                                <Avatar
-                                    :allow-upload="false"
-                                    :avatar-name="nameUpdater"
-                                    :avatar-size="18"
-                                    :avatar-shape="'circle'"
-                                    class="mr-2"
-                                />
-
-                                <span class="text-gray-700">{{
-                                    nameUpdater
-                                }}</span>
-                            </div>
-                            <DatePiece
-                                label="Created At"
-                                :no-popover="true"
-                                class="font-light text-gray-500"
-                                :date="updatedAt"
-                            />
-                            <IconStatus
-                                :request="request"
-                                :name-updater="nameUpdater"
-                            />
-                        </div>
-                    </div>
-                    <div v-else class="flex justify-end">
-                        <div class="flex items-center justify-end gap-x-1">
+                    <RequestActions
+                        v-if="request.status === 'active'"
+                        :request="request"
+                        :loading="state.isLoading"
+                        :is-approval-loading="state.isApprovalLoading"
+                        @accept="handleApproval"
+                        @reject="handleRejection"
+                    />
+                    <div
+                        v-else-if="
+                            request.status === 'approved' ||
+                            request.status === 'rejected'
+                        "
+                        class="flex items-center justify-end font-light whitespace-nowrap"
+                        :class="
+                            request.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
+                    >
+                        {{
+                            request.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
+                        <div class="flex items-center mx-2 truncate">
                             <Avatar
                                 :allow-upload="false"
-                                :avatar-name="request.created_by_user?.username"
-                                avatar-size="24"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
                                 :avatar-shape="'circle'"
-                                :image-url="request.createdBy ? '' : atlanLogo"
+                                class="mr-2"
                             />
 
-                            <div class="flex flex-col ml-2 avatar-name">
-                                <UserPiece
-                                    :user="{ username: request.createdBy }"
-                                    :is-pill="false"
-                                    :default-name="'Atlan Bot'"
-                                />
-                                <div class="font-light text-gray-500">
-                                    {{ createdAt }}
-                                </div>
-                                <!-- <DatePiece
+                            <span class="text-gray-700">{{ nameUpdater }}</span>
+                        </div>
+                        <DatePiece
+                            label="Created At"
+                            :no-popover="true"
+                            class="font-light text-gray-500"
+                            :date="updatedAt"
+                        />
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                    </div>
+                </div>
+                <div v-else class="flex justify-end">
+                    <div class="flex items-center justify-end gap-x-1">
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="request.created_by_user?.username"
+                            avatar-size="24"
+                            :avatar-shape="'circle'"
+                            :image-url="request.createdBy ? '' : atlanLogo"
+                        />
+
+                        <div class="flex flex-col ml-2 avatar-name">
+                            <UserPiece
+                                :user="{ username: request.createdBy }"
+                                :is-pill="false"
+                                :default-name="'Atlan Bot'"
+                            />
+                            <div class="font-light text-gray-500">
+                                {{ createdAt }}
+                            </div>
+                            <!-- <DatePiece
                                 label="Created At"
                                 :date="request.createdAt"
                                 class="text-gray-500"
                             /> -->
-                            </div>
-                            <IconStatus
-                                :request="request"
-                                :name-updater="nameUpdater"
-                            />
                         </div>
-                        <!-- <div class="flex items-center">
+                        <IconStatus
+                            :request="request"
+                            :name-updater="nameUpdater"
+                        />
+                    </div>
+                    <!-- <div class="flex items-center">
                         <AtlanIcon
                             v-if="
                                 request.status === 'approved' &&
@@ -227,11 +223,10 @@
                             />
                         </div>
                     </div> -->
-                    </div>
                 </div>
             </div>
         </div>
-    </transition>
+    </div>
 </template>
 
 <script lang="ts">
@@ -454,14 +449,6 @@
 </script>
 
 <style lang="less" scoped>
-    .slide-out-leave-active {
-        transition: transform 10s ease-out;
-        // transform: translateX(-500px);
-    }
-    .slide-out-to {
-        opacity: 0;
-        transform: translateX(-500px);
-    }
     .request-card {
         &.active-request {
             // outline-style: solid !important;

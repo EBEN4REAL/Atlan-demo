@@ -72,16 +72,19 @@
             </div>
             <!-- Show on expand -->
             <keep-alive>
-                <ColumnSubPanel
-                    v-model:subpanels="
-                        activeInlineTab.playground.vqb.panels[index].subpanels
-                    "
-                    v-model:selectedTables="
-                        activeInlineTab.playground.vqb.selectedTables
-                    "
-                    :expand="expand"
-                    v-if="expand"
-                />
+                <transition name="collapse-smooth">
+                    <ColumnSubPanel
+                        v-model:subpanels="
+                            activeInlineTab.playground.vqb.panels[index]
+                                .subpanels
+                        "
+                        v-model:selectedTables="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
+                        :expand="expand"
+                        v-if="expand"
+                    />
+                </transition>
             </keep-alive>
             <FooterActions
                 v-model:submenuHovered="submenuHovered"
@@ -282,6 +285,19 @@
     })
 </script>
 <style lang="less" scoped>
+    .collapse-smooth-enter-active {
+        transition: all 0.2s ease;
+    }
+    .collapse-smooth-leave-active {
+        transition: all 0.2s ease;
+    }
+    // .collapse-smooth-enter-from {
+    //     height: 0px;
+    // }
+    .collapse-smooth-leave-from {
+        height: 80px !important;
+        opacity: 1;
+    }
     .chevron {
         transition: all ease 0.1s;
     }

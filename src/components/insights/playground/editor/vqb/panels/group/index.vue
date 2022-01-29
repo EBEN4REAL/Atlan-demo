@@ -142,16 +142,19 @@
 
             <!-- Show on expand -->
             <keep-alive>
-                <GroupSubPanel
-                    v-model:subpanels="
-                        activeInlineTab.playground.vqb.panels[index].subpanels
-                    "
-                    v-model:columnSubpanels="
-                        activeInlineTab.playground.vqb.panels[0].subpanels
-                    "
-                    :expand="expand"
-                    v-if="expand"
-                />
+                <transition name="collapse-smooth">
+                    <GroupSubPanel
+                        v-model:subpanels="
+                            activeInlineTab.playground.vqb.panels[index]
+                                .subpanels
+                        "
+                        v-model:columnSubpanels="
+                            activeInlineTab.playground.vqb.panels[0].subpanels
+                        "
+                        :expand="expand"
+                        v-if="expand"
+                    />
+                </transition>
             </keep-alive>
             <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
@@ -351,6 +354,30 @@
     })
 </script>
 <style lang="less" scoped>
+    .collapse-smooth-enter-active {
+        transition: all 0.25s ease-out;
+    }
+    .collapse-smooth-leave-active {
+        transition: all 0.25s ease;
+    }
+    .collapse-smooth-enter-from {
+        height: 0px;
+        // opacity: 0;
+    }
+    .collapse-smooth-enter-to {
+        height: 56px;
+    }
+    .collapse-smooth-leave-from {
+        height: 56px;
+        opacity: 1;
+    }
+
+    .collapse-smooth-leave-to {
+        // transform: translateX(20px);
+        height: 0px;
+        opacity: 0;
+    }
+
     .chevron {
         transition: all ease 0.1s;
     }

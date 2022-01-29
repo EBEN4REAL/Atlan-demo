@@ -135,10 +135,42 @@
                         </a-form-item>
 
                         <div v-show="selectedEnumOptions?.length" class="">
-                            <div class="mb-2 font-normal font-size-sm">
-                                Enum options:
+                            <div class="flex justify-between">
+                                <div class="mb-2 font-normal font-size-sm">
+                                    Enum options:
+                                </div>
+                                <span
+                                    v-auth="access.UPDATE_ENUM"
+                                    v-if="!enumEdit"
+                                    class="cursor-pointer hover:underline text-primary"
+                                    @click="handleEditEnum"
+                                    >Edit</span
+                                >
+
+                                <div v-else class="space-x-3">
+                                    <span
+                                        v-auth="access.UPDATE_ENUM"
+                                        class="cursor-pointer hover:underline text-primary"
+                                        @click="discardEnumEdit"
+                                        >Cancel</span
+                                    >
+                                    <span
+                                        v-auth="access.UPDATE_ENUM"
+                                        class="cursor-pointer hover:underline text-primary"
+                                        @click="saveChanges"
+                                        >Save</span
+                                    >
+                                </div>
                             </div>
-                            <p>
+                            <template v-if="enumEdit">
+                                <MultiInput
+                                    placeholder='Enter values separated by a "," or "↵"'
+                                    :value="enumValueModel"
+                                    delimiter=","
+                                    @change="handleChange"
+                                />
+                            </template>
+                            <p v-else>
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
@@ -394,6 +426,7 @@
         Ref,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
+    import { onKeyStroke } from '@vueuse/core'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -406,13 +439,17 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
-    import { onKeyStroke } from '@vueuse/core'
     import Truncate from '@/common/ellipsis/index.vue'
+    import access from '~/constant/accessControl/map'
+    import { useUpdateEnums } from '../enums/composables/useModifyEnums'
+    import { useTypedefStore } from '~/store/typedef'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
+            MultiInput,
             NewEnumForm,
             Truncate,
             VNodes: (_, { attrs }) => attrs.vnodes,
@@ -693,11 +730,88 @@
                 }
             }
 
+            /** ? Edit Enum properties logic starts here   */
+
+            const enumEdit = ref<boolean>(false)
+            const enumValueModel = ref([])
+
+            const initEnumModel = () => {
+                // ? initialize enum edit input v-model
+                enumValueModel.value = selectedEnumOptions.value?.map(
+                    (x) => x.value
+                )
+            }
+
+            const handleEditEnum = () => {
+                initEnumModel()
+                enumEdit.value = true
+            }
+            const discardEnumEdit = () => {
+                enumValueModel.value = []
+                enumEdit.value = false
+            }
+
+            function handleChange(values: String[]) {
+                enumValueModel.value = values
+            }
+
+            // Enum Updation flow
+            const { updateEnums, updatedEnumDef, reset } = useUpdateEnums()
+            const {
+                error: updateError,
+                isReady,
+                state,
+                execute,
+                isLoading,
+            } = updateEnums
+
+            async function saveChanges() {
+                const store = useTypedefStore()
+                const enumObject = enumList.value?.find(
+                    (item) => item.name === form.value.options.enumType
+                )
+                enumObject.elementDefs = enumValueModel.value.map(
+                    (value, ordinal) => ({
+                        value,
+                        ordinal,
+                    })
+                )
+
+                updatedEnumDef.value = enumObject
+                message.success({ key: 'enum', content: 'Updating Enum...' })
+                await execute()
+                const updatedEnum =
+                    state?.value?.enumDefs?.length && state.value.enumDefs[0]
+                store.updateEnum(updatedEnum)
+            }
+
+            // FIXME: May be simplified
+            watch([updateError, isReady], () => {
+                if (isReady && state.value.enumDefs.length) {
+                    message.success({
+                        key: 'enum',
+                        content: 'Enum updated.',
+                        duration: 2,
+                    })
+                    enumEdit.value = false
+                }
+                if (updateError.value) {
+                    message.error({
+                        key: 'enum',
+                        content: 'Failed to update Enum.',
+                        duration: 2,
+                    })
+                    reset()
+                }
+            })
+
+            /** ? Edit Enum properties logic starts ends   */
+
             const handleEnumSelect = (v) => {
                 form.value.typeName = v
                 updateEnumValues()
+                if (enumEdit.value) enumEdit.value = false
             }
-
             /**
              * @param {String} value new type name selected
              * @desc set enum boolean in options & emit changes
@@ -821,6 +935,13 @@
             })
 
             return {
+                discardEnumEdit,
+                handleEditEnum,
+                saveChanges,
+                enumValueModel,
+                handleChange,
+                enumEdit,
+                access,
                 createMore,
                 refetchTypedef,
                 handleEnumSelect,

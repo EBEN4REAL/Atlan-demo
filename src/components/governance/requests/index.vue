@@ -148,14 +148,16 @@
                     @action="handleRequestAction($event, index)"
                 /> -->
                 <div class="h-6" @mouseenter="mouseEnterContainer" />
-                <VirtualList
-                    :data="requestList"
-                    data-key="id"
-                    class="container-scroll"
-                    @mouseleave="mouseLeaveContainer"
+                <transition-group
+                    tag="div"
+                    name="request-done"
+                    class="overflow-auto container-scroll"
                 >
-                    <template #default="{ item, index }">
-                        <!-- @select="selectRequest(item.id, index)" -->
+                    <div
+                        v-for="(item, index) in requestList"
+                        :key="item.id"
+                        @mouseleave="mouseLeaveContainer"
+                    >
                         <RequestListItem
                             :active="index === selectedIndex"
                             :request="item"
@@ -165,8 +167,8 @@
                             @action="handleRequestAction($event, index)"
                             @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
-                    </template>
-                </VirtualList>
+                    </div>
+                </transition-group>
                 <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
                     class="flex items-center justify-between p-4 bg-white border-t border-gray-light"
@@ -571,7 +573,16 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+    .request-done-leave-active {
+        transition: all 300ms cubic-bezier(0.4, 0, 1, 1);
+        // transform: translateX(-500px);
+    }
+    .request-done-leave-to {
+        opacity: 0;
+        transform: translateX(-100%);
+        // height: 0;
+    }
     .drawer-request {
         .ant-collapse-content {
             background: none !important;

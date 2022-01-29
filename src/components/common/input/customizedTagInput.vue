@@ -107,14 +107,16 @@
         }
     }
 
+    const trimArr = (arr) => arr.map((s) => s.trim())
+
     const change = (v) => {
-        let finalValue = v
+        let finalValue = trimArr(v)
         if (delimiter.value) {
             finalValue = v.reduce((acc, cur) => {
                 acc.push(...cur.split(delimiter.value).filter((w) => !!w))
                 return acc
             }, [])
-            localValue.value = finalValue
+            localValue.value = trimArr(finalValue)
         }
         if (['int', 'long', 'number'].includes(dataType.value.toLowerCase()))
             handleNumber(finalValue)

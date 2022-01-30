@@ -336,6 +336,16 @@ export default function useAssetInfo() {
     }
 
     const getLineagePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            if (tableGuid) {
+                return `/assets/${tableGuid}/lineage`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/lineage`
+            }
+        }
         return `/assets/${asset.guid}/lineage`
     }
 

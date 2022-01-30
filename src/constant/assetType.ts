@@ -397,7 +397,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['folder', 'query', 'model', 'tile', 'dashboard'],
+        relationships: ['folder', /* 'query', */ 'model', 'tile', 'dashboard'],
         groupOrder: 5,
     },
     {
@@ -406,7 +406,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['explores', 'query', 'project', 'fields', 'look'],
+        relationships: ['explores', /* 'query', */ 'project', 'fields', 'look'],
         groupOrder: 5,
     },
     {
@@ -418,7 +418,7 @@ export const assetTypeList: {
         relationships: ['explores', 'models', 'fields'],
         groupOrder: 5,
     },
-    {
+    /*  {
         id: 'LookerQuery',
         label: 'Query',
         isDiscoverable: true,
@@ -426,14 +426,14 @@ export const assetTypeList: {
         parents: [],
         relationships: ['tile', 'model', 'look'],
         groupOrder: 5,
-    },
+    }, */
     {
         id: 'LookerTile',
         label: 'Tile',
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['query', 'dashboard', 'look'],
+        relationships: [/* 'query', */ 'dashboard', 'look'],
         groupOrder: 5,
     },
 ]

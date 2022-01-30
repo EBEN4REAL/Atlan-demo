@@ -58,10 +58,10 @@
                 </a-form-item> -->
                 <a-form-item label="Values">
                     <MultiInput
-                        placeholder='Enter values separated by a "," or "↵"'
+                        placeholder='Enter values separated by a  ";" or "↵"'
                         :disabled="!isEditing"
                         :value="enumValues"
-                        delimiter=","
+                        delimiter=";"
                         @change="handleChange"
                     />
                     <!-- TODO: Can this be done using computed and v-modal -->

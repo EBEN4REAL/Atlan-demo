@@ -164,9 +164,9 @@
                             </div>
                             <template v-if="enumEdit">
                                 <MultiInput
-                                    placeholder='Enter values separated by a "," or "↵"'
+                                    placeholder='Enter values separated by a  ";" or "↵"'
                                     :value="enumValueModel"
-                                    delimiter=","
+                                    delimiter=";"
                                     @change="handleChange"
                                 />
                             </template>

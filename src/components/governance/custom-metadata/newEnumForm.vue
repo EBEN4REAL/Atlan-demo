@@ -19,9 +19,9 @@
             <a-form-item label="Values" name="elementDefs">
                 <MultiInput
                     ref="valuesRef"
-                    placeholder='Enter values separated by a "," or "↵"'
+                    placeholder='Enter values separated by a  ";" or "↵"'
                     :value="form.elementDefs"
-                    delimiter=","
+                    delimiter=";"
                     @change="handleChange"
                 />
             </a-form-item>

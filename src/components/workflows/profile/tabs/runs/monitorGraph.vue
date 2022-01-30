@@ -233,13 +233,7 @@
                 )
 
                 // useComputeGraph
-                const {
-                    nodes,
-                    reset,
-                    getNodeParent,
-                    isCollapsedNode,
-                    getNode,
-                } = useComputeGraph(
+                const { nodes } = useComputeGraph(
                     graph,
                     graphLayout,
                     graphData,
@@ -281,19 +275,20 @@
                         node: Node
                         options: Model.SetOptions
                     }) => {
-                        if (args.node.id) {
-                            if (isCollapsedNode(args.node.id)) {
-                                expandedNodes.value.push(
-                                    getNodeParent(args.node.id)
-                                )
-                                initialize(true)
-                            } else {
-                                expandedNodes.value.push(args.node.id)
-                                // console.log(getNode(args.node.id))
-                                // emit('select', getNode(args.node.id))
-                            }
-                            // console.log(getNodeParent(args.node.id))
-                        }
+                        // alert('selct')
+                        // if (args.node.id) {
+                        //     if (isCollapsedNode(args.node.id)) {
+                        //         expandedNodes.value.push(
+                        //             getNodeParent(args.node.id)
+                        //         )
+                        //         initialize(true)
+                        //     } else {
+                        //         expandedNodes.value.push(args.node.id)
+                        //         // console.log(getNode(args.node.id))
+                        //         // emit('select', getNode(args.node.id))
+                        //     }
+                        //     // console.log(getNodeParent(args.node.id))
+                        // }
                     }
                 )
             }
@@ -344,10 +339,40 @@
 </script>
 
 <style lang="less">
-    .start-node {
-        height: 55px;
-        width: 55px;
-        border-radius: 50%;
+    .x6-node foreignObject > body {
+        background: transparent !important;
+    }
+
+    .bg-success-run {
+        background-color: #eeffef;
+    }
+
+    .bg-error-run {
+        background-color: #f9dcd2;
+    }
+
+    .x6-node-selected {
+        border-color: #1890ff;
+        border-radius: 2px;
+        box-shadow: 0 0 0 4px #d4e8fe;
+        .Succeeded {
+            border-color: #52c41a;
+            border-radius: 2px;
+            box-shadow: 0 0 0 4px #ccecc0;
+        }
+
+        .Failed {
+            border-color: #ff4d4f;
+            border-radius: 2px;
+            box-shadow: 0 0 0 4px #fedcdc;
+        }
+    }
+    .x6-node-selected .node.success {
+    }
+    .x6-node-selected .node.failed {
+        border-color: #ff4d4f;
+        border-radius: 2px;
+        box-shadow: 0 0 0 4px #fedcdc;
     }
 
     .monitor {

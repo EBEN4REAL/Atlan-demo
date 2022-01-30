@@ -1,13 +1,7 @@
 <template>
     <div class="flex flex-col flex-grow h-full overflow-hidden">
         <div class="relative flex-grow overflow-hidden bg-primary-light">
-            <MonitorGraph
-                :graph-data="selectedRun"
-                class=""
-                @refresh="handleRefresh"
-                @select="handleSelectPod"
-            />
-            <div class="absolute rounded right-10 top-10">
+            <div class="absolute z-10 rounded left-10 top-10">
                 <div class="flex flex-col">
                     <RunsSelect
                         v-model="selectedRunName"
@@ -22,6 +16,22 @@
                     ></Sidebar>
                 </div>
             </div>
+            <MonitorGraph
+                :graph-data="selectedRun"
+                class=""
+                @refresh="handleRefresh"
+                @select="handleSelectPod"
+            />
+            <!--     <div class="absolute rounded right-10 top-10">
+                <div class="flex flex-col">
+                    <Sidebar
+                        :selected-run="selectedRun"
+                        :selected-pod="selectedPod"
+                        class="mt-3"
+                        style="width: 300px"
+                    ></Sidebar>
+                </div>
+            </div> -->
         </div>
     </div>
 </template>

@@ -18,7 +18,7 @@ export default function useCreateGraph(
     graph.value = new Graph({
         async: true, // Saves resources and enhances performance.
         autoResize: true,
-        interacting: false,
+        interacting: true,
         container: graphContainer.value,
         selecting: {
             enabled: true,
@@ -82,9 +82,9 @@ export default function useCreateGraph(
         type: 'dagre',
         ranksep: 25,
         nodesep: 60,
-        align: 'DR',
         rankDir: 'TB',
-        controlPoints: false,
+        controlPoints: true,
+        workerEnabled: true,
     })
 
     return {

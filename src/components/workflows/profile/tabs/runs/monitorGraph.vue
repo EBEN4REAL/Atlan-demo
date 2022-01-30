@@ -168,7 +168,7 @@
             },
             selectedPod: {
                 type: Object,
-                required: true,
+                required: false,
             },
         },
         emits: ['select'],
@@ -238,7 +238,7 @@
                     graphLayout,
                     graphData,
                     currZoom,
-                    expandedNodes
+                    true
                 )
 
                 firstNode.value = nodes.value[0]
@@ -253,12 +253,12 @@
                 )
 
                 // mousewheel events
-                graph.value.on('blank:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
-                graph.value.on('cell:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
+                // graph.value.on('blank:mousewheel', () => {
+                //     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+                // })
+                // graph.value.on('cell:mousewheel', () => {
+                //     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+                // })
 
                 // The graph is rendered asynchronously, so any synchronous
                 // interactions need to take place after the render is complete.

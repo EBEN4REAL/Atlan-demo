@@ -6,7 +6,7 @@ export default function useComputeGraph(
     graphLayout,
     workflowData,
     currZoom,
-    full: boolean
+    isFull: boolean
 ) {
     interface PrepareNode {
         nodeName: string
@@ -169,7 +169,7 @@ export default function useComputeGraph(
                          
                      
                          </div>    
-                            
+                         
            
                             </div>`
                 },
@@ -192,12 +192,40 @@ export default function useComputeGraph(
 
             const name = getNode(item?.nodeName).name
 
-            if (isFirstLevel(name)) {
+            if (isFull) {
+                nodes.value.push(newNode(item, rootNodeName))
+
+                if (item?.parent) {
+                    const edge = {
+                        id: `${item.parent}@${getNode(item?.nodeName).name}`,
+                        source: item.parent,
+                        target: item?.nodeName,
+                        router: { name: 'metro' },
+                        connector: { name: 'rounded' },
+
+                        attrs: {
+                            line: {
+                                stroke: '#666',
+                                strokeWidth: 1,
+                                targetMarker: {
+                                    name: 'block',
+                                    targetMarker: 'classic',
+                                    stroke: '#666',
+                                    fill: '#666',
+
+                                    width: 5,
+                                    height: 5,
+                                },
+                            },
+                        },
+                    }
+
+                    edges.value.push(edge)
+                }
+            } else if (isFirstLevel(name)) {
                 if (!consideredChildren.has(item?.nodeName)) {
                     nodes.value.push(newNode(item, rootNodeName))
                 }
-
-                const stroke = '#aaaaaa'
 
                 let source = previousCollapsed
                 const found = nodes.value.find((i) => i.id === item?.parent)
@@ -249,8 +277,6 @@ export default function useComputeGraph(
             if (!node) {
                 continue
             }
-            console.log('node push', node.id)
-            console.log('node push', nodes)
             pushChildren(node.id, queue)
         }
     }

@@ -80,11 +80,11 @@ export default function useCreateGraph(
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
-        ranksep: 25,
+        ranksep: 40,
         nodesep: 60,
         rankDir: 'TB',
         controlPoints: true,
-        workerEnabled: true,
+        workerEnabled: false,
     })
 
     return {

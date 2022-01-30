@@ -6,12 +6,12 @@
             expand-trigger="hover"
             @change="onChange"
         >
-            <a href="#" class="flex">
+            <a href="#" class="flex items-center">
                 <div
-                    class="flex items-center text-sm font-semibold cursor-pointer hover:text-primary"
                     v-if="selectedValue.length > 0"
+                    class="flex items-center text-sm font-semibold cursor-pointer hover:text-primary"
                 >
-                    <div class="" v-if="selectedValue.length === 1">
+                    <div v-if="selectedValue.length === 1" class="">
                         All Assets
                     </div>
                     <div
@@ -20,32 +20,33 @@
                     >
                         <div v-if="selectedValue[0] === 'persona'">Persona</div>
                         <div v-if="selectedValue[0] === 'purpose'">Purpose</div>
+
                         <AtlanIcon icon="ChevronRight" class="mx-1" />
 
                         <div
-                            class="flex items-center"
                             v-if="selectedValue[0] === 'persona'"
+                            class="flex items-center"
                         >
                             <div class="capitalize">
                                 {{ getPersona(selectedValue[1])?.displayName }}
                             </div>
                             <AtlanIcon
-                                icon="Lock"
-                                class="mb-1 ml-1 h4"
                                 v-if="!isAccessPersona(selectedValue[1])"
+                                icon="Lock"
+                                class="mb-0.5 ml-1 h4"
                             ></AtlanIcon>
                         </div>
                         <div
-                            class="flex items-center"
                             v-if="selectedValue[0] === 'purpose'"
+                            class="flex items-center"
                         >
                             <div class="capitalize">
                                 {{ getPurpose(selectedValue[1])?.displayName }}
                             </div>
                             <AtlanIcon
-                                icon="Lock"
-                                class="h-3 ml-1"
                                 v-if="!isAccessPurpose(selectedValue[1])"
+                                icon="Lock"
+                                class="mb-0.5 ml-1 h4"
                             ></AtlanIcon>
                         </div>
                     </div>
@@ -67,6 +68,7 @@
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
     import { capitalizeFirstLetter } from '~/utils/string'
+
     interface Option {
         value: string
         label: string
@@ -94,8 +96,8 @@
 
             const authStore = useAuthStore()
 
-            const personas = authStore.personas
-            const purposes = authStore.purposes
+            const { personas } = authStore
+            const { purposes } = authStore
 
             const text = ref<string[]>([])
 

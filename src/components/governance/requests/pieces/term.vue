@@ -9,7 +9,7 @@
             :term="{ guid: request.sourceGuid }"
             @visible="handleTermPopoverVisibility"
         >
-            <Pill :label="data?.name" :has-action="false">
+            <Pill class="term-pill" :label="data?.name" :has-action="false">
                 <template #prefix>
                     <AtlanIcon icon="Term"></AtlanIcon>
                 </template>
@@ -114,6 +114,9 @@
             &:hover {
                 background: transparent !important;
                 @apply text-gray-700 !important;
+                span {
+                    border-bottom: 1px solid rgba(111, 117, 144, 1) !important;
+                }
             }
         }
     }

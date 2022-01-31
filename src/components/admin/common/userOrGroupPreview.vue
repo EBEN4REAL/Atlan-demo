@@ -78,7 +78,7 @@
                                 </span>
                             </div>
                             <span class="mr-1 text-sm truncate w-28">
-                                @{{ name }}
+                                {{ name }}
                             </span>
                             <span v-if="details" class="mr-1 text-sm">
                                 <span class="text-gray-300">&bull;</span>
@@ -191,6 +191,12 @@
             ),
             Assets: defineAsyncComponent(
                 () => import('@/admin/users/userPreview/assets.vue')
+            ),
+            Integrations: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/admin/users/userPreview/integrations/integrations.vue'
+                    )
             ),
             Avatar,
             ErrorView,

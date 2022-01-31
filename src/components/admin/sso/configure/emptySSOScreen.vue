@@ -26,7 +26,8 @@
                             v-if="!provider.isCustomSaml"
                             :src="provider.image"
                             :alt="provider.title"
-                            class="w-6 h-6 mr-5"
+                            class="mr-5"
+                            :class="provider.imageClass||'w-6 h-6'"
                         />
                         <AtlanIcon
                             v-else

@@ -11,7 +11,9 @@
                 <template v-for="v in attribute.value" :key="v">
                     <span v-linkified class="space-x-1 text-primary">
                         <img
-                            :src="`https://www.google.com/s2/favicons?domain=${v}`"
+                            :src="`https://www.google.com/s2/favicons?domain=${getDomain(
+                                v
+                            )}`"
                             :alt="v"
                             class="inline-block w-4 h-4"
                         />{{ v }}</span
@@ -29,7 +31,9 @@
                 class="flex items-center text-primary gap-x-1"
             >
                 <img
-                    :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
+                    :src="`https://www.google.com/s2/favicons?domain=${getDomain(
+                        attribute.value
+                    )}`"
                     :alt="attribute.value"
                     class="w-4 h-4"
                 />
@@ -153,6 +157,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
+    import { getDomain } from '~/utils/url'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
@@ -193,6 +198,7 @@
             )
 
             return {
+                getDomain,
                 isMultivalued,
                 getDatatypeOfAttribute,
                 formatDisplayValue,

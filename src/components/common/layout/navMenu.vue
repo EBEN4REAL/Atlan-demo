@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-between w-full h-full">
-        <div class="flex items-center">
+        <div class="flex">
             <AtlanIcon
                 icon="Dots"
                 v-if="!isHome"
@@ -9,7 +9,7 @@
                 @click="$emit('toggleNavbar')"
             />
 
-            <div v-if="logoUrl && !logoNotFound" class="mb-1">
+            <div v-if="logoUrl && !logoNotFound" class="mt-1">
                 <router-link to="/">
                     <img
                         :src="logoUrl"
@@ -21,13 +21,12 @@
             </div>
             <p
                 v-else
-                class="mt-1 text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary"
-                style="margin-top: 3px"
+                class="text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary"
             >
                 {{ logoName }}
             </p>
 
-            <div class="flex items-center ml-1 gap-x-1" v-if="isAssets">
+            <div v-if="isAssets" class="flex items-center ml-1 gap-x-1">
                 <AtlanIcon icon="ChevronRight"></AtlanIcon>
                 <GlobalSelection
                     :key="dirtyTimestamp"

@@ -49,6 +49,7 @@ import {
     Row,
     Col,
     Result,
+    Skeleton
 } from 'ant-design-vue'
 import { UserModule } from '~/types/vitessg'
 
@@ -96,6 +97,7 @@ export const install: UserModule = ({ app }) => {
     app.use(Row)
     app.use(Col)
     app.use(Result)
+    app.use(Skeleton)
 
     app.config.globalProperties.$message = message
     app.config.globalProperties.$error = Modal.error

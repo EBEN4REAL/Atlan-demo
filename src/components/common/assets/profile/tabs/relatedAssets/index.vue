@@ -6,10 +6,10 @@
         :filters="tabFilter"
         :static-use="true"
         custom-placeholder="Search all related assets"
-        emptyViewText="No related assets found"
-        :enableSidebarDrawer="true"
-        aggregationTabClass="px-6"
-        searchBarClass="px-6 my-1"
+        empty-view-text="No related assets found"
+        :enable-sidebar-drawer="true"
+        aggregation-tab-class="px-6"
+        search-bar-class="px-6 my-1"
         asset-list-class="mx-6 mt-1"
     />
 </template>
@@ -17,10 +17,10 @@
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
 
+    import { whenever } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetList from '@/common/assetList/assetList.vue'
     import { useRelations } from '~/composables/discovery/useRelations'
-    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'RelatedAssetsTab',
@@ -38,9 +38,7 @@
             const { guidList, isReady: isGuidArrayReady } =
                 useRelations(selectedAsset)
 
-            const tabFilter = computed(() => {
-                return { guidList: guidList.value }
-            })
+            const tabFilter = computed(() => ({ guidList: guidList.value }))
 
             whenever(isGuidArrayReady, () => (fetchAssets.value = true))
 

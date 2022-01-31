@@ -1,8 +1,7 @@
 <template>
     <div class="h-full p-3">
         <div
-            class="w-full h-full p-3 rounded-lg"
-            :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
+            class="w-full p-3 rounded-lg vqb"
             style="z-index: 3; background-color: #f6f8fd"
         >
             <template
@@ -19,7 +18,6 @@
                     class="mb-4 bg-white rounded-lg"
                 ></component>
             </template>
-
             <FloatingAddAction
                 @add="(type, panel) => handleAddPanel(type, panel)"
                 :panelInfo="panelInfo"
@@ -142,7 +140,7 @@
         background-color: #f4f4f4;
     }
     .vqb {
-        height: calc(100% - 4.5rem);
+        height: calc(100% - 4rem);
         overflow-y: auto;
     }
     .vqb-scroll-lock {

@@ -27,98 +27,47 @@
         </div>
 
         <div class="flex flex-col w-full h-full mt-2 overflow-y-scroll">
-            <div
-                class="flex items-center justify-between w-full px-4 py-4 cursor-pointer item-border"
-                @click="expandedToday = !expandedToday"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon
-                        :icon="expandedToday ? 'CaretDown' : 'CaretRight'"
-                        class="w-4 h-4 mr-1 mb-0.5"
-                    />
-                    <span class="text-base font-bold text-gray-700">Today</span>
+            <div v-for="(block, index) in historyState" :key="index">
+                <div
+                    class="flex items-center justify-between w-full px-4 py-4 cursor-pointer item-border"
+                    @click="
+                        expandState[block.title] = !expandState[block.title]
+                    "
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            :icon="
+                                expandState[block.title]
+                                    ? 'CaretDown'
+                                    : 'CaretRight'
+                            "
+                            class="w-4 h-4 mr-1 mb-0.5"
+                        />
+                        <span class="text-base font-bold text-gray-700">{{
+                            block.title
+                        }}</span>
+                    </div>
+                    <span class="text-sm text-gray-500">
+                        {{ block.date }}
+                    </span>
                 </div>
-                <span class="text-sm text-gray-500">{{
-                    dayjs().format('MMMM D, YYYY')
-                }}</span>
+
+                <QueryHistoryList
+                    v-if="expandState[block.title]"
+                    :lowerLimit="block.endDate"
+                    :upperLimit="block.startDate"
+                />
             </div>
-
-            <QueryHistoryList
-                v-if="expandedToday"
-                :lowerLimit="dayjs(new Date(Date.now())).endOf('day').format()"
-                :upperLimit="
-                    dayjs(new Date(Date.now())).startOf('day').format()
-                "
-            />
-
-            <div
-                class="flex items-center justify-between w-full px-4 py-4 cursor-pointer item-border"
-                @click="expandedYesterday = !expandedYesterday"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon
-                        :icon="expandedYesterday ? 'CaretDown' : 'CaretRight'"
-                        class="w-4 h-4 mr-1 mb-0.5"
-                    />
-                    <span class="text-base font-bold text-gray-700"
-                        >Yesterday</span
-                    >
-                </div>
-                <span class="text-sm text-gray-500">{{
-                    dayjs(Date.now() - 24 * 60 * 60 * 1000).format(
-                        'MMMM D, YYYY'
-                    )
-                }}</span>
-            </div>
-
-            <QueryHistoryList
-                v-if="expandedYesterday"
-                :lowerLimit="
-                    dayjs(new Date(Date.now() - 24 * 60 * 60 * 1000))
-                        .endOf('day')
-                        .format()
-                "
-                :upperLimit="
-                    dayjs(new Date(Date.now() - 24 * 60 * 60 * 1000))
-                        .startOf('day')
-                        .format()
-                "
-            />
-
-            <div
-                class="flex items-center justify-between w-full px-4 py-4 cursor-pointer item-border"
-                @click="expandedOld = !expandedOld"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon
-                        :icon="expandedOld ? 'CaretDown' : 'CaretRight'"
-                        class="w-4 h-4 mr-1 mb-0.5"
-                    />
-                    <span class="text-base font-bold text-gray-700">Older</span>
-                </div>
-            </div>
-            <QueryHistoryList
-                v-if="expandedOld"
-                :lowerLimit="
-                    dayjs(new Date(Date.now() - 48 * 60 * 60 * 1000))
-                        .endOf('day')
-                        .format()
-                "
-                :upperLimit="
-                    dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
-                        .startOf('day')
-                        .format()
-                "
-            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, onMounted } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import QueryHistoryList from './queryHistoryList.vue'
     import dayjs from 'dayjs'
+    import { historyState } from './composables/useQueryHistory'
 
     export default defineComponent({
         components: { AtlanIcon, QueryHistoryList },
@@ -130,12 +79,25 @@
             const expandedYesterday = ref(false)
             const expandedOld = ref(false)
 
+            const expandState = ref({})
+
+            onMounted(() => {
+                historyState.forEach((block) => {
+                    expandState.value = {
+                        ...expandState.value,
+                        [block.title]: false,
+                    }
+                })
+            })
+
             return {
                 searchQuery,
                 dayjs,
                 expandedToday,
                 expandedYesterday,
                 expandedOld,
+                historyState,
+                expandState,
             }
         },
     })

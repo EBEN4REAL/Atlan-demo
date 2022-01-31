@@ -1,5 +1,4 @@
 <template>
-    <!-- {{ current }} : {{ Math.ceil(totalPages) }} : {{ loading }} -->
     <div
         v-if="current < Math.ceil(totalPages)"
         class="flex items-center w-full h-12 px-4 item-border"
@@ -9,7 +8,9 @@
             @click="() => handlePagination(current + 1)"
         >
             <span>Load more </span>
-            <span class="ml-2" v-if="loading"> <LoadingView /> </span>
+            <span class="ml-2" v-if="loading">
+                <a-spin size="small" />
+            </span>
         </div>
     </div>
 </template>

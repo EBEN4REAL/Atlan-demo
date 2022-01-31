@@ -1,17 +1,18 @@
 <template>
     <div
         v-if="computedItems?.length > 0"
-        class="flex items-center px-3 py-2 bg-white group-hover:border-white float-btn-container"
+        class="flex items-center bg-white group-hover:border-white float-btn-container"
     >
         <div
-            class="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer plus-button bg-primary"
+            class="flex items-center justify-center p-2.5 rounded-full cursor-pointer plus-button bg-primary"
+            style="margin-top: -0.25px; margin-left: -1px"
         >
             <AtlanIcon class="w-3 h-3" icon="PlusWhite"></AtlanIcon>
         </div>
         <div class="ml-2 gap-x-1 action-buttons-container">
             <template v-for="item in computedItems" :key="item.label">
                 <div
-                    class="flex items-center px-2 rounded-lg cursor-pointer hover:bg-primary-light hover:text-primary panel-action"
+                    class="flex items-center px-1.5 rounded-lg cursor-pointer hover:bg-primary-light hover:text-primary panel-action"
                     @click="() => handleAdd(item.id)"
                 >
                     <AtlanIcon
@@ -164,5 +165,7 @@
             //     transform: rotate(135deg);
             // }
         }
+        padding: 2px 8.5px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
     }
 </style>

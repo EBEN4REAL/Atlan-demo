@@ -2,7 +2,7 @@
     <div
         v-if="!readOnly"
         :class="[
-            true ? 'opacity-100' : 'opacity-0',
+            containerHovered ? 'opacity-100' : 'opacity-0',
             'flex border border-gray-light rounded   items-strech',
             'h-8',
         ]"

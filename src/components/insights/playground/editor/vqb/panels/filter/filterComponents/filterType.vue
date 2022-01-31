@@ -4,6 +4,7 @@
             v-model:active="filterType"
             :disabled="disabled"
             :data="tabConfig"
+            variant="small"
         />
     </div>
 </template>

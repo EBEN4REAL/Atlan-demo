@@ -4,7 +4,7 @@
             <!--explorer pane start -->
             <div class="w-full h-full pt-3 overflow-y-hidden">
                 <div class="flex items-center justify-between px-4">
-                    <span class="text-sm font-bold text-gray-700">move to</span>
+                    <span class="text-sm font-bold text-gray-700">Move to</span>
 
                     <a-tooltip placement="right" color="#363636">
                         <template #title> Add folder </template>

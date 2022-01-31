@@ -6,7 +6,7 @@
     >
         <div
             @click="emit('toggleExpand')"
-            class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
+            class="box-border relative flex items-center px-3 pt-3 pb-3 cursor-pointer"
         >
             <div
                 class="flex items-center justify-between w-full min-h-panel-header"

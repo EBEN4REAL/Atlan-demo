@@ -72,13 +72,13 @@
                         </div>
                         <!-- FIXME why is this not working? , component resolve faield-->
                         <!-- <LearnMore>
-                            <Button
+                            <AtlanButton
                                 color="secondary"
                                 size="sm"
                                 padding="compact"
                             >
                                 Learn More
-                            </Button>
+                            </AtlanButton>
                         </LearnMore> -->
 
                         <a-popover
@@ -205,13 +205,13 @@
                                 </div>
                                 <!-- learnMore component is failing import -->
                             </template>
-                            <Button
+                            <AtlanButton
                                 color="secondary"
                                 size="sm"
                                 padding="compact"
                             >
                                 Learn More
-                            </Button>
+                            </AtlanButton>
                         </a-popover>
                     </div>
                     <div class="">
@@ -255,18 +255,18 @@
                                         Are you sure you want to start over?
                                     </h1>
                                     <div class="flex justify-end space-x-2">
-                                        <Button
+                                        <AtlanButton
                                             @click="reconfigure = false"
                                             padding="compact"
                                             size="sm"
                                             color="minimal"
-                                            >Cancel</Button
+                                            >Cancel</AtlanButton
                                         >
-                                        <Button
+                                        <AtlanButton
                                             @click="handleReconfigure"
                                             padding="compact"
                                             size="sm"
-                                            >Confirm</Button
+                                            >Confirm</AtlanButton
                                         >
                                     </div>
                                 </div>
@@ -293,7 +293,7 @@
                             >
                                 Installed
                             </div>
-                            <Button
+                            <AtlanButton
                                 v-auth="access.CREATE_INTEGRATION"
                                 v-else
                                 class="text-primary"
@@ -310,7 +310,7 @@
                             >
                                 Install now
                                 <AtlanIcon :icon="'ArrowRight'" />
-                            </Button>
+                            </AtlanButton>
                         </div>
                     </div>
                 </template>
@@ -319,15 +319,15 @@
         <footer>
             <div class="flex justify-end px-6 py-6 border-t">
                 <div v-if="tenantSlackStatus.configured" class="">
-                    <Button color="secondary" @click="$emit('close')"
-                        >Close</Button
+                    <AtlanButton color="secondary" @click="$emit('close')"
+                        >Close</AtlanButton
                     >
                 </div>
                 <div v-else class="flex items-center">
                     <a-button class="mr-3 border-0" @click="$emit('close')"
                         >Cancel
                     </a-button>
-                    <Button
+                    <AtlanButton
                         v-auth="access.CREATE_INTEGRATION"
                         :disabled="buttonDisabled"
                         :loading="isLoading"
@@ -336,7 +336,7 @@
                         @click="next"
                     >
                         {{ buttonCopy }}
-                    </Button>
+                    </AtlanButton>
                 </div>
             </div>
         </footer>

@@ -2,7 +2,7 @@
     <div
         v-if="!readOnly"
         :class="[
-            containerHovered ? 'opacity-100' : 'opacity-0',
+            true ? 'opacity-100' : 'opacity-0',
             'flex border border-gray-300 rounded   items-strech',
             'h-8',
         ]"
@@ -20,7 +20,8 @@
                 "
             >
                 <a-checkbox
-                    class="h-4 -mt-1"
+                    class="h-4"
+                    style="margin-top: -5px"
                     v-model:checked="
                         activeInlineTab.playground.vqb.panels[index].hide
                     "

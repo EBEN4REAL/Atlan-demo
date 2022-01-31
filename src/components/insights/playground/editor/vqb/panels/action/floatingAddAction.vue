@@ -35,6 +35,7 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
+    import { useUtils as useAddPanelsUtils } from './useUtils'
 
     export default defineComponent({
         name: 'FloatingAddAction',
@@ -49,6 +50,8 @@
             const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
             const { syncSortAggregateAndGroupPanel } = useSort()
+            const { getInitialPanelStructure } = useAddPanelsUtils()
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -118,54 +121,7 @@
             })
 
             const handleAdd = (type) => {
-                let panel = {}
-                let uuid = generateUUID()
-
-                if (type === 'aggregate') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        aggregators: [],
-                        expand: true,
-                    }
-                } else if (type === 'group') {
-                    panel = {
-                        id: uuid,
-                        tableQualfiedName: undefined,
-                        columns: [],
-                        columnsData: [],
-                        expand: true,
-                    }
-                } else if (type === 'sort') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        order: 'asc',
-                        expand: true,
-                        active: false,
-                        aggregateORGroupColumn: {},
-                    }
-                } else if (type === 'filter') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        filter: {
-                            filterType: 'and',
-                        },
-                        expand: true,
-                    }
-                } else if (type === 'join') {
-                    panel = {
-                        id: uuid,
-                        columnsDataLeft: {},
-                        columnsDataRight: {},
-                        joinType: {
-                            type: 'inner_join',
-                            name: 'Inner Join',
-                        },
-                        expand: true,
-                    }
-                }
+                const panel = getInitialPanelStructure(type)
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)

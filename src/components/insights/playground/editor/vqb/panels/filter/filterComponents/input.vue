@@ -4,7 +4,7 @@
         v-model:value="localeValue"
         :disabled="readOnly && !subpanel?.filter?.isVariable"
         placeholder="Enter Value"
-        class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        class="flex-1 w-full border-gray-200 rounded focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
         @change="(event) => onChange(event, type)"
     >

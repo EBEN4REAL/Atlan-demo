@@ -79,7 +79,7 @@
                 if (!join) {
                     _items.push({
                         id: 'join',
-                        icon: 'Union',
+                        icon: 'JoinHeader',
                         label: 'Join data',
                     })
                 }

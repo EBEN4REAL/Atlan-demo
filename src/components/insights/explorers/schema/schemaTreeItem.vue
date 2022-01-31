@@ -903,22 +903,11 @@
                             Object.keys(activeInlineTabCopy)
                         )
 
-                        // new logic for preview ctc
-                        // previous text
-
-                        // let newQuery = `\/* ${title(
-                        //     item.value
-                        // )} preview *\/\nSELECT * FROM \"${title(
-                        //     item.value
-                        // )}\" LIMIT 50;\n`
-
                         let newQuery = `-- ${title(
                             item.value
                         )} preview \nSELECT * FROM ${assetQuoteType}${title(
                             item.value
                         )}${assetQuoteType} LIMIT 50;\n`
-
-                        // console.log('selected query: ', item.value)
 
                         let databaseName = item.value?.databaseName
                         let schemaName = item.value?.schemaName

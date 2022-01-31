@@ -3,10 +3,10 @@
         <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
             <div
                 @click.self="toggleExpand"
-                class="box-border relative flex items-center p-3 cursor-pointer"
+                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
             >
                 <div
-                    class="flex items-center justify-between w-full"
+                    class="flex items-center justify-between w-full min-h-panel-header"
                     @click="toggleExpand"
                 >
                     <div class="flex items-center">
@@ -355,6 +355,9 @@
     })
 </script>
 <style lang="less" scoped>
+    .min-h-panel-header {
+        min-height: 36px;
+    }
     .collapse-smooth-enter-active {
         transition: all 0.25s ease-out;
     }

@@ -62,7 +62,6 @@
         // computed
     } from 'vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import AtlanTable from '@/common/table/previewTable/index.vue'
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -71,7 +70,7 @@
     import { Insights } from '~/services/sql/query'
 
     export default defineComponent({
-        components: { Tooltip, AtlanTable, AtlanPreviewTable },
+        components: { Tooltip, AtlanPreviewTable },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,

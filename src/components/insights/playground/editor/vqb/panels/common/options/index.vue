@@ -3,12 +3,12 @@
         v-if="!readOnly"
         :class="[
             true ? 'opacity-100' : 'opacity-0',
-            'flex border border-gray-300 rounded   items-strech',
+            'flex border border-gray-light rounded   items-strech',
             'h-8',
         ]"
     >
         <div
-            class="inline-flex items-center justify-center px-2 py-2 border-r border-gray-300"
+            class="inline-flex items-center justify-center px-2 py-2 border-r border-gray-light"
             @click.stop="() => {}"
         >
             <a-tooltip
@@ -30,7 +30,7 @@
             </a-tooltip>
         </div>
         <div
-            class="border-r border-gray-300"
+            class="border-r border-gray-light"
             v-if="
                 activeInlineTab.playground.vqb.panels.length - 1 !==
                     Number(index) && !readOnly
@@ -47,7 +47,7 @@
             </a-tooltip>
             <!-- ------------------------------ -->
         </div>
-        <div class="flex items-center border-r border-gray-300">
+        <div class="flex items-center">
             <a-tooltip placement="top" title="Delete step">
                 <AtlanBtn
                     @click.stop="() => handleDelete(index)"

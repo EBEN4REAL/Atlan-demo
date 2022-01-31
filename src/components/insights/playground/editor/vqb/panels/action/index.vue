@@ -6,7 +6,7 @@
             @visibleChange="handleOpenChange"
         >
             <AtlanBtn
-                class="flex-none border-r border-gray-300 border-none"
+                class="flex-none border-r border-none border-gray-light"
                 size="sm"
                 color="secondary"
                 @click.stop="() => {}"
@@ -15,6 +15,7 @@
                 <AtlanIcon
                     icon="Add"
                     class="w-4 h-4 -mx-1 text-gray"
+                    style="margin-top: 1px"
                 ></AtlanIcon>
             </AtlanBtn>
             <template #overlay>
@@ -134,9 +135,9 @@
                 if (!filter) {
                     _items.push({
                         id: 'filter',
-                        icon: 'Filter',
+                        icon: 'FilterFunnel',
                         label: 'Filter',
-                        class: 'mr-2',
+                        class: 'mr-2 -mt-0.5',
                     })
                 }
 

@@ -235,99 +235,20 @@
                 >
                     <EmptyView empty-screen="EmptyCM" class="h-24 mt-8 mb-6" />
                     <div
-                        class="flex flex-col items-center text-gray-500 gap-y-7"
+                        class="flex flex-col items-center text-gray-500 gap-y-5"
                     >
                         <div class="">
-                            <a-popover
-                                placement="bottom"
-                                :destroy-tooltip-on-hide="true"
-                                trigger="click"
-                            >
-                                <template #content>
-                                    <div
-                                        class="p-4 space-y-4 overflow-x-auto max-h-60 w-44"
-                                    >
-                                        <h1 class="font-bold">Properties</h1>
-                                        <template
-                                            v-for="p in applicableList"
-                                            :key="p.name"
-                                        >
-                                            <div class="flex flex-col">
-                                                <div class="flex gap-x-2">
-                                                    <div
-                                                        class="flex items-center w-full gap-x-1"
-                                                    >
-                                                        <div
-                                                            class="flex-grow text-gray-700"
-                                                        >
-                                                            <Truncate
-                                                                :tooltip-text="
-                                                                    p.displayName
-                                                                "
-                                                                width="500px"
-                                                                placement="left"
-                                                            />
-                                                        </div>
-                                                        <a-tooltip>
-                                                            <template #title>
-                                                                <span>{{
-                                                                    p.options
-                                                                        .description
-                                                                }}</span>
-                                                            </template>
-                                                            <div class="">
-                                                                <AtlanIcon
-                                                                    v-if="
-                                                                        p
-                                                                            .options
-                                                                            .description
-                                                                    "
-                                                                    class="h-3 text-gray-400 hover:text-gray-500"
-                                                                    icon="Info"
-                                                                />
-                                                            </div>
-                                                        </a-tooltip>
-                                                    </div>
-                                                    <span
-                                                        class="flex items-center text-gray-500 capitalize gap-x-1"
-                                                    >
-                                                        <div class="flex">
-                                                            <AtlanIcon
-                                                                v-if="
-                                                                    p.options
-                                                                        .multiValueSelect ===
-                                                                    'true'
-                                                                "
-                                                                icon="Array"
-                                                                class="h-3"
-                                                            />
-                                                            <AtlanIcon
-                                                                :icon="
-                                                                    getDataTypeIcon(
-                                                                        p
-                                                                            ?.options
-                                                                            ?.primitiveType
-                                                                    )
-                                                                "
-                                                                class="h-3"
-                                                            />
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                                <span
-                                    class="underline cursor-pointer text-primary"
-                                    >{{
-                                        applicableList.length
-                                    }}
-                                    properties</span
-                                >
-                            </a-popover>
-                            <span
-                                v-if="
+                            <div v-if="isEvaluating" class="w-64">
+                                <a-skeleton
+                                    :loading="true"
+                                    active
+                                    class="w-full"
+                                    :title="false"
+                                    :paragraph="{ rows: 2 }"
+                                />
+                            </div>
+                            <template
+                                v-else-if="
                                     selectedAssetUpdatePermission(
                                         selectedAsset,
                                         isDrawer,
@@ -335,9 +256,18 @@
                                     )
                                 "
                             >
-                                are available to be populated.</span
-                            >
-                            <span v-else> haven’t been populated yet. </span>
+                                <PropertyPopover
+                                    :applicable-list="applicableList"
+                                />
+
+                                <span> are available to be populated.</span>
+                            </template>
+                            <template v-else>
+                                <PropertyPopover
+                                    :applicable-list="applicableList"
+                                />
+                                <span> haven’t been populated yet. </span>
+                            </template>
                         </div>
                         <AtlanButton
                             v-if="
@@ -407,6 +337,7 @@
         Ref,
         h,
         resolveComponent,
+        inject,
     } from 'vue'
     import {
         whenever,
@@ -420,25 +351,22 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-    import AtlanButton from '@/UI/button.vue'
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
-    import { getDataTypeIcon } from '~/utils/dataType'
     import Truncate from '@/common/ellipsis/index.vue'
     import { truncate } from '~/utils/string'
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
+    import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
-            AtlanButton,
             EmptyView,
         },
         props: {
@@ -464,6 +392,7 @@
             const showMore = ref(false)
             const guid = ref()
             const { checkAccess } = useAuth()
+            const isEvaluating = inject('isEvaluating')
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
@@ -716,11 +645,12 @@
             })
 
             return {
+                isEvaluating,
                 checkAccess,
                 page,
                 getHumanTypeName,
                 isProfile,
-                getDataTypeIcon,
+
                 showMore,
                 readOnlySort,
                 hasValue,
@@ -757,4 +687,5 @@
     .slide-fade-leave-to {
         max-height: 0;
     }
+    /* // m-0 h-10 mt-4 mx-auto w-32 */
 </style>

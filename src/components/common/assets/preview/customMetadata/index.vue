@@ -4,9 +4,7 @@
     </div>
     <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
-        <div
-            class="flex items-center justify-between h-12 px-5 py-2 gap-x-4 group"
-        >
+        <div class="flex justify-between h-12 px-5 pb-2 mt-4 gap-x-4 group">
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex gap-x-1">
                     <Truncate

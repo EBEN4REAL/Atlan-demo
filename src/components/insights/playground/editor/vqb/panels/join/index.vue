@@ -1,99 +1,64 @@
 <template>
-    <div>
-        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
-            <div
-                @click.self="toggleExpand"
-                class="box-border relative flex items-center p-3 cursor-pointer"
-            >
-                <div
-                    class="flex items-center justify-between w-full min-h-panel-header"
-                    @click="toggleExpand"
-                >
-                    <div class="flex items-center">
-                        <div
-                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
-                            :class="[
-                                expand ? 'bg-primary-light' : 'bg-gray-100',
-                            ]"
-                            style="z-index: 2"
-                        >
-                            <AtlanIcon
-                                icon="JoinHeader"
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-400',
-                                    isChecked && expand ? 'text-primary' : '',
-                                    'w-4 h-4',
-                                ]"
-                            />
-                        </div>
-                        <div class="">
-                            <p
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-500',
-                                    'text-sm font-bold  ',
-                                ]"
-                            >
-                                Join data
-                            </p>
-                            <p
-                                :class="[
-                                    isChecked
-                                        ? 'text-gray-500'
-                                        : 'text-gray-400 line-through',
-                                    'text-xs break-words line-clamp-2',
-                                ]"
-                                v-if="!expand"
-                            >
-                                {{
-                                    getSummarisedInfoOfJoinPanel(
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].subpanels
-                                    )
-                                }}
-                            </p>
-                        </div>
-                    </div>
-                    <PanelOptions
-                        v-model:containerHovered="containerHovered"
-                        v-model:submenuHovered="submenuHovered"
-                        @handleDelete="handleDelete"
-                        :panel="panel"
-                        :index="index"
-                    />
-                </div>
-            </div>
-            <!-- Show on expand -->
-            <keep-alive>
-                <transition name="collapse-smooth">
-                    <JoinSubPanel
-                        v-model:subpanels="
-                            activeInlineTab.playground.vqb.panels[index]
-                                .subpanels
-                        "
-                        :panelIndex="index"
-                        v-model:selectedTables="
-                            activeInlineTab.playground.vqb.selectedTables
-                        "
-                        :expand="expand"
-                        v-if="expand"
-                    />
-                </transition>
-            </keep-alive>
-            <!-- <FooterActions
-                v-model:submenuHovered="submenuHovered"
+    <PanelLayout
+        @handleMouseOver="handleMouseOver"
+        @handleMouseOut="handleMouseOut"
+        @toggleExpand="toggleExpand"
+        :expand="expand"
+        :isChecked="isChecked"
+    >
+        <template #panelIcon>
+            <AtlanIcon
+                icon="JoinHeader"
+                :class="[
+                    isChecked ? 'text-gray' : 'text-gray-400',
+                    isChecked && expand ? 'text-primary' : '',
+                    'w-4 h-4',
+                ]"
+            />
+        </template>
+        <template #panelName>
+            <span> Join data </span>
+        </template>
+        <template #panelDescription>
+            <span>
+                {{
+                    getSummarisedInfoOfJoinPanel(
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    )
+                }}
+            </span>
+        </template>
+        <template #options>
+            <PanelOptions
                 v-model:containerHovered="containerHovered"
-                @add="(type, panel) => handleAddPanel(index, type, panel)"
-                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
-                v-if="
-                    expand &&
-                    activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index) &&
-                    !readOnly
-                "
-            /> -->
-        </div>
-    </div>
+                v-model:submenuHovered="submenuHovered"
+                @handleDelete="handleDelete"
+                :panel="panel"
+                :index="index"
+            />
+        </template>
+        <template #expand>
+            <div>
+                <!-- Show on expand -->
+                <keep-alive>
+                    <transition name="collapse-smooth">
+                        <JoinSubPanel
+                            v-model:subpanels="
+                                activeInlineTab.playground.vqb.panels[index]
+                                    .subpanels
+                            "
+                            :panelIndex="index"
+                            v-model:selectedTables="
+                                activeInlineTab.playground.vqb.selectedTables
+                            "
+                            :expand="expand"
+                            v-if="expand"
+                        />
+                    </transition>
+                </keep-alive>
+            </div>
+        </template>
+    </PanelLayout>
 </template>
 
 <script lang="ts">
@@ -117,10 +82,12 @@
     import JoinSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
+    import PanelLayout from '~/components/insights/playground/editor/vqb/panels/layout/index.vue'
 
     export default defineComponent({
         name: 'Joins',
         components: {
+            PanelLayout,
             PanelOptions,
             FooterActions,
             Actions,

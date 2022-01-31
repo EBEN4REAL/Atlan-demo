@@ -1,109 +1,65 @@
 <template>
-    <div>
-        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
-            <div
-                @click.self="toggleExpand"
-                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
-            >
-                <div
-                    class="flex items-center justify-between w-full min-h-panel-header"
-                    @click="toggleExpand"
-                >
-                    <div class="flex items-center">
-                        <div
-                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
-                            :class="[
-                                expand ? 'bg-primary-light' : 'bg-gray-100',
-                            ]"
-                            style="z-index: 2"
-                        >
-                            <AtlanIcon
-                                icon="BuilderGroup"
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-400',
-                                    isChecked && expand ? 'text-primary' : '',
-                                    'w-4 h-4',
-                                ]"
-                            />
-                        </div>
-                        <div class="">
-                            <div
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-500',
-                                    'text-sm   ',
-                                ]"
-                            >
-                                <div class="flex items-center">
-                                    <div class="relative font-bold">Group</div>
-                                    <div
-                                        v-if="!isChecked && expand"
-                                        class="px-3 ml-2 text-gray-500 rounded-full bg-gray-light"
-                                    >
-                                        Disabled
-                                    </div>
-                                </div>
-                            </div>
-                            <p
-                                :class="[
-                                    isChecked
-                                        ? 'text-gray-500'
-                                        : 'text-gray-400 line-through',
-                                    'text-xs break-words line-clamp-2',
-                                ]"
-                                v-if="!expand"
-                            >
-                                {{
-                                    getSummarisedInfoOfGroupPanel(
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].subpanels
-                                    )
-                                }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <PanelOptions
-                        @handleCheckboxChange="handleCheckboxChange"
-                        @handleDelete="handleDelete"
-                        v-model:containerHovered="containerHovered"
-                        v-model:submenuHovered="submenuHovered"
-                        :panel="panel"
-                        :index="index"
-                    />
-                </div>
-            </div>
-
-            <!-- Show on expand -->
-            <keep-alive>
-                <transition name="collapse-smooth">
-                    <GroupSubPanel
-                        v-model:subpanels="
-                            activeInlineTab.playground.vqb.panels[index]
-                                .subpanels
-                        "
-                        v-model:columnSubpanels="
-                            activeInlineTab.playground.vqb.panels[0].subpanels
-                        "
-                        :expand="expand"
-                        v-if="expand"
-                    />
-                </transition>
-            </keep-alive>
-            <!-- <FooterActions
-                v-model:submenuHovered="submenuHovered"
+    <PanelLayout
+        @handleMouseOver="handleMouseOver"
+        @handleMouseOut="handleMouseOut"
+        @toggleExpand="toggleExpand"
+        :expand="expand"
+        :isChecked="isChecked"
+    >
+        <template #panelIcon>
+            <AtlanIcon
+                icon="BuilderGroup"
+                :class="[
+                    isChecked ? 'text-gray' : 'text-gray-400',
+                    isChecked && expand ? 'text-primary' : '',
+                    'w-4 h-4',
+                ]"
+            />
+        </template>
+        <template #panelName>
+            <span> Group </span>
+        </template>
+        <template #panelDescription>
+            <span>
+                {{
+                    getSummarisedInfoOfGroupPanel(
+                        activeInlineTab.playground.vqb.panels[index].subpanels
+                    )
+                }}
+            </span>
+        </template>
+        <template #options>
+            <PanelOptions
+                @handleCheckboxChange="handleCheckboxChange"
+                @handleDelete="handleDelete"
                 v-model:containerHovered="containerHovered"
-                @add="(type, panel) => handleAddPanel(index, type, panel)"
-                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
-                v-if="
-                    expand &&
-                    activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index) &&
-                    !readOnly
-                "
-            /> -->
-        </div>
-    </div>
+                v-model:submenuHovered="submenuHovered"
+                :panel="panel"
+                :index="index"
+            />
+        </template>
+        <template #expand>
+            <div>
+                <!-- Show on expand -->
+                <keep-alive>
+                    <transition name="collapse-smooth">
+                        <GroupSubPanel
+                            v-model:subpanels="
+                                activeInlineTab.playground.vqb.panels[index]
+                                    .subpanels
+                            "
+                            v-model:columnSubpanels="
+                                activeInlineTab.playground.vqb.panels[0]
+                                    .subpanels
+                            "
+                            :expand="expand"
+                            v-if="expand"
+                        />
+                    </transition>
+                </keep-alive>
+            </div>
+        </template>
+    </PanelLayout>
 </template>
 
 <script lang="ts">
@@ -128,10 +84,12 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
     import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
+    import PanelLayout from '~/components/insights/playground/editor/vqb/panels/layout/index.vue'
 
     export default defineComponent({
         name: 'Groups',
         components: {
+            PanelLayout,
             FooterActions,
             Actions,
             AtlanBtn,

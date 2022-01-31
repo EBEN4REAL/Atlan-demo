@@ -1,108 +1,76 @@
 <template>
-    <div>
-        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
+    <PanelLayout
+        @handleMouseOver="handleMouseOver"
+        @handleMouseOut="handleMouseOut"
+        @toggleExpand="toggleExpand"
+        :expand="expand"
+        :isChecked="isChecked"
+    >
+        <template #panelIcon>
+            <AtlanIcon
+                icon="TableGray"
+                :class="[expand ? 'text-primary' : '', 'w-4 h-4']"
+            />
+        </template>
+        <template #panelName>
+            <span> Select from </span>
+        </template>
+        <template #panelDescription>
+            <span>
+                {{
+                    getTableNamesStringFromQualfieidNames(
+                        panel?.subpanels?.map((e) => e.tableQualfiedName)
+                    )
+                }}
+            </span>
+        </template>
+        <template #options>
             <div
-                @click="toggleExpand"
-                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
+                v-if="!readOnly"
+                :class="[
+                    containerHovered ? 'opacity-100' : 'opacity-0',
+                    'flex border border-gray-300 rounded   items-strech',
+                ]"
             >
                 <div
-                    class="flex items-center justify-between w-full min-h-panel-header"
+                    class="border-gray-300"
+                    v-if="
+                        activeInlineTab.playground.vqb.panels.length - 1 !==
+                        Number(index)
+                    "
                 >
-                    <div class="flex items-center">
-                        <div
-                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
-                            :class="[
-                                expand ? 'bg-primary-light' : 'bg-gray-100',
-                            ]"
-                            style="z-index: 2"
-                        >
-                            <AtlanIcon
-                                icon="TableGray"
-                                :class="[
-                                    expand ? 'text-primary' : '',
-                                    'w-4 h-4',
-                                ]"
-                            />
-                        </div>
-                        <div class="">
-                            <p class="text-sm font-bold capitalize text-gray">
-                                Select from
-                            </p>
-                            <p
-                                class="text-xs text-gray-500 break-words line-clamp-2"
-                                v-if="!expand"
-                            >
-                                {{
-                                    getTableNamesStringFromQualfieidNames(
-                                        panel?.subpanels?.map(
-                                            (e) => e.tableQualfiedName
-                                        )
-                                    )
-                                }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="!readOnly"
-                        :class="[
-                            containerHovered ? 'opacity-100' : 'opacity-0',
-                            'flex border border-gray-300 rounded   items-strech',
-                        ]"
-                    >
-                        <div
-                            class="border-gray-300"
-                            v-if="
-                                activeInlineTab.playground.vqb.panels.length -
-                                    1 !==
-                                Number(index)
-                            "
-                        >
-                            <!-- Show dropdown except the last panel -->
-                            <Actions
-                                @add="
-                                    (type, panel) =>
-                                        handleAddPanel(index, type, panel)
-                                "
-                                v-model:submenuHovered="submenuHovered"
-                                v-model:containerHovered="containerHovered"
-                            />
-                            <!-- ------------------------------ -->
-                        </div>
-                    </div>
+                    <!-- Show dropdown except the last panel -->
+                    <Actions
+                        @add="
+                            (type, panel) => handleAddPanel(index, type, panel)
+                        "
+                        v-model:submenuHovered="submenuHovered"
+                        v-model:containerHovered="containerHovered"
+                    />
+                    <!-- ------------------------------ -->
                 </div>
             </div>
-            <!-- Show on expand -->
-            <keep-alive>
-                <transition name="collapse-smooth">
-                    <ColumnSubPanel
-                        v-model:subpanels="
-                            activeInlineTab.playground.vqb.panels[index]
-                                .subpanels
-                        "
-                        v-model:selectedTables="
-                            activeInlineTab.playground.vqb.selectedTables
-                        "
-                        :expand="expand"
-                        v-if="expand"
-                    />
-                </transition>
-            </keep-alive>
-            <!-- <FooterActions
-                v-model:submenuHovered="submenuHovered"
-                v-model:containerHovered="containerHovered"
-                @add="(type, panel) => handleAddPanel(index, type, panel)"
-                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
-                v-if="
-                    expand &&
-                    activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index) &&
-                    activeInlineTab.playground.vqb.selectedTables.length > 0 &&
-                    !readOnly
-                "
-            /> -->
-        </div>
-    </div>
+        </template>
+        <template #expand>
+            <div>
+                <keep-alive>
+                    <transition name="collapse-smooth">
+                        <ColumnSubPanel
+                            v-model:subpanels="
+                                activeInlineTab.playground.vqb.panels[index]
+                                    .subpanels
+                            "
+                            v-model:selectedTables="
+                                activeInlineTab.playground.vqb.selectedTables
+                            "
+                            :expand="expand"
+                            v-if="expand"
+                        />
+                    </transition>
+                </keep-alive>
+            </div>
+        </template>
+    </PanelLayout>
 </template>
 
 <script lang="ts">
@@ -110,13 +78,11 @@
         computed,
         defineComponent,
         toRefs,
-        watch,
         ref,
         ComputedRef,
         Ref,
         inject,
         PropType,
-        toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
@@ -126,6 +92,7 @@
     import FooterActions from '../action/footer.vue'
     import ColumnSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import PanelLayout from '~/components/insights/playground/editor/vqb/panels/layout/index.vue'
 
     export default defineComponent({
         name: 'Columns',
@@ -134,6 +101,7 @@
             Actions,
             AtlanBtn,
             ColumnSubPanel,
+            PanelLayout,
         },
         props: {
             index: {

@@ -98,7 +98,7 @@
             :style="
                 isProfile || $route?.params?.id
                     ? 'max-height: calc(100vh - 7rem)'
-                    : 'max-height: calc(100vh - 12rem)'
+                    : 'max-height: calc(100vh - 13rem)'
             "
         >
             <!-- showing non empty starts here -->

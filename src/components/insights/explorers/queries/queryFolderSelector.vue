@@ -126,11 +126,13 @@
                                 />
 
                                 <div
-                                    v-if="isQueriesLoading"
                                     class="flex flex-col justify-center h-8"
                                     :id="`${collection?.attributes?.qualifiedName}-selector`"
                                 >
-                                    <a-spin size="small" />
+                                    <a-spin
+                                        v-if="isQueriesLoading"
+                                        size="small"
+                                    />
                                 </div>
                             </div>
                             <div

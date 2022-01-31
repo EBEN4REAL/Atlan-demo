@@ -112,13 +112,14 @@
                         )"
                         :key="x"
                     >
-                        <div class="mb-5">
-                            <div class="flex mb-2 font-normal text-gray-500">
+                        <div class="mb-3">
+                            <div class="flex font-normal text-gray-500">
                                 <Truncate
                                     :tooltip-text="a.displayName"
                                     :rows="1"
                                     width="500px"
                                     placement="left"
+                                    classes="text-gray-500"
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -145,7 +146,7 @@
                     v-if="applicableList.filter((i) => !hasValue(i)).length"
                 >
                     <transition name="slide-fade">
-                        <div v-if="showMore" class="">
+                        <div v-if="showMore" class="pt-2 border-t">
                             <template
                                 v-for="(a, x) in applicableList.filter(
                                     (i) => !hasValue(i)
@@ -291,12 +292,13 @@
             <!-- if edit mode show everything as it is -->
             <template v-if="!readOnly">
                 <template v-for="(a, x) in applicableList" :key="x">
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <div class="flex mb-2 font-normal text-gray-500">
                             <Truncate
                                 :tooltip-text="a.displayName"
                                 width="500px"
                                 placement="left"
+                                classes="text-gray-500"
                             />
                             <a-tooltip>
                                 <template #title>

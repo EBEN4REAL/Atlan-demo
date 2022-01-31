@@ -2,9 +2,11 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col pl-5 mb-3">
+    <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
-        <div class="flex justify-between pr-3 mt-4 mb-3 mr-2 gap-x-4">
+        <div
+            class="flex items-center justify-between h-12 px-5 py-2 bg-gray-100 gap-x-4 group"
+        >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex items-center gap-x-1">
                     <Truncate
@@ -26,6 +28,13 @@
                                 : {}
                         "
                     />
+                    <!-- <a
+                        v-if="checkAccess(page.PAGE_GOVERNANCE)"
+                        class="mb-1"
+                        :href="`/governance/custom-metadata/${data.guid}`"
+                        target="_blank"
+                        ><AtlanIcon icon="External"
+                    /></a> -->
 
                     <a-tooltip>
                         <template #title>
@@ -50,17 +59,20 @@
                     )
                 "
             >
-                <template
+                <div
                     v-if="
                         readOnly &&
                         applicableList.filter((i) => hasValue(i)).length
                     "
+                    class="opacity-0 group-hover:opacity-100"
                 >
-                    <a-button @click="() => (readOnly = false)">
-                        <AtlanIcon icon="Edit" />
-                        <span class="ml-1 text-gray-700">Edit</span>
-                    </a-button>
-                </template>
+                    <span
+                        class="font-bold cursor-pointer hover:underline text-primary"
+                        @click="() => (readOnly = false)"
+                    >
+                        Edit
+                    </span>
+                </div>
                 <div v-else-if="!readOnly" class="flex items-center gap-x-2">
                     <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
@@ -82,7 +94,7 @@
         <!-- header ends here -->
 
         <div
-            class="flex flex-col flex-grow pr-5 overflow-auto scrollheight"
+            class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
             :style="
                 isProfile || $route?.params?.id
                     ? 'max-height: calc(100vh - 7rem)'
@@ -103,7 +115,7 @@
                         <div class="mb-5">
                             <div class="flex mb-2 font-normal text-gray-500">
                                 <Truncate
-                                    :tooltipText="a.displayName"
+                                    :tooltip-text="a.displayName"
                                     :rows="1"
                                     width="500px"
                                     placement="left"
@@ -145,8 +157,8 @@
                                 >
                                     <Truncate
                                         classes="text-gray-600"
-                                        clampPercentage="80%"
-                                        :tooltipText="a.displayName"
+                                        clamp-percentage="80%"
+                                        :tooltip-text="a.displayName"
                                         width="500px"
                                         placement="left"
                                     />

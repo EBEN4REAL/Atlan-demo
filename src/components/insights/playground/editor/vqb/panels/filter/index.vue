@@ -11,7 +11,7 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
+                            class="flex items-center justify-center mr-2 rounded-md p-1.5 relative"
                             :class="[
                                 expand ? 'bg-primary-light' : 'bg-gray-100',
                             ]"

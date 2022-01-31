@@ -86,79 +86,12 @@
                         </div>
                     </div>
 
-                    <div
-                        v-if="!readOnly"
-                        :class="[
-                            containerHovered ? 'opacity-100' : 'opacity-0',
-                            'flex border border-gray-300 rounded   items-strech',
-                        ]"
-                    >
-                        <div
-                            class="flex items-center justify-center px-3 border-r border-gray-300"
-                            @click.stop="() => {}"
-                        >
-                            <a-tooltip
-                                placement="top"
-                                :title="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                        .hide
-                                        ? 'Disable step'
-                                        : 'Enable step'
-                                "
-                            >
-                                <a-checkbox
-                                    v-model:checked="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].hide
-                                    "
-                                    @change="handleCheckboxChange"
-                                ></a-checkbox>
-                            </a-tooltip>
-                        </div>
-                        <div
-                            class="border-r border-gray-300"
-                            v-if="
-                                activeInlineTab.playground.vqb.panels.length -
-                                    1 !==
-                                Number(index)
-                            "
-                        >
-                            <!-- Show dropdown except the last panel -->
-                            <a-tooltip placement="top" title="Add step">
-                                <Actions
-                                    @add="
-                                        (type, panel) =>
-                                            handleAddPanel(index, type, panel)
-                                    "
-                                    v-model:submenuHovered="submenuHovered"
-                                    v-model:containerHovered="containerHovered"
-                                    :panelInfo="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ]
-                                    "
-                                />
-                            </a-tooltip>
-                            <!-- ------------------------------ -->
-                        </div>
-                        <div class="border-r border-gray-300">
-                            <a-tooltip placement="top" title="Delete step">
-                                <AtlanBtn
-                                    @click.stop="() => handleDelete(index)"
-                                    class="flex-none border-none px-3.5 text-gray hover:text-red-500"
-                                    size="sm"
-                                    color="secondary"
-                                    padding="compact"
-                                >
-                                    <AtlanIcon
-                                        icon="Delete"
-                                        class="-mx-1"
-                                    ></AtlanIcon>
-                                </AtlanBtn>
-                            </a-tooltip>
-                        </div>
-                    </div>
+                    <PanelOptions
+                        v-model:containerHovered="containerHovered"
+                        v-model:submenuHovered="submenuHovered"
+                        :panel="panel"
+                        :index="index"
+                    />
                 </div>
             </div>
             <!-- Show on expand -->
@@ -207,7 +140,6 @@
         toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
@@ -216,9 +148,9 @@
     import { editor } from 'monaco-editor'
 
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
-    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import VariableRender from './variableRender/index.vue'
+    import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -228,6 +160,7 @@
             AtlanBtn,
             FilterSubPanel,
             VariableRender,
+            PanelOptions,
         },
         props: {
             index: {
@@ -247,14 +180,6 @@
             const editorInstanceRef = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
-            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const editorInstance = toRaw(editorInstanceRef.value)
-            const monacoInstance = toRaw(monacoInstanceRef.value)
-
-            const { deleteVariable } = useCustomVariable(
-                editorInstance,
-                monacoInstance
-            )
             const confirmDeletePopover = ref(false)
             const isChecked = computed(
                 () =>
@@ -320,7 +245,6 @@
             )
 
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -338,51 +262,7 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAddPanel = (index, type, panel) => {
-                containerHovered.value = false
-                handleAdd(
-                    index,
-                    type,
-                    panel,
-                    activeInlineTab,
-                    activeInlineTabKey,
-                    inlineTabs
-                )
-            }
-            const handleDelete = (index) => {
-                deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
-                /* Delete all the custom variables related to it */
 
-                // get all custom variables related to this panel
-                const subpanelIds = panel.value.subpanels.map(
-                    (subpanel) => subpanel.id
-                )
-                let variables: any = []
-                activeInlineTab.value.playground.editor.variables.map(
-                    (_variable) => {
-                        subpanelIds.forEach((subpanelId) => {
-                            if (_variable?.subpanelId?.includes(subpanelId)) {
-                                variables.push(_variable)
-                            }
-                        })
-                    }
-                )
-                try {
-                    const forceDelete = true
-                    // delete all the custom variables
-                    variables.forEach((variable) => {
-                        if (variable !== undefined)
-                            deleteVariable(
-                                activeInlineTab,
-                                inlineTabs,
-                                variable,
-                                forceDelete
-                            )
-                    })
-                } catch (e) {
-                    console.error('Failed to delete custom variable')
-                }
-            }
             const toggleExpand = () => {
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
@@ -402,54 +282,10 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            const getPopoverContent = () => {
-                let _customVariableCount = 0
-                panel.value.subpanels.forEach((subpanel) => {
-                    if (subpanel.filter.isVariable === true) {
-                        _customVariableCount +=
-                            totalFiledsMapWithInput[subpanel?.filter?.type]
-                    }
-                })
-
-                return `Are you sure you want to delete?
-                There are total of <b>${_customVariableCount} variable${
-                    _customVariableCount > 1 ? '(s)' : ''
-                } </b> associated with this panel
-                 `
-            }
-
-            const toggleConfirmPopover = (_index) => {
-                /* Check if there is alteast one custom variable which is associated with this filter panel
-                    otherwise don't show the confirm popover */
-
-                const index = panel.value.subpanels.findIndex(
-                    (subpanel) => subpanel.filter.isVariable === true
-                )
-                if (index > -1) {
-                    confirmDeletePopover.value = true
-                } else {
-                    handleDelete(_index)
-                }
-            }
-
-            watch(
-                activeInlineTab,
-                () => {
-                    console.log('updated data: ', activeInlineTab.value)
-                },
-                { immediate: true }
-            )
-
-            const handleCheckboxChange = () => {
-                updateVQB(activeInlineTab, inlineTabs)
-            }
-
             return {
                 readOnly,
                 isFilterIsInteractive,
                 STRING_CHECK,
-                toggleConfirmPopover,
-                getPopoverContent,
                 confirmDeletePopover,
                 getSummarisedInfoOfFilterPanel,
                 isChecked,
@@ -465,10 +301,7 @@
                 index,
                 checkbox,
                 panel,
-                handleDelete,
-                handleAddPanel,
                 findTimeLineHeight,
-                handleCheckboxChange,
             }
         },
     })

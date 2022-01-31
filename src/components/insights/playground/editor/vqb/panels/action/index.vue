@@ -6,13 +6,16 @@
             @visibleChange="handleOpenChange"
         >
             <AtlanBtn
-                class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
+                class="flex-none border-r border-gray-300 border-none"
                 size="sm"
                 color="secondary"
                 @click.stop="() => {}"
                 padding="compact"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                <AtlanIcon
+                    icon="Add"
+                    class="w-4 h-4 -mx-1 text-gray"
+                ></AtlanIcon>
             </AtlanBtn>
             <template #overlay>
                 <a-menu

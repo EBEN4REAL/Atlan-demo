@@ -66,80 +66,12 @@
                         </div>
                     </div>
 
-                    <div
-                        v-if="!readOnly"
-                        :class="[
-                            containerHovered ? 'opacity-100' : 'opacity-0',
-                            'flex border border-gray-300 rounded   items-strech',
-                        ]"
-                    >
-                        <div
-                            class="flex items-center justify-center px-3 border-r border-gray-300"
-                            @click.stop="() => {}"
-                        >
-                            <a-tooltip
-                                placement="top"
-                                :title="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                        .hide
-                                        ? 'Disable step'
-                                        : 'Enable step'
-                                "
-                            >
-                                <a-checkbox
-                                    v-model:checked="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].hide
-                                    "
-                                    @change="handleCheckboxChange"
-                                ></a-checkbox>
-                            </a-tooltip>
-                        </div>
-                        <div
-                            class="border-r border-gray-300"
-                            v-if="
-                                activeInlineTab.playground.vqb.panels.length -
-                                    1 !==
-                                    Number(index) && !readOnly
-                            "
-                        >
-                            <!-- Show dropdown except the last panel -->
-                            <a-tooltip placement="top" title="Add step">
-                                <Actions
-                                    @add="
-                                        (type, panel) =>
-                                            handleAddPanel(index, type, panel)
-                                    "
-                                    :panelInfo="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ]
-                                    "
-                                    v-model:submenuHovered="submenuHovered"
-                                    v-model:containerHovered="containerHovered"
-                                />
-                            </a-tooltip>
-                            <!-- ------------------------------ -->
-                        </div>
-                        <div class="border-r border-gray-300">
-                            <a-tooltip placement="top" title="Delete step">
-                                <AtlanBtn
-                                    @click.stop="() => handleDelete(index)"
-                                    :disabled="Number(index) === 0"
-                                    class="flex-none border-none px-3.5 text-gray hover:text-red-500"
-                                    size="sm"
-                                    color="secondary"
-                                    padding="compact"
-                                >
-                                    <AtlanIcon
-                                        icon="Delete"
-                                        class="-mx-1"
-                                    ></AtlanIcon>
-                                </AtlanBtn>
-                            </a-tooltip>
-                        </div>
-                    </div>
+                    <PanelOptions
+                        v-model:containerHovered="containerHovered"
+                        v-model:submenuHovered="submenuHovered"
+                        :panel="panel"
+                        :index="index"
+                    />
                 </div>
             </div>
             <!-- Show on expand -->
@@ -190,13 +122,13 @@
         toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import SortSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
+    import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -205,6 +137,7 @@
             Actions,
             AtlanBtn,
             SortSubPanel,
+            PanelOptions,
         },
         props: {
             index: {
@@ -274,7 +207,6 @@
             )
 
             const checkbox = ref(true)
-            const { handleAdd, deletePanelsInVQB, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -292,20 +224,7 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAddPanel = (index, type, panel) => {
-                containerHovered.value = false
-                handleAdd(
-                    index,
-                    type,
-                    panel,
-                    activeInlineTab,
-                    activeInlineTabKey,
-                    inlineTabs
-                )
-            }
-            const handleDelete = (index) => {
-                deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
-            }
+
             const toggleExpand = () => {
                 activeInlineTab.value.playground.vqb.panels[
                     index.value
@@ -326,10 +245,6 @@
                 if (!containerHovered.value) containerHovered.value = true
             }
 
-            const handleCheckboxChange = () => {
-                updateVQB(activeInlineTab, inlineTabs)
-            }
-
             return {
                 readOnly,
                 isChecked,
@@ -345,11 +260,8 @@
                 index,
                 checkbox,
                 panel,
-                handleDelete,
-                handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfSortPanel,
-                handleCheckboxChange,
             }
         },
     })

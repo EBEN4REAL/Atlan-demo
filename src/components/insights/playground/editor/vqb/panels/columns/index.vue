@@ -86,7 +86,7 @@
                     />
                 </transition>
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
                 v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
@@ -98,7 +98,7 @@
                     activeInlineTab.playground.vqb.selectedTables.length > 0 &&
                     !readOnly
                 "
-            />
+            /> -->
         </div>
     </div>
 </template>

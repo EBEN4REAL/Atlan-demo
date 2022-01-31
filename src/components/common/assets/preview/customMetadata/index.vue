@@ -5,10 +5,10 @@
     <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
         <div
-            class="flex items-center justify-between h-12 px-5 py-2 bg-gray-100 gap-x-4 group"
+            class="flex items-center justify-between h-12 px-5 py-2 gap-x-4 group"
         >
             <div class="flex-grow font-semibold text-gray-500">
-                <div class="flex items-center gap-x-1">
+                <div class="flex gap-x-1">
                     <Truncate
                         :tooltip-text="data.label"
                         :rows="2"
@@ -28,13 +28,15 @@
                                 : {}
                         "
                     />
-                    <!-- <a
-                        v-if="checkAccess(page.PAGE_GOVERNANCE)"
-                        class="mb-1"
-                        :href="`/governance/custom-metadata/${data.guid}`"
-                        target="_blank"
-                        ><AtlanIcon icon="External"
-                    /></a> -->
+                    <!-- <div class="">
+                        <a
+                            v-if="checkAccess(page.PAGE_GOVERNANCE)"
+                            class="mb-1"
+                            :href="`/governance/custom-metadata/${data.guid}`"
+                            target="_blank"
+                            ><AtlanIcon icon="External"
+                        /></a>
+                    </div> -->
 
                     <a-tooltip>
                         <template #title>
@@ -113,7 +115,7 @@
                         :key="x"
                     >
                         <div class="mb-3">
-                            <div class="flex font-normal text-gray-500">
+                            <div class="flex mb-1 font-normal text-gray-500">
                                 <Truncate
                                     :tooltip-text="a.displayName"
                                     :rows="1"
@@ -293,7 +295,7 @@
             <template v-if="!readOnly">
                 <template v-for="(a, x) in applicableList" :key="x">
                     <div class="mb-3">
-                        <div class="flex mb-2 font-normal text-gray-500">
+                        <div class="flex mb-1 font-normal text-gray-500">
                             <Truncate
                                 :tooltip-text="a.displayName"
                                 width="500px"

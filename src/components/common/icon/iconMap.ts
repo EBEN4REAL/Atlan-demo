@@ -773,10 +773,7 @@ export default {
     Request,
     RequestActive,
     FilterFunnelDot,
-<<<<<<< HEAD
     PlusWhite,
-=======
     Comment,
-    EmptyRequest
->>>>>>> staging
+    EmptyRequest,
 }

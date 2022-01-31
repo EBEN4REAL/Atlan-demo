@@ -399,6 +399,10 @@
                 },
             })
             const permissions = inject('permissions') as ComputedRef<any>
+            const limitRows = inject('limitRows') as Ref<{
+                checked: boolean
+                rowsCount: number
+            }>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
             const storeDiscovery = useAssetStore()
@@ -933,7 +937,8 @@
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
-                        getRelevantTreeData().parentGuid.value
+                        getRelevantTreeData().parentGuid.value,
+                    limitRows
                 )
                 focusEditor(toRaw(editorInstance.value))
 

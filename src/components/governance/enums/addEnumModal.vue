@@ -19,12 +19,12 @@
                 </a-form-item>
 
                 <a-form-item label="Values">
-                    <a-select
-                        mode="tags"
-                        placeholder="Enter enum values"
+                    <MultiInput
+                        ref="valuesRef"
+                        placeholder='Enter values separated by a  ";" or "↵"'
                         :value="form.elementDefs"
-                        :open="false"
-                        @change="form.elementDefs = $event"
+                        delimiter=";"
+                        @change="handleChange"
                     />
                 </a-form-item>
                 <div class="flex items-center justify-end space-x-3">
@@ -55,10 +55,11 @@
 
     import EnumDetails from './enumDetails.vue'
     import { useAddEnums } from './composables/useModifyEnums'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     export default defineComponent({
         name: 'AddEnumModal',
-        components: { EnumDetails },
+        components: { EnumDetails, MultiInput },
         props: {
             isEdit: {
                 type: Boolean,
@@ -81,6 +82,10 @@
 
             const { newEnum, addEnum, reset } = useAddEnums()
             const { error: updateError, isReady, state } = addEnum
+
+            function handleChange(values: String[]) {
+                form.value.elementDefs = values
+            }
 
             function handleOK() {
                 const tempForm = { ...form.value }
@@ -109,6 +114,7 @@
             })
 
             return {
+                handleChange,
                 form,
                 enumDetailsComponent,
                 handleOK,

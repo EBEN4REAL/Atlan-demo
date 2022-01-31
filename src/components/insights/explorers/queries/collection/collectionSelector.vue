@@ -53,6 +53,7 @@
                                 :item="collection"
                                 :handle-change="handleChange"
                                 v-model:collectionModalVisible="isVisible"
+                                :selectedCollection="selectedCollection"
                             />
                         </div>
                         <div
@@ -301,10 +302,10 @@
                     qname: collection?.attributes.qualifiedName,
                     guid: collectionId,
                 }
-                console.log(
-                    'useQueryTree collection selected',
-                    selectedValue.value
-                )
+                // console.log(
+                //     'useQueryTree collection selected',
+                //     selectedValue.value
+                // )
                 emit('update:data', data)
             }
 

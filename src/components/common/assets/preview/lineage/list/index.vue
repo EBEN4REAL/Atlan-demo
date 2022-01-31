@@ -44,6 +44,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetTypeList } from '~/constant/assetType'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'LineageList',
@@ -70,6 +71,13 @@
             const preference = ref([])
 
             const { title } = useAssetInfo()
+
+            const discoveryStore = useAssetStore()
+
+            if (discoveryStore.preferences) {
+                preference.value =
+                    discoveryStore.preferences.display || preference.value
+            }
 
             const searchedAssets = computed(() => {
                 if (queryText.value) {

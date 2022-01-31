@@ -41,12 +41,12 @@
             if (entity.value.username) type.value = 'user'
             else if (entity.value.alias) type.value = 'group'
 
-            const userProfiles = computed(() => {
-                if (entity.value && type.value === 'user') {
-                    return entity.value?.attributes?.profiles
-                }
-                return []
-            })
+            // const userProfiles = computed(() => {
+            //     if (entity.value && type.value === 'user') {
+            //         return entity.value?.attributes?.profiles
+            //     }
+            //     return []
+            // })
             const groupChannels = computed(() => {
                 if (entity.value && type.value === 'group') {
                     return (
@@ -56,16 +56,15 @@
                 }
                 return []
             })
-            const slackProfile = computed(() => {
-                if (userProfiles.value?.length > 0) {
-                    const firstProfile = JSON.parse(userProfiles.value[0])
-                    if (
-                        firstProfile &&
-                        firstProfile.length > 0 &&
-                        firstProfile[0].hasOwnProperty('slack')
-                    ) {
-                        return firstProfile[0].slack
-                    }
+            const slackMemberID = computed(() => {
+                if (
+                    entity.value?.attributes?.slack?.length &&
+                    type.value === 'user'
+                ) {
+                    const memberID = JSON.parse(
+                        entity.value.attributes.slack[0]
+                    )?.userId
+                    return memberID
                 }
                 return ''
             })
@@ -83,7 +82,7 @@
                 return ''
             })
             const slackEnabled = computed(
-                () => slackProfile.value || slackChannel.value
+                () => slackMemberID.value || slackChannel.value
             )
             const slackUrl = computed(() =>
                 slackEnabled.value

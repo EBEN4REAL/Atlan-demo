@@ -248,6 +248,10 @@
             const saveQueryLoading = ref(false)
             const saveModalRef = ref()
             const saveQueryData = ref()
+            const limitRows = inject('limitRows') as Ref<{
+                checked: boolean
+                rowsCount: number
+            }>
 
             const { getFirstQueryConnection } = useUtils()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
@@ -544,6 +548,7 @@
                         saveQueryData.value.parentQF,
                         saveQueryData.value.parentGuid,
                         tabData as activeInlineTabInterface,
+                        limitRows,
                         tabRemoveCallbackFunction,
                         false
                     )
@@ -567,7 +572,12 @@
                 if (tabData?.queryId) {
                     console.log(tabData, key, 'updayte')
                     /* If this tab already saved to database */
-                    updateSavedQuery(editorInstance, isSaving, tabData)
+                    updateSavedQuery(
+                        editorInstance,
+                        isSaving,
+                        tabData,
+                        limitRows
+                    )
                     inlineTabRemove(
                         key as string,
                         tabs,

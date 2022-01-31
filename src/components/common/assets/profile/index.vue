@@ -130,8 +130,8 @@ meta:
         }
 
         :global(.ant-tabs-tab-active) {
-            -webkit-text-stroke: 0.65px !important;
-            -moz-text-stroke: 0.65px !important;
+            -webkit-text-stroke: 0.65px;
+            -moz-text-stroke: 0.65px;
         }
 
         :global(.ant-tabs-nav) {

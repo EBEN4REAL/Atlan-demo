@@ -7,6 +7,7 @@ export const SourceList = [
         connectionCount: 0,
         dialectConfig: {
             assetQuoteType: '"',
+            abortQuery: true,
         },
         hierarchy: [
             {
@@ -74,6 +75,9 @@ export const SourceList = [
         image: 'Redshift',
         hierarchy: [],
         connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
     },
     {
         id: 'databricks',
@@ -118,6 +122,10 @@ export const SourceList = [
                 level: 3,
             },
         ],
+        dialectConfig: {
+            // does not support abortQuery for now
+            abortQuery: false,
+        },
         connectionCount: 0,
         types: [
             'Database',
@@ -167,6 +175,10 @@ export const SourceList = [
                 level: 3,
             },
         ],
+        dialectConfig: {
+            // does not support abortQuery for now
+            abortQuery: false,
+        },
         connectionCount: 0,
         types: [
             'Database',
@@ -186,6 +198,9 @@ export const SourceList = [
         image: 'Postgres',
         hierarchy: [],
         connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
         types: [
             'Database',
             'Schema',
@@ -203,6 +218,9 @@ export const SourceList = [
         label: 'Athena',
         image: 'Athena',
         filterMaxLevel: 2,
+        dialectConfig: {
+            abortQuery: true,
+        },
         hierarchy: [
             {
                 typeName: 'Database',
@@ -262,6 +280,24 @@ export const SourceList = [
             'PowerBITile',
             'PowerBIPage',
             'PowerBIDatasource',
+        ],
+    },
+    {
+        id: 'looker',
+        label: 'Looker',
+        image: 'Looker',
+        connectionCount: 0,
+        hierarchy: [],
+        types: [
+            'LookerDashboard',
+            'LookerExplore',
+            'LookerField',
+            'LookerFolder',
+            'LookerLook',
+            'LookerModel',
+            'LookerProject',
+            'LookerQuery',
+            'LookerTile',
         ],
     },
 ]

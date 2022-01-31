@@ -1,7 +1,7 @@
 <template>
     <div style="width: 314px"></div>
 
-    <a-tabs default-active-key="1" size="small">
+    <a-tabs :class="$style.emojiPicker" default-active-key="1" size="small">
         <template v-if="emoji || image" #rightExtra>
             <a-button class="border-0" @click="emit('remove')">
                 <AtlanIcon icon="Delete" class="inline mr-1 text-gray-500" />
@@ -84,17 +84,21 @@
         .emoji-mart-anchor-bar {
             background-color: rgb(82, 119, 215) !important;
         }
-    }
 
-    .ant-tabs-nav {
-        padding-left: 15px;
-        margin-bottom: 0;
+        button.emoji-mart-emoji,
+        .emoji-mart-category .emoji-mart-emoji span {
+            cursor: pointer;
+        }
     }
-    .ant-upload.ant-upload-select {
-        display: block;
-    }
-    button.emoji-mart-emoji,
-    .emoji-mart-category .emoji-mart-emoji span {
-        cursor: pointer;
+</style>
+<style lang="less" module>
+    .emojiPicker {
+        :global(.ant-tabs-nav) {
+            padding-left: 15px;
+            margin-bottom: 0;
+        }
+        :global(.ant-upload.ant-upload-select) {
+            display: block;
+        }
     }
 </style>

@@ -14,9 +14,9 @@
                         <div
                             v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"
-                            class="dot"
+                            class="mr-3 dot"
                         />
-                        <span class="mb-0 ml-3 text-gray">
+                        <span class="mb-0 text-gray">
                             {{ el.label }}
                         </span>
                     </div>

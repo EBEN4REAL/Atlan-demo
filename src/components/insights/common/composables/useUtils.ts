@@ -1,13 +1,25 @@
 import { useConnectionStore } from '~/store/connection/index'
+import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
 export function useUtils() {
     const getFirstQueryConnection = () => {
         const connectionStore = useConnectionStore()
-        console.log('connection store: ', connectionStore)
-        let firstConnection = connectionStore?.list.find(
-            (item) => item.attributes.connectorName === 'snowflake'
+        let BItypes = getBISourceTypes()?.map((item: string) =>
+            item.toLowerCase()
         )
-        return firstConnection
+        console.log('connection store: ', connectionStore)
+        if (connectionStore?.list?.length > 0) {
+            let filteredConnectionsList = connectionStore?.list.filter(
+                (connection) =>
+                    !BItypes.includes(
+                        connection.attributes.connectorName?.toLowerCase()
+                    )
+            )
+            if (filteredConnectionsList.length > 0) {
+                return filteredConnectionsList[0]
+            }
+        }
+        return undefined
     }
 
     const checkConnection = (connector) => {

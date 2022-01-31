@@ -53,11 +53,14 @@
                         </template>
                     </ColumnSelector>
 
-                    <span class="px-3 text-sm text-gray-500"
+                    <span
+                        class="px-3 text-sm text-gray-500"
+                        :class="{ invisible: !subpanel?.column?.item?.guid }"
                         >calculate the</span
                     >
 
                     <AggregateSelector
+                        :class="{ invisible: !subpanel?.column?.item?.guid }"
                         class="flex-1"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"

@@ -99,6 +99,7 @@
                         :data="tabConfig"
                         :disabled="readOnly"
                         @update:active="updateData"
+                        variant="small"
                     />
 
                     <AtlanIcon

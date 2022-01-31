@@ -3,9 +3,11 @@
         <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
             <div
                 @click="toggleExpand"
-                class="box-border relative flex items-center p-3 cursor-pointer"
+                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
             >
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full min-h-panel-header"
+                >
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 rounded-md p-1.5"
@@ -86,7 +88,7 @@
                     />
                 </transition>
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
                 v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
@@ -98,7 +100,7 @@
                     activeInlineTab.playground.vqb.selectedTables.length > 0 &&
                     !readOnly
                 "
-            />
+            /> -->
         </div>
     </div>
 </template>
@@ -285,11 +287,16 @@
     })
 </script>
 <style lang="less" scoped>
+    .min-h-panel-header {
+        min-height: 36px;
+    }
     .collapse-smooth-enter-active {
         transition: all 0.25s ease-out;
+        overflow-y: hidden;
     }
     .collapse-smooth-leave-active {
         transition: all 0.25s ease;
+        overflow-y: hidden;
     }
     .collapse-smooth-enter-from {
         height: 0px;

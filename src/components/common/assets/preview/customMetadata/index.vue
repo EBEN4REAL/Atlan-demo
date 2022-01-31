@@ -609,11 +609,9 @@
             }
 
             const handleCancel = () => {
-                cancel()
-                return
-                //! disabling unsaved changes confirmation temporarily
                 if (isEdit.value) {
                     Modal.confirm({
+                        icon: null,
                         title: () =>
                             h(
                                 'span',

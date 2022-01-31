@@ -1,9 +1,5 @@
 import { NV, BNV } from './view'
 
-import { DagreLayout } from '@antv/layout'
-
-import { Graph } from '@antv/x6'
-
 export default function useCreateGraph(
     graph,
     graphLayout,
@@ -13,8 +9,8 @@ export default function useCreateGraph(
     graphHeight
 ) {
     /* Build Graph Canvas */
-    // const { Graph } = window.X6
-    // const { DagreLayout } = window.layout
+    const { Graph } = window.X6
+    const { DagreLayout } = window.layout
 
     Graph.registerConnector(
         'beiz',

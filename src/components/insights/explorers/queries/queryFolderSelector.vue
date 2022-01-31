@@ -27,16 +27,13 @@
         </AtlanBtn>
 
         <template #overlay>
-            <div
-                ref="clickOutside"
-                class="overflow-y-scroll rounded-sm popover-container"
-            >
+            <div ref="clickOutside" class="overflow-y-scroll popover-container">
                 <div
                     class="w-full h-full"
                     v-if="writeAccessCollections?.length"
                 >
                     <div
-                        class="absolute top-0 left-0 z-10 flex items-center justify-between w-full px-4 pt-3 pb-2 bg-white"
+                        class="absolute top-0 left-0 z-10 flex items-center justify-between w-full px-4 pt-3 pb-2 bg-white rounded-t"
                     >
                         <span class="text-sm font-bold text-gray-700"
                             >Save query to</span
@@ -126,7 +123,7 @@
                                 />
 
                                 <div
-                                    class="flex flex-col justify-center h-8"
+                                    class="flex flex-col justify-center"
                                     :id="`${collection?.attributes?.qualifiedName}-selector`"
                                 >
                                     <a-spin
@@ -143,10 +140,12 @@
                         </div>
                     </div>
 
-                    <div class="absolute bottom-0 left-0 z-10 bg-white">
+                    <div
+                        class="absolute bottom-0 left-0 z-10 bg-white rounded-b"
+                    >
                         <div
                             v-if="readAccessCollections.length"
-                            class="flex p-2 mx-4 text-xs text-gray-500 bg-gray-100 rounded item-center"
+                            class="flex p-2 mx-4 text-xs text-gray-500 bg-gray-100 item-center"
                         >
                             <AtlanIcon
                                 icon="Info"
@@ -157,7 +156,7 @@
                             </div>
                         </div>
 
-                        <div class="flex mt-3 mb-4 ml-4">
+                        <div class="flex mt-3 mb-4 ml-4 rounded-b">
                             <AtlanBtn
                                 size="sm"
                                 color="secondary"
@@ -177,7 +176,7 @@
                                 style="width: 102px"
                                 @click="closeDropdown('save')"
                             >
-                                <span class="text-center">Save</span>
+                                <span class="text-center">Done</span>
                             </AtlanBtn>
                         </div>
                     </div>

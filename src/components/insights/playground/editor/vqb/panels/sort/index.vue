@@ -360,9 +360,11 @@
     }
     .collapse-smooth-enter-active {
         transition: all 0.25s ease-out;
+        overflow-y: hidden;
     }
     .collapse-smooth-leave-active {
         transition: all 0.25s ease;
+        overflow-y: hidden;
     }
     .collapse-smooth-enter-from {
         height: 0px;

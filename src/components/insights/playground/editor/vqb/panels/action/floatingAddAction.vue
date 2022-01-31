@@ -85,8 +85,9 @@
                 if (!filter) {
                     _items.push({
                         id: 'filter',
-                        icon: 'Filter',
+                        icon: 'FilterFunnel',
                         label: 'Filter',
+                        class: '-mt-0.5',
                     })
                 }
 

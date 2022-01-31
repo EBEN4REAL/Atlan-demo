@@ -43,13 +43,13 @@
 
                     <p class="text-gray-500">Run Mode</p>
                     <div
-                        class="mb-2 text-gray-500"
+                        class="mb-2 text-gray-700"
                         v-if="isCronRun(selectedRun)"
                     >
                         <span>via <span>Schedule</span></span>
                     </div>
                     <div
-                        class="mb-2 text-gray-500"
+                        class="mb-2 text-gray-700"
                         v-else-if="creatorUsername(selectedRun)"
                     >
                         via
@@ -68,8 +68,64 @@
             <div
                 class="flex flex-col px-3 py-2 bg-white border-b border-l border-r"
             >
-                <div v-for="pod in failedPods" :key="pod.name">
-                    {{ pod.displayName }}
+                <div class="flex flex-col pb-2 border-b gap-y-3">
+                    <a-select ref="select" v-model:value="selectedPodName">
+                        <a-select-option
+                            v-for="pod in failedPods"
+                            :key="pod.name"
+                            >Jack</a-select-option
+                        >
+                        <a-select-option value="lucy">Lucy</a-select-option>
+                        <a-select-option value="disabled" disabled
+                            >Disabled</a-select-option
+                        >
+                        <a-select-option value="Yiminghe"
+                            >yiminghe</a-select-option
+                        >
+                    </a-select>
+                    <a-dropdown>
+                        <a class="ant-dropdown-link" @click.prevent>
+                            Hover me
+                            <DownOutlined />
+                        </a>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item>
+                                    <a href="javascript:;">1st menu item</a>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <div class="flex flex-col">
+                        <p class="text-gray-500">Display Name</p>
+                        <div clas s="mb-2 text-gray-700">
+                            {{ pod.displayName }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-gray-500">DAG Reference</p>
+                        <div class="mb-2 text-gray-700">
+                            {{ pod.name }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-gray-500">Started At</p>
+                        <p class="mb-2 text-gray-700">
+                            {{ formatDate(pod.startedAt) }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-gray-500">Finished At</p>
+                        <p class="mb-2 text-gray-700">
+                            {{ formatDate(pod.finishedAt) }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-gray-500">Duration</p>
+                        <p class="mb-2 text-gray-700">
+                            {{ difference(pod.startedAt, pod.finishedAt) }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </a-tab-pane>
@@ -111,6 +167,9 @@
                 phaseMessage,
                 getRunClass,
                 getRunTextClass,
+                podFinishedAt,
+                difference,
+                formatDate,
             } = useWorkflowInfo()
 
             const icon = computed(() => {
@@ -131,9 +190,10 @@
                 const temp = []
                 Object.keys(selectedRun.value?.status?.nodes).forEach((key) => {
                     if (
-                        ['Failed', 'Errpr'].includes(
+                        ['Failed', 'Error'].includes(
                             selectedRun.value?.status?.nodes[key].phase
-                        )
+                        ) &&
+                        selectedRun.value?.status?.nodes[key].type === 'Pod'
                     ) {
                         temp.push(selectedRun.value?.status?.nodes[key])
                     }
@@ -158,6 +218,9 @@
                 getRunClass,
                 getRunTextClass,
                 failedPods,
+                podFinishedAt,
+                formatDate,
+                difference,
             }
         },
     })

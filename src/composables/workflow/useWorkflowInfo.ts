@@ -66,6 +66,19 @@ export default function useWorkflowInfo() {
             'dddd, MMMM D YYYY, HH:mm:ss'
         )
     }
+
+    const difference = (startTime, endTime) => {
+        if (startTime && endTime) {
+            const sec = dayjs(endTime).diff(startTime, 'second')
+            return `${Math.floor(sec / 60)} mins, ${sec % 60} seconds`
+        }
+        return ''
+    }
+
+    const formatDate = (date) => {
+        return dayjs(date).format('dddd, MMMM D YYYY, HH:mm:ss')
+    }
+
     const podFinishedAt = (finishedAtProp: any) => {
         if (finishedAtProp) {
             return dayjs().to(dayjs(finishedAtProp))
@@ -295,5 +308,7 @@ export default function useWorkflowInfo() {
         getGlobalArguments,
         useCases,
         supportLink,
+        formatDate,
+        difference,
     }
 }

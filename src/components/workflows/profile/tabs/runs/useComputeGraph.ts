@@ -97,6 +97,7 @@ export default function useComputeGraph(
             name: nodeName,
             phase,
             type,
+            zIndex: 10,
 
             width,
             height,
@@ -193,12 +194,21 @@ export default function useComputeGraph(
             const name = getNode(item?.nodeName).name
 
             if (isFull) {
-                nodes.value.push(newNode(item, rootNodeName))
+                if (!consideredChildren.has(item?.nodeName)) {
+                    nodes.value.push(newNode(item, rootNodeName))
+                }
 
-                if (item?.parent) {
+                let source = previousCollapsed
+
+                const found = nodes.value.find((i) => i.id === item?.parent)
+                if (found) {
+                    source = found?.id
+                }
+
+                if (source && source !== item?.nodeName) {
                     const edge = {
-                        id: `${item.parent}@${getNode(item?.nodeName).name}`,
-                        source: item.parent,
+                        id: `${source}@${getNode(item?.nodeName).name}`,
+                        source,
                         target: item?.nodeName,
                         router: { name: 'metro' },
                         connector: { name: 'rounded' },
@@ -221,6 +231,7 @@ export default function useComputeGraph(
                     }
 
                     edges.value.push(edge)
+                    previousCollapsed = item?.nodeName
                 }
             } else if (isFirstLevel(name)) {
                 if (!consideredChildren.has(item?.nodeName)) {

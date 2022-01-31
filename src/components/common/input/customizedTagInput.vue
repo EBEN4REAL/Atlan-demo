@@ -107,7 +107,10 @@
         }
     }
 
-    const trimArr = (arr) => arr.map((s) => s.trim())
+    const trimArr = (arr) =>
+        arr.map((s) =>
+            typeof s === 'string' || s instanceof String ? s.trim() : s
+        )
 
     const change = (v) => {
         let finalValue = trimArr(v)

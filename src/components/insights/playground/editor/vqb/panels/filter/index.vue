@@ -5,6 +5,7 @@
         @toggleExpand="toggleExpand"
         :expand="expand"
         :isChecked="isChecked"
+        :containerHovered="containerHovered"
     >
         <template #panelIcon>
             <span class="absolute text-sm -right-1 -top-2">

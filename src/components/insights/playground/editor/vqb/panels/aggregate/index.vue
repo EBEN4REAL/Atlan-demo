@@ -5,6 +5,7 @@
         @toggleExpand="toggleExpand"
         :expand="expand"
         :isChecked="isChecked"
+        :containerHovered="containerHovered"
     >
         <template #panelIcon>
             <div class="relative flex items-center justify-center">

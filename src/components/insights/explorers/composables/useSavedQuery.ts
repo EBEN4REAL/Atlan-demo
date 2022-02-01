@@ -233,7 +233,7 @@ export function useSavedQuery(
                 if (tab.queryId === newTab.queryId) key = tab.key
             })
             newTab.key = key
-            overwriteInlineTab(newTab, tabsArray)
+            // overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
         }
     }
@@ -379,7 +379,7 @@ export function useSavedQuery(
             },
         })
 
-        console.log('update query body: ', body.value)
+        // console.log('update query body: ', body.value)
 
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(

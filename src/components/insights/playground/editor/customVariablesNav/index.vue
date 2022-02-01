@@ -78,11 +78,15 @@
                                 <div
                                     @mouseleave="closeSelectDropdown"
                                     class="z-10 flex flex-col text-gray-700 bg-white rounded shadow"
-                                    style="width: 162px"
+                                    style="
+                                        width: 162px;
+                                        height: 200px;
+                                        overflow: scroll;
+                                    "
                                 >
                                     <div
                                         v-if="variable.allowMultiple"
-                                        class="gap-y-2"
+                                        class="w-full gap-y-2"
                                     >
                                         <div
                                             class="flex flex-col w-full"
@@ -114,17 +118,23 @@
                                                     onChange(variable)
                                                 }
                                             "
+                                            class="w-full overflow-x-hidden"
                                         >
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
-                                                class="flex items-center justify-between px-4 pt-2 pb-2"
+                                                class="flex items-center justify-between w-full px-4 py-1"
                                             >
                                                 <a-checkbox :value="item.value"
                                                     ><span
-                                                        class="w-full h-8 mb-0 ml-1"
+                                                        class="flex w-full h-8 mb-0 ml-1"
                                                     >
-                                                        {{ item.label }}
+                                                        <!-- {{ item.label }} -->
+
+                                                        <Tooltip
+                                                            :tooltip-text="`${item.label}`"
+                                                            clamp-percentage="96%"
+                                                        />
                                                     </span>
                                                 </a-checkbox>
                                             </div>
@@ -136,21 +146,26 @@
                                                 variable.value
                                             "
                                             @select="onChange(variable)"
+                                            class="w-full"
                                         >
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
+                                                class="w-full"
                                             >
                                                 <a-menu-item
-                                                    class="px-4 hover:bg-gray-100"
+                                                    class="w-full px-4 hover:bg-gray-100"
                                                     :key="item.value"
                                                 >
                                                     <div
-                                                        class="flex items-center justify-between"
+                                                        class="flex items-center justify-between w-full"
                                                     >
-                                                        <span>{{
-                                                            item.label
-                                                        }}</span>
+                                                        <span
+                                                            class="flex w-full h-8 mb-0 ml-1"
+                                                            ><Tooltip
+                                                                :tooltip-text="`${item.label}`"
+                                                                clamp-percentage="96%"
+                                                        /></span>
                                                         <!-- <AtlanIcon
                                                             icon="Check"
                                                             class="text-primary"
@@ -374,6 +389,7 @@
                                                     :dropdownStyle="{
                                                         visibility: 'hidden',
                                                     }"
+                                                    :class="$style.multi_select"
                                                 >
                                                     <!-- <template
                                                         #dropdownRender
@@ -480,10 +496,12 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import dayjs from 'dayjs'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             AtlanBtn,
+            Tooltip,
         },
         props: {},
         setup(props) {
@@ -798,6 +816,13 @@
     }
     input[type='number'] {
         -moz-appearance: textfield !important;
+    }
+
+    .multi_select {
+        :global(.ant-select-selector) {
+            max-height: 80px !important;
+            overflow: scroll !important;
+        }
     }
 </style>
 

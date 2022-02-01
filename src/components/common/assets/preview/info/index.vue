@@ -146,6 +146,18 @@
             </div>
         </div>
 
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Fields</span>
+                <div
+                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-all">{{ field }}</span>
+                </div>
+            </div>
+        </div>
+
         <div
             v-if="
                 isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
@@ -689,6 +701,7 @@
                 externalLocationFormat,
                 isBiAsset,
                 getConnectorLabel,
+                fieldsLookerQuery,
             } = useAssetInfo()
 
             const {
@@ -817,6 +830,7 @@
                 isBiAsset,
                 isProfile,
                 getConnectorLabel,
+                fieldsLookerQuery,
             }
         },
     })

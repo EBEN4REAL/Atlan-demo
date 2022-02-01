@@ -12,7 +12,7 @@
                     >{{ sourceCreatedAt(asset) }}</a-tooltip
                 ></span
             >
-            <span class="flex ml-2" v-if="sourceCreatedBy(asset)">
+            <span v-if="sourceCreatedBy(asset)" class="flex ml-2">
                 by {{ sourceCreatedBy(asset) }}
             </span>
         </div>

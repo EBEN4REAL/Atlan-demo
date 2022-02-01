@@ -79,7 +79,10 @@ export default function useAssetInfo() {
         getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
-        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
+        (attributes(asset)?.displayName ||
+            attributes(asset)?.name ||
+            attributes(asset)?.qualifiedName) ??
+        ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =

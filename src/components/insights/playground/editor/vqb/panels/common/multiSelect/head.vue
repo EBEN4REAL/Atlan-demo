@@ -43,7 +43,7 @@
     import { selectedTables } from '~/types/insights/VQB.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useJoin } from '~/components/insights/playground/editor/vqb/composables/useJoin'
-    import { pluralizeString } from '~/utils/string'
+    import { pluralizeString, getValidStringUsingCount } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -110,10 +110,13 @@
                                 'table',
                                 totalTablesCount.value,
                                 false
-                            )} and ${totalViewsCount.value} ${pluralizeString(
-                                'view',
+                            )} ${getValidStringUsingCount(
                                 totalViewsCount.value,
-                                false
+                                `and ${totalViewsCount.value} ${pluralizeString(
+                                    'view',
+                                    totalViewsCount.value,
+                                    false
+                                )}`
                             )}`
                         }
                     } else {

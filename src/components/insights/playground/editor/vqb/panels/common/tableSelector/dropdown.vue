@@ -155,7 +155,7 @@
     import Loader from '@common/loaders/page.vue'
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
-    import { pluralizeString } from '~/utils/string'
+    import { pluralizeString, getValidStringUsingCount } from '~/utils/string'
 
     export default defineComponent({
         name: 'Multi Column Select',
@@ -223,10 +223,13 @@
                     'table',
                     totalTablesCount.value,
                     false
-                )} and ${totalViewsCount.value} ${pluralizeString(
-                    'view',
+                )} ${getValidStringUsingCount(
                     totalViewsCount.value,
-                    false
+                    `and ${totalViewsCount.value} ${pluralizeString(
+                        'view',
+                        totalViewsCount.value,
+                        false
+                    )}`
                 )}`
                 if (isTableLoading.value) {
                     data = 'Loading tables and views...'

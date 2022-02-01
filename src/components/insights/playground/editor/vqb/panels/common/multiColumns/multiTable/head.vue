@@ -80,7 +80,7 @@
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
-    import { pluralizeString } from '~/utils/string'
+    import { pluralizeString, getValidStringUsingCount } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -152,10 +152,13 @@
                                 'table',
                                 totalTablesCount.value,
                                 false
-                            )} and ${totalViewsCount.value} ${pluralizeString(
-                                'view',
+                            )} ${getValidStringUsingCount(
                                 totalViewsCount.value,
-                                false
+                                `and ${totalViewsCount.value} ${pluralizeString(
+                                    'view',
+                                    totalViewsCount.value,
+                                    false
+                                )}`
                             )}`
                         }
                     } else {

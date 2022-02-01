@@ -60,7 +60,7 @@ export const getTruncatedStringFromArray = (
         // length of name and 'x others(s)'
         const lastElm =
             truncated.length === 1 &&
-                truncated[0].length < `${truncated.length} other(s)`.length
+            truncated[0].length < `${truncated.length} other(s)`.length
                 ? `${truncated[0]}`
                 : `${truncated.length} other(s)`
 
@@ -140,9 +140,12 @@ export const getNameInitials = (name: string) => {
     return ''
 }
 
+export const getValidStringUsingCount = (count: number, str: string) => {
+    if (count === 0) return ''
+    return str
+}
 
 export const truncate = (string, len) => {
-    const myTruncatedString = string.substring(0, len);
-    return `${myTruncatedString
-        }...`
-} 
+    const myTruncatedString = string.substring(0, len)
+    return `${myTruncatedString}...`
+}

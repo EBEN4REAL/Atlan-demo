@@ -16,12 +16,19 @@
                 class="flex flex-col justify-center h-full"
             >
                 <Loading v-if="isQueryRunning === 'loading'" />
-                <QueryTimer :timerId="`${activeInlineTab.key}_timer`" />
+                <!-- <QueryTimer :timerId="`${activeInlineTab.key}_timer`" /> -->
                 <div
                     class="flex justify-center mt-2"
                     v-if="
                         isQueryRunning === 'loading' &&
-                        activeInlineTab.playground.resultsPane.result.runQueryId
+                        activeInlineTab.playground.resultsPane.result
+                            .runQueryId &&
+                        canQueryAbort(
+                            getConnectorName(
+                                activeInlineTab.playground.editor.context
+                                    .attributeValue
+                            ) ?? ''
+                        )
                     "
                 >
                     <AtlanBtn
@@ -133,6 +140,9 @@
     import { useError } from '~/components/insights/playground/common/composables/UseError'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import QueryTimer from '~/components/insights/playground/resultsPane/result/timer/queryTimer.vue'
+    import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+
     // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
     export default defineComponent({
@@ -162,6 +172,7 @@
         },
         setup(props) {
             const { abortQuery } = useRunQuery()
+            const { getConnectorName } = useConnector()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -212,6 +223,8 @@
             }
 
             return {
+                getConnectorName,
+                canQueryAbort,
                 haveLineNumber,
                 errorDecorations,
                 LINE_ERROR_NAMES,

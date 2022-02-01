@@ -6,7 +6,7 @@
                 v-model="queryText"
                 :placeholder="placeholder"
                 class="-mt-1.5"
-                :allowClear="true"
+                :allow-clear="true"
             >
             </SearchAdvanced>
         </div>
@@ -49,10 +49,10 @@
                 </div>
             </a-checkbox-group>
         </div>
-        <div class="px-4 pt-1" v-if="showNone">
+        <div v-if="showNone" class="px-4 pt-1">
             <a-checkbox
-                @change="checkNoClassifications"
                 class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
+                @change="checkNoClassifications"
             >
                 <component
                     :is="noStatus"
@@ -77,8 +77,8 @@
         watch,
     } from 'vue'
 
-    import noStatus from '~/assets/images/status/nostatus.svg'
     import { useTimeoutFn, useVModels } from '@vueuse/core'
+    import noStatus from '~/assets/images/status/nostatus.svg'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
@@ -113,11 +113,12 @@
 
             const { classificationList } = useTypedefData()
 
-            const placeholder = computed(() => {
-                return `Search ${
-                    filteredList?.value?.length ?? ''
-                } classifications`
-            })
+            const placeholder = computed(
+                () =>
+                    `Search ${
+                        filteredList?.value?.length ?? ''
+                    } classifications`
+            )
 
             const filteredList = computed(() =>
                 classificationList.value.filter((i) =>

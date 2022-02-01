@@ -7,6 +7,7 @@
             :class="{
                 active: item.key === active,
                 'fake-bold': item.key === active,
+                'h-6': variant === 'small',
             }"
             :disabled="disabled"
             :data-test-id="item?.key ?? 'atlan-btn'"
@@ -47,6 +48,12 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            variant: {
+                // normal, small
+                type: String,
+                required: false,
+                default: () => 'normal',
             },
         },
         emits: ['update:active'],

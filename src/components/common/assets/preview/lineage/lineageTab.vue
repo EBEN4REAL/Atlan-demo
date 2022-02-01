@@ -23,7 +23,7 @@
                 Download Impact
             </AtlanButton>
 
-            <router-link v-else :to="link">
+            <router-link v-else :to="getLineagePath(selectedAsset)">
                 <AtlanButton
                     size="sm"
                     padding="compact"
@@ -94,7 +94,13 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { AssetAttributes, SQLAttributes } from '~/constant/projection'
+    import {
+        AssetAttributes,
+        SQLAttributes,
+        GlossaryAttributes,
+        AssetRelationAttributes,
+    } from '~/constant/projection'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
@@ -119,7 +125,7 @@
             /** DATA */
             const { selectedAsset } = toRefs(props)
             const showImpactedAssets = ref(false)
-
+            const { getLineagePath } = useAssetInfo()
             const assetTypesLengthMap = ref({})
 
             const route = useRoute()
@@ -133,11 +139,6 @@
 
             const direction = ref('BOTH')
 
-            const link = computed(() => {
-                const text = `/assets/${guid.value}/lineage`
-                return text
-            })
-
             /** COMPUTED */
             const guid = computed(() => selectedAsset.value.guid)
             const assetName = computed(
@@ -150,7 +151,11 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
-                attributes: [...AssetAttributes, ...SQLAttributes],
+                attributes: [
+                    ...AssetAttributes,
+                    ...SQLAttributes,
+                    ...GlossaryAttributes,
+                ],
             }))
 
             const {
@@ -253,7 +258,7 @@
                 streams,
                 direction,
                 depth,
-                link,
+                getLineagePath,
                 showImpactedAssets,
                 isWithGraph,
                 allEntities,

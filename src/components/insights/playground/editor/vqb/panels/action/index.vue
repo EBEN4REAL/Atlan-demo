@@ -6,13 +6,17 @@
             @visibleChange="handleOpenChange"
         >
             <AtlanBtn
-                class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
+                class="flex-none border-r border-none border-gray-light"
                 size="sm"
                 color="secondary"
                 @click.stop="() => {}"
                 padding="compact"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                <AtlanIcon
+                    icon="Add"
+                    class="w-4 h-4 -mx-1 text-gray"
+                    style="margin-top: 1px"
+                ></AtlanIcon>
             </AtlanBtn>
             <template #overlay>
                 <a-menu
@@ -55,9 +59,9 @@
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { generateUUID } from '~/utils/helper/generator'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
+    import { useUtils as useAddPanelsUtils } from './useUtils'
 
     export default defineComponent({
         name: 'Columns',
@@ -84,65 +88,17 @@
             const { panelInfo } = toRefs(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
             const { syncSortAggregateAndGroupPanel } = useSort()
+            const { getInitialPanelStructure } = useAddPanelsUtils()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const handleAdd = (type) => {
-                let panel = {}
-                let uuid = generateUUID()
-
-                if (type === 'aggregate') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        aggregators: [],
-                        expand: true,
-                    }
-                } else if (type === 'group') {
-                    panel = {
-                        id: uuid,
-                        tableQualfiedName: undefined,
-                        columns: [],
-                        columsData: [],
-                        expand: true,
-                    }
-                } else if (type === 'sort') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        order: 'asc',
-                        expand: true,
-                        active: false,
-                        aggregateORGroupColumn: {},
-                    }
-                } else if (type === 'filter') {
-                    panel = {
-                        id: uuid,
-                        column: {},
-                        filter: {
-                            filterType: 'and',
-                        },
-                        expand: true,
-                    }
-                } else if (type === 'join') {
-                    panel = {
-                        id: uuid,
-                        columnsDataLeft: {},
-                        columnsDataRight: {},
-                        joinType: {
-                            type: 'inner_join',
-                            name: 'Inner Join',
-                        },
-                        expand: true,
-                    }
-                }
+                const panel = getInitialPanelStructure(type)
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 containerHovered.value = false
                 submenuHovered.value = false
                 syncSortAggregateAndGroupPanel(activeInlineTab)
-
-                // emit('add', type)
             }
 
             const computedItems = computed(() => {
@@ -179,9 +135,9 @@
                 if (!filter) {
                     _items.push({
                         id: 'filter',
-                        icon: 'Filter',
+                        icon: 'FilterFunnel',
                         label: 'Filter',
-                        class: 'mr-2',
+                        class: 'mr-2 -mt-0.5',
                     })
                 }
 

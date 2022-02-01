@@ -123,8 +123,8 @@
             })
             const sortOrderTable = ref('name.keyword-asc')
             const sortOrderColumn = ref('order-asc')
-            emit('change', 'sortOrderTable', sortOrderTable.value)
-            emit('change', 'sortOrderColumn', sortOrderColumn.value)
+            // emit('change', 'sortOrderTable', sortOrderTable.value)
+            // emit('change', 'sortOrderColumn', sortOrderColumn.value)
 
             const handleSortOrderChange = () => {
                 emit('change', 'sortOrderTable', sortOrderTable.value)

@@ -36,11 +36,13 @@
                 image-class="h-44"
             />
         </template>
-        <div v-else class="flex-grow px-2 overflow-y-auto">
+        <div v-else :class="customClasses">
             <template v-for="p in personaList" :key="p.guid">
                 <PurposeCard
                     :p="p"
                     :classification-list="classificationList"
+                    :padding-x='paddingX'
+                    :padding-y='paddingY'
                     class="border-b"
                 />
             </template>
@@ -64,6 +66,21 @@
             type: String,
             required: true,
         },
+        paddingX: {
+            type: Number,
+            required: false,
+            default: 10
+        },
+        paddingY: {
+            type: Number,
+            required: false,
+            default: 8
+        },
+        customClasses: {
+            type: String,
+            required: false,
+            default: 'flex-grow px-2 overflow-y-auto'
+        }
     })
 
     const { classificationID } = toRefs(props)

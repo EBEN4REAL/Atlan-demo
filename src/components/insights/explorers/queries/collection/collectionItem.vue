@@ -3,6 +3,7 @@
         :key="item.guid"
         :class="[
             'flex items-center justify-between px-4 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden w-full',
+            selectedCollection?.guid === item?.guid ? 'bg-gray-light' : '',
         ]"
         style="height: 34px"
         @click="handleChange(item.guid)"
@@ -138,6 +139,10 @@
             collectionModalVisible: {
                 type: Boolean,
                 required: true,
+            },
+            selectedCollection: {
+                type: Object,
+                required: false,
             },
         },
         setup(props, { emit }) {

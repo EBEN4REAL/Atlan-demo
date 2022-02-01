@@ -17,6 +17,7 @@
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Workspace">
+                        <!-- TODO port to json -->
                         <a-menu-item
                             key="overview"
                             v-auth="[map.UPDATE_WORKSPACE]"
@@ -37,12 +38,12 @@
                         <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]">
                             SMTP
                         </a-menu-item>
-                        <!-- <a-menu-item
-                            key="integration"
+                        <a-menu-item
+                            key="integrations"
                             v-auth="[map.LIST_INTEGRATION]"
                         >
                             Integrations
-                        </a-menu-item> -->
+                        </a-menu-item>
                     </a-menu-item-group>
                     <a-menu-item-group title="Logs">
                         <a-menu-item

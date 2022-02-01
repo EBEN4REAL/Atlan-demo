@@ -1,45 +1,19 @@
 <template>
     <div>
-        <div
-            @mouseover="handleMouseOver"
-            @mouseout="handleMouseOut"
-            :class="[
-                expand
-                    ? 'border-gray-300 rounded  border '
-                    : 'border-white  rounded border ',
-                containerHovered ? 'border-gray-300' : '',
-            ]"
-        >
+        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
             <div
                 @click.self="toggleExpand"
-                class="box-border relative flex items-center p-3 cursor-pointer"
+                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
             >
-                <div class="mr-3" @click.self="toggleExpand">
-                    <AtlanIcon
-                        @click.self="toggleExpand"
-                        icon="ChevronRight"
-                        :class="
-                            expand
-                                ? 'w-4 h-4 chevron rotate-90'
-                                : 'w-4 h-4 chevron rotate-0'
-                        "
-                    />
-                </div>
                 <div
-                    class="flex items-center justify-between w-full"
+                    class="flex items-center justify-between w-full min-h-panel-header"
                     @click="toggleExpand"
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
+                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
                             :class="[
-                                isChecked
-                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
-                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
-                                isChecked && expand
-                                    ? 'border-primary-focus bg-primary-light text-primary '
-                                    : '',
-                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
+                                expand ? 'bg-primary-light' : 'bg-gray-100',
                             ]"
                             style="z-index: 2"
                         >
@@ -50,15 +24,14 @@
                                     icon="Trigger"
                                     :class="[
                                         isChecked
-                                            ? 'text-gray-500'
+                                            ? 'text-gray'
                                             : 'text-gray-400',
                                         isChecked && expand
                                             ? 'text-primary'
                                             : '',
-                                        'absolute w-4 h-4 dead-center',
+                                        'w-4 h-4',
                                     ]"
                                 />
-                                <div class="w-4 h-4"></div>
                             </div>
                         </div>
                         <div class="">
@@ -74,7 +47,7 @@
                                     </div>
                                     <div
                                         v-if="!isChecked && expand"
-                                        class="px-3 py-1 ml-2 text-gray-500 rounded-full bg-gray-light"
+                                        class="px-3 ml-2 text-gray-500 rounded-full bg-gray-light"
                                     >
                                         Disabled
                                     </div>
@@ -100,111 +73,33 @@
                         </div>
                     </div>
 
-                    <div
-                        v-if="!readOnly"
-                        :class="[
-                            containerHovered ? 'opacity-100' : 'opacity-0',
-                            'flex border border-gray-300 rounded   items-strech',
-                        ]"
-                    >
-                        <div
-                            class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
-                            @click.stop="() => {}"
-                        >
-                            <a-tooltip
-                                placement="top"
-                                :title="
-                                    activeInlineTab.playground.vqb.panels[index]
-                                        .hide
-                                        ? 'Disable step'
-                                        : 'Enable step'
-                                "
-                            >
-                                <a-checkbox
-                                    v-model:checked="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ].hide
-                                    "
-                                    @change="handleCheckboxChange"
-                                ></a-checkbox>
-                            </a-tooltip>
-                        </div>
-
-                        <div
-                            class="border-r border-gray-300"
-                            v-if="
-                                activeInlineTab.playground.vqb.panels.length -
-                                    1 !==
-                                Number(index)
-                            "
-                        >
-                            <a-tooltip placement="top" title="Add step">
-                                <!-- Show dropdown except the last panel -->
-                                <Actions
-                                    @add="
-                                        (type, panel) =>
-                                            handleAddPanel(index, type, panel)
-                                    "
-                                    v-model:submenuHovered="submenuHovered"
-                                    v-model:containerHovered="containerHovered"
-                                    :panelInfo="
-                                        activeInlineTab.playground.vqb.panels[
-                                            index
-                                        ]
-                                    "
-                                />
-                            </a-tooltip>
-                            <!-- ------------------------------ -->
-                        </div>
-
-                        <div class="border-r border-gray-300">
-                            <a-tooltip placement="top" title="Delete step">
-                                <AtlanBtn
-                                    @click.stop="() => handleDelete(index)"
-                                    :disabled="Number(index) === 0"
-                                    class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                    size="sm"
-                                    color="secondary"
-                                    padding="compact"
-                                >
-                                    <AtlanIcon
-                                        icon="Delete"
-                                        class="-mx-1"
-                                    ></AtlanIcon>
-                                </AtlanBtn>
-                            </a-tooltip>
-                        </div>
-                    </div>
+                    <PanelOptions
+                        @handleCheckboxChange="handleCheckboxChange"
+                        @handleDelete="handleDelete"
+                        v-model:containerHovered="containerHovered"
+                        v-model:submenuHovered="submenuHovered"
+                        :panel="panel"
+                        :index="index"
+                    />
                 </div>
-
-                <div
-                    @click.self="toggleExpand"
-                    :class="[
-                        expand
-                            ? 'absolute bg-gray-300 opacity-0'
-                            : 'absolute bg-gray-300 ',
-                        containerHovered ? 'opacity-0' : '',
-                    ]"
-                    :style="`width: 1px; left: 55px; z-index: 1; ${findTimeLineHeight(
-                        Number(index)
-                    )}`"
-                ></div>
             </div>
             <!-- Show on expand -->
             <keep-alive>
-                <AggregatorSubPanel
-                    v-model:subpanels="
-                        activeInlineTab.playground.vqb.panels[index].subpanels
-                    "
-                    v-model:columnSubpanels="
-                        activeInlineTab.playground.vqb.panels[0].subpanels
-                    "
-                    :expand="expand"
-                    v-if="expand"
-                />
+                <transition name="collapse-smooth">
+                    <AggregatorSubPanel
+                        v-model:subpanels="
+                            activeInlineTab.playground.vqb.panels[index]
+                                .subpanels
+                        "
+                        v-model:columnSubpanels="
+                            activeInlineTab.playground.vqb.panels[0].subpanels
+                        "
+                        :expand="expand"
+                        v-if="expand"
+                    />
+                </transition>
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
                 v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
@@ -215,19 +110,7 @@
                         Number(index) &&
                     !readOnly
                 "
-            />
-        </div>
-        <div
-            @click.stop="() => {}"
-            class="relative w-full h-4"
-            v-if="
-                Number(index) < activeInlineTab.playground.vqb.panels.length - 1
-            "
-        >
-            <div
-                class="absolute h-4 bg-gray-300 left-14"
-                style="width: 1px; top: -1px"
-            ></div>
+            /> -->
         </div>
     </div>
 </template>
@@ -246,7 +129,6 @@
         toRaw,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
@@ -254,6 +136,7 @@
     import AggregatorSubPanel from './subpanel/index.vue'
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
+    import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -262,6 +145,7 @@
             Actions,
             AtlanBtn,
             AggregatorSubPanel,
+            PanelOptions,
         },
         props: {
             index: {
@@ -332,7 +216,6 @@
             )
 
             const checkbox = ref(true)
-            const { deletePanelsInVQB, handleAdd, updateVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -350,18 +233,8 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAddPanel = (index, type, panel) => {
-                handleAdd(
-                    index,
-                    type,
-                    panel,
-                    activeInlineTab,
-                    activeInlineTabKey,
-                    inlineTabs
-                )
-            }
+
             const handleDelete = (index) => {
-                deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             const toggleExpand = () => {
@@ -395,7 +268,6 @@
             // )
 
             const handleCheckboxChange = () => {
-                updateVQB(activeInlineTab, inlineTabs)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
             }
 
@@ -415,7 +287,6 @@
                 checkbox,
                 panel,
                 handleDelete,
-                handleAddPanel,
                 findTimeLineHeight,
                 getSummarisedInfoOfAggregationPanel,
                 handleCheckboxChange,
@@ -424,6 +295,34 @@
     })
 </script>
 <style lang="less" scoped>
+    .min-h-panel-header {
+        min-height: 36px;
+    }
+    .collapse-smooth-enter-active {
+        transition: all 0.25s ease-out;
+        overflow-y: hidden;
+    }
+    .collapse-smooth-leave-active {
+        transition: all 0.25s ease;
+        overflow-y: hidden;
+    }
+    .collapse-smooth-enter-from {
+        height: 0px;
+        // opacity: 0;
+    }
+    .collapse-smooth-enter-to {
+        height: 80px;
+    }
+    .collapse-smooth-leave-from {
+        height: 80px !important;
+        opacity: 1;
+    }
+
+    .collapse-smooth-leave-to {
+        // transform: translateX(20px);
+        height: 0px !important;
+        opacity: 0;
+    }
     .chevron {
         transition: all ease 0.1s;
     }

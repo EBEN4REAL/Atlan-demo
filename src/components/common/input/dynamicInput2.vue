@@ -33,12 +33,14 @@
         v-else-if="dataType === 'url'"
         v-model:value="localValue"
         :maxlength="max || 50"
+        placeholder="Enter a URL..."
         @change="handleInputChange"
     ></a-input>
     <a-input
         v-else-if="['string', 'text'].includes(dataType)"
         v-model:value="localValue"
         :maxlength="max || 50"
+        placeholder="Type..."
         @change="handleInputChange"
     ></a-input>
     <a-input-number
@@ -49,6 +51,7 @@
         "
         v-model:value="localValue"
         :precision="0"
+        placeholder="Enter an integer..."
         @change="handleInputChange"
         @keydown="handleNumberKeyPress"
     ></a-input-number>
@@ -60,6 +63,7 @@
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        placeholder="Enter decimal value..."
         @change="handleInputChange"
         @keydown="handleNumberKeyPress"
     ></a-input-number>
@@ -117,14 +121,14 @@
         Ref,
     } from 'vue'
 
+    import dayjs, { Dayjs } from 'dayjs'
+    import utc from 'dayjs/plugin/utc'
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
     import { isFloat } from '~/utils/checkType'
 
-    import dayjs, { Dayjs } from 'dayjs'
-    import utc from 'dayjs/plugin/utc'
     dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
     // import useAsyncTreeSelect from './useAsyncTreeSelect'
@@ -157,7 +161,7 @@
 
             // set proper default value
             if (multiple.value && !localValue.value) localValue.value = []
-            else if (localValue.value == null) localValue.value = ''
+            else if (localValue.value == null) localValue.value = undefined // set to undefined else placeholder won't appear
 
             const handleInputChange = (v) => {
                 if (

@@ -34,6 +34,7 @@ module.exports = {
                     light: '#F3F3F3',
                     500: '#6F7590',
                     300: '#E6E6EB',
+                    200: '#F3F3F3',
                     100: '#FAFAFA',
                 },
                 pink: {

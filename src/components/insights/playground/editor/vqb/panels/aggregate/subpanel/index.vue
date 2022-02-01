@@ -1,5 +1,5 @@
 <template>
-    <div :class="[' mx-3 mt-1 mb-4']">
+    <div :class="[' mx-3 pb-3']">
         <div class="">
             <!-- {{ columnSubpanels }} -->
 
@@ -53,11 +53,14 @@
                         </template>
                     </ColumnSelector>
 
-                    <span class="px-3 text-sm text-gray-500"
-                        >Calculate the</span
+                    <span
+                        class="px-3 text-sm text-gray-500"
+                        :class="{ invisible: !subpanel?.column?.item?.guid }"
+                        >calculate the</span
                     >
 
                     <AggregateSelector
+                        :class="{ invisible: !subpanel?.column?.item?.guid }"
                         class="flex-1"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"

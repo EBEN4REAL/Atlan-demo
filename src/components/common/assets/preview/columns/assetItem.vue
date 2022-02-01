@@ -73,7 +73,10 @@
                         v-for="classification in list"
                         :key="classification.guid"
                     >
-                        <PopoverClassification :classification="classification" :entity-guid="item?.guid">
+                        <PopoverClassification
+                            :classification="classification"
+                            :entity-guid="item?.guid"
+                        >
                             <ClassificationPill
                                 :name="classification.name"
                                 :display-name="classification?.displayName"
@@ -93,6 +96,7 @@
             :data="item"
             :show-drawer="showColumnDrawer"
             :show-mask="page === 'assets'"
+            :showCloseBtn="page !== 'assets'"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -190,8 +194,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {

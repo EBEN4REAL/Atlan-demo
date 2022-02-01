@@ -22,6 +22,7 @@ export default function useBody({
     context,
 }: useBodyProps) {
     const base = bodybuilder()
+    base.filter('term', '__state', 'ACTIVE')
 
     base.from(from || 0)
     base.size(limit || 100)

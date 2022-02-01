@@ -20,6 +20,7 @@ export default function useBody({
     context,
 }: useBodyProps) {
     const base = bodybuilder()
+    base.filter('term', '__state', 'ACTIVE')
     // debugger
 
     base.from(from || 0)

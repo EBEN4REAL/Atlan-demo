@@ -90,6 +90,7 @@ export const AssetAttributes = [
     'fields',
     'sourceOwners',
     'noteText',
+    'subtitleText',
 ]
 
 export const SQLAttributes = [

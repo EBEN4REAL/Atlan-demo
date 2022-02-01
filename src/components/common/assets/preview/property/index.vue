@@ -17,7 +17,7 @@
                 </div>
 
                 <span
-                    class="text-xs text-gray-700"
+                    class="text-gray-700"
                     v-if="sourceUpdatedAt(selectedAsset, true)"
                     >{{ sourceUpdatedAt(selectedAsset, true) }} ({{
                         sourceUpdatedAt(selectedAsset, false)
@@ -39,7 +39,7 @@
                     {{ sourceCreatedBy(selectedAsset) }}
                 </div>
 
-                <span class="text-xs text-gray-700"
+                <span class="text-gray-700"
                     >{{ sourceCreatedAt(selectedAsset, true) }} ({{
                         sourceCreatedAt(selectedAsset, false)
                     }})</span

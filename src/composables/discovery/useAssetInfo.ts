@@ -1074,6 +1074,9 @@ export default function useAssetInfo() {
     const fieldsLookerQuery = (asset: assetInterface) =>
         attributes(asset)?.fields || []
 
+    const sourceOwners = (asset: assetInterface) =>
+        attributes(asset)?.sourceOwners
+
     return {
         attributes,
         title,
@@ -1156,6 +1159,7 @@ export default function useAssetInfo() {
         categories,
         seeAlso,
         parentCategory,
+        sourceOwners,
         isGTC,
         getProfilePath,
         isGTCByType,

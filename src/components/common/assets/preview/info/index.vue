@@ -146,6 +146,15 @@
             </div>
         </div>
 
+        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                <span class="text-gray-700">{{
+                    sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
         <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
@@ -702,6 +711,7 @@
                 isBiAsset,
                 getConnectorLabel,
                 fieldsLookerQuery,
+                sourceOwners,
             } = useAssetInfo()
 
             const {
@@ -831,6 +841,7 @@
                 isProfile,
                 getConnectorLabel,
                 fieldsLookerQuery,
+                sourceOwners,
             }
         },
     })

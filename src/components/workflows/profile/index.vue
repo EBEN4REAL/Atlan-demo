@@ -95,6 +95,8 @@
                 runName.value = run
             }
 
+            provide('newrun', handleNewRun)
+
             return {
                 activeKey,
                 handleChangeTab,

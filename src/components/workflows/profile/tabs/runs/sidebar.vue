@@ -10,19 +10,39 @@
             >
                 <div class="flex flex-col">
                     <div class="flex mb-2 gap-x-3">
-                        <div class="flex flex-col">
+                        <div class="flex flex-col w-full">
                             <p class="text-gray-500">Status</p>
-                            <div class="flex items-center">
-                                <div
-                                    class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
-                                    :class="getRunClass(selectedRun)"
-                                ></div>
-                                <p
-                                    :class="getRunTextClass(selectedRun)"
-                                    class="font-semibold"
+                            <div class="flex justify-between w-full">
+                                <div class="flex items-center">
+                                    <div
+                                        class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
+                                        :class="getRunClass(selectedRun)"
+                                    ></div>
+                                    <p
+                                        :class="getRunTextClass(selectedRun)"
+                                        class="font-semibold"
+                                    >
+                                        {{ phase(selectedRun) }}
+                                    </p>
+                                </div>
+                                <a-button
+                                    type="danger"
+                                    v-if="
+                                        ['Running'].includes(phase(selectedRun))
+                                    "
+                                    >Stop</a-button
                                 >
-                                    {{ phase(selectedRun) }}
-                                </p>
+
+                                <a-button
+                                    class="text-red-500"
+                                    v-if="
+                                        ['Failed', 'Error'].includes(
+                                            phase(selectedRun)
+                                        )
+                                    "
+                                    @click="handleRetry"
+                                    >Retry</a-button
+                                >
                             </div>
                         </div>
                     </div>
@@ -83,7 +103,7 @@
                             </a-select>
                         </div>
 
-                        <a-button>Logs</a-button>
+                        <a-button @click="handleLogs">Logs</a-button>
                     </div>
                     <div class="flex flex-col">
                         <p class="text-gray-500">Name</p>
@@ -128,9 +148,12 @@
 
 <script lang="ts">
     // Vue
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-
+    import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
+    import useWorkflowRunRetry from '~/composables/package/useWorkflowRunRetry'
+    import { Modal, message } from 'ant-design-vue'
+    import { promiseTimeout, useTimeout, useTimeoutFn } from '@vueuse/core'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],
@@ -171,6 +194,8 @@
                     )}`
             )
 
+            const { getLiveLogs } = useWorkflowLogsStream('')
+
             const failedPods = computed(() => {
                 const temp = []
                 if (selectedRun?.value?.metadata?.name) {
@@ -208,6 +233,45 @@
                 return {}
             })
 
+            const handleNewRun = inject('newrun')
+            const messageKey = ref('messageKey')
+            const handleRetry = () => {
+                Modal.confirm({
+                    title: 'Are you sure you want to retry this run?',
+                    content: 'This will retry all the failed tasks',
+                    okText: 'Yes',
+                    onOk() {
+                        const path = ref({
+                            name: selectedRun.value?.metadata?.name,
+                        })
+                        const { data } = useWorkflowRunRetry(path, true)
+
+                        message.loading({
+                            content: 'Retrying the run',
+                            key: messageKey.value,
+                        })
+
+                        watch(data, () => {
+                            const {} = useTimeoutFn(() => {
+                                /* ... */
+                                // handleNewRun(name(data.value))
+                                message.success({
+                                    content: 'Run started',
+                                    key: messageKey.value,
+                                    duration: 10,
+                                })
+                            }, 2000)
+                        })
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                    onCancel() {},
+                })
+            }
+
+            const handleLogs = () => {
+                getLiveLogs()
+            }
+
             return {
                 selectedPod,
                 phase,
@@ -228,6 +292,11 @@
                 formatDate,
                 difference,
                 selectedPodName,
+                handleRetry,
+                messageKey,
+                handleNewRun,
+                handleLogs,
+                getLiveLogs,
             }
         },
     })

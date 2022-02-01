@@ -18,6 +18,7 @@ interface useSSEParams {
         [index: string]: any
     }
     body: Object
+    method?: string
 }
 
 interface useSSEReturnObj {
@@ -88,6 +89,7 @@ export function useSSE({
     headers = {},
     pathVariables = {},
     body = {},
+    method = 'POST',
 }: useSSEParams): any {
     const keycloack = appInstance.config.globalProperties.$keycloak
     const { token } = keycloack
@@ -127,13 +129,23 @@ export function useSSE({
     const URL: any = resolveUrl(path, pathVariables)
 
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
-        eventSource.value = new EventSourcePolyfill(URL, {
-            headers: reqHeaders,
-            method: 'POST',
-            withCredentials: cfg.withCredentials,
-            heartbeatTimeout: heartbeatTimeout,
-            body,
-        })
+        if (method === 'GET') {
+            eventSource.value = new EventSourcePolyfill(URL, {
+                headers: reqHeaders,
+                method,
+                withCredentials: cfg.withCredentials,
+                heartbeatTimeout: heartbeatTimeout,
+            })
+        } else {
+            eventSource.value = new EventSourcePolyfill(URL, {
+                headers: reqHeaders,
+                method,
+                withCredentials: cfg.withCredentials,
+                heartbeatTimeout: heartbeatTimeout,
+                body,
+            })
+        }
+
         // setInterval(() => {
 
         // }, 4000)
@@ -160,6 +172,7 @@ export function useSSE({
                 },
 
                 subscribe(event: any, handler) {
+                    console.log('e', event)
                     const listener = (e: any) => {
                         let data
                         try {

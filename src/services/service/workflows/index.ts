@@ -51,6 +51,16 @@ const updateWorkflowByName = (pathVariables?, body?, options?: useOptions) =>
         options || {}
     )
 
+const retryRun = (pathVariables, options?: useOptions) =>
+    useAPI(
+        map.RETRY_RUN,
+        'POST',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+
 // const List = (params?: any, options?: AxiosRequestConfig) =>
 //     getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {
 //         params,
@@ -157,16 +167,6 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
             pathVariables,
         },
         { asyncOptions: { immediate } }
-    )
-
-const retryRun = (pathVariables) =>
-    useAPI(
-        map.RETRY_RUN,
-        'POST',
-        {
-            pathVariables,
-        },
-        {}
     )
 
 const stopRun = (pathVariables) =>

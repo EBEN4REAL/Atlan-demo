@@ -1,26 +1,23 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import axios from 'axios'
-import { mutate } from 'swrv'
 import swrvState from '~/utils/swrvState'
 
 import { pluralizeString } from '~/utils/string'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
-import { LIST_USERS } from '~/services/service/users/key'
 import { useOptions } from '~/services/api/common'
+import { userStatusOptions } from '~/constant/users'
 
 export const getUserName = (user: any) => {
     const { firstName } = user
     const { lastName } = user
     /** remove ` (me) string if present from last name`; we add it here @see {@link src/composables/user/useFacetUsers.ts} */
     const lastNameArray = lastName?.split(' ') || []
-    if (firstName) {
-        return `${firstName} ${
-            lastNameArray.length ? lastNameArray[0] || '' : lastName
-        }`
+    if (firstName && lastName) {
+        return `${firstName} ${lastNameArray.length ? lastNameArray[0] || '' : lastName
+            }`
     }
     return user.username
 }
@@ -159,8 +156,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -210,6 +207,26 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         mutate()
     }
 
+    const getUserTypeAggregations = () => {
+        const result = ref({
+            active: 0,
+            disabled: 0,
+            invited: 0,
+        })
+        userStatusOptions.forEach((status) => {
+            const payload = {
+                limit: 1,
+                offset: 0,
+                sort: 'firstName',
+                filter: { $and: [JSON.parse(status.value)] },
+            }
+            const { data } = Users.List(payload)
+            watch(data, () => {
+                result.value[status.id] = data?.value?.filterRecord
+            })
+        })
+        return result
+    }
     return {
         total,
         state,
@@ -225,6 +242,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         error,
         cancelRequest,
         mutate,
+        getUserTypeAggregations,
     }
 }
 interface params {

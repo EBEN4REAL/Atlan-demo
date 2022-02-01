@@ -102,7 +102,7 @@
         margin: 2px 0;
     }
     .content-popover-group-persona {
-        width: 220px;
+        min-width: 180px;
     }
     .container-scroll {
         max-height: 170px;

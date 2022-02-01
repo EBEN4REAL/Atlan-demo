@@ -522,6 +522,7 @@
                 useAddEvent('discovery', 'aggregate_tab', 'changed', {
                     name: tabName,
                 })
+                handleFocusOnInput()
             }
 
             const handleLoadMore = () => {

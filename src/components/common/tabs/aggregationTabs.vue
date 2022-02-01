@@ -38,8 +38,13 @@
                                 icon="Globe"
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
+                            <AtlanIcon
+                                v-else-if="item.image && !item.hideIcon"
+                                :icon="item.image"
+                                class="self-center mr-1 mb-0.5"
+                            ></AtlanIcon>
 
-                            <div class="self-center text-sm font-normal">
+                            <div class="self-center text-sm">
                                 {{ item.label }}
                             </div>
                             <div
@@ -206,7 +211,6 @@
                 selectedTab,
                 getCountString,
                 onTabChange,
-                icon,
                 getKeyboardShortcutData,
                 currentIndex,
             }
@@ -223,7 +227,6 @@
         }
         :global(.ant-tabs-tab) {
             @apply bg-white text-sm mr-1 !important;
-            border: 1px solid #e6e6eb;
             border-radius: 24px !important;
             border: 1px solid #e6e6eb !important;
 
@@ -259,6 +262,11 @@
             @apply bg-primary-menu !important;
             @apply text-primary !important;
             @apply border-primary !important;
+            -webkit-text-stroke: 0px !important;
+            -moz-text-stroke: 0px !important;
+            &:hover {
+                @apply border-primary !important;
+            }
 
             .chip {
                 @apply text-primary !important;
@@ -289,11 +297,13 @@
         :global(.ant-tabs-nav::before) {
             @apply border-0 !important;
         }
-
         :global(.ant-tabs-tab-btn:focus) {
             @apply bg-primary-menu !important;
             @apply text-primary !important;
-            @apply border-primary !important;
+            @apply border-primary-menu !important;
+            .chip {
+                @apply text-primary !important;
+            }
         }
     }
 </style>

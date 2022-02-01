@@ -1,18 +1,22 @@
 <template>
     <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
-        <div class="flex items-center justify-between">
+        <div
+            v-if="links(selectedAsset)?.length > 0"
+            class="flex items-center justify-between"
+        >
             <span class="font-semibold text-gray-500">Resources</span>
 
             <AddResources
-                v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"
                 :edit-permission="linkEditPermission"
-                ><template #trigger>
+            >
+                <template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none hover:border-gray-400"
                     >
-                        <AtlanIcon icon="Add" /> </a-button
-                ></template>
+                        <AtlanIcon icon="Add" />
+                    </a-button>
+                </template>
             </AddResources>
         </div>
         <div>
@@ -20,7 +24,14 @@
                 v-if="links(selectedAsset)?.length > 0"
                 class="flex flex-col gap-y-4"
             >
-                <div v-for="(item, index) in links(selectedAsset)" :key="index">
+                <div
+                    v-for="(item, index) in links(selectedAsset)?.sort((a, b) =>
+                        a.attributes.__timestamp < b.attributes.__timestamp
+                            ? -1
+                            : 1
+                    )"
+                    :key="index"
+                >
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :edit-permission="linkEditPermission"
@@ -32,28 +43,39 @@
                 <SlackUserLoginTrigger
                     v-if="
                         hasAtleastOneSlackLink &&
-                        !hasUserLevelSlackIntegration &&
-                        hasTenantLevelSlackIntegration
+                        !userSlackStatus.configured &&
+                        tenantSlackStatus.configured
                     "
                     class="mt-6"
                 />
             </div>
             <div
                 v-else
-                class="flex flex-col items-center justify-center h-full gap-y-3"
+                class="flex flex-col items-center justify-center h-full mt-4 text-center text-gray-700"
             >
-                <AtlanIcon
-                    icon="EmptyResource"
-                    alt="EmptyResource"
-                    class="w-auto h-32"
-                />
-                <p class="text-sm text-center text-gray-700">
-                    Add URLs related to this asset
+                <p class="mb-2 text-xl font-bold">Resources</p>
+                <p class="text-sm">
+                    Resources is the place to document all <br />knowledge
+                    around the asset
                 </p>
+                <AtlanIcon
+                    icon="EmptyResource2"
+                    alt="EmptyResource"
+                    class="w-auto my-10 h-44"
+                />
+                <div
+                    class="flex flex-col mb-5 text-xs font-bold tracking-wide text-gray-500 gap-y-4"
+                >
+                    <span>Paul's Slack discussion around data type</span>
+                    <span>The confluence doc that John wrote</span>
+                    <span>The pdf that Ringo created</span>
+                    <span>The Github issue that George started</span>
+                </div>
                 <AddResources
                     :asset="selectedAsset"
                     :edit-permission="linkEditPermission"
-                    ><template #trigger>
+                >
+                    <template #trigger>
                         <AtlanButton
                             size="lg"
                             color="primary"
@@ -61,9 +83,9 @@
                         >
                             <AtlanIcon icon="Add" class="inline mb-0.5 mr-1" />
                             Add Resource
-                        </AtlanButton></template
-                    ></AddResources
-                >
+                        </AtlanButton>
+                    </template>
+                </AddResources>
             </div>
         </div>
     </div>
@@ -80,23 +102,25 @@
         computed,
         toRefs,
         defineAsyncComponent,
+        ref,
     } from 'vue'
+    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AddResources from './addResource.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AtlanButton from '~/components/UI/button.vue'
     import integrationStore from '~/store/integrations/index'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
-    import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
+    // import slackLinkPreview from './previews/slackLinkPreviewCard.vue'
 
     dayjs.extend(relativeTime)
 
     export default defineComponent({
+        name: 'ResourceWidget',
         components: {
             SlackUserLoginTrigger,
             AddResources,
@@ -105,6 +129,7 @@
             slackLinkPreview: defineAsyncComponent(
                 () => import('./previews/slackLinkPreviewCard.vue')
             ),
+
             linkPreview: defineAsyncComponent(
                 () => import('./previews/linkPreviewCard.vue')
             ),
@@ -124,14 +149,15 @@
             const timeAgo = (time: string) => dayjs().from(time, true)
             const { links, selectedAssetUpdatePermission, assetPermission } =
                 useAssetInfo()
-            const hasUserLevelSlackIntegration = true
-            const hasTenantLevelSlackIntegration = true
+
+            const store = integrationStore()
+            const { tenantSlackStatus, userSlackStatus } = toRefs(store)
 
             function getPreviewComponent(url) {
                 if (
                     isSlackLink(url) &&
-                    hasUserLevelSlackIntegration &&
-                    hasTenantLevelSlackIntegration
+                    tenantSlackStatus.value.configured &&
+                    userSlackStatus.value.configured
                 ) {
                     return 'slackLinkPreview'
                 }
@@ -159,14 +185,14 @@
             )
 
             return {
+                tenantSlackStatus,
+                userSlackStatus,
                 links,
                 linkEditPermission,
                 hasAtleastOneSlackLink,
-                hasUserLevelSlackIntegration,
                 isSlackLink,
                 timeAgo,
                 getPreviewComponent,
-                hasTenantLevelSlackIntegration,
             }
         },
     })

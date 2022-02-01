@@ -31,14 +31,23 @@ export const allTabs = [
         activeIcon: 'GroupActive',
     },
     {
-        name: 'Sessions',
+        name: 'Integrations',
         iconClass: '',
-        component: 'Sessions',
-        key: 'sessions',
-        icon: 'Hourglass',
-        tooltip: 'Sessions',
-        activeIcon: 'HourglassActive',
+        component: 'Integrations',
+        key: 'Integrations',
+        icon: 'Integrations',
+        tooltip: 'Integrations',
+        activeIcon: 'IntegrationsActive',
     },
+    // {
+    //     name: 'Sessions',
+    //     iconClass: '',
+    //     component: 'Sessions',
+    //     key: 'sessions',
+    //     icon: 'Hourglass',
+    //     tooltip: 'Sessions',
+    //     activeIcon: 'HourglassActive',
+    // },
     // {
     //     name: 'Access Logs',
     //     iconClass: '',
@@ -125,11 +134,13 @@ export const userStatusOptions = [
     {
         label: 'Active',
         value: JSON.stringify({ enabled: true, emailVerified: true }),
+        id: 'active'
     },
-    { label: 'Disabled', value: JSON.stringify({ enabled: false }) },
+    { label: 'Disabled', value: JSON.stringify({ enabled: false }), id: 'disabled' },
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
+        id: 'invited'
     },
 ]
 

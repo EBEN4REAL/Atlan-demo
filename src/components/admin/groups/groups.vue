@@ -79,7 +79,7 @@
             <a-table
                 id="groupList"
                 class="overflow-hidden rounded-b-lg users-groups-table"
-                :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
+                :scroll="{ y: 'calc(100vh - 20rem)', x: false }"
                 :pagination="false"
                 :data-source="groupList"
                 :columns="columns"
@@ -98,7 +98,7 @@
                     <a-tooltip
                         v-if="column.sortKey"
                         placement="top"
-                        class="px-4 py-2"
+                        class="px-4"
                     >
                         <template #title>{{
                             getSortTooltipText(
@@ -115,7 +115,7 @@
                                     : ''
                             "
                         >
-                            <div class="pt-0.5">
+                            <div class="pt-0">
                                 {{ title }}
                             </div>
                             <div
@@ -163,22 +163,24 @@
                                 ? 'justify-end'
                                 : 'justify-start'
                         "
-                        class="flex p-4 py-3 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
+                        class="flex px-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
-                        <div class="pt-0.5">{{ title }}</div>
+                        <div class="pt-0">{{ title }}</div>
                     </div>
                 </template>
 
                 <template #bodyCell="{ text: value, record: group, column }">
-                    <div class="flex items-center h-11">
+                    <div
+                        class="flex items-center h-11"
+                        @click="
+                            () => {
+                                handleGroupClick(group)
+                            }
+                        "
+                    >
                         <div
                             v-if="column.key === 'name'"
-                            class="flex items-center"
-                            @click="
-                                () => {
-                                    handleGroupClick(group)
-                                }
-                            "
+                            class="flex items-center truncate pr-6"
                         >
                             <Avatar
                                 :avatar-size="32"
@@ -186,11 +188,11 @@
                                 class="mr-3"
                                 :is-group="true"
                             />
-                            <div>
+                            <div class="w-full truncate">
                                 <div
-                                    class="flex capitalize truncate cursor-pointer text-primary"
+                                    class="flex capitalize cursor-pointer text-primary"
                                 >
-                                    <div class="mr-2 truncate max-w-3/4">
+                                    <div class="mr-2 truncate">
                                         {{ group.name }}
                                     </div>
                                     <div
@@ -201,13 +203,20 @@
                                     </div>
                                 </div>
                                 <p class="mb-0 text-gray-500 truncate">
-                                    {{ group.description }}
+                                    <a-tooltip placement="bottom">
+                                        <template #title>alias</template>
+                                        {{ group.alias }}</a-tooltip
+                                    ><span v-if="group.description"
+                                        ><span class="mx-1 text-gray-300"
+                                            >•</span
+                                        >{{ group.description }}</span
+                                    >
                                 </p>
                             </div>
                         </div>
                         <div
                             v-else-if="column.key === 'memberCount'"
-                            @click="handleAddMembers(group)"
+                            @click.stop="handleAddMembers(group)"
                         >
                             <div
                                 class="cursor-pointer text-primary hover:underline"
@@ -220,9 +229,61 @@
                             </div>
                         </div>
                         <div
+                            v-else-if="column.key === 'personas'"
+                            @click.stop=""
+                        >
+                            <a-popover
+                                v-if="group?.personas?.length"
+                                placement="bottom"
+                                :destroy-tooltip-on-hide="true"
+                            >
+                                <template #content>
+                                    <div
+                                        class="p-3 pb-4 content-popover-group-persona"
+                                    >
+                                        <div class="flex justify-between">
+                                            Personas
+                                            <!-- <div>
+                                                <span
+                                                    class="ml-auto text-primary"
+                                                >
+                                                    Manage
+                                                </span>
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="ml-1 text-primary"
+                                                />
+                                            </div> -->
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 mt-3">
+                                            <div
+                                                v-for="persona in group?.personas"
+                                                :key="persona.id"
+                                                class="px-2 border rounded-xl"
+                                            >
+                                                {{ persona.name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div
+                                    class="text-left cursor-pointer text-primary hover:underline"
+                                >
+                                    <span>{{
+                                        group?.personas?.length > 1
+                                            ? group?.personas?.length +
+                                              ' personas'
+                                            : group?.personas?.length +
+                                                  ' persona' || '-'
+                                    }}</span>
+                                </div>
+                            </a-popover>
+                            <div v-else class="text-left">-</div>
+                        </div>
+                        <div
                             v-else-if="column.key === 'createdBy'"
                             class="flex items-center cursor-pointer"
-                            @click="handleUserPreview(value)"
+                            @click.stop="handleUserPreview(value)"
                         >
                             <Avatar
                                 v-if="value"
@@ -282,6 +343,7 @@
     import { message, Modal } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
+    import axios from 'axios'
     import { Groups } from '~/services/service/groups'
     import DefaultLayout from '@/admin/layout.vue'
     import useGroups from '~/composables/group/useGroups'
@@ -318,6 +380,7 @@
             const deleteGroupLoading = ref(false)
             const showActionsDropdown = ref(false)
             const isGroupDrawerVisible = ref(false)
+            const cancelTokenSource = ref()
             const activeSortObject = ref({
                 order: '',
                 key: '',
@@ -605,6 +668,13 @@
                 })
             }
             const handleToggleDefault = (group: any) => {
+                if (cancelTokenSource.value) {
+                    cancelTokenSource.value.cancel('cancelled')
+                }
+                cancelTokenSource.value = axios.CancelToken.source()
+                const options = ref({
+                    cancelToken: cancelTokenSource.value.token,
+                })
                 const requestPayload = ref()
                 requestPayload.value = {
                     attributes: {
@@ -615,7 +685,8 @@
                 }
                 const { data, isReady, error, isLoading } = Groups.UpdateGroup(
                     group.id,
-                    requestPayload
+                    requestPayload,
+                    { options }
                 )
                 watch(
                     [data, isReady, error, isLoading],
@@ -629,9 +700,11 @@
                                         : 'marked'
                                 } as default`
                             )
-
+                            cancelTokenSource.value = null
                             getGroupList()
                         } else if (error && error.value) {
+                            if (error && error.value.message === 'cancelled')
+                                return
                             message.error(
                                 `Unable to ${
                                     group.isDefault === 'true'
@@ -691,6 +764,13 @@
         border-right-color: #e6e6eb;
         border-bottom-color: #e6e6eb;
         border-left-color: #e6e6eb;
+    }
+</style>
+<style lang="less" scoped>
+    .content-popover-group-persona {
+        min-width: 180px;
+        height: auto;
+        max-height: 170px;
     }
 </style>
 <route lang="yaml">

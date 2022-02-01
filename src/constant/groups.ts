@@ -37,7 +37,7 @@ export const columns = [
         title: 'Group',
         key: 'name',
         ellipsis: true,
-        width: '40%',
+        width: 400,
         sortKey: 'alias',
         dataIndex: 'name',
         align: 'left',
@@ -60,6 +60,13 @@ export const columns = [
         sorter: true,
         sortDirections: ['ASC', 'DESC'],
     },
+    {
+        title: 'Personas',
+        key: 'personas',
+        // sorter: true,
+        align: 'left',
+        width: '30%',
+    },
     // {
     //     title: 'Personas',
     //     dataIndex: 'personaCount',
@@ -81,6 +88,7 @@ export const columns = [
     },
     {
         title: '',
+        width: 100,
         key: 'actions',
         // slots: { customRender: 'actions' },
         align: 'right',

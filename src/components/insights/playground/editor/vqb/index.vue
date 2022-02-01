@@ -1,21 +1,28 @@
 <template>
-    <div
-        class="absolute w-full px-4 py-3 bg-white rounded vqb ml-0.5"
-        :class="lockVQBScroll ? 'vqb-scroll-lock' : 'vqb'"
-        style="z-index: 3"
-    >
-        <template
-            v-for="(item, index) in activeInlineTab?.playground?.vqb?.panels"
-            :key="item?.id + index + activeInlineTab.key"
+    <div class="h-full p-3">
+        <div
+            class="w-full p-3 rounded-lg vqb"
+            style="z-index: 3; background-color: #f6f8fd"
         >
-            <component
-                :is="item?.id"
-                :index="index"
-                :panel="item"
-                v-if="item"
+            <template
+                v-for="(item, index) in activeInlineTab?.playground?.vqb
+                    ?.panels"
                 :key="item?.id + index + activeInlineTab.key"
-            ></component>
-        </template>
+            >
+                <component
+                    :is="item?.id"
+                    :index="index"
+                    :panel="item"
+                    v-if="item"
+                    :key="item?.id + index + activeInlineTab.key"
+                    class="mb-4 bg-white rounded-lg"
+                ></component>
+            </template>
+            <FloatingAddAction
+                @add="(type, panel) => handleAddPanel(type, panel)"
+                :panelInfo="panelInfo"
+            />
+        </div>
     </div>
 </template>
 
@@ -28,16 +35,20 @@
         inject,
         ref,
         watch,
+        computed,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import FloatingAddAction from '~/components/insights/playground/editor/vqb/panels/action/floatingAddAction.vue'
     import {
         useProvide,
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
+    import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
 
     export default defineComponent({
         name: 'VQB',
         components: {
+            FloatingAddAction,
             columns: defineAsyncComponent(
                 () => import('./panels/columns/index.vue')
             ),
@@ -73,6 +84,31 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<string>
+
+            const lastIndex = computed(
+                () => activeInlineTab.value?.playground?.vqb?.panels?.length - 1
+            )
+            const panelInfo = computed(() => {
+                activeInlineTab.value?.playground?.vqb?.panels[lastIndex.value]
+            })
+            const { handleAdd } = useVQB()
+            const handleAddPanel = (type, panel) => {
+                console.log('handleAddPanel', { lastIndex: lastIndex.value })
+                if (lastIndex.value === -1) {
+                    return
+                }
+                handleAdd(
+                    lastIndex.value,
+                    type,
+                    panel,
+                    activeInlineTab,
+                    activeInlineTabKey,
+                    inlineTabs
+                )
+            }
 
             // watch(
             //     () => activeInlineTab.value.playground.vqb.panels,
@@ -93,6 +129,8 @@
             return {
                 // vqb,
                 activeInlineTab,
+                handleAddPanel,
+                panelInfo,
             }
         },
     })
@@ -102,7 +140,7 @@
         background-color: #f4f4f4;
     }
     .vqb {
-        height: calc(100% - 4.5rem);
+        height: calc(100% - 4rem);
         overflow-y: auto;
     }
     .vqb-scroll-lock {

@@ -160,6 +160,7 @@ import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -171,8 +172,8 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
-import Slack from '~/assets/images/integrations/slack.svg'
-import Teams from '~/assets/images/integrations/teams.svg'
+import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -180,7 +181,8 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
-import Retry from '~/assets/images/icons/retry.svg'
+import Retry from '~/assets/images/icons/retry2.svg'
+import Retry2 from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
 import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
@@ -217,8 +219,10 @@ import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
 import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+import ColumnGray from '~/assets/images/icons/column-gray.svg'
+import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 
-import Gdoc from '~/assets/images/integrations/gDoc.svg'
+import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
@@ -294,7 +298,10 @@ import AddColumn from '~/assets/images/icons/add-column.svg'
 
 import ClassificationShield from '~/assets/images/classifications/shield.svg'
 import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationAtlanHollow from '~/assets/images/classifications/atlan-hollow.svg'
 import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
+import ClassificationPoliciesGray from '~/assets/images/classifications/policies-gray.svg'
+import ClassificationPoliciesActive from '~/assets/images/classifications/policies-active.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -303,10 +310,15 @@ import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
-import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
-import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Redshift from '~/assets/images/source/svg/Redshift.svg'
+import Postgres from '~/assets/images/source/svg/postgres.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
 import Databricks from '~/assets/images/source/svg/Databricks.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
+import Looker from '~/assets/images/source/svg/Looker.svg'
+
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
@@ -352,6 +364,7 @@ import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
+import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
 
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
@@ -364,6 +377,7 @@ import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
 import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
 import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
 import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
+import PlusWhite from '~/assets/images/icons/plus-white.svg'
 
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
@@ -373,12 +387,26 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
+import Gear from '~/assets/images/icons/gear.svg'
+import SafariLock from '~/assets/images/icons/safari-lock.svg'
+import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import Integrations from '~/assets/images/icons/integrations.svg'
+import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
 import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
 import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
+import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
+import Comment from '~/assets/images/icons/Comment.svg'
 
 export default {
+    IntegrationsActive,
+    Integrations,
+    SlackToken,
+    SafariLock,
+    Gear,
+    Atlan,
     GlowFlash,
     Query24,
     Vqb24,
@@ -429,8 +457,10 @@ export default {
     EmptyLineage,
     EmptyLineageTab,
     EmptyResource,
+    EmptyResource2,
     IssuesFilled,
     ExplorerTrigger,
+    MaterialisedView,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,
@@ -444,6 +474,7 @@ export default {
     RunSuccess,
     RunFailed,
     Metadata,
+    ColumnGray,
     Relation,
     MorningIcon,
     AfternoonIcon,
@@ -584,6 +615,7 @@ export default {
     FullScreenBoth,
     Minus,
     Retry,
+    Retry2,
     Recenter,
     Refocus,
     AssetsInactiveLight,
@@ -657,6 +689,10 @@ export default {
     Athena,
     PowerBI,
     Tableau,
+    Postgres,
+    Redshift,
+    BigQuery,
+    Looker,
     SSO,
     SMTP,
     APIKey,
@@ -720,6 +756,9 @@ export default {
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,
+    ClassificationAtlanHollow,
+    ClassificationPoliciesGray,
+    ClassificationPoliciesActive,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,
@@ -741,4 +780,8 @@ export default {
     Request,
     RequestActive,
     GlossaryGray,
+    FilterFunnelDot,
+    PlusWhite,
+    Comment,
+    EmptyRequest,
 }

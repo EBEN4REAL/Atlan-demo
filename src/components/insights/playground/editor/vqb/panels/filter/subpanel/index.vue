@@ -1,11 +1,11 @@
 <template>
-    <div :class="[' mx-3 mt-1 mb-4 ']">
+    <div :class="[' mx-3 pb-3 ']">
         <div class="">
             <template
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div class="flex items-center mb-3">
+                <div class="flex items-center mb-1">
                     <div
                         class="flex items-center justify-end mr-3 item-1"
                         style="min-width: 91px"
@@ -447,6 +447,25 @@
     })
 </script>
 <style lang="less" scoped>
+    .collapse-smooth-enter-active {
+        transition: all 0.2s ease;
+    }
+    .collapse-smooth-leave-active {
+        transition: all 0.2s ease;
+    }
+    // .collapse-smooth-enter-from {
+    //     height: 0px;
+    // }
+    .collapse-smooth-leave-from {
+        height: 80px !important;
+        opacity: 1;
+    }
+
+    .collapse-smooth-leave-to {
+        // transform: translateX(20px);
+        height: 0px !important;
+        opacity: 0;
+    }
     .border-shift-plus {
         padding: 1px;
     }
@@ -465,18 +484,21 @@
     .item-1 {
         flex: 0.35;
         flex-shrink: 0;
+        padding: 0px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }
     .item-2 {
         flex: 0.2;
         flex-shrink: 0;
+        padding: 2px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }
     .item-3 {
         flex: 0.45;
         flex-shrink: 0;
+        padding: 2px 2px 6px 2px;
         white-space: nowrap;
         overflow: hidden;
     }

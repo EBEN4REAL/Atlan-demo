@@ -74,8 +74,8 @@
                                 </span>
                             </div>
                             <div class="flex items-center mt-1 ml-4">
-                                <img
-                                    :src="
+                                <AtlanIcon
+                                    :icon="
                                         getConnectorImagePath(
                                             getConnectorName(
                                                 queryInfo._source.log.message
@@ -129,8 +129,8 @@
                                 >
                             </div>
                             <div class="flex items-center mt-1.5 ml-4">
-                                <img
-                                    :src="
+                                <AtlanIcon
+                                    :icon="
                                         getConnectorImagePath(
                                             getConnectorName(
                                                 queryInfo._source.log.message
@@ -171,24 +171,9 @@
 
                         <span class="text-sm text-gray-700">
                             {{
-                                queryInfo._source.log.message.totalTime < 1000
-                                    ? `${queryInfo._source.log.message.totalTime}ms`
-                                    : queryInfo._source.log.message.totalTime /
-                                          1000 >
-                                      60
-                                    ? `${Math.floor(
-                                          queryInfo._source.log.message
-                                              .totalTime /
-                                              (1000 * 60)
-                                      )}m ${
-                                          queryInfo._source.log.message
-                                              .totalTime %
-                                          (1000 * 60)
-                                      }s`
-                                    : `${
-                                          queryInfo._source.log.message
-                                              .totalTime / 1000
-                                      }s`
+                                getDurationStringFromMilliSec(
+                                    queryInfo._source.log.message.totalTime
+                                )
                             }}
                         </span>
                         <div
@@ -329,10 +314,12 @@
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import { SourceList } from '~/constant/source'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import { getDurationStringFromMilliSec } from '~/utils/time'
 
     export default defineComponent({
         name: 'QueryLogsTable',
-        components: { Avatar, AtlanBtn, PillGroup },
+        components: { Avatar, AtlanBtn, PillGroup, AtlanIcon },
         props: {
             queryLogsList: {
                 type: Array,
@@ -446,6 +433,7 @@
                 getConnectionName,
                 getConnectorImagePath,
                 getConnectorName,
+                getDurationStringFromMilliSec,
             }
         },
     })

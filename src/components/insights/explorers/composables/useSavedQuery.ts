@@ -22,6 +22,7 @@ import { useTenantStore } from '~/store/tenant'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import updateAsset from '~/composables/discovery/updateAsset'
+import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -161,11 +162,17 @@ export function useSavedQuery(
                           ],
                       },
                 editor: {
-                    text: savedQuery?.attributes?.rawQuery ? savedQuery?.attributes?.rawQuery : "",
+                    text: savedQuery?.attributes?.rawQuery
+                        ? savedQuery?.attributes?.rawQuery
+                        : '',
                     dataList: [],
                     columnList: [],
-                    variables:  Array.isArray(decodedVariables) ? decodedVariables : [],
-                    savedVariables: Array.isArray(decodedVariables) ? decodedVariables : [],
+                    variables: Array.isArray(decodedVariables)
+                        ? decodedVariables
+                        : [],
+                    savedVariables: Array.isArray(decodedVariables)
+                        ? decodedVariables
+                        : [],
                     limitRows: {
                         checked: false,
                         rowsCount: -1,
@@ -275,7 +282,10 @@ export function useSavedQuery(
         editorInstance: Ref<any>,
         isUpdating: Ref<boolean>,
         activeInlineTab: activeInlineTabInterface,
-        isVQB: boolean = false
+        limitRows?: Ref<{
+            checked: boolean
+            rowsCount: number
+        }>
     ) => {
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
@@ -286,16 +296,18 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
+        let rawQuery = activeInlineTab?.playground?.editor?.text
         // if (isVQB) {
         //     visualBuilderSchemaBase64 = serializeQuery(
         //         activeInlineTabCopy?.playground.vqb
         //     )
         //     isVisualQuery = true
         // }
-        if (activeInlineTabCopy.playground.isVQB) {
+        if (activeInlineTabCopy.playground.isVQB && limitRows?.value) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )
+            rawQuery = generateSQLQuery(activeInlineTab, limitRows.value)
             isVisualQuery = true
         }
 
@@ -322,7 +334,7 @@ export function useSavedQuery(
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
         const qualifiedName = activeInlineTab?.qualifiedName
         // const
-        const rawQuery = activeInlineTab?.playground?.editor?.text
+
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
 
@@ -420,10 +432,15 @@ export function useSavedQuery(
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
+        limitRows?: Ref<{
+            checked: boolean
+            rowsCount: number
+        }>,
         Callback?: Function,
         routeToGuid: boolean = true,
         isVQB: boolean = false
     ) => {
+        let rawQuery = activeInlineTab.playground.editor.text
         const attributeValue =
             activeInlineTab.playground.editor.context.attributeValue
         const attributeName =
@@ -441,10 +458,11 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if (isVQB) {
+        if (isVQB && limitRows?.value) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTab?.playground.vqb
             )
+            rawQuery = generateSQLQuery(activeInlineTab, limitRows.value)
             isVisualQuery = true
         }
 
@@ -460,7 +478,7 @@ export function useSavedQuery(
         const description = saveQueryData.description
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
-        const rawQuery = activeInlineTab.playground.editor.text
+
         // const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
@@ -616,8 +634,13 @@ export function useSavedQuery(
         type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
+        limitRows?: Ref<{
+            checked: boolean
+            rowsCount: number
+        }>,
         isVQB: boolean = false
     ) => {
+        let rawQuery = ''
         const editorInstanceRaw = toRaw(editorInstance.value)
         // eslint-disable-next-line prefer-destructuring
         const attributeValue =
@@ -632,8 +655,11 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if (isVQB) {
-            visualBuilderSchemaBase64 = undefined
+        if (isVQB && limitRows?.value) {
+            visualBuilderSchemaBase64 = serializeQuery(
+                activeInlineTab.value?.playground.vqb
+            )
+            rawQuery = generateSQLQuery(activeInlineTab.value, limitRows.value)
             isVisualQuery = true
         }
 
@@ -645,7 +671,7 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-        const rawQuery = ""
+
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
@@ -902,9 +928,14 @@ export function useSavedQuery(
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
         Callback?: Function,
+        limitRows?: Ref<{
+            checked: boolean
+            rowsCount: number
+        }>,
         routeToGuid: boolean = true,
         isVQB: boolean = false
     ) => {
+        let rawQuery = activeInlineTab?.playground?.editor?.text
         const attributeValue =
             activeInlineTab.playground.editor.context.attributeValue
         const attributeName =
@@ -941,12 +972,11 @@ export function useSavedQuery(
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
 
-        const rawQuery = activeInlineTab?.playground?.editor?.text
-
-        if (activeInlineTabCopy.playground.isVQB) {
+        if (activeInlineTabCopy.playground.isVQB && limitRows?.value) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )
+            rawQuery = generateSQLQuery(activeInlineTab, limitRows.value)
             isVisualQuery = true
         }
 

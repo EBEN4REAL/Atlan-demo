@@ -336,6 +336,16 @@ export default function useAssetInfo() {
     }
 
     const getLineagePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            if (tableGuid) {
+                return `/assets/${tableGuid}/lineage`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/lineage`
+            }
+        }
         return `/assets/${asset.guid}/lineage`
     }
 
@@ -450,7 +460,7 @@ export default function useAssetInfo() {
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).rowCount, true)
+            : getCountString(attributes(asset).rowCount, false)
 
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -698,7 +708,8 @@ export default function useAssetInfo() {
     const isBiAsset = (asset: assetInterface) => {
         return (
             assetType(asset)?.includes('Tableau') ||
-            assetType(asset)?.includes('BI')
+            assetType(asset)?.includes('BI') ||
+            assetType(asset)?.includes('Looker')
         )
     }
 
@@ -706,6 +717,8 @@ export default function useAssetInfo() {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
+            assetType(asset) === 'MaterialisedView' ||
+            assetType(asset) === 'TablePartition' ||
             assetType(asset) === 'Column'
         )
     }

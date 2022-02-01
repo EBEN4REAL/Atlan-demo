@@ -727,14 +727,7 @@ export default function useEventGraph(
 
     // EDGE - CLICK
     graph.value.on('edge:click', ({ e, edge, cell }) => {
-        if (chp.value.portId) return
-
         loaderCords.value = { x: e.clientX, y: e.clientY }
-
-        if (edge.id.includes('port')) {
-            loaderCords.value = {}
-            return
-        }
 
         // If user clicks on selected edge
         if (che.value === edge.id) {
@@ -753,7 +746,11 @@ export default function useEventGraph(
 
         che.value = edge.id
         controlEdgeHighlight(edge, false)
-        const processId = edge.id.split('/')[0]
+
+        const processId = edge.id.includes('port')
+            ? edge.id.split('/')[1]
+            : edge.id.split('/')[0]
+
         const { data } = fetchAsset(processId)
 
         /** Automatically stop the watcher once done.
@@ -761,8 +758,16 @@ export default function useEventGraph(
          * due to multiple watchers staying active in the memory */
         watchOnce(data, () => {
             onSelectAsset(data.value)
-            const target = edge.id.split('/')[1].split('@')[1]
-            highlight(target, false)
+
+            if (edge.id.includes('port')) {
+                setPortStyle(chp.value.node, chp.value.portId, 'highlight')
+                chp.value.node = null
+                chp.value.portId = ''
+            } else {
+                const target = edge.id.split('/')[1].split('@')[1]
+                highlight(target, false)
+            }
+
             loaderCords.value = {}
         })
     })

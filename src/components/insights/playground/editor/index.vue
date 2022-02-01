@@ -174,6 +174,7 @@
                             <a-popover
                                 placement="bottom"
                                 trigger="click"
+                                v-model:visible="showQueryPreview"
                                 :overlayStyle="{ padding: '0px !important' }"
                                 :destroyTooltipOnHide="true"
                                 @visibleChange="
@@ -186,7 +187,11 @@
                             >
                                 <template #content>
                                     <div>
-                                        <VQBSQLPreview />
+                                        <VQBSQLPreview
+                                            v-model:showQueryPreview="
+                                                showQueryPreview
+                                            "
+                                        />
                                     </div>
                                 </template>
                                 <a-tooltip
@@ -482,10 +487,10 @@
 
             const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
-            const limitRows = ref({
-                checked: true,
-                rowsCount: 100,
-            })
+            const limitRows = inject('limitRows') as Ref<{
+                checked: boolean
+                rowsCount: number
+            }>
             const showcustomToolBar = ref(false)
             const showQueryPreview = ref(false)
 
@@ -741,7 +746,8 @@
                 updateSavedQuery(
                     editorInstance,
                     isUpdating,
-                    activeInlineTab.value
+                    activeInlineTab.value,
+                    limitRows
                 )
             }
 
@@ -770,7 +776,8 @@
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
                     activeInlineTab.value,
-                    props.refreshQueryTree
+                    props.refreshQueryTree,
+                    limitRows
                 )
             }
             const formatDocument = () => {
@@ -832,7 +839,6 @@
                 runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
                 showcustomToolBar: showcustomToolBar,
-                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/

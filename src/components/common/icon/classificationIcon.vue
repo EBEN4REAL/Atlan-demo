@@ -28,7 +28,18 @@
             },
             entityGuid: {
                 type: String,
-                required: true
+                required: false,
+                default: ''
+            },
+            linkedBy: {
+                type: String,
+                required: false,
+                default: ''
+            },
+            mouseEnter: {
+                type: Boolean,
+                default: false,
+                required: false
             }
         },
         setup(props, { emit }) {
@@ -36,7 +47,7 @@
             const entityGuid = ref(props.entityGuid)
 
             const isPropagated = computed(() => {
-                if (!entityGuid.value) {
+                if (!entityGuid.value || entityGuid.value.length === 0) {
                     return false
                 }
                 return entityGuid.value !== classification.value.entityGuid;
@@ -46,7 +57,7 @@
                 if (isPropagated.value) {
                     return "ClassificationPropagated"
                 }
-                if (classification.value.createdBy.includes('service-account-atlan')) {
+                if (props.linkedBy.includes('service-account-atlan')) {
                     return "ClassificationAtlan"
                 }
                 return "ClassificationShield"

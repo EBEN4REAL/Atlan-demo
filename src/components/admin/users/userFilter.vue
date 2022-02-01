@@ -5,8 +5,8 @@
         v-model="activeCollapse"
         bordered
         :default-active-key="['1', '2']"
-        @change="handleChange"
         class="-mt-3"
+        @change="handleChange"
     >
         <div
             class="w-full p-2.5 text-sm text-gray-500 uppercase bg-white rounded-md flex justify-between"
@@ -38,12 +38,23 @@
             <template #header>
                 <div class="flex justify-between w-48 hover:text-primary">
                     <span
-                        class="text-sm text-gray-500 uppercase hover:text-primary"
-                        :class="`${
-                            activeCollapse.includes('1') ? 'text-primary' : ''
-                        }`"
-                        >status</span
+                        ><span
+                            class="text-sm text-gray-500 uppercase hover:text-primary"
+                            :class="`${
+                                activeCollapse.includes('1')
+                                    ? 'text-primary'
+                                    : ''
+                            }`"
+                            >status</span
+                        >
+                    </span>
+                    <span
+                        v-if="statusFilter.length"
+                        class="ml-auto text-sm text-gray-500 opacity-100 hover:text-red-500"
+                        @click.stop.prevent="handleClearStatusFilter"
                     >
+                        clear
+                    </span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
@@ -54,9 +65,9 @@
                 </div>
             </template>
             <div
-                class="justify-center w-full bg-white border border-b-0 border-l-0 border-r-0 border-gray-200"
+                class="justify-center w-full bg-white"
             >
-                <a-form layout="vertical" class="p-2">
+                <a-form layout="vertical" class="px-2">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
                             v-model:value="statusFilter"
@@ -71,7 +82,7 @@
                                         class="flex flex-row-reverse justify-between w-48 mb-1 atlan-reverse"
                                         :value="item.value"
                                     >
-                                        <div
+                                        <!-- <div
                                             class="inline-flex -mt-1 align-middle dot"
                                             :class="`${
                                                 item.label.toLocaleLowerCase() ===
@@ -82,18 +93,12 @@
                                                     ? 'bg-error'
                                                     : 'bg-alert'
                                             }`"
-                                        ></div>
+                                        ></div> -->
                                         <span class="mb-0 text-gray">
                                             {{ item.label }}
                                             <span class="text-sm text-gray-500"
                                                 >({{
-                                                    item.label.toLocaleLowerCase() ===
-                                                    'active'
-                                                        ? numberOfActiveUser
-                                                        : item.label.toLocaleLowerCase() ===
-                                                          'disabled'
-                                                        ? numberOfDisableUser
-                                                        : numberOfInvitedUser
+                                                    userTypeAgg[item.id]
                                                 }})</span
                                             >
                                         </span>
@@ -115,12 +120,23 @@
                     class="flex justify-between w-48 border-t-0 hover:text-primary"
                 >
                     <span
-                        class="text-sm text-gray-500 uppercase border-t-0"
-                        :class="`${
-                            activeCollapse.includes('2') ? 'text-primary' : ''
-                        }`"
-                        >role</span
+                        ><span
+                            class="text-sm text-gray-500 uppercase border-t-0"
+                            :class="`${
+                                activeCollapse.includes('2')
+                                    ? 'text-primary'
+                                    : ''
+                            }`"
+                            >role</span
+                        ></span
                     >
+                    <span
+                        v-if="role"
+                        class="ml-auto text-sm text-gray-500 opacity-100 hover:text-red-500"
+                        @click.stop.prevent="handleClearRoleFilter"
+                    >
+                        clear
+                    </span>
                     <AtlanIcon
                         icon="CaretDown"
                         class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary"
@@ -180,20 +196,9 @@
                 type: Array,
                 default: () => null,
             },
-            numberOfActiveUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfDisableUser: {
-                type: Number,
-                required: false,
-                default: 0,
-            },
-            numberOfInvitedUser: {
-                type: Number,
-                required: false,
-                default: 0,
+            userTypeAgg: {
+                type: Object,
+                default: () => {},
             },
         },
         emits: ['update:modelValue', 'change', 'changeRole'],
@@ -220,12 +225,21 @@
             const handleChangeRoleFilter = () => {
                 emit('changeRole', role.value)
             }
+            const handleClearStatusFilter = () => {
+                statusFilter.value = []
+                handleStatusFilterChange()
+            }
+            const handleClearRoleFilter = () => {
+                role.value = ''
+                emit('changeRole', role.value)
+            }
             const handleClearFilter = () => {
                 role.value = ''
                 statusFilter.value = []
                 emit('update:modelValue', [])
                 emit('changeRole', role.value)
             }
+
             const storeUser = useUserStore()
             const { roles } = storeToRefs(storeUser)
             const rolesWithCount = computed(() =>
@@ -250,9 +264,8 @@
                 handleClearFilter,
                 roles,
                 rolesWithCount,
-                numberOfActiveUser,
-                numberOfDisableUser,
-                numberOfInvitedUser,
+                handleClearRoleFilter,
+                handleClearStatusFilter,
                 handleChange,
             }
         },

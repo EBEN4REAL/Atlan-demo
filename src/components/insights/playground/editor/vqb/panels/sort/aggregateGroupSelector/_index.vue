@@ -4,9 +4,7 @@
         @click="toggleFocus"
         class="relative flex items-center w-full border cursor-pointer group"
         :class="[
-            isAreaFocused
-                ? ' container-box-shadow-focus'
-                : 'border-gray-300 container-box-shadow',
+            isAreaFocused ? ' container-box-shadow-focus' : 'border-gray-200',
             ,
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
@@ -52,6 +50,7 @@
     import { SubpanelColumnData } from '~/types/insights/VQBPanelAggregators.interface'
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
     import { useUtilsScoped } from './useUtilsScoped'
+    import { aggregatedAliasMap } from '~/components/insights/playground/editor/vqb/constants/aggregation'
 
     import {
         useProvide,

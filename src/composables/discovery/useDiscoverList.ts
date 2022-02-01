@@ -90,18 +90,18 @@ export function useDiscoverList({
                 list.value.push(...data.value?.entities)
                 freshList.value = [...data?.value?.entities]
             }
+        } else if (data.value?.entities) {
+            list.value = [...data?.value?.entities]
+            freshList.value = [...data?.value?.entities]
         } else {
-            if (data.value?.entities) {
-                list.value = [...data?.value?.entities]
-                freshList.value = [...data?.value?.entities]
-            } else {
-                list.value = []
-                freshList.value = []
-            }
+            list.value = []
+            freshList.value = []
         }
     })
 
-    watch(dependentKey, () => (localKey.value = dependentKey?.value))
+    watch(dependentKey, () => {
+        localKey.value = dependentKey?.value
+    })
 
     const getAggregationList = (
         aggregationKey: string,
@@ -138,6 +138,7 @@ export function useDiscoverList({
                 found.count = aggregationMap(aggregationKey).find(
                     (i) => i.key.toLowerCase() === item.toLowerCase()
                 )?.doc_count
+
                 temp.push(found)
             }
         })
@@ -153,15 +154,28 @@ export function useDiscoverList({
                     })
                 })
         }
-        temp.sort((a, b) => {
-            if (a.count > b.count) {
-                return -1
-            }
-            if (a.count < b.count) {
-                return 1
-            }
-            return 0
-        })
+
+        if (aggregationKey !== 'group_by_typeName') {
+            temp.sort((a, b) => {
+                if (a.count > b.count) {
+                    return -1
+                }
+                if (a.count < b.count) {
+                    return 1
+                }
+                return 0
+            })
+        } else {
+            // we are arranging assets by group and then label - not count
+
+            temp.sort(
+                (a, b) =>
+                    a?.groupOrder - b?.groupOrder ||
+                    a?.priorityOrder - b?.priorityOrder ||
+                    a.id.localeCompare(b.id)
+            )
+        }
+
         return temp
     }
 

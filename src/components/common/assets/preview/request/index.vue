@@ -1,7 +1,51 @@
 <template>
     <div>
-        <div class="p-4">
-            <p class="text-lg font-semibold">Requests</p>
+        <div class="flex justify-between p-4">
+            <p class="font-semibold text-gray-500">Requests</p>
+            <a-dropdown trigger="click" placement="bottomRight">
+                <template #overlay>
+                    <a-menu class="p-1">
+                        <a-menu-item
+                            v-for="stat in listStatus"
+                            :key="stat.key"
+                            @click="selctedFilter = stat"
+                        >
+                            <div
+                                class="flex items-center rounded hover:bg-primary-light menu-status"
+                            >
+                                <!-- <div
+                                    class="mr-2 dot"
+                                    :style="{
+                                        background: stat.color,
+                                    }"
+                                /> -->
+                                {{ stat.name }}
+                                <AtlanIcon
+                                    v-if="selctedFilter.key === stat.key"
+                                    icon="Check"
+                                    class="ml-auto text-primary"
+                                />
+                            </div>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+                <AtlanButton
+                    class="flex items-center justify-between filter-status"
+                    color="secondary"
+                    padding="compact"
+                >
+                    <div class="flex items-center">
+                        <!-- <div
+                            :style="{
+                                background: selctedFilter.color,
+                            }"
+                            class="mr-2 dot"
+                        /> -->
+                        {{ selctedFilter.name }}
+                    </div>
+                    <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
+                </AtlanButton>
+            </a-dropdown>
         </div>
         <div
             v-if="isLoading && pagination.offset === 0"
@@ -13,7 +57,12 @@
             v-else-if="!list.length && !isLoading"
             class="flex items-center justify-center container-loading"
         >
-            <div class="text-gray-500">No Data</div>
+            <div class="flex flex-col items-center">
+                <AtlanIcon icon="EmptyRequest" style="height: 165px" />
+                <div class="px-10 mx-10 mt-2 text-center text-gray-500">
+                    There are no requests for this asset right now
+                </div>
+            </div>
         </div>
         <VirtualList
             v-else
@@ -56,14 +105,38 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRefs, ref, watch } from 'vue'
+    import { defineComponent, toRefs, ref, watch } from 'vue'
     import { useRequest } from '~/composables/discovery/useRequest'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestItem from './requestItem.vue'
+    import AtlanButton from '@/UI/button.vue'
+
+    const listStatus = [
+        {
+            name: 'All',
+            key: 'all',
+            color: '#6D6DDA',
+        },
+        {
+            name: 'Pending',
+            key: 'active',
+            color: '#FFB119',
+        },
+        {
+            name: 'Approved',
+            key: 'approved',
+            color: '#6D6DDA',
+        },
+        {
+            name: 'Rejected',
+            key: 'rejected',
+            color: '#DC5252',
+        },
+    ]
 
     export default defineComponent({
         name: 'RequestTab',
-        components: { VirtualList, RequestItem },
+        components: { VirtualList, RequestItem, AtlanButton },
         props: {
             selectedAsset: {
                 type: Object,
@@ -72,6 +145,7 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
+            const selctedFilter = ref(listStatus[0])
             const list = ref([])
             const resPagination = ref({
                 filterRecord: 0,
@@ -80,11 +154,25 @@
                 limit: 40,
                 offset: 0,
             })
-            const { data, isLoading } = useRequest(
+            const filterStatus = ref({})
+            const { data, isLoading, mutate } = useRequest(
                 selectedAsset.value.guid,
                 pagination,
-                selectedAsset.value.typeName
+                selectedAsset.value.typeName,
+                filterStatus
             )
+            watch(selctedFilter, () => {
+                list.value = []
+                if (selctedFilter.value.key === 'all') {
+                    filterStatus.value = {}
+                } else {
+                    filterStatus.value = {
+                        status: selctedFilter.value.key,
+                    }
+                }
+                pagination.value.offset = 0
+                mutate()
+            })
             const handleLoadMore = () => {
                 pagination.value.offset =
                     pagination.value.offset + pagination.value.limit
@@ -106,6 +194,8 @@
                 resPagination,
                 handleLoadMore,
                 pagination,
+                listStatus,
+                selctedFilter,
             }
         },
     })
@@ -115,9 +205,20 @@
     .container-scroll-request {
         max-height: 555px;
     }
+    .menu-status {
+        width: 100px;
+    }
+    .filter-status {
+        width: 90px;
+    }
 </style>
 <style lang="less" scoped>
     .container-loading {
         height: 500px;
+    }
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
     }
 </style>

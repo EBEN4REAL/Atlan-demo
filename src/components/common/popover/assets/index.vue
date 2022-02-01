@@ -4,7 +4,7 @@
             <div class="relation-ship">
                 <div class="flex justify-between">
                     <div class="flex items-center mb-1 text-gray-500">
-                        <img :src="logoTitle" class="h-3 mr-1 mb-0.5" />
+                        <AtlanIcon :icon="logoTitle" class="h-3 mr-1 mb-0.5" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
@@ -49,7 +49,7 @@
                                         <span
                                             v-if="
                                                 sizeBytes(item, false) &&
-                                                rows !== '0'
+                                                rows !== '~'
                                             "
                                             class="font-semibold"
                                             >{{ rows }} rows ({{
@@ -57,7 +57,10 @@
                                             }})</span
                                         >
                                         <span v-else class="font-semibold"
-                                            >0 rows from the source</span
+                                            >Row count is not available for
+                                            {{ connectorName(item) }}/{{
+                                                connectionName(item)
+                                            }}</span
                                         >
                                     </template>
                                 </a-tooltip>
@@ -98,17 +101,18 @@
                         <span>{{ item.attributes?.dataType }}</span>
                     </div>
                 </div>
-                <div class="flex">
-                    <div class="mb-0.5 font-semibold truncate">
+                <div class="mb-0.5 font-semibold flex items-center break-words">
+                    <span class="break-words line-clamp-3">
                         {{ item?.displayText || item?.attributes?.name }}
-                    </div>
-                    <CertificateBadge
-                        v-if="certificateStatus(item)"
-                        :status="certificateStatus(item)"
-                        :username="certificateUpdatedBy(item)"
-                        :timestamp="certificateUpdatedAt(item)"
-                        class="mb-1 ml-1"
-                    />
+                        <CertificateBadge
+                            v-if="certificateStatus(item)"
+                            :status="certificateStatus(item)"
+                            :username="certificateUpdatedBy(item)"
+                            :timestamp="certificateUpdatedAt(item)"
+                            class="flex mb-1 ml-1"
+                            style="min-width: 16px"
+                        />
+                    </span>
                 </div>
                 <div class="flex flex-wrap items-center gap-x-2">
                     <div
@@ -276,6 +280,8 @@
                 dataTypeCategoryImage,
                 description,
                 sizeBytes,
+                connectionName,
+                connectorName,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -326,6 +332,8 @@
                 slots,
                 description,
                 sizeBytes,
+                connectionName,
+                connectorName,
             }
         },
     }

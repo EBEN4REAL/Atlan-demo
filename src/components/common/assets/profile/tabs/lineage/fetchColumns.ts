@@ -6,13 +6,22 @@ import {
     AssetRelationAttributes,
     InternalAttributes,
     SQLAttributes,
+    AssetAttributes,
 } from '~/constant/projection'
+import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 export default function fetchColumns({
     viewQualifiedName,
     tableQualifiedName,
 }) {
-    const attributes = [...InternalAttributes, ...SQLAttributes]
+    const { customMetadataProjections } = useTypedefData()
+
+    const attributes = [
+        ...InternalAttributes,
+        ...SQLAttributes,
+        ...AssetAttributes,
+        ...customMetadataProjections,
+    ]
     const relationAttributes = [...AssetRelationAttributes]
     const base = bodybuilder()
     const offset = 0

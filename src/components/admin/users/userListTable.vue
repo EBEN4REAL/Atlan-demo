@@ -111,7 +111,7 @@
                         user.email || '-'
                     }}</span>
                     <p class="mb-0 text-gray-500 truncate">
-                        @{{ user.username || '-' }}
+                        {{ user.username || '-' }}
                     </p>
                 </div>
             </div>
@@ -209,7 +209,7 @@
                     }}
                 </div>
             </a-popover>
-            <div v-else class="text-left text-primary">-</div>
+            <div v-else class="text-left">-</div>
         </template>
         <template #actions="{ text: user }">
             <div class="flex justify-end">
@@ -248,7 +248,7 @@
                                         class="flex items-center px-1.5 py-1 cursor-pointer text-red-600"
                                     >
                                         <AtlanIcon
-                                            class="mr-2 icon-disabled-user"
+                                            class="mr-2"
                                             icon="DisableUser"
                                         />
                                         Disable user
@@ -687,21 +687,14 @@
         margin-right: 8px;
     }
     .content-popover-group-persona {
-        width: 180px;
+        min-width: 180px;
+        // width: auto;
         height: auto;
         max-height: 170px;
     }
 </style>
 
 <style lang="less">
-    .icon-disabled-user {
-        path {
-            stroke: #dc2626;
-        }
-        circle {
-            stroke: #dc2626;
-        }
-    }
     .caret-role {
         path {
             stroke: #374151;

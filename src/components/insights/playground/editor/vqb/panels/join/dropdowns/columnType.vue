@@ -1,11 +1,24 @@
 <template>
     <div
         tabindex="-1"
-        :class="['  bg-white rounded custom-shadow  dropdown-container']"
+        :class="[
+            '  bg-white rounded custom-shadow flex flex-col  dropdown-container',
+        ]"
+        style="min-height: 0"
     >
-        <div tabindex="-1" :class="['dropdown-container  w-full h-full']">
+        <div
+            tabindex="-1"
+            :class="[
+                'dropdown-container flex w-full',
+                isColumnLoading || isTableLoading ? 'flex-col' : '',
+            ]"
+            style="min-height: 0"
+        >
             <!--  Multiple table column selection-->
-            <div class="w-full dropdown-container" v-if="!dirtyIsTableSelected">
+            <div
+                class="flex flex-col w-full dropdown-container"
+                v-if="!dirtyIsTableSelected"
+            >
                 <div
                     class="px-4 py-3 border-b border-gray-300 dropdown-container"
                 >
@@ -22,7 +35,8 @@
                 </div>
 
                 <div
-                    class="w-full h-full overflow-auto dropdown-container"
+                    class="flex-1 w-full overflow-auto dropdown-container"
+                    style="min-height: 0"
                     tabindex="-1"
                     :class="[
                         tableDropdownOption.length === 0
@@ -38,7 +52,7 @@
                         <PopoverAsset
                             :item="item.item"
                             placement="right"
-                            :mouseEnterDelay="0.85"
+                            :mouseEnterDelay="1"
                         >
                             <template #button>
                                 <AtlanBtn
@@ -107,7 +121,10 @@
                 </div>
             </div>
 
-            <div class="w-full dropdown-container" v-if="dirtyIsTableSelected">
+            <div
+                class="flex flex-col w-full dropdown-container"
+                v-if="dirtyIsTableSelected"
+            >
                 <div
                     class="flex items-center justify-between pt-3 pl-2 pr-4 truncanimate-spin dropdown-container"
                     @click.stop="() => {}"
@@ -161,17 +178,19 @@
                 </div>
 
                 <div
-                    class="w-full dropdown-container"
+                    class="flex w-full dropdown-container"
                     v-if="dirtyIsTableSelected && !isColumnLoading"
+                    :class="isColumnLoading || isTableLoading ? 'flex-col' : ''"
+                    style="min-height: 0"
                 >
                     <div
-                        class="overflow-y-auto"
-                        style="height: 180px"
+                        class="w-full overflow-y-auto"
                         :class="[
                             columnDropdownOption.length === 0
                                 ? 'flex justify-center items-center'
                                 : '',
                         ]"
+                        style="min-height: 0"
                     >
                         <template
                             v-for="(item, index) in columnDropdownOption"
@@ -180,7 +199,7 @@
                             <PopoverAsset
                                 :item="item.item"
                                 placement="right"
-                                :mouseEnterDelay="0.85"
+                                :mouseEnterDelay="1"
                             >
                                 <template #button>
                                     <AtlanBtn

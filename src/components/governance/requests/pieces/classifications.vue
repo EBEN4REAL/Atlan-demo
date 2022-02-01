@@ -91,13 +91,16 @@
         }
     }
     .classification-pill {
-        width: fit-content!important
-        // padding-left: 0px !important;
-        // background: transparent !important;
-        // border: none !important;
-        // &:hover {
-        //     background: transparent !important;
-        //     @apply text-gray-700 !important;
-        // }
+        width: fit-content !important;
+        padding-left: 0px !important;
+        background: transparent !important;
+        border: none !important;
+        &:hover {
+            background: transparent !important;
+            @apply text-gray-700 !important;
+            div {
+                // border-bottom: 1px solid rgba(111, 117, 144, 1) !important;
+            }
+        }
     }
 </style>

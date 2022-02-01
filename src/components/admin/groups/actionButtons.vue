@@ -46,6 +46,7 @@
             v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
+            @click.stop=""
             @visibleChange="handleVisibleChange"
         >
             <AtlanBtn

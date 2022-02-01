@@ -61,9 +61,9 @@
                                     )}`
                                 }}</span>
                             </template>
-                            <img
-                                :src="getConnectorImage(item)"
-                                class="h-3 mr-1 mb-0.5"
+                            <AtlanIcon
+                                :icon="getConnectorImage(item)"
+                                class="h-4 mr-1 mb-0.5"
                             />
                         </a-tooltip>
 
@@ -104,9 +104,9 @@
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
                         <div class="flex items-center text-gray">
-                            <img
-                                :src="getConnectorImage(item)"
-                                class="h-3 mr-1 mb-0.5"
+                            <AtlanIcon
+                                :icon="getConnectorImage(item)"
+                                class="h-4 mr-1 mb-0.5"
                             />
                             <span>{{
                                 `${connectorName(item)}/${connectionName(item)}`
@@ -280,7 +280,10 @@
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
-                        <img :src="getConnectorImage(item)" class="h-4 mr-1" />
+                        <AtlanIcon
+                            :icon="getConnectorImage(item)"
+                            class="h-4 mr-1"
+                        />
                         Open in PowerBI
                     </div>
                 </a-button>

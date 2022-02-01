@@ -91,10 +91,10 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <img
-                                    :src="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
-                                />
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
+                                    class="h-4 mr-1 mb-0.5"
+                                ></AtlanIcon>
                             </a-tooltip>
 
                             <AtlanIcon
@@ -222,7 +222,7 @@
                                     <span
                                         v-if="
                                             sizeBytes(item, false) &&
-                                            rowCount(item, false) !== '0'
+                                            rowCount(item, false) !== '~'
                                         "
                                         class="font-semibold"
                                         >{{ rowCount(item, true) }} rows ({{
@@ -230,7 +230,10 @@
                                         }})</span
                                     >
                                     <span v-else class="font-semibold"
-                                        >0 rows from the source</span
+                                        >Row count is not available for
+                                        {{ connectorName(item) }}/{{
+                                            connectionName(item)
+                                        }}</span
                                     >
                                 </template>
                             </a-tooltip>
@@ -252,10 +255,14 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <img
+                                <!-- <img
                                     :src="getConnectorImage(item)"
                                     class="h-3 mr-1 mb-0.5"
-                                />
+                                /> -->
+                                <AtlanIcon
+                                    :icon="getConnectorImage(item)"
+                                    class="h-4 mr-1 mb-0.5"
+                                ></AtlanIcon>
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
                                         item
@@ -764,6 +771,7 @@
     import TermPopover from '@/common/popover/term/term.vue'
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -776,6 +784,7 @@
             Tooltip,
             Truncate,
             TermPopover,
+            AtlanIcon,
         },
         props: {
             item: {
@@ -932,22 +941,18 @@
             }
 
             const isSelected = computed(() => {
-                if (selectedGuid.value === item?.value?.guid) {
-                    return true
-                }
-                return false
+                return selectedGuid.value === item?.value?.guid;
+
             })
 
             const { classificationList } = useTypedefData()
 
             const isPropagated = (classification) => {
-                if (!item?.value?.guid?.value) {
+                if (!item?.value?.guid) {
                     return false
                 }
-                if (item?.value?.guid === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return item?.value?.guid !== classification.entityGuid;
+
             }
 
             const list = computed(() => {

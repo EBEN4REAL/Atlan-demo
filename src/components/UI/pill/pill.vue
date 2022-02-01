@@ -18,7 +18,7 @@
             <span v-if="prefixIcon">
                 <AtlanIcon :icon="prefixIcon" class="h-4 -ml-0.5 mr-1" />
             </span>
-            <span>
+            <span class="">
                 {{ label }}
             </span>
         </div>

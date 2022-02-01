@@ -26,13 +26,13 @@
                     v-if="hasErrorData(queryErrorObj)"
                     class="text-center text-gray-500"
                 >
-                    User does not has access to the table
-                    {{ queryErrorObj?.details?.asset.table }}
+                    You do not have query access to
+                    {{ queryErrorObj?.details?.asset.table }} table
                 </div>
             </div>
             <div v-else-if="queryErrorObj?.errorMessage">
                 <div class="text-center text-gray-500">
-                    {{ queryErrorObj?.errorMessage }}
+                    {{ errorDescription(queryErrorObj) }}
                 </div>
             </div>
 
@@ -138,6 +138,7 @@
 
             const {
                 errorMessage,
+                errorDescription,
                 SOURCE_ACCESS_ERROR_NAMES,
                 hasErrorAction,
                 hasErrorData,
@@ -147,6 +148,7 @@
                 isQueryRunning,
                 queryErrorObj,
                 errorMessage,
+                errorDescription,
                 hasErrorAction,
                 hasErrorData,
                 SOURCE_ACCESS_ERROR_NAMES,

@@ -10,12 +10,11 @@
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
-                : 'border-gray-300 border border-plus',
+                : 'border-gray-200 border border-plus',
             ,
-            'flex flex-wrap items-center  rounded box-shadow selector-height px-3',
+            'flex flex-wrap items-center  rounded selector-height px-3 cursor-pointer',
             disabled ? ' cursor-not-allowed disable-bg' : '',
         ]"
-        @click.stop="() => {}"
     >
         <template v-if="selectedFilter?.name">
             <!-- chips -->
@@ -37,7 +36,10 @@
             ]"
         />
         <div class="absolute right-2">
-            <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
+            <AtlanIcon
+                :icon="isAreaFocused ? 'ChevronUp' : 'ChevronDown'"
+                class="w-4 h-4"
+            />
         </div>
         <teleport to="body">
             <div

@@ -6,6 +6,7 @@
         :destroy-tooltip-on-hide="true"
         :overlay-class-name="$style.ownerPopover"
         :align="{ offset: [0, -6] }"
+        @click.stop=""
     >
         <template #content>
             <div class="">
@@ -16,7 +17,7 @@
                     :hide-disabled-tabs="true"
                     select-user-key="id"
                     :group-id="selectedGroup.id"
-                    :hideTabs="true"
+                    :hide-tabs="true"
                 />
             </div>
             <div class="flex justify-end mr-3">

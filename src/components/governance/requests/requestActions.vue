@@ -24,9 +24,9 @@
             :align="{ offset: [90, -5] }"
         >
             <template #content>
-                <div class="p-4 comment-delete">
+                <div class="px-2 py-3 comment-delete">
                     <div class="flex">
-                        <component :is="iconQuotes" class="mr-4" />
+                        <component :is="iconQuotes" class="mr-2.5" />
                         <p>{{ request?.message }}</p>
                     </div>
                     <div class="flex items-center mt-4">

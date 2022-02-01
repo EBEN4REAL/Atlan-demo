@@ -273,7 +273,14 @@
 
                 if (id === 'statusRequest' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
-                        ? facetMap.value[id].join(',')
+                        ? facetMap.value[id]
+                              .map(
+                                  (_id: string) =>
+                                      item.value.data.find(
+                                          (status) => status.id === _id
+                                      ).label
+                              )
+                              .join(',')
                         : `${facetMap.value[id]?.length} applied`
                 }
                 if (id === 'assetType' && facetMap.value[id]) {

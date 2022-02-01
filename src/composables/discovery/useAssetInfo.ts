@@ -79,11 +79,22 @@ export default function useAssetInfo() {
         getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
-        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
+        (attributes(asset)?.displayName ||
+            attributes(asset)?.name ||
+            attributes(asset)?.qualifiedName) ??
+        ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
+                attributes(asset)?.connectorName?.toLowerCase()
+            ]
+        return found
+    }
+
+    const getConnectorLabel = (asset: assetInterface) => {
+        const found =
+            connectionStore.getConnectorLabelMapping[
                 attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
@@ -1124,6 +1135,7 @@ export default function useAssetInfo() {
         categoryCount,
         termsCount,
         getConnectorImageMap,
+        getConnectorLabel,
         anchorAttributes,
         readmeGuid,
         getConnectorsNameFromQualifiedName,

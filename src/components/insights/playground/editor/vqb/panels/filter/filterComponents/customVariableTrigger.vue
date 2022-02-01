@@ -12,7 +12,7 @@
                 <p class="text-xs text-gray-500">
                     {{
                         !subpanel?.filter?.isVariable
-                            ? 'Configure this input for read-only viewers to interact"'
+                            ? 'Configure this input for read-only viewers to interact'
                             : 'This input is configured as an interactive variable'
                     }}
                 </p>

@@ -45,6 +45,7 @@ export default function useBody({
         }
     }
     base.filter('terms', '__typeName.keyword', ['Table', 'View'])
+    base.aggregation('terms', '__typeName.keyword')
 
     const tempQuery = base.build()
 

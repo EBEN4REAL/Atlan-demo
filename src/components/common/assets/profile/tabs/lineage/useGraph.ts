@@ -346,6 +346,49 @@ export default function useGraph() {
                     },
                 },
             },
+            defaultLabel: {
+                markup: [
+                    {
+                        tagName: 'rect',
+                        selector: 'body',
+                    },
+                    {
+                        tagName: 'text',
+                        selector: 'label',
+                    },
+                ],
+                attrs: {
+                    label: {
+                        fill: '#3e4359',
+                        fontSize: 14,
+                        textAnchor: 'middle',
+                        textVerticalAnchor: 'middle',
+                        pointerEvents: 'none',
+                    },
+                    body: {
+                        ref: 'label',
+                        fill: '#ffffffcc',
+                        strokeWidth: 1,
+                        rx: 4,
+                        ry: 4,
+                        refWidth: '140%',
+                        refHeight: '140%',
+                        refX: '-20%',
+                        refY: '-20%',
+                    },
+                },
+                position: {
+                    distance: 0.5,
+                    options: {
+                        // keepGradient: true,
+                    },
+                },
+            },
+            labels: [
+                {
+                    attrs: { label: { text: 'Process' } },
+                },
+            ],
             data,
         }
 

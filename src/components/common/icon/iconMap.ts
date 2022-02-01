@@ -297,7 +297,10 @@ import AddColumn from '~/assets/images/icons/add-column.svg'
 
 import ClassificationShield from '~/assets/images/classifications/shield.svg'
 import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationAtlanHollow from '~/assets/images/classifications/atlan-hollow.svg'
 import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
+import ClassificationPoliciesGray from '~/assets/images/classifications/policies-gray.svg'
+import ClassificationPoliciesActive from '~/assets/images/classifications/policies-active.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -752,6 +755,9 @@ export default {
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,
+    ClassificationAtlanHollow,
+    ClassificationPoliciesGray,
+    ClassificationPoliciesActive,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,

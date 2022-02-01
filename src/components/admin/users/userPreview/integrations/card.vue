@@ -60,18 +60,18 @@
                                 <b>Slack</b>?
                             </h1>
                             <div class="flex justify-end space-x-2">
-                                <Button
+                                <AtlanButton
                                     @click="popover = false"
                                     padding="compact"
                                     size="sm"
                                     color="minimal"
-                                    >Cancel</Button
+                                    >Cancel</AtlanButton
                                 >
-                                <Button
+                                <AtlanButton
                                     @click="disconnect"
                                     padding="compact"
                                     size="sm"
-                                    >Confirm</Button
+                                    >Confirm</AtlanButton
                                 >
                             </div>
                         </div>

@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-1.5" style="padding: 10px 8px">
+    <div class="space-y-1.5" :style="`padding: ${paddingX}px ${paddingY}px`">
         <h1 class="font-bold text-primary">{{ p.displayName }}</h1>
         <div v-if="p.description" class="">{{ p.description }}</div>
         <div class="flex h-full space-x-2 text-gray-500">
@@ -47,6 +47,16 @@
             type: Array as PropType<CF[]>,
             required: true,
         },
+        paddingX: {
+            type: Number,
+            required: false,
+            default: 10
+        },
+        paddingY: {
+            type: Number,
+            required: false,
+            default: 8
+        }
     })
     const { p, classificationList } = toRefs(props)
     const allClassifications: Ref<object[]> = ref([])

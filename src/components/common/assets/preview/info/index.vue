@@ -370,6 +370,13 @@
                 background="bg-primary-light"
             />
         </div>
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="selectedAsset?.attributes?.sourceDefinition"
+                background="bg-primary-light"
+            />
+        </div>
 
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />

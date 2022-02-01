@@ -86,6 +86,7 @@ export const AssetAttributes = [
     'externalLocation',
     'externalLocationFormat',
     'sql',
+    'sourceDefinition',
 ]
 
 export const SQLAttributes = [

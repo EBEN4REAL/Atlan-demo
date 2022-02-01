@@ -12,10 +12,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Workspace</span>
-            <router-link
-                :to="`/assets/${parentWorkspace(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentWorkspace(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentWorkspace(asset)?.guid)"
+                >{{ parentWorkspace(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -26,10 +26,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Dataset</span>
-            <router-link
-                :to="`/assets/${parentDataset(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentDataset(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentDataset(asset)?.guid)"
+                >{{ parentDataset(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -40,10 +40,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Report</span>
-            <router-link
-                :to="`/assets/${parentReport(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentReport(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentReport(asset)?.guid)"
+                >{{ parentReport(asset)?.attributes?.name }}</span
             >
         </div>
 
@@ -55,10 +55,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Dashboard</span>
-            <router-link
-                :to="`/assets/${parentDashboard(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentDashboard(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentDashboard(asset)?.guid)"
+                >{{ parentDashboard(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -69,10 +69,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Site</span>
-            <router-link
-                :to="`/assets/${parentSite(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentSite(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentSite(asset)?.guid)"
+                >{{ parentSite(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -87,10 +87,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Project</span>
-            <router-link
-                :to="`/assets/${parentProject(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentProject(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentProject(asset)?.guid)"
+                >{{ parentProject(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -104,10 +104,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Workbook</span>
-            <router-link
-                :to="`/assets/${parentWorkbook(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentWorkbook(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentWorkbook(asset)?.guid)"
+                >{{ parentWorkbook(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -119,10 +119,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Datasource</span>
-            <router-link
-                :to="`/assets/${parentDatasource(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentDatasource(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentDatasource(asset)?.guid)"
+                >{{ parentDatasource(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -133,10 +133,10 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Folder</span>
-            <router-link
-                :to="`/assets/${parentFolder(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentFolder(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentFolder(asset)?.guid)"
+                >{{ parentFolder(asset)?.attributes?.name }}</span
             >
         </div>
         <div
@@ -147,17 +147,23 @@
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-sm text-gray-500">Model</span>
-            <router-link
-                :to="`/assets/${parentModel(asset)?.guid}`"
-                class="font-bold text-primary hover:underline"
-                >{{ parentModel(asset)?.attributes?.name }}</router-link
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentModel(asset)?.guid)"
+                >{{ parentModel(asset)?.attributes?.name }}</span
             >
         </div>
     </div>
+    <AssetDrawer
+        :show-drawer="drawerVisible"
+        :guid="guidToFetch"
+        @closeDrawer="handleCloseDrawer"
+    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -166,6 +172,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        components: { AssetDrawer },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -185,6 +192,20 @@
                 parentReport,
                 parentDashboard,
             } = useAssetInfo()
+
+            const drawerVisible = ref(false)
+            const guidToFetch = ref('')
+
+            const handleOpenDrawer = (guid) => {
+                drawerVisible.value = true
+                guidToFetch.value = guid
+            }
+
+            const handleCloseDrawer = () => {
+                drawerVisible.value = false
+                guidToFetch.value = ''
+            }
+
             return {
                 parentWorkspace,
                 parentDataset,
@@ -196,6 +217,10 @@
                 parentWorkbook,
                 parentReport,
                 parentDashboard,
+                guidToFetch,
+                drawerVisible,
+                handleCloseDrawer,
+                handleOpenDrawer,
             }
         },
     })

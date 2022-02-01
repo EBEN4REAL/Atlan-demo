@@ -105,7 +105,7 @@
                             >
                                 <AtlanIcon
                                     :icon="
-                                        Object.keys(facets).length > 0
+                                        isFilterApplied
                                             ? 'FilterFunnelDot'
                                             : 'FilterFunnel'
                                     "
@@ -202,9 +202,7 @@
                 class="flex items-center justify-center h-full mt-5 mb-10 container-empty"
             >
                 <div
-                    v-if="
-                        searchTerm?.length > 0 && Object.keys(facets).length > 0
-                    "
+                    v-if="!searchTerm?.length && !isFilterApplied"
                     class="flex flex-col items-center"
                 >
                     <AtlanIcon icon="EmptyRequest" style="height: 165px" />
@@ -232,7 +230,7 @@
                     >
                 </div>
                 <div
-                    v-else-if="Object.keys(facets).length > 0"
+                    v-else-if="isFilterApplied"
                     class="flex flex-col items-center justify-center h-96"
                 >
                     <AtlanIcon icon="EmptyRequest" style="height: 165px" />
@@ -322,6 +320,18 @@
                 request_type: [],
             })
             const requestList = ref([])
+
+            const isFilterApplied = computed(() => {
+                // * sanitization of facets object should be done by the filter component, handling it here due to potential regression
+                if (!Object.values(filters.value)?.length) return false
+                const hasValue = Object.values(filters.value).some((v) => {
+                    if (typeof v === 'object' && Object.keys(v).length)
+                        return true
+                    if (Array.isArray(v) && v.length) return true
+                    return false
+                })
+                return hasValue
+            })
 
             const pagination = ref({
                 limit: 40,
@@ -534,6 +544,7 @@
                 // }, 1000)
             }
             return {
+                isFilterApplied,
                 mutate,
                 pagination,
                 requestList,

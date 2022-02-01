@@ -14,14 +14,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        toRefs,
-        onMounted,
-        ref,
-        computed,
-    } from 'vue'
+    import { defineComponent, PropType, toRefs, computed } from 'vue'
     import Popover from '@/common/popover/classification/index.vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import ClassificationPill from '@/common/pills/classification.vue'
@@ -44,12 +37,12 @@
             const { data } = toRefs(props)
             const { classificationList } = useTypedefData()
 
-            const classification = computed(() => {
-                console.log(classificationList.value)
-                return classificationList.value.find(
+            const classification = computed(() => ({
+                ...classificationList.value.find(
                     (item) => item.name === data.value.value.typeName
-                )
-            })
+                ),
+                entityGuid: data.value.value?.entityGuid,
+            }))
 
             return { classification }
         },

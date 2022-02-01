@@ -50,6 +50,7 @@ export function useFilter() {
         'ANY',
         'VARIANT',
         'OBJECT',
+        'ARRAY',
     ]
 
     let date = [

@@ -7,7 +7,10 @@
         :closable="false"
         :class="'drawer-filter-request'"
     >
-        <div class="relative h-full pt-4 pb-10 overflow-scroll bg-gray-50">
+        <div
+            class="relative h-full pb-10 overflow-scroll bg-gray-50"
+            :class="$style['request-filter-wrapper']"
+        >
             <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
@@ -66,7 +69,7 @@
         </div>
     </a-drawer>
     <DefaultLayout title="Requests" class="px-6 governance-request">
-        <div class="relative mt-3 border rounded-md">
+        <div class="relative mt-3 border border-gray-300 rounded-md">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
             <div
                 class="wrapper-scoll right"
@@ -127,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="" icon="Retry2" />
+                        <AtlanIcon class="text-gray-700" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -147,7 +150,7 @@
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
                 /> -->
-                <div class="h-6" @mouseenter="mouseEnterContainer" />
+                <div class="h-4" @mouseenter="mouseEnterContainer" />
                 <transition-group
                     tag="div"
                     name="request-done"
@@ -612,8 +615,8 @@
         }
     }
     .button-close-drawer-request {
-        left: 250px !important;
-        // right: -40px !important;
+        left: 300px !important;
+        top: 12px;
     }
     .governance-request {
         .container-content {
@@ -678,5 +681,15 @@
         top: -5px;
         height: 30px;
         right: 0;
+    }
+</style>
+
+<style lang="less" module>
+    .request-filter-wrapper {
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

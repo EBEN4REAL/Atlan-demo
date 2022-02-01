@@ -1,28 +1,28 @@
 <template>
     <a-dropdown
         v-model:visible="isVisible"
-        trigger="click"
+        trigger="hover"
         placement="bottomRight"
     >
-        <a-tooltip>
-            <template #title
-                >Add new
-                {{
-                    `${
-                        defaultEntityType === 'AtlasGlossary'
-                            ? 'Glossary'
-                            : 'Term/Category'
-                    }`
-                }}</template
-            >
+        <!-- <a-tooltip> -->
+        <!--     <template #title -->
+        <!--         >Add new -->
+        <!--         {{ -->
+        <!--             `${ -->
+        <!--                 defaultEntityType === 'AtlasGlossary' -->
+        <!--                     ? 'Glossary' -->
+        <!--                     : 'Term/Category' -->
+        <!--             }` -->
+        <!--         }}</template -->
+        <!--     > -->
 
-            <a-button class="ml-3" size="small">
-                <atlan-icon
-                    icon="Add"
-                    class="transition duration-300 text-primary"
-                />
-            </a-button>
-        </a-tooltip>
+        <a-button class="ml-3" size="small">
+            <atlan-icon
+                icon="Add"
+                class="transition duration-300 text-primary"
+            />
+        </a-button>
+        <!-- </a-tooltip> -->
 
         <template #overlay>
             <a-menu class="" mode="vertical">
@@ -49,6 +49,9 @@
                         @add="handleAdd"
                         :glossaryQualifiedName="selectedGlossaryQf"
                         :glossaryName="selectedGlosaryName"
+                        :showGlossarySelect="
+                            selectedGlossaryQf?.length ? false : true
+                        "
                     >
                         <template #trigger>
                             <div class="flex items-center">
@@ -65,6 +68,10 @@
                         @add="handleAdd"
                         :glossaryQualifiedName="selectedGlossaryQf"
                         :glossaryName="selectedGlosaryName"
+                        :showGlossarySelect="
+                            selectedGlossaryQf?.length ? false : true
+                        "
+ 
                     >
                         <template #trigger>
                             <div class="flex items-center">
@@ -118,8 +125,8 @@
                 }
                 return 'AtlasGlossary'
             })
-            const handleAdd = (asset) => {
-                emit('add', asset)
+            const handleAdd = (asset,entity) => {
+                emit('add', asset,entity)
             }
             return {
                 defaultEntityType,

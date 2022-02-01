@@ -126,7 +126,7 @@
             disabledGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
-            }
+            },
         },
         emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
@@ -192,8 +192,11 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
-                if (entity !== {}) addNode(asset, entity)
-                else addNode(asset)
+                console.log(asset, entity)
+                if (entity !== {}) {
+                    console.log("add")
+                    addNode(asset, entity)
+                } else addNode(asset)
             }
             const deleteGTCNode = (asset, entity = {}) => {
                 if (entity !== {}) deleteNode(asset, entity)

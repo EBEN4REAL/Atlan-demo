@@ -16,7 +16,7 @@
             <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center">
                     <div
-                        v-if="!glossaryQualifiedName"
+                        v-if="!glossaryQualifiedName && !showGlossarySelect"
                         class="flex items-center uppercase"
                     >
                         <AtlanIcon
@@ -25,8 +25,16 @@
                         ></AtlanIcon>
                         New Glossary
                     </div>
+
+                    <div v-if="showGlossarySelect && !glossaryQualifiedName" class="mr-3">
+                        <GlossarySelect
+                            v-model="parentGlossary"
+                            @change="handleSelectGlossary"
+                            :showAllGlossary="false"
+                        ></GlossarySelect>
+                    </div>
                     <GTCSelect
-                        v-else
+                        v-if="showGlossarySelect || glossaryQualifiedName"
                         class="p-1 mr-3 bg-gray-100 rounded"
                         v-model="localEntityType"
                     ></GTCSelect>
@@ -159,6 +167,7 @@
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
     import AddOwners from '@/glossary/modal/addOwners.vue'
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
+    import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
@@ -168,6 +177,7 @@
             GTCSelect,
             StatusBadge,
             AddOwners,
+            GlossarySelect,
         },
         props: {
             entityType: {
@@ -206,6 +216,11 @@
                     return ''
                 },
             },
+            showGlossarySelect: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
@@ -225,9 +240,21 @@
                 localEntityType.value = entityType.value
             })
 
-            const { getGlossaryByQF } = useGlossaryData()
+            const { getGlossaryByQF, selectedGlossary } = useGlossaryData()
+            const parentGlossaryQf = computed(() =>
+                selectedGlossary.value?.typeName === 'AtlasGlossary'
+                    ? selectedGlossary.value?.attributes?.qualifiedName
+                    : selectedGlossary?.value?.attributes?.anchor
+                          ?.uniqueAttributes?.qualifiedName
+            )
+            const parentGlossary = ref(parentGlossaryQf.value)
             const visible = ref(false)
             const isCreateMore = ref<boolean>()
+            const anchorQf = computed(() =>
+                glossaryQualifiedName.value.length
+                    ? glossaryQualifiedName.value
+                    : parentGlossary.value
+            )
             const entity = reactive({
                 attributes: {
                     userDescription: '',
@@ -300,16 +327,14 @@
                         entity.relationshipAttributes = {
                             anchor: {
                                 typeName: 'AtlasGlossary',
-                                guid: getGlossaryByQF(
-                                    glossaryQualifiedName.value
-                                )?.guid,
+                                guid: getGlossaryByQF(anchorQf.value)?.guid,
                             },
                         }
+                        console.log(entity)
                         if (
                             categoryGuid.value &&
                             categoryGuid.value !==
-                                getGlossaryByQF(glossaryQualifiedName.value)
-                                    ?.guid
+                                getGlossaryByQF(anchorQf.value)?.guid
                         ) {
                             if (typeNameTitle.value === 'Category') {
                                 entity.relationshipAttributes.parentCategory = {
@@ -388,6 +413,7 @@
                 entity.attributes.ownerGroups =
                     selectedValue?.value?.ownerGroups
             }
+
             whenever(error, () => {
                 if (error.value) {
                     if (error.value.response?.status === 409) {
@@ -404,7 +430,13 @@
 
             whenever(isUpdateReady, () => {
                 if (asset.value?.attributes?.qualifiedName) {
-                    emit('add', asset.value)
+                    if (props.showGlossarySelect)
+                        emit(
+                            'add',
+                            asset.value,
+                            getGlossaryByQF(anchorQf.value)
+                        )
+                    else emit('add', asset.value)
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
@@ -418,6 +450,19 @@
                 }
             })
 
+            watch(selectedGlossary,()=>{
+                parentGlossary.value=parentGlossaryQf.value
+                console.log(parentGlossaryQf.value)
+            })
+            const handleSelectGlossary = (val) => {
+                console.log(glossaryQualifiedName.value.length)
+                console.log(
+                    glossaryQualifiedName.value.length
+                        ? glossaryQualifiedName.value
+                        : parentGlossary.value
+                )
+                console.log(glossaryQualifiedName.value || parentGlossary.value)
+            }
             return {
                 visible,
                 showModal,
@@ -447,6 +492,8 @@
                 ListForSidebar,
                 handleStatusChange,
                 handleOwnersChange,
+                parentGlossary,
+                handleSelectGlossary,
             }
         },
     })

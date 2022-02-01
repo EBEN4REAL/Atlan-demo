@@ -8,7 +8,7 @@
             trigger="['click']"
         >
             <template #content>
-                <div class="px-3 py-1 border-b">
+                <div v-if="showAllGlossary" class="px-3 py-1 border-b">
                     <div
                         class="flex items-center py-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('')"
@@ -109,6 +109,11 @@
                     return ''
                 },
             },
+            showAllGlossary:{
+                type:Boolean,
+                required:false,
+                default:true
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

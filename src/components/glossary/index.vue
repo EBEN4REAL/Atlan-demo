@@ -406,14 +406,18 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
-            const handleAddGTC = (asset) => {
+            const handleAddGTC = (asset, entity) => {
                 if (asset) {
                     if (asset.typeName === 'AtlasGlossary') {
                         glossaryStore.addGlossary(asset)
                         handleSelectGlossary(asset?.attributes?.qualifiedName)
                     }
                     if (glossaryTree.value) {
-                        glossaryTree.value.addGlossary(asset)
+                        console.log(asset, entity)
+                        if (entity?.value?.guid || entity?.guid) {
+                            console.log(entity.value)
+                            glossaryTree.value.addGTCNode(asset, entity)
+                        } else glossaryTree.value.addGlossary(asset)
                     }
                 }
             }

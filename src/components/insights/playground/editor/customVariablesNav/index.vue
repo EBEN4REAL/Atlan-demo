@@ -78,18 +78,14 @@
                                 <div
                                     @mouseleave="closeSelectDropdown"
                                     class="z-10 flex flex-col text-gray-700 bg-white rounded shadow"
-                                    style="
-                                        width: 162px;
-                                        height: 200px;
-                                        overflow: scroll;
-                                    "
+                                    style="width: 162px; max-height: 200px"
                                 >
                                     <div
                                         v-if="variable.allowMultiple"
-                                        class="w-full gap-y-2"
+                                        class="w-full overflow-y-scroll gap-y-2"
                                     >
                                         <div
-                                            class="flex flex-col w-full"
+                                            class="absolute top-0 z-10 flex flex-col w-full bg-white hover:bg-primary-light"
                                             @change="
                                                 () => {
                                                     onCheckAllOptions(variable)
@@ -99,9 +95,13 @@
                                         >
                                             <a-checkbox
                                                 v-model:checked="checkAll"
-                                                class="w-full px-4 py-2"
+                                                class="inline-flex items-center w-full px-2 py-2"
+                                                :class="$style.checkbox_style"
                                             >
-                                                Select all
+                                                <span
+                                                    class="flex w-full h-full ml-1 -mb-1.5"
+                                                    >Select all</span
+                                                >
                                             </a-checkbox>
                                         </div>
 
@@ -118,29 +118,34 @@
                                                     onChange(variable)
                                                 }
                                             "
-                                            class="w-full overflow-x-hidden"
+                                            class="w-full overflow-x-hidden mt-9"
                                         >
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
-                                                class="flex items-center justify-between w-full px-4 py-1"
+                                                class="w-full px-2 py-1 hover:bg-primary-light"
                                             >
-                                                <a-checkbox :value="item.value"
+                                                <a-checkbox
+                                                    :value="item.value"
+                                                    :class="
+                                                        $style.checkbox_style
+                                                    "
+                                                    class="inline-flex items-center"
                                                     ><span
-                                                        class="flex w-full h-8 mb-0 ml-1"
+                                                        class="flex w-full h-full ml-1 -mb-1.5"
                                                     >
                                                         <!-- {{ item.label }} -->
 
                                                         <Tooltip
                                                             :tooltip-text="`${item.label}`"
-                                                            clamp-percentage="96%"
+                                                            clamp-percentage="97%"
                                                         />
                                                     </span>
                                                 </a-checkbox>
                                             </div>
                                         </a-checkbox-group>
                                     </div>
-                                    <div v-else>
+                                    <div v-else class="overflow-y-scroll">
                                         <a-menu
                                             v-model:selectedKeys="
                                                 variable.value
@@ -154,17 +159,17 @@
                                                 class="w-full"
                                             >
                                                 <a-menu-item
-                                                    class="w-full px-4 hover:bg-gray-100"
+                                                    class="w-full px-2 hover:bg-primary-light"
                                                     :key="item.value"
                                                 >
                                                     <div
                                                         class="flex items-center justify-between w-full"
                                                     >
                                                         <span
-                                                            class="flex w-full h-8 mb-0 ml-1"
+                                                            class="flex w-full h-8 mb-0"
                                                             ><Tooltip
                                                                 :tooltip-text="`${item.label}`"
-                                                                clamp-percentage="96%"
+                                                                clamp-percentage="99%"
                                                         /></span>
                                                         <!-- <AtlanIcon
                                                             icon="Check"
@@ -389,7 +394,11 @@
                                                     :dropdownStyle="{
                                                         visibility: 'hidden',
                                                     }"
-                                                    :class="$style.multi_select"
+                                                    :class="[
+                                                        dropdownError
+                                                            ? $style.error_select
+                                                            : $style.multi_select,
+                                                    ]"
                                                 >
                                                     <!-- <template
                                                         #dropdownRender
@@ -430,9 +439,10 @@
                                                             onChangeAllowMultiple()
                                                         }
                                                     "
+                                                    class="inline-flex items-center"
                                                 >
                                                     <span
-                                                        class="text-sm text-gray-700"
+                                                        class="flex -mb-1.5 ml-0.5 text-sm text-gray-700"
                                                     >
                                                         Allow multiple values
                                                     </span>
@@ -545,11 +555,13 @@
 
             const varTest = /^[a-zA-Z0-9_]+$/
             let inputError = ref(false)
+            let dropdownError = ref(false)
 
             const closeDropdown = () => {
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
                 inputError.value = false
+                dropdownError.value = false
             }
 
             const cancelEdit = () => {
@@ -567,6 +579,7 @@
 
                 currVariable.value = undefined
                 inputError.value = false
+                dropdownError.value = false
             }
             const onAddVariable = () => {
                 // addVariable(activeInlineTab, tabs, sqlVariables)
@@ -587,6 +600,15 @@
                 } else {
                     inputError.value = true
                 }
+                if (variable.type === 'dropdown') {
+                    if (variable.options.length) {
+                        dropdownError.value = false
+                    } else {
+                        dropdownError.value = true
+                    }
+                }
+
+                // console.log('toggle: ', variable)
             }
 
             const onDeleteVariable = (variable: CustomVaribaleInterface) => {
@@ -596,27 +618,51 @@
             }
 
             const onSaveVariable = () => {
+                // console.log('save var: ', activeVariable.value)
                 if (varTest.test(activeVariable.value.name)) {
-                    if (
-                        saveVariable(
-                            activeInlineTab,
-                            tabs,
-                            activeVariable.value,
-                            currVariable
-                        )
-                    ) {
-                        /* If successfully variable saved then close the dropdown */
-                        checkAll.value = false
-                        inputError.value = false
-
-                        // if (variable.type === 'dropdown') {
-                        //     variable.value = [variable.options[0].value]
-                        // }
-                        // activeVariable.value = null
-                        closeDropdown()
+                    if (activeVariable.value.type === 'dropdown') {
+                        if (activeVariable.value.options.length) {
+                            dropdownError.value = false
+                            if (
+                                saveVariable(
+                                    activeInlineTab,
+                                    tabs,
+                                    activeVariable.value,
+                                    currVariable
+                                )
+                            ) {
+                                /* If successfully variable saved then close the dropdown */
+                                checkAll.value = false
+                                inputError.value = false
+                                closeDropdown()
+                            }
+                        } else {
+                            dropdownError.value = true
+                        }
+                    } else {
+                        if (
+                            saveVariable(
+                                activeInlineTab,
+                                tabs,
+                                activeVariable.value,
+                                currVariable
+                            )
+                        ) {
+                            /* If successfully variable saved then close the dropdown */
+                            checkAll.value = false
+                            inputError.value = false
+                            closeDropdown()
+                        }
                     }
                 } else {
                     inputError.value = true
+                    if (activeVariable.value.type === 'dropdown') {
+                        if (activeVariable.value.options.length) {
+                            dropdownError.value = false
+                        } else {
+                            dropdownError.value = true
+                        }
+                    }
                 }
             }
             const onCopyVariable = (variable: CustomVaribaleInterface) => {
@@ -734,6 +780,7 @@
                 closeDropdown,
                 // checkInput,
                 inputError,
+                dropdownError,
                 handleSelectInputChange,
                 handleSelectDateChange,
                 handleVariableTypeChange,
@@ -787,8 +834,8 @@
             height: 7px !important;
         }
         :global(.ant-checkbox-inner) {
-            width: 13.5px !important;
-            height: 13px !important;
+            width: 13px !important;
+            height: 13.5px !important;
         }
         :global(.ant-checkbox + span) {
             @apply px-1 !important;
@@ -820,6 +867,14 @@
 
     .multi_select {
         :global(.ant-select-selector) {
+            max-height: 80px !important;
+            overflow: scroll !important;
+        }
+    }
+    .error_select {
+        :global(.ant-select-selector) {
+            // @apply border-red-300;
+            border-color: rgb(252, 165, 165) !important;
             max-height: 80px !important;
             overflow: scroll !important;
         }

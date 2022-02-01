@@ -10,7 +10,6 @@
                     ></RunsSelect>
                     <Sidebar
                         :selected-run="selectedRun"
-                        :selected-pod="selectedPod"
                         class="mt-3"
                         style="width: 300px"
                     ></Sidebar>

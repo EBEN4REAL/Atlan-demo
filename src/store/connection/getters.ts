@@ -8,6 +8,7 @@ export interface Getters {
     getSourceList(): any[]
     getFilteredSourceList(): (list: string[]) => any
     getConnectorImageMapping(): any
+    getConnectorLabelMapping(): any
     getImage(): (id: string) => any
     getList(): any
 }
@@ -64,6 +65,13 @@ export const getters: GettersTree<State> & Getters = {
         const map = {}
         SourceList.forEach((item) => {
             map[item.id.toLowerCase()] = item.image
+        })
+        return map
+    },
+    getConnectorLabelMapping() {
+        const map = {}
+        SourceList.forEach((item) => {
+            map[item.id.toLowerCase()] = item.label
         })
         return map
     },

@@ -1,5 +1,22 @@
 <template>
     <div class="flex items-center gap-x-2">
+        <RequestDropdown
+            :type="'reject'"
+            :is-loading="loading"
+            :item-drop-down="'Reject with comment'"
+            @submit="(message) => $emit('reject', message || '')"
+        >
+            <span class="text-red-500"> Reject </span>
+        </RequestDropdown>
+
+        <RequestDropdown
+            :type="'approve'"
+            :is-loading="isApprovalLoading"
+            :item-drop-down="'Approve with comment'"
+            @submit="(message) => $emit('accept', message || '')"
+        >
+            <span class="text-green-500"> Approve </span>
+        </RequestDropdown>
         <a-popover
             v-if="request?.message"
             trigger="hover"
@@ -7,7 +24,7 @@
             :align="{ offset: [90, -5] }"
         >
             <template #content>
-                <div class="comment-delete">
+                <div class="p-4 comment-delete">
                     <div class="flex">
                         <component :is="iconQuotes" class="mr-4" />
                         <p>{{ request?.message }}</p>
@@ -29,26 +46,9 @@
                     </div>
                 </div>
             </template>
-            <AtlanIcon class="mr-3 message-icon" icon="Message" />
+            <AtlanIcon class="ml-3 message-icon" icon="Message" />
         </a-popover>
         <div v-else class="w-7" />
-        <RequestDropdown
-            :type="'reject'"
-            :is-loading="loading"
-            :item-drop-down="'Reject with comment'"
-            @submit="(message) => $emit('reject', message || '')"
-        >
-            <span class="text-red-500"> Reject </span>
-        </RequestDropdown>
-
-        <RequestDropdown
-            :type="'approve'"
-            :is-loading="isApprovalLoading"
-            :item-drop-down="'Approve with comment'"
-            @submit="(message) => $emit('accept', message || '')"
-        >
-            <span class="text-green-500"> Approve </span>
-        </RequestDropdown>
     </div>
 </template>
 

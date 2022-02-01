@@ -66,7 +66,7 @@
         </div>
     </a-drawer>
     <DefaultLayout title="Requests" class="px-6 governance-request">
-        <div class="relative mt-3 border rounded-md">
+        <div class="relative mt-3 border border-gray-300 rounded-md">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
             <div
                 class="wrapper-scoll right"

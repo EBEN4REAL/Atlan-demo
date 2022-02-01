@@ -312,7 +312,7 @@
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
-                statusRequest: [],
+                statusRequest: ['active'],
             })
             const paginationRef = ref('')
             const searchTerm = ref('')

@@ -145,7 +145,6 @@
             ) => {
                 if (openDrawer) isDrawerVisible.value = true
                 control('selectedAsset', item)
-                control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
             }
 

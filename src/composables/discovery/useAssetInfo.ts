@@ -60,6 +60,10 @@ export default function useAssetInfo() {
 
     const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
+    const parentFolder = (asset: assetInterface) => attributes(asset)?.folder
+
+    const parentModel = (asset: assetInterface) => attributes(asset)?.model
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -1214,5 +1218,7 @@ export default function useAssetInfo() {
         sourceMetadataId,
         sourceContentMetadataId,
         sourceViewCount,
+        parentFolder,
+        parentModel,
     }
 }

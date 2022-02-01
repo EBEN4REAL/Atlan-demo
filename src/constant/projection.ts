@@ -95,6 +95,10 @@ export const AssetAttributes = [
     'sourceMetadataId',
     'sourceContentMetadataId',
     'sourceViewCount',
+    'folderName',
+    'modelName',
+    'folder',
+    'model',
 ]
 
 export const SQLAttributes = [

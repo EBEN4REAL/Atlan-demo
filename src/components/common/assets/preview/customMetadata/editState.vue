@@ -193,7 +193,7 @@
 
             // set proper default value
             if (isMultivalued.value && !localValue.value) localValue.value = []
-            else if (!localValue.value) localValue.value = ''
+            else if (!localValue.value) localValue.value = undefined // set to undefined else placeholder won't appear
 
             const handleChange = () => {
                 if (typeName.value === 'date') {

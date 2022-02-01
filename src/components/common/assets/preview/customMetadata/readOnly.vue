@@ -58,7 +58,7 @@
         </template>
         <a-typography-paragraph
             v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
-            class="text-gray-700"
+            class="text-gray-700 break-normal"
             :ellipsis="{
                 rows: 5,
                 expandable: true,

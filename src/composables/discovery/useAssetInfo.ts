@@ -1077,6 +1077,13 @@ export default function useAssetInfo() {
     const sourceOwners = (asset: assetInterface) =>
         attributes(asset)?.sourceOwners
 
+    const resultMakerID = (asset: assetInterface) =>
+        attributes(asset)?.resultMakerID || '-'
+    const sourceMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceMetadataId || '-'
+    const sourceContentMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceContentMetadataId || '-'
+
     return {
         attributes,
         title,
@@ -1198,5 +1205,8 @@ export default function useAssetInfo() {
         parentWorkbook,
         sourceURL,
         parentSite,
+        resultMakerID,
+        sourceMetadataId,
+        sourceContentMetadataId,
     }
 }

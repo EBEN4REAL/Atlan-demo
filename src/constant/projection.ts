@@ -91,6 +91,9 @@ export const AssetAttributes = [
     'sourceOwners',
     'noteText',
     'subtitleText',
+    'resultMakerID',
+    'sourceMetadataId',
+    'sourceContentMetadataId',
 ]
 
 export const SQLAttributes = [

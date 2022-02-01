@@ -7,6 +7,8 @@ import mysql from '~/assets/images/source/mysql.png'
 import glue from '~/assets/images/source/glue.png'
 import powerbi from '~/assets/images/source/powerbi.png'
 import databricks from '~/assets/images/source/databricks.png'
+import looker from '~/assets/images/source/looker.png'
+import bigquery from '~/assets/images/source/bigquery.png'
 
 /**
  * Gets the mapped string for the Node type
@@ -45,13 +47,17 @@ export const getNodeSourceImage = {
     glue,
     powerbi,
     databricks,
+    looker,
+    bigquery,
 }
 
+// FIXME: Shall we use the connectorName attribute here?
 export const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
     if (item[0] === 'default') return item[1]
     return item[0]
 }
+
 export const getSchema = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
     if (item[0] === 'default') return item[4]

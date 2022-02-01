@@ -36,7 +36,7 @@
                     </div>
                     <div class="mb-4">
                         <div class="mb-2.5">
-                            Atlan Audience URL (SP Entity ID)
+                            Atlan Audience URI (SP Entity ID)
                         </div>
                         <div class="flex justify-between mb-2 text-gray-500">
                             <div class="mr-3 break-all">

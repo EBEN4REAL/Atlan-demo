@@ -11,3 +11,14 @@ export function getDialectInfo(selectedSourceId: string) {
     }
     return ''
 }
+export function canQueryAbort(selectedSourceId: string) {
+    const sourceInfo = SourceList.find(
+        (source) => source.id?.toLowerCase() === selectedSourceId?.toLowerCase()
+    )
+    if (sourceInfo?.hasOwnProperty('dialectConfig')) {
+        if (sourceInfo.dialectConfig?.abortQuery) {
+            return sourceInfo.dialectConfig?.abortQuery
+        }
+    }
+    return false
+}

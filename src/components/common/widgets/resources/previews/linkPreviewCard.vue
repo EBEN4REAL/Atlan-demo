@@ -11,8 +11,8 @@
                 />
                 <img
                     v-else
-                    :src="`https://www.google.com/s2/favicons?domain=${link(
-                        item
+                    :src="`https://www.google.com/s2/favicons?domain=${getDomain(
+                        link(item)
                     )}&sz=64`"
                     alt=""
                     :onerror="imageLoadOnError"
@@ -91,6 +91,7 @@
 <script lang="ts">
     // Vue
     import { defineComponent, PropType, ref } from 'vue'
+    import { getDomain } from '~/utils/url'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import DeleteResource from '../deleteResource.vue'
@@ -140,6 +141,7 @@
             }
 
             return {
+                getDomain,
                 createdBy,
                 modifiedBy,
                 createdAt,

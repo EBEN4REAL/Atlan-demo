@@ -109,13 +109,19 @@
                     rowCount(selectedAsset, true) !== '0' &&
                     rowCount(selectedAsset, true)
                 "
-                class="flex flex-col text-sm cursor-pointer"
+                class="flex flex-col text-sm"
+                :class="isProfile ? '' : 'cursor-pointer'"
                 @click="showSampleDataModal"
             >
                 <span class="mb-2 text-sm text-gray-500">Rows</span>
-                <span class="font-semibold text-primary">{{
-                    rowCount(selectedAsset, true)
-                }}</span>
+                <span
+                    :class="
+                        isProfile
+                            ? 'text-gray-700'
+                            : 'text-primary font-semibold'
+                    "
+                    >{{ rowCount(selectedAsset, true) }}</span
+                >
             </div>
             <!-- </RowInfoHoverCard> -->
             <div
@@ -542,6 +548,7 @@
             v-model:visible="sampleDataVisible"
             :footer="null"
             :closable="false"
+            :destroy-on-close="true"
             width="1000px"
             ><div class="p-3">
                 <SampleDataTable :asset="selectedAsset" />
@@ -632,6 +639,7 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+            const isProfile = inject('isProfile')
             const { collectionData } = toRefs(props)
 
             const { isDrawer } = toRefs(props)
@@ -639,7 +647,9 @@
             const sampleDataVisible = ref<boolean>(false)
 
             const showSampleDataModal = () => {
-                sampleDataVisible.value = true
+                if (!isProfile.value) {
+                    sampleDataVisible.value = true
+                }
             }
 
             const {
@@ -787,6 +797,7 @@
                 externalLocationFormat,
                 handleCollectionClick,
                 isBiAsset,
+                isProfile,
             }
         },
     })

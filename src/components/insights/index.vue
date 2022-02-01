@@ -300,6 +300,11 @@
 
             const editorContentSelectionState: Ref<boolean> = ref(false)
 
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+
             const setEditorInstance = (
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
@@ -364,6 +369,7 @@
                 assetSidebarUpdatedData,
                 readAccessCollections,
                 writeAccessCollections,
+                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -487,11 +493,6 @@
                     // focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
-
-            const limitRows = ref({
-                checked: true,
-                rowsCount: 100,
-            })
 
             // FIXME: refactor it
 

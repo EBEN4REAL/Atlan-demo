@@ -28,10 +28,12 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <div class="flex items-center">
-                        <img
-                            :src="getImage(connectionQfName?.split('/')[1])"
+                        <AtlanIcon
+                            :icon="`${getImage(
+                                connectionQfName?.split('/')[1]
+                            )}`"
                             class="w-auto h-4 pr-1 rounded-tl rounded-bl"
-                        />
+                        ></AtlanIcon>
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
@@ -277,7 +279,7 @@
                 visibleDelete,
                 isAddAll,
                 maskComputed,
-                permissions
+                permissions,
             }
         },
     })

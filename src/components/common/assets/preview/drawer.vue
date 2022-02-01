@@ -14,7 +14,7 @@
             @close="$emit('closeDrawer')"
         >
             <div
-                v-if="(!showMask || showCloseBtn) && visible"
+                v-if="showCloseBtn && visible"
                 class="close-btn"
                 @click="() => $emit('closeDrawer')"
             >
@@ -22,7 +22,7 @@
             </div>
             <AssetPreview
                 v-if="visible"
-                :selected-asset="data"
+                :selected-asset="drawerData"
                 :is-drawer="true"
                 :drawer-active-key="drawerActiveKey"
                 @closeDrawer="$emit('closeDrawer')"
@@ -31,8 +31,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs, provide } from 'vue'
+    import { defineComponent, ref, watch, toRefs, provide, computed } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import {
+        AssetAttributes,
+        InternalAttributes,
+        SQLAttributes,
+        GlossaryAttributes,
+        AssetRelationAttributes,
+    } from '~/constant/projection'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         components: {
@@ -66,13 +75,24 @@
                 required: false,
                 default: false,
             },
+            guid: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            qualifiedName: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
         emits: ['closeDrawer', 'update'],
 
         setup(props, { emit }) {
-            const { showDrawer } = toRefs(props)
+            const { showDrawer, guid, qualifiedName, data } = toRefs(props)
 
             const visible = ref(false)
+            const drawerData = ref(data.value)
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -80,11 +100,61 @@
 
             provide('updateDrawerList', updateDrawerList)
 
-            watch(showDrawer, () => {
-                visible.value = showDrawer.value
+            const limit = ref(1)
+            const offset = ref(0)
+            const facets = computed(() => {
+                if (guid.value !== '') {
+                    return { guid: guid.value }
+                }
+                return { qualifiedName: qualifiedName.value }
             })
 
-            return { visible }
+            const dependentKey = ref(null)
+
+            const { customMetadataProjections } = useTypedefData()
+
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...SQLAttributes,
+                ...GlossaryAttributes,
+                ...customMetadataProjections,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            const { list, fetch } = useDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
+            watch(showDrawer, () => {
+                if (
+                    (guid.value !== '' || qualifiedName.value !== '') &&
+                    showDrawer.value
+                ) {
+                    fetch()
+                } else {
+                    visible.value = showDrawer.value
+                }
+            })
+
+            watch(list, () => {
+                if (list.value.length > 0) {
+                    drawerData.value = list.value[0]
+                    visible.value = true
+                }
+            })
+
+            watch(data, () => {
+                drawerData.value = data.value
+            })
+
+            return { visible, drawerData }
         },
     })
 </script>

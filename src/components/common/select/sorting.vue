@@ -8,6 +8,9 @@
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
     >
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" class="mb-1" />
+        </template>
         <a-select-option
             :value="item.id"
             v-for="item in sortList"

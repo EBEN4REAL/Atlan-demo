@@ -113,6 +113,7 @@
 import { defineComponent, ref, watch, toRefs, computed } from 'vue'
 import SQLSnippet from '@common/sql/snippet.vue'
 import { getQueryMetadata } from '@/governance/queryLogs/composables/useQueryLogs'
+import { getDurationStringFromMilliSec } from '~/utils/time'
 
 export default defineComponent({
     name: 'QueryPreviewDrawer',
@@ -150,35 +151,17 @@ export default defineComponent({
             }
             return 0
         }
-        const durationDetails = computed(() => {
-            const result = {
-                executionTimeString: '',
-                totalTimeString: '',
-            }
-            if (query?.value?._source?.message?.executionTime) {
-                const time = query?.value?._source?.message?.executionTime
-
-                 if (time < 1000) result.executionTimeString = `${time}ms`
-                 else if (time / 1000 < 60)
-                    result.executionTimeString = `${+(time / 1000).toFixed(2)}s`
-                 else
-                    result.executionTimeString = `${+(time / (1000 * 60)).toFixed(2)}m${
-                        time % (1000 * 60)
-                    }s`
-            } else result.executionTimeString = ''
-            if (query?.value?._source?.message?.totalTime) {
-                const time = query?.value?._source?.message?.totalTime
-                 if (time < 1000) result.totalTimeString = `${time}ms`
-                 else if (time / 1000 < 60)
-                    result.totalTimeString = `${+(time / 1000).toFixed(2)}s`
-                 else
-                    result.totalTimeString = `${+(time / (1000 * 60)).toFixed(2)}m${
-                        time % (1000 * 60)
-                    }s`
-            } else result.totalTimeString = ''
-
-            return result
-        })
+       const durationDetails = computed(() => {
+                const result = {
+                    executionTimeString: getDurationStringFromMilliSec(
+                        query?.value?._source?.message?.executionTime ?? ''
+                    ),
+                    totalTimeString: getDurationStringFromMilliSec(
+                        query?.value?._source?.message?.totalTime ?? ''
+                    ),
+                }
+                return result
+            })
 
         const durationObj = computed(() => ({
             percent: getDurationPercent(),

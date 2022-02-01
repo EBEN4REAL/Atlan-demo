@@ -312,7 +312,7 @@
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
             const facets = ref({
-                statusRequest: ['active'],
+                statusRequest: [],
             })
             const paginationRef = ref('')
             const searchTerm = ref('')
@@ -616,6 +616,7 @@
     }
     .button-close-drawer-request {
         left: 300px !important;
+        top: 12px;
     }
     .governance-request {
         .container-content {
@@ -685,6 +686,10 @@
 
 <style lang="less" module>
     .request-filter-wrapper {
-        // background: red !important;
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

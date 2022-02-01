@@ -10,6 +10,7 @@
         </RequestDropdown>
 
         <RequestDropdown
+            v-if="!disabledAccept"
             :type="'approve'"
             :is-loading="isApprovalLoading"
             :item-drop-down="'Approve with comment'"
@@ -53,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import iconQuotes from '~/assets/images/icons/Quotes.svg'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -61,6 +62,7 @@
     import UserPiece from './pieces/user.vue'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         name: 'RequestActions',
@@ -83,7 +85,23 @@
         },
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
+            // ! temporary solution for corrupted requests
+            const disabledAccept = computed(() => {
+                const isClassificationReq =
+                    props.request?.requestType === 'attach_classification'
+                if (isClassificationReq) {
+                    const { classificationList } = useTypedefData()
+                    const { typeName } = props.request.payload
+
+                    const classificationExist = classificationList.value.find(
+                        (clsf) => clsf?.name === typeName
+                    )
+                    return !classificationExist
+                }
+                return false
+            })
             return {
+                disabledAccept,
                 iconQuotes,
                 atlanLogo,
             }

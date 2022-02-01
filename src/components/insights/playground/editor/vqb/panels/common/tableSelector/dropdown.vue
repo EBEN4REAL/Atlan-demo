@@ -216,9 +216,11 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const placeholder = computed(() => {
-                let data = `Search from ${totalTablesCount.value} columns`
+                let data = `Search from ${
+                    totalTablesCount.value
+                } ${pluralizeString('table', totalTablesCount.value, false)}`
                 if (isTableLoading.value) {
-                    data = 'Loading...'
+                    data = 'Loading tables...'
                 }
 
                 return data

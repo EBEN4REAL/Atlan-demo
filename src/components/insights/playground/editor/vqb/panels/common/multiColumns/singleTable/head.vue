@@ -78,6 +78,7 @@
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
+    import { pluralizeString } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel Head',
@@ -117,7 +118,7 @@
             const { getTableName } = useUtils()
             const mouseOver = ref(false)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
-            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -129,13 +130,25 @@
 
             const placeholder = computed(() => {
                 let data = ''
-                data = `Select a table first`
+                data = `No table selected`
                 if (tableQualfiedName.value) {
-                    data = `Select from ${totalColumnsCount.value} columns`
+                    data = `Select from ${
+                        totalColumnsCount.value
+                    } ${pluralizeString(
+                        'column',
+                        totalColumnsCount.value,
+                        false
+                    )} `
                     if (isColumnLoading.value) {
-                        data = 'Loading...'
+                        data = 'Loading columns...'
                     } else {
-                        data = `Select from ${totalColumnsCount.value} columns`
+                        data = `Select from ${
+                            totalColumnsCount.value
+                        } ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
                     }
                 }
 

@@ -80,6 +80,7 @@
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useVModels } from '@vueuse/core'
+    import { pluralizeString } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -118,8 +119,9 @@
             const mouseOver = ref(false)
             const isJoinPanelDisabled = ref(true)
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
-            const totalTablesCount = inject('totalTablesCount') as Ref<Number>
-            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalViewsCount = inject('totalViewsCount') as Ref<number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
@@ -142,22 +144,44 @@
                 if (selectedTables.value?.length > 1) {
                     if (!isTableSelected.value) {
                         if (isTableLoading.value) {
-                            data = 'Loading...'
+                            data = 'Loading tables and views...'
                         } else {
-                            data = `Select from ${totalTablesCount.value} tables`
+                            data = `Select from ${
+                                totalTablesCount.value
+                            } ${pluralizeString(
+                                'table',
+                                totalTablesCount.value,
+                                false
+                            )} and ${totalViewsCount.value} ${pluralizeString(
+                                'view',
+                                totalViewsCount.value,
+                                false
+                            )}`
                         }
                     } else {
                         if (isColumnLoading.value) {
-                            data = 'Loading...'
+                            data = 'Loading columns...'
                         } else {
-                            data = `Select from ${totalColumnsCount.value} columns`
+                            data = `Select from ${
+                                totalColumnsCount.value
+                            } ${pluralizeString(
+                                'column',
+                                totalColumnsCount.value,
+                                false
+                            )}`
                         }
                     }
                 } else {
                     if (isColumnLoading.value) {
-                        data = 'Loading...'
+                        data = 'Loading columns...'
                     } else {
-                        data = `Select from ${totalColumnsCount.value} columns`
+                        data = `Select from ${
+                            totalColumnsCount.value
+                        }  ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
                     }
                 }
                 return data

@@ -190,6 +190,7 @@
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalViewsCount = inject('totalViewsCount') as Ref<number>
             const tableQueryText = inject('tableQueryText') as Ref<String>
 
             const TableList = inject('TableList') as Ref<any[]>
@@ -218,9 +219,17 @@
             const placeholder = computed(() => {
                 let data = `Search from ${
                     totalTablesCount.value
-                } ${pluralizeString('table', totalTablesCount.value, false)}`
+                } ${pluralizeString(
+                    'table',
+                    totalTablesCount.value,
+                    false
+                )} and ${totalViewsCount.value} ${pluralizeString(
+                    'view',
+                    totalViewsCount.value,
+                    false
+                )}`
                 if (isTableLoading.value) {
-                    data = 'Loading tables...'
+                    data = 'Loading tables and views...'
                 }
 
                 return data

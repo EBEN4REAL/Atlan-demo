@@ -146,6 +146,17 @@
             </div>
         </div>
 
+        <div
+            v-if="
+                ['LookerDashboard', 'LookerLook'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex px-5"
+        >
+            <SourceViewCount :asset="selectedAsset" />
+        </div>
+
         <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Source Owner</span>
@@ -634,6 +645,7 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
+    import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -655,6 +667,7 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            SourceViewCount,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

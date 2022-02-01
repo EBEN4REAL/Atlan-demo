@@ -227,7 +227,12 @@ export const summaryVariants = [
     {
         id: 'lookerDashboard',
         label: 'Dashboard',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'SourceViewCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerDashboard'],
     },
     {
@@ -251,7 +256,12 @@ export const summaryVariants = [
     {
         id: 'lookerLook',
         label: 'Look',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'SourceViewCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerLook'],
     },
     {

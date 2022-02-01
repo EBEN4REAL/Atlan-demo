@@ -165,6 +165,9 @@
             SourceUpdated: defineAsyncComponent(
                 () => import('./types/sourceUpdated.vue')
             ),
+            SourceViewCount: defineAsyncComponent(
+                () => import('./types/sourceViewCount.vue')
+            ),
         },
 
         props: {

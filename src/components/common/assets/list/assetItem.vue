@@ -315,6 +315,7 @@
                                 >
                             </div>
                         </div>
+
                         <div
                             v-if="
                                 ['column'].includes(
@@ -670,6 +671,22 @@
                                 </template>
                             </a-tooltip>
                         </div>
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ sourceViewCount(item) }}</span
+                                >
+                                views</span
+                            >
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -919,6 +936,7 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                sourceViewCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -941,8 +959,7 @@
             }
 
             const isSelected = computed(() => {
-                return selectedGuid.value === item?.value?.guid;
-
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
@@ -951,8 +968,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -1057,6 +1073,7 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                sourceViewCount,
             }
         },
     })

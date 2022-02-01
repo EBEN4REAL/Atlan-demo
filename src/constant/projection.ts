@@ -94,6 +94,7 @@ export const AssetAttributes = [
     'resultMakerID',
     'sourceMetadataId',
     'sourceContentMetadataId',
+    'sourceViewCount',
 ]
 
 export const SQLAttributes = [

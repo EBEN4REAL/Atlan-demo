@@ -1079,10 +1079,15 @@ export default function useAssetInfo() {
 
     const resultMakerID = (asset: assetInterface) =>
         attributes(asset)?.resultMakerID || '-'
+
     const sourceMetadataId = (asset: assetInterface) =>
         attributes(asset)?.sourceMetadataId || '-'
+
     const sourceContentMetadataId = (asset: assetInterface) =>
         attributes(asset)?.sourceContentMetadataId || '-'
+
+    const sourceViewCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceViewCount, false)
 
     return {
         attributes,
@@ -1208,5 +1213,6 @@ export default function useAssetInfo() {
         resultMakerID,
         sourceMetadataId,
         sourceContentMetadataId,
+        sourceViewCount,
     }
 }

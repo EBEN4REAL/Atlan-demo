@@ -45,6 +45,8 @@ export default function useBody({
         base.filter('term', '__typeName.keyword', 'Column')
     }
 
+    base.filter('term', '__state', 'ACTIVE')
+    base.filter('term', '__typeName.keyword', 'Column')
     base.filter('term', '__typeName.keyword', 'Column')
     const tempQuery = base.build()
     const query = {

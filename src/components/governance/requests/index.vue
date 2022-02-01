@@ -218,7 +218,7 @@
                     v-else-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center h-96"
                 >
-                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                     <span class="mt-4 text-center text-gray-500 w-72">
                         Oops… we didn’t find any requests that match this search
                     </span>
@@ -232,7 +232,7 @@
                     v-else-if="Object.keys(facets).length > 0"
                     class="flex flex-col items-center justify-center h-96"
                 >
-                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                     <span class="mt-4 text-center text-gray-500 w-72">
                         Oops… we didn’t find any requests that match this filter
                     </span>

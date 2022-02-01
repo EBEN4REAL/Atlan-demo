@@ -330,7 +330,13 @@ const refreshBody = () => {
                         bool: {
                             filter: {
                                 bool: {
-                                    must: [],
+                                    must: [
+                                        {
+                                            term: {
+                                                __state: 'ACTIVE',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },

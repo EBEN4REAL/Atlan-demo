@@ -191,7 +191,7 @@
                     v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
                     :key="index"
                 >
-                    <span class="font-semibold break-all">{{ field }}</span>
+                    <span class="font-semibold break-words">{{ field }}</span>
                 </div>
             </div>
         </div>
@@ -207,7 +207,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold break-all">{{
+                <span class="font-semibold break-words">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -227,7 +227,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700 break-all">{{
+                <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>

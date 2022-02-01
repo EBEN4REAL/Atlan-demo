@@ -62,12 +62,17 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
+
+    // Constants
     import {
         AssetAttributes,
         BasicSearchAttributes,
         SQLAttributes,
         AssetRelationAttributes,
     } from '~/constant/projection'
+
+    // Composables
+    import { useRelations } from '~/composables/discovery/useRelations'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
@@ -75,20 +80,25 @@
         components: { LineageGraph, EmptyState },
         emits: ['preview'],
         setup(_, { emit }) {
+            /** INITIALIZE */
             const route = useRoute()
+            const assetStore = useAssetStore()
             const { customMetadataProjections } = useTypedefData()
 
             /** DATA */
             const lineage = ref({})
             const depth = ref(1)
             const baseEntity = ref({})
-            const guid = computed(() => route.params?.id || '')
+            const guid = ref(route.params?.id || '')
             const direction = ref('BOTH')
-            const selectedAssetGuid = ref('')
-            const selectedAsset = ref({})
             const hideProcess = ref(true)
             const loaderText = ref('Fetching Data...')
             const isFirstLoad = ref(true)
+            const selectedAsset = ref(assetStore.getSelectedAsset)
+            const biAssetNoLinMap = {
+                PowerBIReport: 'dataset',
+                LookerTile: 'query',
+            }
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
                 { id: 2, label: 'Depth 2' },
@@ -100,7 +110,6 @@
                 { id: 'INPUT', label: 'Upstream' },
                 { id: 'OUTPUT', label: 'Downstream' },
             ]
-
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
@@ -116,36 +125,51 @@
             }))
 
             /** METHODS */
+            // computeLineageForBiAssetNoLin
+            const computeLineageForBiAssetNoLin = (data) => {
+                const computedLineage = { ...data }
+                const { childrenCounts, guidEntityMap } = computedLineage
+                const parentGuid = computedLineage.baseEntityGuid
+                computedLineage.baseEntityGuid = selectedAsset.value.guid
+                computedLineage.childrenCounts = {
+                    ...childrenCounts,
+                    [selectedAsset.value.guid]: { OUTPUT: 0 },
+                }
+                computedLineage.guidEntityMap = {
+                    ...guidEntityMap,
+                    [selectedAsset.value.guid]: selectedAsset.value,
+                }
+                computedLineage.relations.push({
+                    fromEntityId: parentGuid,
+                    processId: 'processId',
+                    toEntityId: selectedAsset.value.guid,
+                    type: 'related',
+                })
+
+                return computedLineage
+            }
+
             // useLineageService
             const { useFetchLineage } = useLineageService()
             const { data, isLoading, isReady, mutate, error } =
                 useFetchLineage(config)
 
             watch(data, async () => {
-                lineage.value = {}
-
                 if (!data.value.relations.length) {
                     lineage.value = { ...data.value }
-                    const assetStore = useAssetStore()
-                    baseEntity.value = assetStore.getSelectedAsset
+                    const { baseEntityGuid } = lineage.value
+                    baseEntity.value = selectedAsset.value
                     lineage.value.guidEntityMap = {
-                        [lineage.value.baseEntityGuid]: baseEntity.value,
+                        [baseEntityGuid]: baseEntity.value,
                     }
-                } else {
-                    lineage.value = data.value
-                    baseEntity.value =
-                        lineage.value.guidEntityMap[
-                            lineage.value.baseEntityGuid
-                        ]
                 }
 
-                if (
-                    selectedAssetGuid.value &&
-                    data.value.guidEntityMap[selectedAssetGuid.value]
-                )
-                    selectedAsset.value =
-                        lineage.value.guidEntityMap[selectedAssetGuid.value]
-                else selectedAsset.value = baseEntity.value
+                lineage.value = biAssetNoLinMap[selectedAsset.value.typeName]
+                    ? computeLineageForBiAssetNoLin(data.value)
+                    : data.value
+
+                const { guidEntityMap, baseEntityGuid } = lineage.value
+                baseEntity.value = guidEntityMap[baseEntityGuid]
 
                 if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
                 isFirstLoad.value = false
@@ -166,18 +190,36 @@
                     direction.value = item
                 }
                 if (type === 'selectedAsset') selectedAsset.value = item
-                if (type === 'selectedAssetGuid') selectedAssetGuid.value = item
                 if (['depth', 'direction'].includes(type)) mutate()
+            }
+
+            // getBiAssetNoLinParentGuid
+            const getBiAssetNoLinParentGuid = (entity) => {
+                let parentGuid = ''
+                Object.entries(entity.attributes).forEach(([key, value]) => {
+                    if (key === biAssetNoLinMap[entity.typeName])
+                        parentGuid = value.guid
+                })
+                return parentGuid
             }
 
             /** LIFECYCLES */
             onMounted(() => {
-                mutate()
+                const biAssetNoLinArr = Object.keys(biAssetNoLinMap)
+                const { data: relData } = useRelations(selectedAsset)
+                watch(relData, () => {
+                    const entity = relData.value?.entities[0]
+                    const { typeName } = selectedAsset.value
+
+                    if (biAssetNoLinArr.includes(typeName))
+                        guid.value = getBiAssetNoLinParentGuid(entity)
+
+                    mutate()
+                })
             })
 
             /** PROVIDERS */
             provide('baseEntity', baseEntity)
-            provide('selectedAssetGuid', selectedAssetGuid)
             provide('selectedAsset', selectedAsset)
             provide('depth', depth)
             provide('direction', direction)

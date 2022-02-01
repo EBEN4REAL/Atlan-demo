@@ -323,7 +323,7 @@
 
             const isFilterApplied = computed(() => {
                 // * sanitization of facets object should be done by the filter component, handling it here due to potential regression
-                if (!Object.values(filters.value).length) return false
+                if (!Object.values(filters.value)?.length) return false
                 const hasValue = Object.values(filters.value).some((v) => {
                     if (typeof v === 'object' && Object.keys(v).length)
                         return true

@@ -1071,6 +1071,12 @@ export default function useAssetInfo() {
     const externalLocationFormat = (asset: assetInterface) =>
         attributes(asset)?.externalLocationFormat || ''
 
+    const fieldsLookerQuery = (asset: assetInterface) =>
+        attributes(asset)?.fields || []
+
+    const sourceOwners = (asset: assetInterface) =>
+        attributes(asset)?.sourceOwners
+
     return {
         attributes,
         title,
@@ -1148,10 +1154,12 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        fieldsLookerQuery,
         isForeign,
         categories,
         seeAlso,
         parentCategory,
+        sourceOwners,
         isGTC,
         getProfilePath,
         isGTCByType,

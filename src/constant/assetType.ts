@@ -424,7 +424,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['tile', 'model', 'look'],
+        relationships: ['tiles', 'model', 'looks'],
         groupOrder: 5,
     },
     {

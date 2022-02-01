@@ -89,6 +89,14 @@ export default function useAssetInfo() {
         return found
     }
 
+    const getConnectorLabel = (asset: assetInterface) => {
+        const found =
+            connectionStore.getConnectorLabelMapping[
+                attributes(asset)?.connectorName?.toLowerCase()
+            ]
+        return found
+    }
+
     const getConnectorImageMap = computed(() => {
         return connectionStore.getConnectorImageMapping
     })
@@ -1124,6 +1132,7 @@ export default function useAssetInfo() {
         categoryCount,
         termsCount,
         getConnectorImageMap,
+        getConnectorLabel,
         anchorAttributes,
         readmeGuid,
         getConnectorsNameFromQualifiedName,

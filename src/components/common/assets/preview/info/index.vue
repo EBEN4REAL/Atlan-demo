@@ -48,7 +48,10 @@
             @change="handleSQLQueryUpdate"
         ></Connection>
 
-        <div v-if="webURL(selectedAsset)" class="px-5">
+        <div
+            v-if="webURL(selectedAsset) || sourceURL(selectedAsset)"
+            class="px-5"
+        >
             <a-button
                 block
                 class="flex items-center justify-between px-2 shadow-none"
@@ -57,14 +60,13 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />
-                    {{
-                        assetTypeLabel(selectedAsset) || selectedAsset.typeName
-                    }}
+                    />Open in
+                    {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
             </a-button>
         </div>
+
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -666,6 +668,7 @@
                 sourceCreatedAt,
                 definition,
                 webURL,
+                sourceURL,
                 assetTypeLabel,
                 isProcess,
                 getProcessSQL,
@@ -678,6 +681,7 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                getConnectorLabel,
             } = useAssetInfo()
 
             const {
@@ -723,7 +727,13 @@
             }
 
             const handlePreviewClick = () => {
-                window.open(webURL(selectedAsset.value), '_blank').focus()
+                if (webURL(selectedAsset.value)) {
+                    window.open(webURL(selectedAsset.value), '_blank').focus()
+                } else {
+                    window
+                        .open(sourceURL(selectedAsset.value), '_blank')
+                        .focus()
+                }
             }
 
             // route to go to insights and select the collection
@@ -762,6 +772,7 @@
                 actions,
                 switchTab,
                 webURL,
+                sourceURL,
                 handlePreviewClick,
                 assetTypeLabel,
                 isProcess,
@@ -798,6 +809,7 @@
                 handleCollectionClick,
                 isBiAsset,
                 isProfile,
+                getConnectorLabel,
             }
         },
     })

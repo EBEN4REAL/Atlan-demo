@@ -150,6 +150,28 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             return
         }
 
+        let selection = editorInstance?.getSelection()
+        let selectedText = editorInstance
+            ?.getModel()
+            ?.getValueInRange(editorInstance?.getSelection())
+
+        // console.log('selection: ', { selection, selectedText })
+
+        // remove highlighted text ot replace with custom variable
+        if (selectedText.length > 0) {
+            var op = {
+                range: {
+                    startLineNumber: selection?.startLineNumber,
+                    endLineNumber: selection?.endLineNumber,
+                    startColumn: selection?.startColumn,
+                    endColumn: selection?.endColumn,
+                },
+                text: '',
+                forceMoveMarkers: true,
+            }
+            editorInstance.executeEdits('my-source', [op])
+        }
+
         const len = activeInlineTab.value.playground.editor.variables.length
         const key = String(new Date().getTime())
         const new_variable: CustomVaribaleInterface = {

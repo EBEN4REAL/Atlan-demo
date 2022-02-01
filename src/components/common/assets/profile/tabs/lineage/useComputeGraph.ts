@@ -39,7 +39,7 @@ export default async function useComputeGraph(
         await Promise.all(
             guidEntityMap.map(async (entity) => {
                 if (entity.typeName === 'Column') {
-                    const parentGuid = entity.attributes.table.guid // TODO: Handle for views too
+                    const parentGuid = entity.attributes.table.guid
                     if (!columnEntity[parentGuid])
                         columnEntity = {
                             ...columnEntity,
@@ -61,9 +61,6 @@ export default async function useComputeGraph(
                         ]
                     )
                 }
-
-                console.log('entity.guid:', entity.guid)
-                console.log('entity hasBase:', hasBase)
 
                 const { nodeData, entity: ent } = await createNodeData(
                     entity,
@@ -115,6 +112,8 @@ export default async function useComputeGraph(
                 targetPort: `${toEntityId}-invisiblePort`,
                 stroke: '#aaaaaa',
             }
+
+            if (x.type) relation.type = x.type
 
             const { edgeData } = createEdgeData(relation, data)
             edges.value.push(edgeData)

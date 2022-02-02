@@ -176,6 +176,9 @@
                 const { attributes, typeName } = baseEntityRelData.value
                 const parentBiAssetMapTypes = parentBiAssetMap[typeName]
 
+                if (!data.relations.length)
+                    addRelatedBiAssetToLineage(data, baseEntityRelData.value)
+
                 Object.entries(attributes).forEach(([k, v]) => {
                     const valueExists = Array.isArray(v)
                         ? v.length

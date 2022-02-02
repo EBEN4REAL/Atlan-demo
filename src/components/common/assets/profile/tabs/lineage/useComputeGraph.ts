@@ -51,17 +51,6 @@ export default async function useComputeGraph(
                     return
                 }
 
-                if (entity.typeName.toLowerCase() === 'powerbidataset') {
-                    lineageStore.setNodesColumnList(
-                        [entity.guid],
-                        [
-                            {
-                                text: 'view related',
-                            },
-                        ]
-                    )
-                }
-
                 const { nodeData, entity: ent } = await createNodeData(
                     entity,
                     relations,

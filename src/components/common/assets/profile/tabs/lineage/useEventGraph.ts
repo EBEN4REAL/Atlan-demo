@@ -18,13 +18,13 @@ const lineageStore = useLineageStore()
 
 export default function useEventGraph(
     graph,
+    lineage,
     baseEntity,
     assetGuidToHighlight,
     highlightedNode,
     loaderCords,
     currZoom,
     resetSelections,
-    config,
     drawerActiveKey,
     onSelectAsset,
     onCloseDrawer,
@@ -399,9 +399,7 @@ export default function useEventGraph(
                 const parentNode = graphNodes.find(
                     (x) =>
                         x.store.data.entity.attributes.qualifiedName ===
-                            parentName ||
-                        x.store.data.entity.typeName.toLowerCase() ===
-                            'powerbidataset'
+                        parentName
                 )
                 const parentNodeExists = translateCandidates.find(
                     (x) => x?.id === parentNode?.id
@@ -458,36 +456,8 @@ export default function useEventGraph(
                 return
             }
 
-            let lineageData = data.value
-
-            const { relations, guidEntityMap } = lineageData
-            const powerBiDatasets = Object.values(guidEntityMap)
-                .filter((x) => x.typeName.toLowerCase() === 'powerbidataset')
-                .map((x) => x.guid)
-            if (powerBiDatasets.length) {
-                const newRelations = []
-                relations.forEach((x) => {
-                    const { fromEntityId, toEntityId, processId } = x
-                    let newFromEntityId = fromEntityId
-                    let newToEntityId = fromEntityId
-                    if (powerBiDatasets.includes(fromEntityId)) {
-                        newFromEntityId = `${fromEntityId}-invisiblePort`
-                    }
-                    if (powerBiDatasets.includes(toEntityId)) {
-                        newToEntityId = `${toEntityId}-invisiblePort`
-                    }
-                    const newRelation = {
-                        fromEntityId: newFromEntityId,
-                        toEntityId: newToEntityId,
-                        processId,
-                    }
-                    newRelations.push(newRelation)
-                })
-                lineageData = { ...lineageData, relations: newRelations }
-            }
-
-            lineageStore.setColumnsLineage(portId, lineageData)
-            controlTranslate(portId, lineageData)
+            lineageStore.setColumnsLineage(portId, data.value)
+            controlTranslate(portId, data.value)
         })
     }
 
@@ -739,7 +709,18 @@ export default function useEventGraph(
             else resetPortStyle(node, port.id)
         })
         loaderCords.value = { x: e.clientX, y: e.clientY }
-        if (!chp.value.portId.includes('ctaPort')) getColumnLineage(portId)
+
+        const { relations } = lineage.value
+        const rel = relations.find((x) => x.fromEntityId === portId)
+        if (rel) {
+            const relation = {
+                fromEntityId: portId,
+                toEntityId: `${rel.toEntityId}-invisiblePort`,
+                processId: rel.processId,
+            }
+            createRelations([relation])
+            loaderCords.value = {}
+        } else getColumnLineage(portId)
     }
 
     // deselectPort
@@ -776,20 +757,6 @@ export default function useEventGraph(
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
-            if (portId.includes('ctaPort')) {
-                setPortStyle(node, portId, 'select')
-                if (drawerActiveKey.value === 'Relations') {
-                    resetPortStyle(node, portId)
-                    onCloseDrawer()
-                    return
-                }
-                onSelectAsset(node.store.data.entity)
-                setTimeout(() => {
-                    drawerActiveKey.value = 'Relations'
-                    loaderCords.value = {}
-                }, 500)
-                return
-            }
             const port = node.getPort(portId)
             onSelectAsset(port.entity)
         }
@@ -797,6 +764,7 @@ export default function useEventGraph(
 
     // EDGE - CLICK
     graph.value.on('edge:click', ({ e, edge, cell }) => {
+        if (edge.id.includes('related')) return
         if (chp.value.portId) return
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
@@ -839,6 +807,7 @@ export default function useEventGraph(
 
     // EDGE - MOUSEENTER
     graph.value.on('edge:mouseenter', ({ cell, edge }) => {
+        if (edge.id.includes('related')) return
         if (chp.value.portId) return
         if (edge.id.includes('port')) {
             loaderCords.value = {}
@@ -855,6 +824,7 @@ export default function useEventGraph(
 
     // EDGE - MOUSELEAVE
     graph.value.on('edge:mouseleave', ({ cell, edge }) => {
+        if (edge.id.includes('related')) return
         if (chp.value.portId) return
         if (edge.id.includes('port')) {
             loaderCords.value = {}

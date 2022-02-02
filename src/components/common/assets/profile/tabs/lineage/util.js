@@ -48,12 +48,16 @@ export const getNodeSourceImage = {
 }
 
 export const getSource = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[1]
     return item[0]
 }
 export const getSchema = (entity) => {
-    const item = entity.attributes.qualifiedName.split('/')
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
 }

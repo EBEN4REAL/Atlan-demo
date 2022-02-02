@@ -61,6 +61,17 @@ const retryRun = (pathVariables, options?: useOptions) =>
         options || {}
     )
 
+const getArchivedRunLogs = (pathVariables, params, options?: useOptions) =>
+    useAPI(
+        map.RUN_LOGS,
+        'GET',
+        {
+            params,
+            pathVariables,
+        },
+        options || {}
+    )
+
 // const List = (params?: any, options?: AxiosRequestConfig) =>
 //     getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {
 //         params,
@@ -252,21 +263,6 @@ const addSchedule = ({ body }) => useAPI(map.SCHEDULES, 'POST', { body }, {})
 
 const getSchedules = ({ params }) =>
     useAPI(map.SCHEDULES, 'GET', { params }, {})
-
-const getArchivedRunLogs = (id, { immediate, options, params }) =>
-    useAPI(
-        map.ARCHIVED_WORKFLOW_RUN_LOGS,
-        'GET',
-        {
-            options,
-            params,
-            pathVariables: {
-                id,
-                isArchived: true, // TODO
-            },
-        },
-        { asyncOptions: { immediate } }
-    )
 
 export const Workflows = {
     URL,

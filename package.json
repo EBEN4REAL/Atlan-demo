@@ -81,6 +81,7 @@
         "vue-i18n": "^9.2.0-beta.25",
         "vue-linkify": "^1.0.1",
         "vue-router": "^4.0.12",
+        "vue-sse": "^2.5.0",
         "vue3-json-editor": "^1.1.4",
         "vue3-timepicker": "^1.0.0-beta.2"
     },

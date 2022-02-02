@@ -118,6 +118,7 @@ specifiers:
   vue-linkify: ^1.0.1
   vue-loader: ^16.8.3
   vue-router: ^4.0.12
+  vue-sse: ^2.5.0
   vue-tsc: ^0.31.1
   vue3-json-editor: ^1.1.4
   vue3-timepicker: ^1.0.0-beta.2
@@ -193,6 +194,7 @@ dependencies:
   vue-i18n: 9.2.0-beta.28_vue@3.2.29
   vue-linkify: 1.0.1
   vue-router: 4.0.12_vue@3.2.29
+  vue-sse: 2.5.0_vue@3.2.29
   vue3-json-editor: 1.1.4
   vue3-timepicker: 1.0.0-beta.2
 
@@ -4230,6 +4232,10 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
+  /event-source-polyfill/1.0.25:
+    resolution: {integrity: sha512-hQxu6sN1Eq4JjoI7ITdQeGGUN193A2ra83qC0Ltm9I2UJVAten3OFVN6k5RX4YWeCS0BoC8xg/5czOCIHVosQg==}
+    dev: false
+
   /event-target-shim/5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
@@ -7850,6 +7856,15 @@ packages:
       vue: ^3.0.0
     dependencies:
       '@vue/devtools-api': 6.0.0-beta.21.1
+      vue: 3.2.29
+    dev: false
+
+  /vue-sse/2.5.0_vue@3.2.29:
+    resolution: {integrity: sha512-BD/49sGrNtLYwBvBwQdQDhZ7FRYZu9Ox9/63OVf/APtJ56YRbBVuB4CeGLcablIgFzEov2lQpBAE/ykqg+mGAQ==}
+    peerDependencies:
+      vue: ^2.0.0
+    dependencies:
+      event-source-polyfill: 1.0.25
       vue: 3.2.29
     dev: false
 

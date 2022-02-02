@@ -104,6 +104,18 @@
                         </div>
 
                         <a-button @click="handleLogs">Logs</a-button>
+                        <a-modal
+                            v-model:visible="isLogVisible"
+                            :closable="false"
+                        >
+                            <div class="px-6 py-3">
+                                <WorkflowLogs
+                                    :selectedPod="selectedPod"
+                                    :selectedRun="selectedRun"
+                                ></WorkflowLogs>
+                            </div>
+                            <template #footer> </template>
+                        </a-modal>
                     </div>
                     <div class="flex flex-col">
                         <p class="text-gray-500">Name</p>
@@ -154,9 +166,13 @@
     import { promiseTimeout, useTimeout, useTimeoutFn } from '@vueuse/core'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
+    import WorkflowLogs from './logs.vue'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],
+        components: {
+            WorkflowLogs,
+        },
         props: {
             selectedRun: {
                 type: Object,
@@ -168,6 +184,7 @@
         setup(props, { emit }) {
             const selectedPodName = ref('')
             const activeKey = ref('summary')
+            const isLogVisible = ref(false)
             const { selectedRun } = toRefs(props)
             const {
                 phase,
@@ -269,7 +286,7 @@
             }
 
             const handleLogs = () => {
-                getLiveLogs()
+                isLogVisible.value = true
             }
 
             return {
@@ -297,6 +314,7 @@
                 handleNewRun,
                 handleLogs,
                 getLiveLogs,
+                isLogVisible,
             }
         },
     })

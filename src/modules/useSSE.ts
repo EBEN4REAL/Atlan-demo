@@ -109,7 +109,7 @@ export function useSSE({
     }
 
     const cfg = {
-        withCredentials: false,
+        withCredentials: true,
         format: 'JSON',
         ...config,
     }
@@ -152,7 +152,6 @@ export function useSSE({
 
         eventSource.value.onerror = (e) => {
             eventSource.value.close()
-            console.log(e)
             error.value = e
             reject(e)
         }
@@ -172,7 +171,6 @@ export function useSSE({
                 },
 
                 subscribe(event: any, handler) {
-                    console.log('e', event)
                     const listener = (e: any) => {
                         let data
                         try {

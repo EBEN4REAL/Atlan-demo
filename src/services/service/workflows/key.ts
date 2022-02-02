@@ -26,6 +26,7 @@ export const GET_ARTIFACTS = 'GET_ARTIFACTS'
 export const WORKFLOW_TEMPLATE_INDEX = 'WORKFLOW_TEMPLATE_INDEX'
 export const WORKFLOW_RUN_INDEX = 'WORKFLOW_RUN_INDEX'
 export const WORKFLOW_INDEX = 'WORKFLOW_INDEX'
+export const RUN_LOGS = 'RUN_LOGS'
 
 export const map = {
     [SCHEDULES]: () => getAPIPath(BASE_PATH, '/workflows/schedules'),
@@ -84,4 +85,11 @@ export const map = {
 
     [ARCHIVED_WORKFLOW_RUN_LOGS]: ({ id, params }: PathParams) =>
         getAPIPath('/api/service', `/runs/${id}/logs?${params || ''}`),
+
+    [RUN_LOGS]: (path: PathParams | Ref<PathParams>) => {
+        if (isRef(path)) {
+            return getAPIPath(BASE_PATH, `/runs/${path.value.id}/logs` || '')
+        }
+        return getAPIPath(BASE_PATH, `/runs/${path.id}/logs` || '')
+    },
 }

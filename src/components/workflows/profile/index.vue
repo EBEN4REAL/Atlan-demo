@@ -5,6 +5,7 @@
             :workflow-object="workflowObject"
             @newrun="handleNewRun"
         />
+
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
@@ -22,6 +23,7 @@
                     :is="tab.component"
                     :key="`${tab.id}_${runName}`"
                     :workflowObject="workflowObject"
+                    :runId="runId"
                     :packageObject="packageObject"
                     :workflowName="workflowObject?.metadata?.name"
                 ></component>
@@ -75,8 +77,11 @@
 
             console.log('workflow', packageObject)
 
-            const activeKey = ref()
             const route = useRoute()
+
+            const activeKey = ref()
+
+            const runId = computed(() => route?.query?.name)
 
             const router = useRouter()
             const handleChangeTab = (key) => {
@@ -103,6 +108,8 @@
                 workflowTabs,
                 handleNewRun,
                 runName,
+                route,
+                runId,
             }
         },
     })

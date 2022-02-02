@@ -49,6 +49,7 @@
     import useRunItem from '~/composables/package/useRunItem'
     import Sidebar from './sidebar.vue'
     import MonitorGraph from './monitorGraph.vue'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -65,6 +66,11 @@
                 required: false,
                 default: () => {},
             },
+            runId: {
+                type: String,
+                required: false,
+                default: '',
+            },
             // selectedPod: {
             //     type: Object,
             //     required: true,
@@ -75,16 +81,24 @@
             // },
         },
         setup(props, { emit }) {
-            const { workflowName } = toRefs(props)
-            const selectedRunName = ref('')
+            const { workflowName, runId } = toRefs(props)
+            const selectedRunName = ref(runId.value)
 
             const path = ref({
                 name: selectedRunName.value,
             })
 
+            const router = useRouter()
             const { item: selectedRun, mutate } = useRunItem(path)
 
             const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
+
+            if (runId.value) {
+                path.value = {
+                    name: selectedRunName.value,
+                }
+                mutate()
+            }
 
             watch(selectedRunName, (newVal) => {
                 if (newVal) {
@@ -92,12 +106,16 @@
                         name: selectedRunName.value,
                     }
                     mutate()
+                    router.push({
+                        query: {
+                            name: selectedRunName.value,
+                        },
+                    })
                 }
             })
 
             const selectedPod = ref({})
             const handleSelectPod = (pod) => {
-                console.log(pod)
                 selectedPod.value = pod
             }
 
@@ -116,6 +134,7 @@
                 startedAt,
                 finishedAt,
                 duration,
+                router,
             }
         },
     })

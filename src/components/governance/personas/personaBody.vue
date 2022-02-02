@@ -58,6 +58,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
+            <Readme :persona="persona" />
         </div>
         <div
             v-if="activeTabKey === 'policies'"
@@ -220,6 +221,7 @@
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
+    import Readme from './overview/PersonaReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
@@ -258,6 +260,7 @@
             SearchAndFilter,
             AggregationTabs,
             Addpolicy,
+            Readme,
         },
         props: {
             persona: {

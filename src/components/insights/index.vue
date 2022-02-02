@@ -276,7 +276,7 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            watch(activeInlineTab, () => {})
+            // watch(activeInlineTab, () => {})
 
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible

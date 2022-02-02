@@ -379,7 +379,7 @@ export function useSavedQuery(
             },
         })
 
-        console.log('update query body: ', body.value)
+        // console.log('update query body: ', body.value)
 
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(

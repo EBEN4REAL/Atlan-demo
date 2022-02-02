@@ -15,8 +15,24 @@ export function useLocalStorageSync() {
         if (!queryDataStore) {
             // for not saving the querying data into the local storage
             const alteredTabsArray = [...tabsArray].map((tab) => {
-                const t = JSON.parse(JSON.stringify(tab))
+                const t = JSON.parse(
+                    JSON.stringify({
+                        ...tab,
+                        playground: {
+                            ...tab.playground,
+                            editor: {
+                                ...tab.playground.editor,
+                                editorState: {
+                                    model: {},
+                                    viewState: {},
+                                },
+                            },
+                        },
+                    })
+                )
                 t.playground.editor.dataList = []
+                t.playground.editor.editorState.model = {}
+                t.playground.editor.editorState.viewState = {}
                 t.playground.editor.columnList = []
                 t.playground.resultsPane.result.isQueryRunning = ''
                 t.playground.resultsPane.result.executionTime = -1
@@ -34,6 +50,7 @@ export function useLocalStorageSync() {
                 })
                 return t
             })
+            console.log(tabsArray, 'debugger')
 
             localStorage.setItem(
                 InsightsLocalStorageKeys.inlinetabs,

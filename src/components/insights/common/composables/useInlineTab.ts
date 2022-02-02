@@ -243,9 +243,12 @@ export function useInlineTab(
         setInlineTabsArray(Boolean(shouldDefaultTabAdd), queryCollections)
     )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
-    const activeInlineTab = computed(() =>
-        tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)
-    )
+    const activeInlineTab = computed(() => {
+        // debugger
+        return tabsArray.value.find(
+            (tab) => tab.key === activeInlineTabKey.value
+        )
+    })
 
     const setVQBInInlineTab = (
         activeTab: activeInlineTabInterface,

@@ -90,7 +90,6 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
-        
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
@@ -132,9 +131,7 @@ export function useEditor(
     //     return query
     // }
 
-    const resetLineDecorations = (
-        editorInstance
-    ) => {
+    const resetLineDecorations = (editorInstance) => {
         decorations = toRaw(editorInstance).deltaDecorations(
             decorations ?? [],
             []
@@ -561,6 +558,59 @@ export function useEditor(
         }
     }
 
+    function saveEditorViewState(
+        viewState: any,
+        index: number,
+        tabs: Ref<activeInlineTabInterface[]>
+    ) {
+        const activeInlineTabCopy = JSON.parse(
+            JSON.stringify(toRaw(tabs.value[index]))
+        )
+        activeInlineTabCopy.playground.editor.editorState.viewState = viewState
+        tabs.value[index] = activeInlineTabCopy
+    }
+    function saveEditorModelURI(
+        uri: any,
+        index: number,
+        tabs: Ref<activeInlineTabInterface[]>
+    ) {
+        const activeInlineTabCopy = JSON.parse(
+            JSON.stringify(toRaw(tabs.value[index]))
+        )
+        activeInlineTabCopy.playground.editor.editorState.model = uri
+        tabs.value[index] = activeInlineTabCopy
+    }
+
+    function saveEditorState(
+        state: any,
+        model: any,
+        index: number,
+        tabs: Ref<activeInlineTabInterface[]>
+    ) {
+        if (!model) {
+            const activeInlineTabCopy = JSON.parse(
+                JSON.stringify(toRaw(tabs.value[index]))
+            )
+            activeInlineTabCopy.playground.editor.editorState = {
+                ...activeInlineTabCopy.playground.editor.editorState,
+                viewState: state,
+            }
+            tabs.value[index] = activeInlineTabCopy
+        } else {
+            const activeInlineTabCopy = JSON.parse(
+                JSON.stringify(toRaw(tabs.value[index]))
+            )
+            activeInlineTabCopy.playground.editor.editorState = {
+                viewState: state,
+                model: model.uri,
+            }
+            tabs.value[index] = activeInlineTabCopy
+            console.log(tabs.value, 'tabs.value')
+        }
+        // debugger
+        // debugger
+    }
+
     // const editor_preference_keys = {
     //     theme: 'theme',
     //     tabSpace: 'tabSpace',
@@ -568,6 +618,9 @@ export function useEditor(
     // }
 
     return {
+        saveEditorModelURI,
+        saveEditorState,
+        saveEditorViewState,
         clearMoustacheTemplateColor,
         setErrorDecorations,
         resetErrorDecorations,
@@ -583,6 +636,6 @@ export function useEditor(
         onEditorContentChange,
         getParsedQuery,
         getParsedQueryCursor,
-        resetLineDecorations
+        resetLineDecorations,
     }
 }

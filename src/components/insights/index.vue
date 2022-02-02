@@ -276,8 +276,6 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            watch(activeInlineTab, () => {})
-
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -373,7 +371,7 @@
             /* Watchers for syncing in localstorage */
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                syncInlineTabsInLocalStorage(tabsArray.value)
+                syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -381,7 +379,7 @@
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
                     console.log('editor data')
-                    syncInlineTabsInLocalStorage(tabsArray.value)
+                    syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 },
                 { deep: true }
             )
@@ -574,6 +572,10 @@
                         isVQB: openVQB === 'true' ? true : false,
                         vqb: vqbData,
                         editor: {
+                            editorState: {
+                                model: {},
+                                viewState: {},
+                            },
                             text: '',
                             context: {
                                 attributeName: undefined,

@@ -59,6 +59,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 ],
             },
             editor: {
+                editorState: {
+                    model: {},
+                    viewState: {},
+                },
                 text: '',
                 context: {
                     attributeName: undefined,

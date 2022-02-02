@@ -116,9 +116,22 @@
             selectedItems.value?.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
-            const TotalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
+
+            const totalViewsCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'view'
+                    )?.doc_count || 0
+                )
+            })
+
+            const totalTablesCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'table'
+                    )?.doc_count || 0
+                )
+            })
             const TotalColumnsCount = computed(
                 () => ColumnsData.value?.approximateCount || 0
             )
@@ -128,6 +141,7 @@
                 replaceBody: replaceTableBody,
                 data: tablesData,
                 isLoading: isTableLoading,
+                aggregations,
             } = useAssetListing('', false)
             const {
                 list: ColumnList,
@@ -258,7 +272,8 @@
                 isJoinPanelDisabled: isJoinPanelDisabled,
                 isAreaFocused: isAreaFocused,
                 isTableSelected: isTableSelected,
-                totalTablesCount: TotalTablesCount,
+                totalTablesCount: totalTablesCount,
+                totalViewsCount: totalViewsCount,
                 totalColumnsCount: TotalColumnsCount,
                 isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,

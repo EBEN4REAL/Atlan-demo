@@ -96,6 +96,7 @@ export default function useBody({
             }
         }
     }
+    base.aggregation('terms', '__typeName.keyword')
 
     const tempQuery = base.build()
     const query = {

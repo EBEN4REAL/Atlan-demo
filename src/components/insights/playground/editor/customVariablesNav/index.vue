@@ -725,6 +725,15 @@
             const handleSelectInputChange = (
                 variable: CustomVaribaleInterface
             ) => {
+                console.log('change select')
+                activeVariable.value.dummy = activeVariable.value.dummy.map(
+                    (el) => {
+                        return el.trim()
+                    }
+                )
+                activeVariable.value.dummy = activeVariable.value.dummy.filter(
+                    (el) => el.length > 0
+                )
                 if (variable.dummy.length) {
                     variable.value = [variable.dummy[variable.dummy.length - 1]]
                 }

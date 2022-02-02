@@ -333,7 +333,7 @@
                     }
                     const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
                     if(entity.typeName === 'AtlasGlossaryCategory' && duplicateExists) {
-                        message.warning(`A category with the same name already exists on this level!`)
+                        message.error(`${entity.attributes.name} already exists on this level!`)
                         return                    
                     } 
                     mutateAsset()

@@ -39,7 +39,7 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between w-full">
                         <div
                             class="flex flex-col"
                             :data-test-id="item.displayName"
@@ -51,6 +51,7 @@
                                         ? 'text-primary font-semibold'
                                         : 'text-gray-700 hover:text-primary hover:font-semibold'
                                 "
+                                style="max-width: 190px"
                             >
                                 {{ item.displayName }}
                             </span>

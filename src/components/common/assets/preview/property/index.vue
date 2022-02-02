@@ -68,7 +68,9 @@
             }}</span>
         </div>
         <div
-            v-if="['LookerLook'].includes(selectedAsset.typeName)"
+            v-if="
+                ['LookerLook', 'LookerFolder'].includes(selectedAsset.typeName)
+            "
             class="flex flex-col text-sm"
         >
             <span class="mb-1 text-gray-500">Source Content Metadata ID</span>

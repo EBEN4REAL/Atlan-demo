@@ -24,7 +24,7 @@ export default function useWorkflowLogsStream() {
 
     // const params = { podName: podId }
 
-    const eventSource = ref(null)
+    const eventClient = ref(null)
 
     const heartbeatTimeout = 10 * 60 * 1000
 
@@ -39,91 +39,79 @@ export default function useWorkflowLogsStream() {
         })
         const URL: any = resolveUrl(map.ARCHIVED_WORKFLOW_RUN_LOGS, {
             id,
+            params: search_prms,
         })
 
-        eventSource.value = new EventSourcePolyfill(URL, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            method: 'GET',
+        eventClient.value = sse.create({
+            url: URL,
+            format: 'json',
             withCredentials: true,
-            heartbeatTimeout,
+            polyfill: true,
+            forcePolyfill: true,
+            polyfillOptions: {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                method: 'GET',
+                heartbeatTimeout,
+            },
         })
-
-        eventSource.value.addEventListener(
-            'message',
-            (e) => {
-                console.log('message', e.data, e.id)
-            },
-            false
-        )
-
-        eventSource.value.addEventListener(
-            'open',
-            (e) => {
-                console.log('open', error)
-                // Connection was opened.
-            },
-            false
-        )
-
-        eventSource.value.addEventListener(
-            'error',
-            (e) => {
-                console.log(e)
-                if (e.readyState === EventSource.CLOSED) {
-                    // Connection was closed.
-                }
-            },
-            false
-        )
     }
 
     const handleMessage = (message, lastEventId) => {
-        if (!message) {
-            console.log('empty message')
+        if (lastEventId === '-1') {
+            status.value = 'COMPLETED'
+            eventClient?.value?.disconnect()
+            eventClient.value = null
+        } else {
+            logArray.value.push(message?.result?.content)
         }
-        console.log('new message')
-        console.log(message)
-        // logArray.value.push(message?.result?.content)
+    }
+
+    const disconnect = () => {
+        if (eventClient.value) {
+            eventClient.value.disconnect()
+            eventClient.value = null
+        }
     }
 
     const connect = () => {
-        // status.value = 'CONNECTING'
-        // if (sseClient.value) {
-        //     sseClient.value.disconnect()
-        // }
-        // sseClient.value.on('error', (e) => {
-        //     error.value = e
-        //     console.error('lost connection or failed to parse!', e)
-        //     status.value = 'DISCONNECTED'
-        //     // If this error is due to an unexpected disconnection, EventSource will
-        //     // automatically attempt to reconnect indefinitely. You will _not_ need to
-        //     // re-add your handlers.
-        // })
-        // sseClient.value.on('message', (m) => {
-        //     console.log(m)
-        // })
-        // sseClient.value
-        //     .connect()
-        //     .then((sse) => {
-        //         status.value = 'CONNECTED'
-        //         console.log("We're connected!")
-        //         // sseClient.value.disconnect()
-        //         // Unsubscribes from event-less messages after 7 seconds
-        //         setTimeout(() => {
-        //             sseClient.value.off('message', handleMessage)
-        //             sseClient.value.disconnect()
-        //             status.value = 'DISCONNECTED'
-        //             console.log('Stopped listening to event-less messages!')
-        //         }, 7000)
-        //     })
-        //     .catch((err) => {
-        //         sseClient.value.disconnect()
-        //         // When this error is caught, it means the initial connection to the
-        //         // events server failed.  No automatic attempts to reconnect will be made.
-        //         console.error('Failed to connect to server', err)
-        //     })
+        status.value = 'CONNECTING'
+        if (eventClient.value) {
+            eventClient.value.disconnect()
+        }
+        eventClient.value.on('error', (e) => {
+            console.log('error')
+            error.value = e
+            status.value = 'DISCONNECTED'
+            // If this error is due to an unexpected disconnection, EventSource will
+            // automatically attempt to reconnect indefinitely. You will _not_ need to
+            // re-add your handlers.
+        })
+
+        eventClient.value.on('message', handleMessage)
+
+        eventClient.value
+            .connect()
+            .then((sse) => {
+                status.value = 'CONNECTED'
+                // sseClient.value.disconnect()
+                // Unsubscribes from event-less messages after 7 seconds
+                setTimeout(() => {
+                    if (sse) {
+                        sse.off('message', handleMessage)
+                        sse.disconnect()
+                    }
+                    status.value = 'TIMEDOUT'
+                }, 70000)
+            })
+            .catch((err) => {
+                console.log('error')
+                eventClient?.value?.disconnect()
+                // When this error is caught, it means the initial connection to the
+                // events server failed.  No automatic attempts to reconnect will be made.
+                console.error('Failed to connect to server', err)
+            })
     }
 
     // let reqHeaders: { [index: string]: string } = {}
@@ -180,5 +168,6 @@ export default function useWorkflowLogsStream() {
         logArray,
         status,
         error,
+        disconnect,
     }
 }

@@ -3,10 +3,6 @@
         <div class="flex flex-col py-3 mt-3 bg-gray-100 border rounded">
             <div class="flex justify-between px-4 mb-2 text-gray-700">
                 <span class="font-semibold">{{ selectedPod?.name }}</span>
-
-                <a-button size="small" @click="handleDownload"
-                    >Download Logs</a-button
-                >
             </div>
             <div
                 v-if="status == 'CONNECTING'"
@@ -36,7 +32,14 @@
 
 <script lang="ts">
     // Vue
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        onBeforeUnmount,
+    } from 'vue'
     import useWorkflowLogsDownload from '~/composables/package/useWorkflowLogsDownload'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
 
@@ -58,19 +61,23 @@
         setup(props, { emit }) {
             const { selectedRun, selectedPod } = toRefs(props)
 
-            const { initClient, connect, logArray, status, error } =
+            const { initClient, connect, logArray, status, error, disconnect } =
                 useWorkflowLogsStream()
-            initClient(selectedRun.value.metadata.name, selectedPod.value.id)
+
             // connect()
-            // watch(
-            //     selectedPod,
-            //     () => {
-            //         console.log('selectedPod changed')
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
+            watch(
+                selectedPod,
+                () => {
+                    initClient(
+                        selectedRun.value.metadata.name,
+                        selectedPod.value.id
+                    )
+                    connect()
+                },
+                {
+                    immediate: true,
+                }
+            )
 
             const handleDownload = () => {
                 const { data: downloadedLogs } = useWorkflowLogsDownload(
@@ -103,6 +110,10 @@
                 // document.body.removeChild(element)
             }
 
+            onBeforeUnmount(() => {
+                disconnect()
+            })
+
             return {
                 selectedPod,
                 selectedRun,
@@ -110,6 +121,7 @@
                 logArray,
                 status,
                 error,
+                disconnect,
             }
         },
     })

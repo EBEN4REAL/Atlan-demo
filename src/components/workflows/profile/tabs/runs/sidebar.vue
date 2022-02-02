@@ -105,6 +105,7 @@
 
                         <a-button @click="handleLogs">Logs</a-button>
                         <a-modal
+                            :destroyOnClose="true"
                             v-model:visible="isLogVisible"
                             :closable="false"
                         >

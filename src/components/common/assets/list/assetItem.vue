@@ -712,23 +712,6 @@
                                     >
                                 </template>
                             </a-tooltip>
-                            <a-tooltip placement="bottomLeft">
-                                <div
-                                    v-if="item?.attributes?.modelName"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <span class="tracking-tight">
-                                        in
-                                        {{ item?.attributes?.modelName }}
-                                    </span>
-                                </div>
-                                <template #title>
-                                    <span
-                                        >Model -
-                                        {{ item?.attributes?.modelName }}</span
-                                    >
-                                </template>
-                            </a-tooltip>
                         </div>
                     </div>
 

@@ -4,21 +4,21 @@
             <span class="font-semibold text-gray-500">Properties</span>
         </div>
         <div
-            class="flex flex-col text-sm"
             v-if="
                 sourceUpdatedBy(selectedAsset) ||
                 sourceUpdatedAt(selectedAsset, true)
             "
+            class="flex flex-col text-sm"
         >
             <span class="mb-1 text-gray-500">Source updated</span>
             <div class="flex flex-col">
-                <div class="flex mb-2" v-if="sourceUpdatedBy(selectedAsset)">
+                <div v-if="sourceUpdatedBy(selectedAsset)" class="flex mb-2">
                     {{ sourceUpdatedBy(selectedAsset) }}
                 </div>
 
                 <span
-                    class="text-gray-700"
                     v-if="sourceUpdatedAt(selectedAsset, true)"
+                    class="text-gray-700"
                     >{{ sourceUpdatedAt(selectedAsset, true) }} ({{
                         sourceUpdatedAt(selectedAsset, false)
                     }})</span
@@ -27,15 +27,15 @@
         </div>
 
         <div
-            class="flex flex-col text-sm"
             v-if="
                 sourceCreatedBy(selectedAsset) ||
                 sourceCreatedAt(selectedAsset, true)
             "
+            class="flex flex-col text-sm"
         >
             <span class="mb-1 text-gray-500">Source created</span>
             <div class="flex flex-col">
-                <div class="flex mb-2" v-if="sourceCreatedBy(selectedAsset)">
+                <div v-if="sourceCreatedBy(selectedAsset)" class="flex mb-2">
                     {{ sourceCreatedBy(selectedAsset) }}
                 </div>
 

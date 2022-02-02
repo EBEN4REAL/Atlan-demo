@@ -11,6 +11,7 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
+import { useError } from './UseError'
 // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
 export default function useProject() {

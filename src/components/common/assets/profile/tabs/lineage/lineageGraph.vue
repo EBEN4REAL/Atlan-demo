@@ -68,6 +68,7 @@
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
             @update="handleDrawerUpdate"
+            :showCloseBtn="false"
         />
     </div>
 </template>

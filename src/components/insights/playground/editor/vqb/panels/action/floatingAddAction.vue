@@ -1,25 +1,29 @@
 <template>
     <div
         v-if="computedItems?.length > 0"
-        class="flex items-center w-full p-3 bg-white border-t border-gray-300 rounded-b group-hover:border-white"
+        class="flex items-center bg-white group-hover:border-white float-btn-container"
     >
-        <template v-for="item in computedItems" :key="item.label">
-            <AtlanBtn
-                class="flex items-center px-4 mr-3 text-gray-700 bg-white border border-gray-300 rounded"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click.stop="() => handleAdd(item.id)"
-            >
-                <template #prefix>
+        <div
+            class="flex items-center justify-center p-2.5 rounded-full cursor-pointer plus-button bg-primary"
+            style="margin-top: -0.25px; margin-left: -1px"
+        >
+            <AtlanIcon class="w-3 h-3" icon="PlusWhite"></AtlanIcon>
+        </div>
+        <div class="ml-2 gap-x-1 action-buttons-container">
+            <template v-for="item in computedItems" :key="item.label">
+                <div
+                    class="flex items-center px-1.5 rounded-lg cursor-pointer hover:bg-primary-light hover:text-primary panel-action"
+                    @click="() => handleAdd(item.id)"
+                >
                     <AtlanIcon
                         :icon="item.icon"
+                        class="mr-1"
                         :class="['text-sm', item.class]"
                     />
-                </template>
-                <span>{{ item.label }}</span>
-            </AtlanBtn>
-        </template>
+                    <span>{{ item.label }}</span>
+                </div>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -35,30 +39,20 @@
     import { useUtils as useAddPanelsUtils } from './useUtils'
 
     export default defineComponent({
-        name: 'Footer Panels',
+        name: 'FloatingAddAction',
         emits: ['add'],
         props: {
             panelInfo: {
                 type: Object,
                 reqruied: true,
             },
-            submenuHovered: {
-                type: Boolean,
-                reqruied: true,
-                default: false,
-            },
-            containerHovered: {
-                type: Boolean,
-                reqruied: true,
-                default: false,
-            },
         },
         setup(props, { emit }) {
             const { panelInfo } = toRefs(props)
-            const { submenuHovered, containerHovered } = useVModels(props)
             const { collapseAllPanelsExceptCurrent } = useUtils()
             const { syncSortAggregateAndGroupPanel } = useSort()
             const { getInitialPanelStructure } = useAddPanelsUtils()
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -76,7 +70,6 @@
                         id: 'aggregate',
                         icon: 'Trigger',
                         label: 'Aggregate',
-                        class: 'mt-0.5 mr-2',
                     })
                 }
 
@@ -88,7 +81,6 @@
                         id: 'join',
                         icon: 'Union',
                         label: 'Join data',
-                        class: 'mr-2',
                     })
                 }
                 const filter = activeInlineTab.value.playground.vqb.panels.find(
@@ -97,9 +89,9 @@
                 if (!filter) {
                     _items.push({
                         id: 'filter',
-                        icon: 'Filter',
+                        icon: 'FilterFunnel',
                         label: 'Filter',
-                        class: 'mr-2',
+                        class: '-mt-0.5',
                     })
                 }
 
@@ -112,7 +104,6 @@
                         id: 'group',
                         icon: 'BuilderGroup',
                         label: 'Group',
-                        class: 'mr-2',
                     })
                 }
                 const sortPanel =
@@ -124,7 +115,6 @@
                         id: 'sort',
                         icon: 'Sort',
                         label: 'Sort',
-                        class: 'mr-2',
                     })
                 }
 
@@ -136,8 +126,6 @@
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
-                containerHovered.value = false
-                submenuHovered.value = false
             }
             return {
                 computedItems,
@@ -147,4 +135,37 @@
         components: { AtlanBtn },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .float-btn-container {
+        width: fit-content;
+        border-radius: 50px;
+        max-width: 56px;
+        height: 48px;
+        // transition: max-width 1s ease;
+        &:hover {
+            max-width: 100% !important;
+            .action-buttons-container {
+                display: flex;
+            }
+            .plus-button {
+                transform: rotate(135deg);
+            }
+        }
+        .action-buttons-container {
+            display: none;
+        }
+        .panel-action {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+        .plus-button {
+            transform: rotate(90deg);
+            transition: all 250ms ease-out;
+            // &:hover {
+            //     transform: rotate(135deg);
+            // }
+        }
+        padding: 2px 8.5px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+    }
+</style>

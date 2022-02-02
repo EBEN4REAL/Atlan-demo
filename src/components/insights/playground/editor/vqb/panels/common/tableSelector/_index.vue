@@ -2,12 +2,9 @@
     <div
         ref="container"
         @click="toggleFocus"
-        class="relative flex items-center w-full border cursor-pointer group"
+        class="relative flex items-center w-full border border-gray-200 cursor-pointer group"
         :class="[
-            isAreaFocused
-                ? ' container-box-shadow-focus'
-                : 'border-gray-300 container-box-shadow',
-            ,
+            isAreaFocused ? '' : 'border-gray-200',
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"

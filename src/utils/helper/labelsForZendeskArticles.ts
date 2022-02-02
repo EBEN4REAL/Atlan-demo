@@ -29,7 +29,7 @@ export const getLabelsForZendeskArticles = (path) => {
                 case 'apikeys':
                     return ['apikeys', 'quick-guide']
                 case 'sso':
-                    return ['sso', 'quick-guide']
+                    return ['sso']
                 case 'smtp':
                     return ['smtp', 'quick-guide']
                 case 'integrations':

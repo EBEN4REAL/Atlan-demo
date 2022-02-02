@@ -315,7 +315,7 @@
 
                 <a-button
                     block
-                    class="flex items-center justify-between px-2 shadow-none"
+                    class="flex items-center px-2 shadow-none"
                     :class="
                         !collectionData?.hasCollectionReadPermission &&
                         !collectionData?.hasCollectionWritePermission &&
@@ -343,7 +343,7 @@
                                 : '🗃'
                         }}</span>
 
-                        <span class="truncate" style="width: 270px">
+                        <span class="text-left truncate" style="width: 270px">
                             {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>

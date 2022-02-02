@@ -501,6 +501,11 @@
                     margin-right: 2px;
                 }
             }
+            & .popover {
+                @apply invisible opacity-0 absolute top-16 left-0 p-3;
+                @apply delay-75 transition-all;
+                @apply rounded shadow-lg break-all bg-white text-gray-500;
+            }
         }
 
         .isGrayed {

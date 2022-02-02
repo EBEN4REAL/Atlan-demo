@@ -4,6 +4,9 @@
             <QueryItem
                 :queryInfo="queryInfo"
                 :savedQueryMetaMap="savedQueryMetaMap"
+                :isHover="isHover"
+                @mouseover="isHover = queryInfo?._id"
+                @mouseleave="isHover = null"
             />
         </template>
     </div>
@@ -56,7 +59,10 @@
                 isLoading,
                 filteredLogsCount,
                 savedQueryMetaMap,
-            } = useQueryLogs(gte, lt, from, size, usernames)
+            } = useQueryLogs(gte, lt, from, size, usernames, [
+                'name',
+                'certificateStatus',
+            ])
 
             let allQueryList = ref([])
 
@@ -89,8 +95,6 @@
             const facets = ref({})
 
             const refreshList = () => {
-                // const queryStatusValues = facets.value?.queryStatus?.status
-
                 mutateBody({
                     from,
                     size,
@@ -100,6 +104,9 @@
                 })
                 refetchList()
             }
+
+            let isHover = ref(null)
+
             return {
                 queryList,
                 allQueryList,
@@ -112,6 +119,7 @@
                 size,
                 filteredLogsCount,
                 totalLogsCount,
+                isHover,
             }
         },
     })

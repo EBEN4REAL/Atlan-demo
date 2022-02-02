@@ -1,38 +1,41 @@
-const date = [{
-    id: 'greaterThan',
-    label: 'Greater Than(>)',
-},
-{
-    id: 'greaterThanEqual',
-    label: 'Greater Than Equal(>=)',
-},
-{
-    id: 'lessThan',
-    label: 'Less Than(<)',
-},
-{
-    id: 'lessThanEqual',
-    label: 'Less Than Equal(<=)',
-}
+const date = [
+    {
+        id: 'lessThan',
+        label: 'Before',
+    },
+    {
+        id: 'greaterThan',
+        label: 'After',
+    },
+    // {
+    //     id: 'greaterThanEqual',
+    //     label: 'Greater Than Equal(>=)',
+    // },
+
+    // {
+    //     id: 'lessThanEqual',
+    //     label: 'Less Than Equal(<=)',
+    // }
 ]
 
 const date_mandatory = [
     {
-        id: 'greaterThan',
-        label: 'Greater Than(>)',
-    },
-    {
-        id: 'greaterThanEqual',
-        label: 'Greater Than Equal(>=)',
-    },
-    {
         id: 'lessThan',
-        label: 'Less Than(<)',
+        label: 'Before',
     },
     {
-        id: 'lessThanEqual',
-        label: 'Less Than Equal(<=)',
-    }
+        id: 'greaterThan',
+        label: 'After',
+    },
+    // {
+    //     id: 'greaterThanEqual',
+    //     label: 'Greater Than Equal(>=)',
+    // },
+
+    // {
+    //     id: 'lessThanEqual',
+    //     label: 'Less Than Equal(<=)',
+    // }
 ]
 
 

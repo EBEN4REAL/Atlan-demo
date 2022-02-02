@@ -32,7 +32,7 @@
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"
                     :class="$style.inputSearch"
-                    placeholder="Search tables"
+                    placeholder="Search tables and views"
                 >
                     <template #suffix>
                         <AtlanIcon icon="Search" color="#6F7590" />

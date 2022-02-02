@@ -367,6 +367,8 @@ const useQueryTree = ({
         const parentTitle = event.node.dataRef?.parentTitle
         currentSelectedNode.value = event.node
 
+        // console.log('query item: ', item)
+
         if (item.typeName === 'Query') {
             console.log('query item: ', item)
             immediateParentFolderQF.value = item.attributes.parentQualifiedName

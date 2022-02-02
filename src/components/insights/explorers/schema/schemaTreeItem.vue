@@ -268,11 +268,18 @@
                                 <div
                                     :data-test-id="'run-table-query'"
                                     v-if="!showVQB"
-                                    class
-                                    @click="() => actionClick('play', item)"
+                                    :class="
+                                        activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : ''
+                                    "
+                                    @click="() => previewData(item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
-                                        <template #title>Preview data</template>
+                                        <template #title>{{
+                                            tooltipText
+                                        }}</template>
 
                                         <AtlanIcon
                                             icon="Play"
@@ -281,7 +288,7 @@
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -515,11 +522,18 @@
                             </div>
                             <div
                                 :data-test-id="'run-table-query'"
-                                class
-                                @click="() => actionClick('play', item)"
+                                :class="
+                                    activeInlineTab.playground.resultsPane
+                                        .result.isQueryRunning === 'loading'
+                                        ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                                        : ''
+                                "
+                                @click="() => previewData(item)"
                             >
                                 <a-tooltip color="#363636" placement="top">
-                                    <template #title>Preview data</template>
+                                    <template #title>{{
+                                        tooltipText
+                                    }}</template>
 
                                     <AtlanIcon
                                         icon="Play"
@@ -528,7 +542,7 @@
                                                 ? 'tree-light-color'
                                                 : ''
                                         "
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto outline-none"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
@@ -813,6 +827,28 @@
                 return lastMatchedKeyword
             }
 
+            const previewData = (item) => {
+                if (
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'loading'
+                ) {
+                    return
+                } else {
+                    actionClick('play', item)
+                }
+            }
+
+            const tooltipText = computed(() => {
+                if (
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'loading'
+                ) {
+                    return 'Another query is running'
+                } else {
+                    return 'Preview data'
+                }
+            })
+
             const actionClick = (action: string, t: assetInterface) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
@@ -867,22 +903,11 @@
                             Object.keys(activeInlineTabCopy)
                         )
 
-                        // new logic for preview ctc
-                        // previous text
-
-                        // let newQuery = `\/* ${title(
-                        //     item.value
-                        // )} preview *\/\nSELECT * FROM \"${title(
-                        //     item.value
-                        // )}\" LIMIT 50;\n`
-
                         let newQuery = `-- ${title(
                             item.value
                         )} preview \nSELECT * FROM ${assetQuoteType}${title(
                             item.value
                         )}${assetQuoteType} LIMIT 50;\n`
-
-                        // console.log('selected query: ', item.value)
 
                         let databaseName = item.value?.databaseName
                         let schemaName = item.value?.schemaName
@@ -1528,6 +1553,8 @@
                 openSidebar,
                 setContextInEditor,
                 readOnly,
+                previewData,
+                tooltipText,
             }
         },
     })

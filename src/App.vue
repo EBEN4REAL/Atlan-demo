@@ -15,6 +15,7 @@
     import useGlossary from './composables/glossary2/useGlossary'
     import usePersona from './composables/persona/usePersona'
     import usePurpose from './composables/purpose/usePurpose'
+
     export default defineComponent({
         setup(props, context) {
             // const isPermissionsReady = ref(false)

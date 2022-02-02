@@ -66,6 +66,13 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+        if (
+            activeInlineTab.value.playground.resultsPane.result
+                .isQueryRunning === 'loading'
+        ) {
+            message.info('A query is in progress in current tab')
+            return
+        }
         let startTime = new Date()
 
         // setStartTime(new Date())
@@ -292,7 +299,6 @@ export default function useProject() {
                                 message?.details.executionTime
                             )
                             if (eventSource.value?.close) {
-                                // for closing the connection
                                 eventSource.value.close()
                             }
                             /* Query related data */
@@ -318,6 +324,10 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'success')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
 
                             /* ------------------- */
@@ -333,6 +343,10 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
                         }
                     })
@@ -341,11 +355,17 @@ export default function useProject() {
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
+                    //IMP: connection need to be closed here
+                    if (eventSource.value?.close) {
+                        eventSource.value.close()
+                    }
                     // reset()
                 }
             } catch (e) {
-                console.log(e)
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
+                if (eventSource.value?.close) {
+                    eventSource.value.close()
+                }
                 // reset()
             }
         })
@@ -396,6 +416,7 @@ export default function useProject() {
                 .eventSourceInstance?.close
         ) {
             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+            // debugger
         }
 
         /* Change loading state */
@@ -424,19 +445,40 @@ export default function useProject() {
             })
             .catch((error) => {
                 /* Query related data */
+                // debugger
+                /* 
+            If errorCode -  exist error from backend 
+            If errorCode - not exist, req did not reached server
 
-                const errorCode = error?.status
-                    ? `${error.status} - ${error.statusText}`
-                    : undefined
+            */
+                let errorCode = error?.response?.status
+                let errorMessage
+                if (errorCode) {
+                    // backed error message
+                    errorMessage =
+                        error?.response?.data?.error?.message ??
+                        'Query Abort Failed!'
+                } else {
+                    errorCode = '000'
+                    errorMessage = error?.message
+                    // capitalizeFirstLetter
+                    errorMessage =
+                        errorMessage.charAt(0).toUpperCase() +
+                        errorMessage.slice(1)
+                }
+
                 activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                    {
-                        requestId: '',
-                        errorName: '',
-                        errorMessage:
-                            error.value?.message ?? 'Something went wrong',
-                        errorCode: errorCode,
-                        developerMessage: '', // (optional field)enabled in case of unhandled error
-                    }
+                    activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                        {
+                            requestId:
+                                activeInlineTab.value.playground.resultsPane
+                                    .result.runQueryId,
+                            errorName: errorMessage,
+                            errorMessage: errorMessage,
+                            errorCode: errorCode,
+                            developerMessage: error.value?.statusText,
+                            errorDescription: '',
+                        }
                 activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
                     -1
                 activeInlineTab.value.playground.resultsPane.result.executionTime =

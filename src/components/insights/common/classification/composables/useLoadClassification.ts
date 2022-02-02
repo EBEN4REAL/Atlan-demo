@@ -1,7 +1,7 @@
 import { Ref, ref } from 'vue'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
-import {map} from '~/services/meta/search/key'
+import { map } from '~/services/meta/search/key'
 
 import {
     InternalAttributes,
@@ -10,13 +10,10 @@ import {
 } from '~/constant/projection'
 
 interface useLoadClassificationProps {
-    connector: Ref<string | undefined>,
+    connector: Ref<string | undefined>
 }
 
-const useLoadClassification = ({
-    connector,
-}: useLoadClassificationProps) => {
-
+const useLoadClassification = ({ connector }: useLoadClassificationProps) => {
     const attributes = [
         'name',
         'displayName',
@@ -56,39 +53,37 @@ const useLoadClassification = ({
                         must: [
                             {
                                 term: {
-                                    "__state": "ACTIVE"
-                                }
-                            }
-                        ]
-                    }
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                        ],
+                    },
                 },
                 aggs: {
                     group_by_direct_classifications: {
                         terms: {
-                            field: "__traitNames",
-                            size: 50
-                        }
+                            field: '__traitNames',
+                            size: 50,
+                        },
                     },
                     group_by_propagated_classifications: {
                         terms: {
-                            field: "__propagatedTraitNames",
-                            size: 50
-                        }
-                    }
-                }
+                            field: '__propagatedTraitNames',
+                            size: 50,
+                        },
+                    },
+                },
             },
-            attributes
+            suppressLogs: true,
+            attributes,
         }
 
         if (connector.value) {
-
-            body.value.dsl.query.bool.must.push(
-                {
-                    term: {
-                        "connectionName": `${connector.value}`
-                    }
-                }
-            )
+            body.value.dsl.query.bool.must.push({
+                term: {
+                    connectionName: `${connector.value}`,
+                },
+            })
         }
     }
 
@@ -96,21 +91,18 @@ const useLoadClassification = ({
 
     const getAssetCountOnClassification = (type) => {
         refreshBody()
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": type
-                }
-            }
-        )
+        body.value.dsl.query.bool.must.push({
+            term: {
+                '__typeName.keyword': type,
+            },
+        })
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body
+            body,
         })
     }
 
-
     return {
-        getAssetCountOnClassification
+        getAssetCountOnClassification,
     }
 }
 

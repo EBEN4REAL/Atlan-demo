@@ -6,7 +6,7 @@
                     {{
                         !subpanel?.filter?.isVariable
                             ? 'Make this interactive'
-                            : 'Interactive parameter'
+                            : 'Interactive variable'
                     }}
                 </p>
                 <p class="text-xs text-gray-500">

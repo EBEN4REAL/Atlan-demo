@@ -169,7 +169,6 @@
             const timeAgo = (time: string) => dayjs().from(time, true)
 
             const { item } = toRefs(props)
-            // const { link } = toRefs(item.value.attributes)
             const body = computed(() => {
                 const { channelId, messageId } =
                     getChannelAndMessageIdFromSlackLink(

@@ -123,6 +123,7 @@ export const SourceList = [
             },
         ],
         dialectConfig: {
+            assetQuoteType: '`',
             // does not support abortQuery for now
             abortQuery: false,
         },

@@ -167,6 +167,22 @@
             <span class="mb-1 text-gray-500">View Name</span>
             <span class="text-gray-700">{{ asset?.attributes?.viewName }}</span>
         </div>
+
+        <!-- SQL Parent Context -->
+        <div
+            v-if="
+                ['Schema'].includes(asset?.typeName) &&
+                parentDatabase(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Database</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentDatabase(asset)?.guid)"
+                >{{ parentDatabase(asset)?.attributes?.name }}</span
+            >
+        </div>
     </div>
     <AssetDrawer
         :show-drawer="drawerVisible"
@@ -205,6 +221,7 @@
                 parentWorkbook,
                 parentReport,
                 parentDashboard,
+                parentDatabase,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -231,6 +248,7 @@
                 parentWorkbook,
                 parentReport,
                 parentDashboard,
+                parentDatabase,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

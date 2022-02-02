@@ -1,5 +1,11 @@
 export const summaryVariants = [
     {
+        id: 'schema',
+        label: 'Schema',
+        components: ['ParentContext', 'TableCount', 'ViewCount', 'Connection'],
+        includes: ['Schema'],
+    },
+    {
         id: 'table',
         label: 'Table',
         components: ['Rows', 'Columns', 'Connection'],

@@ -156,6 +156,12 @@
         >
             <SourceViewCount :asset="selectedAsset" />
         </div>
+        <div
+            v-if="['LookerFolder'].includes(selectedAsset.typeName)"
+            class="flex px-5"
+        >
+            <SubFolderCount :asset="selectedAsset" />
+        </div>
 
         <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
             <div class="flex flex-col text-sm">
@@ -646,6 +652,7 @@
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
+    import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -668,6 +675,7 @@
             SourceUpdated,
             Admins,
             SourceViewCount,
+            SubFolderCount,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

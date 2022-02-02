@@ -689,6 +689,22 @@
                         </div>
                         <div
                             v-if="
+                                ['lookerfolder'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ sourceChildCount(item) }}</span
+                                >
+                                sub-folders</span
+                            >
+                        </div>
+                        <div
+                            v-if="
                                 ['lookerdashboard', 'lookerlook'].includes(
                                     item.typeName?.toLowerCase()
                                 )
@@ -963,6 +979,7 @@
                 parentWorkbook,
                 parentSite,
                 sourceViewCount,
+                sourceChildCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1100,6 +1117,7 @@
                 parentWorkbook,
                 parentSite,
                 sourceViewCount,
+                sourceChildCount,
             }
         },
     })

@@ -10,7 +10,7 @@ import {
     iconDeprecated,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
-
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 const checkIfLeafNode = (relations, id) => {
     let res = true
     relations.forEach((x) => {
@@ -44,10 +44,11 @@ export default function useGraph() {
         baseEntityGuid,
         dataObj = {}
     ) => {
+        const { title } = useAssetInfo()
         const { guid, typeName, attributes, typeCount } = entity
         const { certificateStatus } = attributes
         let status = ''
-        let { displayText } = entity
+        const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
@@ -69,8 +70,6 @@ export default function useGraph() {
                     status = iconDeprecated
             }
         }
-
-        if (!displayText) displayText = attributes.name
 
         const computedData = {
             id: guid,
@@ -118,6 +117,9 @@ export default function useGraph() {
                                         isBase ? 'inscr' : 'hidden'
                                     }"> 
                                         <span class="inscr-item">BASE</span>
+                                    </div>
+                                    <div class="popover group-hover:visible group-hover:top-20 group-hover:opacity-100 group-hover:delay-1000">
+                                        ${displayText} 
                                     </div>
                                     <div>
                                         <div class="${

@@ -24,10 +24,7 @@
                 </a-button>
                 <template v-else-if="isEditMode">
                     <a-button @click="handleCancelEdit">Cancel</a-button>
-                    <a-button
-                        type="primary"
-                        class="ml-2"
-                        @click="handleAddReadMe"
+                    <a-button type="primary" class="ml-2" @click="handleSave"
                         >Save</a-button
                     >
                 </template>
@@ -41,6 +38,7 @@
                 :is-edit-mode="isEditMode"
             />
         </div>
+        <div v-else class="h-12" />
     </div>
 </template>
 
@@ -49,11 +47,8 @@
     import Editor from '@/common/editor/index.vue'
     import { Files } from '~/services/service/files/index'
     import {
-        isEditing,
         savePersona,
-        discardPersona,
-        selectedPersonaDirty,
-        deletePersonaById,
+        updateSelectedPersona,
     } from '../composables/useEditPurpose'
 
     export default {
@@ -76,7 +71,7 @@
             const loadingSave = ref(false)
             const editorValue = ref('')
             const { data, isLoading, mutate } = Files.GetFile({
-                id: readMeId,
+                id: readMeId.value,
                 // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
             })
             const fetchReadme = () => {
@@ -85,6 +80,8 @@
                 }
             }
             watch(purpose, () => {
+                editor.value.resetEditor(decodeURIComponent(''))
+                editorValue.value = ''
                 fetchReadme()
             })
             onMounted(() => {
@@ -94,37 +91,45 @@
             const handleCancelEdit = () => {
                 editor.value.resetEditor(decodeURIComponent(data.value || ''))
                 isEditMode.value = false
-                editorValue.value = data.value
+                editorValue.value = data.value || ''
             }
             watch(data, () => {
                 editorValue.value = data.value
             })
             const handleUpdatePueposeReadme = async (id) => {
                 try {
-                    await savePersona({
+                    const data = await savePersona({
                         ...purpose.value,
                         readme: id,
                     })
+                    updateSelectedPersona()
                 } catch (error) {}
             }
             const handleAddReadMe = () => {
-                isEditMode.value = false
-                loadingSave.value = true
-                const payload = new FormData()
-                payload.append('name', 'name')
-                payload.append('prefix', 'purpose_readme')
-                payload.append('force', false)
-                payload.append('excludePrefix', false)
-                const htmlRaw = decodeURIComponent(editorValue.value)
-                const fileHtml = new Blob([htmlRaw], { type: 'text/html' })
-                payload.append('file', fileHtml)
-                const { data: dataFile } = Files.CreateFile(payload)
+                const { data: dataFile } = Files.CreateFile(editorValue.value)
                 watch(dataFile, () => {
                     const idFile = dataFile.value.id
-                    // emit(addReadme, idFile)
                     handleUpdatePueposeReadme(idFile)
                     loadingSave.value = false
                 })
+            }
+            const handleUpdateReadme = () => {
+                const { data: dataFile } = Files.UpdateFile(
+                    editorValue.value,
+                    readMeId.value
+                )
+                watch(dataFile, () => {
+                    loadingSave.value = false
+                })
+            }
+            const handleSave = () => {
+                isEditMode.value = false
+                loadingSave.value = true
+                if (readMeId.value) {
+                    handleUpdateReadme()
+                } else {
+                    handleAddReadMe()
+                }
             }
             return {
                 isLoading,
@@ -135,6 +140,7 @@
                 editor,
                 loadingSave,
                 readMeId,
+                handleSave,
             }
         },
     }

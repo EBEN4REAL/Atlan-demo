@@ -5,9 +5,9 @@ import { useAPI } from '~/services/api/useAPI'
 import { useOptions } from '~/services/api/common'
 
 const GetFile = (
-    {id, name}: any,
+    {id}: any,
     options?: useOptions
-) => useAPI(map.GET_FILE, 'GET', {pathVariables: {id, name}}, {
+) => useAPI(map.GET_FILE, 'GET', {pathVariables: {id}}, {
     asyncOptions: ref({
                 immediate: false,
                 onError: (e) => {
@@ -16,9 +16,32 @@ const GetFile = (
             }),
 })
 
-const CreateFile = (body) => useAPI(map.CREATE_FILE, 'POST', {body}, {})
+const CreateFile = (editorValue) => {
+    const body = new FormData()
+    body.append('name', 'name')
+    body.append('prefix', 'purpose_readme')
+    body.append('force', false)
+    body.append('excludePrefix', false)
+    const htmlRaw = decodeURIComponent(editorValue)
+    const fileHtml = new Blob([htmlRaw], { type: 'text/html' })
+    body.append('file', fileHtml)
+    return useAPI(map.CREATE_FILE, 'POST', {body}, {})
+}
+
+const UpdateFile = (editorValue, id) => {
+    const body = new FormData()
+    body.append('name', 'name')
+    body.append('prefix', 'purpose_readme')
+    body.append('force', false)
+    body.append('excludePrefix', false)
+    const htmlRaw = decodeURIComponent(editorValue)
+    const fileHtml = new Blob([htmlRaw], { type: 'text/html' })
+    body.append('file', fileHtml)
+    return useAPI(map.UPDATE_FILE, 'PUT', {body, pathVariables: {id}}, {})
+}
 
 export const Files = {
     GetFile,
-    CreateFile
+    CreateFile,
+    UpdateFile
 }

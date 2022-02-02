@@ -7,6 +7,7 @@
                         <div
                             class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
                             :class="getRunClass(index)"
+                            @click.stop.prevent="handleRunClick(index)"
                         ></div>
                     </a-tooltip>
                 </template>
@@ -24,6 +25,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import cronstrue from 'cronstrue'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         props: {
@@ -41,9 +43,13 @@
                     return []
                 },
             },
+            workflow: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
-            const { item, runs } = toRefs(props)
+            const { item, runs, workflow } = toRefs(props)
 
             const getRunClass = (index) => {
                 const tempStatus = getRunStatus(index)
@@ -91,6 +97,14 @@
                     return finishedAt(getRun(index)?._source, true)
                 }
             }
+            const router = useRouter()
+            const handleRunClick = (index) => {
+                const run = getRun(index)
+
+                router.push(
+                    `/workflows/${workflow.value}/runs?name=${run['_id']}`
+                )
+            }
 
             const tooltipContent = (index) => {
                 const tempStatus = getRunStatus(index)
@@ -135,6 +149,9 @@
                 finishedAt,
                 startedAt,
                 getRun,
+                router,
+                handleRunClick,
+                workflow,
                 duration,
             }
         },

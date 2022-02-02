@@ -7,6 +7,7 @@
                         <div
                             class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
                             :class="getRunClass(index)"
+                            @click.stop.prevent="handleRunClick(index)"
                         ></div>
                     </a-tooltip>
                 </template>
@@ -24,6 +25,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import cronstrue from 'cronstrue'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         props: {
@@ -41,9 +43,17 @@
                     return []
                 },
             },
+            workflow: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
-            const { item, runs } = toRefs(props)
+            const { item, runs, workflow } = toRefs(props)
+
+            const { phase, finishedAt, startedAt, duration } = useWorkflowInfo()
+
+            const router = useRouter()
 
             const getRunClass = (index) => {
                 const tempStatus = getRunStatus(index)
@@ -81,6 +91,14 @@
                     return cronstrue.toString(cron.value)
                 }
             })
+
+            const handleRunClick = (index) => {
+                const run = getRun(index)
+
+                router.push(
+                    `/workflows/${workflow.value}/runs?name=${run['_id']}`
+                )
+            }
 
             const getRunTime = (index, relative) => {
                 const tempStatus = getRunStatus(index)
@@ -120,8 +138,6 @@
                 )} ago (${duration(getRun(index)._source)})`
             }
 
-            const { phase, finishedAt, startedAt, duration } = useWorkflowInfo()
-
             return {
                 item,
                 runs,
@@ -136,6 +152,9 @@
                 startedAt,
                 getRun,
                 duration,
+                handleRunClick,
+                workflow,
+                router,
             }
         },
     })

@@ -40,7 +40,7 @@
             >
                 <template #default="{ item, isSelected }">
                     <div
-                        class="flex items-center justify-between"
+                        class="flex items-center justify-between w-full"
                         @click="handleSelectPurpose(item)"
                     >
                         <div
@@ -54,6 +54,7 @@
                                         ? 'text-primary font-semibold'
                                         : 'text-gray-700 hover:text-primary hover:font-semibold'
                                 "
+                                style="max-width: 190px"
                             >
                                 {{ item.displayName }}
                             </span>

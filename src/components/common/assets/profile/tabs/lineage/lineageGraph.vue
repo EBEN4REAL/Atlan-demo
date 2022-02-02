@@ -113,7 +113,6 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
-            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -182,13 +181,13 @@
                 // useEventGraph
                 useEventGraph(
                     graph,
+                    lineage,
                     baseEntity,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
                     currZoom,
                     resetSelections,
-                    config,
                     drawerActiveKey,
                     onSelectAsset,
                     onCloseDrawer,
@@ -430,6 +429,10 @@
                 align-items: center;
             }
 
+            &.isCounter {
+                height: 50px !important;
+            }
+
             &.isBase {
                 border-top-left-radius: 0;
                 border: 1px solid #5277d7 !important;
@@ -475,6 +478,14 @@
                     text-transform: capitalize;
                     color: #6f7590;
                     margin: 0 6px;
+
+                    &.isCounter {
+                        background: #9ca1a9;
+                        color: white;
+                        padding: 2px 5px 0px 5px;
+                        border-radius: 2px;
+                        line-height: 1.3rem;
+                    }
                 }
 
                 &__source {

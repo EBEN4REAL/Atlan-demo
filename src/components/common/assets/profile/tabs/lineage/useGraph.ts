@@ -44,7 +44,7 @@ export default function useGraph() {
         baseEntityGuid,
         dataObj = {}
     ) => {
-        const { guid, typeName, attributes } = entity
+        const { guid, typeName, attributes, typeCount } = entity
         const { certificateStatus } = attributes
         let status = ''
         let { displayText } = entity
@@ -88,7 +88,7 @@ export default function useGraph() {
             entity,
             isProcess,
             width: isProcess ? 60 : 270,
-            height: 70,
+            height: typeCount ? 50 : 70,
             shape: 'html',
             data: computedData,
             html: {
@@ -98,7 +98,9 @@ export default function useGraph() {
                     return !isProcess
                         ? `
                         <div class="flex items-center">
-                            <div id="${guid}" class="lineage-node group ${
+                            <div id="${guid}" class="${
+                              typeCount ? 'isCounter' : ''
+                          } lineage-node group ${
                               data?.isHighlightedNode === data?.id
                                   ? 'isHighlightedNode'
                                   : ''
@@ -111,15 +113,23 @@ export default function useGraph() {
                             ${data?.isGrayed ? 'isGrayed' : ''}
                             ${isBase ? 'isBase' : ''}
                             ">
-                                    <span class=" ${
+                                    <div class=" ${
                                         isBase ? 'inscr' : 'hidden'
-                                    }">
+                                    }"> 
                                         <span class="inscr-item">BASE</span>
-                                    </span>
+                                    </div>
                                     <div>
-                                        <div class="node-text">
-                                            <span class="z-50 relative block">
-                                                <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${iconCaretDown}</span>
+                                        <div class="${
+                                            typeCount ? 'hidden' : ''
+                                        } node-text">
+                                            <span class=" z-50 relative block">
+                                                <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${
+                                                    ['Table', 'View'].includes(
+                                                        typeName
+                                                    )
+                                                        ? iconCaretDown
+                                                        : ''
+                                                }</span>
                                             </span>
                                             <div class="flex items-center gap-x-1">
                                                 <span class="node-title truncate group-hover:underline">${displayText}</span>
@@ -136,11 +146,18 @@ export default function useGraph() {
                                                     ? iconEllipse
                                                     : ''
                                             }
-                                        <div class="node-meta__text  truncate ${
-                                            ['Table', 'View'].includes(typeName)
-                                                ? ''
-                                                : 'hidden'
-                                        }">${schemaName || ''}</div>
+                                            <div class="${
+                                                !typeCount
+                                                    ? 'hidden'
+                                                    : 'isCounter'
+                                            } node-meta__text">${typeCount}</div>
+                                            <div class="node-meta__text  truncate ${
+                                                ['Table', 'View'].includes(
+                                                    typeName
+                                                )
+                                                    ? ''
+                                                    : 'hidden'
+                                            }">${schemaName || ''}</div>
                                         </div>
                                     </div>       
                                 </div>

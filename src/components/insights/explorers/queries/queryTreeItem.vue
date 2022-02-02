@@ -117,17 +117,28 @@
                                 ></div>
                                 <div class="flex items-center h-full">
                                     <div
-                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                        class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
                                     >
                                         <AtlanIcon
-                                            :icon="
+                                            v-if="
                                                 item?.attributes?.parent
                                                     ?.typeName === 'Folder'
-                                                    ? 'FolderClosed'
-                                                    : 'CollectionIconSmall'
                                             "
+                                            icon="FolderClosed"
                                             class="h-4 mb-2"
                                         />
+
+                                        <span
+                                            v-else
+                                            class="w-4 h-4 mr-1 -mt-1 text-sm"
+                                            >{{
+                                                item?.attributes?.parent
+                                                    ?.attributes?.icon
+                                                    ? item?.attributes?.parent
+                                                          ?.attributes?.icon
+                                                    : '🗃'
+                                            }}</span
+                                        >
                                     </div>
 
                                     <span>{{

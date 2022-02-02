@@ -251,7 +251,9 @@
                                                 placement="bottom"
                                                 color="#363636"
                                             >
-                                                <template #title>Copy</template>
+                                                <template #title
+                                                    >Copy variable</template
+                                                >
                                                 <AtlanIcon
                                                     @click="
                                                         () =>
@@ -364,11 +366,11 @@
                                                     <a-select-option
                                                         value="dropdown"
                                                         ><AtlanIcon
-                                                            icon="Column"
+                                                            icon="Columns"
                                                             class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
                                                         />
                                                         <span
-                                                            >Dropdown</span
+                                                            >Select</span
                                                         ></a-select-option
                                                     >
                                                 </a-select>

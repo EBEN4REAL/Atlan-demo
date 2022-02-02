@@ -486,8 +486,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables
         )
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -671,15 +670,13 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
             getDatabaseQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = []
         // const uuidv4 = generateUUID()
-        const collectionQualifiedName =
-            activeInlineTab.value.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
         // const variablesSchemaBase64 = []
 
@@ -980,8 +977,7 @@ export function useSavedQuery(
             isVisualQuery = true
         }
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -1120,9 +1116,12 @@ export function useSavedQuery(
                     watch([data2, error2, isLoading2], () => {
                         if (isLoading2.value == false) {
                             if (error2.value === undefined) {
-                                // console.log('saved query entity: ', data2.value?.entity)
+                                // console.log('saved query entity: ', data2.value)
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     data2.value?.entity
+
+                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                    collectionQualifiedName
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             }
                         }

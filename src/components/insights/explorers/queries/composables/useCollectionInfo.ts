@@ -4,11 +4,7 @@ import { useAPI } from '~/services/api/useAPI'
 import { map } from '~/services/meta/search/key'
 import whoami from '~/composables/user/whoami'
 
-const useCollectionInfo = (
-    selectedAsset,
-    collectionGuid
-) => {
-
+const useCollectionInfo = (selectedAsset, collectionGuid) => {
     const selectedCollectionLoading = ref(false)
     const selectedCollectionData = ref({})
     const selectedCollectionError = ref()
@@ -23,7 +19,7 @@ const useCollectionInfo = (
         'description',
         'userDescription',
         'certificateStatus',
-        
+
         'ownerUsers',
         'ownerGroups',
         'adminUsers',
@@ -48,7 +44,7 @@ const useCollectionInfo = (
     let body = ref({})
 
     const refreshBody = () => {
-        if(collectionGuid?.value) {
+        if (collectionGuid?.value) {
             body.value = {
                 dsl: {
                     query: {
@@ -56,8 +52,7 @@ const useCollectionInfo = (
                             must: [
                                 {
                                     term: {
-                                        "__guid":
-                                        collectionGuid?.value
+                                        __guid: collectionGuid?.value,
                                     },
                                 },
                             ],
@@ -65,6 +60,7 @@ const useCollectionInfo = (
                     },
                 },
                 attributes,
+                suppressLogs: true,
             }
         } else {
             body.value = {
@@ -75,7 +71,8 @@ const useCollectionInfo = (
                                 {
                                     term: {
                                         qualifiedName:
-                                        selectedAsset?.value?.attributes?.collectionQualifiedName
+                                            selectedAsset?.value?.attributes
+                                                ?.collectionQualifiedName,
                                     },
                                 },
                             ],
@@ -83,9 +80,9 @@ const useCollectionInfo = (
                     },
                 },
                 attributes,
+                suppressLogs: true,
             }
         }
-        
     }
 
     const getSelectedCollectionData = () => {
@@ -102,7 +99,7 @@ const useCollectionInfo = (
 
     const fetchCollectionInfo = () => {
         refreshBody()
-       
+
         const { data, error, isLoading } = getSelectedCollectionData()
         selectedCollectionLoading.value = true
 
@@ -114,8 +111,9 @@ const useCollectionInfo = (
                 if (error.value === undefined) {
                     if (data?.value) {
                         selectedCollectionData.value = data?.value
-                        if(data?.value?.entities?.length) {
-                            selectedCollectionData.value = data?.value?.entities[0]
+                        if (data?.value?.entities?.length) {
+                            selectedCollectionData.value =
+                                data?.value?.entities[0]
                         }
                     } else {
                         selectedCollectionData.value = {}
@@ -125,22 +123,19 @@ const useCollectionInfo = (
                 } else {
                     selectedCollectionLoading.value = false
                     selectedCollectionError.value = error.value
-
                 }
             }
-        })           
+        })
     }
     const hasCollectionReadPermission = computed(() => {
         // Viewer
 
-        let viewerUsers = selectedCollectionData?.value?.attributes
-            ?.viewerUsers
+        let viewerUsers = selectedCollectionData?.value?.attributes?.viewerUsers
             ? selectedCollectionData?.value?.attributes?.viewerUsers
             : []
         let viewerGroups = selectedCollectionData?.value?.attributes
             ?.viewerGroups
-            ? selectedCollectionData?.value?.attributes
-                  ?.viewerGroups
+            ? selectedCollectionData?.value?.attributes?.viewerGroups
             : []
 
         // console.log('permission: ',toRaw(viewerUsers))
@@ -162,12 +157,10 @@ const useCollectionInfo = (
     })
 
     const hasCollectionWritePermission = computed(() => {
-        let adminUsers = selectedCollectionData?.value?.attributes
-            ?.adminUsers
+        let adminUsers = selectedCollectionData?.value?.attributes?.adminUsers
             ? selectedCollectionData?.value?.attributes?.adminUsers
             : []
-        let adminGroups = selectedCollectionData.value?.attributes
-            ?.adminGroups
+        let adminGroups = selectedCollectionData.value?.attributes?.adminGroups
             ? selectedCollectionData.value?.attributes?.adminGroups
             : []
 
@@ -190,29 +183,30 @@ const useCollectionInfo = (
         if (selectedCollectionData?.value) {
             return (
                 currentUser.value ===
-                selectedCollectionData?.value?.attributes
-                    ?.__createdBy
+                selectedCollectionData?.value?.attributes?.__createdBy
             )
         } else {
             return false
         }
     })
 
-
     watch(
-        ()=>selectedAsset?.value?.attributes?.collectionQualifiedName,
+        () => selectedAsset?.value?.attributes?.collectionQualifiedName,
         async () => {
-            if(selectedAsset?.value?.typeName==='Query' || collectionGuid?.value)
-            await fetchCollectionInfo()
+            if (
+                selectedAsset?.value?.typeName === 'Query' ||
+                collectionGuid?.value
+            )
+                await fetchCollectionInfo()
         },
         { deep: true, immediate: true }
     )
-    
+
     return {
         collectionInfo: selectedCollectionData,
         hasCollectionReadPermission,
         hasCollectionWritePermission,
-        isCollectionCreatedByCurrentUser
+        isCollectionCreatedByCurrentUser,
     }
 }
 

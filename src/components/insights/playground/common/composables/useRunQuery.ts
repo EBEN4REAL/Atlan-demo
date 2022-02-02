@@ -66,6 +66,13 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+        if (
+            activeInlineTab.value.playground.resultsPane.result
+                .isQueryRunning === 'loading'
+        ) {
+            message.info('A query is in progress in current tab')
+            return
+        }
         let startTime = new Date()
 
         // setStartTime(new Date())

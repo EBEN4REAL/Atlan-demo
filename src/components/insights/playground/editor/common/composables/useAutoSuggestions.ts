@@ -421,6 +421,7 @@ const refreshBody = () => {
             },
         },
         attributes,
+        suppressLogs: true,
     }
 }
 

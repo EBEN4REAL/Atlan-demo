@@ -215,6 +215,8 @@
                 queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
+                readAccessCollections,
+                writeAccessCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
                 // selectCollectionFromUrl,
@@ -365,6 +367,8 @@
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
+                readAccessCollections,
+                writeAccessCollections,
                 limitRows: limitRows,
             }
             useProvide(provideData)
@@ -420,6 +424,22 @@
                     }
                 }
             })
+
+            watch(
+                () =>
+                    activeInlineTab.value?.explorer.queries.collection
+                        .qualifiedName,
+                () => {
+                    // console.log('collection change')
+                    selectFirstCollectionByDefault(
+                        queryCollections.value,
+                        activeInlineTab,
+                        tabsArray,
+                        false,
+                        undefined
+                    )
+                }
+            )
             watch(editorConfig, () => {
                 console.log('editorConfig CHanged')
                 setUserPreferenceToLocalStorage(editorConfig.value)

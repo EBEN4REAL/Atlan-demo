@@ -13,7 +13,8 @@ export function useQueryLogs(
     lt: Ref<string>,
     from = ref(0),
     size = ref(6),
-    usernames: Ref<Array<string>>
+    usernames: Ref<Array<string>>,
+    attributes = ['name']
 ) {
     const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
@@ -40,7 +41,7 @@ export function useQueryLogs(
         } = useIndexSearch(
             {
                 dsl: { ...requestBody },
-                attributes: ['name'],
+                attributes: attributes,
                 suppressLogs: true,
             },
             ref('GET_SAVED_QUERY_META'),

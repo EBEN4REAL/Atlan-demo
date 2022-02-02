@@ -1,4 +1,4 @@
-import { watch, ref, computed } from 'vue'
+import { watch, ref, computed, Ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { watchOnce, whenever } from '@vueuse/core'
 
@@ -25,7 +25,8 @@ export default function useEventGraph(
     loaderCords,
     currZoom,
     resetSelections,
-    drawerActiveKey,
+    drawerActiveKey: Ref<string>,
+    selectedTypeInRelationDrawer: Ref<string>,
     config,
     onSelectAsset,
     onCloseDrawer,
@@ -870,8 +871,23 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
-        onSelectAsset(node.store.data.entity)
-        highlight(node?.id)
+
+        if (node.store.data?.data?.isTypeNode) {
+            const edges = graph.value.getIncomingEdges(node)
+            const sNode = edges[0]?.getSourceNode()
+            if (sNode) {
+                onSelectAsset(sNode.store.data.entity)
+                highlight(node?.id)
+                setTimeout(() => {
+                    drawerActiveKey.value = 'Relations'
+                }, 500)
+                selectedTypeInRelationDrawer.value =
+                    node.store.data.entity.typeName
+            }
+        } else {
+            onSelectAsset(node.store.data.entity)
+            highlight(node?.id)
+        }
         resetCHE()
     })
 
@@ -916,7 +932,7 @@ export default function useEventGraph(
     whenever(resetSelections, () => {
         onSelectAsset(baseEntity.value, false, false)
         resetCHE()
-        drawerActiveKey.value = 'Info'
+        drawerActiveKey.value = 'Overview'
         if (highlightedNode.value) highlight(null)
         if (chp.value.portId) deselectPort()
 

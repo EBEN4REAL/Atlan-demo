@@ -21,7 +21,7 @@
         </div>
 
         <AggregationTabs
-            v-model="postFacets.typeName"
+            v-model="selectedType"
             class="px-3 mb-1"
             :list="assetTypeAggregationList"
             @change="handleAssetTypeChange"
@@ -84,6 +84,7 @@
         toRefs,
         watch,
         PropType,
+        inject,
     } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
@@ -130,6 +131,7 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
+            const selectedType = inject('selectedTypeInRelation', ref('__all'))
 
             const {
                 guidList,
@@ -143,9 +145,11 @@
             const facets = ref({})
 
             const aggregations = ref(['typeName'])
-            const postFacets = ref({
-                typeName: '__all',
-            })
+
+            const postFacets = computed(() => ({
+                typeName: selectedType.value,
+            }))
+
             const dependentKey = ref(null)
             const { customMetadataProjections } = useTypedefData()
 
@@ -276,6 +280,7 @@
                 isValidating,
                 updateCurrentList,
                 guidList,
+                selectedType,
             }
         },
     })

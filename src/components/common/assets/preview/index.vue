@@ -298,7 +298,7 @@
             drawerActiveKey: {
                 type: String,
                 required: false,
-                default: 'info',
+                default: 'Overview',
             },
         },
         emits: ['assetMutation', 'closeDrawer'],
@@ -413,9 +413,13 @@
 
             provide('switchTab', switchTab)
 
-            watch(drawerActiveKey, (newVal) => {
-                switchTab(selectedAsset.value, newVal)
-            })
+            watch(
+                drawerActiveKey,
+                (newVal) => {
+                    switchTab(selectedAsset.value, newVal)
+                },
+                { immediate: true }
+            )
 
             const router = useRouter()
 

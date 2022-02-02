@@ -114,6 +114,7 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -190,6 +191,7 @@
                     currZoom,
                     resetSelections,
                     drawerActiveKey,
+                    config,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph

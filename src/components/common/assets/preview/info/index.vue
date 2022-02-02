@@ -146,6 +146,27 @@
             </div>
         </div>
 
+        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                <span class="text-gray-700">{{
+                    sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Fields</span>
+                <div
+                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-all">{{ field }}</span>
+                </div>
+            </div>
+        </div>
+
         <div
             v-if="
                 isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
@@ -367,6 +388,13 @@
             <SQLSnippet
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="selectedAsset?.attributes?.sourceDefinition"
                 background="bg-primary-light"
             />
         </div>
@@ -682,6 +710,8 @@
                 externalLocationFormat,
                 isBiAsset,
                 getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             } = useAssetInfo()
 
             const {
@@ -810,6 +840,8 @@
                 isBiAsset,
                 isProfile,
                 getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             }
         },
     })

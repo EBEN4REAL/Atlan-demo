@@ -7,8 +7,7 @@ import whoami from '~/composables/user/whoami'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 const useActiveQueryAccess = (
-    activeInlineTab: ComputedRef<activeInlineTabInterface>,
-    
+    activeInlineTab: ComputedRef<activeInlineTabInterface>
 ) => {
     const { username: currentUser, groups: userGroups } = whoami()
 
@@ -75,6 +74,7 @@ const useActiveQueryAccess = (
                 },
             },
             attributes,
+            suppressLogs: true,
         }
 
         // console.log('coll body: ', body.value)
@@ -226,12 +226,14 @@ const useActiveQueryAccess = (
         }
     })
 
-    const activeTabCollection = computed(()=> {
-        return selectedCollectionData?.value ? selectedCollectionData?.value?.entities[0] : {}
+    const activeTabCollection = computed(() => {
+        return selectedCollectionData?.value
+            ? selectedCollectionData?.value?.entities[0]
+            : {}
     })
 
     watch(
-        ()=>activeInlineTab?.value?.qualifiedName,
+        () => activeInlineTab?.value?.qualifiedName,
         () => {
             fetchSelectedCollectionData()
         },
@@ -242,7 +244,7 @@ const useActiveQueryAccess = (
         isQueryCreatedByCurrentUser,
         hasQueryReadPermission,
         hasQueryWritePermission,
-        activeTabCollection
+        activeTabCollection,
     }
 }
 

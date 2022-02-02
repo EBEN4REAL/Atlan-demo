@@ -15,7 +15,7 @@ import {
     InternalAttributes,
     BasicSearchAttributes,
     AssetAttributes,
-    AssetRelationAttributes
+    AssetRelationAttributes,
 } from '~/constant/projection'
 import { useBody } from './useBody'
 
@@ -79,9 +79,8 @@ const useLoadTreeData = (
         body.value = {
             dsl,
             attributes,
-            relationAttributes: [
-                ...AssetRelationAttributes
-            ]
+            suppressLogs: true,
+            relationAttributes: [...AssetRelationAttributes],
         }
     }
 
@@ -111,10 +110,7 @@ const useLoadTreeData = (
         console.log('query con: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (
-                queryText.value.length == 0 &&
-                getFacetCount(facets) === 0
-            ) {
+            if (queryText.value.length == 0 && getFacetCount(facets) === 0) {
                 typeName.value = 'Database'
             } else {
                 typeName.value = ['Table', 'View']
@@ -144,10 +140,7 @@ const useLoadTreeData = (
         // console.log('query sch: ', queryText)
         console.log('query fac: ', facets)
         if (searchResultType.value === 'table') {
-            if (
-                queryText.value.length == 0 &&
-                getFacetCount(facets) === 0
-            ) {
+            if (queryText.value.length == 0 && getFacetCount(facets) === 0) {
                 typeName.value = 'Schema'
             } else {
                 typeName.value = ['Table', 'View']

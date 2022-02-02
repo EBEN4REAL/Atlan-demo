@@ -9,7 +9,7 @@ import {
     InternalAttributes,
     SavedQueryAttributes,
     SQLAttributes,
-    AssetRelationAttributes
+    AssetRelationAttributes,
 } from '~/constant/projection'
 
 import { useAPI } from '~/services/api/useAPI'
@@ -71,17 +71,17 @@ export function useAssetSidebar(
     const refreshBody = (asset) => {
         const base = bodybuilder()
         base.filter('term', '__typeName.keyword', asset?.typeName)
-        base.filter('term','qualifiedName', asset?.attributes?.qualifiedName)
+        base.filter('term', 'qualifiedName', asset?.attributes?.qualifiedName)
 
         return base.build()
     }
 
-    let attributes= [
+    let attributes = [
         ...AssetAttributes,
         ...InternalAttributes,
         ...SavedQueryAttributes,
         ...SQLAttributes,
-        'links'
+        'links',
     ]
 
     const fetchAssetData = (asset) => {
@@ -89,10 +89,9 @@ export function useAssetSidebar(
         let body = ref({})
         body.value = {
             dsl,
+            suppressLogs: true,
             attributes,
-            relationAttributes: [
-                ...AssetRelationAttributes
-            ]
+            relationAttributes: [...AssetRelationAttributes],
         }
 
         // console.log('query: ', body.value)
@@ -106,12 +105,12 @@ export function useAssetSidebar(
             {}
         )
 
-        return {data, error, isLoading}
+        return { data, error, isLoading }
     }
 
     return {
         closeAssetSidebar,
         openAssetSidebar,
-        fetchAssetData
+        fetchAssetData,
     }
 }

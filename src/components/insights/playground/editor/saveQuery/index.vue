@@ -243,6 +243,8 @@
                 // let terms = assetTerms
                 // let classifications = assetClassification
 
+                // console.log('hello: ', selectedParentFolder.value)
+
                 if (Object.keys(toRaw(selectedParentFolder.value)).length) {
                     const saveQueryData = {
                         title:
@@ -256,6 +258,13 @@
                             selectedParentFolder.value?.attributes
                                 ?.qualifiedName,
                         parentGuid: selectedParentFolder.value?.guid,
+                        collection:
+                            selectedParentFolder.value?.typeName ===
+                            'Collection'
+                                ? selectedParentFolder.value?.attributes
+                                      ?.qualifiedName
+                                : selectedParentFolder.value?.attributes
+                                      ?.collectionQualifiedName,
                     }
                     emit(
                         'onSaveQuery',

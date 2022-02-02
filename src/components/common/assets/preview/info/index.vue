@@ -264,12 +264,12 @@
                 <span class="mb-1 text-sm text-gray-500">Data Type</span>
 
                 <div class="flex items-center text-gray-700 gap-x-1">
-                    <div class="flex">
+                    <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                            class="h-4 mr-0.5 mb-0.5"
                         />
-                        <span class="text-sm text-gray-700">{{
+                        <span class="text-sm">{{
                             dataType(selectedAsset)
                         }}</span>
                     </div>
@@ -308,12 +308,14 @@
             <div v-if="tableName(selectedAsset)">
                 <div class="mb-1 text-sm text-gray-500">Table</div>
                 <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
                     {{ tableName(selectedAsset) }}
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
                 <div class="mb-1 text-sm text-gray-500">View</div>
                 <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
                     {{ viewName(selectedAsset) }}
                 </div>
             </div>
@@ -671,6 +673,7 @@
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -701,6 +704,7 @@
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
+            AtlanIcon,
         },
         props: {
             isDrawer: {

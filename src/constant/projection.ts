@@ -95,6 +95,7 @@ export const AssetAttributes = [
     'sourceMetadataId',
     'sourceContentMetadataId',
     'sourceViewCount',
+    'sourceChildCount',
     'folderName',
     'modelName',
     'folder',

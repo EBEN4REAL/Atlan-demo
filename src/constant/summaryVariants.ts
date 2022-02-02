@@ -251,7 +251,12 @@ export const summaryVariants = [
     {
         id: 'lookerFolder',
         label: 'Folder',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'SubFolderCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerFolder'],
     },
     {

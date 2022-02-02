@@ -82,6 +82,7 @@
                     'TableauFlow',
                     'TableauMetric',
                     'TableauDatasource',
+                    'LookerModel',
                 ].includes(asset?.typeName) && parentProject(asset)?.guid
             "
             class="flex flex-col text-sm"

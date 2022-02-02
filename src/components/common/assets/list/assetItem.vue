@@ -729,6 +729,34 @@
                                 </template>
                             </a-tooltip>
                         </div>
+                        <div
+                            v-if="
+                                ['lookermodel'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.projectName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.projectName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Project -
+                                        {{
+                                            item?.attributes?.projectName
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">

@@ -11,15 +11,6 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <!-- <AtlanIcon
-                icon="CollectionIconSmall"
-                class="w-4 h-4"
-                v-if="
-                    selectedFolderContext?.typeName === 'Collection' ||
-                    Object.keys(selectedFolderContext)?.length === 0
-                "
-            ></AtlanIcon> -->
-
             <span
                 v-if="
                     selectedFolderContext?.typeName === 'Collection' ||

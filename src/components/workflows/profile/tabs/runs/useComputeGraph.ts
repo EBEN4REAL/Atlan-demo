@@ -305,9 +305,6 @@ export default function useComputeGraph(
             nodes: nodes.value,
         })
         graph.value.fromJSON(model.value)
-
-        console.log('nodes', nodes.value)
-
         graph.value.zoom(-0.3)
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
         // graph.value.zoomToFit({ maxScale: 1 })

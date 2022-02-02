@@ -60,6 +60,15 @@ const retryRun = (pathVariables, options?: useOptions) =>
         },
         options || {}
     )
+const stopRun = (pathVariables, options?: useOptions) =>
+    useAPI(
+        map.STOP_RUN,
+        'POST',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
 
 const getArchivedRunLogs = (pathVariables, params, options?: useOptions) =>
     useAPI(
@@ -178,16 +187,6 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
             pathVariables,
         },
         { asyncOptions: { immediate } }
-    )
-
-const stopRun = (pathVariables) =>
-    useAPI(
-        map.STOP_RUN,
-        'POST',
-        {
-            pathVariables,
-        },
-        {}
     )
 
 const getRunList = (reqOptions) =>

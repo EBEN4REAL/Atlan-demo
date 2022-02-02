@@ -81,7 +81,7 @@ export default function useCreateGraph(
         nodesep: 60,
         rankDir: 'TB',
         controlPoints: true,
-        workerEnabled: false,
+        workerEnabled: true,
     })
 
     return {

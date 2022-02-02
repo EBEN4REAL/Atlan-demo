@@ -35,8 +35,6 @@ export const map = {
     [DELETE_SCHEDULE]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/workflows/schedules/${name}/archive`),
 
-    [STOP_RUN]: ({ name }: PathParams) =>
-        getAPIPath(BASE_PATH, `/runs/${name}/stop`),
     [CREATE_WORKFLOW]: () => getAPIPath('/service', `/workflows`),
     [WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows'),
     [RUN_WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows/submit'),
@@ -81,6 +79,13 @@ export const map = {
             getAPIPath(BASE_PATH, `/runs/${path.value.name}/retry`)
         }
         return getAPIPath(BASE_PATH, `/runs/${path.name}/retry`)
+    },
+
+    [STOP_RUN]: (path: PathParams | Ref<PathParams>) => {
+        if (isRef(path)) {
+            getAPIPath(BASE_PATH, `/runs/${path.value.name}/retry`)
+        }
+        return getAPIPath(BASE_PATH, `/runs/${path.name}/stop`)
     },
 
     [ARCHIVED_WORKFLOW_RUN_LOGS]: ({ id, params }: PathParams) =>

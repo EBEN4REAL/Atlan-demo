@@ -25,11 +25,13 @@
                                         {{ phase(selectedRun) }}
                                     </p>
                                 </div>
+
                                 <a-button
                                     type="danger"
                                     v-if="
                                         ['Running'].includes(phase(selectedRun))
                                     "
+                                    @click="handleStop"
                                     >Stop</a-button
                                 >
 
@@ -56,10 +58,38 @@
                     <p class="mb-2 text-gray-700">
                         {{ finishedAt(selectedRun, false) }}
                     </p>
-                    <p class="text-gray-500">Duration</p>
-                    <p class="mb-2 text-gray-700">
-                        {{ duration(selectedRun, false) }}
-                    </p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Duration</p>
+                            <p class="mb-2 text-gray-700">
+                                {{ duration(selectedRun, false) }}
+                            </p>
+                        </div>
+
+                        <!--   <a-button
+                            v-if="['Succeeded'].includes(phase(selectedRun))"
+                            @click="handleMetrics"
+                            >View Metrics</a-button
+                        >-->
+                        <a-modal
+                            width="100%"
+                            :centered="true"
+                            :bodyStyle="{
+                                height: 'calc(100vh - 100px)',
+                            }"
+                            :destroyOnClose="true"
+                            v-model:visible="isMetricVisible"
+                            :closable="false"
+                        >
+                            <div class="h-full px-6 py-3">
+                                <WorkflowMetrics
+                                    :selectedPod="selectedPod"
+                                    :selectedRun="selectedRun"
+                                ></WorkflowMetrics>
+                            </div>
+                            <template #footer> </template>
+                        </a-modal>
+                    </div>
 
                     <p class="text-gray-500">Run Mode</p>
                     <div
@@ -83,7 +113,11 @@
                 </div>
             </div>
         </a-tab-pane>
-        <a-tab-pane key="failed" tab="Failed Tasks">
+        <a-tab-pane
+            key="failed"
+            tab="Failed Tasks"
+            v-if="['Error', 'Failed'].includes(phase(selectedRun))"
+        >
             <div
                 class="flex flex-col px-3 py-2 bg-white border-b border-l border-r"
             >
@@ -168,11 +202,14 @@
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
+    import WorkflowMetrics from './metrics.vue'
+    import useWorkflowRunStop from '~/composables/package/useWorkflowRunStop'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],
         components: {
             WorkflowLogs,
+            WorkflowMetrics,
         },
         props: {
             selectedRun: {
@@ -186,6 +223,7 @@
             const selectedPodName = ref('')
             const activeKey = ref('summary')
             const isLogVisible = ref(false)
+            const isMetricVisible = ref(false)
             const { selectedRun } = toRefs(props)
             const {
                 phase,
@@ -286,8 +324,47 @@
                 })
             }
 
+            const handleStop = () => {
+                Modal.confirm({
+                    title: 'Are you sure you want to stop this run?',
+                    content: 'This will stop all the running tasks',
+                    okText: 'Yes',
+                    onOk() {
+                        const path = ref({
+                            name: selectedRun.value?.metadata?.name,
+                        })
+                        const { data } = useWorkflowRunStop(path, true)
+
+                        message.loading({
+                            content: 'Stopping the run',
+                            key: messageKey.value,
+                        })
+
+                        watch(data, () => {
+                            const {} = useTimeoutFn(() => {
+                                /* ... */
+                                // handleNewRun(name(data.value))
+                                message.success({
+                                    content:
+                                        'Run will be stopped and all the tasks will be cancelled',
+                                    key: messageKey.value,
+                                    duration: 10,
+                                })
+                                window.location.reload()
+                            }, 5000)
+                        })
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                    onCancel() {},
+                })
+            }
+
             const handleLogs = () => {
                 isLogVisible.value = true
+            }
+
+            const handleMetrics = () => {
+                isMetricVisible.value = true
             }
 
             return {
@@ -316,6 +393,9 @@
                 handleLogs,
                 getLiveLogs,
                 isLogVisible,
+                isMetricVisible,
+                handleStop,
+                handleMetrics,
             }
         },
     })

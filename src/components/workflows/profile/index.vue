@@ -75,8 +75,6 @@
 
             console.log('workflow', packageObject)
 
-            // const { getProfileTabs, isScrubbed } = useWorkflowInfo()
-
             const activeKey = ref()
             const route = useRoute()
 

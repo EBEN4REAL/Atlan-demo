@@ -250,7 +250,12 @@ export const summaryVariants = [
     {
         id: 'lookerField',
         label: 'Field',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerField'],
     },
     {

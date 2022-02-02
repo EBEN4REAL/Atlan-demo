@@ -731,9 +731,11 @@
                         </div>
                         <div
                             v-if="
-                                ['lookermodel', 'lookerexplore'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
+                                [
+                                    'lookermodel',
+                                    'lookerexplore',
+                                    'lookerfield',
+                                ].includes(item.typeName?.toLowerCase())
                             "
                             class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
@@ -759,7 +761,7 @@
                         </div>
                         <div
                             v-if="
-                                ['lookerexplore'].includes(
+                                ['lookerexplore', 'lookerfield'].includes(
                                     item.typeName?.toLowerCase()
                                 )
                             "

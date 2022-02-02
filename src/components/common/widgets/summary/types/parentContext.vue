@@ -84,6 +84,7 @@
                     'TableauDatasource',
                     'LookerModel',
                     'LookerExplore',
+                    'LookerField',
                 ].includes(asset?.typeName) && parentProject(asset)?.guid
             "
             class="flex flex-col text-sm"
@@ -143,8 +144,9 @@
         </div>
         <div
             v-if="
-                ['LookerLook', 'LookerExplore'].includes(asset?.typeName) &&
-                parentModel(asset)?.guid
+                ['LookerLook', 'LookerExplore', 'LookerField'].includes(
+                    asset?.typeName
+                ) && parentModel(asset)?.guid
             "
             class="flex flex-col text-sm"
         >

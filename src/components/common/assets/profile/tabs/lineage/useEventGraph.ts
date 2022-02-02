@@ -27,6 +27,7 @@ export default function useEventGraph(
     resetSelections,
     drawerActiveKey: Ref<string>,
     selectedTypeInRelationDrawer: Ref<string>,
+    config,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph
@@ -441,10 +442,11 @@ export default function useEventGraph(
             controlTranslate(portId, lineage)
             return
         }
+        const { depth, direction } = config.value
         const portConfig = computed(() => ({
-            depth: 21,
+            depth,
             guid: portId,
-            direction: 'BOTH',
+            direction,
             hideProcess: true,
         }))
         const { data } = useFetchLineage(portConfig, true)

@@ -114,6 +114,7 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -192,6 +193,7 @@
                     resetSelections,
                     drawerActiveKey,
                     selectedTypeInRelationDrawer,
+                    config,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph

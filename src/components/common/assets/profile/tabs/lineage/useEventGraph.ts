@@ -868,8 +868,19 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
 
         loaderCords.value = { x: e.clientX, y: e.clientY }
-        onSelectAsset(node.store.data.entity)
-        highlight(node?.id)
+
+        if (node.store.data?.data?.isTypeNode) {
+            const edges = graph.value.getIncomingEdges(node)
+            const sNode = edges[0]?.getSourceNode()
+            if (sNode) {
+                onSelectAsset(sNode.store.data.entity)
+                highlight(node?.id)
+                drawerActiveKey.value = 'Relations'
+            }
+        } else {
+            onSelectAsset(node.store.data.entity)
+            highlight(node?.id)
+        }
         resetCHE()
     })
 

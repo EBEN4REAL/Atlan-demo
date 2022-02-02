@@ -10,14 +10,14 @@
                     v-if="!isEditMode"
                     class="flex items-center"
                     type="primary"
-                    :loading="loadingSave"
+                    :loading="loadingSave || isLoading"
                     @click="isEditMode = true"
                 >
                     <AtlanIcon
                         icon="Edit"
                         class="w-auto h-4 mr-1"
                         :class="{
-                            'ml-2': loadingSave,
+                            'ml-2': loadingSave || isLoading,
                         }"
                     />
                     {{ readMeId ? 'Edit' : 'Add a readme' }}
@@ -44,6 +44,7 @@
 
 <script lang="ts">
     import { watch, ref, toRefs, onMounted, computed } from 'vue'
+    import { message } from 'ant-design-vue'
     import Editor from '@/common/editor/index.vue'
     import { Files } from '~/services/service/files/index'
     import {
@@ -79,6 +80,15 @@
                     mutate()
                 }
             }
+            const resetEditor = () => {
+                const editorValueDefault = readMeId.value
+                    ? Object.keys(data.value).length
+                        ? data.value
+                        : ''
+                    : ''
+                editor.value.resetEditor(decodeURIComponent(editorValueDefault))
+                editorValue.value = editorValueDefault
+            }
             watch(purpose, () => {
                 editor.value.resetEditor(decodeURIComponent(''))
                 editorValue.value = ''
@@ -98,26 +108,39 @@
             })
             const handleUpdatePueposeReadme = async (id) => {
                 try {
-                    const data = await savePersona({
+                    await savePersona({
                         ...purpose.value,
                         readme: id,
                     })
                     updateSelectedPersona()
-                } catch (error) {}
+                } catch (error) {
+                    message.error(
+                        error?.response?.data?.message ||
+                            'Some error occured...Please try again later.'
+                    )
+                }
+                loadingSave.value = false
             }
             const handleAddReadMe = () => {
                 const { data: dataFile } = Files.CreateFile(editorValue.value)
                 watch(dataFile, () => {
                     const idFile = dataFile.value.id
                     handleUpdatePueposeReadme(idFile)
-                    loadingSave.value = false
                 })
             }
             const handleUpdateReadme = () => {
-                const { data: dataFile } = Files.UpdateFile(
+                const { data: dataFile, error } = Files.UpdateFile(
                     editorValue.value,
                     readMeId.value
                 )
+                watch(error, () => {
+                    resetEditor()
+                    loadingSave.value = false
+                    message.error(
+                        error?.response?.data?.message ||
+                            'Some error occured...Please try again later.'
+                    )
+                })
                 watch(dataFile, () => {
                     loadingSave.value = false
                 })

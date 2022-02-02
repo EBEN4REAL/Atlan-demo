@@ -37,7 +37,7 @@ const UpdateFile = (editorValue, id) => {
     const htmlRaw = decodeURIComponent(editorValue)
     const fileHtml = new Blob([htmlRaw], { type: 'text/html' })
     body.append('file', fileHtml)
-    return useAPI(map.UPDATE_FILE, 'PUT', {body, pathVariables: {id}}, {})
+    return useAPI(map.UPDATE_FILE, 'POST', {body, pathVariables: {id}}, {})
 }
 
 export const Files = {

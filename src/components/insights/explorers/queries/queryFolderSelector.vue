@@ -11,14 +11,28 @@
             padding="compact"
             @click="toggleDropdown"
         >
-            <AtlanIcon
+            <!-- <AtlanIcon
                 icon="CollectionIconSmall"
                 class="w-4 h-4"
                 v-if="
                     selectedFolderContext?.typeName === 'Collection' ||
                     Object.keys(selectedFolderContext)?.length === 0
                 "
-            ></AtlanIcon>
+            ></AtlanIcon> -->
+
+            <span
+                v-if="
+                    selectedFolderContext?.typeName === 'Collection' ||
+                    Object.keys(selectedFolderContext)?.length === 0
+                "
+                class="w-4 h-4 -mt-1 text-base"
+                >{{
+                    selectedFolderContext?.attributes?.icon
+                        ? selectedFolderContext?.attributes?.icon
+                        : '🗃'
+                }}</span
+            >
+
             <AtlanIcon icon="FolderClosed" v-else></AtlanIcon>
 
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
@@ -80,10 +94,15 @@
                                             expandCollection(collection, $event)
                                         "
                                     ></AtlanIcon>
-                                    <AtlanIcon
+                                    <!-- <AtlanIcon
                                         icon="CollectionIconSmall"
                                         class="w-4 h-4 my-auto mr-2 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
+                                    ></AtlanIcon> -->
+                                    <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
+                                        collection?.attributes?.icon
+                                            ? collection?.attributes?.icon
+                                            : '🗃'
+                                    }}</span>
                                     <span
                                         class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                         >{{ collection?.attributes.name }}</span

@@ -86,18 +86,31 @@
             const { customMetadataProjections } = useTypedefData()
 
             /** DATA */
-            const lineage = ref({})
+            const lineage: any = ref({})
+            const computedLineage = ref(null)
             const depth = ref(1)
             const baseEntity = ref({})
+            const baseEntityRelData = ref({})
             const guid = ref(route.params?.id || '')
             const direction = ref('BOTH')
             const hideProcess = ref(true)
             const loaderText = ref('Fetching Data...')
             const isFirstLoad = ref(true)
             const selectedAsset = ref(assetStore.getSelectedAsset)
-            const biAssetNoLinMap = {
+            const childBiAssetMap = {
                 PowerBIReport: 'dataset',
                 LookerTile: 'query',
+            }
+            const parentBiAssetMap = {
+                PowerBIDataset: [
+                    'datasets',
+                    'workspace',
+                    'tiles',
+                    'reports',
+                    'datasources',
+                    'dataflows',
+                ],
+                LookerQuery: [],
             }
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
@@ -125,28 +138,57 @@
             }))
 
             /** METHODS */
-            // computeLineageForBiAssetNoLin
-            const computeLineageForBiAssetNoLin = (data) => {
-                const computedLineage = { ...data }
-                const { childrenCounts, guidEntityMap } = computedLineage
-                const parentGuid = computedLineage.baseEntityGuid
-                computedLineage.baseEntityGuid = selectedAsset.value.guid
-                computedLineage.childrenCounts = {
-                    ...childrenCounts,
-                    [selectedAsset.value.guid]: { OUTPUT: 0 },
+            // addEntityToLineage
+            const addRelatedBiAssetToLineage = (data, entity) => {
+                if (!computedLineage.value) computedLineage.value = { ...data }
+
+                const parentGuid = computedLineage.value.baseEntityGuid
+                computedLineage.value.childrenCounts = {
+                    ...computedLineage.value.childrenCounts,
+                    [entity.guid]: { OUTPUT: 0 },
                 }
-                computedLineage.guidEntityMap = {
-                    ...guidEntityMap,
-                    [selectedAsset.value.guid]: selectedAsset.value,
+                computedLineage.value.guidEntityMap = {
+                    ...computedLineage.value.guidEntityMap,
+                    [entity.guid]: entity,
                 }
-                computedLineage.relations.push({
+                computedLineage.value.relations.push({
                     fromEntityId: parentGuid,
-                    processId: 'processId',
-                    toEntityId: selectedAsset.value.guid,
+                    processId: 'related',
+                    toEntityId: entity.guid,
                     type: 'related',
                 })
+            }
 
-                return computedLineage
+            // computeLineageForChildBiAsset
+            const computeLineageForChildBiAsset = (data) => {
+                addRelatedBiAssetToLineage(data, selectedAsset.value)
+                computedLineage.value.baseEntityGuid = selectedAsset.value.guid
+                return computedLineage.value
+            }
+
+            // computeLineageForParentBiAsset
+            const computeLineageForParentBiAsset = (data) => {
+                const { attributes, typeName } = baseEntityRelData.value
+                const parentBiAssetMapTypes = parentBiAssetMap[typeName]
+
+                Object.entries(attributes).forEach(([k, v]) => {
+                    const valueExists = Array.isArray(v)
+                        ? v.length
+                        : Object.keys(v).length
+
+                    if (parentBiAssetMapTypes.includes(k) && valueExists) {
+                        if (Array.isArray(v)) {
+                            const asset = v[0]
+                            asset.typeCount = v.length
+                            addRelatedBiAssetToLineage(data, asset)
+                        } else {
+                            v.typeCount = 1
+                            addRelatedBiAssetToLineage(data, v)
+                        }
+                    }
+                })
+
+                return computedLineage.value
             }
 
             // useLineageService
@@ -164,9 +206,11 @@
                     }
                 }
 
-                lineage.value = biAssetNoLinMap[selectedAsset.value.typeName]
-                    ? computeLineageForBiAssetNoLin(data.value)
-                    : data.value
+                if (childBiAssetMap[selectedAsset.value.typeName])
+                    lineage.value = computeLineageForChildBiAsset(data.value)
+                else if (parentBiAssetMap[selectedAsset.value.typeName])
+                    lineage.value = computeLineageForParentBiAsset(data.value)
+                else lineage.value = { ...data.value }
 
                 const { guidEntityMap, baseEntityGuid } = lineage.value
                 baseEntity.value = guidEntityMap[baseEntityGuid]
@@ -193,11 +237,11 @@
                 if (['depth', 'direction'].includes(type)) mutate()
             }
 
-            // getBiAssetNoLinParentGuid
-            const getBiAssetNoLinParentGuid = (entity) => {
+            // getChildBiAssetParentGuid
+            const getChildBiAssetParentGuid = (entity) => {
                 let parentGuid = ''
                 Object.entries(entity.attributes).forEach(([key, value]) => {
-                    if (key === biAssetNoLinMap[entity.typeName])
+                    if (key === childBiAssetMap[entity.typeName])
                         parentGuid = value.guid
                 })
                 return parentGuid
@@ -205,14 +249,16 @@
 
             /** LIFECYCLES */
             onMounted(() => {
-                const biAssetNoLinArr = Object.keys(biAssetNoLinMap)
+                const childBiAssetArr = Object.keys(childBiAssetMap)
                 const { data: relData } = useRelations(selectedAsset)
                 watch(relData, () => {
+                    baseEntityRelData.value = relData.value?.entities[0]
+
                     const entity = relData.value?.entities[0]
                     const { typeName } = selectedAsset.value
 
-                    if (biAssetNoLinArr.includes(typeName))
-                        guid.value = getBiAssetNoLinParentGuid(entity)
+                    if (childBiAssetArr.includes(typeName))
+                        guid.value = getChildBiAssetParentGuid(entity)
 
                     mutate()
                 })

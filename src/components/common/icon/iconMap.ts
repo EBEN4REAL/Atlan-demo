@@ -257,7 +257,7 @@ import Refresh from '~/assets/images/icons/Refresh.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
 import NoRuns from '~/assets/images/workflows/noRuns.svg'
-import Skipped from '~/assets/images/skipped.svg'
+
 import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
@@ -775,5 +775,4 @@ export default {
     FilterFunnelDot,
     Comment,
     EmptyRequest,
-    Skipped,
 }

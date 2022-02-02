@@ -1091,7 +1091,10 @@ export default function useAssetInfo() {
         attributes(asset)?.sourceContentMetadataId || '-'
 
     const sourceViewCount = (asset: assetInterface) =>
-        getCountString(attributes(asset)?.sourceViewCount, false)
+        getCountString(attributes(asset)?.sourceViewCount, true)
+
+    const sourceChildCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceChildCount, true)
 
     return {
         attributes,
@@ -1220,5 +1223,6 @@ export default function useAssetInfo() {
         sourceViewCount,
         parentFolder,
         parentModel,
+        sourceChildCount,
     }
 }

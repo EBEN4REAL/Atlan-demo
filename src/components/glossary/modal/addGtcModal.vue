@@ -16,7 +16,10 @@
             <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center">
                     <div
-                        v-if="!glossaryQualifiedName && !showGlossarySelect"
+                        v-if="
+                            entityType === 'AtlasGlossary' ||
+                            (!glossaryQualifiedName && !showGlossarySelect)
+                        "
                         class="flex items-center uppercase"
                     >
                         <AtlanIcon
@@ -26,20 +29,20 @@
                         New Glossary
                     </div>
 
-                    <div v-if="showGlossarySelect && !glossaryQualifiedName" class="mr-3">
+                    <div
+                        v-if="showGlossarySelect && !glossaryQualifiedName"
+                        class="mr-3"
+                    >
                         <GlossarySelect
                             v-model="parentGlossary"
                             @change="handleSelectGlossary"
                             :showAllGlossary="false"
                         ></GlossarySelect>
                     </div>
-                    <GTCSelect
-                        v-if="showGlossarySelect || glossaryQualifiedName"
-                        class="p-1 mr-3 bg-gray-100 rounded"
-                        v-model="localEntityType"
-                    ></GTCSelect>
-
-                    <div v-if="glossaryName" class="flex items-center mr-2">
+                    <div
+                        v-if="glossaryName && entityType !== 'AtlasGlossary'"
+                        class="flex items-center mr-3"
+                    >
                         <AtlanIcon
                             icon="Glossary"
                             class="self-center pr-1"
@@ -48,7 +51,7 @@
                     </div>
                     <div
                         v-if="glossaryName && categoryName && categoryGuid"
-                        class="flex items-center"
+                        class="flex items-center mr-3"
                     >
                         <AtlanIcon
                             icon="Category"
@@ -56,6 +59,14 @@
                         ></AtlanIcon>
                         {{ categoryName }}
                     </div>
+                    <GTCSelect
+                        v-if="
+                            (showGlossarySelect || glossaryQualifiedName) &&
+                            entityType !== 'AtlasGlossary'
+                        "
+                        class="p-1 mr-3 bg-gray-100 rounded"
+                        v-model="localEntityType"
+                    ></GTCSelect>
                 </div>
                 <div class="text-xs">
                     <a-dropdown
@@ -450,8 +461,8 @@
                 }
             })
 
-            watch(selectedGlossary,()=>{
-                parentGlossary.value=parentGlossaryQf.value
+            watch(selectedGlossary, () => {
+                parentGlossary.value = parentGlossaryQf.value
                 console.log(parentGlossaryQf.value)
             })
             const handleSelectGlossary = (val) => {

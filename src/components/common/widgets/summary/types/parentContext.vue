@@ -1,5 +1,5 @@
 <template>
-    <div class="flex gap-x-16">
+    <div class="flex flex-wrap gap-x-16 gap-y-3">
         <div
             v-if="
                 [

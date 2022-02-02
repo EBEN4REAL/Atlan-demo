@@ -148,6 +148,23 @@
 
         <div
             v-if="
+                isBiAsset(selectedAsset) &&
+                ![
+                    'PowerBIWorkspace',
+                    'TableauSite',
+                    'LookerFolder',
+                    'LookerProject',
+                    'LookerQuery',
+                    'LookerTile',
+                ].includes(selectedAsset?.typeName)
+            "
+            class="flex px-5"
+        >
+            <ParentContext :asset="selectedAsset" />
+        </div>
+
+        <div
+            v-if="
                 ['LookerDashboard', 'LookerLook'].includes(
                     selectedAsset.typeName
                 )
@@ -653,6 +670,7 @@
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
+    import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -676,6 +694,7 @@
             Admins,
             SourceViewCount,
             SubFolderCount,
+            ParentContext,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

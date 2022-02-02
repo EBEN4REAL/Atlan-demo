@@ -695,7 +695,7 @@ export default function useEventGraph(
     // removeCHPEdges
     const removeCHPEdges = () => {
         const graphEdges = graph.value.getEdges()
-        const edges = graphEdges.filter((x) => x.id.includes(chp.value.portId))
+        const edges = graphEdges.filter((x) => x.id.includes('port'))
         edges.forEach((edge) => {
             const cell = graph.value.getCellById(edge.id)
             cell.remove()
@@ -706,7 +706,7 @@ export default function useEventGraph(
     const selectPort = (node, e, portId) => {
         resetPortStyle(chp.value.node, chp.value.portId)
 
-        if (chp.value.portId) removeCHPEdges()
+        if (chp.value.portId || che.value) removeCHPEdges()
         activeNodesToggled.value = {}
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
@@ -746,7 +746,7 @@ export default function useEventGraph(
     const deselectPort = () => {
         resetPortStyle(chp.value.node, chp.value.portId)
 
-        if (chp.value.portId) removeCHPEdges()
+        if (chp.value.portId || che.value) removeCHPEdges()
         activeNodesToggled.value = {}
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)

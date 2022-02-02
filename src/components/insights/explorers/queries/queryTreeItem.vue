@@ -104,18 +104,18 @@
                 >
                     <template #extraHeaders>
                         <div
-                            class="flex item-center"
+                            class="flex w-full item-center"
                             v-if="
                                 item?.attributes?.parent?.typeName ===
                                 'Collection'
                             "
                         >
-                            <div class="flex items-center">
+                            <div class="flex items-center w-full">
                                 <div
                                     class="w-1 h-1 mx-2 rounded-full -mt-0.5"
                                     style="background-color: #c4c4c4"
                                 ></div>
-                                <div class="flex items-center h-full">
+                                <div class="flex items-center w-full h-full">
                                     <div
                                         class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                                     >
@@ -126,42 +126,58 @@
                                                     ? 'FolderClosed'
                                                     : 'CollectionIconSmall'
                                             "
-                                            class="h-4 mb-2"
+                                            class="w-4 h-4 mb-2"
                                         />
                                     </div>
 
-                                    <span>{{
-                                        item?.attributes?.parent?.attributes
-                                            ?.name
-                                    }}</span>
+                                    <span class="w-11/12">
+                                        <Tooltip
+                                            clampPercentage="99%"
+                                            :tooltip-text="
+                                                item?.attributes?.parent
+                                                    ?.attributes?.name
+                                            "
+                                            :rows="1"
+                                        />
+                                    </span>
+
+                                    <!-- <span></span> -->
                                 </div>
                             </div>
                         </div>
                         <div
-                            class="flex item-center"
+                            class="flex w-full item-center"
                             v-if="
                                 item?.attributes?.parent?.typeName === 'Folder'
                             "
                         >
-                            <div class="flex items-center">
+                            <div class="flex items-center w-full">
                                 <div
                                     class="w-1 h-1 mx-2 rounded-full -mt-0.5"
                                     style="background-color: #c4c4c4"
                                 ></div>
-                                <div class="flex items-center h-full">
+                                <div class="flex items-center w-full h-full">
                                     <div
                                         class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                                     >
                                         <AtlanIcon
                                             icon="CollectionIconSmall"
-                                            class="h-4 mb-2"
+                                            class="w-4 h-4 mb-2"
                                         />
                                     </div>
 
-                                    <span>{{ collectionName }}</span>
+                                    <!-- <span>{{ collectionName }}</span> -->
+
+                                    <span class="w-11/12">
+                                        <Tooltip
+                                            :tooltip-text="collectionName"
+                                            :rows="1"
+                                            clampPercentage="99%"
+                                        />
+                                    </span>
                                 </div>
                             </div>
-                            <div class="flex items-center">
+                            <!-- <div class="flex items-center">
                                 <div
                                     class="w-1 h-1 mx-2 rounded-full -mt-0.5"
                                     style="background-color: #c4c4c4"
@@ -181,7 +197,7 @@
                                             ?.name
                                     }}</span>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </template>
 
@@ -461,6 +477,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     const {
         inlineTabRemove,
@@ -478,6 +495,7 @@
             QueryFolderSelector,
             PopoverAsset,
             AtlanBtn,
+            Tooltip,
         },
         props: {
             item: {
@@ -850,6 +868,7 @@
                     }
                 })
                 input.addEventListener('blur', (e) => {
+                    console.log('rename error blur: ', error)
                     if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
                         const { data, error } = Insights.CreateQueryFolder(

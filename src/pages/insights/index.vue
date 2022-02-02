@@ -22,6 +22,7 @@
         AssetAttributes,
         SavedQueryAttributes,
         InternalAttributes,
+        AssetRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
@@ -123,7 +124,7 @@
                 const { list, error, isLoading } = useAssetData({
                     facets,
                     dependentKey: ref('insights_saved_query'),
-                    relationAttributes: ref(['name']),
+                    relationAttributes: ref(AssetRelationAttributes),
                     attributes: defaultAttributes,
                     limit: ref(1),
                 })

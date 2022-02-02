@@ -335,7 +335,7 @@
                             icon="CollectionIconSmall"
                             class="mr-1 mb-0.5"
                         />
-                        <span>
+                        <span class="truncate" style="width: 270px">
                             {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>

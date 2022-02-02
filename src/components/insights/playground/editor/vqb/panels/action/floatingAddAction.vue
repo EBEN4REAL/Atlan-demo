@@ -4,10 +4,17 @@
         class="flex items-center bg-white group-hover:border-white float-btn-container"
     >
         <div
-            class="flex items-center justify-center p-2.5 rounded-full cursor-pointer plus-button bg-primary"
-            style="margin-top: -0.25px; margin-left: -1px"
+            class="relative flex items-center group-hover: justify-center p-2.5 rounded-full cursor-pointer bg-white"
         >
             <AtlanIcon class="w-3 h-3" icon="PlusWhite"></AtlanIcon>
+            <div
+                class="absolute dead-center flex items-center justify-center p-2.5 rounded-full cursor-pointer bg-primary"
+            >
+                <AtlanIcon
+                    class="w-3 h-3 plus-button"
+                    icon="PlusWhite"
+                ></AtlanIcon>
+            </div>
         </div>
         <div class="ml-2 gap-x-1 action-buttons-container">
             <template v-for="item in computedItems" :key="item.label">
@@ -88,7 +95,7 @@
                 if (!join) {
                     _items.push({
                         id: 'join',
-                        icon: 'Union',
+                        icon: 'JoinHeader',
                         label: 'Join data',
                     })
                 }
@@ -171,9 +178,15 @@
         .plus-button {
             transform: rotate(90deg);
             transition: all 250ms ease-out;
+            transform-origin: center;
             // &:hover {
             //     transform: rotate(135deg);
             // }
+        }
+        .dead-center {
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
         }
         padding: 2px 8.5px;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);

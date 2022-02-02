@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="computedItems?.length > 0"
+        v-if="computedItems?.length > 0 && isContextTableSelected"
         class="flex items-center bg-white group-hover:border-white float-btn-container"
     >
         <div
@@ -56,6 +56,15 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const isContextTableSelected = computed(() => {
+                const selectPanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'columns'
+                    )
+                return selectPanel?.subpanels[0]?.tableQualfiedName
+                    ? true
+                    : false
+            })
 
             const computedItems = computed(() => {
                 let _items: any = []
@@ -128,6 +137,7 @@
                 syncSortAggregateAndGroupPanel(activeInlineTab)
             }
             return {
+                isContextTableSelected,
                 computedItems,
                 handleAdd,
             }

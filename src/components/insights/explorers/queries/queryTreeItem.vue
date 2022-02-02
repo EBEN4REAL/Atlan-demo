@@ -261,7 +261,7 @@
                                                     ? 'tree-light-color'
                                                     : ''
                                             "
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto outline-none"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -472,13 +472,19 @@
     import AtlanBtn from '@/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
     const {
         inlineTabRemove,
         modifyActiveInlineTabEditor,
         modifyActiveInlineTab,
     } = useInlineTab()
-    const { focusEditor, setSelection } = useEditor()
+    const {
+        focusEditor,
+        setSelection,
+        resetErrorDecorations,
+        setErrorDecorations,
+    } = useEditor()
 
     import { message } from 'ant-design-vue'
 
@@ -631,6 +637,53 @@
             const showPublishPopover = ref(false)
             const showFolderPopover = ref(false)
 
+            const onRunCompletion = (activeInlineTab, status: string) => {
+                console.log('tree item: ', { status, activeInlineTab })
+                if (status === 'success') {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                } else if (status === 'error') {
+                    console.log('tree item: ', { status, activeInlineTab })
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                    // console.log('error deco:', status)
+                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
+                    const errorName =
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+
+                    console.log(
+                        'tree item error data: ',
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    )
+                    if (LINE_ERROR_NAMES.includes(errorName)) {
+                        setErrorDecorations(
+                            activeInlineTab,
+                            toRaw(editorInstance),
+                            toRaw(monacoInstance)
+                        )
+                    }
+                }
+            }
+
+            const onQueryIdGeneration = (
+                activeInlineTab,
+                queryId: string,
+                eventSource: any
+            ) => {
+                /* Setting the particular instance to this tab */
+                activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    queryId
+                activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                    eventSource
+            }
+
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */
                 switch (action) {
@@ -665,7 +718,9 @@
                             getData,
                             limitRows,
                             editorInstance,
-                            monacoInstance
+                            monacoInstance,
+                            onRunCompletion,
+                            onQueryIdGeneration
                         )
                         break
                     }

@@ -9,7 +9,7 @@ export function useRunQueryUtils(editorInstance, monacoInstance) {
         if (status === 'success') {
             /* Resetting the red dot from the editor if it error is not line type */
             resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
-        } else if ((status = 'error')) {
+        } else if (status === 'error') {
             resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
             const errorName =

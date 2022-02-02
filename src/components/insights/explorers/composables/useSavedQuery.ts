@@ -248,7 +248,9 @@ export function useSavedQuery(
         ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
-        monacoInstance: Ref<any>
+        monacoInstance: Ref<any>,
+        onRunCompletion,
+        onQueryIdGeneration
     ) => {
         openSavedQueryInNewTab({
             ...savedQuery?.value,
@@ -256,12 +258,13 @@ export function useSavedQuery(
                 savedQuery?.value?.attributes?.parent?.attributes?.name,
         })
         setTimeout(() => {
+            console.log('active tab copy: ', activeInlineTab)
             queryRun(
                 activeInlineTab,
                 getData,
                 limitRows,
-                null,
-                null,
+                onRunCompletion,
+                onQueryIdGeneration,
                 savedQuery.value?.attributes.rawQuery,
                 editorInstance,
                 monacoInstance,

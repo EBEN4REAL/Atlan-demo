@@ -2,18 +2,17 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col pl-5 mb-3">
+    <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
-        <div
-            class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2 gap-x-4"
-        >
+        <div class="flex justify-between h-12 px-5 pb-2 mt-4 gap-x-4 group">
             <div class="flex-grow font-semibold text-gray-500">
-                <div class="flex items-center gap-x-1">
+                <div class="flex gap-x-1">
                     <Truncate
                         :tooltip-text="data.label"
                         :rows="2"
                         width="500px"
                         placement="left"
+                        :should-open-in-new-tab="true"
                         :classes="
                             checkAccess(page.PAGE_GOVERNANCE)
                                 ? 'text-primary hover:underline'
@@ -27,6 +26,15 @@
                                 : {}
                         "
                     />
+                    <!-- <div class="">
+                        <a
+                            v-if="checkAccess(page.PAGE_GOVERNANCE)"
+                            class="mb-1"
+                            :href="`/governance/custom-metadata/${data.guid}`"
+                            target="_blank"
+                            ><AtlanIcon icon="External"
+                        /></a>
+                    </div> -->
 
                     <a-tooltip>
                         <template #title>
@@ -51,17 +59,20 @@
                     )
                 "
             >
-                <template
+                <div
                     v-if="
                         readOnly &&
                         applicableList.filter((i) => hasValue(i)).length
                     "
+                    class="opacity-0 group-hover:opacity-100"
                 >
-                    <a-button @click="() => (readOnly = false)">
-                        <AtlanIcon icon="Edit" />
-                        <span class="ml-1 text-gray-700">Edit</span>
-                    </a-button>
-                </template>
+                    <span
+                        class="font-bold cursor-pointer hover:underline text-primary"
+                        @click="() => (readOnly = false)"
+                    >
+                        Edit
+                    </span>
+                </div>
                 <div v-else-if="!readOnly" class="flex items-center gap-x-2">
                     <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
@@ -83,11 +94,11 @@
         <!-- header ends here -->
 
         <div
-            class="flex flex-col flex-grow pr-5 overflow-auto scrollheight"
+            class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
             :style="
                 isProfile || $route?.params?.id
                     ? 'max-height: calc(100vh - 7rem)'
-                    : 'max-height: calc(100vh - 12rem)'
+                    : 'max-height: calc(100vh - 13rem)'
             "
         >
             <!-- showing non empty starts here -->
@@ -101,13 +112,14 @@
                         )"
                         :key="x"
                     >
-                        <div class="mb-5">
-                            <div class="flex mb-2 font-normal text-gray-500">
+                        <div class="mb-3">
+                            <div class="flex mb-1 font-normal text-gray-500">
                                 <Truncate
-                                    :tooltipText="a.displayName"
+                                    :tooltip-text="a.displayName"
                                     :rows="1"
                                     width="500px"
                                     placement="left"
+                                    classes="text-gray-500"
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -134,7 +146,7 @@
                     v-if="applicableList.filter((i) => !hasValue(i)).length"
                 >
                     <transition name="slide-fade">
-                        <div v-if="showMore" class="">
+                        <div v-if="showMore" class="pt-2 border-t">
                             <template
                                 v-for="(a, x) in applicableList.filter(
                                     (i) => !hasValue(i)
@@ -142,12 +154,12 @@
                                 :key="x"
                             >
                                 <div
-                                    class="flex mb-2 font-normal text-gray-500 gap-x-2"
+                                    class="flex mb-2 font-normal text-gray-600 gap-x-2"
                                 >
                                     <Truncate
-                                        classes="text-gray-500"
-                                        clampPercentage="80%"
-                                        :tooltipText="a.displayName"
+                                        classes="text-gray-600"
+                                        clamp-percentage="80%"
+                                        :tooltip-text="a.displayName"
                                         width="500px"
                                         placement="left"
                                     />
@@ -224,99 +236,20 @@
                 >
                     <EmptyView empty-screen="EmptyCM" class="h-24 mt-8 mb-6" />
                     <div
-                        class="flex flex-col items-center text-gray-500 gap-y-7"
+                        class="flex flex-col items-center text-gray-500 gap-y-5"
                     >
                         <div class="">
-                            <a-popover
-                                placement="bottom"
-                                :destroy-tooltip-on-hide="true"
-                                trigger="click"
-                            >
-                                <template #content>
-                                    <div
-                                        class="p-4 space-y-4 overflow-x-auto max-h-60 w-44"
-                                    >
-                                        <h1 class="font-bold">Properties</h1>
-                                        <template
-                                            v-for="p in applicableList"
-                                            :key="p.name"
-                                        >
-                                            <div class="flex flex-col">
-                                                <div class="flex gap-x-2">
-                                                    <div
-                                                        class="flex items-center w-full gap-x-1"
-                                                    >
-                                                        <div
-                                                            class="flex-grow text-gray-700"
-                                                        >
-                                                            <Truncate
-                                                                :tooltip-text="
-                                                                    p.displayName
-                                                                "
-                                                                width="500px"
-                                                                placement="left"
-                                                            />
-                                                        </div>
-                                                        <a-tooltip>
-                                                            <template #title>
-                                                                <span>{{
-                                                                    p.options
-                                                                        .description
-                                                                }}</span>
-                                                            </template>
-                                                            <div class="">
-                                                                <AtlanIcon
-                                                                    v-if="
-                                                                        p
-                                                                            .options
-                                                                            .description
-                                                                    "
-                                                                    class="h-3 text-gray-400 hover:text-gray-500"
-                                                                    icon="Info"
-                                                                />
-                                                            </div>
-                                                        </a-tooltip>
-                                                    </div>
-                                                    <span
-                                                        class="flex items-center text-gray-500 capitalize gap-x-1"
-                                                    >
-                                                        <div class="flex">
-                                                            <AtlanIcon
-                                                                v-if="
-                                                                    p.options
-                                                                        .multiValueSelect ===
-                                                                    'true'
-                                                                "
-                                                                icon="Array"
-                                                                class="h-3"
-                                                            />
-                                                            <AtlanIcon
-                                                                :icon="
-                                                                    getDataTypeIcon(
-                                                                        p
-                                                                            ?.options
-                                                                            ?.primitiveType
-                                                                    )
-                                                                "
-                                                                class="h-3"
-                                                            />
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                                <span
-                                    class="underline cursor-pointer text-primary"
-                                    >{{
-                                        applicableList.length
-                                    }}
-                                    properties</span
-                                >
-                            </a-popover>
-                            <span
-                                v-if="
+                            <div v-if="isEvaluating" class="w-64">
+                                <a-skeleton
+                                    :loading="true"
+                                    active
+                                    class="w-full"
+                                    :title="false"
+                                    :paragraph="{ rows: 2 }"
+                                />
+                            </div>
+                            <template
+                                v-else-if="
                                     selectedAssetUpdatePermission(
                                         selectedAsset,
                                         isDrawer,
@@ -324,9 +257,18 @@
                                     )
                                 "
                             >
-                                are available to be populated.</span
-                            >
-                            <span v-else> haven’t been populated yet. </span>
+                                <PropertyPopover
+                                    :applicable-list="applicableList"
+                                />
+
+                                <span> are available to be populated.</span>
+                            </template>
+                            <template v-else>
+                                <PropertyPopover
+                                    :applicable-list="applicableList"
+                                />
+                                <span> haven’t been populated yet. </span>
+                            </template>
                         </div>
                         <AtlanButton
                             v-if="
@@ -350,12 +292,13 @@
             <!-- if edit mode show everything as it is -->
             <template v-if="!readOnly">
                 <template v-for="(a, x) in applicableList" :key="x">
-                    <div class="mb-5">
-                        <div class="flex mb-2 font-normal text-gray-500">
+                    <div class="mb-3">
+                        <div class="flex mb-1 font-normal text-gray-500">
                             <Truncate
                                 :tooltip-text="a.displayName"
                                 width="500px"
                                 placement="left"
+                                classes="text-gray-500"
                             />
                             <a-tooltip>
                                 <template #title>
@@ -396,6 +339,7 @@
         Ref,
         h,
         resolveComponent,
+        inject,
     } from 'vue'
     import {
         whenever,
@@ -409,25 +353,22 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-    import AtlanButton from '@/UI/button.vue'
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
-    import { getDataTypeIcon } from '~/utils/dataType'
     import Truncate from '@/common/ellipsis/index.vue'
     import { truncate } from '~/utils/string'
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
+    import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
-            AtlanButton,
             EmptyView,
         },
         props: {
@@ -453,6 +394,7 @@
             const showMore = ref(false)
             const guid = ref()
             const { checkAccess } = useAuth()
+            const isEvaluating = inject('isEvaluating')
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
@@ -610,11 +552,9 @@
             }
 
             const handleCancel = () => {
-                cancel()
-                return
-                //! disabling unsaved changes confirmation temporarily
                 if (isEdit.value) {
                     Modal.confirm({
+                        icon: null,
                         title: () =>
                             h(
                                 'span',
@@ -707,11 +647,12 @@
             })
 
             return {
+                isEvaluating,
                 checkAccess,
                 page,
                 getHumanTypeName,
                 isProfile,
-                getDataTypeIcon,
+
                 showMore,
                 readOnlySort,
                 hasValue,
@@ -748,4 +689,5 @@
     .slide-fade-leave-to {
         max-height: 0;
     }
+    /* // m-0 h-10 mt-4 mx-auto w-32 */
 </style>

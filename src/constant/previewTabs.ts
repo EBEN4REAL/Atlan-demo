@@ -65,8 +65,6 @@ export const previewTabs = [
         component: 'relations',
         excludes: [
             'Connection',
-            'Database',
-            'Schema',
             'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
@@ -79,7 +77,7 @@ export const previewTabs = [
             'Procedure',
         ],
         icon: 'Relation',
-        tooltip: 'Relationships',
+        tooltip: 'Related Assets',
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'relations',

@@ -25,6 +25,7 @@ export default function useBody({
     //         },
     //     },
     // ])
+
     base.filter('term', '__typeName.keyword', 'Collection')
     base.filter('term', '__state', 'ACTIVE')
     if (searchText)

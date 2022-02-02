@@ -1,50 +1,26 @@
 <template>
     <div>
-        <div
-            @mouseover="handleMouseOver"
-            @mouseout="handleMouseOut"
-            :class="[
-                expand
-                    ? 'border-gray-300 rounded  border '
-                    : 'border-white  rounded border ',
-                containerHovered ? 'border-gray-300' : '',
-            ]"
-        >
+        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
             <div
                 @click="toggleExpand"
-                class="box-border relative flex items-center p-3 cursor-pointer"
+                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
             >
-                <div class="mr-3" @click="toggleExpand">
-                    <AtlanIcon
-                        @click="toggleExpand"
-                        icon="ChevronRight"
-                        :class="
-                            expand
-                                ? 'w-4 h-4 chevron rotate-90'
-                                : 'w-4 h-4 chevron rotate-0'
-                        "
-                    />
-                </div>
-                <div class="flex items-center justify-between w-full">
+                <div
+                    class="flex items-center justify-between w-full min-h-panel-header"
+                >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="
-                                !expand
-                                    ? [
-                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
-                                      ]
-                                    : [
-                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
-                                      ]
-                            "
+                            class="flex items-center justify-center mr-2 rounded-md p-1.5"
+                            :class="[
+                                expand ? 'bg-primary-light' : 'bg-gray-100',
+                            ]"
                             style="z-index: 2"
                         >
                             <AtlanIcon
-                                icon="Columns"
-                                class="w-4 h-4"
+                                icon="TableGray"
                                 :class="[
-                                    expand ? 'text-primary' : 'text-gray-500',
+                                    expand ? 'text-primary' : '',
+                                    'w-4 h-4',
                                 ]"
                             />
                         </div>
@@ -95,33 +71,24 @@
                         </div>
                     </div>
                 </div>
-
-                <div
-                    :class="[
-                        expand
-                            ? 'absolute bg-gray-300 opacity-0'
-                            : 'absolute bg-gray-300 ',
-                        containerHovered ? 'opacity-0' : '',
-                    ]"
-                    :style="`width: 1px; left: 55px; z-index: 1; ${findTimeLineHeight(
-                        Number(index)
-                    )}`"
-                ></div>
             </div>
             <!-- Show on expand -->
             <keep-alive>
-                <ColumnSubPanel
-                    v-model:subpanels="
-                        activeInlineTab.playground.vqb.panels[index].subpanels
-                    "
-                    v-model:selectedTables="
-                        activeInlineTab.playground.vqb.selectedTables
-                    "
-                    :expand="expand"
-                    v-if="expand"
-                />
+                <transition name="collapse-smooth">
+                    <ColumnSubPanel
+                        v-model:subpanels="
+                            activeInlineTab.playground.vqb.panels[index]
+                                .subpanels
+                        "
+                        v-model:selectedTables="
+                            activeInlineTab.playground.vqb.selectedTables
+                        "
+                        :expand="expand"
+                        v-if="expand"
+                    />
+                </transition>
             </keep-alive>
-            <FooterActions
+            <!-- <FooterActions
                 v-model:submenuHovered="submenuHovered"
                 v-model:containerHovered="containerHovered"
                 @add="(type, panel) => handleAddPanel(index, type, panel)"
@@ -130,21 +97,10 @@
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
                         Number(index) &&
+                    activeInlineTab.playground.vqb.selectedTables.length > 0 &&
                     !readOnly
                 "
-            />
-        </div>
-        <div
-            @click.stop="() => {}"
-            class="relative w-full h-4"
-            v-if="
-                Number(index) < activeInlineTab.playground.vqb.panels.length - 1
-            "
-        >
-            <div
-                class="absolute h-4 bg-gray-300 left-14"
-                style="width: 1px; top: -1px"
-            ></div>
+            /> -->
         </div>
     </div>
 </template>
@@ -331,6 +287,34 @@
     })
 </script>
 <style lang="less" scoped>
+    .min-h-panel-header {
+        min-height: 36px;
+    }
+    .collapse-smooth-enter-active {
+        transition: all 0.25s ease-out;
+        overflow-y: hidden;
+    }
+    .collapse-smooth-leave-active {
+        transition: all 0.25s ease;
+        overflow-y: hidden;
+    }
+    .collapse-smooth-enter-from {
+        height: 0px;
+        // opacity: 0;
+    }
+    .collapse-smooth-enter-to {
+        height: 56px;
+    }
+    .collapse-smooth-leave-from {
+        height: 56px !important;
+        opacity: 1;
+    }
+
+    .collapse-smooth-leave-to {
+        // transform: translateX(20px);
+        height: 0px !important;
+        opacity: 0;
+    }
     .chevron {
         transition: all ease 0.1s;
     }

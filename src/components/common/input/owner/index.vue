@@ -210,7 +210,9 @@
 
             const handleClickUser = (username: string) => {
                 setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+                showUserPreview({
+                    allowed: ['about', 'assets', 'groups', 'Integrations'],
+                })
             }
             const setLocalValue = (objOwners) => {
                 localValue.value = objOwners

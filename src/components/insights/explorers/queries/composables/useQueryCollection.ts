@@ -1,10 +1,6 @@
-import { Ref, ref, watch } from 'vue'
-
-// import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
-// import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
+import { Ref, ref, watch, toRaw, computed } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
-// import { map } from '~/services/meta/insights/key'
 import { map } from '~/services/meta/search/key'
 import { InternalAttributes } from '~/constant/projection'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -54,6 +50,7 @@ const useQueryCollection = () => {
                 createdBy: username.value,
                 groups: groups.value,
             }),
+            suppressLogs: true,
             attributes,
         }
     }
@@ -184,12 +181,20 @@ const useQueryCollection = () => {
         isCollectionCreated: Ref<Boolean>,
         collectionGuid: Ref
     ) => {
+        //cases taken under consideration:
+        // 1. when collection is created, select that
+        // 2. if url has a collection guid, look for it, if found, select. else select another
+        // 3. if a saved query is created/opened from tab, select corresponding collection
+        // 4. for unsaved query opened in tab, select the collection corresponding to that
+
         if (collection?.length > 0) {
             if (activeInlineTab.value?.key) {
+                // console.log('activeInlineTab in if: ', activeInlineTab)
+
                 let col = collection[0]
 
                 const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
                 if (isCollectionCreated.value) {
                     let l = collection.length
@@ -198,19 +203,17 @@ const useQueryCollection = () => {
 
                     console.log('set collection create :')
                 } else {
-                    if(collectionGuid?.value) {
+                    if (collectionGuid?.value) {
                         console.log('set collection guid collection:')
-                        col = collection.find((col) => col?.guid == collectionGuid.value)
+                        col = collection.find(
+                            (col) => col?.guid == collectionGuid.value
+                        )
 
                         if (col) {
                         } else {
                             col = collection[0]
-                            // message.info(
-                            //     `Either collection does not exist or you don't have the access to it`
-                            // )
                         }
-                        // collectionGuid.value = null
-                    } else if (activeInlineTab.value?.queryId) {
+                    } else if (activeInlineTabCopy?.queryId) {
                         col = collection.find(
                             (col) =>
                                 col?.attributes?.qualifiedName ===
@@ -233,26 +236,20 @@ const useQueryCollection = () => {
                                     .qualifiedName
                         )
 
-                        if(!col) {
-                            col=collection[0]
+                        if (!col) {
+                            col = collection[0]
                         }
                     }
                 }
 
-                if(!col) {
-                    col=collection[0]
+                if (!col) {
+                    col = collection[0]
                 }
 
                 activeInlineTabCopy.explorer.queries.collection = {
                     guid: col?.guid,
-                    qualifiedName: col?.attributes?.qualifiedName
-
+                    qualifiedName: col?.attributes?.qualifiedName,
                 }
-
-                // activeInlineTabCopy.explorer.queries.collection.guid = col?.guid
-
-                // activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-                //     col?.attributes?.qualifiedName
 
                 modifyActiveInlineTab(
                     activeInlineTabCopy,
@@ -263,53 +260,92 @@ const useQueryCollection = () => {
         }
     }
 
-    // const selectCollectionFromUrl = (
-    //     collection: QueryCollection[],
-    //     activeInlineTab: Ref<activeInlineTabInterface>,
-    //     tabs: Ref<activeInlineTabInterface[]>,
-    //     collectionGuid
-    // ) => {
-    //     if (collection?.length > 0) {
-    //         if (activeInlineTab.value?.key) {
-    //             let col = undefined
+    const hasCollectionReadAccess = (collection: QueryCollection) => {
+        // Viewer
 
-    //             console.log('collections: ', collection)
+        let viewerUsers = collection.attributes?.viewerUsers
+            ? collection.attributes?.viewerUsers
+            : []
+        let viewerGroups = collection.attributes?.viewerGroups
+            ? collection.attributes?.viewerGroups
+            : []
 
-    //             const activeInlineTabCopy: activeInlineTabInterface =
-    //                 Object.assign({}, activeInlineTab.value)
+        // console.log('permission: ',toRaw(viewerUsers))
 
-    //             if (collectionGuid.value) {
-    //                 col = collection.find((col) => col?.guid == collectionGuid.value)
+        if (viewerUsers?.length) {
+            let v1 = viewerUsers.find((el) => el === username.value)
+            if (v1) {
+                return true
+            }
+        }
 
-    //                 if (col) {
-    //                 } else {
-    //                     col = collection[0]
-    //                     message.info(
-    //                         `Either collection does not exist or you don't have the access to it`
-    //                     )
-    //                 }
-    //                 collectionGuid.value = null
-    
-    //                 activeInlineTabCopy.explorer.queries.collection.guid = col.guid
-    
-    //                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-    //                     col?.attributes?.qualifiedName
-    
-    //                 modifyActiveInlineTab(
-    //                     activeInlineTabCopy,
-    //                     tabs,
-    //                     activeInlineTabCopy.isSaved
-    //                 )
-    //             }
+        if (viewerGroups?.length) {
+            let filteredArray = viewerGroups.filter((value) =>
+                groups.value.includes(value)
+            )
+            return filteredArray.length > 0
+        }
+        return false
+    }
 
-                
-    //         }
-    //     } 
-    // }
+    const hasCollectionWriteAccess = (collection: QueryCollection) => {
+        let adminUsers = collection.attributes?.adminUsers
+            ? collection.attributes?.adminUsers
+            : []
+        let adminGroups = collection.attributes?.adminGroups
+            ? collection.attributes?.adminGroups
+            : []
+
+        if (adminUsers?.length) {
+            let v1 = adminUsers.find((el) => el === username.value)
+            if (v1) {
+                return true
+            }
+        }
+        if (adminGroups?.length) {
+            let filteredArray = adminGroups.filter((value) =>
+                groups.value.includes(value)
+            )
+            return filteredArray.length > 0
+        }
+        return false
+    }
+
+    const isCollectionCreatedByCurrentUser = (collection: QueryCollection) => {
+        if (collection) {
+            return username.value === collection.attributes?.__createdBy
+        } else {
+            return false
+        }
+    }
+
+    const readAccessCollections = computed(() => {
+        let collectionList = queryCollections.value?.filter((col) => {
+            return (
+                !hasCollectionWriteAccess(col) &&
+                !isCollectionCreatedByCurrentUser(col)
+            )
+        })
+
+        return collectionList
+    })
+
+    const writeAccessCollections = computed(() => {
+        let collectionList = queryCollections.value?.filter((col) => {
+            return (
+                hasCollectionWriteAccess(col) ||
+                isCollectionCreatedByCurrentUser(col)
+            )
+        })
+
+        return collectionList
+    })
 
     return {
         queryCollectionsError,
         queryCollections,
+        readAccessCollections,
+        writeAccessCollections,
         queryCollectionsLoading,
         selectFirstCollectionByDefault,
         refetchQueryCollection: refreshBody,
@@ -317,7 +353,6 @@ const useQueryCollection = () => {
         setCollectionsDataInInlineTab,
         createCollection,
         updateCollection,
-        // selectCollectionFromUrl,
     }
 }
 

@@ -378,6 +378,8 @@
                 false,
                 isDrawer.value
             )
+            provide('isEvaluating', isEvaluating)
+
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {
@@ -481,7 +483,7 @@
                 })
             }
 
-            provide('isProfile', isProfile.value)
+            provide('isProfile', isProfile)
 
             return {
                 tabChildRef,
@@ -542,11 +544,6 @@
             }
             :global(.ant-tabs-tab) {
                 padding: 3px 8px !important;
-                &:hover {
-                    path {
-                        stroke: #5277d6 !important;
-                    }
-                }
 
                 @apply justify-center;
             }

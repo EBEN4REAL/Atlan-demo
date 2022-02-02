@@ -2,11 +2,23 @@
     <div
         class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:text-white group"
         :data-test-id="displayName"
-        :style="`background-color: ${noHover ? '' : bgHover}!important;`"
-        @mouseenter="toggleColor"
-        @mouseleave="toggleColor"
+        :style="`background-color: ${bgHover}!important;`"
+        @mouseenter="
+            () => {
+                mouseEnter = true
+            }
+        "
+        @mouseleave="
+            () => {
+                mouseEnter = false
+            }
+        "
     >
-        <ClassificationIcon :icon="icon" :color="shieldColour" />
+        <ClassificationIcon
+            :icon="icon"
+            :color="shieldColour"
+            :mouse-enter="mouseEnter"
+        />
 
         <div class="ml-1">
             {{ displayName || name }}
@@ -74,19 +86,22 @@
         setup(props, { emit }) {
             const { name, displayName, color, createdBy, isPropagated } =
                 toRefs(props)
-            const shieldColour = ref(unref(color).toLowerCase())
             const originalColour = ref(unref(color).toLowerCase())
-            const bgColor = ref('white')
+
+            const mouseEnter = ref(false)
+            const bgColor = computed(() =>
+                mouseEnter.value ? originalColour.value : 'white'
+            )
+            const shieldColour = computed(() =>
+                mouseEnter.value ? 'white' : originalColour.value
+            )
             const icon = computed(() => {
                 if (isPropagated.value) {
                     return 'ClassificationPropagated'
                 }
-                if (
-                    createdBy.value?.length &&
-                    createdBy.value?.includes('service-account-atlan')
-                ) {
-                    return 'ClassificationAtlan'
-                }
+                // if (createdBy.value?.length && createdBy.value?.includes('service-account-atlan')) {
+                //     return mouseEnter.value ? "ClassificationAtlanHollow" : "ClassificationAtlan"
+                // }
                 return 'ClassificationShield'
             })
 
@@ -114,6 +129,7 @@
                 bgColor,
                 toggleColor,
                 icon,
+                mouseEnter,
             }
         },
     })

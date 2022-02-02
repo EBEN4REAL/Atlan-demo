@@ -10,14 +10,14 @@
         <div class="flex items-center px-3 text-gray-700 mt-0.5">
             <span class="mr-2">
                 {{
-                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount} rows`
+                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows`
                 }}
             </span>
             <div class="w-1 h-1 mr-2 bg-gray-500 rounded-full mb-0.5"></div>
 
             <span class="mr-2">
                 {{
-                    activeInlineTab.playground.editor.columnList.length
+                    activeInlineTab.playground.editor.columnList.length?.toLocaleString()
                 }}&nbsp;cols
             </span>
             <!-- Execution Time will be shown when it is >0 -->

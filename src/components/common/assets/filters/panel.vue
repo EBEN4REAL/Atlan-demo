@@ -75,6 +75,7 @@
             :is="item.component"
             :key="componentKey"
             v-model="facetMap[item.id]"
+            :show-none="item.showNone"
             :item="item"
             v-bind="item.propsToComponent"
             :select-user-key="item.selectUserKey || 'username'"
@@ -271,6 +272,18 @@
                 }
 
                 if (id === 'statusRequest' && facetMap.value[id]) {
+                    return facetMap.value[id]?.length < 3
+                        ? facetMap.value[id]
+                              .map(
+                                  (_id: string) =>
+                                      item.value.data.find(
+                                          (status) => status.id === _id
+                                      ).label
+                              )
+                              .join(',')
+                        : `${facetMap.value[id]?.length} applied`
+                }
+                if (id === 'assetType' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
                         ? facetMap.value[id].join(',')
                         : `${facetMap.value[id]?.length} applied`

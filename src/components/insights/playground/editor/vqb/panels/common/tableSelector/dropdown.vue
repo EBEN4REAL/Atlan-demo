@@ -155,7 +155,7 @@
     import Loader from '@common/loaders/page.vue'
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
-    import { pluralizeString } from '~/utils/string'
+    import { pluralizeString, getValidStringUsingCount } from '~/utils/string'
 
     export default defineComponent({
         name: 'Multi Column Select',
@@ -190,6 +190,7 @@
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalViewsCount = inject('totalViewsCount') as Ref<number>
             const tableQueryText = inject('tableQueryText') as Ref<String>
 
             const TableList = inject('TableList') as Ref<any[]>
@@ -216,9 +217,22 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const placeholder = computed(() => {
-                let data = `Search from ${totalTablesCount.value} columns`
+                let data = `Search from ${
+                    totalTablesCount.value
+                } ${pluralizeString(
+                    'table',
+                    totalTablesCount.value,
+                    false
+                )} ${getValidStringUsingCount(
+                    totalViewsCount.value,
+                    `and ${totalViewsCount.value} ${pluralizeString(
+                        'view',
+                        totalViewsCount.value,
+                        false
+                    )}`
+                )}`
                 if (isTableLoading.value) {
-                    data = 'Loading...'
+                    data = 'Loading tables and views...'
                 }
 
                 return data

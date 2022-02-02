@@ -12,12 +12,11 @@
                     >
                         <AtlanIcon
                             v-if="tab?.icon"
-                            :icon="
-                                activeTabId === tab.id
-                                    ? `${tab.icon}Active`
-                                    : `${tab.icon}`
-                            "
+                            :icon="`${tab.icon}`"
                             class="w-6 h-6"
+                            :color="
+                                activeTabId === tab.id ? '#5277D7' : '#6f7590'
+                            "
                         />
                         <div
                             class="absolute top-0 right-0 h-full"
@@ -78,7 +77,8 @@
                         "
                         class="absolute h-full full-width"
                     >
-                        <Variables />
+                        <!-- <Variables /> -->
+                        <History />
                     </div>
                     <!--explorer pane end -->
                 </pane>
@@ -133,8 +133,7 @@
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries/index.vue'
-    import Variables from './explorers/variables/index.vue'
-    import History from './explorers/history.vue'
+    import History from './explorers/history/index.vue'
     import Schedule from './explorers/schedule.vue'
 
     import useInsightsTabList from './common/composables/useTabList'
@@ -176,7 +175,6 @@
             AssetSidebar,
             Schema,
             Queries,
-            Variables,
             History,
             Schedule,
         },
@@ -217,6 +215,8 @@
                 queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
+                readAccessCollections,
+                writeAccessCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
                 // selectCollectionFromUrl,
@@ -278,7 +278,7 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            watch(activeInlineTab, () => {})
+            // watch(activeInlineTab, () => {})
 
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
@@ -299,6 +299,11 @@
             const monacoInstance: Ref<any> = ref()
 
             const editorContentSelectionState: Ref<boolean> = ref(false)
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
 
             const setEditorInstance = (
                 editorInstanceParam: any,
@@ -362,6 +367,9 @@
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
+                readAccessCollections,
+                writeAccessCollections,
+                limitRows: limitRows,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -391,6 +399,14 @@
                                 ?.name,
                     })
 
+                    selectFirstCollectionByDefault(
+                        queryCollections.value,
+                        activeInlineTab,
+                        tabsArray,
+                        false,
+                        undefined
+                    )
+
                     // console.log('run query: ', savedQueryInfo.value)
 
                     if (runQuery.value === 'true') {
@@ -408,6 +424,22 @@
                     }
                 }
             })
+
+            watch(
+                () =>
+                    activeInlineTab.value?.explorer.queries.collection
+                        .qualifiedName,
+                () => {
+                    // console.log('collection change')
+                    selectFirstCollectionByDefault(
+                        queryCollections.value,
+                        activeInlineTab,
+                        tabsArray,
+                        false,
+                        undefined
+                    )
+                }
+            )
             watch(editorConfig, () => {
                 console.log('editorConfig CHanged')
                 setUserPreferenceToLocalStorage(editorConfig.value)
@@ -461,11 +493,6 @@
                     // focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
-
-            const limitRows = ref({
-                checked: true,
-                rowsCount: 100,
-            })
 
             // FIXME: refactor it
 
@@ -972,9 +999,9 @@
     }
 </style>
 <style lang="less" scoped>
-    .placeholder {
-        background-color: #f4f4f4;
-    }
+    // .placeholder {
+    //     background-color: #f4f4f4;
+    // }
     .active-placeholder {
         @apply bg-primary;
     }

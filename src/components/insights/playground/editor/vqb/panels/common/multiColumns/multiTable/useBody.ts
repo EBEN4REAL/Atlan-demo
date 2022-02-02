@@ -22,6 +22,7 @@ export default function useBody({
     context,
 }: useBodyProps) {
     const base = bodybuilder()
+    base.filter('term', '__state', 'ACTIVE')
 
     base.from(from || 0)
     base.size(limit || 100)
@@ -95,6 +96,7 @@ export default function useBody({
             }
         }
     }
+    base.aggregation('terms', '__typeName.keyword')
 
     const tempQuery = base.build()
     const query = {

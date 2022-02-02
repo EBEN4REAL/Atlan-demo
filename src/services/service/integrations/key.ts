@@ -14,8 +14,6 @@ export const UNFURL_SLACK_MESSAGE = 'UNFURL_SLACK_MESSAGE'
 export const CREATE_SLACK_APP = 'CREATE_SLACK_APP'
 
 export const map = {
-    [LIST_INTEGRATIONS_TYPES]: () =>
-        getAPIPath('/service', '/integrationtypes'),
     [LIST_INTEGRATIONS]: () => getAPIPath('/service', '/integrations'),
     [SHARE_SLACK]: () => getAPIPath('/service', `/slack/share`),
     [GET_INTEGRATION]: ({ id }: PathParams) =>

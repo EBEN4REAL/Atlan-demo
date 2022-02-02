@@ -2,12 +2,9 @@
     <div
         ref="container"
         @click="toggleFocus"
-        class="relative flex items-center w-full border cursor-pointer group"
+        class="relative flex items-center w-full border border-gray-200 cursor-pointer group"
         :class="[
-            isAreaFocused
-                ? ' container-box-shadow-focus'
-                : 'border-gray-300 container-box-shadow',
-            ,
+            isAreaFocused ? '' : 'border-gray-200',
             'flex flex-wrap items-center  rounded selector-height',
             disabled ? ' cursor-not-allowed disable-bg ' : '',
         ]"
@@ -89,16 +86,29 @@
 
             const tableQueryText = ref('')
 
-            const totalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
-
             const {
                 list: TableList,
                 replaceBody: replaceTableBody,
                 data: tablesData,
                 isLoading: isTableLoading,
+                aggregations,
             } = useAssetListing('', false)
+
+            const totalViewsCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'view'
+                    )?.doc_count || 0
+                )
+            })
+
+            const totalTablesCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'table'
+                    )?.doc_count || 0
+                )
+            })
 
             const getTableInitialBody = () => {
                 return {
@@ -187,6 +197,7 @@
                 TableList: TableList,
                 isAreaFocused: isAreaFocused,
                 totalTablesCount: totalTablesCount,
+                totalViewsCount: totalViewsCount,
                 isTableLoading: isTableLoading,
             }
             useProvide(provideData)

@@ -57,12 +57,11 @@
                     />
                 </a-form-item> -->
                 <a-form-item label="Values">
-                    <a-select
-                        mode="tags"
-                        placeholder="Enter enum values"
+                    <MultiInput
+                        placeholder='Enter values separated by a  ";" or "↵"'
                         :disabled="!isEditing"
                         :value="enumValues"
-                        :open="false"
+                        delimiter=";"
                         @change="handleChange"
                     />
                     <!-- TODO: Can this be done using computed and v-modal -->
@@ -83,9 +82,11 @@
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import map from '~/constant/accessControl/map'
     import { useTypedefStore } from '~/store/typedef'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     export default defineComponent({
         components: {
+            MultiInput,
             CreateUpdateInfo,
         },
         props: {

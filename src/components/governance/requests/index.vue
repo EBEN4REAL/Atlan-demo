@@ -7,7 +7,10 @@
         :closable="false"
         :class="'drawer-filter-request'"
     >
-        <div class="relative h-full pt-4 pb-10 overflow-scroll bg-gray-50">
+        <div
+            class="relative h-full pb-10 overflow-scroll bg-gray-50"
+            :class="$style['request-filter-wrapper']"
+        >
             <!-- <div
                 :class="`close-icon ${
                     !drawerFilter && 'closed'
@@ -23,7 +26,7 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <div class="px-2 filter-container">
+            <div class="filter-container">
                 <AssetFilters
                     v-model="facets"
                     :filter-list="requestFilter"
@@ -34,7 +37,7 @@
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
-                    <div class="mt-4 mb-4 wrapper-filter">
+                    <!-- <div class="px-2 mt-4 mb-4 wrapper-filter">
                         <Connector
                             v-model:data="connectorsData"
                             class=""
@@ -60,13 +63,13 @@
                             @change="handleChangeConnector"
                             @update:data="setConnector"
                         />
-                    </div>
+                    </div> -->
                 </AssetFilters>
             </div>
         </div>
     </a-drawer>
     <DefaultLayout title="Requests" class="px-6 governance-request">
-        <div class="relative mt-3 border rounded-md">
+        <div class="relative mt-3 border border-gray-300 rounded-md">
             <div class="wrapper-scoll left" @mouseenter="mouseEnterContainer" />
             <div
                 class="wrapper-scoll right"
@@ -102,7 +105,7 @@
                             >
                                 <AtlanIcon
                                     :icon="
-                                        Object.keys(facets).length > 0
+                                        isFilterApplied
                                             ? 'FilterFunnelDot'
                                             : 'FilterFunnel'
                                     "
@@ -127,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="" icon="Retry2" />
+                        <AtlanIcon class="text-gray-700" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -139,37 +142,39 @@
                 <AtlanLoader class="h-10" />
             </div>
             <div v-show="!listLoading && requestList.length">
-                <RequestModal
+                <!-- <RequestModal
                     v-if="requestList[selectedIndex]"
                     v-model:visible="isDetailsVisible"
                     :request="requestList[selectedIndex]"
                     @up="traverseUp"
                     @down="traverseDown"
                     @action="handleRequestAction($event, index)"
-                />
-                <div class="h-6" @mouseenter="mouseEnterContainer" />
-                <VirtualList
-                    :data="requestList"
-                    data-key="id"
-                    class="container-scroll"
-                    @mouseleave="mouseLeaveContainer"
+                /> -->
+                <div class="h-4" @mouseenter="mouseEnterContainer" />
+                <transition-group
+                    tag="div"
+                    name="request-done"
+                    class="overflow-auto container-scroll"
                 >
-                    <template #default="{ item, index }">
-                        <!-- @select="selectRequest(item.id, index)" -->
+                    <div
+                        v-for="(item, index) in requestList"
+                        :key="item.id"
+                        @mouseleave="mouseLeaveContainer"
+                    >
                         <RequestListItem
+                            :active="index === selectedIndex"
                             :request="item"
                             :active-hover="activeHover"
-                            :active="index === selectedIndex"
                             :selected="isSelected(item.id)"
                             @mouseenter="handleMouseEnter(item.id, index)"
                             @action="handleRequestAction($event, index)"
                             @mouseEnterAsset="mouseEnterAsset(item.id, index)"
                         />
-                    </template>
-                </VirtualList>
+                    </div>
+                </transition-group>
                 <!-- <div class="h-3" @mouseenter="mouseEnterContainer" /> -->
                 <div
-                    class="flex items-center justify-between p-4 bg-white border-t"
+                    class="flex items-center justify-between p-4 bg-white border-t border-gray-light"
                     @mouseenter="mouseEnterContainer"
                 >
                     <div class="text-gray-500">
@@ -194,13 +199,27 @@
             </div>
             <div
                 v-if="!listLoading && !requestList.length"
-                class="flex items-center justify-center h-full mt-5 mb-10"
+                class="flex items-center justify-center h-full mt-5 mb-10 container-empty"
             >
                 <div
-                    v-if="searchTerm?.length > 0"
+                    v-if="!searchTerm?.length && !isFilterApplied"
+                    class="flex flex-col items-center"
+                >
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
+                    <div
+                        class="px-10 mx-10 mt-2 text-xl font-bold text-center text-gray-700"
+                    >
+                        All caught up!!
+                    </div>
+                    <div class="px-10 mx-10 mt-2 text-center text-gray-400">
+                        There are no requests at this time
+                    </div>
+                </div>
+                <div
+                    v-else-if="searchTerm?.length > 0"
                     class="flex flex-col items-center justify-center h-96"
                 >
-                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                     <span class="mt-4 text-center text-gray-500 w-72">
                         Oops… we didn’t find any requests that match this search
                     </span>
@@ -211,10 +230,10 @@
                     >
                 </div>
                 <div
-                    v-else-if="Object.keys(facets).length > 0"
+                    v-else-if="isFilterApplied"
                     class="flex flex-col items-center justify-center h-96"
                 >
-                    <atlan-icon icon="NoRequestFound" class="h-36" />
+                    <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                     <span class="mt-4 text-center text-gray-500 w-72">
                         Oops… we didn’t find any requests that match this filter
                     </span>
@@ -302,6 +321,18 @@
             })
             const requestList = ref([])
 
+            const isFilterApplied = computed(() => {
+                // * sanitization of facets object should be done by the filter component, handling it here due to potential regression
+                if (!Object.values(filters.value)?.length) return false
+                const hasValue = Object.values(filters.value).some((v) => {
+                    if (typeof v === 'object' && Object.keys(v).length)
+                        return true
+                    if (Array.isArray(v) && v.length) return true
+                    return false
+                })
+                return hasValue
+            })
+
             const pagination = ref({
                 limit: 40,
                 offset: 0,
@@ -316,12 +347,13 @@
             } = useRequestList(searchTerm, filters, pagination)
 
             watch(response, () => {
-                requestList.value =
-                    response.value?.records?.filter((req) =>
-                        Array.isArray(filters.value.status)
-                            ? filters.value.status.includes(req.status)
-                            : req.status === filters.value.status
-                    ) || []
+                // requestList.value =
+                //     response.value?.records?.filter((req) =>
+                //         Array.isArray(filters.value.status)
+                //             ? filters.value.status.includes(req.status)
+                //             : req.status === filters.value.status
+                //     ) || []
+                requestList.value = response.value?.records || []
                 pagination.value.totalPages =
                     response.value.filterRecord / pagination.value.limit
                 pagination.value.totalData = response.value.filterRecord
@@ -425,6 +457,7 @@
                 setTimeout(() => {
                     showPagination.value = true
                 }, 200)
+                // destinationQualifiedName
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
@@ -433,9 +466,19 @@
                 // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
-                    status: status.length > 0 ? status : 'active',
+                    // status: status.length > 0 ? status : 'active',
+                    status,
                     createdBy,
                     // typeName,
+                }
+                delete filterMerge.destinationQualifiedName
+                if (facetsValue.hierarchy?.connectorName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectorName
+                }
+                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.connectionQualifiedName
                 }
                 if (facetsValue.__traitNames) {
                     const filterClasification = []
@@ -501,6 +544,7 @@
                 // }, 1000)
             }
             return {
+                isFilterApplied,
                 mutate,
                 pagination,
                 requestList,
@@ -543,7 +587,16 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+    .request-done-leave-active {
+        transition: all 300ms cubic-bezier(0.4, 0, 1, 1);
+        // transform: translateX(-500px);
+    }
+    .request-done-leave-to {
+        opacity: 0;
+        transform: translateX(-100%);
+        // height: 0;
+    }
     .drawer-request {
         .ant-collapse-content {
             background: none !important;
@@ -573,8 +626,8 @@
         }
     }
     .button-close-drawer-request {
-        left: 250px !important;
-        // right: -40px !important;
+        left: 300px !important;
+        top: 12px;
     }
     .governance-request {
         .container-content {
@@ -598,6 +651,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .container-empty {
+        height: 65vh !important;
+    }
     .filter-icon-wrapper {
         height: 28px !important;
     }
@@ -636,5 +692,15 @@
         top: -5px;
         height: 30px;
         right: 0;
+    }
+</style>
+
+<style lang="less" module>
+    .request-filter-wrapper {
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

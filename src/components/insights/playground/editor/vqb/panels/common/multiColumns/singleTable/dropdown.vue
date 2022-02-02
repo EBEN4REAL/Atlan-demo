@@ -221,13 +221,25 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const placeholder = computed(() => {
-                let data = `Select a table first`
+                let data = `No table selected`
                 if (tableQualfiedName.value) {
-                    data = `Search from ${totalColumnsCount.value} columns`
+                    data = `Search from ${
+                        totalColumnsCount.value
+                    } ${pluralizeString(
+                        'column',
+                        totalColumnsCount.value,
+                        false
+                    )}`
                     if (isColumnLoading.value) {
-                        data = 'Loading...'
+                        data = 'Loading columns...'
                     } else {
-                        data = `Search from ${totalColumnsCount.value} columns`
+                        data = `Search from ${
+                            totalColumnsCount.value
+                        } ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
                     }
                 }
                 return data

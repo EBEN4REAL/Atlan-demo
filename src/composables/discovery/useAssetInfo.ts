@@ -60,6 +60,10 @@ export default function useAssetInfo() {
 
     const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
+    const parentFolder = (asset: assetInterface) => attributes(asset)?.folder
+
+    const parentModel = (asset: assetInterface) => attributes(asset)?.model
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -79,11 +83,22 @@ export default function useAssetInfo() {
         getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
-        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
+        (attributes(asset)?.displayName ||
+            attributes(asset)?.name ||
+            attributes(asset)?.qualifiedName) ??
+        ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
+                attributes(asset)?.connectorName?.toLowerCase()
+            ]
+        return found
+    }
+
+    const getConnectorLabel = (asset: assetInterface) => {
+        const found =
+            connectionStore.getConnectorLabelMapping[
                 attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
@@ -336,6 +351,16 @@ export default function useAssetInfo() {
     }
 
     const getLineagePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            if (tableGuid) {
+                return `/assets/${tableGuid}/lineage`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/lineage`
+            }
+        }
         return `/assets/${asset.guid}/lineage`
     }
 
@@ -698,7 +723,8 @@ export default function useAssetInfo() {
     const isBiAsset = (asset: assetInterface) => {
         return (
             assetType(asset)?.includes('Tableau') ||
-            assetType(asset)?.includes('BI')
+            assetType(asset)?.includes('BI') ||
+            assetType(asset)?.includes('Looker')
         )
     }
 
@@ -1049,6 +1075,24 @@ export default function useAssetInfo() {
     const externalLocationFormat = (asset: assetInterface) =>
         attributes(asset)?.externalLocationFormat || ''
 
+    const fieldsLookerQuery = (asset: assetInterface) =>
+        attributes(asset)?.fields || []
+
+    const sourceOwners = (asset: assetInterface) =>
+        attributes(asset)?.sourceOwners
+
+    const resultMakerID = (asset: assetInterface) =>
+        attributes(asset)?.resultMakerID || '-'
+
+    const sourceMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceMetadataId || '-'
+
+    const sourceContentMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceContentMetadataId || '-'
+
+    const sourceViewCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceViewCount, false)
+
     return {
         attributes,
         title,
@@ -1113,6 +1157,7 @@ export default function useAssetInfo() {
         categoryCount,
         termsCount,
         getConnectorImageMap,
+        getConnectorLabel,
         anchorAttributes,
         readmeGuid,
         getConnectorsNameFromQualifiedName,
@@ -1125,10 +1170,12 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        fieldsLookerQuery,
         isForeign,
         categories,
         seeAlso,
         parentCategory,
+        sourceOwners,
         isGTC,
         getProfilePath,
         isGTCByType,
@@ -1167,5 +1214,11 @@ export default function useAssetInfo() {
         parentWorkbook,
         sourceURL,
         parentSite,
+        resultMakerID,
+        sourceMetadataId,
+        sourceContentMetadataId,
+        sourceViewCount,
+        parentFolder,
+        parentModel,
     }
 }

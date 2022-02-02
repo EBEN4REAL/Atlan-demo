@@ -3,6 +3,7 @@
         :key="item.guid"
         :class="[
             'flex items-center justify-between px-4 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden w-full',
+            selectedCollection?.guid === item?.guid ? 'bg-primary-light' : '',
         ]"
         style="height: 34px"
         @click="handleChange(item.guid)"
@@ -54,6 +55,13 @@
                     </a-menu>
                 </template>
             </a-dropdown>
+        </div>
+        <div class="absolute opacity-100 group right-12 y-center">
+            <AtlanIcon
+                v-if="selectedCollection?.guid === item?.guid"
+                icon="Check"
+                class="w-4 h-4 text-primary parent-ellipsis-container-extension"
+            ></AtlanIcon>
         </div>
         <!-- <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
@@ -138,6 +146,10 @@
             collectionModalVisible: {
                 type: Boolean,
                 required: true,
+            },
+            selectedCollection: {
+                type: Object,
+                required: false,
             },
         },
         setup(props, { emit }) {

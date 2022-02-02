@@ -46,4 +46,5 @@ export interface IPurpose {
     updatedBy?: string
     createdAt?: string
     createdBy?: string
+    readme?: any
 }

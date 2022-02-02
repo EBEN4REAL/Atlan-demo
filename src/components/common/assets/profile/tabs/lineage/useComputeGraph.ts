@@ -38,8 +38,10 @@ export default async function useComputeGraph(
 
         await Promise.all(
             guidEntityMap.map(async (entity) => {
-                if (entity.typeName === 'Column') {
-                    const parentGuid = entity.attributes.table.guid
+                const { attributes, typeName, guid } = entity
+
+                if (typeName === 'Column') {
+                    const parentGuid = attributes.table.guid
                     if (!columnEntity[parentGuid])
                         columnEntity = {
                             ...columnEntity,
@@ -47,7 +49,7 @@ export default async function useComputeGraph(
                         }
                     else columnEntity[parentGuid].push(entity)
 
-                    columnEntityIds.push(entity.guid)
+                    columnEntityIds.push(guid)
                     return
                 }
 
@@ -80,25 +82,21 @@ export default async function useComputeGraph(
 
         const fromAndToIdSet = new Set()
         relations.forEach((x) => {
-            const { fromEntityId, toEntityId, processId } = x
+            const { fromEntityId: from, toEntityId: to, processId } = x
 
             let data = {}
-            const fromAndToId = `${fromEntityId}@${toEntityId}`
+            const fromAndToId = `${from}@${to}`
             if (fromAndToIdSet.has(fromAndToId)) data = { isDup: true }
             else fromAndToIdSet.add(fromAndToId)
 
-            if (
-                columnEntityIds.includes(fromEntityId) ||
-                columnEntityIds.includes(toEntityId)
-            )
-                return
+            if (columnEntityIds.find((y) => [from, to].includes(y))) return
 
             const relation = {
-                id: `${processId}/${fromEntityId}@${toEntityId}`,
-                sourceCell: fromEntityId,
-                sourcePort: `${fromEntityId}-invisiblePort`,
-                targetCell: toEntityId,
-                targetPort: `${toEntityId}-invisiblePort`,
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
                 stroke: '#aaaaaa',
             }
 

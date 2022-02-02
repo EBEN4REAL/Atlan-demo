@@ -1,5 +1,5 @@
 <template>
-    <div ref="footerRoot" class="lineage-control footer">
+    <div class="lineage-control footer">
         <slot></slot>
 
         <div class="controls">
@@ -28,7 +28,7 @@
                 <a-popover
                     v-model:visible="isPreferencesVisible"
                     :trigger="['click']"
-                    :getPopupContainer="() => footerRoot"
+                    :get-popup-container="(e) => e.parentNode"
                 >
                     <template #content>
                         <div class="px-4 py-3 text-sm">View Options</div>
@@ -37,7 +37,10 @@
                             <!-- Depth Selector -->
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Depth</span>
-                                <a-dropdown :trigger="['click']">
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    :get-popup-container="(e) => e.parentNode"
+                                >
                                     <span class="lineage-footer-menu">
                                         {{ currDepth }}
                                         <AtlanIcon
@@ -65,7 +68,10 @@
                             <!-- Direction Selector -->
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Direction</span>
-                                <a-dropdown :trigger="['click']">
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    :get-popup-container="(e) => e.parentNode"
+                                >
                                     <span class="lineage-footer-menu">
                                         {{ currDir }}
                                         <AtlanIcon
@@ -236,7 +242,6 @@
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
             const isPreferencesVisible = ref(false)
-            const footerRoot = ref<HTMLElement>()
 
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
@@ -290,7 +295,6 @@
             }
             return {
                 showMinimap,
-                footerRoot,
                 isFullscreen,
                 isPreferencesVisible,
                 isExpanded,

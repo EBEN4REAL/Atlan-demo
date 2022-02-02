@@ -1,7 +1,7 @@
 <template>
-    <div class="h-full p-3">
+    <div class="h-full">
         <div
-            class="w-full p-3 rounded-lg vqb"
+            class="w-full p-3 vqb"
             style="z-index: 3; background-color: #f6f8fd"
         >
             <template

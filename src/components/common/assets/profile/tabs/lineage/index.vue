@@ -128,6 +128,11 @@
                 guid: guid.value,
                 direction: direction.value,
                 hideProcess: hideProcess.value,
+                entityFilters: {
+                    attributeName: '__state',
+                    operator: 'eq',
+                    attributeValue: 'ACTIVE',
+                },
                 attributes: [
                     ...AssetAttributes,
                     ...SQLAttributes,

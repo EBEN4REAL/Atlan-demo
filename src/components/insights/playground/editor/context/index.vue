@@ -1,5 +1,7 @@
 <template>
-    <div class="flex flex-wrap items-center justify-between w-full pr-3 mt-2">
+    <div
+        class="flex flex-wrap items-center justify-between w-full pb-1.5 pr-3 mt-2"
+    >
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">

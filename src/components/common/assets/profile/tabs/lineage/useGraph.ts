@@ -399,7 +399,6 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            label: relation?.type === 'related' ? 'related' : 'process',
             connector: { name: 'beiz' },
             attrs: {
                 line: {
@@ -453,7 +452,14 @@ export default function useGraph() {
             },
             labels: [
                 {
-                    attrs: { label: { text: 'Process' } },
+                    attrs: {
+                        label: {
+                            text:
+                                relation?.type === 'related'
+                                    ? 'related'
+                                    : 'process',
+                        },
+                    },
                 },
             ],
             data,

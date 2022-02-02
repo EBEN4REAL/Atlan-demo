@@ -110,7 +110,7 @@
                     'datasources',
                     'dataflows',
                 ],
-                LookerQuery: [],
+                LookerQuery: ['tiles', 'model', 'looks'],
             }
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },

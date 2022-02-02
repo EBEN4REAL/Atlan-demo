@@ -1,196 +1,222 @@
 <template>
-    <a-tabs
-        v-model:activeKey="activeKey"
-        type="card"
-        :class="$style.previewtab"
+    <div
+        v-if="isLoading"
+        style="height: 150px; width: 100%"
+        class="flex items-center justify-center p-3 mt-3 bg-white border"
     >
-        <a-tab-pane key="summary" tab="Summary">
-            <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r"
-            >
-                <div class="flex flex-col">
-                    <div class="flex mb-2 gap-x-3">
-                        <div class="flex flex-col w-full">
-                            <p class="text-gray-500">Status</p>
-                            <div class="flex justify-between w-full">
-                                <div class="flex items-center">
-                                    <div
-                                        class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
-                                        :class="getRunClass(selectedRun)"
-                                    ></div>
-                                    <p
-                                        :class="getRunTextClass(selectedRun)"
-                                        class="font-semibold"
+        <a-spin size="small" class="mt-1 mr-3"></a-spin>Loading Run
+    </div>
+    <div
+        v-else-if="!isLoading && error"
+        style="height: 150px; width: 100%"
+        class="flex items-center justify-center p-3 mt-3 bg-white border"
+    >
+        <AtlanIcon icon="Error" class="mt-1 mr-3"></AtlanIcon>
+        Run not found.
+    </div>
+    <div v-else>
+        <a-tabs
+            v-model:activeKey="activeKey"
+            type="card"
+            :class="$style.previewtab"
+        >
+            <a-tab-pane key="summary" tab="Summary" class="shadow">
+                <div
+                    class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
+                >
+                    <div class="flex flex-col">
+                        <div class="flex mb-2 gap-x-3">
+                            <div class="flex flex-col w-full">
+                                <p class="text-gray-500">Status</p>
+                                <div class="flex justify-between w-full">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
+                                            :class="getRunClass(selectedRun)"
+                                        ></div>
+                                        <p
+                                            :class="
+                                                getRunTextClass(selectedRun)
+                                            "
+                                            class="font-semibold"
+                                        >
+                                            {{ phase(selectedRun) }}
+                                        </p>
+                                    </div>
+
+                                    <a-button
+                                        type="danger"
+                                        v-if="
+                                            ['Running'].includes(
+                                                phase(selectedRun)
+                                            )
+                                        "
+                                        @click="handleStop"
+                                        >Stop</a-button
                                     >
-                                        {{ phase(selectedRun) }}
-                                    </p>
+
+                                    <a-button
+                                        class="text-red-500"
+                                        v-if="
+                                            ['Failed', 'Error'].includes(
+                                                phase(selectedRun)
+                                            )
+                                        "
+                                        @click="handleRetry"
+                                        >Retry</a-button
+                                    >
                                 </div>
-
-                                <a-button
-                                    type="danger"
-                                    v-if="
-                                        ['Running'].includes(phase(selectedRun))
-                                    "
-                                    @click="handleStop"
-                                    >Stop</a-button
-                                >
-
-                                <a-button
-                                    class="text-red-500"
-                                    v-if="
-                                        ['Failed', 'Error'].includes(
-                                            phase(selectedRun)
-                                        )
-                                    "
-                                    @click="handleRetry"
-                                    >Retry</a-button
-                                >
                             </div>
                         </div>
-                    </div>
 
-                    <p class="text-gray-500">Started At</p>
-                    <p class="mb-2 text-gray-700">
-                        {{ startedAt(selectedRun, false) }}
-                    </p>
+                        <p class="text-gray-500">Started At</p>
+                        <p class="mb-2 text-gray-700">
+                            {{ startedAt(selectedRun, false) }}
+                        </p>
 
-                    <p class="text-gray-500">Finished At</p>
-                    <p class="mb-2 text-gray-700">
-                        {{ finishedAt(selectedRun, false) }}
-                    </p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <p class="text-gray-500">Duration</p>
-                            <p class="mb-2 text-gray-700">
-                                {{ duration(selectedRun, false) }}
-                            </p>
-                        </div>
+                        <p class="text-gray-500">Finished At</p>
+                        <p class="mb-2 text-gray-700">
+                            {{ finishedAt(selectedRun, false) }}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <p class="text-gray-500">Duration</p>
+                                <p class="mb-2 text-gray-700">
+                                    {{ duration(selectedRun, false) }}
+                                </p>
+                            </div>
 
-                        <!--   <a-button
+                            <!--   <a-button
                             v-if="['Succeeded'].includes(phase(selectedRun))"
                             @click="handleMetrics"
                             >View Metrics</a-button
                         >-->
-                        <a-modal
-                            width="100%"
-                            :centered="true"
-                            :bodyStyle="{
-                                height: 'calc(100vh - 100px)',
-                            }"
-                            :destroyOnClose="true"
-                            v-model:visible="isMetricVisible"
-                            :closable="false"
-                        >
-                            <div class="h-full px-6 py-3">
-                                <WorkflowMetrics
-                                    :selectedPod="selectedPod"
-                                    :selectedRun="selectedRun"
-                                ></WorkflowMetrics>
-                            </div>
-                            <template #footer> </template>
-                        </a-modal>
-                    </div>
-
-                    <p class="text-gray-500">Run Mode</p>
-                    <div
-                        class="mb-2 text-gray-700"
-                        v-if="isCronRun(selectedRun)"
-                    >
-                        <span>via <span>Schedule</span></span>
-                    </div>
-                    <div
-                        class="mb-2 text-gray-700"
-                        v-else-if="creatorUsername(selectedRun)"
-                    >
-                        via
-                        {{ creatorUsername(selectedRun) }}
-                    </div>
-
-                    <p class="text-gray-500">Reference</p>
-                    <a :href="link" target="_blank" class="mb-2 text-primary">
-                        {{ name(selectedRun) }}
-                    </a>
-                </div>
-            </div>
-        </a-tab-pane>
-        <a-tab-pane
-            key="failed"
-            tab="Failed Tasks"
-            v-if="['Error', 'Failed'].includes(phase(selectedRun))"
-        >
-            <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r"
-            >
-                <div class="flex flex-col gap-y-2">
-                    <div class="flex w-full mb-2 gap-x-2">
-                        <div class="flex-grow">
-                            <a-select
-                                ref="select"
-                                class="w-full"
-                                v-model:value="selectedPodName"
+                            <a-modal
+                                width="100%"
+                                :centered="true"
+                                :bodyStyle="{
+                                    height: 'calc(100vh - 100px)',
+                                }"
+                                :destroyOnClose="true"
+                                v-model:visible="isMetricVisible"
+                                :closable="false"
                             >
-                                <a-select-option
-                                    v-for="pod in failedPods"
-                                    :key="pod.name"
-                                    >{{ pod.displayName }}</a-select-option
-                                >
-                            </a-select>
+                                <div class="h-full px-6 py-3">
+                                    <WorkflowMetrics
+                                        :selectedPod="selectedPod"
+                                        :selectedRun="selectedRun"
+                                    ></WorkflowMetrics>
+                                </div>
+                                <template #footer> </template>
+                            </a-modal>
                         </div>
 
-                        <a-button @click="handleLogs">Logs</a-button>
-                        <a-modal
-                            :destroyOnClose="true"
-                            v-model:visible="isLogVisible"
-                            :closable="false"
+                        <p class="text-gray-500">Run Mode</p>
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-if="isCronRun(selectedRun)"
                         >
-                            <div class="px-6 py-3">
-                                <WorkflowLogs
-                                    :selectedPod="selectedPod"
-                                    :selectedRun="selectedRun"
-                                ></WorkflowLogs>
-                            </div>
-                            <template #footer> </template>
-                        </a-modal>
-                    </div>
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Name</p>
-                        <div class="mb-2 text-gray-700">
-                            {{ selectedPod?.name }}
+                            <span>via <span>Schedule</span></span>
                         </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Started At</p>
-                        <p class="mb-2 text-gray-700">
-                            {{ formatDate(selectedPod?.startedAt) }}
-                        </p>
-                    </div>
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Finished At</p>
-                        <p class="mb-2 text-gray-700">
-                            {{ formatDate(selectedPod?.finishedAt) }}
-                        </p>
-                    </div>
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Duration</p>
-                        <p class="mb-2 text-gray-700">
-                            {{
-                                difference(
-                                    selectedPod?.startedAt,
-                                    selectedPod?.finishedAt
-                                )
-                            }}
-                        </p>
-                    </div>
-                    <div class="flex flex-col">
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-else-if="creatorUsername(selectedRun)"
+                        >
+                            via
+                            {{ creatorUsername(selectedRun) }}
+                        </div>
+
                         <p class="text-gray-500">Reference</p>
-                        <div class="mb-2 text-gray-700">
-                            {{ selectedPod?.id }}
+                        <a
+                            :href="link"
+                            target="_blank"
+                            class="mb-2 text-primary"
+                        >
+                            {{ name(selectedRun) }}
+                        </a>
+                    </div>
+                </div>
+            </a-tab-pane>
+            <a-tab-pane
+                key="failed"
+                class="shadow"
+                tab="Failed Tasks"
+                v-if="['Error', 'Failed'].includes(phase(selectedRun))"
+            >
+                <div
+                    class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
+                >
+                    <div class="flex flex-col gap-y-2">
+                        <div class="flex w-full mb-2 gap-x-2">
+                            <div class="flex-grow">
+                                <a-select
+                                    ref="select"
+                                    class="w-full"
+                                    v-model:value="selectedPodName"
+                                >
+                                    <a-select-option
+                                        v-for="pod in failedPods"
+                                        :key="pod.name"
+                                        >{{ pod.displayName }}</a-select-option
+                                    >
+                                </a-select>
+                            </div>
+
+                            <a-button @click="handleLogs">Logs</a-button>
+                            <a-modal
+                                :destroyOnClose="true"
+                                v-model:visible="isLogVisible"
+                                :closable="false"
+                            >
+                                <div class="px-6 py-3">
+                                    <WorkflowLogs
+                                        :selectedPod="selectedPod"
+                                        :selectedRun="selectedRun"
+                                    ></WorkflowLogs>
+                                </div>
+                                <template #footer> </template>
+                            </a-modal>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Name</p>
+                            <div class="mb-2 text-gray-700">
+                                {{ selectedPod?.name }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Started At</p>
+                            <p class="mb-2 text-gray-700">
+                                {{ formatDate(selectedPod?.startedAt) }}
+                            </p>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Finished At</p>
+                            <p class="mb-2 text-gray-700">
+                                {{ formatDate(selectedPod?.finishedAt) }}
+                            </p>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Duration</p>
+                            <p class="mb-2 text-gray-700">
+                                {{
+                                    difference(
+                                        selectedPod?.startedAt,
+                                        selectedPod?.finishedAt
+                                    )
+                                }}
+                            </p>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-gray-500">Reference</p>
+                            <div class="mb-2 text-gray-700">
+                                {{ selectedPod?.id }}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </a-tab-pane>
-    </a-tabs>
+            </a-tab-pane>
+        </a-tabs>
+    </div>
 </template>
 
 <script lang="ts">
@@ -204,6 +230,7 @@
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'
     import useWorkflowRunStop from '~/composables/package/useWorkflowRunStop'
+    import useRunItem from '~/composables/package/useRunItem'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],
@@ -215,7 +242,14 @@
             selectedRun: {
                 type: Object,
                 required: false,
-                default: () => ({}),
+            },
+            isLoading: {
+                type: Boolean,
+                required: false,
+            },
+            error: {
+                type: Object,
+                required: false,
             },
         },
         emits: ['setSelectedGraph', 'openLog'],
@@ -225,6 +259,7 @@
             const isLogVisible = ref(false)
             const isMetricVisible = ref(false)
             const { selectedRun } = toRefs(props)
+
             const {
                 phase,
                 startedAt,

@@ -3,12 +3,12 @@ import { useOptions } from '~/services/api/common'
 
 import { Runs } from '~/services/service/runs'
 
-export default function useRunItem(path) {
+export default function useRunItem(path, immediate) {
     const item = ref({})
 
     const options: useOptions = {}
     options.asyncOptions = ref({
-        immediate: false,
+        immediate,
     })
 
     const { data, error, isLoading, mutate, isReady, isValidating } =

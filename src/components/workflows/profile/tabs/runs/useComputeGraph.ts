@@ -146,12 +146,17 @@ export default function useComputeGraph(
                                
                                </div>  
                                <div class="flex items-center justify-center border w-full h-full bg-transparent rounded border-gray-500 ${phase} ${
-                        ['Omitted'].includes(phase) ? 'block' : 'hidden'
+                        ['Omitted', 'Skipped'].includes(phase)
+                            ? 'block'
+                            : 'hidden'
                     }">
                              
                             <div class=" font-bold text-gray-500">${displayNameTrunc}</div>
                             
-                            
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+<path d="M14.6807 8.03763C15.4216 8.46535 15.4216 9.53465 14.6807 9.96237L9.68012 12.8495C8.93929 13.2772 8.01325 12.7425 8.01325 11.8871L8.01326 6.1129C8.01326 5.25747 8.93929 4.72282 9.68012 5.15054L14.6807 8.03763Z" fill="#6F7590"/>
+<path d="M9.43112 8.03763C10.1719 8.46535 10.1719 9.53465 9.43112 9.96237L4.43052 12.8495C3.68969 13.2772 2.76365 12.7425 2.76365 11.8871L2.76365 6.1129C2.76365 5.25747 3.68969 4.72282 4.43052 5.15054L9.43112 8.03763Z" fill="#6F7590"/>
+</svg>
                             </div>   
                             <div class="flex items-center bg-primary-menu justify-between border-primary border-l-4 w-full h-full bg-transparent rounded border-r border-t border-b ${
                                 ['Running'].includes(phase) ? 'block' : 'hidden'
@@ -272,7 +277,6 @@ export default function useComputeGraph(
                             },
                         },
                     }
-                    console.log('edge', item, edge)
 
                     edges.value.push(edge)
                 }

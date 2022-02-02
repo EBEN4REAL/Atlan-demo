@@ -7,10 +7,12 @@
                         v-model="selectedRunName"
                         :workflowName="workflowName"
                         style="min-width: 150px"
+                        class="mb-3 shadow"
                     ></RunsSelect>
                     <Sidebar
-                        :selected-run="selectedRun"
-                        class="mt-3"
+                        :selectedRun="selectedRun"
+                        :isLoading="isLoading"
+                        :error="error"
                         style="width: 300px"
                     ></Sidebar>
                 </div>
@@ -18,19 +20,10 @@
             <MonitorGraph
                 :graph-data="selectedRun"
                 class=""
-                @refresh="handleRefresh"
                 @select="handleSelectPod"
+                :isLoading="isLoading"
+                :error="error"
             />
-            <!--     <div class="absolute rounded right-10 top-10">
-                <div class="flex flex-col">
-                    <Sidebar
-                        :selected-run="selectedRun"
-                        :selected-pod="selectedPod"
-                        class="mt-3"
-                        style="width: 300px"
-                    ></Sidebar>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -84,57 +77,58 @@
             const { workflowName, runId } = toRefs(props)
             const selectedRunName = ref(runId.value)
 
+            const router = useRouter()
+
+            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
+
             const path = ref({
                 name: selectedRunName.value,
             })
 
-            const router = useRouter()
-            const { item: selectedRun, mutate } = useRunItem(path)
+            const {
+                item: selectedRun,
+                mutate,
+                isLoading,
+                error,
+            } = useRunItem(path, false)
 
-            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
-
-            if (runId.value) {
-                path.value = {
-                    name: selectedRunName.value,
-                }
-                mutate()
-            }
-
-            watch(selectedRunName, (newVal) => {
-                if (newVal) {
-                    path.value = {
-                        name: selectedRunName.value,
-                    }
-                    mutate()
-                    router.push({
-                        query: {
+            watch(
+                selectedRunName,
+                () => {
+                    if (selectedRunName.value) {
+                        path.value = {
                             name: selectedRunName.value,
-                        },
-                    })
-                }
-            })
+                        }
+                        mutate()
+                        router.push({
+                            query: {
+                                name: selectedRunName.value,
+                            },
+                        })
+                    }
+                },
+                { immediate: true }
+            )
 
             const selectedPod = ref({})
             const handleSelectPod = (pod) => {
                 selectedPod.value = pod
             }
 
-            const handleRefresh = () => {
-                mutate()
-            }
-
             return {
                 selectedRunName,
                 workflowName,
-                selectedRun,
-                handleRefresh,
+
                 handleSelectPod,
                 selectedPod,
                 phase,
                 startedAt,
                 finishedAt,
                 duration,
+                selectedRun,
                 router,
+                isLoading,
+                error,
             }
         },
     })

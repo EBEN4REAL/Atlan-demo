@@ -83,6 +83,7 @@
                     'TableauMetric',
                     'TableauDatasource',
                     'LookerModel',
+                    'LookerExplore',
                 ].includes(asset?.typeName) && parentProject(asset)?.guid
             "
             class="flex flex-col text-sm"
@@ -142,7 +143,7 @@
         </div>
         <div
             v-if="
-                ['LookerLook'].includes(asset?.typeName) &&
+                ['LookerLook', 'LookerExplore'].includes(asset?.typeName) &&
                 parentModel(asset)?.guid
             "
             class="flex flex-col text-sm"
@@ -153,6 +154,16 @@
                 @click="handleOpenDrawer(parentModel(asset)?.guid)"
                 >{{ parentModel(asset)?.attributes?.name }}</span
             >
+        </div>
+        <div
+            v-if="
+                ['LookerExplore'].includes(asset?.typeName) &&
+                parentModel(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">View Name</span>
+            <span class="text-gray-700">{{ asset?.attributes?.viewName }}</span>
         </div>
     </div>
     <AssetDrawer

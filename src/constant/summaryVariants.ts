@@ -239,7 +239,12 @@ export const summaryVariants = [
     {
         id: 'lookerExplore',
         label: 'Explore',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerExplore'],
     },
     {

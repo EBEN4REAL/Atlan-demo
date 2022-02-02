@@ -298,7 +298,7 @@
             drawerActiveKey: {
                 type: String,
                 required: false,
-                default: 'info',
+                default: 'Overview',
             },
         },
         emits: ['assetMutation', 'closeDrawer'],

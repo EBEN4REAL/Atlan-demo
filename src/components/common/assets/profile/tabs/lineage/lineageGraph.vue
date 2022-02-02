@@ -134,7 +134,8 @@
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
-            const drawerActiveKey = ref('Info')
+            const drawerActiveKey = ref('Overview')
+            const selectedTypeInRelationDrawer = ref('__all')
 
             /** METHODS */
             // onSelectAsset
@@ -190,6 +191,7 @@
                     currZoom,
                     resetSelections,
                     drawerActiveKey,
+                    selectedTypeInRelationDrawer,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph
@@ -199,6 +201,7 @@
             /** PROVIDERS */
             provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
+            provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
             // onShowAddLineage
             const onShowAddLineage = () => {

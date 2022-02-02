@@ -146,11 +146,40 @@
             </div>
         </div>
 
+        <div
+            v-if="
+                ['LookerDashboard', 'LookerLook'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex px-5"
+        >
+            <SourceViewCount :asset="selectedAsset" />
+        </div>
+
         <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Source Owner</span>
                 <span class="text-gray-700">{{
                     sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Note</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.noteText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.subtitleText
                 }}</span>
             </div>
         </div>
@@ -162,7 +191,7 @@
                     v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
                     :key="index"
                 >
-                    <span class="font-semibold break-all">{{ field }}</span>
+                    <span class="font-semibold break-words">{{ field }}</span>
                 </div>
             </div>
         </div>
@@ -178,7 +207,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold break-all">{{
+                <span class="font-semibold break-words">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -198,7 +227,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700 break-all">{{
+                <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>
@@ -616,6 +645,7 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
+    import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -637,6 +667,7 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            SourceViewCount,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

@@ -299,7 +299,6 @@ export default function useProject() {
                                 message?.details.executionTime
                             )
                             if (eventSource.value?.close) {
-                                // for closing the connection
                                 eventSource.value.close()
                             }
                             /* Query related data */
@@ -325,6 +324,10 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'success')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
 
                             /* ------------------- */
@@ -340,6 +343,10 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
                         }
                     })
@@ -348,11 +355,17 @@ export default function useProject() {
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
+                    //IMP: connection need to be closed here
+                    if (eventSource.value?.close) {
+                        eventSource.value.close()
+                    }
                     // reset()
                 }
             } catch (e) {
-                console.log(e)
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
+                if (eventSource.value?.close) {
+                    eventSource.value.close()
+                }
                 // reset()
             }
         })

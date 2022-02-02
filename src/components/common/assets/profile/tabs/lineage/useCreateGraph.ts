@@ -4,10 +4,6 @@ interface PointBasic {
     x: number
     y: number
 }
-const getDistance = (p1: PointBasic, p2: PointBasic): number => {
-    const diff: PointBasic = { x: p1.x - p2.x, y: p1.y - p2.y }
-    return Math.round(Math.sqrt(diff.x ** 2 + diff.y ** 2))
-}
 
 export default function useCreateGraph(
     graph,

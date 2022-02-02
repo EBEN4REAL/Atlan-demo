@@ -1,129 +1,76 @@
 <template>
-    <div>
-        <div @mouseover="handleMouseOver" @mouseout="handleMouseOut">
-            <div
-                @click.self="toggleExpand"
-                class="box-border relative flex items-center px-3 pt-3 pb-2 cursor-pointer"
-            >
-                <div
-                    class="flex items-center justify-between w-full min-h-panel-header"
-                    @click="toggleExpand"
-                >
-                    <div class="flex items-center">
-                        <div
-                            class="flex items-center justify-center mr-2 rounded-md p-1.5 relative"
-                            :class="[
-                                expand ? 'bg-primary-light' : 'bg-gray-100',
-                            ]"
-                            style="z-index: 2"
-                        >
-                            <span class="absolute text-sm -right-1 -top-2">
-                                <AtlanIcon
-                                    v-if="
-                                        isFilterIsInteractive(
-                                            activeInlineTab.playground.vqb
-                                                .panels[index].subpanels
-                                        )
-                                    "
-                                    icon="GlowFlash"
-                                    class="w-4 h-4"
-                            /></span>
-
-                            <AtlanIcon
-                                icon="FilterFunnel"
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-400',
-                                    isChecked && expand ? 'text-primary' : '',
-                                    'w-4 h-4',
-                                ]"
-                            />
-                        </div>
-                        <div class="">
-                            <div
-                                :class="[
-                                    isChecked ? 'text-gray' : 'text-gray-500',
-                                    'text-sm  ',
-                                ]"
-                            >
-                                <div class="flex items-center">
-                                    <div class="relative font-bold">Filter</div>
-                                    <div
-                                        v-if="!isChecked && expand"
-                                        class="px-3 ml-2 text-gray-500 rounded-full bg-gray-light"
-                                    >
-                                        Disabled
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                :class="[
-                                    isChecked
-                                        ? 'text-gray-500'
-                                        : 'text-gray-400 line-through',
-                                    'text-xs',
-                                ]"
-                                v-if="!expand"
-                            >
-                                <p
-                                    :class="[
-                                        isChecked
-                                            ? 'text-gray-500'
-                                            : 'text-gray-400 line-through',
-                                        'text-xs break-words line-clamp-2',
-                                    ]"
-                                    v-if="!expand"
-                                >
-                                    {{
-                                        getSummarisedInfoOfFilterPanel(
-                                            activeInlineTab.playground.vqb
-                                                .panels[index].subpanels,
-                                            activeInlineTab
-                                        )
-                                    }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <PanelOptions
-                        v-model:containerHovered="containerHovered"
-                        v-model:submenuHovered="submenuHovered"
-                        :panel="panel"
-                        :index="index"
-                    />
-                </div>
-            </div>
-            <!-- Show on expand -->
-            <keep-alive>
-                <transition name="collapse-smooth">
-                    <FilterSubPanel
-                        v-model:subpanels="
+    <PanelLayout
+        @handleMouseOver="handleMouseOver"
+        @handleMouseOut="handleMouseOut"
+        @toggleExpand="toggleExpand"
+        :expand="expand"
+        :isChecked="isChecked"
+        :containerHovered="containerHovered"
+    >
+        <template #panelIcon>
+            <span class="absolute text-sm -right-1 -top-2">
+                <AtlanIcon
+                    v-if="
+                        isFilterIsInteractive(
                             activeInlineTab.playground.vqb.panels[index]
                                 .subpanels
-                        "
-                        v-model:columnSubpanels="
-                            activeInlineTab.playground.vqb.panels[0].subpanels
-                        "
-                        :expand="expand"
-                        v-if="expand"
-                    />
-                </transition>
-            </keep-alive>
-            <!-- <FooterActions
-                v-model:submenuHovered="submenuHovered"
+                        )
+                    "
+                    icon="GlowFlash"
+                    class="w-4 h-4"
+            /></span>
+
+            <AtlanIcon
+                icon="FilterFunnel"
+                :class="[
+                    isChecked ? 'text-gray' : 'text-gray-400',
+                    isChecked && expand ? 'text-primary' : '',
+                    'w-4 h-4',
+                ]"
+            />
+        </template>
+        <template #panelName>
+            <span> Filter </span>
+        </template>
+        <template #panelDescription>
+            <span>
+                {{
+                    getSummarisedInfoOfFilterPanel(
+                        activeInlineTab.playground.vqb.panels[index].subpanels,
+                        activeInlineTab
+                    )
+                }}
+            </span>
+        </template>
+        <template #options>
+            <PanelOptions
                 v-model:containerHovered="containerHovered"
-                @add="(type, panel) => handleAddPanel(index, type, panel)"
-                :panelInfo="activeInlineTab.playground.vqb.panels[index]"
-                v-if="
-                    expand &&
-                    activeInlineTab.playground.vqb.panels.length - 1 ===
-                        Number(index) &&
-                    !readOnly
-                "
-            /> -->
-        </div>
-    </div>
+                v-model:submenuHovered="submenuHovered"
+                :panel="panel"
+                :index="index"
+            />
+        </template>
+        <template #expand>
+            <div>
+                <keep-alive>
+                    <transition name="collapse-smooth">
+                        <FilterSubPanel
+                            v-model:subpanels="
+                                activeInlineTab.playground.vqb.panels[index]
+                                    .subpanels
+                            "
+                            v-model:columnSubpanels="
+                                activeInlineTab.playground.vqb.panels[0]
+                                    .subpanels
+                            "
+                            :expand="expand"
+                            v-if="expand"
+                        />
+                    </transition>
+                </keep-alive>
+            </div>
+        </template>
+    </PanelLayout>
 </template>
 
 <script lang="ts">
@@ -145,15 +92,15 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import FilterSubPanel from './subpanel/index.vue'
-    import { editor } from 'monaco-editor'
 
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import VariableRender from './variableRender/index.vue'
     import PanelOptions from '~/components/insights/playground/editor/vqb/panels/common/options/index.vue'
+    import PanelLayout from '~/components/insights/playground/editor/vqb/panels/layout/index.vue'
 
     export default defineComponent({
-        name: 'Aggregate',
+        name: 'Filter',
         components: {
             FooterActions,
             Actions,
@@ -161,6 +108,7 @@
             FilterSubPanel,
             VariableRender,
             PanelOptions,
+            PanelLayout,
         },
         props: {
             index: {
@@ -177,9 +125,7 @@
             const { index, panel } = toRefs(props)
             const { totalFiledsMapWithInput, isFilterIsInteractive } =
                 useFilter()
-            const editorInstanceRef = inject(
-                'editorInstance'
-            ) as Ref<editor.IStandaloneCodeEditor>
+            const editorInstanceRef = inject('editorInstance') as Ref<any>
             const confirmDeletePopover = ref(false)
             const isChecked = computed(
                 () =>

@@ -342,7 +342,8 @@
                                       ?.icon
                                 : '🗃'
                         }}</span>
-                        <span>
+
+                        <span class="truncate" style="width: 270px">
                             {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>

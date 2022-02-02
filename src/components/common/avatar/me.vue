@@ -26,7 +26,20 @@
         <template #overlay>
             <a-menu class="mt-1">
                 <a-menu-item style="width: 130px">
-                    <a @click="() => handleClickUser(username)">Profile</a>
+                    <a @click="() => handleClickUser(username)">
+                        <div class="flex items-center">
+                            <AtlanIcon icon="User" class="mr-2" />
+                            <span>Profile</span>
+                        </div></a
+                    >
+                </a-menu-item>
+                <a-menu-item style="width: 130px">
+                    <a @click="toggleHelpWidget">
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Support" class="mr-2" />
+                            <span>Support</span>
+                        </div>
+                    </a>
                 </a-menu-item>
                 <!-- <a-menu-item>
                     <a href="javascript:;">Admin Centre</a>
@@ -44,8 +57,11 @@
                 <a-menu-divider />
                 <a-menu-item>
                     <a class="text-red-500" @click.stop="handleLogout"
-                        >Logout</a
-                    >
+                        ><div class="flex items-center">
+                            <AtlanIcon icon="Logout" class="mr-2" />
+                            <span>Logout</span>
+                        </div>
+                    </a>
                 </a-menu-item>
             </a-menu>
         </template>
@@ -58,6 +74,7 @@
     // import whoami from '~/composables/user/whoami'
     import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
 
     export default defineComponent({
         name: 'UserPersonalAvatar',
@@ -67,6 +84,7 @@
         props: {},
         setup() {
             const keycloak = inject('$keycloak')
+            const { toggleHelpWidget } = useHelpWidget()
             const handleLogout = () => {
                 window.localStorage.clear()
                 keycloak.logout({
@@ -88,6 +106,7 @@
                 username,
                 name,
                 avatarUrl,
+                toggleHelpWidget,
             }
         },
         data() {

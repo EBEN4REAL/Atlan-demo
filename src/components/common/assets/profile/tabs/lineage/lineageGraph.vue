@@ -114,6 +114,7 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const config = inject('config')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -134,7 +135,8 @@
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
-            const drawerActiveKey = ref('Info')
+            const drawerActiveKey = ref('Overview')
+            const selectedTypeInRelationDrawer = ref('__all')
 
             /** METHODS */
             // onSelectAsset
@@ -190,6 +192,8 @@
                     currZoom,
                     resetSelections,
                     drawerActiveKey,
+                    selectedTypeInRelationDrawer,
+                    config,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph
@@ -199,6 +203,7 @@
             /** PROVIDERS */
             provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
+            provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
             // onShowAddLineage
             const onShowAddLineage = () => {

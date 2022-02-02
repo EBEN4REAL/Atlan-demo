@@ -34,7 +34,7 @@ export const assetTypeList: {
         isDiscoverable: false,
         image: 'DatabaseGray',
         count: 0,
-        relationships: [],
+        relationships: ['schemas'],
         groupOrder: 6,
     },
     {
@@ -47,7 +47,13 @@ export const assetTypeList: {
         isDiscoverable: false,
         image: 'SchemaGray',
         count: 0,
-        relationships: [],
+        relationships: [
+            'tables',
+            'views',
+            'partitions',
+            'procedures',
+            'materialisedViews',
+        ],
         groupOrder: 6,
     },
     {
@@ -56,7 +62,7 @@ export const assetTypeList: {
         nameAttribute: 'viewName',
         qualifiedNameAttribute: 'viewQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
-        children: ['Column'],
+        children: ['Table', 'Column'],
         isDiscoverable: true,
         orderWeight: 90,
         count: 0,

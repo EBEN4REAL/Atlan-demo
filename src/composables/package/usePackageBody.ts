@@ -271,10 +271,20 @@ export function usePackageBody(
                                         size: 200,
                                     },
                                     aggs: {
-                                        by_package: {
-                                            terms: {
-                                                field: 'metadata.name.keyword',
-                                                size: 200,
+                                        by_package_hits: {
+                                            top_hits: {
+                                                size: 2,
+                                                sort: [
+                                                    {
+                                                        'metadata.creationTimestamp':
+                                                            {
+                                                                order: 'desc',
+                                                            },
+                                                    },
+                                                ],
+                                                _source: {
+                                                    includes: ['metadata.name'],
+                                                },
                                             },
                                         },
                                     },

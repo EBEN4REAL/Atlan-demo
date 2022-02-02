@@ -20,7 +20,7 @@
                             'ml-2': loadingSave,
                         }"
                     />
-                    {{ editorValue ? 'Edit' : 'Add a readme' }}
+                    {{ readMeId ? 'Edit' : 'Add a readme' }}
                 </a-button>
                 <template v-else-if="isEditMode">
                     <a-button @click="handleCancelEdit">Cancel</a-button>
@@ -45,37 +45,68 @@
 </template>
 
 <script lang="ts">
-    import { watch, ref } from 'vue'
+    import { watch, ref, toRefs, onMounted, computed } from 'vue'
     import Editor from '@/common/editor/index.vue'
     import { Files } from '~/services/service/files/index'
+    import {
+        isEditing,
+        savePersona,
+        discardPersona,
+        selectedPersonaDirty,
+        deletePersonaById,
+    } from '../composables/useEditPurpose'
 
     export default {
         name: 'PurposeReadme',
         components: {
             Editor,
         },
-        setup() {
+        props: {
+            purpose: {
+                type: Object,
+                required: true,
+            },
+        },
+        emits: ['addReadme'],
+        setup(props, { emit }) {
+            const { purpose } = toRefs(props)
+            const readMeId = computed(() => purpose.value.readme || '')
             const editor = ref()
             const isEditMode = ref(false)
             const loadingSave = ref(false)
-            const { data, isLoading, mutate } = Files.GetFile({
-                id: 'ead02e7b-9277-4efa-b1e0-7458a77663ec',
-                name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
-            })
             const editorValue = ref('')
+            const { data, isLoading, mutate } = Files.GetFile({
+                id: readMeId,
+                // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
+            })
+            const fetchReadme = () => {
+                if (readMeId.value) {
+                    mutate()
+                }
+            }
+            watch(purpose, () => {
+                fetchReadme()
+            })
+            onMounted(() => {
+                fetchReadme()
+            })
 
             const handleCancelEdit = () => {
-                if (editor.value) {
-                    editor.value.resetEditor(
-                        decodeURIComponent(data.value || '')
-                    )
-                }
+                editor.value.resetEditor(decodeURIComponent(data.value || ''))
                 isEditMode.value = false
                 editorValue.value = data.value
             }
             watch(data, () => {
                 editorValue.value = data.value
             })
+            const handleUpdatePueposeReadme = async (id) => {
+                try {
+                    await savePersona({
+                        ...purpose.value,
+                        readme: id,
+                    })
+                } catch (error) {}
+            }
             const handleAddReadMe = () => {
                 isEditMode.value = false
                 loadingSave.value = true
@@ -87,8 +118,11 @@
                 const htmlRaw = decodeURIComponent(editorValue.value)
                 const fileHtml = new Blob([htmlRaw], { type: 'text/html' })
                 payload.append('file', fileHtml)
-                const { data: dataFile, isLoading } = Files.CreateFile(payload)
+                const { data: dataFile } = Files.CreateFile(payload)
                 watch(dataFile, () => {
+                    const idFile = dataFile.value.id
+                    // emit(addReadme, idFile)
+                    handleUpdatePueposeReadme(idFile)
                     loadingSave.value = false
                 })
             }
@@ -100,6 +134,7 @@
                 editorValue,
                 editor,
                 loadingSave,
+                readMeId,
             }
         },
     }

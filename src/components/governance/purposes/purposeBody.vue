@@ -42,7 +42,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <PurposeReadme />
+            <PurposeReadme :purpose="persona" />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"
@@ -320,7 +320,6 @@
                 id: string,
                 isEditMode: boolean
             ) {
-                console.log('savePolicyUI', { type, id, isEditMode })
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',

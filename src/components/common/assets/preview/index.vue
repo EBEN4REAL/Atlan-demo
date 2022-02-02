@@ -378,6 +378,8 @@
                 false,
                 isDrawer.value
             )
+            provide('isEvaluating', isEvaluating)
+
             debouncedWatch(
                 () => selectedAsset.value?.attributes?.qualifiedName,
                 (prev) => {

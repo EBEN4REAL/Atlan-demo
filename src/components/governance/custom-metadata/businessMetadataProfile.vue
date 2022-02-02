@@ -95,8 +95,10 @@
                             <p>No properties found</p>
                         </template>
 
-                        <Button class="mx-auto" @click="attrsearchText = ''"
-                            >Clear Search</Button
+                        <AtlanButton
+                            class="mx-auto"
+                            @click="attrsearchText = ''"
+                            >Clear Search</AtlanButton
                         >
                     </a-empty>
                 </div>
@@ -162,13 +164,13 @@
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
-    import Button from '@/UI/button.vue'
+    import AtlanButton from '@/UI/button.vue'
     import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             Truncate,
-            Button,
+            AtlanButton,
             CreateUpdateInfo,
             MetadataHeaderButton,
             AddPropertyDrawer,

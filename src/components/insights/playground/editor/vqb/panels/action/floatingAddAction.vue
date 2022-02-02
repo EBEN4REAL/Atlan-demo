@@ -147,7 +147,7 @@
         width: fit-content;
         border-radius: 50px;
         max-width: 56px;
-        height: 49px;
+        height: 48px;
         // transition: max-width 1s ease;
         &:hover {
             max-width: 100% !important;

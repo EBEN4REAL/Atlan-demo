@@ -70,6 +70,7 @@
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
                         @click="isEditing = true"
+                        color="secondary"
                     >
                         <AtlanIcon icon="Edit"></AtlanIcon>
                     </AtlanButton>
@@ -82,6 +83,7 @@
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
                         @click="deletePersona"
+                        color="secondary"
                     >
                         <AtlanIcon icon="Delete"></AtlanIcon>
                     </AtlanButton>

@@ -23,7 +23,7 @@ const useCollectionAccess = (
         'description',
         'userDescription',
         'certificateStatus',
-        
+
         'ownerUsers',
         'ownerGroups',
         'adminUsers',
@@ -66,6 +66,7 @@ const useCollectionAccess = (
                 },
             },
             attributes,
+            suppressLogs: true,
         }
 
         // console.log('coll body: ', body.value)
@@ -191,9 +192,9 @@ const useCollectionAccess = (
     })
 
     watch(
-        ()=>activeInlineTab?.value?.explorer
-        ?.queries?.collection
-        ?.qualifiedName,
+        () =>
+            activeInlineTab?.value?.explorer?.queries?.collection
+                ?.qualifiedName,
         async () => {
             // console.log('activeInlineTab: ', activeInlineTab.value)
 

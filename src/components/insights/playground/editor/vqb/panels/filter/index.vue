@@ -92,7 +92,6 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import FilterSubPanel from './subpanel/index.vue'
-    import { editor } from 'monaco-editor'
 
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
@@ -126,9 +125,7 @@
             const { index, panel } = toRefs(props)
             const { totalFiledsMapWithInput, isFilterIsInteractive } =
                 useFilter()
-            const editorInstanceRef = inject(
-                'editorInstance'
-            ) as Ref<editor.IStandaloneCodeEditor>
+            const editorInstanceRef = inject('editorInstance') as Ref<any>
             const confirmDeletePopover = ref(false)
             const isChecked = computed(
                 () =>

@@ -156,8 +156,7 @@
                 if (!guid?.value) {
                     return false
                 }
-                return guid.value !== classification.entityGuid;
-
+                return guid.value !== classification.entityGuid
             }
 
             const list = computed(() => {

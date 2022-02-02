@@ -69,6 +69,7 @@
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
                         @click="isEditing = true"
+                        color="secondary"
                     >
                         <AtlanIcon icon="Edit"></AtlanIcon>
                     </AtlanButton>
@@ -81,6 +82,7 @@
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
                         @click="deletePurpose"
+                        color="secondary"
                     >
                         <AtlanIcon icon="Delete"></AtlanIcon>
                     </AtlanButton>
@@ -112,10 +114,11 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useVModels } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'Purpose Header',
-        components: { Dropdown, CreationModal },
+        components: { Dropdown, CreationModal, AtlanButton },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,

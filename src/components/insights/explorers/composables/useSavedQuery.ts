@@ -57,25 +57,14 @@ export function useSavedQuery(
     const { queryRun } = useRunQuery()
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
-        console.log('query entity2: ', savedQuery)
-
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
-
-        console.log('decoded vars: ', Array.isArray(decodedVariables))
-        // debugger
-        // console.log(decodedVariables, savedQuery)
-        // if (!Array.isArray(decodedVariables)) decodedVariables = []
-
-        /* --------NOTE- TEMPERORY FIX-------*/
 
         const defaultSchemaQualifiedName =
             savedQuery?.attributes?.defaultSchemaQualifiedName
         const connectionQualifiedName =
             savedQuery.attributes.connectionQualifiedName
-
-        console.log('saved query: ', savedQuery?.attributes)
 
         const defaultDatabaseQualifiedName =
             savedQuery?.attributes?.defaultDatabaseQualifiedName
@@ -226,14 +215,25 @@ export function useSavedQuery(
             syncInlineTabsInLocalStorage(tabsArray.value)
             return
         } else {
-            console.log('saved query tab opened')
+            // console.log('saved query tab opened')
             // show user that this tab is already opened
             let key = undefined
-            tabsArray.value.forEach((tab) => {
-                if (tab.queryId === newTab.queryId) key = tab.key
+            let index = -1
+            tabsArray.value.forEach((tab, i) => {
+                if (tab.queryId === newTab.queryId) {
+                    key = tab.key
+                    index = i
+                }
             })
             newTab.key = key
-            overwriteInlineTab(newTab, tabsArray)
+            // console.log(
+            //     'tab data: ',
+            //     tabsArray.value[index].playground.resultsPane.result
+            //         .isQueryRunning
+            // )
+
+            // stop overwrite for now
+            // overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
         }
     }
@@ -379,7 +379,7 @@ export function useSavedQuery(
             },
         })
 
-        console.log('update query body: ', body.value)
+        // console.log('update query body: ', body.value)
 
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(
@@ -486,8 +486,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables
         )
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -671,15 +670,13 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
             getDatabaseQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = []
         // const uuidv4 = generateUUID()
-        const collectionQualifiedName =
-            activeInlineTab.value.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
         // const variablesSchemaBase64 = []
 
@@ -980,8 +977,7 @@ export function useSavedQuery(
             isVisualQuery = true
         }
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -1120,9 +1116,12 @@ export function useSavedQuery(
                     watch([data2, error2, isLoading2], () => {
                         if (isLoading2.value == false) {
                             if (error2.value === undefined) {
-                                // console.log('saved query entity: ', data2.value?.entity)
+                                // console.log('saved query entity: ', data2.value)
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     data2.value?.entity
+
+                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                    collectionQualifiedName
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             }
                         }

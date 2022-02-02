@@ -1,4 +1,4 @@
-import { Ref, ref, watch, toRaw } from 'vue'
+import { Ref, ref, watch, toRaw, computed } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
 import { map } from '~/services/meta/search/key'
@@ -50,6 +50,7 @@ const useQueryCollection = () => {
                 createdBy: username.value,
                 groups: groups.value,
             }),
+            suppressLogs: true,
             attributes,
         }
     }
@@ -259,9 +260,92 @@ const useQueryCollection = () => {
         }
     }
 
+    const hasCollectionReadAccess = (collection: QueryCollection) => {
+        // Viewer
+
+        let viewerUsers = collection.attributes?.viewerUsers
+            ? collection.attributes?.viewerUsers
+            : []
+        let viewerGroups = collection.attributes?.viewerGroups
+            ? collection.attributes?.viewerGroups
+            : []
+
+        // console.log('permission: ',toRaw(viewerUsers))
+
+        if (viewerUsers?.length) {
+            let v1 = viewerUsers.find((el) => el === username.value)
+            if (v1) {
+                return true
+            }
+        }
+
+        if (viewerGroups?.length) {
+            let filteredArray = viewerGroups.filter((value) =>
+                groups.value.includes(value)
+            )
+            return filteredArray.length > 0
+        }
+        return false
+    }
+
+    const hasCollectionWriteAccess = (collection: QueryCollection) => {
+        let adminUsers = collection.attributes?.adminUsers
+            ? collection.attributes?.adminUsers
+            : []
+        let adminGroups = collection.attributes?.adminGroups
+            ? collection.attributes?.adminGroups
+            : []
+
+        if (adminUsers?.length) {
+            let v1 = adminUsers.find((el) => el === username.value)
+            if (v1) {
+                return true
+            }
+        }
+        if (adminGroups?.length) {
+            let filteredArray = adminGroups.filter((value) =>
+                groups.value.includes(value)
+            )
+            return filteredArray.length > 0
+        }
+        return false
+    }
+
+    const isCollectionCreatedByCurrentUser = (collection: QueryCollection) => {
+        if (collection) {
+            return username.value === collection.attributes?.__createdBy
+        } else {
+            return false
+        }
+    }
+
+    const readAccessCollections = computed(() => {
+        let collectionList = queryCollections.value?.filter((col) => {
+            return (
+                !hasCollectionWriteAccess(col) &&
+                !isCollectionCreatedByCurrentUser(col)
+            )
+        })
+
+        return collectionList
+    })
+
+    const writeAccessCollections = computed(() => {
+        let collectionList = queryCollections.value?.filter((col) => {
+            return (
+                hasCollectionWriteAccess(col) ||
+                isCollectionCreatedByCurrentUser(col)
+            )
+        })
+
+        return collectionList
+    })
+
     return {
         queryCollectionsError,
         queryCollections,
+        readAccessCollections,
+        writeAccessCollections,
         queryCollectionsLoading,
         selectFirstCollectionByDefault,
         refetchQueryCollection: refreshBody,

@@ -153,7 +153,7 @@
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
-                            <div class="font-light text-gray-500">
+                            <div class="text-xs font-light text-gray-500">
                                 {{ createdAt }}
                             </div>
                             <!-- <DatePiece

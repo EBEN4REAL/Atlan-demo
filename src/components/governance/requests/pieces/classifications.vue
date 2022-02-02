@@ -31,6 +31,13 @@
                 class="pr-3 classification-pill"
             />
         </Popover>
+        <template v-else>
+            <div class="">
+                <!-- <AtlanIcon icon="" />  -->
+                <!-- temporary handle corrupt request -->
+                Classification deleted
+            </div>
+        </template>
         <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>
 </template>

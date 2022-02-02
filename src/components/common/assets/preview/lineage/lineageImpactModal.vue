@@ -97,18 +97,22 @@
                         <!-- Classification -->
                         <template v-else-if="column.key === 'classifications'">
                             <div class="flex flex-wrap items-center gap-1">
-                                <ClassificationPill
+                                <ClassificationPopover
                                     v-for="(classif, idx) in getClassification(
                                         text.slice(0, 2)
                                     )"
                                     :key="idx"
-                                    :name="classif.name"
-                                    :display-name="classif?.displayName"
-                                    :is-propagated="isPropagated(classif)"
-                                    :color="classif.options?.color"
-                                    :allow-delete="false"
-                                    :created-by="classif?.createdBy"
-                                />
+                                    :classification='classif'
+                                >
+                                    <ClassificationPill
+                                        :name="classif.name"
+                                        :display-name="classif?.displayName"
+                                        :is-propagated="isPropagated(classif)"
+                                        :color="classif.options?.color"
+                                        :allow-delete="false"
+                                        :created-by="classif?.createdBy"
+                                    />
+                                </ClassificationPopover>
 
                                 <span
                                     v-if="text.length - 2 > 0"
@@ -206,6 +210,7 @@
     /** COMPONENTS */
     import TermPill from '@/common/pills/term.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import ClassificationPopover from '@/common/popover/classification/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanButton from '@/UI/button.vue'
@@ -223,6 +228,7 @@
             CertificateBadge,
             Tooltip,
             AtlanButton,
+            ClassificationPopover
         },
         props: {
             guid: { type: String, required: true },
@@ -259,10 +265,8 @@
                 if (!guid?.value) {
                     return false
                 }
-                if (guid.value === classification.entityGuid) {
-                    return false
-                }
-                return true
+                return guid.value !== classification.entityGuid;
+
             }
 
             const getSource = (entity) => {

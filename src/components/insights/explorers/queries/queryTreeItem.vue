@@ -258,7 +258,6 @@
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-gray-light via-gray-light',
-
                                     hasWritePermission ? 'right-6' : 'right-0',
                                 ]"
                             >
@@ -604,6 +603,8 @@
                 QueryCollection[] | undefined
             >
 
+            const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
+
             const collectionName = computed(() => {
                 let col = queryCollections.value?.find(
                     (col) =>
@@ -859,10 +860,6 @@
                 let querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
 
-                // console.log('icons: ', getEntityStatusIcon(
-                //     'query',
-                //     certificateStatus(item.value)
-                // ))
                 const folderSvgEl = new DOMParser().parseFromString(
                     item.value.typeName === 'Query' ? querySvg : folderSvg,
                     'text/html'
@@ -887,31 +884,107 @@
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
-                            const { data, error } = Insights.CreateQueryFolder(
-                                {
-                                    entity: item.value.entity,
-                                },
-                                {}
-                            )
-                            console.log('rename: ', { data, error })
+                            const { data, error, isLoading } =
+                                Insights.CreateQueryFolder(
+                                    {
+                                        entity: item.value.entity,
+                                    },
+                                    {}
+                                )
+                            // console.log('rename: ', { data, error })
                             watch(
                                 error,
                                 () => {
-                                    console.log('rename error: ', error)
-                                    if (error.value == undefined) {
-                                        message.success({
-                                            content: `${
-                                                item.value.typeName === 'Query'
-                                                    ? 'Query'
-                                                    : 'Folder'
-                                            } renamed successfully`,
-                                        })
-                                        useAddEvent(
-                                            'insights',
-                                            'folder',
-                                            'renamed',
-                                            undefined
-                                        )
+                                    // console.log('rename error: ', error)
+
+                                    if (isLoading.value === false) {
+                                        if (error.value === undefined) {
+                                            // message.success({
+                                            //     content: `${
+                                            //         item.value.typeName ===
+                                            //         'Query'
+                                            //             ? 'Query'
+                                            //             : 'Folder'
+                                            //     } renamed successfully`,
+                                            // })
+                                            // useAddEvent(
+                                            //     'insights',
+                                            //     'folder',
+                                            //     'renamed',
+                                            //     undefined
+                                            // )
+                                        } else {
+                                            item.value.attributes.name =
+                                                orignalName
+
+                                            message.error({
+                                                content: `${
+                                                    item.value.typeName ===
+                                                    'Query'
+                                                        ? 'Query'
+                                                        : 'Folder'
+                                                } rename failed`,
+                                            })
+                                        }
+                                    }
+                                },
+                                { immediate: true }
+                            )
+
+                            watch(data, () => {
+                                // setTimeout(() => {
+                                updateAssetCheck.value = true
+                                message.success({
+                                    content: `${
+                                        item.value.typeName === 'Query'
+                                            ? 'Query'
+                                            : 'Folder'
+                                    } renamed successfully`,
+                                })
+
+                                useAddEvent(
+                                    'insights',
+                                    'folder',
+                                    'renamed',
+                                    undefined
+                                )
+                                // }, 200)
+                            })
+                        }
+                        input.value = ''
+                        try {
+                            parentNode?.removeChild(div)
+                        } catch {}
+                        childNode?.classList?.remove('hidden')
+                    }
+                })
+                input.addEventListener('blur', (e) => {
+                    // console.log('rename error blur: ', error)
+                    if (input.value && input.value !== orignalName) {
+                        item.value.attributes.name = input.value
+                        const { data, error, isLoading } =
+                            Insights.CreateQueryFolder(
+                                {
+                                    entiy: item.value.entity,
+                                },
+                                {}
+                            )
+
+                        watch(
+                            error,
+                            () => {
+                                // console.log('rename error blur: ', error)
+
+                                if (isLoading.value === false) {
+                                    if (error.value === undefined) {
+                                        // message.success({
+                                        //     content: `${
+                                        //         item.value.typeName === 'Query'
+                                        //             ? 'Query'
+                                        //             : 'Folder'
+                                        //     } renamed successfully`,
+                                        // })
+                                        // updateAssetCheck.value = true
                                     } else {
                                         item.value.attributes.name = orignalName
 
@@ -923,58 +996,30 @@
                                             } rename failed`,
                                         })
                                     }
-                                },
-                                { immediate: true }
-                            )
-                        }
-                        input.value = ''
-                        try {
-                            parentNode?.removeChild(div)
-                        } catch {}
-                        childNode?.classList?.remove('hidden')
-                    }
-                })
-                input.addEventListener('blur', (e) => {
-                    console.log('rename error blur: ', error)
-                    if (input.value && input.value !== orignalName) {
-                        item.value.attributes.name = input.value
-                        const { data, error } = Insights.CreateQueryFolder(
-                            {
-                                entiy: item.value.entity,
-                            },
-                            {}
-                        )
-                        // watch(error, (newError) => {
-                        //     if (newError) {
-                        //         item.value.attributes.name = orignalName
-                        //     }
-                        // })
-                        watch(
-                            error,
-                            () => {
-                                console.log('rename erro: ', error)
-                                if (error.value == undefined) {
-                                    message.success({
-                                        content: `${
-                                            item.value.typeName === 'Query'
-                                                ? 'Query'
-                                                : 'Folder'
-                                        } renamed successfully`,
-                                    })
-                                } else {
-                                    item.value.attributes.name = orignalName
-
-                                    message.error({
-                                        content: `${
-                                            item.value.typeName === 'Query'
-                                                ? 'Query'
-                                                : 'Folder'
-                                        } rename failed`,
-                                    })
                                 }
                             },
                             { immediate: true }
                         )
+
+                        watch(data, () => {
+                            // setTimeout(() => {
+                            updateAssetCheck.value = true
+                            message.success({
+                                content: `${
+                                    item.value.typeName === 'Query'
+                                        ? 'Query'
+                                        : 'Folder'
+                                } renamed successfully`,
+                            })
+
+                            useAddEvent(
+                                'insights',
+                                'folder',
+                                'renamed',
+                                undefined
+                            )
+                            // }, 200)
+                        })
                     }
                     try {
                         parentNode?.removeChild(div)
@@ -1145,14 +1190,14 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
-                console.log('item to move: ', item)
+                // console.log('item to move: ', item)
                 let previousParentGuId = item.attributes.parent.guid
                 let selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
 
-                console.log('selected folder:', selectedFolder.value)
+                // console.log('selected folder:', selectedFolder.value)
 
                 if (selectedFolder.value) {
                     const newEntity = { ...item, relationshipAttributes: {} }
@@ -1200,7 +1245,7 @@
                         newEntity.classifications = []
                     }
 
-                    console.log('new entity: ', newEntity)
+                    // console.log('new entity: ', newEntity)
 
                     isUpdating.value = true
 
@@ -1269,12 +1314,15 @@
                                     }, 2000)
 
                                     message.success('Query moved successfully')
+                                    updateAssetCheck.value = true
                                 } else {
                                     message.success(`Query move failed`)
                                 }
                             }
                             showFolderPopover.value = false
                             showPublishPopover.value = false
+
+                            // console.log('update data change folder: ', data)
                         })
                     }
                 }

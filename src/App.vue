@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref, watch, inject, computed } from 'vue'
     import { useI18n } from 'vue-i18n'
     import useTypedefs from '~/composables/typedefs/useTypedefs'
 

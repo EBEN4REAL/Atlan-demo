@@ -68,6 +68,40 @@
                 </router-link>
             </template>
         </div>
+        <div class="px-3">
+            <template v-for="nav in helpCenterList" :key="nav.id">
+                <div
+                    v-if="nav.isActive"
+                    class="w-full mx-0 cursor-pointer menu-item group"
+                    @click="
+                        () => {
+                            nav.id === 'support' ? toggleHelpWidget() : null
+                        }
+                    "
+                >
+                    <a
+                        v-if="nav.link"
+                        :target="nav.openInANewTab ? '_blank' : 'self'"
+                        :href="nav.link"
+                    >
+                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
+                        {{ nav.label }}
+                        <AtlanIcon
+                            v-if="nav.openInANewTab"
+                            icon="External"
+                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100"
+                        />
+                    </a>
+                    <span v-else class="flex items-center">
+                        <atlan-icon
+                            :icon="nav?.icon"
+                            class="h-4 mr-2 text-gray-500"
+                        />
+                        {{ nav.label }}
+                    </span>
+                </div>
+            </template>
+        </div>
 
         <!-- <div
             v-if="path === '/'"
@@ -96,15 +130,16 @@
 
 <script lang="ts">
     import { computed, defineComponent } from 'vue'
-
+    import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/meLarge.vue'
     import useUserData from '~/composables/user/useUserData'
     import map from '~/constant/accessControl/map'
 
     import { workspaceList } from '~/constant/navigation/workspace'
     import { workspaceCentreList } from '~/constant/navigation/workspaceCentre'
+    import { helpCenterList } from '~/constant/navigation/helpCentre'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import whoami from '~/composables/user/whoami'
-    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -116,13 +151,12 @@
         setup(props, { emit }) {
             const { username, name } = useUserData()
             const { role } = whoami()
+            const { toggleHelpWidget } = useHelpWidget()
 
             const getVersion = process.env.npm_package_version
             const route = useRoute()
 
-            const path = computed(() => {
-                return route.path
-            })
+            const path = computed(() => route.path)
 
             function closeNavDrawer() {
                 emit('closeNavbar')
@@ -132,11 +166,13 @@
                 closeNavDrawer,
                 workspaceList,
                 workspaceCentreList,
+                helpCenterList,
                 username,
                 name,
                 getVersion,
                 map,
                 path,
+                toggleHelpWidget,
             }
         },
     })

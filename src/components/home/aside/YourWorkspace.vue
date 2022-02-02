@@ -2,11 +2,11 @@
     <h2 class="mb-3 text-xl font-bold">Workspace</h2>
     <Card
         v-for="l in worksplaceListMeta"
+        :key="l.id"
         :url="l.path"
         :desc="l.desc"
         :head="l.label"
         :icon="l.icon"
-        :key="l.id"
     />
 </template>
 
@@ -15,6 +15,7 @@
     import Card from '@/home/shared/card.vue'
     import { topNavKeys, bottomNavKeys } from '~/constant/navigation/workspace'
     import useTenantData from '~/composables/tenant/useTenantData'
+
     export default defineComponent({
         name: 'YourWorkspace',
         components: { Card },

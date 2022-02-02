@@ -128,8 +128,10 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
         AssetAttributes,
+        AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
+        GlossaryAttributes,
     } from '~/constant/projection'
 
     export default defineComponent({
@@ -268,7 +270,10 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...customMetadataProjections,
+                ...GlossaryAttributes,
             ])
+
+            const relationAttributes = ref([...AssetRelationAttributes])
 
             // Preferences are to be shared for all asset lists
             const discoveryStore = useAssetStore()
@@ -310,6 +315,7 @@
                 attributes: attributes.value.length
                     ? attributes
                     : defaultAttributes,
+                relationAttributes,
                 suppressLogs: suppressLogs?.value,
             })
 

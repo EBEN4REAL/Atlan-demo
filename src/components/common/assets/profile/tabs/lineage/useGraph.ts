@@ -426,7 +426,7 @@ export default function useGraph() {
                 ],
                 attrs: {
                     label: {
-                        fill: '#3e4359',
+                        fill: relation?.type === 'related' ? '#3e4359' : 'none',
                         fontSize: 14,
                         textAnchor: 'middle',
                         textVerticalAnchor: 'middle',
@@ -434,7 +434,7 @@ export default function useGraph() {
                     },
                     body: {
                         ref: 'label',
-                        fill: '#ffffffcc',
+                        fill: relation?.type === 'related' ? '#fff' : 'none',
                         strokeWidth: 1,
                         rx: 4,
                         ry: 4,

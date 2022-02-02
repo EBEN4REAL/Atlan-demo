@@ -470,11 +470,11 @@ export default function useEventGraph(
             edge.getLabels().map((lbl) => ({
                 attrs: {
                     label: {
-                        fill: reset ? '#3e4359' : '#5277d7',
+                        fill: reset ? 'none' : '#5277d7',
                         text: lbl.attrs.label.text,
                     },
                     body: {
-                        fill: reset ? '#ffffffcc' : '#fff',
+                        fill: reset ? 'none' : '#fff',
                         stroke: reset ? 'none' : '#5277d7',
                     },
                 },

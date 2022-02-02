@@ -89,7 +89,7 @@ export default async function useComputeGraph(
             if (fromAndToIdSet.has(fromAndToId)) data = { isDup: true }
             else fromAndToIdSet.add(fromAndToId)
 
-            if (columnEntityIds.find((x) => [from, to].includes(x))) return
+            if (columnEntityIds.find((y) => [from, to].includes(y))) return
 
             const relation = {
                 id: `${processId}/${from}@${to}`,

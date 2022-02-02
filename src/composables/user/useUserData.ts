@@ -16,5 +16,6 @@ export default function useUserData() {
         avatar: avatarURL.value,
         firstName: authStore.firstName,
         lastName: authStore.lastName,
+        email: authStore.email,
     }
 }

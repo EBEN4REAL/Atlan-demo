@@ -261,7 +261,7 @@
             class="flex flex-col px-5 text-sm gap-y-4"
         >
             <div class="flex flex-col">
-                <span class="mb-2 text-sm text-gray-500">Data Type</span>
+                <span class="mb-1 text-sm text-gray-500">Data Type</span>
 
                 <div class="flex items-center text-gray-700 gap-x-1">
                     <div class="flex">
@@ -269,7 +269,7 @@
                             :is="dataTypeCategoryImage(selectedAsset)"
                             class="h-4 text-gray-500 mr-0.5 mb-0.5"
                         />
-                        <span class="text-sm tracking-wider text-gray-700">{{
+                        <span class="text-sm text-gray-700">{{
                             dataType(selectedAsset)
                         }}</span>
                     </div>
@@ -306,14 +306,14 @@
                 </div>
             </div>
             <div v-if="tableName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">Table</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="mb-1 text-sm text-gray-500">Table</div>
+                <div class="text-sm text-gray-700">
                     {{ tableName(selectedAsset) }}
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">View</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="text-sm text-gray-700">
                     {{ viewName(selectedAsset) }}
                 </div>
             </div>
@@ -386,7 +386,7 @@
             <div class="mb-1 text-sm text-gray-500">
                 {{ attributes(selectedAsset)?.parent?.typeName }}
             </div>
-            <div class="text-sm tracking-wider text-gray-700">
+            <div class="text-sm text-gray-700">
                 {{ attributes(selectedAsset)?.parent?.attributes?.name }}
             </div>
         </div>
@@ -401,13 +401,13 @@
         >
             <div class="flex flex-col px-5 text-sm">
                 <div class="mb-1 text-sm text-gray-500">Collection</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="text-sm text-gray-700">
                     {{ selectedAsset?.collectionName }}
                 </div>
             </div>
             <div class="flex flex-col px-5 text-sm">
                 <div class="mb-1 text-sm text-gray-500">Folder</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="text-sm text-gray-700">
                     {{ attributes(selectedAsset)?.parent?.attributes?.name }}
                 </div>
             </div>

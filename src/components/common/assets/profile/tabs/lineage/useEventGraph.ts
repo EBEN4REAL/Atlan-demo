@@ -493,8 +493,26 @@ export default function useEventGraph(
         })
     }
 
+    // Set the style of label based on the edge highlight state
+    const controlLabelStyle = (edge, reset: boolean) => {
+        edge.setLabels(
+            edge.getLabels().map((lbl) => ({
+                attrs: {
+                    label: {
+                        fill: reset ? '#3e4359' : '#5277d7',
+                        text: lbl.attrs.label.text,
+                    },
+                    body: {
+                        fill: reset ? '#ffffffcc' : '#fff',
+                        stroke: reset ? 'none' : '#5277d7',
+                    },
+                },
+            }))
+        )
+    }
+
     // controlEdgeHighlight
-    const controlEdgeHighlight = (edge, reset, animate = false) => {
+    const controlEdgeHighlight = (edge, reset: boolean, animate = false) => {
         if (!edge) return
         edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
         edge.attr('line/strokeWidth', reset ? 1.6 : 3)
@@ -502,6 +520,7 @@ export default function useEventGraph(
         edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
         edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
         edge.toFront()
+        controlLabelStyle(edge, reset)
 
         if (animate)
             edge.attr('line/style/animation', 'ant-line 30s infinite linear')

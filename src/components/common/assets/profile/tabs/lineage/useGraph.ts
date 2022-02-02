@@ -168,7 +168,7 @@ export default function useGraph() {
                                   : 'hidden'
                           } ${
                               isRootNode ? 'l-m20px' : 'r-m20px'
-                          } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">${iconPlus}
+                          } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center hidden">${iconPlus}
                                 </div>
                         </div>`
                         : `<div class="lineage-process ${

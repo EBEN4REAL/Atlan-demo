@@ -3,16 +3,16 @@
         <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
             <div class="mb-1 text-gray-500">Classifications</div>
             <Classification
-                :allowDelete="selectedClassifications.length > 1"
                 v-model:modelValue="selectedClassifications"
+                :allow-delete="selectedClassifications.length > 1"
+                :edit-permission="true"
                 @change="updateClassifications"
-                :editPermission="true"
             />
         </div>
         <DetailsWidget
             :item="persona"
-            @editDetails="$emit('editDetails')"
             class="border border-gray-200"
+            @editDetails="$emit('editDetails')"
         >
             <!-- <template #actionBtn>
                 <div class="hidden">
@@ -124,24 +124,24 @@
         h,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
-    import { IPurpose } from '~/types/accessPolicies/purposes'
-    import { enablePersona } from '../composables/useEditPurpose'
-    import { setActiveTab } from '../composables/usePurposeTabs'
     import Classification from '@common/input/classification/index.vue'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { useTimeAgo } from '@vueuse/core'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
+        enablePersona,
         updateSelectedPersona,
         selectedPersonaDirty,
         saveClassifications,
+        enablePurpose,
     } from '../composables/useEditPurpose'
+    import { setActiveTab } from '../composables/usePurposeTabs'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { selectedPersona } from '../composables/usePurposeList'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
     // import PurposeSummary from './PurposeSummary.vue'
     import DetailsWidget from '~/components/common/widgets/detailsWidget.vue'
-    import { enablePurpose } from '../composables/useEditPurpose'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -161,7 +161,7 @@
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
             const mapClassificationsFromNames = computed(() => {
-                let arr: any[] = []
+                const arr: any[] = []
                 classificationList.value.forEach((cl) => {
                     selectedPersonaDirty.value?.tags?.forEach((name) => {
                         if (name === cl.name) {
@@ -269,8 +269,8 @@
                     Modal.confirm({
                         title: 'Disable purpose',
                         class: 'disable-purpose-modal',
-                        content: () => {
-                            return h('div', [
+                        content: () =>
+                            h('div', [
                                 'Are you sure you want to disable purpose',
                                 h('span', [' ']),
                                 h(
@@ -281,8 +281,7 @@
                                     [`${purpose.value.displayName}`]
                                 ),
                                 h('span', '?'),
-                            ])
-                        },
+                            ]),
                         okType: 'danger',
                         autoFocusButton: null,
                         okButtonProps: {

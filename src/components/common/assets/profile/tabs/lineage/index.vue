@@ -197,20 +197,18 @@
                 useFetchLineage(config)
 
             watch(data, async () => {
-                if (!data.value.relations.length) {
+                if (childBiAssetMap[selectedAsset.value.typeName])
+                    lineage.value = computeLineageForChildBiAsset(data.value)
+                else if (parentBiAssetMap[selectedAsset.value.typeName])
+                    lineage.value = computeLineageForParentBiAsset(data.value)
+                else if (!data.value.relations.length) {
                     lineage.value = { ...data.value }
                     const { baseEntityGuid } = lineage.value
                     baseEntity.value = selectedAsset.value
                     lineage.value.guidEntityMap = {
                         [baseEntityGuid]: baseEntity.value,
                     }
-                }
-
-                if (childBiAssetMap[selectedAsset.value.typeName])
-                    lineage.value = computeLineageForChildBiAsset(data.value)
-                else if (parentBiAssetMap[selectedAsset.value.typeName])
-                    lineage.value = computeLineageForParentBiAsset(data.value)
-                else lineage.value = { ...data.value }
+                } else lineage.value = { ...data.value }
 
                 const { guidEntityMap, baseEntityGuid } = lineage.value
                 baseEntity.value = guidEntityMap[baseEntityGuid]

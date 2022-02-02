@@ -14,11 +14,14 @@
                     :placeholder="placeholder"
                     :allow-clear="true"
                     size="minimal"
-                    class="border-b-0"
+                    customClass="border-b-0"
                     :autofocus="false"
                 >
                     <template #tab>
-                        <div class="flex gap-1" :class="hideTabs ? 'hidden' : ''">
+                        <div
+                            class="flex gap-1"
+                            :class="hideTabs ? 'hidden' : ''"
+                        >
                             <a-tooltip title="users" placement="top">
                                 <div
                                     :class="
@@ -183,30 +186,30 @@
                 required: false,
                 default: () => ({}),
             },
-             selectedRecords: {
+            selectedRecords: {
                 type: Object,
                 default: null,
-                required: false
+                required: false,
             },
-            showLoggedInUser:{
+            showLoggedInUser: {
                 type: Boolean,
                 default: false,
-                required: false
+                required: false,
             },
-            dropdownStyleObject:{
+            dropdownStyleObject: {
                 type: Object,
-                default:{ width: '330px' },
-                required: false
+                default: { width: '330px' },
+                required: false,
             },
-            searchPlaceholder:{
+            searchPlaceholder: {
                 type: String,
-                default: ''
+                default: '',
             },
-            hideTabs:{
+            hideTabs: {
                 type: Boolean,
                 default: false,
-                required: false
-            }
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -252,7 +255,7 @@
 
             const placeholder = computed(() => {
                 if (!popoverVisible.value) {
-                    return props?.searchPlaceholder || 'Search users and groups' 
+                    return props?.searchPlaceholder || 'Search users and groups'
                 }
                 if (componentType.value === 'groups') {
                     return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
@@ -299,7 +302,7 @@
                 showPopover,
                 popoverVisible,
                 target,
-                selectedRecords
+                selectedRecords,
                 // handleUserChange,
             }
         },

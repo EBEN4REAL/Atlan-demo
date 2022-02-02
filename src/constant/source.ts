@@ -219,6 +219,7 @@ export const SourceList = [
         image: 'Athena',
         filterMaxLevel: 2,
         dialectConfig: {
+            assetQuoteType: '"',
             abortQuery: true,
         },
         hierarchy: [

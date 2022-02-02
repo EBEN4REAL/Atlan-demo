@@ -133,7 +133,6 @@
     import LineError from './lineError.vue'
     // import { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } from '~/components/insights/common/constants'
     import AtlanBtn from '~/components/UI/button.vue'
-    import AtlanTable from '@/common/table/previewTable/index.vue'
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
@@ -147,7 +146,6 @@
 
     export default defineComponent({
         components: {
-            AtlanTable,
             LineError,
             ResultPaneFooter,
             LoadingView,

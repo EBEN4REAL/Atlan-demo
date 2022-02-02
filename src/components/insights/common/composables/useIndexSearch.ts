@@ -30,7 +30,7 @@ export default function useIndexSearch(
     )
 
     const replaceBody = (payload: any) => {
-        console.log('payload: ', payload)
+        console.log('body payload: ', payload)
         body.value = payload
         mutate()
     }

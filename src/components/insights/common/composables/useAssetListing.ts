@@ -9,6 +9,7 @@ export function useAssetListing(
     params: Object = {}
 ) {
     const list: Ref<assetInterface[]> = ref([])
+    const aggregations: Ref<any[]> = ref([])
     const { replaceBody, body, isReady, error, data, isLoading } =
         useIndexSearch({}, '', immediate, params)
 
@@ -27,9 +28,16 @@ export function useAssetListing(
         } else {
             list.value = []
         }
+        if (data.value?.aggregations) {
+            aggregations.value =
+                data.value?.aggregations[
+                    'agg_terms___typeName.keyword'
+                ]?.buckets
+        }
     })
 
     return {
+        aggregations,
         error,
         data,
         list,

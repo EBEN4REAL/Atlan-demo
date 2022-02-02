@@ -22,9 +22,8 @@ import {
 } from './composables/eventTracking/useAddEvent'
 
 const app = createApp(App)
-//initialize store
 app.use(createPinia())
-//vue-head
+// vue-head
 const head = createHead()
 app.use(head)
 
@@ -47,6 +46,8 @@ keycloak
     .then(async (auth) => {
         authStore.setIsAuthenticated(auth)
         if (!auth) {
+            const redirectURL = window.location.pathname
+            localStorage.setItem('redirectURL', redirectURL)
             window.location.replace(keycloak.createLoginUrl())
         } else {
             authStore.setToken({
@@ -71,11 +72,9 @@ keycloak
                     authStore.setFailed(true)
                 }
             }
-
             setInterval(() => {
                 keycloak.updateToken(60)
             }, 6000)
-
             app.config.globalProperties.$keycloak = keycloak
             app.provide('$keycloak', keycloak)
 
@@ -86,6 +85,11 @@ keycloak
             inputFocusDirective(app)
             authDirective(app)
             app.use(router).mount('#app')
+            const redirectUrl = localStorage.getItem('redirectURL')
+            if (redirectUrl) {
+                router.push(redirectUrl)
+                localStorage.setItem('redirectURL', '')
+            }
             identifyUser()
             identifyGroup()
         }

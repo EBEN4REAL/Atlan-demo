@@ -1,5 +1,23 @@
 <template>
     <div class="flex items-center gap-x-2">
+        <RequestDropdown
+            :type="'reject'"
+            :is-loading="loading"
+            :item-drop-down="'Reject with comment'"
+            @submit="(message) => $emit('reject', message || '')"
+        >
+            <span class="text-red-500"> Reject </span>
+        </RequestDropdown>
+
+        <RequestDropdown
+            v-if="!disabledAccept"
+            :type="'approve'"
+            :is-loading="isApprovalLoading"
+            :item-drop-down="'Approve with comment'"
+            @submit="(message) => $emit('accept', message || '')"
+        >
+            <span class="text-green-500"> Approve </span>
+        </RequestDropdown>
         <a-popover
             v-if="request?.message"
             trigger="hover"
@@ -7,9 +25,9 @@
             :align="{ offset: [90, -5] }"
         >
             <template #content>
-                <div class="comment-delete">
+                <div class="px-2 py-3 comment-delete">
                     <div class="flex">
-                        <component :is="iconQuotes" class="mr-4" />
+                        <component :is="iconQuotes" class="mr-2.5" />
                         <p>{{ request?.message }}</p>
                     </div>
                     <div class="flex items-center mt-4">
@@ -29,31 +47,14 @@
                     </div>
                 </div>
             </template>
-            <AtlanIcon class="mr-3 message-icon" icon="Message" />
+            <AtlanIcon class="ml-3 message-icon" icon="Message" />
         </a-popover>
         <div v-else class="w-7" />
-        <RequestDropdown
-            :type="'reject'"
-            :is-loading="loading"
-            :item-drop-down="'Reject with comment'"
-            @submit="(message) => $emit('reject', message || '')"
-        >
-            <span class="text-red-500"> Reject </span>
-        </RequestDropdown>
-
-        <RequestDropdown
-            :type="'approve'"
-            :is-loading="isApprovalLoading"
-            :item-drop-down="'Approve with comment'"
-            @submit="(message) => $emit('accept', message || '')"
-        >
-            <span class="text-green-500"> Approve </span>
-        </RequestDropdown>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import iconQuotes from '~/assets/images/icons/Quotes.svg'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -61,6 +62,7 @@
     import UserPiece from './pieces/user.vue'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         name: 'RequestActions',
@@ -83,7 +85,23 @@
         },
         emits: ['accept', 'reject', 'more'],
         setup(props, { emit }) {
+            // ! temporary solution for corrupted requests
+            const disabledAccept = computed(() => {
+                const isClassificationReq =
+                    props.request?.requestType === 'attach_classification'
+                if (isClassificationReq) {
+                    const { classificationList } = useTypedefData()
+                    const { typeName } = props.request.payload
+
+                    const classificationExist = classificationList.value.find(
+                        (clsf) => clsf?.name === typeName
+                    )
+                    return !classificationExist
+                }
+                return false
+            })
             return {
+                disabledAccept,
                 iconQuotes,
                 atlanLogo,
             }

@@ -26,6 +26,7 @@
         </AddGtcModal>
     </div>
     <a-tree
+        :key="defaultGlossary"
         class="glossary-tree"
         :tree-data="treeData"
         :draggable="true"

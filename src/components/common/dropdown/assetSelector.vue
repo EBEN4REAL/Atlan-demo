@@ -1,38 +1,4 @@
 <template>
-    <!-- <a-select
-        :value="modelValue"
-        style="width: 100%; border-radius: 8px"
-        :class="$style.connector"
-        @change="handleChange"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        :options="dropdownOption"
-        :loading="isLoading"
-        show-search
-        filter-option
-        allow-clear
-    >
-        <template #option="item">
-            <div class="flex">
-                <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-1 mr-1" />
-                <p>{{ item.label }}</p>
-            </div>
-        </template>
-
-        <template #dropdownRender="{ menuNode: menu }">
-            <v-nodes :vnodes="menu" />
-
-            <a-divider style="margin: 4px 0" />
-            <div class="px-3">
-                {{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}
-            </div>
-        </template>
-        <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template>
-    </a-select>
-    <div></div> -->
-
     <a-select
         :placeholder="placeholder"
         :value="modelValue"
@@ -135,6 +101,7 @@
                 () => {
                     if (!disabled.value) {
                         initialBody.dsl = filters.value
+
                         replaceBody(initialBody)
                     }
                 },

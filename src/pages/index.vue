@@ -35,29 +35,42 @@
                 <YourWorkspace />
             </section>
             <!-- TODO: Hidden for paytm rollout, will enable it back -->
-            <!--section>
+            <section>
                 <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
-                <router-link to="//notion.so" target="_blank" replace>
+                <a :href="documentationLink" target="_blank">
                     <div
                         class="flex items-center p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
                     >
-                        <AtlanIcon class="h-12" icon="AtlanIcon" />
+                        <AtlanIcon class="h-9" icon="AtlanIcon" />
                         <span class="flex flex-col text-gray-700">
-                            <h3 class="text-base">Atlan Documentation</h3>
+                            <div class="flex items-center text-base">
+                                Atlan Documentation
+                                <AtlanIcon
+                                    icon="External"
+                                    class="mb-1 ml-2 opacity-0 text-primary group-hover:opacity-100"
+                                />
+                            </div>
                         </span>
                     </div>
-                </router-link>
-                <router-link to="//notion.so" target="_blank" replace>
-                    <div
-                        class="flex items-center p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
-                    >
-                        <AtlanIcon class="h-12" icon="CallIcon" />
-                        <span class="flex flex-col text-gray-700">
-                            <h3 class="text-base">Customer Support</h3>
-                        </span>
-                    </div>
-                </router-link>
-                <router-link to="//notion.so" target="_blank" replace>
+                </a>
+
+                <div
+                    class="relative flex items-center w-full p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
+                    @click="toggleHelpWidget"
+                >
+                    <AtlanIcon class="h-9" icon="CallIcon" />
+                    <span class="flex flex-col text-gray-700">
+                        <div class="text-base">
+                            Support
+                            <AtlanIcon
+                                class="absolute opacity-0 right-3 text-primary top-4 group-hover:opacity-100"
+                                icon="ArrowRight"
+                            />
+                        </div>
+                    </span>
+                </div>
+
+                <!-- <router-link to="//notion.so" target="_blank" replace>
                     <div
                         class="flex items-center p-2 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
                     >
@@ -66,15 +79,15 @@
                             <h3 class="text-base">Share Feedback</h3>
                         </span>
                     </div>
-                </router-link>
-            </section-->
+                </router-link> -->
+            </section>
         </aside>
     </div>
 </template>
 
 <script lang="ts">
     import { useHead } from '@vueuse/head'
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import useUserData from '~/composables/user/useUserData'
     import { getNameInTitleCase } from '~/utils/string'
     import SearchAndStats from '@/home/main/searchAndStats.vue'
@@ -84,6 +97,8 @@
     import Purpose from '@/home/main/purpose.vue'
     import YourOrgs from '@/home/main/YourOrgs.vue'
     import YourWorkspace from '@/home/aside/YourWorkspace.vue'
+    import { helpCenterList } from '~/constant/navigation/helpCentre'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
 
     export default defineComponent({
         name: 'HomePage',
@@ -99,6 +114,7 @@
         props: {},
         setup() {
             const { name } = useUserData()
+            const { toggleHelpWidget } = useHelpWidget()
 
             useHead({
                 title: `Welcome - ${getNameInTitleCase(name)} `,
@@ -117,11 +133,19 @@
                 return 'Good Evening'
             }
 
+            const documentationLink = computed(
+                () =>
+                    helpCenterList.find(
+                        (listItem) => listItem.id === 'documentation'
+                    )?.link ?? ''
+            )
             return {
                 getIcon,
                 getGreet,
                 name,
                 getNameInTitleCase,
+                documentationLink,
+                toggleHelpWidget,
             }
         },
     })

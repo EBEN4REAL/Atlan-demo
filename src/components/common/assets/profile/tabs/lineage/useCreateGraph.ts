@@ -117,11 +117,11 @@ export default function useCreateGraph(
         type: 'dagre',
         rankdir: 'LR',
         controlPoints: true,
-        nodesepFunc() {
+        nodesepFunc(x) {
             // vertical spacing btw nodes
             return 20
         },
-        ranksepFunc() {
+        ranksepFunc(x) {
             // horizontal spacing btw nodes
             return 190
         },

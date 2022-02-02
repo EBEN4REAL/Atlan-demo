@@ -20,7 +20,7 @@
                 >
                     <span
                         v-if="!isEdit && description(selectedAsset)"
-                        class="break-all whitespace-pre-wrap"
+                        class="break-words whitespace-pre-wrap"
                         >{{ description(selectedAsset) }}</span
                     >
                     <span

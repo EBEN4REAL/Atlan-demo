@@ -48,7 +48,10 @@
             @change="handleSQLQueryUpdate"
         ></Connection>
 
-        <div v-if="webURL(selectedAsset)" class="px-5">
+        <div
+            v-if="webURL(selectedAsset) || sourceURL(selectedAsset)"
+            class="px-5"
+        >
             <a-button
                 block
                 class="flex items-center justify-between px-2 shadow-none"
@@ -57,14 +60,13 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />
-                    {{
-                        assetTypeLabel(selectedAsset) || selectedAsset.typeName
-                    }}
+                    />Open in
+                    {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
             </a-button>
         </div>
+
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -146,6 +148,56 @@
 
         <div
             v-if="
+                ['LookerDashboard', 'LookerLook'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex px-5"
+        >
+            <SourceViewCount :asset="selectedAsset" />
+        </div>
+
+        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                <span class="text-gray-700">{{
+                    sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Note</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.noteText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.subtitleText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Fields</span>
+                <div
+                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ field }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                 externalLocation(selectedAsset)
             "
@@ -155,7 +207,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold break-all">{{
+                <span class="font-semibold break-words">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -175,7 +227,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700 break-all">{{
+                <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>
@@ -365,6 +417,13 @@
             <SQLSnippet
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="selectedAsset?.attributes?.sourceDefinition"
                 background="bg-primary-light"
             />
         </div>
@@ -586,6 +645,7 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
+    import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -607,6 +667,7 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            SourceViewCount,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -666,6 +727,7 @@
                 sourceCreatedAt,
                 definition,
                 webURL,
+                sourceURL,
                 assetTypeLabel,
                 isProcess,
                 getProcessSQL,
@@ -678,6 +740,9 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             } = useAssetInfo()
 
             const {
@@ -723,7 +788,13 @@
             }
 
             const handlePreviewClick = () => {
-                window.open(webURL(selectedAsset.value), '_blank').focus()
+                if (webURL(selectedAsset.value)) {
+                    window.open(webURL(selectedAsset.value), '_blank').focus()
+                } else {
+                    window
+                        .open(sourceURL(selectedAsset.value), '_blank')
+                        .focus()
+                }
             }
 
             // route to go to insights and select the collection
@@ -762,6 +833,7 @@
                 actions,
                 switchTab,
                 webURL,
+                sourceURL,
                 handlePreviewClick,
                 assetTypeLabel,
                 isProcess,
@@ -798,6 +870,9 @@
                 handleCollectionClick,
                 isBiAsset,
                 isProfile,
+                getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             }
         },
     })

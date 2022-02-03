@@ -491,18 +491,10 @@
                                         <div>
                                             <span
                                                 v-if="
-                                                    !activeInlineTab?.playground
-                                                        .resultsPane?.result
-                                                        ?.runQueryId
-                                                "
-                                                class="text-white"
-                                                >Run</span
-                                            >
-                                            <span
-                                                v-else-if="
-                                                    activeInlineTab?.playground
-                                                        .resultsPane?.result
-                                                        ?.runQueryId &&
+                                                    activeInlineTab.playground
+                                                        .resultsPane.result
+                                                        .isQueryRunning ===
+                                                        'loading' &&
                                                     !activeInlineTab?.playground
                                                         ?.resultsPane?.result
                                                         ?.buttonDisable
@@ -518,6 +510,9 @@
                                                 "
                                                 class="text-white"
                                                 >Aborting</span
+                                            >
+                                            <span v-else class="text-white"
+                                                >Run</span
                                             >
                                         </div>
                                     </div>
@@ -563,7 +558,6 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
-
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
 
@@ -599,9 +593,6 @@
                 getConnectorName,
                 getConnectionQualifiedName,
             } = useConnector()
-            const { getFirstQueryConnection } = useUtils()
-            const { modifyActiveInlineTab } = useInlineTab()
-
             const popoverVisible = ref(false)
 
             const activeInlineTab = inject(

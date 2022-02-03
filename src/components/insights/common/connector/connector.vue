@@ -23,10 +23,7 @@
                 <div class="flex items-center truncate">
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     <span class="parent-ellipsis-container-base"
-                        >{{
-                            node?.title.charAt(0).toUpperCase() +
-                            node?.title.slice(1)
-                        }}
+                        >{{ node?.title }}
                     </span>
                 </div>
             </template>
@@ -402,6 +399,9 @@
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+        }
+        :global(.ant-select-selection-item) {
+            @apply capitalize !important;
         }
     }
     .selector_bg {

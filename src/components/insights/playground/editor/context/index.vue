@@ -346,7 +346,7 @@
                             <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
 
                             <div v-if="connectionName">
-                                <div
+                                <!-- <div
                                     class="flex items-center"
                                     v-if="
                                         activeInlineTab?.explorer?.schema
@@ -356,12 +356,7 @@
                                     "
                                 >
                                     <div class="text-gray-700">
-                                        {{
-                                            connectionName
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                            connectionName.slice(1)
-                                        }}
+                                        {{ connectionName }}
                                     </div>
                                     <div
                                         :class="
@@ -373,7 +368,7 @@
                                     >
                                         .
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <span v-else class="text-gray-500"

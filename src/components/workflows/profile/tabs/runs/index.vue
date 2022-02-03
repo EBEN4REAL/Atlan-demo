@@ -50,6 +50,7 @@
 
     import useRunItem from '~/composables/package/useRunItem'
     import Sidebar from './sidebar.vue'
+
     import MonitorGraph from './monitorGraph.vue'
     import { useRouter } from 'vue-router'
     import { useIntervalFn } from '@vueuse/core'
@@ -178,6 +179,7 @@
                 mutate,
                 dependentKey,
                 isValidating,
+
                 monitorGraphRef,
             }
         },

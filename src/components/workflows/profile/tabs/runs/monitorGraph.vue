@@ -137,6 +137,22 @@
             <AtlanIcon icon="Loader" class="h-5 animate-spin" />
         </div>
 
+        <a-drawer
+            placement="right"
+            :closable="true"
+            :mask="false"
+            v-model:visible="drawerVisible"
+            :get-container="false"
+            :style="{ position: 'absolute' }"
+        >
+            <template #title>
+                <span class="font-semibold line-clamp-1">{{
+                    selectedPod?.name
+                }}</span>
+            </template>
+            <Drawer :selectedPod="selectedPod"></Drawer>
+        </a-drawer>
+
         <!-- Monitor Controls -->
     </div>
 </template>
@@ -159,22 +175,24 @@
     import useTransformGraph from './useTransformGraph'
     import useControlGraph from './useControlGraph'
 
+    import Drawer from './drawer.vue'
     export default defineComponent({
         name: 'MonitorGraph',
+        components: {
+            Drawer,
+        },
         props: {
             graphData: {
                 type: Object,
                 required: true,
             },
-            selectedPod: {
-                type: Object,
-                required: false,
-            },
         },
         emits: ['select'],
         setup(props, { emit }) {
             /** DATA */
-            const { graphData, selectedPod } = toRefs(props)
+            const { graphData } = toRefs(props)
+
+            const selectedPod = ref({})
             const selectedRunName = computed(() => graphData.value.name)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
@@ -194,6 +212,7 @@
             const currentScroll = ref({})
 
             const expandedNodes = ref([])
+            const drawerVisible = ref(false)
 
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
@@ -281,6 +300,46 @@
                         isGraphRendered.value = true
                         graph.value.getScrollbarPosition(currentScroll.value)
                     })
+
+                    graph.value.on(
+                        'node:selected',
+                        (args: {
+                            cell: Cell
+                            node: Node
+                            options: Model.SetOptions
+                        }) => {
+                            console.log(selectedPod.value)
+                            console.log(args.cell.id)
+                            if (args.cell.id === selectedPod.value.id) {
+                                drawerVisible.value = !drawerVisible.value
+                            } else if (drawerVisible.value) {
+                                selectedPod.value = args?.cell?.data
+                            } else {
+                                selectedPod.value = args?.cell?.data
+                                drawerVisible.value = !drawerVisible.value
+                            }
+                        }
+                    )
+
+                    // graph.value.on(
+                    //     'node:unselected',
+                    //     (args: {
+                    //         cell: Cell
+                    //         node: Node
+                    //         options: Model.SetOptions
+                    //     }) => {
+                    //         // console.log(selectedPod.value)
+                    //         console.log(args?.cell?.id)
+                    //         // if (args.cell.id === selectedPod.value.id) {
+                    //         //     drawerVisible.value = !drawerVisible.value
+                    //         // } else if (drawerVisible.value) {
+                    //         //     selectedPod.value = args?.cell?.data
+                    //         // } else {
+                    //         //     drawerVisible.value = !drawerVisible.value
+                    //         // }
+                    //     }
+                    // )
+
                     isLoadingRefresh.value = false
                 } else {
                     const { nodes, init } = useComputeGraph(
@@ -294,30 +353,6 @@
                     )
                     init(false)
                 }
-
-                // graph.value.on(
-                //     'node:selected',
-                //     (args: {
-                //         cell: Cell
-                //         node: Node
-                //         options: Model.SetOptions
-                //     }) => {
-                //         // alert('selct')
-                //         // if (args.node.id) {
-                //         //     if (isCollapsedNode(args.node.id)) {
-                //         //         expandedNodes.value.push(
-                //         //             getNodeParent(args.node.id)
-                //         //         )
-                //         //         initialize(true)
-                //         //     } else {
-                //         //         expandedNodes.value.push(args.node.id)
-                //         //         // console.log(getNode(args.node.id))
-                //         //         // emit('select', getNode(args.node.id))
-                //         //     }
-                //         //     // console.log(getNodeParent(args.node.id))
-                //         // }
-                //     }
-                // )
             }
 
             watch(
@@ -368,6 +403,8 @@
                 lastZoom,
                 graphLayout,
                 currentScroll,
+                drawerVisible,
+                selectedPod,
             }
         },
     })

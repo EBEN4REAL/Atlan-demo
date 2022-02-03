@@ -167,8 +167,7 @@ export default function useWorkflowInfo() {
         return false
     }
 
-    const getRunClass = (item) => {
-        const tempStatus = phase(item)
+    const getRunClassByPhase = (tempStatus) => {
         if (tempStatus === 'Succeeded') {
             return 'bg-green-500 opacity-75'
         } else if (
@@ -183,20 +182,7 @@ export default function useWorkflowInfo() {
         }
         return 'bg-gray-200'
     }
-    const getRunBorderClass = (item) => {
-        const tempStatus = phase(item)
-        if (tempStatus === 'Succeeded') {
-            return 'border-green-500 opacity-75'
-        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
-            return 'border-red-500 opacity-75'
-        } else if (tempStatus === 'Running') {
-            return 'border-blue-500 opacity-75 animate-pulse'
-        }
-        return 'border-gray-200'
-    }
-
-    const getRunTextClass = (item) => {
-        const tempStatus = phase(item)
+    const getRunTextClassByPhase = (tempStatus) => {
         if (tempStatus === 'Succeeded') {
             return 'text-green-500'
         } else if (
@@ -209,6 +195,31 @@ export default function useWorkflowInfo() {
             return 'text-blue-500 animate-pulse'
         }
         return 'bg-gray-200'
+    }
+    const getRunBorderClassByPhase = (tempStatus) => {
+        if (tempStatus === 'Succeeded') {
+            return 'border-green-500 opacity-75'
+        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            return 'border-red-500 opacity-75'
+        } else if (tempStatus === 'Running') {
+            return 'border-blue-500 opacity-75 animate-pulse'
+        }
+        return 'border-gray-200'
+    }
+
+    const getRunClass = (item) => {
+        const tempStatus = phase(item)
+        return getRunClassByPhase(tempStatus)
+    }
+
+    const getRunBorderClass = (item) => {
+        const tempStatus = phase(item)
+        return getRunBorderClassByPhase(tempStatus)
+    }
+
+    const getRunTextClass = (item) => {
+        const tempStatus = phase(item)
+        return getRunTextClassByPhase(tempStatus)
     }
 
     // const getRunTimeContent = (item, relativeTime) => {
@@ -324,5 +335,8 @@ export default function useWorkflowInfo() {
         supportLink,
         formatDate,
         difference,
+        getRunClassByPhase,
+        getRunBorderClassByPhase,
+        getRunTextClassByPhase,
     }
 }

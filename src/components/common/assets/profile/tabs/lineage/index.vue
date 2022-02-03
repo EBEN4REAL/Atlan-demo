@@ -111,6 +111,7 @@
                     'dataflows',
                 ],
                 LookerQuery: ['tiles', 'model', 'looks'],
+                LookerDashboard: ['folder'],
             }
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },

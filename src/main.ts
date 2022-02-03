@@ -15,6 +15,7 @@ import { getBasePath, getEnv } from './modules/__env'
 import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
+import { Tenant } from '~/services/service/tenant'
 
 import {
     identifyGroup,
@@ -37,6 +38,14 @@ const keycloak = Keycloak({
     clientId: getEnv().DEFAULT_CLIENT_ID,
 })
 
+const getTenantStatus = async () => {
+    try {
+        const status = await Tenant.GetTenantStatus()
+        return status
+    } catch (e) {
+        return ''
+    }
+}
 keycloak
     .init({
         pkceMethod: 'S256',
@@ -46,9 +55,13 @@ keycloak
     .then(async (auth) => {
         authStore.setIsAuthenticated(auth)
         if (!auth) {
-            const redirectURL = window.location.pathname
-            localStorage.setItem('redirectURL', redirectURL)
-            window.location.replace(keycloak.createLoginUrl())
+            const status = getTenantStatus()
+            if (status === 'register') router.push('/setup')
+            else if (status === 'ready') {
+                const redirectURL = window.location.pathname
+                localStorage.setItem('redirectURL', redirectURL)
+                window.location.replace(keycloak.createLoginUrl())
+            } else router.push('/404')
         } else {
             authStore.setToken({
                 token: keycloak.token,

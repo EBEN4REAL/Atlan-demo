@@ -671,38 +671,7 @@
                                 </template>
                             </a-tooltip>
                         </div>
-                        <div
-                            v-if="
-                                ['lookerdashboard', 'lookerlook'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex mr-2 text-sm text-gray-500"
-                        >
-                            <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-tight text-gray-500"
-                                    >{{ sourceViewCount(item) }}</span
-                                >
-                                views</span
-                            >
-                        </div>
-                        <div
-                            v-if="
-                                ['lookerfolder'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex mr-2 text-sm text-gray-500"
-                        >
-                            <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-tight text-gray-500"
-                                    >{{ sourceChildCount(item) }}</span
-                                >
-                                sub-folders</span
-                            >
-                        </div>
+
                         <div
                             v-if="
                                 ['lookerdashboard', 'lookerlook'].includes(
@@ -784,6 +753,36 @@
                                     >
                                 </template>
                             </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span class="tracking-tight text-gray-500">{{
+                                    sourceViewCount(item)
+                                }}</span>
+                                views</span
+                            >
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerfolder'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span class="tracking-tight text-gray-500">{{
+                                    sourceChildCount(item)
+                                }}</span>
+                                sub-folders</span
+                            >
                         </div>
                     </div>
 

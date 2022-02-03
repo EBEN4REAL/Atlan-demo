@@ -3,12 +3,19 @@
         <div class="relative flex-grow overflow-hidden bg-primary-light">
             <div class="absolute z-10 rounded left-10 top-10">
                 <div class="flex flex-col">
-                    <RunsSelect
-                        v-model="selectedRunName"
-                        :workflowName="workflowName"
-                        style="min-width: 150px"
-                        class="mb-3 shadow"
-                    ></RunsSelect>
+                    <div class="flex items-center">
+                        <RunsSelect
+                            v-model="selectedRunName"
+                            :workflowName="workflowName"
+                            style="min-width: 150px"
+                            class="mb-3 shadow"
+                        ></RunsSelect>
+                        <a-spin
+                            size="small"
+                            v-if="isValidating"
+                            class="ml-2"
+                        ></a-spin>
+                    </div>
                     <Sidebar
                         :selectedRun="selectedRun"
                         :isLoading="isLoading"
@@ -17,7 +24,9 @@
                     ></Sidebar>
                 </div>
             </div>
+
             <MonitorGraph
+                ref="monitorGraphRef"
                 :graph-data="selectedRun"
                 class=""
                 @select="handleSelectPod"
@@ -43,6 +52,7 @@
     import Sidebar from './sidebar.vue'
     import MonitorGraph from './monitorGraph.vue'
     import { useRouter } from 'vue-router'
+    import { useIntervalFn } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -79,36 +89,70 @@
 
             const router = useRouter()
 
+            const monitorGraphRef = ref(null)
+
             const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
 
+            const dependentKey = ref()
             const path = ref({
                 name: selectedRunName.value,
             })
 
+            const isValidating = ref(false)
+
             const {
-                item: selectedRun,
+                data: selectedRun,
                 mutate,
                 isLoading,
+
                 error,
             } = useRunItem(path, false)
 
             watch(
                 selectedRunName,
-                () => {
+                async () => {
                     if (selectedRunName.value) {
                         path.value = {
                             name: selectedRunName.value,
                         }
-                        mutate()
-                        router.push({
-                            query: {
-                                name: selectedRunName.value,
-                            },
-                        })
+
+                        // router.push({
+                        //     query: {
+                        //         name: selectedRunName.value,
+                        //     },
+                        // })
+                        isValidating.value = true
+                        await mutate()
+                        monitorGraphRef.value?.initialize(false, selectedRun)
+                        isValidating.value = false
                     }
                 },
                 { immediate: true }
             )
+
+            const { pause, resume } = useIntervalFn(
+                async () => {
+                    if (phase(selectedRun.value) === 'Running') {
+                        await mutate()
+                        console.log(selectedRun.value)
+                        monitorGraphRef.value?.initialize(false, selectedRun)
+                    } else {
+                        pause()
+                    }
+                },
+                5000,
+                { immediate: false }
+            )
+
+            watch(selectedRun, () => {
+                if (selectedRun.value) {
+                    if (phase(selectedRun.value) === 'Running') {
+                        resume()
+                    } else {
+                        pause()
+                    }
+                }
+            })
 
             const selectedPod = ref({})
             const handleSelectPod = (pod) => {
@@ -129,6 +173,12 @@
                 router,
                 isLoading,
                 error,
+                pause,
+                resume,
+                mutate,
+                dependentKey,
+                isValidating,
+                monitorGraphRef,
             }
         },
     })

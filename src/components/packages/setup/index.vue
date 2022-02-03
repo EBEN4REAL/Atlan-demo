@@ -85,7 +85,9 @@
                         <p class="text-gray-500">
                             All future runs will use this new configuration
                         </p>
-                        <a-checkbox class="mt-3">Start a new run</a-checkbox>
+                        <a-checkbox class="mt-3" v-model:value="runOnUpdate"
+                            >Start a new run</a-checkbox
+                        >
                     </template>
                     <a-button type="primary"> Update </a-button>
                 </a-popconfirm>
@@ -273,6 +275,7 @@
 
             const stepForm = ref()
             const currentStep = ref(0)
+            const runOnUpdate = ref(false)
             const {
                 workflowTemplate,
                 configMap,
@@ -665,6 +668,7 @@
                 defaultValue,
                 updateWorkflow,
                 path,
+                runOnUpdate,
             }
         },
     })

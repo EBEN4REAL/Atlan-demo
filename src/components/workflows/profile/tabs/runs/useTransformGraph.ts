@@ -10,7 +10,7 @@ export default function useTransformGraph(graph, currZoom, firstNode) {
     }
     const handleRecenter = () => {
         const cell = graph.value.getCellById(firstNode.value.id)
-        if (cell) graph.value.centerCell(cell)
+        if (cell) graph.value.centerCell(cell, { padding: { top: -300 } })
         // graph.value.centerPoint(0, 400)
         // graph.value.centerCell(cell)
         // graph.value.centerPoint(null, 800)

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { timeDiffCalc } from '~/utils/date'
 
 export default function useComputeGraph(
@@ -6,6 +6,8 @@ export default function useComputeGraph(
     graphLayout,
     workflowData,
     currZoom,
+    lastZoom,
+    currentScroll,
     isFull: boolean
 ) {
     interface PrepareNode {
@@ -18,22 +20,32 @@ export default function useComputeGraph(
     const nodes = ref([])
     const model = ref(null)
 
-    const name = workflowData.value.metadata?.name
-    const sourceNodes = workflowData.value?.status?.nodes
+    const name = workflowData?.value?.metadata?.name
+    // const sourceNodes = workflowData.value?.status?.nodes
+
+    const sourceNodes = computed(() => workflowData.value?.status?.nodes)
 
     const getChildren = (nodeId: string): string[] => {
         if (nodeId) {
-            if (!sourceNodes[nodeId] || !sourceNodes[nodeId].children) {
+            if (
+                !sourceNodes.value[nodeId] ||
+                !sourceNodes.value[nodeId].children
+            ) {
                 return []
             }
-            return sourceNodes[nodeId].children.filter(
-                (child) => sourceNodes[child]
+            return sourceNodes.value[nodeId].children.filter(
+                (child) => sourceNodes.value[child]
             )
         }
         return []
     }
 
-    const getNode = (nodeId: string) => sourceNodes[nodeId]
+    const getNode = (nodeId) => {
+        if (sourceNodes.value) {
+            return sourceNodes.value[nodeId]
+        }
+        return {}
+    }
 
     const isFirstLevel = (name): boolean => {
         if (name) {
@@ -296,7 +308,7 @@ export default function useComputeGraph(
         }
     }
 
-    const init = () => {
+    const init = (reset = true) => {
         const workflowRoot: PrepareNode = {
             nodeName: name,
             parent: '',
@@ -309,19 +321,28 @@ export default function useComputeGraph(
             nodes: nodes.value,
         })
         graph.value.fromJSON(model.value)
-        graph.value.zoom(-0.3)
-        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-        // graph.value.zoomToFit({ maxScale: 1 })
 
-        const cell = graph.value.getCellById(
-            `${workflowData.value.metadata?.name}`
-        )
+        console.log('Reset', reset, nodes)
+        if (reset) {
+            lastZoom.value = 0.3
+            graph.value.zoom(-0.3)
+            currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+            // graph.value.zoomToFit({ maxScale: 1 })
 
-        if (cell) graph.value.centerCell(cell, { padding: { top: -300 } })
-    }
+            const cell = graph.value.getCellById(
+                `${workflowData.value.metadata?.name}`
+            )
 
-    if (name) {
-        init()
+            if (cell) graph.value.centerCell(cell, { padding: { top: -300 } })
+
+            currentScroll.value = graph.value.getScrollbarPosition()
+        } else {
+            console.log(sourceNodes)
+            // console.log(currentScroll.value)
+            // console.log(lastZoom.value)
+            // graph.value.zoom(1 - lastZoom.value)
+            // currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+        }
     }
 
     /* Center Base */

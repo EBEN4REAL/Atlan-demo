@@ -149,17 +149,6 @@
                 v-if="allowSchedule(workflowObject)"
                 >{{ scheduleCTAMessage }}</a-button
             >
-            <a-button class="text-primary">Delete Workflow</a-button>
-            <a-dropdown>
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item key="delete" class="text-red-500"
-                            >Delete Workflow</a-menu-item
-                        >
-                    </a-menu>
-                </template>
-                <a-button> Settings </a-button>
-            </a-dropdown>
 
             <a-modal
                 v-model:visible="scheduleVisible"

@@ -4,10 +4,9 @@ import { SimpleNodeView } from './view.js'
 export default function useCreateGraph(
     graph,
     graphContainer,
-    minimapContainer
+    minimapContainer,
+    graphLayout
 ) {
-    const graphLayout = ref({})
-
     /* Build Graph Canvas */
     const { Graph } = window.X6
     const { DagreLayout } = window.layout

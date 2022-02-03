@@ -21,7 +21,7 @@
             >
                 <component
                     :is="tab.component"
-                    :key="`${tab.id}_${runName}`"
+                    :key="`${tab.id}`"
                     :workflowObject="workflowObject"
                     :runId="runId"
                     :packageObject="packageObject"
@@ -73,10 +73,6 @@
         setup(props) {
             const { workflowObject, packageObject } = toRefs(props)
 
-            console.log('workflow', workflowObject)
-
-            console.log('workflow', packageObject)
-
             const route = useRoute()
 
             const activeKey = ref()
@@ -95,7 +91,12 @@
             const runName = ref('')
 
             const handleNewRun = (run) => {
-                runName.value = run
+                // runName.value = run
+                router.push({
+                    query: {
+                        name: run,
+                    },
+                })
             }
 
             provide('newrun', handleNewRun)

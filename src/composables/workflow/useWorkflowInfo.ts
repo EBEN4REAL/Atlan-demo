@@ -21,7 +21,21 @@ export default function useWorkflowInfo() {
     const creatorUsername = (item) =>
         item?.metadata?.labels[
             'workflows.argoproj.io/creator-preferred-username'
+        ] || 'argo'
+
+    const modifierUsername = (item) =>
+        item?.metadata?.labels[
+            'workflows.argoproj.io/modifier-preferred-username'
         ]
+
+    // const modifiedTimestamp = (item: any, relative: any) => {
+    //     if (relative) {
+    //         return dayjs().from(item.metadata?.creationTimestamp, true)
+    //     }
+    //     return dayjs(item.metadata?.creationTimestamp).format(
+    //         'dddd MMMM D YYYY HH:mm:ss'
+    //     )
+    // }
 
     const labels = (item: any) => item.metadata?.labels
 

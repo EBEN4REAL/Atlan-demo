@@ -9,21 +9,19 @@ export default function useRunItem(path, immediate) {
     const options: useOptions = {}
     options.asyncOptions = ref({
         immediate,
+        resetOnExecute: false,
     })
 
-    const { data, error, isLoading, mutate, isReady, isValidating } =
-        Runs.getLiveRun(path, options)
-
-    watch(data, () => {
-        if (data.value) {
-            item.value = data.value
-        }
-    })
+    const { data, error, isLoading, mutate, isValidating } = Runs.getLiveRun(
+        path,
+        options
+    )
 
     return {
-        item,
+        data,
         error,
         isLoading,
+        isValidating,
         mutate,
     }
 }

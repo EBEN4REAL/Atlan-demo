@@ -167,7 +167,6 @@
 
             const onPopoverClose = async (visible) => {
                 popoverVisible.value = visible
-                console.log('bruh', visible, hasBeenEdited.value, checkedKeys.value)
                 if (visible) {
                     await initCategories()
                 }
@@ -243,8 +242,6 @@
                     checkedKeysSnapshot.value.length !== newCheckedKeys.length
                 ) {
                     hasBeenEdited.value = true
-                        console.log('bruh true h')
-
                 } else {
                     if (
                         newCheckedKeys.every((node) =>
@@ -254,10 +251,8 @@
                         )
                     ) {
                         hasBeenEdited.value = false
-                        console.log('bruh false h')
                     } else {
                         hasBeenEdited.value = true
-                        console.log('bruh true h')
                     }
                 }
             })

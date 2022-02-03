@@ -555,7 +555,6 @@
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
-    import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
 
@@ -726,7 +725,6 @@
             })
 
             return {
-                canQueryAbort,
                 showVQB,
                 popoverVisible,
                 onPopoverVisibleChange,

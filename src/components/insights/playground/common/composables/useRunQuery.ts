@@ -276,11 +276,13 @@ export default function useProject() {
         watch([isLoading, error], () => {
             try {
                 if (!isLoading.value && error.value === undefined) {
+                    // if query aborted then don't show the midway fetched data
                     if (
                         activeInlineTab.value.playground.resultsPane.result
                             .isQueryAborted
                     )
                         return
+
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         /* Saving the queryId */

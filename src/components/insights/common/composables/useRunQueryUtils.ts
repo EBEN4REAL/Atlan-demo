@@ -30,15 +30,9 @@ export function useRunQueryUtils(editorInstance, monacoInstance) {
             }
         }
     }
-    const onQueryIdGeneration = (
-        activeInlineTab,
-        queryId: string,
-        eventSource: any
-    ) => {
+    const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
         /* Setting the particular instance to this tab */
         activeInlineTab.value.playground.resultsPane.result.runQueryId = queryId
-        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-            eventSource
     }
 
     return {

@@ -164,6 +164,9 @@ export default function useAssetInfo() {
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
+    const parentDatabase = (asset: assetInterface) =>
+        attributes(asset)?.database
+
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
 
@@ -481,6 +484,16 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount, true)
+
+    const tableCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.tableCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).tableCount, false)
+
+    const viewCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.viewsCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).viewsCount, false)
 
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -1223,6 +1236,9 @@ export default function useAssetInfo() {
         sourceViewCount,
         parentFolder,
         parentModel,
+        parentDatabase,
         sourceChildCount,
+        tableCount,
+        viewCount,
     }
 }

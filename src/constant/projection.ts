@@ -136,6 +136,9 @@ export const SQLAttributes = [
     'isDist',
     'table',
     'view',
+    'database',
+    'tableCount',
+    'viewsCount',
 ]
 
 export const GlossaryAttributes = [

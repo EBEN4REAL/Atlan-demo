@@ -82,7 +82,7 @@ const useLoadQueryData = ({
             },
             attributes,
             suppressLogs: true,
-            relationAttributes: [...AssetRelationAttributes],
+            relationAttributes: [...AssetRelationAttributes, 'icon'],
         }
     }
 

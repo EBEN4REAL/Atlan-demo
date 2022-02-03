@@ -56,6 +56,27 @@ export function useSavedQuery(
 
     const { queryRun } = useRunQuery()
 
+    const checkQueryOpenedInTab = (queryId) => {
+        let index = -1
+        tabsArray.value.forEach((tab, i) => {
+            if (tab.queryId === queryId) {
+                index = i
+            }
+        })
+
+        return index
+    }
+
+    const checkPreviewOpenedInCurrentTab = (guid) => {
+        let assetId = activeInlineTab?.value?.assetSidebar?.assetInfo?.guid
+
+        if (assetId) {
+            return assetId === guid
+        }
+
+        return false
+    }
+
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
@@ -248,7 +269,9 @@ export function useSavedQuery(
         ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
-        monacoInstance: Ref<any>
+        monacoInstance: Ref<any>,
+        onRunCompletion,
+        onQueryIdGeneration
     ) => {
         openSavedQueryInNewTab({
             ...savedQuery?.value,
@@ -256,12 +279,13 @@ export function useSavedQuery(
                 savedQuery?.value?.attributes?.parent?.attributes?.name,
         })
         setTimeout(() => {
+            console.log('active tab copy: ', activeInlineTab)
             queryRun(
                 activeInlineTab,
                 getData,
                 limitRows,
-                null,
-                null,
+                onRunCompletion,
+                onQueryIdGeneration,
                 savedQuery.value?.attributes.rawQuery,
                 editorInstance,
                 monacoInstance,
@@ -1280,5 +1304,7 @@ export function useSavedQuery(
         createFolder,
         saveQueryToDatabaseWithTerms,
         openSavedQueryInNewTabAndRun,
+        checkQueryOpenedInTab,
+        checkPreviewOpenedInCurrentTab,
     }
 }

@@ -48,7 +48,10 @@
             @change="handleSQLQueryUpdate"
         ></Connection>
 
-        <div v-if="webURL(selectedAsset)" class="px-5">
+        <div
+            v-if="webURL(selectedAsset) || sourceURL(selectedAsset)"
+            class="px-5"
+        >
             <a-button
                 block
                 class="flex items-center justify-between px-2 shadow-none"
@@ -57,14 +60,13 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />
-                    {{
-                        assetTypeLabel(selectedAsset) || selectedAsset.typeName
-                    }}
+                    />Open in
+                    {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
             </a-button>
         </div>
+
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -146,6 +148,79 @@
 
         <div
             v-if="
+                isBiAsset(selectedAsset) &&
+                ![
+                    'PowerBIWorkspace',
+                    'TableauSite',
+                    'LookerFolder',
+                    'LookerProject',
+                    'LookerQuery',
+                    'LookerTile',
+                ].includes(selectedAsset?.typeName)
+            "
+            class="flex px-5"
+        >
+            <ParentContext :asset="selectedAsset" />
+        </div>
+
+        <div
+            v-if="
+                ['LookerDashboard', 'LookerLook'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex px-5"
+        >
+            <SourceViewCount :asset="selectedAsset" />
+        </div>
+        <div
+            v-if="['LookerFolder'].includes(selectedAsset.typeName)"
+            class="flex px-5"
+        >
+            <SubFolderCount :asset="selectedAsset" />
+        </div>
+
+        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                <span class="text-gray-700">{{
+                    sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Note</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.noteText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.subtitleText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Fields</span>
+                <div
+                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ field }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                 externalLocation(selectedAsset)
             "
@@ -155,7 +230,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold break-all">{{
+                <span class="font-semibold break-words">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -175,7 +250,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700 break-all">{{
+                <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>
@@ -186,15 +261,15 @@
             class="flex flex-col px-5 text-sm gap-y-4"
         >
             <div class="flex flex-col">
-                <span class="mb-2 text-sm text-gray-500">Data Type</span>
+                <span class="mb-1 text-sm text-gray-500">Data Type</span>
 
                 <div class="flex items-center text-gray-700 gap-x-1">
-                    <div class="flex">
+                    <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                            class="h-4 mr-0.5 mb-0.5"
                         />
-                        <span class="text-sm tracking-wider text-gray-700">{{
+                        <span class="text-sm">{{
                             dataType(selectedAsset)
                         }}</span>
                     </div>
@@ -231,14 +306,16 @@
                 </div>
             </div>
             <div v-if="tableName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">Table</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="mb-1 text-sm text-gray-500">Table</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
                     {{ tableName(selectedAsset) }}
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-2 text-sm text-gray-500">View</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
                     {{ viewName(selectedAsset) }}
                 </div>
             </div>
@@ -311,7 +388,7 @@
             <div class="mb-1 text-sm text-gray-500">
                 {{ attributes(selectedAsset)?.parent?.typeName }}
             </div>
-            <div class="text-sm tracking-wider text-gray-700">
+            <div class="text-sm text-gray-700">
                 {{ attributes(selectedAsset)?.parent?.attributes?.name }}
             </div>
         </div>
@@ -326,13 +403,13 @@
         >
             <div class="flex flex-col px-5 text-sm">
                 <div class="mb-1 text-sm text-gray-500">Collection</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="text-sm text-gray-700">
                     {{ selectedAsset?.collectionName }}
                 </div>
             </div>
             <div class="flex flex-col px-5 text-sm">
                 <div class="mb-1 text-sm text-gray-500">Folder</div>
-                <div class="text-sm tracking-wider text-gray-700">
+                <div class="text-sm text-gray-700">
                     {{ attributes(selectedAsset)?.parent?.attributes?.name }}
                 </div>
             </div>
@@ -365,6 +442,13 @@
             <SQLSnippet
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
+                background="bg-primary-light"
+            />
+        </div>
+        <div v-if="selectedAsset?.typeName === 'LookerQuery'">
+            <SQLSnippet
+                class="mx-4 rounded-lg"
+                :text="selectedAsset?.attributes?.sourceDefinition"
                 background="bg-primary-light"
             />
         </div>
@@ -586,6 +670,10 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
+    import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
+    import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
+    import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -607,12 +695,16 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            SourceViewCount,
+            SubFolderCount,
+            ParentContext,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
+            AtlanIcon,
         },
         props: {
             isDrawer: {
@@ -666,6 +758,7 @@
                 sourceCreatedAt,
                 definition,
                 webURL,
+                sourceURL,
                 assetTypeLabel,
                 isProcess,
                 getProcessSQL,
@@ -678,6 +771,9 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             } = useAssetInfo()
 
             const {
@@ -723,7 +819,13 @@
             }
 
             const handlePreviewClick = () => {
-                window.open(webURL(selectedAsset.value), '_blank').focus()
+                if (webURL(selectedAsset.value)) {
+                    window.open(webURL(selectedAsset.value), '_blank').focus()
+                } else {
+                    window
+                        .open(sourceURL(selectedAsset.value), '_blank')
+                        .focus()
+                }
             }
 
             // route to go to insights and select the collection
@@ -762,6 +864,7 @@
                 actions,
                 switchTab,
                 webURL,
+                sourceURL,
                 handlePreviewClick,
                 assetTypeLabel,
                 isProcess,
@@ -798,6 +901,9 @@
                 handleCollectionClick,
                 isBiAsset,
                 isProfile,
+                getConnectorLabel,
+                fieldsLookerQuery,
+                sourceOwners,
             }
         },
     })

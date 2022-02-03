@@ -21,6 +21,7 @@ export const assetTypeList: {
         parents: [],
         children: ['Column'],
         count: 0,
+        image: 'Connection',
         relationships: [],
         groupOrder: 6, // For grouping according to asset types
     },
@@ -34,7 +35,7 @@ export const assetTypeList: {
         isDiscoverable: false,
         image: 'DatabaseGray',
         count: 0,
-        relationships: [],
+        relationships: ['schemas'],
         groupOrder: 6,
     },
     {
@@ -47,7 +48,13 @@ export const assetTypeList: {
         isDiscoverable: false,
         image: 'SchemaGray',
         count: 0,
-        relationships: [],
+        relationships: [
+            'tables',
+            'views',
+            'partitions',
+            'procedures',
+            'materialisedViews',
+        ],
         groupOrder: 6,
     },
     {
@@ -56,7 +63,7 @@ export const assetTypeList: {
         nameAttribute: 'viewName',
         qualifiedNameAttribute: 'viewQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
-        children: ['Column'],
+        children: ['Table', 'Column'],
         isDiscoverable: true,
         orderWeight: 90,
         count: 0,
@@ -397,7 +404,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['folder', /* 'query', */ 'model', 'tile', 'dashboard'],
+        relationships: ['folder', 'query', 'model', 'tile', 'dashboard'],
         groupOrder: 5,
     },
     {
@@ -406,7 +413,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['explores', /* 'query', */ 'project', 'fields', 'look'],
+        relationships: ['explores', 'queries', 'project', 'fields', 'look'],
         groupOrder: 5,
     },
     {
@@ -418,22 +425,22 @@ export const assetTypeList: {
         relationships: ['explores', 'models', 'fields'],
         groupOrder: 5,
     },
-    /*  {
+    {
         id: 'LookerQuery',
         label: 'Query',
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: ['tile', 'model', 'look'],
+        relationships: ['tiles', 'model', 'looks'],
         groupOrder: 5,
-    }, */
+    },
     {
         id: 'LookerTile',
         label: 'Tile',
         isDiscoverable: true,
         image: 'Looker',
         parents: [],
-        relationships: [/* 'query', */ 'dashboard', 'look'],
+        relationships: ['query', 'dashboard', 'look'],
         groupOrder: 5,
     },
 ]

@@ -273,7 +273,7 @@
                 </a-tooltip>
 
                 <a-button
-                    v-if="isBiAsset(item) && webURL(item)"
+                    v-if="isBiAsset(item) && (webURL(item) || sourceURL(item))"
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
@@ -281,7 +281,8 @@
                             :icon="getConnectorImage(item)"
                             class="h-4 mr-1"
                         />
-                        Open in PowerBI
+                        Open in
+                        {{ getConnectorLabel(item) }}
                     </div>
                 </a-button>
 
@@ -371,6 +372,7 @@
             const {
                 title,
                 getConnectorImage,
+                getConnectorLabel,
                 assetType,
                 rowCount,
                 sizeBytes,
@@ -398,6 +400,7 @@
                 isBiAsset,
                 assetTypeLabel,
                 webURL,
+                sourceURL,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -445,7 +448,11 @@
             }
 
             const handleBIRedirect = () => {
-                window.open(webURL(item.value), '_blank').focus()
+                if (webURL(item.value)) {
+                    window.open(webURL(item.value), '_blank').focus()
+                } else {
+                    window.open(sourceURL(item.value), '_blank').focus()
+                }
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {
@@ -489,6 +496,8 @@
                 webURL,
                 handleBIRedirect,
                 handleClick,
+                sourceURL,
+                getConnectorLabel,
             }
         },
     })

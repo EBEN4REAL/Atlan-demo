@@ -10,6 +10,7 @@
             [$style.transparent]: true,
             [allowTabShortcut]: true,
             [$style.inputBox]: true,
+            customClass,
         }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
         @change="handleChange"
@@ -91,6 +92,7 @@
                 default: () => '',
             },
             connectorName: { type: String, default: () => '' },
+            customClass: { type: String, default: '' },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

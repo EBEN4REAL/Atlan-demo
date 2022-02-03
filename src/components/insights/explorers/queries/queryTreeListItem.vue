@@ -4,6 +4,7 @@
         :style="`opacity: ${
             selectedFolderHide?.guid === item?.guid ? 0.5 : 1
         };`"
+        :id="`${item.qualifiedName}-selector`"
     >
         <div class="flex justify-between w-full overflow-hidden item-center">
             <div class="flex w-full m-0">

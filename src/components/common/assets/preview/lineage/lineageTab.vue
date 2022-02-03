@@ -8,7 +8,7 @@
             style="z-index: 600"
         />
         <div class="flex items-center justify-between px-5 pt-4">
-            <span class="text-base font-bold text-gray-500">Lineage</span>
+            <span class="text-sm font-bold text-gray-500">Lineage</span>
 
             <AtlanButton
                 v-if="isWithGraph"

@@ -1,11 +1,7 @@
 <template>
     <div class="flex flex-col text-sm">
-        <span class="mb-1 text-sm text-gray-500">Workbook</span>
-        <router-link
-            :to="`/assets/${parentWorkbook(asset)?.guid}`"
-            class="font-bold text-primary hover:underline"
-            >{{ parentWorkbook(asset)?.attributes?.name }}</router-link
-        >
+        <span class="mb-1 text-sm text-gray-500">Tables</span>
+        <span class="text-gray-700">{{ tableCount(asset) }}</span>
     </div>
 </template>
 
@@ -26,9 +22,10 @@
             },
         },
         setup() {
-            const { parentWorkbook } = useAssetInfo()
+            const { tableCount } = useAssetInfo()
+
             return {
-                parentWorkbook,
+                tableCount,
             }
         },
     })

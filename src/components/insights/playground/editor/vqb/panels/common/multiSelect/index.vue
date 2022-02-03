@@ -135,18 +135,13 @@
             const dirtyIsTableSelected = ref(false)
             const columnQueryText = ref('')
             const tableQueryText = ref('')
-            const TotalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
-            const TotalColumnsCount = computed(
-                () => ColumnsData.value?.approximateCount || 0
-            )
 
             const {
                 list: TableList,
                 replaceBody: replaceTableBody,
                 data: tablesData,
                 isLoading: isTableLoading,
+                aggregations,
             } = useAssetListing('', false)
             const {
                 list: ColumnList,
@@ -154,6 +149,25 @@
                 data: ColumnsData,
                 isLoading: isColumnLoading,
             } = useAssetListing('', false)
+
+            const totalViewsCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'view'
+                    )?.doc_count || 0
+                )
+            })
+
+            const totalTablesCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'table'
+                    )?.doc_count || 0
+                )
+            })
+            const totalColumnsCount = computed(
+                () => ColumnsData.value?.approximateCount || 0
+            )
 
             const getColumnInitialBody = (
                 item: any | selectedTables[],
@@ -328,8 +342,9 @@
                 ColumnList: ColumnList,
                 isAreaFocused: isAreaFocused,
                 isTableSelected: isTableSelected,
-                totalTablesCount: TotalTablesCount,
-                totalColumnsCount: TotalColumnsCount,
+                totalTablesCount: totalTablesCount,
+                totalViewsCount: totalViewsCount,
+                totalColumnsCount: totalColumnsCount,
                 isTableLoading: isTableLoading,
                 isColumnLoading: isColumnLoading,
                 tableSelected: tableSelected,

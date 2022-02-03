@@ -315,6 +315,7 @@
                                 >
                             </div>
                         </div>
+
                         <div
                             v-if="
                                 ['column'].includes(
@@ -670,6 +671,120 @@
                                 </template>
                             </a-tooltip>
                         </div>
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ sourceViewCount(item) }}</span
+                                >
+                                views</span
+                            >
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerfolder'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ sourceChildCount(item) }}</span
+                                >
+                                sub-folders</span
+                            >
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.folderName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.folderName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Folder -
+                                        {{ item?.attributes?.folderName }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'lookermodel',
+                                    'lookerexplore',
+                                    'lookerfield',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.projectName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.projectName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Project -
+                                        {{
+                                            item?.attributes?.projectName
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerexplore', 'lookerfield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.modelName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.modelName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Model -
+                                        {{ item?.attributes?.modelName }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -919,6 +1034,8 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                sourceViewCount,
+                sourceChildCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -941,8 +1058,7 @@
             }
 
             const isSelected = computed(() => {
-                return selectedGuid.value === item?.value?.guid;
-
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
@@ -951,8 +1067,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -1057,6 +1172,8 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                sourceViewCount,
+                sourceChildCount,
             }
         },
     })

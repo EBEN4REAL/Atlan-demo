@@ -60,6 +60,10 @@ export default function useAssetInfo() {
 
     const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
+    const parentFolder = (asset: assetInterface) => attributes(asset)?.folder
+
+    const parentModel = (asset: assetInterface) => attributes(asset)?.model
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -79,11 +83,22 @@ export default function useAssetInfo() {
         getCountString(attributes(asset)?.pageCount, true)
 
     const title = (asset: assetInterface) =>
-        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
+        (attributes(asset)?.displayName ||
+            attributes(asset)?.name ||
+            attributes(asset)?.qualifiedName) ??
+        ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
+                attributes(asset)?.connectorName?.toLowerCase()
+            ]
+        return found
+    }
+
+    const getConnectorLabel = (asset: assetInterface) => {
+        const found =
+            connectionStore.getConnectorLabelMapping[
                 attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
@@ -148,6 +163,9 @@ export default function useAssetInfo() {
 
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
+
+    const parentDatabase = (asset: assetInterface) =>
+        attributes(asset)?.database
 
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
@@ -466,6 +484,16 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount, true)
+
+    const tableCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.tableCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).tableCount, false)
+
+    const viewCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.viewsCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).viewsCount, false)
 
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -1060,6 +1088,27 @@ export default function useAssetInfo() {
     const externalLocationFormat = (asset: assetInterface) =>
         attributes(asset)?.externalLocationFormat || ''
 
+    const fieldsLookerQuery = (asset: assetInterface) =>
+        attributes(asset)?.fields || []
+
+    const sourceOwners = (asset: assetInterface) =>
+        attributes(asset)?.sourceOwners
+
+    const resultMakerID = (asset: assetInterface) =>
+        attributes(asset)?.resultMakerID || '-'
+
+    const sourceMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceMetadataId || '-'
+
+    const sourceContentMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceContentMetadataId || '-'
+
+    const sourceViewCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceViewCount, true)
+
+    const sourceChildCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceChildCount, true)
+
     return {
         attributes,
         title,
@@ -1124,6 +1173,7 @@ export default function useAssetInfo() {
         categoryCount,
         termsCount,
         getConnectorImageMap,
+        getConnectorLabel,
         anchorAttributes,
         readmeGuid,
         getConnectorsNameFromQualifiedName,
@@ -1136,10 +1186,12 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        fieldsLookerQuery,
         isForeign,
         categories,
         seeAlso,
         parentCategory,
+        sourceOwners,
         isGTC,
         getProfilePath,
         isGTCByType,
@@ -1178,5 +1230,15 @@ export default function useAssetInfo() {
         parentWorkbook,
         sourceURL,
         parentSite,
+        resultMakerID,
+        sourceMetadataId,
+        sourceContentMetadataId,
+        sourceViewCount,
+        parentFolder,
+        parentModel,
+        parentDatabase,
+        sourceChildCount,
+        tableCount,
+        viewCount,
     }
 }

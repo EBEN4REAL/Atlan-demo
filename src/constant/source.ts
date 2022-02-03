@@ -123,6 +123,7 @@ export const SourceList = [
             },
         ],
         dialectConfig: {
+            assetQuoteType: '`',
             // does not support abortQuery for now
             abortQuery: false,
         },
@@ -219,6 +220,7 @@ export const SourceList = [
         image: 'Athena',
         filterMaxLevel: 2,
         dialectConfig: {
+            assetQuoteType: '"',
             abortQuery: true,
         },
         hierarchy: [

@@ -1,11 +1,7 @@
 <template>
     <div class="flex flex-col text-sm">
-        <span class="mb-1 text-sm text-gray-500">Dataset</span>
-        <router-link
-            :to="`/assets/${parentDataset(asset)?.guid}`"
-            class="font-bold text-primary hover:underline"
-            >{{ parentDataset(asset)?.attributes?.name }}</router-link
-        >
+        <span class="mb-1 text-sm text-gray-500">Source Views</span>
+        <span class="text-gray-700">{{ sourceViewCount(asset) }}</span>
     </div>
 </template>
 
@@ -26,9 +22,10 @@
             },
         },
         setup() {
-            const { parentDataset } = useAssetInfo()
+            const { sourceViewCount } = useAssetInfo()
+
             return {
-                parentDataset,
+                sourceViewCount,
             }
         },
     })

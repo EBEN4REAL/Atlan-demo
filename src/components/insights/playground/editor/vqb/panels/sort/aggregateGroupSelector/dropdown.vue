@@ -139,6 +139,7 @@
     import { aggregatedAliasMap } from '~/components/insights/playground/editor/vqb/constants/aggregation'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import { useUtilsScoped } from './useUtilsScoped'
+    import { pluralizeString } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -250,9 +251,15 @@
 
             const placeholder = computed(() => {
                 if (columnDropdownOption.value?.length > 0) {
-                    return `Search from ${columnDropdownOption.value?.length} columns`
+                    return `Search from ${
+                        columnDropdownOption.value?.length
+                    } ${pluralizeString(
+                        'column',
+                        columnDropdownOption.value.length,
+                        false
+                    )}`
                 }
-                return `Select a Column first`
+                return `No column selected`
             })
 
             const onSelectColumn = (item, event) => {

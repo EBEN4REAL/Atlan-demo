@@ -1,5 +1,11 @@
 export const summaryVariants = [
     {
+        id: 'schema',
+        label: 'Schema',
+        components: ['ParentContext', 'TableCount', 'ViewCount', 'Connection'],
+        includes: ['Schema'],
+    },
+    {
         id: 'table',
         label: 'Table',
         components: ['Rows', 'Columns', 'Connection'],
@@ -44,7 +50,7 @@ export const summaryVariants = [
         id: 'powerBIDatasource',
         label: 'Datasource',
         components: [
-            'ParentDataset',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -55,7 +61,7 @@ export const summaryVariants = [
         id: 'dataset',
         label: 'Dataset',
         components: [
-            'ParentWorkspace',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -66,7 +72,7 @@ export const summaryVariants = [
         id: 'dataflow',
         label: 'Dataflow',
         components: [
-            'ParentWorkspace',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -77,7 +83,7 @@ export const summaryVariants = [
         id: 'report',
         label: 'Report',
         components: [
-            'ParentWorkspace',
+            'ParentContext',
             'Pages',
             'Connection',
             'SourceCreated',
@@ -89,7 +95,7 @@ export const summaryVariants = [
         id: 'powerBIDashboard',
         label: 'Dashboard',
         components: [
-            'ParentWorkspace',
+            'ParentContext',
             'Tiles',
             'Connection',
             'SourceCreated',
@@ -101,7 +107,7 @@ export const summaryVariants = [
         id: 'page',
         label: 'Page',
         components: [
-            'ParentReport',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -112,7 +118,7 @@ export const summaryVariants = [
         id: 'tile',
         label: 'Tile',
         components: [
-            'ParentDashboard',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -129,7 +135,7 @@ export const summaryVariants = [
         id: 'project',
         label: 'Project',
         components: [
-            'ParentSite',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -140,7 +146,7 @@ export const summaryVariants = [
         id: 'workbook',
         label: 'Workbook',
         components: [
-            'ParentProject',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -151,7 +157,7 @@ export const summaryVariants = [
         id: 'worksheet',
         label: 'Worksheet',
         components: [
-            'ParentWorkbook',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -162,7 +168,7 @@ export const summaryVariants = [
         id: 'tableauDashboard',
         label: 'Dashboard',
         components: [
-            'ParentWorkbook',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -173,7 +179,7 @@ export const summaryVariants = [
         id: 'tableauDatasource',
         label: 'Datasource',
         components: [
-            'ParentWorkbook',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -184,7 +190,7 @@ export const summaryVariants = [
         id: 'calculatedField',
         label: 'Calculated Field',
         components: [
-            'ParentDatasource',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -195,7 +201,7 @@ export const summaryVariants = [
         id: 'datasourceField',
         label: 'Datasource Field',
         components: [
-            'ParentDatasource',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -206,7 +212,7 @@ export const summaryVariants = [
         id: 'flow',
         label: 'Flow',
         components: [
-            'ParentProject',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -217,7 +223,7 @@ export const summaryVariants = [
         id: 'metric',
         label: 'Metric',
         components: [
-            'ParentProject',
+            'ParentContext',
             'Connection',
             'SourceCreated',
             'SourceUpdated',
@@ -227,37 +233,69 @@ export const summaryVariants = [
     {
         id: 'lookerDashboard',
         label: 'Dashboard',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'SourceViewCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerDashboard'],
     },
     {
         id: 'lookerExplore',
         label: 'Explore',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerExplore'],
     },
     {
         id: 'lookerField',
         label: 'Field',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerField'],
     },
     {
         id: 'lookerFolder',
         label: 'Folder',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'SubFolderCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerFolder'],
     },
     {
         id: 'lookerLook',
         label: 'Look',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'SourceViewCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerLook'],
     },
     {
         id: 'lookerModel',
-        label: 'LookerModel',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        label: 'Model',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerModel'],
     },
     {

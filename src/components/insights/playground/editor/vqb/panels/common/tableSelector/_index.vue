@@ -86,16 +86,29 @@
 
             const tableQueryText = ref('')
 
-            const totalTablesCount = computed(
-                () => tablesData.value?.approximateCount || 0
-            )
-
             const {
                 list: TableList,
                 replaceBody: replaceTableBody,
                 data: tablesData,
                 isLoading: isTableLoading,
+                aggregations,
             } = useAssetListing('', false)
+
+            const totalViewsCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'view'
+                    )?.doc_count || 0
+                )
+            })
+
+            const totalTablesCount = computed(() => {
+                return (
+                    aggregations.value.find(
+                        (_el) => _el?.key?.toLowerCase() === 'table'
+                    )?.doc_count || 0
+                )
+            })
 
             const getTableInitialBody = () => {
                 return {
@@ -184,6 +197,7 @@
                 TableList: TableList,
                 isAreaFocused: isAreaFocused,
                 totalTablesCount: totalTablesCount,
+                totalViewsCount: totalViewsCount,
                 isTableLoading: isTableLoading,
             }
             useProvide(provideData)

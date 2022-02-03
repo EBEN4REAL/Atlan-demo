@@ -4,21 +4,21 @@
             <span class="font-semibold text-gray-500">Properties</span>
         </div>
         <div
-            class="flex flex-col text-sm"
             v-if="
                 sourceUpdatedBy(selectedAsset) ||
                 sourceUpdatedAt(selectedAsset, true)
             "
+            class="flex flex-col text-sm"
         >
             <span class="mb-1 text-gray-500">Source updated</span>
             <div class="flex flex-col">
-                <div class="flex mb-2" v-if="sourceUpdatedBy(selectedAsset)">
+                <div v-if="sourceUpdatedBy(selectedAsset)" class="flex mb-2">
                     {{ sourceUpdatedBy(selectedAsset) }}
                 </div>
 
                 <span
-                    class="text-xs text-gray-700"
                     v-if="sourceUpdatedAt(selectedAsset, true)"
+                    class="text-gray-700"
                     >{{ sourceUpdatedAt(selectedAsset, true) }} ({{
                         sourceUpdatedAt(selectedAsset, false)
                     }})</span
@@ -27,24 +27,57 @@
         </div>
 
         <div
-            class="flex flex-col text-sm"
             v-if="
                 sourceCreatedBy(selectedAsset) ||
                 sourceCreatedAt(selectedAsset, true)
             "
+            class="flex flex-col text-sm"
         >
             <span class="mb-1 text-gray-500">Source created</span>
             <div class="flex flex-col">
-                <div class="flex mb-2" v-if="sourceCreatedBy(selectedAsset)">
+                <div v-if="sourceCreatedBy(selectedAsset)" class="flex mb-2">
                     {{ sourceCreatedBy(selectedAsset) }}
                 </div>
 
-                <span class="text-xs text-gray-700"
+                <span class="text-gray-700"
                     >{{ sourceCreatedAt(selectedAsset, true) }} ({{
                         sourceCreatedAt(selectedAsset, false)
                     }})</span
                 >
             </div>
+        </div>
+
+        <div
+            v-if="['LookerTile'].includes(selectedAsset.typeName)"
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">Result Maker ID</span>
+
+            <span class="text-gray-700">{{
+                resultMakerID(selectedAsset)
+            }}</span>
+        </div>
+        <div
+            v-if="['LookerDashboard'].includes(selectedAsset.typeName)"
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">Source Metadata ID</span>
+
+            <span class="text-gray-700">{{
+                sourceMetadataId(selectedAsset)
+            }}</span>
+        </div>
+        <div
+            v-if="
+                ['LookerLook', 'LookerFolder'].includes(selectedAsset.typeName)
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">Source Content Metadata ID</span>
+
+            <span class="text-gray-700">{{
+                sourceContentMetadataId(selectedAsset)
+            }}</span>
         </div>
 
         <ConnectionInfo
@@ -139,6 +172,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
+    import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -146,7 +180,6 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
-    import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -189,6 +222,9 @@
                 getAnchorProfile,
                 getAnchorName,
                 connectionGuid,
+                resultMakerID,
+                sourceMetadataId,
+                sourceContentMetadataId,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -219,6 +255,9 @@
                 sourceUpdatedBy,
                 sourceCreatedBy,
                 connectionGuid,
+                resultMakerID,
+                sourceMetadataId,
+                sourceContentMetadataId,
             }
         },
     })

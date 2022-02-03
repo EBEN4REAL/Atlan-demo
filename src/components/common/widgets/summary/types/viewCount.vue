@@ -1,11 +1,7 @@
 <template>
     <div class="flex flex-col text-sm">
-        <span class="mb-1 text-sm text-gray-500">Dashboard</span>
-        <router-link
-            :to="`/assets/${parentDashboard(asset)?.guid}`"
-            class="font-bold text-primary hover:underline"
-            >{{ parentDashboard(asset)?.attributes?.name }}</router-link
-        >
+        <span class="mb-1 text-sm text-gray-500">Views</span>
+        <span class="text-gray-700">{{ viewCount(asset) }}</span>
     </div>
 </template>
 
@@ -26,9 +22,10 @@
             },
         },
         setup() {
-            const { parentDashboard } = useAssetInfo()
+            const { viewCount } = useAssetInfo()
+
             return {
-                parentDashboard,
+                viewCount,
             }
         },
     })

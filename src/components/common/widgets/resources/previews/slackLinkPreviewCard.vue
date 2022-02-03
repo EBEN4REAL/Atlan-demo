@@ -169,19 +169,28 @@
             const timeAgo = (time: string) => dayjs().from(time, true)
 
             const { item } = toRefs(props)
-            const { link } = item.value.attributes
-            const { channelId, messageId } =
-                getChannelAndMessageIdFromSlackLink(link)
-            const { data, isLoading, error, mutate } = UnfurlSlackMessage(
-                {
+            const body = computed(() => {
+                const { channelId, messageId } =
+                    getChannelAndMessageIdFromSlackLink(
+                        item.value.attributes.link
+                    )
+                return {
                     conversationId: channelId,
                     messageId,
-                },
+                }
+            })
+            const { data, isLoading, error, mutate } = UnfurlSlackMessage(
+                body,
                 {
-                    immediate: false,
+                    immediate: true,
                 }
             )
-            mutate()
+            watch(
+                () => item.value.attributes.link,
+                () => {
+                    mutate()
+                }
+            )
 
             const store = integrationStore()
 
@@ -204,8 +213,6 @@
 
             return {
                 stripSlackText,
-                channelId,
-                messageId,
                 data,
                 isLoading,
                 error,

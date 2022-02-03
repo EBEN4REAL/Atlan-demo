@@ -870,7 +870,9 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `"${title(t)}", `,
+                                        text: `${assetQuoteType}${title(
+                                            t
+                                        )}${assetQuoteType}, `,
                                     }
                                 )
                             } else {
@@ -878,7 +880,9 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `"${title(t)}"`,
+                                        text: `${assetQuoteType}${title(
+                                            t
+                                        )}${assetQuoteType}`,
                                     }
                                 )
                             }
@@ -887,7 +891,9 @@
                                 'keyboard',
                                 'type',
                                 {
-                                    text: `"${title(t)}"`,
+                                    text: `${assetQuoteType}${title(
+                                        t
+                                    )}${assetQuoteType}`,
                                 }
                             )
                         }

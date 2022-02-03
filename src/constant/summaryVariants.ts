@@ -1,5 +1,11 @@
 export const summaryVariants = [
     {
+        id: 'schema',
+        label: 'Schema',
+        components: ['ParentContext', 'TableCount', 'ViewCount', 'Connection'],
+        includes: ['Schema'],
+    },
+    {
         id: 'table',
         label: 'Table',
         components: ['Rows', 'Columns', 'Connection'],
@@ -239,19 +245,34 @@ export const summaryVariants = [
     {
         id: 'lookerExplore',
         label: 'Explore',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerExplore'],
     },
     {
         id: 'lookerField',
         label: 'Field',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerField'],
     },
     {
         id: 'lookerFolder',
         label: 'Folder',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'SubFolderCount',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerFolder'],
     },
     {
@@ -268,8 +289,13 @@ export const summaryVariants = [
     },
     {
         id: 'lookerModel',
-        label: 'LookerModel',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        label: 'Model',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerModel'],
     },
     {

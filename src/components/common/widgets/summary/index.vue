@@ -147,6 +147,15 @@
             SourceViewCount: defineAsyncComponent(
                 () => import('./types/sourceViewCount.vue')
             ),
+            SubFolderCount: defineAsyncComponent(
+                () => import('./types/subFolderCount.vue')
+            ),
+            TableCount: defineAsyncComponent(
+                () => import('./types/tableCount.vue')
+            ),
+            ViewCount: defineAsyncComponent(
+                () => import('./types/viewCount.vue')
+            ),
         },
 
         props: {

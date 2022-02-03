@@ -17,6 +17,7 @@ export default function useFetchAssetList({
     isCache,
     dependentKey,
     attributes,
+    relationAttributes,
     suppressLogs,
 }) {
     const defaultBody = ref({})
@@ -33,6 +34,7 @@ export default function useFetchAssetList({
         defaultBody.value = {
             dsl,
             attributes: attributes?.value,
+            relationAttributes: relationAttributes?.value,
             suppressLogs,
         }
     }

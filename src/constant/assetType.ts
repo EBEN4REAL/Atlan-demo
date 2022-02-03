@@ -21,6 +21,7 @@ export const assetTypeList: {
         parents: [],
         children: ['Column'],
         count: 0,
+        image: 'Connection',
         relationships: [],
         groupOrder: 6, // For grouping according to asset types
     },

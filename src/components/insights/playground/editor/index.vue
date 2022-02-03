@@ -415,7 +415,6 @@
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
@@ -429,7 +428,6 @@
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
-
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
 
@@ -468,17 +466,12 @@
             // const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
-            const { getDatabaseName, getConnectionQualifiedName } =
-                useConnector()
+            const { getConnectorName } = useConnector()
             const { isFilterIsInteractive } = useFilter()
             const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
-            const {
-                modifyActiveInlineTabEditor,
-                modifyActiveInlineTab,
-                setVQBInInlineTab,
-            } = useInlineTab()
+            const { modifyActiveInlineTabEditor } = useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -603,7 +596,7 @@
                         activeInlineTab,
                         toRaw(editorInstance.value)
                     )
-                } else if ((status = 'error')) {
+                } else if (status === 'error') {
                     resetErrorDecorations(
                         activeInlineTab,
                         toRaw(editorInstance.value)
@@ -628,25 +621,24 @@
                     }
                 }
             }
-            const onQueryIdGeneration = (
-                activeInlineTab,
-                queryId: string,
-                eventSource: any
-            ) => {
+            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
                 /* Setting the particular instance to this tab */
                 activeInlineTab.value.playground.resultsPane.result.runQueryId =
                     queryId
-                activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-                    eventSource
             }
             function toggleRun() {
                 const activeInlineTabCopy = ref(activeInlineTab.value)
-
-                const queryId =
-                    activeInlineTabCopy.value.playground.resultsPane.result
-                        .runQueryId
-                const currState = !queryId ? 'run' : 'abort'
-                if (currState === 'run') {
+                const currState =
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'loading'
+                        ? 'abort'
+                        : 'run'
+                // debugger
+                if (
+                    currState === 'run' &&
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning !== 'loading'
+                ) {
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
@@ -675,7 +667,7 @@
                         monacoInstance,
                         showVQB
                     )
-                } else {
+                } else if (currState === 'abort') {
                     abortQuery(
                         activeInlineTabCopy,
                         inlineTabs,
@@ -689,7 +681,11 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .runQueryId
                 const currState = !queryId ? 'run' : 'abort'
-                if (currState === 'run') {
+                if (
+                    currState === 'run' &&
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning !== 'loading'
+                ) {
                     /* If VQB enabled, run VQB Query */
                     let selectedText = ''
                     if (showVQB.value) {
@@ -718,23 +714,6 @@
                     )
                 }
             }
-
-            // let selectedQuery = computed(() => {
-            //     console.log('inside select: ')
-            //     if (
-            //         toRaw(editorInstance.value) &&
-            //         toRaw(editorInstance.value).getSelection()
-            //     ) {
-            //         return toRaw(editorInstance.value).getSelection()
-            //     } else {
-            //         return ''
-            //     }
-            // })
-
-            // watch(selectedQuery, () => {
-            //     if (toRaw(editorInstance.value))
-            //         console.log('selection happened: ', selectedQuery.value)
-            // })
 
             const setInstance = (
                 editorInstanceParam: editor.IStandaloneCodeEditor,

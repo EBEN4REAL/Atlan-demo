@@ -39,6 +39,8 @@ const useCollectionInfo = (selectedAsset, collectionGuid) => {
         'collectionQualifiedName',
         'viewerUsers',
         'viewerGroups',
+        'icon',
+        'iconType',
     ]
 
     let body = ref({})

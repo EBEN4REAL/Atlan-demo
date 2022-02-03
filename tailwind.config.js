@@ -85,6 +85,10 @@ module.exports = {
             backgroundColor: ['group-hover'],
             fill: ['group-hover'],
             textDecoration: ['group-hover'],
+            visibility: ['group-hover'],
+            inset: ['group-hover'],
+            transitionDuration: ['group-hover'],
+            transitionDelay: ['group-hover'],
         },
     },
     plugins: [

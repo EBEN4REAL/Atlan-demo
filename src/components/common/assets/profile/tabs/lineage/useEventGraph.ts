@@ -41,6 +41,14 @@ export default function useEventGraph(
     const activeNodesToggled = ref({})
 
     /** METHODS */
+    const showLoader = (e) => {
+        loaderCords.value = { x: e.clientX, y: e.clientY }
+    }
+
+    const hideLoader = () => {
+        loaderCords.value = {}
+    }
+
     // getHighlights
     const getHighlights = (guid) => {
         let nodesToHighlight = []
@@ -48,10 +56,7 @@ export default function useEventGraph(
             const { predecessors, successors } = useGetNodes(graph, guid.value)
             nodesToHighlight = [guid.value, ...predecessors, ...successors]
         }
-
-        return {
-            nodesToHighlight,
-        }
+        return nodesToHighlight
     }
 
     // highlight
@@ -63,14 +68,14 @@ export default function useEventGraph(
 
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
-        const { nodesToHighlight } = getHighlights(highlightedNode)
+        const nodesToHighlight = getHighlights(highlightedNode)
         highlightEdges(graph, nodesToHighlight, edgesHighlighted)
         highlightNodes(
             graph,
             styleHighlightedNode ? highlightedNode : '',
             nodesToHighlight
         )
-        loaderCords.value = {}
+        hideLoader()
     }
 
     // getAllXPos
@@ -318,7 +323,7 @@ export default function useEventGraph(
                 ports.shift()
                 node.removePorts(ports)
                 translateExpandedNodesToDefault(node)
-                loaderCords.value = {}
+                hideLoader()
                 if (!allRelations.length) return
             }
 
@@ -336,7 +341,7 @@ export default function useEventGraph(
                 const rel = getValidPortRelations(allRelations)
                 createRelations(rel)
                 translateSubsequentNodes(node)
-                loaderCords.value = {}
+                hideLoader()
                 return
             }
 
@@ -347,7 +352,7 @@ export default function useEventGraph(
         })
 
         if (tableQualifiedName.length === 1 && viewQualifiedName.length === 1) {
-            loaderCords.value = {}
+            hideLoader()
             return
         }
 
@@ -363,7 +368,7 @@ export default function useEventGraph(
                     const node = nodes[0]
                     const caretElement = getCaretElement(node.id)
                     controlCaret(node.id, caretElement)
-                    loaderCords.value = {}
+                    hideLoader()
                     message.info('No column with lineage found for this node')
                     return
                 }
@@ -383,7 +388,7 @@ export default function useEventGraph(
                     createRelations(rel)
                     translateSubsequentNodes(node)
                 })
-                loaderCords.value = {}
+                hideLoader()
             },
             { deep: true }
         )
@@ -414,7 +419,7 @@ export default function useEventGraph(
 
         if (!translateCandidates.length) {
             toggleNodesEdges(graph, true)
-            loaderCords.value = {}
+            hideLoader()
             message.info(
                 'The selected column has no relations for the nodes on the graph'
             )
@@ -454,7 +459,7 @@ export default function useEventGraph(
         watch(data, () => {
             if (!data.value?.relations.length) {
                 toggleNodesEdges(graph, true)
-                loaderCords.value = {}
+                hideLoader()
                 message.info('No lineage data available for selected column')
                 return
             }
@@ -485,19 +490,20 @@ export default function useEventGraph(
     // controlEdgeHighlight
     const controlEdgeHighlight = (edge, reset: boolean, animate = false) => {
         if (!edge) return
+
         edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
         edge.attr('line/strokeWidth', reset ? 1.6 : 3)
         edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
         edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
         edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        edge.attr('line/strokeDasharray', reset ? 0 : 5)
+
         edge.toFront()
         controlLabelStyle(edge, reset)
 
         if (animate)
             edge.attr('line/style/animation', 'ant-line 30s infinite linear')
         else edge.attr('line/style/animation', 'unset')
-
-        edge.attr('line/strokeDasharray', reset ? 0 : 5)
     }
 
     /** Reset the current highlighted port styling */
@@ -581,7 +587,7 @@ export default function useEventGraph(
                 registerAllListeners,
                 removeAddedNodesShadow
             )
-            loaderCords.value = {}
+            hideLoader()
         })
     }
 
@@ -614,7 +620,7 @@ export default function useEventGraph(
 
                 resetState()
 
-                loaderCords.value = { x: e.clientX, y: e.clientY }
+                showLoader(e)
 
                 const ele = getEventPath(e).find((x) =>
                     x.getAttribute('data-cell-id')
@@ -636,7 +642,7 @@ export default function useEventGraph(
             x.addEventListener('mousedown', (e) => {
                 e.stopPropagation()
 
-                loaderCords.value = { x: e.clientX, y: e.clientY }
+                showLoader(e)
 
                 const ele = getEventPath(e).find((x) =>
                     x.getAttribute('data-cell-id')
@@ -682,7 +688,7 @@ export default function useEventGraph(
                         delete activeNodesToggled.value[node.id]
                     }
                     translateExpandedNodesToDefault(node)
-                    loaderCords.value = {}
+                    hideLoader()
                 }
             })
         })
@@ -730,7 +736,7 @@ export default function useEventGraph(
             if (port.id === portId) setPortStyle(node, portId, 'select')
             else resetPortStyle(node, port.id)
         })
-        loaderCords.value = { x: e.clientX, y: e.clientY }
+        showLoader(e)
 
         const { relations } = lineage.value
         const rel = relations.find((x) => x.fromEntityId === portId)
@@ -741,7 +747,7 @@ export default function useEventGraph(
                 processId: rel.processId,
             }
             createRelations([relation])
-            loaderCords.value = {}
+            hideLoader()
         } else getColumnLineage(portId)
     }
 
@@ -773,7 +779,7 @@ export default function useEventGraph(
         e.stopPropagation()
         const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
-
+        // If user selects the already selected port
         if (chp.value.portId === portId) {
             deselectPort()
             onCloseDrawer()
@@ -784,10 +790,51 @@ export default function useEventGraph(
         }
     })
 
+    /**
+     * Check if an edge is clickable in the current context
+     * @param edge - The edge whose interactivity is to be checked
+     */
+    function isEdgeClickable(edge) {
+        // No interaction for related edges
+        if (edge.id.includes('related')) return false
+
+        // If CHE is a port edge then no interaction for normal edges
+        if (che.value.includes('port') && !edge.id.includes('port'))
+            return false
+
+        // If a port is selected only let the user select port edges
+        if (chp.value.portId && !edge.id.includes('port')) return false
+
+        return true
+    }
+
+    /**
+     * Check if an edge is hoverable in the current context
+     * @param edge - The edge whose interactivity is to be checked
+     */
+    function isEdgeHoverable(edge) {
+        // No interaction for related edges
+        if (edge.id.includes('related')) return false
+
+        // Port Edges are non hoverable
+        if (edge.id.includes('port')) return false
+
+        // No interaction when a port or edge is selected
+        if (chp.value.portId || che.value) return false
+
+        // // If the user hovers on already selected edge, no interaction
+        // if (che.value === edge.id) return false
+
+        if (edgesHighlighted.value.includes(edge.id)) return false
+
+        return true
+    }
+
     // EDGE - CLICK
     graph.value.on('edge:click', ({ e, edge, cell }) => {
-        if (edge.id.includes('related')) return
-        loaderCords.value = { x: e.clientX, y: e.clientY }
+        if (!isEdgeClickable(edge)) return
+
+        showLoader(e)
 
         // If user clicks on selected edge
         if (che.value === edge.id) {
@@ -828,21 +875,16 @@ export default function useEventGraph(
                 highlight(target, false)
             }
 
-            loaderCords.value = {}
+            hideLoader()
         })
     })
 
     // EDGE - MOUSEENTER
     graph.value.on('edge:mouseenter', ({ cell, edge }) => {
-        if (edge.id.includes('related')) return
-        if (chp.value.portId) return
-        if (edge.id.includes('port')) {
-            loaderCords.value = {}
-            return
-        }
-        if (che.value === edge.id) return
-        if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(edge, false, true)
+        if (!isEdgeHoverable(edge)) return
+
+        controlEdgeHighlight(edge, false, true)
+
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -851,15 +893,10 @@ export default function useEventGraph(
 
     // EDGE - MOUSELEAVE
     graph.value.on('edge:mouseleave', ({ cell, edge }) => {
-        if (edge.id.includes('related')) return
-        if (chp.value.portId) return
-        if (edge.id.includes('port')) {
-            loaderCords.value = {}
-            return
-        }
-        if (che.value === edge.id) return
-        if (!edgesHighlighted.value.includes(edge.id))
-            controlEdgeHighlight(edge, true)
+        if (!isEdgeHoverable(edge)) return
+
+        controlEdgeHighlight(edge, true)
+
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
             edgeCell.toFront()
@@ -870,7 +907,7 @@ export default function useEventGraph(
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
 
-        loaderCords.value = { x: e.clientX, y: e.clientY }
+        showLoader(e)
 
         if (node.store.data?.data?.isTypeNode) {
             const edges = graph.value.getIncomingEdges(node)

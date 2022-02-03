@@ -30,10 +30,12 @@
                     <template #suffixIcon
                         ><AtlanIcon icon="Search" class="h-8 text-gray"
                     /></template>
-                    <template #title="item"
-                        ><AtlanIcon :icon="icon(item.node)" />
-                        {{ item.title }}</template
-                    >
+                    <template #title="item">
+                        <div class="flex items-center space-x-1">
+                            <AtlanIcon :icon="icon(item.node)" />
+                            <span>{{ item.title }}</span>
+                        </div>
+                    </template>
                 </a-tree-select>
                 <div :class="$style.categoryWidget" id="categoryWidget"></div>
             </template>

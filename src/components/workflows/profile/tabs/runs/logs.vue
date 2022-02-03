@@ -15,7 +15,7 @@
                 v-else
             >
                 <div v-for="(log, id) in logArray" :key="id">
-                    <span class="font-mono"> {{ log }}</span>
+                    <span class="font-mono text-xs"> {{ log }}</span>
                 </div>
                 <div
                     v-if="status == 'CONNECTED'"

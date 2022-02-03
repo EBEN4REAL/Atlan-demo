@@ -1,8 +1,9 @@
 import { Ref, ref, watch } from 'vue'
 import { IPersona, IGroup } from '~/types/accessPolicies/personas'
 import useGroups from '~/composables/group/useGroups'
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
-function usePersonaGroupList(persona: Ref<IPersona>) {
+function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
     params.value.append('limit', '20')
@@ -19,7 +20,19 @@ function usePersonaGroupList(persona: Ref<IPersona>) {
         STATES,
         isLoading,
         error,
-    } = useGroups(params.value)
+    } = useGroups(
+        params.value,
+        'LIST_GROUP_PERSONAS',
+        {
+            cacheOptions: {
+                shouldRetryOnError: false,
+                revalidateOnFocus: false,
+                cache: new LocalStorageCache(),
+                dedupingInterval: 1,
+            },
+        },
+        cancelToken
+    )
 
     watch(
         () => persona.value.id,

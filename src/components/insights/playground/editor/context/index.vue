@@ -346,7 +346,7 @@
                             <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
 
                             <div v-if="connectionName">
-                                <div
+                                <!-- <div
                                     class="flex items-center"
                                     v-if="
                                         activeInlineTab?.explorer?.schema
@@ -368,7 +368,7 @@
                                     >
                                         .
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <span v-else class="text-gray-500"

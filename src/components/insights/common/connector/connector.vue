@@ -23,7 +23,10 @@
                 <div class="flex items-center truncate">
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     <span class="parent-ellipsis-container-base"
-                        >{{ node?.title }}
+                        >{{
+                            node?.title.charAt(0).toUpperCase() +
+                            node?.title.slice(1)
+                        }}
                     </span>
                 </div>
             </template>

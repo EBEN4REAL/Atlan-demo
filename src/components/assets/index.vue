@@ -489,13 +489,18 @@
                 }
             }, 600)
 
+            const firstAssetAutoClicked = ref(false)
+
             const handleClickAssetItem = (...args) => {
                 if (allCheckboxAreaClick.value) {
                     updateBulkSelectedAssets(...args)
                 }
-                useAddEvent('discovery', 'asset_card', 'clicked', {
-                    click_index: args[1],
-                })
+                if (firstAssetAutoClicked.value) {
+                    useAddEvent('discovery', 'asset_card', 'clicked', {
+                        click_index: args[1],
+                    })
+                }
+
                 if (handlePreview && !disableHandlePreview.value) {
                     handlePreview(...args)
                 }
@@ -696,6 +701,7 @@
                         else {
                             handleClickAssetItem(selectedAsset.value)
                         }
+                        firstAssetAutoClicked.value = true
                     }
                 })
             })

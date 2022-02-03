@@ -15,7 +15,9 @@
     <div v-else class="mt-1">
         <span v-if="type === 'user'"
             >{{
-                isCurrentUser ? `You don't` : `${entity.firstName} doesn't`
+                isCurrentUser
+                    ? `You don't`
+                    : `${entity?.firstName ?? entity.username} doesn't`
             }}
             have any linked personas.</span
         >

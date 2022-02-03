@@ -488,7 +488,7 @@ export default function useEventGraph(
     }
 
     // controlEdgeHighlight
-    const controlEdgeHighlight = (edge, reset: boolean, animate = false) => {
+    const controlEdgeHighlight = (edge, reset: boolean) => {
         if (!edge) return
 
         edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
@@ -500,7 +500,22 @@ export default function useEventGraph(
 
         edge.toFront()
         controlLabelStyle(edge, reset)
+    }
 
+    const controlPortEdgeHighlight = (edge, reset: boolean) => {
+        if (!edge) return
+
+        edge.attr('line/strokeWidth', reset ? 1.6 : 3)
+        edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
+        edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
+        edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        edge.attr('line/strokeDasharray', reset ? 0 : 5)
+
+        edge.toFront()
+        controlLabelStyle(edge, reset)
+    }
+
+    const animateEdge = (edge, animate = false) => {
         if (animate)
             edge.attr('line/style/animation', 'ant-line 30s infinite linear')
         else edge.attr('line/style/animation', 'unset')
@@ -510,7 +525,13 @@ export default function useEventGraph(
     const resetCHE = () => {
         if (che.value) {
             const edge = graph.value.getCellById(che.value)
-            if (edge) controlEdgeHighlight(edge, true)
+            if (edge) {
+                if (edge?.id.includes('port'))
+                    controlPortEdgeHighlight(edge, true)
+                else controlEdgeHighlight(edge, true)
+
+                animateEdge(edge, false)
+            }
             che.value = ''
         }
     }
@@ -754,8 +775,8 @@ export default function useEventGraph(
     // deselectPort
     const deselectPort = () => {
         resetPortStyle(chp.value.node, chp.value.portId)
+        removeCHPEdges()
 
-        if (chp.value.portId || che.value) removeCHPEdges()
         activeNodesToggled.value = {}
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
@@ -767,6 +788,7 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
+
         chp.value.node = null
         chp.value.portId = ''
         chp.value.expandedNodes = []
@@ -777,11 +799,15 @@ export default function useEventGraph(
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
+
+        if (che.value) resetCHE()
+        if (chp.value.portId) deselectPort()
+
         const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
+
         // If user selects the already selected port
         if (chp.value.portId === portId) {
-            deselectPort()
             onCloseDrawer()
         } else {
             selectPort(node, e, portId)
@@ -819,8 +845,8 @@ export default function useEventGraph(
         // Port Edges are non hoverable
         if (edge.id.includes('port')) return false
 
-        // No interaction when a port or edge is selected
-        if (chp.value.portId || che.value) return false
+        // No interaction when a port or edge or node is selected
+        if (chp.value.portId || che.value || highlightedNode.value) return false
 
         // // If the user hovers on already selected edge, no interaction
         // if (che.value === edge.id) return false
@@ -834,23 +860,34 @@ export default function useEventGraph(
     graph.value.on('edge:click', ({ e, edge, cell }) => {
         if (!isEdgeClickable(edge)) return
 
-        showLoader(e)
+        animateEdge(edge, false)
 
         // If user clicks on selected edge
         if (che.value === edge.id) {
+            if (edge.id.includes('port')) {
+                const { node, portId } = chp.value
+                if (node && portId) {
+                    const port = node.getPort(portId)
+                    onSelectAsset(port.entity)
+                }
+                controlPortEdgeHighlight(edge, true)
+            } else {
+                onCloseDrawer()
+                controlEdgeHighlight(edge, true)
+            }
+
             che.value = ''
-            onCloseDrawer()
-            controlEdgeHighlight(edge, true)
-            highlight(null)
+            // highlight(null)
             return
         }
 
         // If there is an existing highlighted edge
         if (che.value) {
             resetCHE()
-            highlight(null)
+            // highlight(null)
         }
 
+        showLoader(e)
         che.value = edge.id
         controlEdgeHighlight(edge, false)
 
@@ -867,12 +904,12 @@ export default function useEventGraph(
             onSelectAsset(data.value)
 
             if (edge.id.includes('port')) {
-                setPortStyle(chp.value.node, chp.value.portId, 'highlight')
-                chp.value.node = null
-                chp.value.portId = ''
+                // setPortStyle(chp.value.node, chp.value.portId, 'highlight')
+                // chp.value.node = null
+                // chp.value.portId = ''
             } else {
                 const target = edge.id.split('/')[1].split('@')[1]
-                highlight(target, false)
+                if (highlightedNode.value !== target) highlight(target, false)
             }
 
             hideLoader()
@@ -883,7 +920,8 @@ export default function useEventGraph(
     graph.value.on('edge:mouseenter', ({ cell, edge }) => {
         if (!isEdgeHoverable(edge)) return
 
-        controlEdgeHighlight(edge, false, true)
+        controlEdgeHighlight(edge, false)
+        animateEdge(edge, true)
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
@@ -896,6 +934,7 @@ export default function useEventGraph(
         if (!isEdgeHoverable(edge)) return
 
         controlEdgeHighlight(edge, true)
+        animateEdge(edge, false)
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
@@ -906,6 +945,7 @@ export default function useEventGraph(
     // NODE - MOUSEUP
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
+        if (che.value) resetCHE()
 
         showLoader(e)
 
@@ -925,17 +965,24 @@ export default function useEventGraph(
             onSelectAsset(node.store.data.entity)
             highlight(node?.id)
         }
-        resetCHE()
     })
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
         removeAddedNodesShadow()
-        if (chp.value.portId) return
-        onSelectAsset(baseEntity.value)
-        onCloseDrawer()
         resetCHE()
-        highlight(null)
+
+        if (chp.value.portId) {
+            const { node, portId } = chp.value
+            if (node && portId) {
+                const port = node.getPort(portId)
+                onSelectAsset(port.entity)
+            }
+        } else {
+            onSelectAsset(baseEntity.value)
+            onCloseDrawer()
+            highlight(null)
+        }
     })
 
     // BLANK - MOUSEWHEEL

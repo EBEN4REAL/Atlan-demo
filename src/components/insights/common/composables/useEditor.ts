@@ -13,11 +13,11 @@ export function useEditor(
     let decorations = []
     let cursorDecorations = []
     function setEditorPos(
-        editorInstance: any,
+        positon: any,
         editorPos: Ref<{ column: number; lineNumber: number }>
     ) {
-        const pos = editorInstance.getPosition()
-        editorPos.value = pos
+        // const pos = editorInstance.getPosition()
+        editorPos.value = positon
     }
     function setEditorFocusedState(
         state: boolean,
@@ -465,17 +465,17 @@ export function useEditor(
         isVisible: boolean,
         editorInstance: any,
         monacoInstance,
-        editorPos: Ref<{
+        editorPos: {
             column: number
             lineNumber: number
-        }>
+        }
     ) => {
         const t = {
             range: new monacoInstance.Range(
-                editorPos.value.lineNumber,
-                editorPos.value.column - 1,
-                editorPos.value.lineNumber,
-                editorPos.value.column
+                editorPos.lineNumber,
+                editorPos.column - 1,
+                editorPos.lineNumber,
+                editorPos.column
             ),
             options: { inlineClassName: 'ghostCursor' },
         }

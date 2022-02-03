@@ -27,7 +27,6 @@
     import { languageTokens } from './sqlTokens'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-    import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import {
@@ -82,15 +81,46 @@
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
-            watch(
-                tabs,
-                () => {
-                    tabs.value.forEach((tab) => {
+            const clearRemovedTabsModels = (
+                tabs: activeInlineTabInterface[]
+            ) => {
+                editorStates.forEach((_, key) => {
+                    const index = tabs.findIndex((tab) => tab.key === key)
+                    if (index < 0) {
+                        editorStates.delete(key)
+                    }
+                    console.log(editorStates.size, 'editorStates')
+                })
+            }
+
+            /* 
+            
+                      tabs.value.forEach((tab) => {
+                    editorStates.set(tab.key, {
+                        model: undefined,
+                        viewState: undefined,
+                    })
+                })
+                
+                
+                */
+            const addModelForNewTab = (tabs: activeInlineTabInterface[]) => {
+                tabs.forEach((tab) => {
+                    if (!editorStates.has(tab.key)) {
                         editorStates.set(tab.key, {
                             model: undefined,
                             viewState: undefined,
                         })
-                    })
+                    }
+                    console.log(editorStates.size, 'editorStates')
+                })
+            }
+
+            watch(
+                () => tabs.value.length,
+                () => {
+                    addModelForNewTab(tabs.value)
+                    clearRemovedTabsModels(tabs.value)
                 },
                 { immediate: true }
             )
@@ -656,18 +686,26 @@
                     suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
+                editor?.onDidChangeCursorPosition((pos) => {
+                    setEditorPos(pos.position, editorPos)
+                })
                 // editor?.onDidChangeCursorPosition(() => {
                 //     // setEditorPos(editor, editorPos)
                 //     // setEditorFocusedState(true, editorFocused)
                 // })
-                // editor?.onDidBlurEditorWidget(() => {
-                //     // setEditorFocusedState(false, editorFocused)
-                //     toggleGhostCursor(true, editor, monaco, editorPos)
-                // })
-                // editor?.onDidFocusEditorWidget(() => {
-                //     toggleGhostCursor(false, editor, monaco, editorPos)
-                // })
-                // setEditorFocusedState(true, editorFocused)
+                editor?.onDidBlurEditorWidget(() => {
+                    // setEditorFocusedState(false, editorFocused)
+                    toggleGhostCursor(
+                        true,
+                        editor,
+                        monaco,
+                        editor?.getPosition()
+                    )
+                })
+                editor?.onDidFocusEditorWidget(() => {
+                    // toggleGhostCursor(false, editor, monaco, editorPos)
+                    setEditorFocusedState(true, editorFocused)
+                })
                 // editor?.focus()
                 // on mounting
             })
@@ -731,54 +769,102 @@
             //     },
             //     { immediate: true }
             // )
-            monaco.editor.onWillDisposeModel((model) => {
-                console.log(
-                    model.getValue(),
-                    'getValue',
-                    activeInlineTab.value.label
-                )
-            })
+            // editor?.onDidChangeModelContent((model) => {
+            //     const viewState = editor?.saveViewState()
+            //     if (viewState?.cursorState?.length > 0) {
+            //         const position = viewState?.cursorState[0].position
+            //         setEditorPos(editor, position)
+            //     }
+            //     debugger
+            //     if (!editorStates[activeInlineTabKey.value].viewState) {
+            //         setEditorFocusedState(false, editorFocused)
+            //     }
+
+            //     console.log(
+            //         model.getValue(),
+            //         'getValue',
+            //         activeInlineTab.value.label
+            //     )
+            // })
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
-                editor?.focus()
-                // saveEditorState(prevViewState, prevModel, _index, tabs)
-
-                // old
-                const _index = tabs.value.findIndex(
-                    (tab) => tab.key === prevKey
-                )
-
-                const prevViewState = editor?.saveViewState()
-                editorStates.set(tabs.value[_index].key, {
-                    model: editorStates.get(tabs.value[_index].key).model,
-                    viewState: prevViewState,
-                })
-
-                //new
-                const index = tabs.value.findIndex((tab) => tab.key === newKey)
-                // debugger
-                if (!editorStates.get(tabs.value[index].key)?.model) {
-                    const newModel = monaco.editor.createModel(
-                        String(toRaw(tabs.value)[index].playground.editor.text),
-                        'atlansql'
-                    )
-                    // saveEditorModelURI(newModel.uri, index, tabs)
-                    editorStates.set(tabs.value[index].key, {
-                        model: newModel,
-                        viewState: {},
-                    })
-                    editor?.setModel(null)
-                    editor?.setModel(newModel)
+                if (tabs.value[newKey]?.playground?.isVQB) {
+                    return
                 } else {
-                    editor?.setModel(
-                        editorStates.get(tabs.value[index].key).model
+                    editor?.focus()
+
+                    if (!editorStates.get(newKey).viewState) {
+                        setEditorFocusedState(false, editorFocused)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    }
+                    const viewState = editor?.saveViewState()
+                    if (!viewState?.cursorState?.length) {
+                        setEditorFocusedState(false, editorFocused)
+                    }
+                    editor?.onDidChangeCursorPosition((pos) => {
+                        setEditorPos(pos.position, editorPos)
+                    })
+                    editor?.onDidFocusEditorWidget(() => {
+                        // toggleGhostCursor(false, editor, monaco, editorPos)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                        setEditorFocusedState(true, editorFocused)
+                    })
+                    editor?.onDidBlurEditorWidget(() => {
+                        // setEditorFocusedState(false, editorFocused)
+                        toggleGhostCursor(
+                            true,
+                            editor,
+                            monaco,
+                            editor?.getPosition()
+                        )
+                    })
+
+                    // old
+                    const _index = tabs.value.findIndex(
+                        (tab) => tab.key === prevKey
                     )
 
+                    if (_index > -1) {
+                        const prevViewState = editor?.saveViewState()
+                        editorStates.set(tabs.value[_index].key, {
+                            model: editorStates.get(tabs.value[_index].key)
+                                .model,
+                            viewState: prevViewState,
+                        })
+                    }
+
+                    //new
+                    const index = tabs.value.findIndex(
+                        (tab) => tab.key === newKey
+                    )
                     // debugger
-                    const newViewState = editorStates.get(
-                        tabs.value[index].key
-                    ).viewState
-                    editor?.restoreViewState(newViewState)
+                    if (!editorStates.get(tabs.value[index].key)?.model) {
+                        const newModel = monaco.editor.createModel(
+                            String(
+                                toRaw(tabs.value)[index].playground.editor.text
+                            ),
+                            'atlansql'
+                        )
+                        // saveEditorModelURI(newModel.uri, index, tabs)
+                        editorStates.set(tabs.value[index].key, {
+                            model: newModel,
+                            viewState: {},
+                        })
+                        editor?.setModel(null)
+                        editor?.setModel(newModel)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    } else {
+                        editor?.setModel(
+                            editorStates.get(tabs.value[index].key).model
+                        )
+
+                        // debugger
+                        const newViewState = editorStates.get(
+                            tabs.value[index].key
+                        ).viewState
+                        editor?.restoreViewState(newViewState)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    }
                 }
             })
 
@@ -792,31 +878,7 @@
                 () => tabs.value[_index.value].playground.editor,
                 () => {
                     if (activeInlineTab.value) {
-                        // if (
-                        //     Object.keys(
-                        //         activeInlineTab.value.playground.editor.editorState
-                        //             .model
-                        //     )?.length == 0
-                        // ) {
-                        // const model = monaco.editor.createModel(
-                        //     String(
-                        //         activeInlineTab.value.playground.editor.text
-                        //     ),
-                        //     'atlansql'
-                        // )
-                        // editor?.setModel(model)
-                        // } else {
-                        // if (editor) {
-                        //     editor.setModel(
-                        //         activeInlineTab.value.playground.editor.editorState
-                        //             .model as any
-                        //     )
-                        //     editor.restoreViewState(
-                        //         activeInlineTab.value.playground.editor.editorState
-                        //             .viewState as any
-                        //     )
-                        // }
-                        // }
+                        if (tabs.value[_index.value]?.playground?.isVQB) return
 
                         /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor(true)
@@ -863,13 +925,7 @@
                         // }
                         // if (position?.column && position?.lineNumber)
                         //     editor?.setPosition(position)
-                        // editor?.onDidChangeCursorPosition(() => {
-                        //     setEditorPos(editor, editorPos)
-                        // })
-                        // editor?.onDidChangeCursorPosition(() => {
-                        //     setEditorPos(editor, editorPos)
-                        //     setEditorFocusedState(true, editorFocused)
-                        // })
+
                         // editor?.focus()
                         // editor?.onDidBlurEditorWidget(() => {
                         //     setEditorFocusedState(false, editorFocused)
@@ -890,6 +946,15 @@
                 }
             })
 
+            onMounted(() => {
+                tabs.value.forEach((tab) => {
+                    editorStates.set(tab.key, {
+                        model: undefined,
+                        viewState: undefined,
+                    })
+                })
+            })
+
             return {
                 editorStates,
                 outputPaneSize,
@@ -897,6 +962,7 @@
             }
         },
     })
+
     // document.fonts.ready.then(function (fontFaceSetEvent) {
     //     alert('All fonts in use by visible text have loaded.')
     //     console.log('Hack loaded? ' + Object.keys(fontFaceSetEvent)) // true

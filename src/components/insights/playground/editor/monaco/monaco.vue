@@ -703,7 +703,7 @@
                     )
                 })
                 editor?.onDidFocusEditorWidget(() => {
-                    // toggleGhostCursor(false, editor, monaco, editorPos)
+                    toggleGhostCursor(false, editor, monaco, editorPos)
                     setEditorFocusedState(true, editorFocused)
                 })
                 // editor?.focus()
@@ -805,7 +805,7 @@
                         setEditorPos(pos.position, editorPos)
                     })
                     editor?.onDidFocusEditorWidget(() => {
-                        // toggleGhostCursor(false, editor, monaco, editorPos)
+                        toggleGhostCursor(false, editor, monaco, editorPos)
                         setEditorPos(editor?.getPosition(), editorPos)
                         setEditorFocusedState(true, editorFocused)
                     })

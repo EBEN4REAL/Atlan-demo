@@ -82,7 +82,7 @@
                             }
                         "
                         v-model:data="connectorData"
-                        :footer-node-content="'You can only view the connections in which you’re added as the owner.'"
+                        :footer-node-content="'You can only view the connections in which you’re added as an admin.'"
                         :whitelisted-connections="
                             isEdit ? null : whitelistedConnectionIds
                         "
@@ -420,7 +420,7 @@
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're
-                    added as an owner.
+                    added as an admin.
                 </div>
             </div>
         </div>

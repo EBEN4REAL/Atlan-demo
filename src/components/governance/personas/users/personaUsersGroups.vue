@@ -489,10 +489,19 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            cancelTokenForUsers: {
+                type: Object,
+                required: false,
+            },
+            cancelTokenForGroups: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const showRemoveUserPopover = ref({})
-            const { persona } = toRefs(props)
+            const { persona, cancelTokenForUsers, cancelTokenForGroups } =
+                toRefs(props)
             const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
             const enableTabs = computed(() => ['users', 'groups'])
 
@@ -510,7 +519,7 @@
                 userList,
                 isLoading: isUsersLoading,
                 error: usersError,
-            } = usePersonaUserList(persona)
+            } = usePersonaUserList(persona, cancelTokenForUsers.value)
             const {
                 getGroupList,
                 STATES: GROUP_STATES,
@@ -518,7 +527,7 @@
                 groupList,
                 isLoading: isGroupsLoading,
                 error: groupsError,
-            } = usePersonaGroupList(persona)
+            } = usePersonaGroupList(persona, cancelTokenForGroups.value)
 
             const filteredList = computed(() => {
                 const qry = queryText.value

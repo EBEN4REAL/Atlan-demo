@@ -356,7 +356,12 @@
                                     "
                                 >
                                     <div class="text-gray-700">
-                                        {{ connectionName }}
+                                        {{
+                                            connectionName
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                            connectionName.slice(1)
+                                        }}
                                     </div>
                                     <div
                                         :class="

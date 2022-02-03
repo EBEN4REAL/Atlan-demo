@@ -30,15 +30,15 @@
                 </template>
             </div>
         </div>
-        <div v-if="!isLoading" class="mt-2">
-            <Editor
-                ref="editor"
-                v-model="editorValue"
-                placeholder="Type '/' for commands"
-                :is-edit-mode="isEditMode"
-            />
-        </div>
-        <div v-else class="h-12" />
+        <!-- <div v-if="!isLoading" class="mt-2"> -->
+        <Editor
+            ref="editor"
+            v-model="editorValue"
+            placeholder="Type '/' for commands"
+            :is-edit-mode="isEditMode"
+        />
+        <!-- </div> -->
+        <!-- <div v-else class="h-12" /> -->
     </div>
 </template>
 
@@ -71,19 +71,39 @@
             const isEditMode = ref(false)
             const loadingSave = ref(false)
             const editorValue = ref('')
-            const { data, isLoading, mutate } = Files.GetFile({
-                id: readMeId.value,
-                // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
-            })
+            const isLoading = ref(false)
+            const defaultValueEditor = ref('')
+            const mutateReadme = () => {
+                isLoading.value = true
+                const {
+                    data,
+                    isLoading: loadingMutate,
+                    mutate,
+                } = Files.GetFile({
+                    id: readMeId.value,
+                    // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
+                })
+                mutate()
+                watch(loadingMutate, () => {
+                    isLoading.value = loadingMutate.value
+                })
+                watch(data, () => {
+                    editorValue.value = data.value
+                    defaultValueEditor.value = data.value
+                    resetEditor()
+                })
+            }
             const fetchReadme = () => {
+                loadingSave.value = false
+                isLoading.value = false
                 if (readMeId.value) {
-                    mutate()
+                    mutateReadme()
                 }
             }
             const resetEditor = () => {
                 const editorValueDefault = readMeId.value
-                    ? Object.keys(data.value).length
-                        ? data.value
+                    ? Object.keys(defaultValueEditor.value).length
+                        ? defaultValueEditor.value
                         : ''
                     : ''
                 editor.value.resetEditor(decodeURIComponent(editorValueDefault))
@@ -99,13 +119,12 @@
             })
 
             const handleCancelEdit = () => {
-                editor.value.resetEditor(decodeURIComponent(data.value || ''))
+                editor.value.resetEditor(
+                    decodeURIComponent(defaultValueEditor.value || '')
+                )
                 isEditMode.value = false
-                editorValue.value = data.value || ''
+                editorValue.value = defaultValueEditor.value || ''
             }
-            watch(data, () => {
-                editorValue.value = data.value
-            })
             const handleUpdatePueposeReadme = async (id) => {
                 try {
                     await savePersona({

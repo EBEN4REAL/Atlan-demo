@@ -228,7 +228,6 @@ export function discardPolicy(type: PolicyType, id: string) {
             )
         }
     } else {
-        console.log('else')
         if (type === 'meta') {
             const policyIndex =
                 selectedPersona.value?.metadataPolicies?.findIndex(
@@ -262,7 +261,6 @@ export function discardPolicy(type: PolicyType, id: string) {
                 selectedPersonaDirty.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
                 ) ?? -1
-            console.log(policyIndex, dirtyPolicyIndex, '-1')
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy = toRaw(selectedPersona.value)?.dataPolicies?.[

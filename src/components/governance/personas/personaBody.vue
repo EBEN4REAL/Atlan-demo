@@ -58,7 +58,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <Readme :persona="persona" />
+            <Readme :persona="selectedPersonaDirty" />
         </div>
         <div
             v-if="activeTabKey === 'policies'"

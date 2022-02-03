@@ -19,17 +19,7 @@
                 <!-- <QueryTimer :timerId="`${activeInlineTab.key}_timer`" /> -->
                 <div
                     class="flex justify-center mt-2"
-                    v-if="
-                        isQueryRunning === 'loading' &&
-                        activeInlineTab.playground.resultsPane.result
-                            .runQueryId &&
-                        canQueryAbort(
-                            getConnectorName(
-                                activeInlineTab.playground.editor.context
-                                    .attributeValue
-                            ) ?? ''
-                        )
-                    "
+                    v-if="isQueryRunning === 'loading'"
                 >
                     <AtlanBtn
                         class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"

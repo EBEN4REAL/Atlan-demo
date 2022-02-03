@@ -340,7 +340,7 @@
 
                 <a-button
                     block
-                    class="flex items-center justify-between px-2 shadow-none"
+                    class="flex items-center px-2 shadow-none"
                     :class="
                         !collectionData?.hasCollectionReadPermission &&
                         !collectionData?.hasCollectionWritePermission &&
@@ -356,11 +356,19 @@
                     "
                 >
                     <div class="flex items-center">
-                        <AtlanIcon
+                        <!-- <AtlanIcon
                             icon="CollectionIconSmall"
                             class="mr-1 mb-0.5"
-                        />
-                        <span>
+                        /> -->
+
+                        <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
+                            collectionData?.collectionInfo?.attributes?.icon
+                                ? collectionData?.collectionInfo?.attributes
+                                      ?.icon
+                                : '🗃'
+                        }}</span>
+
+                        <span class="text-left truncate" style="width: 270px">
                             {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>

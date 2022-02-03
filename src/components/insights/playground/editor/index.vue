@@ -603,7 +603,7 @@
                         activeInlineTab,
                         toRaw(editorInstance.value)
                     )
-                } else if ((status = 'error')) {
+                } else if (status === 'error') {
                     resetErrorDecorations(
                         activeInlineTab,
                         toRaw(editorInstance.value)

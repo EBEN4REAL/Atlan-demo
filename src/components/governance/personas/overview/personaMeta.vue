@@ -3,6 +3,9 @@
         <PersonaUsersGroups
             v-model:persona="persona"
             class="col-span-2 border border-gray-200"
+            :key="persona.id"
+            :cancelTokenForGroups="cancelTokenForGroups"
+            :cancelTokenForUsers="cancelTokenForUsers"
         />
         <DetailsWidget
             :item="persona"
@@ -144,7 +147,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs, h } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -155,6 +158,7 @@
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
     import { enablePersona } from '../composables/useEditPersona'
     import { message, Modal } from 'ant-design-vue'
+    import axios from 'axios'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -173,6 +177,8 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { persona } = toRefs(props)
+            const cancelTokenForUsers = ref()
+            const cancelTokenForGroups = ref()
             const enableDisableLoading = ref(false)
             const timeStamp = (time, raw: boolean = false) => {
                 if (time) {
@@ -247,11 +253,29 @@
                         },
                     })
             }
+
+            //cancel request to fetch users and groups if persona changes too fast
+            watch(
+                () => persona.value.id,
+                () => {
+                    if (cancelTokenForUsers.value)
+                        cancelTokenForUsers.value.cancel('cancelled')
+                    if (cancelTokenForGroups.value)
+                        cancelTokenForGroups.value.cancel('cancelled')
+                    cancelTokenForUsers.value = axios.CancelToken.source()
+                    cancelTokenForGroups.value = axios.CancelToken.source()
+                },
+                {
+                    immediate: true,
+                }
+            )
             return {
                 setActiveTab,
                 timeStamp,
                 handleEnableDisablePersona,
                 enableDisableLoading,
+                cancelTokenForGroups,
+                cancelTokenForUsers,
             }
         },
     })

@@ -167,8 +167,13 @@
                                 :destroyOnClose="true"
                                 v-model:visible="isLogVisible"
                                 :closable="false"
+                                width="80%"
+                                :centered="true"
+                                :bodyStyle="{
+                                    height: 'calc(100vh - 100px)',
+                                }"
                             >
-                                <div class="px-6 py-3">
+                                <div class="h-full px-6 py-3">
                                     <WorkflowLogs
                                         :selectedPod="selectedPod"
                                         :selectedRun="selectedRun"
@@ -284,8 +289,6 @@
                         selectedRun.value
                     )}`
             )
-
-            const { getLiveLogs } = useWorkflowLogsStream('')
 
             const failedPods = computed(() => {
                 const temp = []
@@ -426,7 +429,7 @@
                 messageKey,
                 handleNewRun,
                 handleLogs,
-                getLiveLogs,
+
                 isLogVisible,
                 isMetricVisible,
                 handleStop,

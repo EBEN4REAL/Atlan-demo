@@ -150,7 +150,10 @@
                     selectedPod?.name
                 }}</span>
             </template>
-            <Drawer :selectedPod="selectedPod"></Drawer>
+            <Drawer
+                :selectedPod="selectedPod"
+                :selected-run="graphData"
+            ></Drawer>
         </a-drawer>
 
         <!-- Monitor Controls -->

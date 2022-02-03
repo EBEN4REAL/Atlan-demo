@@ -6,6 +6,12 @@
                 {{ selectedPod?.name }}
             </div>
         </div>
+        <div class="flex flex-col">
+            <p class="text-gray-500">Task Type</p>
+            <div class="mb-2 text-gray-700">
+                {{ selectedPod?.type }}
+            </div>
+        </div>
         <div class="flex mb-2 gap-x-3">
             <div class="flex flex-col w-full">
                 <p class="text-gray-500">Status</p>
@@ -22,6 +28,29 @@
                             {{ selectedPod?.phase }}
                         </p>
                     </div>
+                    <a-button
+                        @click="handleLogs"
+                        v-if="selectedPod?.type === 'Pod'"
+                        >Logs</a-button
+                    >
+                    <a-modal
+                        :destroyOnClose="true"
+                        v-model:visible="isLogVisible"
+                        :closable="false"
+                        width="80%"
+                        :centered="true"
+                        :bodyStyle="{
+                            height: 'calc(100vh - 100px)',
+                        }"
+                    >
+                        <div class="h-full px-6 py-3">
+                            <WorkflowLogs
+                                :selectedPod="selectedPod"
+                                :selectedRun="selectedRun"
+                            ></WorkflowLogs>
+                        </div>
+                        <template #footer> </template>
+                    </a-modal>
 
                     <!-- <a-button
                         type="danger"
@@ -88,9 +117,12 @@
     import useWorkflowLogsDownload from '~/composables/package/useWorkflowLogsDownload'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import WorkflowLogs from './logs.vue'
 
     export default defineComponent({
-        components: {},
+        components: {
+            WorkflowLogs,
+        },
         // mixins: [WorkflowMixin],
         props: {
             selectedPod: {
@@ -98,10 +130,16 @@
                 required: false,
                 default: () => ({}),
             },
+            selectedRun: {
+                type: Object,
+                required: false,
+            },
         },
 
         setup(props, { emit }) {
-            const { selectedPod } = toRefs(props)
+            const { selectedPod, selectedRun } = toRefs(props)
+
+            const isLogVisible = ref(false)
 
             const {
                 formatDate,
@@ -113,6 +151,10 @@
                 getRunTextClassByPhase,
             } = useWorkflowInfo()
 
+            const handleLogs = () => {
+                isLogVisible.value = true
+            }
+
             return {
                 selectedPod,
                 formatDate,
@@ -122,6 +164,9 @@
                 getRunClassByPhase,
                 getRunBorderClassByPhase,
                 getRunTextClassByPhase,
+                handleLogs,
+                isLogVisible,
+                selectedRun,
             }
         },
     })

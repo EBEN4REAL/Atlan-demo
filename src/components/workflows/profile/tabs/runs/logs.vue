@@ -1,20 +1,18 @@
 <template>
-    <div class="flex flex-col">
-        <div class="flex flex-col py-3 mt-3 bg-gray-100 border rounded">
+    <div class="flex flex-col h-full">
+        <div class="flex flex-col h-full py-3 mt-3 bg-gray-100 border rounded">
             <div class="flex justify-between px-4 mb-2 text-gray-700">
                 <span class="font-semibold">{{ selectedPod?.name }}</span>
             </div>
             <div
                 v-if="status == 'CONNECTING'"
-                class="flex items-center justify-center"
-                style="height: 300px"
+                class="flex items-center justify-center flex-grow"
             >
                 <a-spin size="small" class="mr-1"></a-spin>Waiting for logs...
             </div>
             <div
-                class="flex flex-col px-4 overflow-y-auto text-gray-500"
+                class="flex flex-col flex-grow px-4 overflow-y-auto text-gray-500"
                 v-else
-                style="height: 300px"
             >
                 <div v-for="(log, id) in logArray" :key="id">
                     <span> {{ log }}</span>

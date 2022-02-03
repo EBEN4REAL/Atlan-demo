@@ -136,10 +136,18 @@ export default function useComputeGraph(
 
                          
                          
-                               <div class="flex items-center justify-between border-l-4 border-green-500 group w-full h-full bg-transparent rounded border-r border-t border-b cursor-pointer ${phase} ${
+                               <div class="flex items-center justify-between  group w-full h-full bg-transparent rounded  cursor-pointer ${phase} ${
                         phase === 'Succeeded' ? 'block' : 'hidden'
+                    } ${
+                        type === 'Pod'
+                            ? 'border-l-4 border-r border-t border-b border-green-500'
+                            : 'border border-primary'
                     }">
-                               <div class=" text-green-500  font-bold pl-3 truncate">${displayNameTrunc}</div>
+                               <div class="font-bold pl-3 truncate ${
+                                   type === 'Pod'
+                                       ? 'text-green-500'
+                                       : 'text-gray-700'
+                               }">${displayNameTrunc}</div>
                                <div class="pr-2">
                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 18 18" fill="none" class="__web-inspector-hide-shortcut__">
 <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#00A680"/>
@@ -147,11 +155,19 @@ export default function useComputeGraph(
 </svg></div>
 
                                </div>
-                               <div class="flex items-center justify-between border-l-4 border-red-500 w-full h-full bg-transparent rounded border-r border-t border-b  cursor-pointer ${phase} ${
+                               <div class="flex items-center justify-between  w-full h-full bg-transparent rounded cursor-pointer ${phase} ${
                         ['Failed', 'Error'].includes(phase) ? 'block' : 'hidden'
-                    }">
+                    }   ${
+                        type === 'Pod'
+                            ? 'border-l-4 border-r border-t border-b border-red-500'
+                            : 'border border-primary'
+                    }"">
               
-                               <div class=" text-red-500  font-bold px-3 truncate">${displayNameTrunc}</div>
+                               <div class="   font-bold px-3 truncate ${
+                                   type === 'Pod'
+                                       ? 'text-red-500'
+                                       : 'text-gray-700'
+                               }">${displayNameTrunc}</div>
                                <div class="pr-2">
                                <svg  xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 18 18" fill="none">
 <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#E04F1A"/>

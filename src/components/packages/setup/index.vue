@@ -399,21 +399,27 @@
             })
 
             const handleTrackLink = () => {
-                if (import.meta.env.DEV) {
-                    window.open(
-                        `${
-                            getEnv().DEV_API_BASE_URL
-                        }/api/orchestration/workflows/default/${
-                            run.value?.metadata.name
-                        }`,
-                        '_blank'
-                    )
-                } else {
-                    window.open(
-                        `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}`,
-                        '_blank'
+                if (run.value?.metadata?.name) {
+                    router.push(
+                        `/workflows/${data.value.metadata.name}/runs?/runs?name=${run.value?.metadata?.name}`
                     )
                 }
+
+                // if (import.meta.env.DEV) {
+                //     window.open(
+                //         `${
+                //             getEnv().DEV_API_BASE_URL
+                //         }/api/orchestration/workflows/default/${
+                //             run.value?.metadata.name
+                //         }`,
+                //         '_blank'
+                //     )
+                // } else {
+                //     window.open(
+                //         `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}`,
+                //         '_blank'
+                //     )
+                // }
             }
 
             const status = ref('')
@@ -662,6 +668,7 @@
                 updateWorkflow,
                 path,
                 runOnUpdate,
+                router,
             }
         },
     })

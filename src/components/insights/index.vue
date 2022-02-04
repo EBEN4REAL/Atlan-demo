@@ -182,6 +182,8 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
+            const isTabClosed: Ref<undefined | string> = ref(undefined)
+            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -368,6 +370,8 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
+                isTabClosed: isTabClosed,
+                isTabAdded: isTabAdded,
             }
             useProvide(provideData)
             /*-------------------------------------*/

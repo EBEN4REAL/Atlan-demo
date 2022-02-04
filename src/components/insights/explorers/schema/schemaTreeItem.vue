@@ -706,6 +706,7 @@
         },
         setup(props) {
             const { hoverActions } = toRefs(props)
+            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -950,7 +951,7 @@
                             )
                             let activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
-                            playQuery(newQuery, newQuery, activeInlineTabCopy)
+                            playQuery(newQuery, newQuery, activeInlineTab)
                             return
                         }
 
@@ -1001,7 +1002,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
 
                                     return
@@ -1010,7 +1011,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1065,7 +1066,7 @@
                                         playQuery(
                                             newQuery,
                                             newText,
-                                            activeInlineTabCopy
+                                            activeInlineTab
                                         )
                                         return
                                     } else {
@@ -1078,7 +1079,7 @@
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTabCopy
+                                                activeInlineTab
                                             )
                                             return
                                         }
@@ -1091,7 +1092,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1149,7 +1150,7 @@
                                         playQuery(
                                             newQuery,
                                             newText,
-                                            activeInlineTabCopy
+                                            activeInlineTab
                                         )
                                         return
                                     } else {
@@ -1162,7 +1163,7 @@
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTabCopy
+                                                activeInlineTab
                                             )
                                             return
                                         } else {
@@ -1175,7 +1176,7 @@
                                                 playQuery(
                                                     newQuery,
                                                     newText,
-                                                    activeInlineTabCopy
+                                                    activeInlineTab
                                                 )
                                                 return
                                             }
@@ -1191,7 +1192,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1270,14 +1271,13 @@
                 }
             }
 
-            const playQuery = (newQuery, newText, activeInlineTabCopy) => {
+            const playQuery = (
+                newQuery,
+                newText,
+                activeInlineTab: Ref<activeInlineTabInterface>
+            ) => {
                 if (!readOnly.value) {
-                    activeInlineTabCopy.playground.editor.text = newText
-                    modifyActiveInlineTab(
-                        activeInlineTabCopy,
-                        inlineTabs,
-                        activeInlineTabCopy.isSaved
-                    )
+                    activeInlineTab.value.playground.editor.text = newText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
@@ -1287,6 +1287,7 @@
                         toRaw(monacoInstanceRef.value),
                         selectionObject.value
                     )
+                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
                 }
 
                 queryRun(
@@ -1360,6 +1361,7 @@
                 previewItem
             ) => {
                 const key = generateUUID()
+                isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,

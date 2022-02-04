@@ -32,13 +32,7 @@ export function useEditor(
         editorText: string,
         editorInstance: any
     ) {
-        if (activeInlineTab?.value && tabs?.value) {
-            // const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-            //     {},
-            //     activeInlineTab.value
-            // )
-            // activeInlineTabCopy.playground.editor.text = editorText
-            // modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+        if (activeInlineTab?.value) {
             activeInlineTab.value.playground.editor.text = editorText
         }
     }

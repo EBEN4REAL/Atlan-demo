@@ -246,8 +246,8 @@
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
-            const isTabClosed: Ref<undefined | string> = ref(undefined)
-            const isTabAdded: Ref<undefined | string> = ref(undefined)
+            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
             const showSaveQueryModal = ref(false)
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
@@ -610,16 +610,6 @@
                     tabHover.value = null
                 }
             }
-
-            /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
-            const provideData: provideDataInterface = {
-                isTabClosed: isTabClosed,
-                isTabAdded: isTabAdded,
-            }
-            useProvide(provideData)
-            /*-------------------------------------*/
 
             return {
                 fullSreenState,

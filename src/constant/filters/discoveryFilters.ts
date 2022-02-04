@@ -149,45 +149,45 @@ export const discoveryFilters = [
         exclude: false,
         analyticsKey: 'property',
     },
-    {
-        id: 'sql',
-        label: 'SQL Assets',
-        component: 'properties',
-        includes: [
-            'Table',
-            'View',
-            'MaterialisedView',
-            'PartitionTable',
-            'Column',
-        ],
-        attributes: [
-            {
-                name: 'databaseName.keyword',
-                displayName: 'Database Name',
-                typeName: 'string',
-            },
-            {
-                name: 'schemaName.keyword',
-                displayName: 'Schema Name',
-                typeName: 'string',
-            },
-            {
-                name: 'tableName.keyword',
-                displayName: 'Table Name',
-                typeName: 'string',
-            },
-            {
-                name: 'viewName.keyword',
-                displayName: 'View Name',
-                typeName: 'string',
-            },
-        ],
-        overallCondition: 'OR',
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        analyticsKey: 'sql_assets',
-    },
+    // {
+    //     id: 'sql',
+    //     label: 'SQL Assets',
+    //     component: 'properties',
+    //     includes: [
+    //         'Table',
+    //         'View',
+    //         'MaterialisedView',
+    //         'PartitionTable',
+    //         'Column',
+    //     ],
+    //     attributes: [
+    //         {
+    //             name: 'databaseName.keyword',
+    //             displayName: 'Database Name',
+    //             typeName: 'string',
+    //         },
+    //         {
+    //             name: 'schemaName.keyword',
+    //             displayName: 'Schema Name',
+    //             typeName: 'string',
+    //         },
+    //         {
+    //             name: 'tableName.keyword',
+    //             displayName: 'Table Name',
+    //             typeName: 'string',
+    //         },
+    //         {
+    //             name: 'viewName.keyword',
+    //             displayName: 'View Name',
+    //             typeName: 'string',
+    //         },
+    //     ],
+    //     overallCondition: 'OR',
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     analyticsKey: 'sql_assets',
+    // },
 
     {
         id: 'table',

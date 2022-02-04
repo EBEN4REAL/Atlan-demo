@@ -1,27 +1,27 @@
 <template>
-    <div class="flex items-center gap-x-1" style="line-height: 1rem">
+    <div class="flex items-center h-full">
         <a-cascader
             v-model:value="selectedValue"
             :options="tree"
             expand-trigger="hover"
             @change="onChange"
         >
-            <a href="#" class="flex items-center">
+            <a href="#" class="flex items-center h-full px-3">
                 <div
                     v-if="selectedValue.length > 0"
-                    class="flex items-center text-sm font-semibold cursor-pointer hover:text-primary"
+                    class="flex items-center text-sm text-primary font-semibold cursor-pointer hover:text-primary"
                 >
                     <div v-if="selectedValue.length === 1" class="">
                         All Assets
                     </div>
                     <div
                         v-else-if="selectedValue.length == 2"
-                        class="flex items-center"
+                        class="flex items-center text-primary"
                     >
-                        <div v-if="selectedValue[0] === 'persona'">Persona</div>
+                        <!-- <div v-if="selectedValue[0] === 'persona'">Persona</div>
                         <div v-if="selectedValue[0] === 'purpose'">Purpose</div>
 
-                        <AtlanIcon icon="ChevronRight" class="mx-1" />
+                        <span>/</span> -->
 
                         <div
                             v-if="selectedValue[0] === 'persona'"
@@ -33,7 +33,7 @@
                             <AtlanIcon
                                 v-if="!isAccessPersona(selectedValue[1])"
                                 icon="Lock"
-                                class="mb-0.5 ml-1 h4"
+                                class="mb-0.5 ml-1 h4 text-yellow-500"
                             ></AtlanIcon>
                         </div>
                         <div
@@ -46,7 +46,7 @@
                             <AtlanIcon
                                 v-if="!isAccessPurpose(selectedValue[1])"
                                 icon="Lock"
-                                class="mb-0.5 ml-1 h4"
+                                class="mb-0.5 ml-1 h3 text-yellow-500"
                             ></AtlanIcon>
                         </div>
                     </div>
@@ -55,8 +55,12 @@
                     v-else
                     class="text-base font-semibold cursor-pointer text-primary"
                 >
-                    Change
+                    All Assets
                 </div>
+                <AtlanIcon
+                    icon="CaretDown"
+                    class="text-primary h-3 ml-1"
+                ></AtlanIcon>
             </a>
         </a-cascader>
     </div>
@@ -68,6 +72,7 @@
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import { message } from 'ant-design-vue'
 
     interface Option {
         value: string
@@ -104,13 +109,7 @@
             const selectedValue = ref(modelValue.value)
 
             const tree = computed(() => {
-                const temp = [
-                    {
-                        value: 'all',
-                        label: 'All Assets',
-                        children: [],
-                    },
-                ]
+                const temp = []
 
                 const persona = {
                     value: 'persona',
@@ -154,12 +153,37 @@
                     })
                 })
                 temp.push(purpose)
+
+                const all = {
+                    value: 'all',
+                    label: 'All Assets',
+                    children: [],
+                }
+
+                temp.push(all)
+
                 return temp
             })
 
             const onChange = (value: string, selectedOptions: Option[]) => {
                 modelValue.value = value
                 emit('change')
+                console.log(selectedOptions[0])
+                if (selectedOptions[0].value == 'persona') {
+                    message.info(
+                        `Persona switched to ${selectedOptions[1].label}`
+                    )
+                }
+                if (selectedOptions[0].value == 'purpose') {
+                    message.info(
+                        `Purpose switched to ${selectedOptions[1].label}`
+                    )
+                }
+                if (selectedOptions[0].value == 'all') {
+                    message.info(
+                        `Switched to default view. All assets will be shown.`
+                    )
+                }
             }
 
             const getPersona = (id) =>

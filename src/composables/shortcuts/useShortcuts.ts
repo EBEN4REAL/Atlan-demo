@@ -20,13 +20,13 @@ export default function useShortcuts() {
         // }
         return isInput
     })
-    const allowedTabShortcut = computed(() => {
+    const allowedTabAndArrowShortcuts = computed(() => {
         const parent = activeElement.value?.parentElement
         return parent?.classList.contains(ALLOW_TAB_SHORTCUT_CLASS)
     })
     return {
         usingInput,
-        allowedTabShortcut,
+        allowedTabAndArrowShortcuts,
     }
 }
 

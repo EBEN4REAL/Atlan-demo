@@ -449,7 +449,7 @@ export const assetTypeList: {
         label: 'Organization',
         isDiscoverable: true,
         image: 'Salesforce',
-        relationships: ['folder', 'looks', 'tiles'],
+        relationships: ['reports', 'objects', 'dashboards'],
         groupOrder: 6,
     },
     {
@@ -458,7 +458,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceOrganization'],
-        relationships: ['folder', 'looks', 'tiles'],
+        relationships: ['reports', 'organization'],
         groupOrder: 6,
     },
 
@@ -468,7 +468,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceOrganization'],
-        relationships: ['folder', 'looks', 'tiles'],
+        relationships: ['dashboards', 'organization'],
         groupOrder: 6,
     },
     {
@@ -477,7 +477,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceOrganization'],
-        relationships: ['folder', 'looks', 'tiles'],
+        relationships: ['fields', 'lookupFields', 'organization'],
         groupOrder: 6,
     },
     {
@@ -486,7 +486,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceObject'],
-        relationships: ['folder', 'looks', 'tiles'],
+        relationships: ['object', 'lookupObjects'],
         groupOrder: 6,
     },
 ]

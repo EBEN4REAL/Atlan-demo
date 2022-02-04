@@ -306,7 +306,6 @@ export const SourceList = [
         id: 'salesforce',
         label: 'Salesforce',
         image: 'Salesforce',
-        connectionCount: 0,
         hierarchy: [],
         types: [
             'SalesforceOrganization',

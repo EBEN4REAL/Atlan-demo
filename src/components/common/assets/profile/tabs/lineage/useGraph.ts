@@ -8,7 +8,6 @@ import {
 } from './util.js'
 import {
     iconPlus,
-    iconEllipse,
     iconCaretDown,
     iconVerified,
     iconDraft,
@@ -93,7 +92,6 @@ export default function useGraph() {
             isHighlightedNode: null,
             isHighlightedNodePath: null,
             isGrayed: false,
-            isTypeNode: !!typeCount, // Converting from number/undefined to boolean
             ...dataObj,
         }
 
@@ -131,7 +129,9 @@ export default function useGraph() {
                 <div class=" ${isBase ? 'inscr' : 'hidden'}"> 
                     <span class="inscr-item">BASE</span>
                 </div>
-                <div class=" popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                <div class="${
+                    typeCount ? 'hidden' : ''
+                } popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
                         ${displayText} 
                 </div>
                 <div>
@@ -151,17 +151,19 @@ export default function useGraph() {
                     </div>
                     <div class="node-meta">
                         <img class="node-meta__source" src="${img}" />
-                        <div class="truncate node-meta__text">${typeNameComputed}</div>
-                        ${
-                            [
-                                'Table',
-                                'View',
-                                ...childGroupBiAssetTypes,
-                            ].includes(typeName) &&
-                            (schemaName || childGroupBiAsset)
-                                ? iconEllipse
-                                : ''
-                        } 
+                        <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
+                        <div class="node-meta__text">
+                            ${
+                                [
+                                    'Table',
+                                    'View',
+                                    ...childGroupBiAssetTypes,
+                                ].includes(typeName) &&
+                                (schemaName || childGroupBiAsset)
+                                    ? 'in'
+                                    : ''
+                            } 
+                        </div>
                         <div class="node-meta__text  truncate ${
                             [
                                 'Table',

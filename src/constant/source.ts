@@ -341,4 +341,18 @@ export const SourceList = [
             'LookerTile',
         ],
     },
+    {
+        id: 'salesforce',
+        label: 'Salesforce',
+        image: 'Salesforce',
+        connectionCount: 0,
+        hierarchy: [],
+        types: [
+            'SalesforceOrganization',
+            'SalesforceDashboard',
+            'SalesforceReport',
+            'SalesforceObject',
+            'SalesforceField',
+        ],
+    },
 ]

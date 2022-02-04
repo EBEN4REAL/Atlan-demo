@@ -656,7 +656,7 @@ export function useBody(
         !facets?.guid
     ) {
         // Global TypeName Filters
-        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
+        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI', 'CRM'])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
             'AtlasGlossaryCategory',

@@ -37,9 +37,14 @@
                         >
                             <div class="w-4 mr-1">
                                 <AtlanIcon
-                                    icon="Glossary"
-                                    class="self-center"
-                                ></AtlanIcon>
+                                    :icon="
+                                        getEntityStatusIcon(
+                                            item.typeName,
+                                            certificateStatus(item)
+                                        )
+                                    "
+                                    class="self-center align-text-bottom"
+                                />
                             </div>
                             <Tooltip
                                 :tooltip-text="`${
@@ -61,7 +66,10 @@
                         :icon="
                             displayText === 'All Glossaries'
                                 ? 'GlossaryGray'
-                                : 'Glossary'
+                                : getEntityStatusIcon(
+                                      'AtlasGlossary',
+                                      certificateStatus(selectedGlossary)
+                                  )
                         "
                         class="self-center h-5"
                     ></AtlanIcon>
@@ -92,7 +100,9 @@
         onMounted,
         watch,
     } from 'vue'
-    import useGlossaryData from '~/composables/glossary/useGlossaryData'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
     import Tooltip from '@/common/ellipsis/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
@@ -109,25 +119,27 @@
                     return ''
                 },
             },
-            showAllGlossary:{
-                type:Boolean,
-                required:false,
-                default:true
-            }
+            showAllGlossary: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const localValue = ref(props.modelValue)
 
-            const { glossaryList } = useGlossaryData()
+            const { glossaryList, getEntityStatusIcon } = useGlossaryData()
             const displayText = ref('')
             const isVisible = ref(false)
-
+            const { certificateStatus } = useAssetInfo()
+            const selectedGlossary = ref()
             const changeDisplayText = () => {
                 const item = filteredList.value.find(
                     (i) => i.attributes.qualifiedName === localValue.value
                 )
                 console.log('change', item)
+                selectedGlossary.value = item
                 if (!item) {
                     displayText.value = 'All Glossaries'
                 } else {
@@ -170,6 +182,9 @@
                 glossaryList,
                 isVisible,
                 changeDisplayText,
+                getEntityStatusIcon,
+                certificateStatus,
+                selectedGlossary,
             }
         },
     })

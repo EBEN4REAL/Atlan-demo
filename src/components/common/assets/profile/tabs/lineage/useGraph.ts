@@ -170,7 +170,7 @@ export default function useGraph() {
                                 ? ''
                                 : 'hidden'
                         }">
-                            ${schemaName || childGroupBiAsset}
+                            ${schemaName || childGroupBiAsset || ''}
                         </div>
                         <div class="${
                             !typeCount ? 'hidden' : 'isCounter'

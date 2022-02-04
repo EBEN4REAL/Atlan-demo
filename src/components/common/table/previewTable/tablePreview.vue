@@ -1,5 +1,5 @@
 <template>
-    <div class="table_height">
+    <div class="table_height" ref="tableHeightRef">
         <regular-table
             ref="tableRef"
             :class="$style.regular_table"
@@ -21,6 +21,7 @@
         watch,
         ref,
         onMounted,
+        onUnmounted,
     } from 'vue'
 
     import Tooltip from '@common/ellipsis/index.vue'
@@ -69,6 +70,7 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
+            const tableHeightRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref('')
             const showExpand = ref('')
@@ -406,12 +408,28 @@
                 table?.draw()
             }
 
-            onMounted(() => {
+            // const tableHeight = document.getElementsByClassName('table_height')[0]
+
+            let observer = ref()
+
+            const onResize = () => {
+                console.log('resize')
                 init()
+            }
+
+            onMounted(() => {
+                observer.value = new ResizeObserver(onResize).observe(
+                    tableHeightRef.value
+                )
+            })
+
+            onUnmounted(() => {
+                observer?.value?.unobserve(tableHeightRef?.value)
             })
 
             return {
                 tableRef,
+                tableHeightRef,
                 images,
                 getDataType,
                 variantTypeIndexes,

@@ -38,6 +38,22 @@
                     @change="handleGlobalStateChange"
                 ></GlobalSelection>
             </div>
+            <!-- <div
+                class="ml-3"
+                v-if="isAssets && globalState?.length > 1"
+                @click="handleInfo"
+            >
+                <a-tooltip title="Click to view details">
+                    <a-button class="px-2 py-0 leading-none h-6">
+                        <AtlanIcon
+                            icon="Info"
+                            class="text-primary"
+                        ></AtlanIcon></a-button
+                ></a-tooltip>
+                <a-modal v-model:visible="infoVisible" :footer="null">
+                    <ContextModal :context="globalState"></ContextModal>
+                </a-modal>
+            </div> -->
         </div>
         <div class="flex items-center h-full cursor-pointer justify-self-end">
             <a-dropdown placement="bottomRight">
@@ -95,9 +111,11 @@
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
     import { useTenantStore } from '~/store/tenant'
+    import ContextModal from '@/common/modal/context.vue'
+
     import { useRoute, useRouter } from 'vue-router'
     import defaultLogo from '~/assets/images/your_company.png'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+
     import AssetMenu from '../assets/profile/header/assetMenu.vue'
     import map from '~/constant/accessControl/map'
     import useAssetStore from '~/store/asset'
@@ -106,7 +124,7 @@
         name: 'Navigation Menu',
         components: {
             UserPersonalAvatar,
-            AtlanIcon,
+            ContextModal,
             AssetMenu,
             GlobalSelection,
         },
@@ -124,6 +142,8 @@
             const tenantStore = useTenantStore()
             const currentRoute = useRoute()
             const logoNotFound = ref(false)
+
+            const infoVisible = ref(false)
 
             const isHome = computed(() => {
                 if (currentRoute.name === 'index') {
@@ -172,6 +192,10 @@
                 assetStore.setGlobalState(globalState.value)
             }
 
+            const handleInfo = () => {
+                infoVisible.value = !infoVisible.value
+            }
+
             return {
                 page,
                 isHome,
@@ -187,6 +211,8 @@
                 globalState,
                 isAssets,
                 dirtyTimestamp,
+                handleInfo,
+                infoVisible,
             }
         },
     })

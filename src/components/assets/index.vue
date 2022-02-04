@@ -132,7 +132,7 @@
                     v-else
                     :list="list"
                     :start-index="selectedAssetIndex"
-                    :blocked="isCmndKVisible || isAssetProfile"
+                    :blocked="listNavigationBlocked"
                     :html-id-getter="getAssetId"
                     @change="onKeyboardNavigate"
                 >
@@ -579,6 +579,9 @@
 
             const getAssetId = (item) => item.guid
 
+            const listNavigationBlocked = computed(() => {
+                return isCmndKVisible.value || isAssetProfile.value
+            })
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -742,6 +745,7 @@
                 getAssetId,
                 quickChange,
                 isAssetProfile,
+                listNavigationBlocked,
             }
         },
     })

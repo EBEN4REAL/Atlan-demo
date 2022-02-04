@@ -66,9 +66,10 @@
     // Utils
     import {
         getNodeTypeText,
+        nonBiTypes,
         childParentBiAssetMap,
         childGroupBiAssetMap,
-        parentChildrenBiAssetMap,
+        parentChildrenBiAssetArr,
     } from './util.js'
     import { pluralizeString } from '~/utils/string'
 
@@ -161,13 +162,6 @@
                 })
             }
 
-            // computeLineageForChildBiAsset
-            const computeLineageForChildBiAsset = (data) => {
-                addRelatedBiAssetToLineage(data, selectedAsset.value)
-                computedLineage.value.baseEntityGuid = selectedAsset.value.guid
-                return computedLineage.value
-            }
-
             // computeLineageForParentBiAsset
             const computeLineageForParentBiAsset = (data) => {
                 if (!data.relations.length)
@@ -204,6 +198,31 @@
                 return computedLineage.value
             }
 
+            // computeLineageForChildBiAsset
+            const computeLineageForChildBiAsset = (data) => {
+                if (!data.relations.length) {
+                    const childParent = relatedBiAssets.value.find(
+                        (v) =>
+                            childParentBiAssetMap[
+                                selectedAsset.value.typeName
+                            ] === v.typeName
+                    )
+                    addRelatedBiAssetToLineage(data, childParent)
+                }
+
+                addRelatedBiAssetToLineage(data, selectedAsset.value)
+                computedLineage.value.baseEntityGuid = selectedAsset.value.guid
+
+                if (
+                    parentChildrenBiAssetArr.includes(
+                        selectedAsset.value.typeName
+                    )
+                )
+                    lineage.value = computeLineageForParentBiAsset(data)
+
+                return computedLineage.value
+            }
+
             // useLineageService
             const { useFetchLineage } = useLineageService()
             const { data, isLoading, isReady, mutate, error } =
@@ -212,7 +231,11 @@
             watch(data, async () => {
                 if (childParentBiAssetMap[selectedAsset.value.typeName])
                     lineage.value = computeLineageForChildBiAsset(data.value)
-                else if (parentChildrenBiAssetMap[selectedAsset.value.typeName])
+                else if (
+                    parentChildrenBiAssetArr.includes(
+                        selectedAsset.value.typeName
+                    )
+                )
                     lineage.value = computeLineageForParentBiAsset(data.value)
                 else if (!data.value.relations.length) {
                     lineage.value = { ...data.value }
@@ -248,15 +271,20 @@
             // getChildBiAssetParentGuid
             const getChildBiAssetParentGuid = (entity) => {
                 let parentGuid = ''
-                Object.entries(entity.attributes).forEach(([key, value]) => {
-                    if (key === childParentBiAssetMap[entity.typeName])
-                        parentGuid = value.guid
+                relatedBiAssets.value.forEach((v) => {
+                    if (childParentBiAssetMap[entity.typeName] === v.typeName)
+                        parentGuid = v.guid
                 })
                 return parentGuid
             }
 
             /** LIFECYCLES */
             onMounted(() => {
+                const { typeName } = selectedAsset.value
+                if (nonBiTypes.includes(typeName)) {
+                    mutate()
+                    return
+                }
                 const childBiAssetArr = Object.keys(childParentBiAssetMap)
                 const { data: relData, guidList } = useRelations(selectedAsset)
                 const limit = ref(20)
@@ -294,7 +322,6 @@
                         baseEntityRelData.value = relData.value?.entities[0]
 
                         const entity = relData.value?.entities[0]
-                        const { typeName } = selectedAsset.value
 
                         if (childBiAssetArr.includes(typeName))
                             guid.value = getChildBiAssetParentGuid(entity)

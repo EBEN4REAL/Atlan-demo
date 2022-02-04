@@ -91,26 +91,43 @@ export const getSchema = (entity) => {
 }
 
 export const childParentBiAssetMap = {
-    PowerBIReport: 'dataset',
-    LookerTile: 'query',
+    PowerBIReport: 'PowerBIDataset',
+    LookerTile: 'LookerQuery',
 }
 
 export const childGroupBiAssetMap = {
+    PowerBIDataset: 'workspace',
+    PowerBIDashboard: 'workspace',
+    PowerBIDataflow: 'workspace',
+    PowerBIPage: 'report',
+    PowerBIReport: 'workspace',
+    PowerBITile: 'dashboard',
     LookerQuery: 'model',
     LookerTile: 'dashboard',
+    LookerLook: 'model',
+    LookerDashboard: 'folder',
+    LookerExplore: 'model',
+    LookerModel: 'project',
 }
-
-export const parentChildrenBiAssetMap = {
-    PowerBIDataset: [
-        'datasets',
-        'workspace',
-        'tiles',
-        'reports',
-        'datasources',
-        'dataflows',
-    ],
-    LookerQuery: ['tiles', 'model', 'looks'],
-}
+export const parentChildrenBiAssetArr = [
+    'PowerBIDataset',
+    'PowerBIDashboard',
+    'PowerBIDataflow',
+    'PowerBIDatasource',
+    'PowerBIPage',
+    'PowerBIReport',
+    'PowerBITile',
+    'PowerBIWorkspace',
+    'LookerTile',
+    'LookerQuery',
+    'LookerFolder',
+    'LookerDashboard',
+    'LookerExplore',
+    'LookerLook',
+    'LookerModel',
+    'LookerProject',
+    'LookerField',
+]
 
 export const nonBiTypes = [
     'Column',

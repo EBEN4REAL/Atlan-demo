@@ -4,10 +4,15 @@ import {
     imagePlugin,
     updateImageNode,
 } from 'prosemirror-image-plugin'
-import Image from '@tiptap/extension-image'
+import { ImagePluginSettings } from 'prosemirror-image-plugin/dist/types'
+import Image, { ImageOptions } from '@tiptap/extension-image'
 import useUploadImage from '~/composables/image/uploadImage'
 
-export default Image.extend({
+interface CustomImageOptions extends ImageOptions {
+    imageSettings: ImagePluginSettings
+}
+
+export default Image.extend<CustomImageOptions>({
     onBeforeCreate() {
         this.editor.schema = new Schema({
             nodes: updateImageNode(this.editor.schema.spec.nodes, {

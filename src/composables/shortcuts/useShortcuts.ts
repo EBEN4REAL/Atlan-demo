@@ -22,7 +22,11 @@ export default function useShortcuts() {
     })
     const allowedTabAndArrowShortcuts = computed(() => {
         const parent = activeElement.value?.parentElement
-        return parent?.classList.contains(ALLOW_TAB_SHORTCUT_CLASS)
+        const activeElementTag = activeElement.value?.tagName
+        return (
+            parent?.classList.contains(ALLOW_TAB_SHORTCUT_CLASS) ||
+            activeElementTag === 'BODY'
+        )
     })
     return {
         usingInput,

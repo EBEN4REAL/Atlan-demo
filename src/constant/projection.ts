@@ -108,6 +108,8 @@ export const AssetAttributes = [
     'site',
     'project',
     'report',
+    'organization',
+    'object',
     'reportCount',
     'dashboardCount',
     'datasetCount',

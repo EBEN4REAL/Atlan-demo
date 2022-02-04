@@ -155,6 +155,7 @@
                     'LookerFolder',
                     'LookerProject',
                     'LookerQuery',
+                    'SalesforceOrganization',
                 ].includes(selectedAsset?.typeName)
             "
             class="flex px-5"
@@ -206,7 +207,13 @@
             </div>
         </div>
 
-        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+        <div
+            v-if="
+                selectedAsset?.typeName === 'LookerQuery' &&
+                fieldsLookerQuery(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
                 <div

@@ -49,7 +49,7 @@
 
         <div
             v-if="
-                ['PowerBITile'].includes(asset?.typeName) &&
+                ['PowerBITile', 'LookerTile'].includes(asset?.typeName) &&
                 parentDashboard(asset)?.guid
             "
             class="flex flex-col text-sm"

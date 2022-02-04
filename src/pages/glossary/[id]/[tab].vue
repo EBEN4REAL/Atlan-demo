@@ -116,6 +116,11 @@
                     if (asset.value?.typeName !== 'AtlasGlossary') {
                         console.log('change QF')
                         handleSelectGlossary(parentGlossaryQF)
+                    } else {
+                        if (asset?.value?.attributes?.qualifiedName)
+                            handleSelectGlossary(
+                                asset?.value?.attributes?.qualifiedName
+                            )
                     }
                 }
             }

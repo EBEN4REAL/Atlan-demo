@@ -3,10 +3,6 @@
         class="flex flex-wrap items-center justify-between w-full pb-1.5 pr-3 mt-2"
     >
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
-        {{
-            activeInlineTab.playground.editor.editorState?.viewState
-                ?.cursorState
-        }}
         <div class="flex items-center mr-3">
             <!-- <a-tooltip
                 color="#363636"

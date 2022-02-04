@@ -1,6 +1,5 @@
 import { Editor, Extension, Range } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
-import { $ } from 'vue/macros'
 
 interface commandsProps {
     editor: Editor

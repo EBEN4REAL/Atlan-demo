@@ -129,11 +129,12 @@
 
             const isEditMode = ref(false)
 
+            const editor = ref()
+
             const handleEditMode = () => {
                 isEditMode.value = !isEditMode.value
+                editor.value?.editor?.commands.focus('end')
             }
-
-            const editor = ref()
 
             const handleUpdate = () => {
                 handleUpdateReadme()
@@ -142,7 +143,9 @@
 
             const handleCancel = () => {
                 if (editor.value) {
-                    editor.value.resetEditor(decodeURIComponent(readmeContent(asset.value) || ""))
+                    editor.value.resetEditor(
+                        decodeURIComponent(readmeContent(asset.value) || '')
+                    )
                 }
                 localReadmeContent.value = readmeContent(asset.value)
                 isEditMode.value = false

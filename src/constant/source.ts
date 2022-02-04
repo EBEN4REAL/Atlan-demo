@@ -73,11 +73,50 @@ export const SourceList = [
         id: 'redshift',
         label: 'Redshift',
         image: 'Redshift',
-        hierarchy: [],
+
         connectionCount: 0,
         dialectConfig: {
             abortQuery: true,
         },
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
     },
     {
         id: 'databricks',

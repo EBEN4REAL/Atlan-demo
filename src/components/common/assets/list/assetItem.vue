@@ -198,9 +198,12 @@
 
                         <div
                             v-if="
-                                ['table', 'view', 'tablepartition'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
+                                [
+                                    'table',
+                                    'view',
+                                    'tablepartition',
+                                    'materialisedview',
+                                ].includes(item.typeName?.toLowerCase())
                             "
                             class="flex mr-2 text-sm text-gray-500"
                         >

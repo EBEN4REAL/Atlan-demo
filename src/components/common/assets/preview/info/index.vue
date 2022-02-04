@@ -42,8 +42,8 @@
 
         <Connection
             v-if="selectedAsset.typeName === 'Connection'"
-            :selected-asset="selectedAsset"
             v-model="localSQLQuery"
+            :selected-asset="selectedAsset"
             :edit-permission="editPermission"
             @change="handleSQLQueryUpdate"
         ></Connection>
@@ -69,7 +69,7 @@
 
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex items-center w-full gap-16 px-5"
+            class="flex flex-wrap items-center w-full gap-16 px-5"
         >
             <SQL
                 v-if="
@@ -80,8 +80,8 @@
                 :sql="definition(selectedAsset)"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Definition</span>
-                    <span class="text-primary">SQL</span>
+                    <span class="mb-1 text-sm text-gray-500">Definition</span>
+                    <span class="font-semibold text-primary">SQL</span>
                 </div>
                 <template #action>
                     <a-button
@@ -115,7 +115,7 @@
                 :class="isProfile ? '' : 'cursor-pointer'"
                 @click="showSampleDataModal"
             >
-                <span class="mb-2 text-sm text-gray-500">Rows</span>
+                <span class="mb-1 text-sm text-gray-500">Rows</span>
                 <span
                     :class="
                         isProfile
@@ -130,7 +130,7 @@
                 class="flex flex-col text-sm cursor-pointer"
                 @click="switchTab(selectedAsset, 'Columns')"
             >
-                <span class="mb-2 text-sm text-gray-500">Columns</span>
+                <span class="mb-1 text-sm text-gray-500">Columns</span>
                 <span class="font-semibold text-primary">{{
                     columnCount(selectedAsset)
                 }}</span>
@@ -139,7 +139,7 @@
                 v-if="sizeBytes(selectedAsset) > 0"
                 class="flex flex-col text-sm cursor-pointer"
             >
-                <span class="mb-2 text-sm text-gray-500">Size</span>
+                <span class="mb-1 text-sm text-gray-500">Size</span>
                 <span class="text-gray-700">{{
                     sizeBytes(selectedAsset)
                 }}</span>

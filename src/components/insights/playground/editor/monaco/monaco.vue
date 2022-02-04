@@ -122,8 +122,6 @@
 
             const {
                 clearMoustacheTemplateColor,
-                setErrorDecorations,
-                resetErrorDecorations,
                 toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
@@ -132,7 +130,6 @@
                 findCustomVariableMatches,
                 setMoustacheTemplateColor,
             } = useEditor(tabs, activeInlineTab)
-            const { isLineError } = useResultPane(tabs)
 
             // save custom variable cases
 
@@ -533,7 +530,6 @@
                     }
                 }
 
-                // emit('editorInstance', editor)
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
@@ -569,23 +565,15 @@
                 })
 
                 editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
-                    // console.log('cmd+k: ', 'presses')
                     toggleCMDK()
                 })
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
-                    if (isLineError(activeInlineTab)) {
-                        resetErrorDecorations(activeInlineTab, editor)
-                    }
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
-                    /* ------------- custom variable color change */
                     findAndChangeCustomVariablesColor(false)
-                    /* ------------------------------------------ */
                     const changes = event?.changes[0]
-                    // const lastTypedCharacter = event?.changes[0]?.text
-                    // console.log(changes, 'changes')
                     /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
                         changes,
@@ -698,7 +686,6 @@
                             ),
                             'atlansql'
                         )
-                        // saveEditorModelURI(newModel.uri, index, tabs)
                         editorStates.set(tabs.value[index].key, {
                             model: newModel,
                             viewState: {},
@@ -719,11 +706,6 @@
                     }
 
                     editor?.getModel()?.onDidChangeContent(async (event) => {
-                        // console.log('editor content change')
-                        if (isLineError(activeInlineTab)) {
-                            resetErrorDecorations(activeInlineTab, editor)
-                        }
-                        // setErrorDecorations(activeInlineTab, editor)
                         const text = editor?.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
@@ -756,45 +738,7 @@
                 () => {
                     if (activeInlineTab.value) {
                         if (tabs.value[_index.value]?.playground?.isVQB) return
-
-                        /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor(true)
-                        /* ------------------------------------------ */
-                        /* ------------- set error decorations */
-                        if (isLineError(activeInlineTab)) {
-                            setErrorDecorations(activeInlineTab, editor, monaco)
-                        }
-                        // console.log('editor active inline tab change')
-                        /* ------------------------------------------ */
-                        editor
-                            ?.getModel()
-                            ?.onDidChangeContent(async (event) => {
-                                // console.log('editor content change')
-                                if (isLineError(activeInlineTab)) {
-                                    resetErrorDecorations(
-                                        activeInlineTab,
-                                        editor
-                                    )
-                                }
-                                // setErrorDecorations(activeInlineTab, editor)
-                                const text = editor?.getValue()
-                                onEditorContentChange(event, text, editor)
-                                const changes = event?.changes[0]
-                                /* ------------- custom variable color change */
-                                findAndChangeCustomVariablesColor(false)
-                                /* ------------------------------------------ */
-                                const suggestions = useAutoSuggestions(
-                                    changes,
-                                    editor,
-                                    activeInlineTab,
-                                    cancelTokenSource
-                                ) as Promise<{
-                                    suggestions: suggestionKeywordInterface[]
-                                    incomplete: boolean
-                                }>
-                                suggestionsList.value = suggestions
-                                triggerAutoCompletion(suggestions)
-                            })
                     }
                 }
             )

@@ -133,13 +133,16 @@
             const displayText = ref('')
             const isVisible = ref(false)
             const { certificateStatus } = useAssetInfo()
-            const selectedGlossary = ref()
+            const selectedGlossary = computed(() =>
+                filteredList.value.find(
+                    (i) => i.attributes.qualifiedName === localValue.value
+                )
+            )
             const changeDisplayText = () => {
                 const item = filteredList.value.find(
                     (i) => i.attributes.qualifiedName === localValue.value
                 )
                 console.log('change', item)
-                selectedGlossary.value = item
                 if (!item) {
                     displayText.value = 'All Glossaries'
                 } else {
@@ -175,6 +178,9 @@
                 }
             )
 
+            watch(selectedGlossary , () => {
+                changeDisplayText()
+            })
             return {
                 filteredList,
                 handleSelect,

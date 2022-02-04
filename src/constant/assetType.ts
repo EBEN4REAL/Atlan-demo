@@ -23,7 +23,8 @@ export const assetTypeList: {
         count: 0,
         image: 'Connection',
         relationships: [],
-        groupOrder: 6, // For grouping according to asset types
+        groupOrder: 50, // For grouping according to asset types
+        // Connection, Schema, Database will always come at last
     },
     {
         id: 'Database',
@@ -36,7 +37,7 @@ export const assetTypeList: {
         image: 'DatabaseGray',
         count: 0,
         relationships: ['schemas'],
-        groupOrder: 6,
+        groupOrder: 50,
     },
     {
         id: 'Schema',
@@ -55,7 +56,7 @@ export const assetTypeList: {
             'procedures',
             'materialisedViews',
         ],
-        groupOrder: 6,
+        groupOrder: 50,
     },
     {
         id: 'View',
@@ -442,5 +443,50 @@ export const assetTypeList: {
         parents: [],
         relationships: ['query', 'dashboard', 'look'],
         groupOrder: 5,
+    },
+    {
+        id: 'SalesforceOrganization',
+        label: 'Organization',
+        isDiscoverable: true,
+        image: 'Salesforce',
+        relationships: ['folder', 'looks', 'tiles'],
+        groupOrder: 6,
+    },
+    {
+        id: 'SalesforceDashboard',
+        label: 'Dashboard',
+        isDiscoverable: true,
+        image: 'Salesforce',
+        parents: ['SalesforceOrganization'],
+        relationships: ['folder', 'looks', 'tiles'],
+        groupOrder: 6,
+    },
+
+    {
+        id: 'SalesforceReport',
+        label: 'Report',
+        isDiscoverable: true,
+        image: 'Salesforce',
+        parents: ['SalesforceOrganization'],
+        relationships: ['folder', 'looks', 'tiles'],
+        groupOrder: 6,
+    },
+    {
+        id: 'SalesforceObject',
+        label: 'Object',
+        isDiscoverable: true,
+        image: 'Salesforce',
+        parents: ['SalesforceOrganization'],
+        relationships: ['folder', 'looks', 'tiles'],
+        groupOrder: 6,
+    },
+    {
+        id: 'SalesforceField',
+        label: 'Field',
+        isDiscoverable: true,
+        image: 'Salesforce',
+        parents: ['SalesforceObject'],
+        relationships: ['folder', 'looks', 'tiles'],
+        groupOrder: 6,
     },
 ]

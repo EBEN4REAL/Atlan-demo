@@ -970,6 +970,7 @@ export default function useEventGraph(
             if (targetEntityId) {
                 highlight(entity?.guid)
                 showLoader(e)
+                onCloseDrawer()
 
                 const { data } = fetchAsset(targetEntityId)
                 watchOnce(data, () => {

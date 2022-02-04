@@ -796,6 +796,73 @@
                                 }}</span
                             >
                         </div>
+                        <div
+                            v-if="
+                                [
+                                    'salesforcedashboard',
+                                    'salesforcereport',
+                                    'salesforceobject',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentOrganization(item)?.attributes
+                                            ?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentOrganization(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Organization -
+                                        {{
+                                            parentOrganization(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['salesforcefield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentObject(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentObject(item)?.attributes?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Object -
+                                        {{
+                                            parentObject(item)?.attributes?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -1045,6 +1112,8 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                parentOrganization,
+                parentObject,
                 sourceViewCount,
                 sourceChildCount,
             } = useAssetInfo()
@@ -1183,6 +1252,8 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                parentOrganization,
+                parentObject,
                 sourceViewCount,
                 sourceChildCount,
             }

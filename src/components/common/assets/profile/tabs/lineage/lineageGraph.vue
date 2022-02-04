@@ -458,12 +458,12 @@
                         line-height: 22px;
                         background: #ffffff;
                         color: #5277d7;
-                        position: absolute;
+                        position: fixed;
                         border: 1px solid #5277d7;
                         border-bottom: 0;
-                        top: -37px;
+                        top: -26px;
                         padding: 3px 8px 0px 8px;
-                        left: -11px;
+                        left: 0;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -491,6 +491,9 @@
                         padding: 2px 5px 0px 5px;
                         border-radius: 2px;
                         line-height: 1.3rem;
+                        position: fixed;
+                        left: 6px;
+                        top: -17px;
                     }
                 }
 

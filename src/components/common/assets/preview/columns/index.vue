@@ -118,7 +118,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset, isDrawer } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -142,13 +142,22 @@
 
             const updateFacet = () => {
                 facets.value = {}
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
+
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() === 'table' ||
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                        'tablepartition'
+                ) {
                     facets.value.tableQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                        selectedAsset.value?.attributes?.qualifiedName
                 }
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() === 'view' ||
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                        'materialisedview'
+                ) {
                     facets.value.viewQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                        selectedAsset.value?.attributes?.qualifiedName
                 }
             }
 

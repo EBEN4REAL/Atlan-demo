@@ -143,6 +143,7 @@
                     ...customMetadataProjections,
                 ],
             }))
+            const preferences = ref({ showArrow: false })
 
             /** METHODS */
             // addRelatedBiAssetToLineage
@@ -358,6 +359,7 @@
             provide('lineageDirections', lineageDirections)
             provide('config', config)
             provide('control', control)
+            provide('preferences', preferences)
 
             /** WATCHERS */
             whenever(error, () => {

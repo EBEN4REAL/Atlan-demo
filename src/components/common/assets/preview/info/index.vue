@@ -718,7 +718,7 @@
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
-                        '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                        '@common/assets/profile/tabs/overview/sql/sampleData.vue'
                     )
             ),
             AtlanIcon,

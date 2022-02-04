@@ -1,13 +1,13 @@
 <template>
-    <div class="grid grid-cols-3 gap-x-3">
+    <div class="grid grid-cols-3 gap-3">
         <PersonaUsersGroups
             v-model:persona="persona"
             class="col-span-2 border border-gray-200"
         />
         <DetailsWidget
             :item="persona"
-            @editDetails="$emit('editDetails')"
             class="border border-gray-200"
+            @editDetails="$emit('editDetails')"
         >
             <!-- <template #actionBtn>
                 <div class="hidden">
@@ -26,6 +26,9 @@
                 </div>
             </template> -->
         </DetailsWidget>
+        <div class="h-full col-span-3 p-4 bg-white">
+            <ResourcesWidget />
+        </div>
 
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
@@ -145,20 +148,22 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs, h } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { message, Modal } from 'ant-design-vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
     import DetailsWidget from '@/common/widgets/detailsWidget.vue'
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
     import { enablePersona } from '../composables/useEditPersona'
-    import { message, Modal } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
         components: {
+            ResourcesWidget,
             PopOverUser,
             UserPill,
             DetailsWidget,

@@ -89,3 +89,34 @@ export const getSchema = (entity) => {
     if (item[0] === 'default') return item[4]
     return item[3]
 }
+
+export const childParentBiAssetMap = {
+    PowerBIReport: 'dataset',
+    LookerTile: 'query',
+}
+
+export const childGroupBiAssetMap = {
+    LookerQuery: 'model',
+    LookerTile: 'dashboard',
+}
+
+export const parentChildrenBiAssetMap = {
+    PowerBIDataset: [
+        'datasets',
+        'workspace',
+        'tiles',
+        'reports',
+        'datasources',
+        'dataflows',
+    ],
+    LookerQuery: ['tiles', 'model', 'looks'],
+}
+
+export const nonBiTypes = [
+    'Column',
+    'ColumnProcess',
+    'Database',
+    'Process',
+    'Table',
+    'View',
+]

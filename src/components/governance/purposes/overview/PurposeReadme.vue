@@ -31,12 +31,25 @@
             </div>
         </div>
         <!-- <div v-if="!isLoading" class="mt-2"> -->
-        <Editor
-            ref="editor"
-            v-model="editorValue"
-            placeholder="Type '/' for commands"
-            :is-edit-mode="isEditMode"
-        />
+        <div class="relative">
+            <div
+                v-if="!editorValue && !isEditMode"
+                class="absolute top-0 z-10 my-1 text-sm text-gray-500"
+            >
+                <!-- {{
+                    isEditMode
+                        ? 'Add a README with an overview of your asset.'
+                        : `Readme hasn't been added for this asset.`
+                }} -->
+                Add a README with an overview of your persona.
+            </div>
+            <Editor
+                ref="editor"
+                v-model="editorValue"
+                placeholder="Type '/' for commands"
+                :is-edit-mode="isEditMode"
+            />
+        </div>
         <!-- </div> -->
         <!-- <div v-else class="h-12" /> -->
     </div>
@@ -66,7 +79,12 @@
         emits: ['addReadme'],
         setup(props, { emit }) {
             const { purpose } = toRefs(props)
-            const readMe = computed(() => purpose.value.readme || '')
+            const readMe = computed(() => {
+                if (decodeURIComponent(purpose.value.readme) === '<p></p>') {
+                    return ''
+                }
+                return purpose.value.readme || ''
+            })
             const editor = ref()
             const isEditMode = ref(false)
             const loadingSave = ref(false)

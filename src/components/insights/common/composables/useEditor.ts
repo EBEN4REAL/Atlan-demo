@@ -33,7 +33,6 @@ export function useEditor(
         editorInstance: any
     ) {
         if (activeInlineTab?.value) {
-            debugger
             activeInlineTab.value.playground.editor.text = editorText
         }
     }

@@ -1,30 +1,41 @@
 <template>
     <div class="w-full">
         <a-tree-select
+            :ref="
+                (el) => {
+                    treeSelectRef = el
+                }
+            "
             :class="[
                 $style.tree_selecttor,
                 bgGrayForSelector ? `${$style.selector_bg}` : '',
             ]"
+            v-model:treeExpandedKeys="expandedKeys"
             :value="selectedValue"
             style="width: 100%"
-            v-model:treeExpandedKeys="expandedKeys"
-            :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
+            data-test-id="connector"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
-            :allowClear="false"
-            ref="treeRef"
+            :disabled="disabled"
             @change="onChange"
-            :data-test-id="'conector'"
-            @click="handleOnClick"
             @select="selectNode"
+            @blur="onBlur"
         >
             <template #title="node">
-                <div class="flex items-center truncate">
-                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
-                    <span class="parent-ellipsis-container-base"
-                        >{{ node?.title }}
-                    </span>
+                <div
+                    v-if="node.nodeType !== 'info-node'"
+                    class="flex items-center truncate selected-connetor"
+                    @click="toggleVisibilityOfChildren(node.title)"
+                >
+                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
+                    <div class="flex flex-col" v-if="!node?.connection">
+                        {{ capitalizeFirstLetter(node.title) }}
+                    </div>
+                    <div class="flex flex-col" v-else>
+                        {{ node.title }}
+                    </div>
                 </div>
             </template>
             <template #suffixIcon>
@@ -35,6 +46,7 @@
                 />
             </template>
         </a-tree-select>
+
         <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
@@ -47,7 +59,6 @@
 </template>
 
 <script lang="ts">
-    import { capitalizeFirstLetter } from '~/utils/string'
     import {
         computed,
         defineComponent,
@@ -57,15 +68,16 @@
         toRefs,
         watch,
     } from 'vue'
-    import { Components } from '~/types/atlas/client'
+    import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
-    // import { Collapse } from '~/types'
     import { useConnectionStore } from '~/store/connection'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    // import Button from '~/components/common/radio/button.vue'
 
     export default defineComponent({
+        components: {
+            AssetDropdown,
+        },
         props: {
             data: {
                 type: Object as PropType<{
@@ -77,11 +89,15 @@
             filterSourceIds: {
                 type: Object as PropType<string[]>,
                 required: false,
-                default: [],
+                default: () => [],
             },
-            isLeafNodeSelectable: {
+            disabled: {
                 type: Boolean,
                 required: false,
+                default: () => false,
+            },
+            showEmptyParents: {
+                type: Boolean,
                 default: true,
             },
             bgGrayForSelector: {
@@ -89,16 +105,11 @@
                 default: true,
             },
         },
-        components: {
-            AssetDropdown,
-            // Button,
-        },
-        emits: ['change', 'update:data'],
+        emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
-            const treeRef = ref()
+            const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds, isLeafNodeSelectable } =
-                toRefs(props)
+            const { data, filterSourceIds } = toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -111,12 +122,11 @@
 
             // QualifiedName format -> tenant/connector/connection/.../.../...
             const connection = computed(() => {
-                let qfChunks = data.value?.attributeValue?.split('/')
+                const qfChunks = data.value?.attributeValue?.split('/')
                 return qfChunks?.length > 2
                     ? qfChunks.slice(0, 3).join('/')
                     : ''
             })
-            console.log('connection initial: ', connection.value)
 
             // undefined is necessary here to show the placeholder
             const selectedValue = computed(
@@ -146,7 +156,6 @@
             const list = computed(() => List)
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
-            console.log(checkedValues.value, 'model')
 
             const transformConnectionsToTree = (connectorId: string) => {
                 return store.getList
@@ -174,9 +183,6 @@
                                 name:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
-                                title:
-                                    connection.attributes.name ||
-                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector: getConnectorName(
                                     connection?.attributes
@@ -185,6 +191,10 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
+                                children: [],
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                             }
                         }
                     })
@@ -193,17 +203,19 @@
             const transformConnectorToTree = (data: any) => {
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
-                    let treeNodeObj = {
+                    const children = transformConnectionsToTree(item.id)
+                    const treeNodeObj = {
                         value: item.id,
-                        title: item.id,
                         key: item.id,
+                        selectable: false,
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        children: transformConnectionsToTree(item.id),
-                        selectable: false,
+                        title: item.id,
+                        children,
                     }
-                    tree.push(treeNodeObj)
+                    if (props.showEmptyParents) tree.push(treeNodeObj)
+                    else if (children && children.length) tree.push(treeNodeObj)
                 })
                 return tree
             }
@@ -211,15 +223,6 @@
             const treeData = computed(() =>
                 transformConnectorToTree(filteredList.value)
             )
-            console.log('tree: ', treeData.value)
-
-            watch([connector, connection], () => emitChangedFilters())
-
-            const emitChangedFilters = () => {
-                emit('change')
-
-                console.log('connection change:  ', connection.value)
-            }
 
             const handleChange = ({
                 attributeName,
@@ -230,12 +233,10 @@
                     emit('change')
                 } else {
                     selectNode(data.value?.attributeValue)
-                    emitChangedFilters()
                 }
             }
 
             const onChange = (value) => {
-                console.log('on change connections: ', value)
                 if (!value) {
                     selectNode(undefined, undefined)
                 }
@@ -244,41 +245,14 @@
             const filteredConnector = computed(() =>
                 store.getSourceList?.find((item) => item.id === connector.value)
             )
-            console.log('store: ', store)
-            console.log('connector from main: ', connector.value)
-            console.log('filteredConnector from main', filteredConnector.value)
 
             function setPlaceholder(label: string, type: string) {
                 placeholderLabel.value[type] = label
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
             const expandedKeys = ref<string[]>([])
-            const expandNode = (expanded: string[], node: any) => {
-                console.log(node.isLeaf)
-                if (node?.children.length > 0) {
-                    const key: string = node.eventKey
-                    const isExpanded = expandedKeys.value?.includes(key)
-                    if (!isExpanded) {
-                        if (node.dataRef.isRoot) {
-                            expandedKeys.value = []
-                        }
-                        expandedKeys.value?.push(key)
-                    } else if (isExpanded) {
-                        const index = expandedKeys.value?.indexOf(key)
-                        expandedKeys.value?.splice(index, 1)
-                    }
-                    expandedKeys.value = [...expandedKeys.value]
-                }
-            }
 
             const selectNode = (value, node?: any) => {
-                /* Checking if isLeafNodeSelectable by default it is selectable */
-
-                console.log('node: ', node)
-                if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
-                    expandNode([], node)
-                    return
-                }
                 const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
@@ -293,69 +267,55 @@
                     payload.attributeValue = chunks.slice(0, 3).join('/')
                 }
 
-                console.log('connector payload: ', payload)
-
                 emit('update:data', payload)
+                emit('change')
+                emit('changeConnector')
+            }
+
+            const onBlur = () => {
+                emit('blur')
+            }
+
+            /**
+             * A helper function for toggling the visibility of the children
+             * of a parent node, when the user clicks on the label. It relies
+             * on the `expandedKeys` array, and inserts the parent node in this
+             * array if not present, otherwise it deletes the parent node from
+             * the array, thus collapsing it.
+             * @param name The name of the parent node
+             */
+            const toggleVisibilityOfChildren = (name: string) => {
+                // Find index of the parent node in the array.
+                const indexOfElement = expandedKeys.value.indexOf(name)
+
+                // If the element is found, remove it from the array.
+                if (indexOfElement > -1) {
+                    expandedKeys.value.splice(indexOfElement, 1)
+                } else {
+                    // If it is not found, add it.
+                    expandedKeys.value.push(name)
+                }
             }
 
             const iconName = (node) => {
-                console.log(node.title)
-                if (
-                    node.title === 'athena' ||
-                    node.title === 'snowflake' ||
-                    node.title === 'powerbi' ||
-                    node.title === 'tableau' ||
-                    node.title === 'databricks' ||
-                    node.title === 'redshift' ||
-                    node.title === 'bigquery'
-                ) {
-                    switch (node.title) {
-                        case 'snowflake':
-                            return 'Snowflake'
-                        case 'athena':
-                            return 'Athena'
-                        case 'powerbi':
-                            return 'PowerBI'
-                        case 'tableau':
-                            return 'Tableau'
-                        case 'databricks':
-                            return 'Databricks'
-                        case 'redshift':
-                            return 'Redshift'
-                        case 'bigquery':
-                            return 'BigQuery'
-                    }
+                if (node?.connection === undefined) {
+                    if (node.title === 'bigquery') return 'BigQuery'
+                    return capitalizeFirstLetter(node.title)
                 } else {
                     let el = node?.key?.split('/')
                     if (el && el.length) {
-                        switch (el[1]) {
-                            case 'snowflake':
-                                return 'Snowflake'
-                            case 'athena':
-                                return 'Athena'
-                            case 'powerbi':
-                                return 'PowerBI'
-                            case 'tableau':
-                                return 'Tableau'
-                            case 'databricks':
-                                return 'Databricks'
-                            case 'redshift':
-                                return 'Redshift'
-                            case 'bigquery':
-                                return 'BigQuery'
-                        }
+                        if (el[1] === 'bigquery') return 'BigQuery'
+                        return capitalizeFirstLetter(el[1])
                     } else {
                         return ''
                     }
                 }
             }
-            const handleOnClick = (x, y) => {
-                console.log(x, y)
-            }
 
             return {
-                handleOnClick,
-                treeRef,
+                iconName,
+                treeSelectRef,
+                filterSourceIds,
                 onChange,
                 expandedKeys,
                 selectNode,
@@ -372,7 +332,8 @@
                 capitalizeFirstLetter,
                 connector,
                 connection,
-                iconName,
+                onBlur,
+                toggleVisibilityOfChildren,
             }
         },
     })
@@ -401,7 +362,7 @@
             border-radius: 8px !important;
         }
         :global(.ant-select-selection-item) {
-            @apply capitalize !important;
+            // @apply capitalize !important;
         }
     }
     .selector_bg {

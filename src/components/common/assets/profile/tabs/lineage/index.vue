@@ -5,8 +5,12 @@
             class="absolute flex items-center justify-center w-full bg-white"
             style="height: 80vh"
         >
-            <div v-if="isLoading || initialLoad">
-                <a-spin :tip="loaderText" />
+            <div
+                v-if="isLoading || initialLoad"
+                class="flex flex-col items-center justify-center"
+            >
+                <AtlanLoader class="h-10" />
+                <span class="mt-1 text-sm">{{ loaderText }}</span>
             </div>
             <div v-if="error">
                 <EmptyState

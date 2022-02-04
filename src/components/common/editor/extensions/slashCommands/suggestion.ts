@@ -5,7 +5,7 @@ import CommandsList from '@common/editor/extensions/slashCommands/CommandsList.v
 import { blockMenu } from '~/constant/readmeMenuItems'
 
 export default {
-    items: (query: string) =>
+    items: ({ query }) =>
         query.length
             ? blockMenu?.filter((item) =>
                   item?.title?.toLowerCase()?.startsWith(query?.toLowerCase())

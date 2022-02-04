@@ -148,13 +148,14 @@
 
         <div
             v-if="
-                isBiAsset(selectedAsset) &&
+                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
                 ![
                     'PowerBIWorkspace',
                     'TableauSite',
                     'LookerFolder',
                     'LookerProject',
                     'LookerQuery',
+                    'SalesforceOrganization',
                 ].includes(selectedAsset?.typeName)
             "
             class="flex px-5"
@@ -206,7 +207,13 @@
             </div>
         </div>
 
-        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+        <div
+            v-if="
+                selectedAsset?.typeName === 'LookerQuery' &&
+                fieldsLookerQuery(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
                 <div
@@ -631,7 +638,10 @@
             >
             </RelatedTerms>
         </div>
-        <div v-if="isBiAsset(selectedAsset)" class="flex flex-col px-5 gap-y-4">
+        <div
+            v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
+            class="flex flex-col px-5 gap-y-4"
+        >
             <SourceUpdated :asset="selectedAsset" />
             <SourceCreated :asset="selectedAsset" />
         </div>
@@ -708,7 +718,7 @@
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
-                        '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                        '@common/assets/profile/tabs/overview/sql/sampleData.vue'
                     )
             ),
             AtlanIcon,
@@ -778,6 +788,7 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                isSaasAsset,
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
@@ -907,6 +918,7 @@
                 externalLocationFormat,
                 handleCollectionClick,
                 isBiAsset,
+                isSaasAsset,
                 isProfile,
                 getConnectorLabel,
                 fieldsLookerQuery,

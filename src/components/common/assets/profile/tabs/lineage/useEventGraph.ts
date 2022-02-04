@@ -44,14 +44,11 @@ export default function useEventGraph(
 
     /** METHODS */
     const showLoader = (e) => {
-        console.log('Show Loader', { x: e.clientX, y: e.clientY })
         loaderCords.value = { x: e.clientX, y: e.clientY }
     }
 
     const hideLoader = () => {
         loaderCords.value = {}
-        console.log('Hide Loader')
-        console.trace()
     }
 
     // getHighlights

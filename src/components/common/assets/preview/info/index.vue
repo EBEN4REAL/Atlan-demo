@@ -148,7 +148,7 @@
 
         <div
             v-if="
-                isBiAsset(selectedAsset) &&
+                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
                 ![
                     'PowerBIWorkspace',
                     'TableauSite',
@@ -631,7 +631,10 @@
             >
             </RelatedTerms>
         </div>
-        <div v-if="isBiAsset(selectedAsset)" class="flex flex-col px-5 gap-y-4">
+        <div
+            v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
+            class="flex flex-col px-5 gap-y-4"
+        >
             <SourceUpdated :asset="selectedAsset" />
             <SourceCreated :asset="selectedAsset" />
         </div>
@@ -778,6 +781,7 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                isSaasAsset,
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
@@ -907,6 +911,7 @@
                 externalLocationFormat,
                 handleCollectionClick,
                 isBiAsset,
+                isSaasAsset,
                 isProfile,
                 getConnectorLabel,
                 fieldsLookerQuery,

@@ -321,4 +321,54 @@ export const summaryVariants = [
         ],
         includes: ['LookerTile'],
     },
+    {
+        id: 'salesforceOrganization',
+        label: 'Organization',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['SalesforceOrganization'],
+    },
+    {
+        id: 'salesforceDashboard',
+        label: 'Dashboard',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['SalesforceDashboard'],
+    },
+    {
+        id: 'salesforceReport',
+        label: 'Report',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['SalesforceReport'],
+    },
+    {
+        id: 'salesforceObject',
+        label: 'Object',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['SalesforceObject'],
+    },
+    {
+        id: 'salesforceField',
+        label: 'Field',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['SalesforceField'],
+    },
 ]

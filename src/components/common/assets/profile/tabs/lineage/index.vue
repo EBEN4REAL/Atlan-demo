@@ -150,6 +150,7 @@
                 if (!computedLineage.value) computedLineage.value = { ...data }
 
                 const parentGuid = computedLineage.value.baseEntityGuid
+
                 computedLineage.value.childrenCounts = {
                     ...computedLineage.value.childrenCounts,
                     [entity.guid]: { OUTPUT: 0 },
@@ -158,6 +159,18 @@
                     ...computedLineage.value.guidEntityMap,
                     [entity.guid]: entity,
                 }
+                const relationExist = computedLineage.value.relations.find(
+                    (x) => {
+                        if (
+                            x.fromEntityId === parentGuid &&
+                            x.toEntityId === entity.guid
+                        )
+                            return true
+                    }
+                )
+                if (relationExist) return
+                if (parentGuid === entity.guid) return
+
                 computedLineage.value.relations.push({
                     fromEntityId: parentGuid,
                     processId: 'related',

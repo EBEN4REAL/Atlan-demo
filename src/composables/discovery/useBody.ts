@@ -188,6 +188,27 @@ export function useBody(
 
                         return q
                     })
+
+                    if (
+                        filterObject.attributeName &&
+                        filterObject.attributeValue
+                    ) {
+                        base.filter('bool', (q) => {
+                            q.orFilter(
+                                'term',
+                                filterObject.attributeName,
+                                filterObject.attributeValue
+                            )
+
+                            q.orFilter(
+                                'term',
+                                'qualifiedName',
+                                filterObject.attributeValue
+                            )
+
+                            return q
+                        })
+                    }
                     // base.filter(
                     //     'term',
                     //     'connectionQualifiedName',

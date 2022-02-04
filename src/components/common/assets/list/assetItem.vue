@@ -198,9 +198,12 @@
 
                         <div
                             v-if="
-                                ['table', 'view', 'tablepartition'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
+                                [
+                                    'table',
+                                    'view',
+                                    'tablepartition',
+                                    'materialisedview',
+                                ].includes(item.typeName?.toLowerCase())
                             "
                             class="flex mr-2 text-sm text-gray-500"
                         >
@@ -830,21 +833,27 @@
                         </div>
                         <div
                             v-if="
-                                meaningRelationships(item).length > 0 &&
+                                meanings(item).length > 0 &&
                                 preference?.display?.includes('terms')
                             "
                             class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
-                                v-for="term in meaningRelationships(item)"
+                                v-for="term in meanings(item)"
                                 :key="term.guid"
                             >
-                                <div class="flex flex-wrap">
+                                <div
+                                    class="flex flex-wrap"
+                                    v-if="
+                                        term?.attributes?.__state &&
+                                        term?.attributes?.__state !== 'DELETED'
+                                    "
+                                >
                                     <TermPopover
                                         :term="term"
                                         :loading="termLoading"
                                         :fetched-term="
-                                            getFetchedTerm(term.termGuid)
+                                            getFetchedTerm(term?.guid ?? term?.termGuid)
                                         "
                                         :error="termError"
                                         trigger="hover"
@@ -1028,6 +1037,7 @@
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
+                meanings,
                 parentWorkspace,
                 parentReport,
                 parentDashboard,
@@ -1182,6 +1192,7 @@
                 parentSite,
                 sourceViewCount,
                 sourceChildCount,
+                meanings,
             }
         },
     })

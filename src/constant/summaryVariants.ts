@@ -313,7 +313,12 @@ export const summaryVariants = [
     {
         id: 'lookerTile',
         label: 'Tile',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerTile'],
     },
 ]

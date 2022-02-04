@@ -98,6 +98,12 @@
                                     </template>
                                 </a-dropdown>
                             </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Arrows</span>
+                                <a-switch
+                                    v-model:checked="graphPrefs.showArrow"
+                                />
+                            </div>
                         </div>
                     </template>
 
@@ -232,6 +238,7 @@
             const control = inject('control')
             const depth = inject('depth')
             const direction = inject('direction')
+            const graphPrefs = inject('preferences', ref({}))
             const lineageDepths: [] = inject('lineageDepths')
             const lineageDirections: [] = inject('lineageDirections')
 
@@ -308,6 +315,7 @@
                 lineageDirections,
                 currDir,
                 footerRoot,
+                graphPrefs,
                 zoom,
                 fit,
                 onShowMinimap,

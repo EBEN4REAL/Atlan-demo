@@ -79,13 +79,13 @@
         <div v-if="showNone" class="px-4 pt-1">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
+                class="inline-flex flex-row-reverse w-full atlan-reverse"
             >
                 <component
                     :is="noStatus"
                     class="inline-flex self-center w-auto h-4 mb-1"
                 />
-                <span class="mb-0 text-xs text-gray-500"> No Owners </span>
+                <span class="mb-0 text-xs text-gray-500"> No Admins </span>
             </a-checkbox>
         </div>
     </div>

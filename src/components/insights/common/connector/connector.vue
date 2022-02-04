@@ -400,6 +400,9 @@
             color: #6f7590 !important;
             border-radius: 8px !important;
         }
+        :global(.ant-select-selection-item) {
+            @apply capitalize !important;
+        }
     }
     .selector_bg {
         :global(.ant-select-selector) {

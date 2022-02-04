@@ -221,7 +221,7 @@ export const SourceList = [
         filterMaxLevel: 2,
         dialectConfig: {
             assetQuoteType: '"',
-            abortQuery: true,
+            abortQuery: false,
         },
         hierarchy: [
             {

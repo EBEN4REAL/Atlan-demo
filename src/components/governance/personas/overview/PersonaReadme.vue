@@ -34,7 +34,7 @@
         <div class="relative">
             <div
                 v-if="!editorValue && !isEditMode"
-                class="absolute top-0 z-10 my-1 text-sm text-gray-500"
+                class="absolute top-0 z-10 my-2 text-sm text-gray-500"
             >
                 <!-- {{
                     isEditMode
@@ -48,6 +48,7 @@
                 v-model="editorValue"
                 placeholder="Type '/' for commands"
                 :is-edit-mode="isEditMode"
+                class="py-2"
             />
         </div>
         <!-- </div> -->

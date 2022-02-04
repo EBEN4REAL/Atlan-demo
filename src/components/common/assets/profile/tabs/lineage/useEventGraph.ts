@@ -515,7 +515,7 @@ export default function useEventGraph(
         controlLabelStyle(edge, reset)
     }
 
-    const animateEdge = (edge, animate = false) => {
+    const animateEdge = (edge, animate = true) => {
         if (animate)
             edge.attr('line/style/animation', 'ant-line 30s infinite linear')
         else edge.attr('line/style/animation', 'unset')

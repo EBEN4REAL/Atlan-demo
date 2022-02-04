@@ -14,9 +14,10 @@
             </div>
         </div>
 
-        <a-spin
+        <AtlanLoader
             v-if="loaderCords.x"
-            :style="`position: absolute; left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
+            class="absolute h-5 opacity-70"
+            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
         />
 
         <!-- Graph Container -->

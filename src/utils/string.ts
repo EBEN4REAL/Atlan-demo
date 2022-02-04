@@ -85,23 +85,34 @@ export const getTruncatedStringFromArray = (
 }
 
 /**
- *
- * @param string - String to be pluralised ex- term/asset w
- * @param count - Count to check if the string passed as first param should be singular or plural
- * @param includeCountInString - If the result string should have the count ex- if string is asset -> 2 assets or assets
- * @returns pluralised string based on count
+ * If the string ends in a y, add an ies. If the string ends in a s, add an s. If the string ends in
+ * anything else, add an s. If the count is greater than 1, add an s
+ * @param {string} string - The string to be pluralized.
+ * @param {number} count - The number of items.
+ * @param {boolean} [includeCountInString=true] - If the result string should have the count ex- if string is asset -> 2 assets or assets
+ * @returns The pluralized string.
  */
 export const pluralizeString = (
     string: string,
     count: number,
     includeCountInString: boolean = true
 ) => {
-    if (string) {
-        if (includeCountInString)
-            return count === 1 ? `${count} ${string}` : `${count} ${string}s`
-        return count === 1 ? `${string}` : `${string}s`
+    if (!string) return ''
+
+    const plural = { y: 'ies', s: 's' }
+
+    if (count > 1) {
+        const lastLetter = string[string.length - 1]
+        if (plural[lastLetter]) {
+            const s = string.slice(0, string.length - 1)
+            return `${includeCountInString ? count : ''} ${s}${
+                plural[lastLetter]
+            }`
+        }
+        return `${includeCountInString ? count : ''} ${string}s`
     }
-    return ''
+
+    return `${includeCountInString ? count : ''} ${string}`
 }
 
 /**

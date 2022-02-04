@@ -44,11 +44,14 @@ export default function useEventGraph(
 
     /** METHODS */
     const showLoader = (e) => {
+        console.log('Show Loader', { x: e.clientX, y: e.clientY })
         loaderCords.value = { x: e.clientX, y: e.clientY }
     }
 
     const hideLoader = () => {
         loaderCords.value = {}
+        console.log('Hide Loader')
+        console.trace()
     }
 
     // getHighlights
@@ -964,18 +967,23 @@ export default function useEventGraph(
             // }
 
             const { entity } = node.store.data
+
+            if (entity.guid === highlightedNode.value) {
+                onCloseDrawer()
+                assetGuidToHighlight.value = ''
+                return
+            }
+
             const targetEntityId =
                 entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
 
             if (targetEntityId) {
                 onCloseDrawer()
                 showLoader(e)
-
                 const { data } = fetchAsset(targetEntityId)
                 watchOnce(data, () => {
                     highlight(entity?.guid)
                     onSelectAsset(data.value)
-                    hideLoader()
                     selectedTypeInRelationDrawer.value =
                         node.store.data.entity.typeName
                     setTimeout(() => {

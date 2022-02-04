@@ -151,7 +151,7 @@ export default function useGraph() {
                     </div>
                     <div class="node-meta">
                         <img class="node-meta__source" src="${img}" />
-                        <div class="truncate node-meta__text">${typeNameComputed}</div>
+                        <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
                         ${
                             [
                                 'Table',

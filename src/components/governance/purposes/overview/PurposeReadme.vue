@@ -24,7 +24,11 @@
                 </a-button>
                 <template v-else-if="isEditMode">
                     <a-button @click="handleCancelEdit">Cancel</a-button>
-                    <a-button type="primary" class="ml-2" @click="handleSave"
+                    <a-button
+                        :loading="loadingSave || isLoading"
+                        type="primary"
+                        class="ml-2"
+                        @click="handleSave"
                         >Save</a-button
                     >
                 </template>
@@ -151,14 +155,19 @@
 
             const handleUpdatePueposeReadme = async (dataEditor) => {
                 try {
+                    const payload = { ...purpose.value }
+                    delete payload.dataPolicies
+                    delete payload.metadataPolicies
                     await savePersona({
-                        ...purpose.value,
+                        ...payload,
                         readme: dataEditor,
                     })
                     updateSelectedPersona()
                     loadingSave.value = false
+                    isEditMode.value = false
                 } catch (error) {
                     loadingSave.value = false
+                    isEditMode.value = false
                     message.error(
                         error?.response?.data?.message ||
                             'Some error occured...Please try again later.'
@@ -194,7 +203,6 @@
                 // })
             }
             const handleSave = () => {
-                isEditMode.value = false
                 loadingSave.value = true
                 if (readMe.value) {
                     handleUpdateReadme()

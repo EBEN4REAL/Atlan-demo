@@ -251,7 +251,9 @@
                                                 placement="bottom"
                                                 color="#363636"
                                             >
-                                                <template #title>Copy</template>
+                                                <template #title
+                                                    >Copy variable</template
+                                                >
                                                 <AtlanIcon
                                                     @click="
                                                         () =>
@@ -299,6 +301,15 @@
                                                     v-model:value="
                                                         activeVariable.name
                                                     "
+                                                    @change="
+                                                        () => {
+                                                            activeVariable.name =
+                                                                activeVariable.name.replace(
+                                                                    / /g,
+                                                                    '_'
+                                                                )
+                                                        }
+                                                    "
                                                     placeholder="Name"
                                                     :class="
                                                         inputError
@@ -325,19 +336,42 @@
                                                 >
                                                     <a-select-option
                                                         value="string"
-                                                        >String</a-select-option
                                                     >
+                                                        <AtlanIcon
+                                                            icon="String"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span>String</span>
+                                                    </a-select-option>
                                                     <a-select-option
                                                         value="number"
-                                                        >Number</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="Number"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Number</span
+                                                        ></a-select-option
                                                     >
                                                     <a-select-option
                                                         value="date"
-                                                        >Date</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="DateTime"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Date</span
+                                                        ></a-select-option
                                                     >
                                                     <a-select-option
                                                         value="dropdown"
-                                                        >Dropdown</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="Columns"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Select</span
+                                                        ></a-select-option
                                                     >
                                                 </a-select>
                                             </a-form-item>
@@ -507,7 +541,6 @@
     import { message } from 'ant-design-vue'
     import dayjs from 'dayjs'
     import Tooltip from '@common/ellipsis/index.vue'
-
     export default defineComponent({
         components: {
             AtlanBtn,
@@ -694,6 +727,15 @@
             const handleSelectInputChange = (
                 variable: CustomVaribaleInterface
             ) => {
+                console.log('change select')
+                activeVariable.value.dummy = activeVariable.value.dummy.map(
+                    (el) => {
+                        return el.trim()
+                    }
+                )
+                activeVariable.value.dummy = activeVariable.value.dummy.filter(
+                    (el) => el.length > 0
+                )
                 if (variable.dummy.length) {
                     variable.value = [variable.dummy[variable.dummy.length - 1]]
                 }

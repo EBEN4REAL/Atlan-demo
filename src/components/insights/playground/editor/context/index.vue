@@ -5,34 +5,6 @@
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <!-- <a-tooltip
-                color="#363636"
-                class="flex items-center h-6 border-none"
-                v-if="activeInlineTab?.description?.length"
-            >
-                <template #title>
-                    {{ activeInlineTab?.description }}
-                </template>
-                <div class="flex items-center">
-                    <div class="mt-1">
-                        <AtlanIcon
-                            :icon="
-                                getEntityStatusIcon(
-                                    'query',
-                                    activeInlineTab?.status
-                                )
-                            "
-                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
-                        ></AtlanIcon>
-                    </div>
- 
-
-                    <Tooltip
-                        :tooltip-text="`${activeInlineTab.label}`"
-                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
-                    />
-                </div>
-            </a-tooltip> -->
             <PopoverAsset
                 :item="{
                     typeName: 'Query',
@@ -44,52 +16,74 @@
             >
                 <template #extraHeaders>
                     <div
-                        class="flex item-center"
+                        class="flex w-full item-center"
                         v-if="
                             activeInlineTab?.attributes?.parent?.typeName ===
                             'Collection'
                         "
                     >
-                        <div class="flex items-center">
+                        <div class="flex items-center w-full">
                             <div
-                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                                class="w-1 h-1 mx-2 -mt-0.5 rounded-full"
                                 style="background-color: #c4c4c4"
                             ></div>
-                            <div class="flex items-center h-full">
+                            <div class="flex items-center w-full h-full">
                                 <div
-                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                                    class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
                                 >
                                     <AtlanIcon
-                                        :icon="
+                                        v-if="
                                             activeInlineTab?.attributes?.parent
                                                 ?.typeName === 'Folder'
-                                                ? 'FolderClosed'
-                                                : 'CollectionIconSmall'
                                         "
-                                        class="h-4 mb-2"
+                                        icon="FolderClosed"
+                                        class="w-4 h-4 mb-2"
                                     />
+
+                                    <span
+                                        v-else
+                                        class="w-4 h-4 mr-1 -mt-1 text-sm"
+                                        >{{
+                                            activeInlineTab?.attributes?.parent
+                                                ?.attributes?.icon
+                                                ? activeInlineTab?.attributes
+                                                      ?.parent?.attributes?.icon
+                                                : '🗃'
+                                        }}</span
+                                    >
                                 </div>
 
-                                <span>{{
+                                <!-- <span>{{
                                     activeInlineTab?.attributes?.parent
                                         ?.attributes?.name
-                                }}</span>
+                                }}</span> -->
+
+                                <span class="w-11/12">
+                                    <Tooltip
+                                        clampPercentage="99%"
+                                        :tooltip-text="
+                                            activeInlineTab?.attributes?.parent
+                                                ?.attributes?.name
+                                        "
+                                        :rows="1"
+                                    />
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div
-                        class="flex item-center"
+                        class="flex w-full item-center"
                         v-if="
                             activeInlineTab?.attributes?.parent?.typeName ===
                             'Folder'
                         "
                     >
-                        <div class="flex items-center">
+                        <div class="flex items-center w-full">
                             <div
                                 class="w-1 h-1 mx-2 rounded-full -mt-0.5"
                                 style="background-color: #c4c4c4"
                             ></div>
-                            <div class="flex items-center h-full">
+                            <div class="flex items-center w-full h-full">
                                 <div
                                     class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                                 >
@@ -97,12 +91,21 @@
                                         icon="CollectionIconSmall"
                                         class="h-4 mb-2"
                                     />
+                                    {{ activeInlineTab?.attributes }}
                                 </div>
 
-                                <span>{{ collectionName }}</span>
+                                <!-- <span>{{ collectionName }}</span> -->
+
+                                <span class="w-11/12">
+                                    <Tooltip
+                                        :tooltip-text="collectionName"
+                                        :rows="1"
+                                        clampPercentage="99%"
+                                    />
+                                </span>
                             </div>
                         </div>
-                        <div class="flex items-center">
+                        <!-- <div class="flex items-center">
                             <div
                                 class="w-1 h-1 mx-2 rounded-full -mt-0.5"
                                 style="background-color: #c4c4c4"
@@ -122,7 +125,7 @@
                                         ?.attributes?.name
                                 }}</span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </template>
 

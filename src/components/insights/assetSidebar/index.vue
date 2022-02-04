@@ -56,6 +56,7 @@
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
     export default defineComponent({
         components: { AssetPreview, AtlanIcon },
@@ -69,6 +70,14 @@
             const { modifyActiveInlineTab } = useInlineTab()
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+
+            const { checkQueryOpenedInTab, checkPreviewOpenedInCurrentTab } =
+                useSavedQuery(tabs, activeInlineTab, activeInlineTabKey)
+
             const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
                 tabs,
                 activeInlineTab
@@ -84,6 +93,8 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+
+            const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
 
             const collectionName = computed(() => {
                 let col = queryCollections.value?.find(
@@ -129,6 +140,20 @@
                 fetchAsset()
             })
 
+            watch(
+                updateAssetCheck,
+                () => {
+                    // console.log('asset update')
+                    assetInfo.value = {}
+                    if (updateAssetCheck.value) {
+                        // console.log('asset update2')
+                        fetchAsset()
+                        updateAssetCheck.value = false
+                    }
+                },
+                { immediate: true }
+            )
+
             const assetSidebarUpdatedData = inject(
                 'assetSidebarUpdatedData'
             ) as Ref<Object>
@@ -143,7 +168,7 @@
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
 
-                console.log('updated asset: ', asset)
+                // console.log('updated asset: ', asset)
                 assetSidebarUpdatedData.value = asset
 
                 if (asset?.typeName === 'Query') {
@@ -158,7 +183,8 @@
                                 asset?.attributes.__modifiedBy,
                             description: asset?.attributes.description,
                             status: asset?.attributes.certificateStatus,
-                            attributes: asset?.attribute,
+                            attributes: { ...asset?.attributes },
+                            label: asset?.attributes?.name,
                         }
                         activeInlineTabCopy.assetSidebar.assetInfo = asset
                     }

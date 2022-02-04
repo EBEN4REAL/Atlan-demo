@@ -842,7 +842,7 @@
                                         :term="term"
                                         :loading="termLoading"
                                         :fetched-term="
-                                            getFetchedTerm(term.termGuid)
+                                            getFetchedTerm(term?.guid ?? term?.termGuid)
                                         "
                                         :error="termError"
                                         trigger="hover"

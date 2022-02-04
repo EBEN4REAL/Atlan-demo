@@ -4,7 +4,7 @@ export interface Link {
     typeName: 'Link',
     qualifiedName: string,
     name: string,
-    link: string,
+    url: string,
     createdAt: number,
     createdBy: string,
     updatedAt?: number,

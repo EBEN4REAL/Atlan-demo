@@ -28,8 +28,9 @@
         </DetailsWidget>
         <div class="h-full col-span-3 p-4 bg-white">
             <ResourcesWidget
+                :resources="persona?.resources?.links ?? []"
                 @add="handleAddResource"
-                @update="handleAddResource"
+                @update="handleUpdateResource"
             />
         </div>
 
@@ -266,17 +267,27 @@
             // The `handleAddResource` function is a helper function that makes network request to store a resource link to the
             // persona.
             const handleAddResource = (r) => {
-                const body = persona.value
+                const body = JSON.parse(JSON.stringify(persona.value))
                 const { resources } = body
                 body.resources = {
-                    ...body?.resources,
-                    links: [...(body?.resources?.links ?? []), r],
+                    ...resources,
+                    links: [...(resources?.links ?? []), r],
                 }
+                savePersona(body)
+            }
+
+            const handleUpdateResource = (r) => {
+                const body = JSON.parse(JSON.stringify(persona.value))
+                const index = body.resources.links.findIndex(
+                    (l) => l.qualifiedName === r.qualifiedName
+                )
+                if (index > -1) body.resources.links[index] = r
                 savePersona(body)
             }
 
             return {
                 handleAddResource,
+                handleUpdateResource,
                 setActiveTab,
                 timeStamp,
                 handleEnableDisablePersona,

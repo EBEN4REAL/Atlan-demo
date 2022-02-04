@@ -1,5 +1,5 @@
 <template>
-    <div>slackPreview</div>
+    <div>SlackPreview</div>
 </template>
 
 <script setup lang="ts"></script>

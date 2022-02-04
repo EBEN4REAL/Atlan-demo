@@ -2,7 +2,7 @@
     <div class="w-full">
         <div class="flex justify-between">
             <h1 class="font-bold">Resources</h1>
-            <AddResources @add="(r) => $emit('add', r)" @update="handleUpdate">
+            <AddResource @add="addCallback" @update="handleUpdate">
                 <template #trigger>
                     <AtlanButton
                         class="flex-none px-2 rounded-full"
@@ -13,7 +13,7 @@
                         <AtlanIcon icon="Add" class="w-4 text-gray-400" />
                     </AtlanButton>
                 </template>
-            </AddResources>
+            </AddResource>
         </div>
         <section>
             <template v-if="!resources?.length">
@@ -22,16 +22,13 @@
                 </div>
             </template>
             <template v-else>
-                <div class="grid grid-cols-2">
-                    <template v-for="l in resources" :key="l.attributes.link">
-                        <ResourcePreview
-                            v-if="
-                                getPreviewComponent(l.attributes.link) ===
-                                'link'
-                            "
-                            :resource="l"
+                <div class="grid grid-cols-2 gap-2">
+                    <template v-for="l in resources" :key="l.qualifiedName">
+                        <LinkPreviewCard
+                            v-if="getPreviewComponent(l.url) === 'link'"
+                            :link="l"
                         />
-                        <SlackPreview v-else :resource="l" />
+                        <SlackPreview v-else :link="l" />
                     </template>
                 </div>
             </template>
@@ -47,33 +44,46 @@
         toRefs,
         defineAsyncComponent,
         ref,
+        provide,
     } from 'vue'
     import { isSlackLink } from '~/composables/integrations/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
-    import ResourcePreview from './resourcePreview.vue'
-    import SlackPreview from './slackPreview.vue'
-    import AddResources from './addResource.vue'
+    import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
+    import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
+    import AddResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
+
     import integrationStore from '~/store/integrations/index'
+    import { Link } from '~/types/resources.interface'
+
+    // const LinkPreviewCard = defineAsyncComponent(
+    //     () =>
+    //         import(
+    //             '@/common/widgets/resources/resourcesWidgetV2/resourcePreview.vue'
+    //         )
+    // )
+    // const SlackPreview = defineAsyncComponent(
+    //     () =>
+    //         import(
+    //             '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
+    //         )
+    // )
 
     const props = defineProps({
         resources: {
-            type: Array,
+            type: Array as PropType<Link[]>,
             required: true,
         },
     })
     const emit = defineEmits(['add', 'update'])
+
+    const addCallback = (r) => emit('add', r)
+    const updateCallback = (r) => emit('update', r)
+
+    provide('add', addCallback)
+    provide('update', updateCallback)
+
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
-
-    const handleAdd = (r) => {
-        console.log('handleAdd', r)
-        emit('add', r)
-    }
-
-    const handleUpdate = (r) => {
-        console.log('handleUpdate', r)
-        emit('update', r)
-    }
 
     function getPreviewComponent(url) {
         if (

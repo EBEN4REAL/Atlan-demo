@@ -27,7 +27,7 @@
                     color="primary"
                     :size="'sm'"
                     :disabled="buttonDisabled"
-                    @click="handleAdd"
+                    @click="handleSubmit"
                 >
                     {{ isEdit ? 'Update' : 'Add' }}
                 </AtlanButton>
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, Ref, nextTick, computed, toRefs } from 'vue'
+    import { ref, Ref, nextTick, computed, toRefs, inject, PropType } from 'vue'
     import { useDebounceFn, useTimestamp } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { getDomain } from '~/utils/url'
@@ -80,11 +80,18 @@
             required: false,
             default: false,
         },
+        link: {
+            type: Object as PropType<Link>,
+            required: true,
+        },
     })
 
-    const emit = defineEmits(['add', 'update'])
+    // const emit = defineEmits(['add', 'update'])
 
-    const { isEdit } = toRefs(props)
+    const add: Function = inject('add')
+    const update: Function = inject('update')
+
+    const { isEdit, link } = toRefs(props)
 
     const visible = ref<boolean>(false)
     const titleBar: Ref<null | HTMLInputElement> = ref(null)
@@ -96,10 +103,19 @@
         title: '',
     })
 
+    const setDefalt = () => {
+        if (isEdit.value) {
+            const { url, name } = link.value
+            localResource.value.link = url
+            localResource.value.title = name
+        }
+    }
+
     const showModal = async () => {
         visible.value = true
         await nextTick()
         titleBar.value?.focus()
+        setDefalt()
     }
 
     const faviconLink = ref('')
@@ -139,7 +155,7 @@
         typeName: 'Link',
         qualifiedName: generateUUID(),
         name: r.title,
-        link: r.link,
+        url: r.link,
         createdAt: timestamp.value,
         createdBy: username.value,
     })
@@ -147,18 +163,20 @@
     // The `generateResourceUpdateEntity` function takes a resource and returns a new resource with the
     // updatedAt and updatedBy fields set to the current timestamp and username.
     const generateResourceUpdateEntity = (r): Link => ({
-        ...r,
+        ...link.value,
+        name: r.title,
+        url: r.link,
         updatedAt: timestamp.value,
         updatedBy: username.value,
     })
 
-    const handleAdd = () => {
+    const handleSubmit = () => {
         if (!localResource.value.link.includes('http'))
             localResource.value.link = `https://${localResource.value.link}`
 
         if (isEdit.value)
-            emit('update', generateResourceUpdateEntity(localResource.value))
-        else emit('add', generateResourceEntity(localResource.value))
+            update(generateResourceUpdateEntity(localResource.value))
+        else add(generateResourceEntity(localResource.value))
         visible.value = false
     }
 </script>

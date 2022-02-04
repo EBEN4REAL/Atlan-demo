@@ -81,6 +81,8 @@ export const getSource = (entity) => {
 }
 
 export const getSchema = (entity) => {
+    const allowedTypes = ['Table', 'View']
+    if (!allowedTypes.includes(entity.typeName)) return null
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')

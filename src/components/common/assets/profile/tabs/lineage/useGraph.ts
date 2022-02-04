@@ -8,7 +8,6 @@ import {
 } from './util.js'
 import {
     iconPlus,
-    iconEllipse,
     iconCaretDown,
     iconVerified,
     iconDraft,
@@ -152,17 +151,19 @@ export default function useGraph() {
                     </div>
                     <div class="node-meta">
                         <img class="node-meta__source" src="${img}" />
-                        <div class="truncate node-meta__text">${typeNameComputed}</div>
-                        ${
-                            [
-                                'Table',
-                                'View',
-                                ...childGroupBiAssetTypes,
-                            ].includes(typeName) &&
-                            (schemaName || childGroupBiAsset)
-                                ? iconEllipse
-                                : ''
-                        } 
+                        <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
+                        <div class="node-meta__text">
+                            ${
+                                [
+                                    'Table',
+                                    'View',
+                                    ...childGroupBiAssetTypes,
+                                ].includes(typeName) &&
+                                (schemaName || childGroupBiAsset)
+                                    ? 'in'
+                                    : ''
+                            } 
+                        </div>
                         <div class="node-meta__text  truncate ${
                             [
                                 'Table',

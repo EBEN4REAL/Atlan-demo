@@ -23,7 +23,9 @@
                     {{ readMe ? 'Edit' : 'Add a readme' }}
                 </a-button>
                 <template v-else-if="isEditMode">
-                    <a-button @click="handleCancelEdit">Cancel</a-button>
+                    <a-button v-if="!loadingSave" @click="handleCancelEdit"
+                        >Cancel</a-button
+                    >
                     <a-button
                         :loading="loadingSave || isLoading"
                         type="primary"

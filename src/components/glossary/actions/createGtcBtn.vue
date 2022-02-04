@@ -4,44 +4,15 @@
         trigger="hover"
         placement="bottomRight"
     >
-        <!-- <a-tooltip> -->
-        <!--     <template #title -->
-        <!--         >Add new -->
-        <!--         {{ -->
-        <!--             `${ -->
-        <!--                 defaultEntityType === 'AtlasGlossary' -->
-        <!--                     ? 'Glossary' -->
-        <!--                     : 'Term/Category' -->
-        <!--             }` -->
-        <!--         }}</template -->
-        <!--     > -->
-
         <a-button class="ml-3" size="small">
             <atlan-icon
                 icon="Add"
                 class="transition duration-300 text-primary"
             />
         </a-button>
-        <!-- </a-tooltip> -->
 
         <template #overlay>
             <a-menu class="" mode="vertical">
-                <a-menu-item @click="closeMenu">
-                    <AddGTCModal
-                        :key="selectedGlossaryQf"
-                        entityType="AtlasGlossary"
-                        @add="handleAdd"
-                        :glossaryQualifiedName="selectedGlossaryQf"
-                        :glossaryName="selectedGlosaryName"
-                    >
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Glossary" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Glossary</p>
-                            </div>
-                        </template>
-                    </AddGTCModal>
-                </a-menu-item>
                 <a-menu-item @click="closeMenu">
                     <AddGTCModal
                         :key="selectedGlossaryQf"
@@ -71,12 +42,30 @@
                         :showGlossarySelect="
                             selectedGlossaryQf?.length ? false : true
                         "
- 
                     >
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon icon="Category" class="m-0 mr-2" />
                                 <p class="p-0 m-0">Add Category</p>
+                            </div>
+                        </template>
+                    </AddGTCModal>
+                </a-menu-item>
+                <a-menu-item @click="closeMenu">
+                    <AddGTCModal
+                        :key="selectedGlossaryQf"
+                        entityType="AtlasGlossary"
+                        @add="handleAdd"
+                        :glossaryQualifiedName="selectedGlossaryQf"
+                        :glossaryName="selectedGlosaryName"
+                    >
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="GlossaryGray"
+                                    class="m-0 mr-2"
+                                />
+                                <p class="p-0 m-0">Add Glossary</p>
                             </div>
                         </template>
                     </AddGTCModal>
@@ -125,8 +114,8 @@
                 }
                 return 'AtlasGlossary'
             })
-            const handleAdd = (asset,entity) => {
-                emit('add', asset,entity)
+            const handleAdd = (asset, entity) => {
+                emit('add', asset, entity)
             }
             return {
                 defaultEntityType,

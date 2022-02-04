@@ -82,7 +82,7 @@
                 <div class="w-4 mr-1">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="h-3 ml-2 text-primary"
+                        class="h-3 ml-2 hover:text-primary"
                     ></AtlanIcon>
                 </div>
             </div>

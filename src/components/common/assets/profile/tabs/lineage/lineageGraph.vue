@@ -502,9 +502,9 @@
                 }
             }
             & .popover {
-                @apply invisible opacity-0 absolute top-16 left-0 p-3;
+                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
                 @apply delay-75 transition-all;
-                @apply rounded shadow-lg break-all bg-white text-gray-500;
+                @apply rounded-md shadow-md bg-white text-gray-500;
             }
         }
 

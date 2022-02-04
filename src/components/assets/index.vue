@@ -579,8 +579,13 @@
 
             const getAssetId = (item) => item.guid
 
+            const { allowedTabAndArrowShortcuts } = useShortcuts()
             const listNavigationBlocked = computed(() => {
-                return isCmndKVisible.value || isAssetProfile.value
+                return (
+                    !allowedTabAndArrowShortcuts.value ||
+                    isCmndKVisible.value ||
+                    isAssetProfile.value
+                )
             })
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
@@ -590,14 +595,15 @@
                 searchBox?.value?.focusInput()
             }
 
-            const { allowedTabShortcut } = useShortcuts()
-
             whenever(tab, () => {
-                console.log('tab allowedTabShortcut', allowedTabShortcut.value)
+                console.log(
+                    'tab allowedTabAndArrowShortcuts',
+                    allowedTabAndArrowShortcuts.value
+                )
                 if (
                     shift_tab.value ||
                     isCmndKVisible.value ||
-                    !allowedTabShortcut.value
+                    !allowedTabAndArrowShortcuts.value
                 ) {
                     // don't run if cmd k is on
                     return
@@ -606,7 +612,10 @@
             })
 
             whenever(shift_tab, () => {
-                if (isCmndKVisible.value || !allowedTabShortcut.value) {
+                if (
+                    isCmndKVisible.value ||
+                    !allowedTabAndArrowShortcuts.value
+                ) {
                     // don't run if cmd k is on
                     return
                 }

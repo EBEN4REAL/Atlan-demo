@@ -968,12 +968,12 @@ export default function useEventGraph(
                 entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
 
             if (targetEntityId) {
-                highlight(entity?.guid)
-                showLoader(e)
                 onCloseDrawer()
+                showLoader(e)
 
                 const { data } = fetchAsset(targetEntityId)
                 watchOnce(data, () => {
+                    highlight(entity?.guid)
                     onSelectAsset(data.value)
                     hideLoader()
                     selectedTypeInRelationDrawer.value =

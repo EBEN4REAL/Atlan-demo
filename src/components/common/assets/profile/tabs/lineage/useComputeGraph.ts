@@ -4,6 +4,7 @@ import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 import { getNodeTypeText, nonBiTypes, childGroupBiAssetMap } from './util.js'
 import { pluralizeString } from '~/utils/string'
+import { findDuplicates } from '~/utils/array'
 
 export default async function useComputeGraph(
     graph,
@@ -36,6 +37,11 @@ export default async function useComputeGraph(
     let biEntity = {}
     const biEntityIds = []
 
+    const typeNames = Object.values(lineage.value.guidEntityMap).map(
+        (x) => x.typeName
+    )
+    const typeNamesDupArr = findDuplicates(typeNames)
+
     const createNodesFromEntityMap = (lineageData, hasBase = true) => {
         const { relations, childrenCounts, baseEntityGuid } = lineageData
         const guidEntityMap = Object.values(lineageData.guidEntityMap)
@@ -59,7 +65,7 @@ export default async function useComputeGraph(
 
             if (
                 !nonBiTypes.includes(typeName) &&
-                childGroupBiAssetMap[typeName]
+                typeNamesDupArr.includes(typeName)
             ) {
                 const parentGuid =
                     attributes[childGroupBiAssetMap[typeName]].guid

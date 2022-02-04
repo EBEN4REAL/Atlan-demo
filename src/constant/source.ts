@@ -123,6 +123,7 @@ export const SourceList = [
             },
         ],
         dialectConfig: {
+            assetQuoteType: '`',
             // does not support abortQuery for now
             abortQuery: false,
         },
@@ -220,7 +221,7 @@ export const SourceList = [
         filterMaxLevel: 2,
         dialectConfig: {
             assetQuoteType: '"',
-            abortQuery: true,
+            abortQuery: false,
         },
         hierarchy: [
             {

@@ -23,24 +23,26 @@
         >
             <template #title="node">
                 <div
-                    v-if="node.node.nodeType !== 'info-node'"
+                    v-if="node && !node.nodeType"
                     class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
-                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
+                    <AtlanIcon :icon="node.img" class="h-4 mr-1" />
                     <div class="flex flex-col">
                         {{ node.title }}
                     </div>
-                    <span v-if="node.node.count" class="text-sm text-gray-500">
-                        ({{ node.node.count }} assets)</span
+                    <span v-if="node?.count" class="text-sm text-gray-500">
+                        ({{ node.count }} assets)</span
                     >
                 </div>
                 <div
-                    v-else
+                    v-else-if="
+                        node && node.nodeType && node.nodeType === 'info-node'
+                    "
                     class="flex p-1 text-xs text-gray-500 bg-gray-100 rounded cursor-default"
                 >
                     <AtlanIcon icon="Overview" class="mt-1 mr-2"></AtlanIcon>
-                    <div>{{ node.node.value }}</div>
+                    <div>{{ node?.value }}</div>
                 </div>
             </template>
 
@@ -65,7 +67,7 @@
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -111,7 +113,7 @@
         emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
-            const { getConnectorName } = useAssetInfo()
+            const { getConnectorName, getConnectorImage } = useAssetInfo()
             const { data, filterSourceIds, hidePowerBi } = toRefs(props)
 
             const connector = computed(() => {
@@ -196,7 +198,7 @@
                                 ),
                                 children: [],
                                 count: connection.assetCount,
-
+                                img: getConnectorImage(connection),
                                 title:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
@@ -336,49 +338,7 @@
                 }
             }
 
-            const iconName = (node) => {
-                if (
-                    node.title === 'athena' ||
-                    node.title === 'snowflake' ||
-                    node.title === 'powerbi' ||
-                    node.title === 'tableau' ||
-                    node.title === 'databricks'
-                ) {
-                    switch (node.title) {
-                        case 'snowflake':
-                            return 'Snowflake'
-                        case 'athena':
-                            return 'Athena'
-                        case 'powerbi':
-                            return 'PowerBI'
-                        case 'tableau':
-                            return 'Tableau'
-                        case 'databricks':
-                            return 'Databricks'
-                    }
-                } else {
-                    const el = node?.key?.split('/')
-                    if (el && el.length) {
-                        switch (el[1]) {
-                            case 'snowflake':
-                                return 'Snowflake'
-                            case 'athena':
-                                return 'Athena'
-                            case 'powerbi':
-                                return 'PowerBI'
-                            case 'tableau':
-                                return 'Tableau'
-                            case 'databricks':
-                                return 'Databricks'
-                        }
-                    } else {
-                        return ''
-                    }
-                }
-            }
-
             return {
-                iconName,
                 treeSelectRef,
                 filterSourceIds,
                 onChange,

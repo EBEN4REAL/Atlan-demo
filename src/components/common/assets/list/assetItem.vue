@@ -689,6 +689,22 @@
                         </div>
                         <div
                             v-if="
+                                ['lookerfolder'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ sourceChildCount(item) }}</span
+                                >
+                                sub-folders</span
+                            >
+                        </div>
+                        <div
+                            v-if="
                                 ['lookerdashboard', 'lookerlook'].includes(
                                     item.typeName?.toLowerCase()
                                 )
@@ -712,6 +728,45 @@
                                     >
                                 </template>
                             </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'lookermodel',
+                                    'lookerexplore',
+                                    'lookerfield',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.projectName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.projectName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Project -
+                                        {{
+                                            item?.attributes?.projectName
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerexplore', 'lookerfield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2"
+                        >
                             <a-tooltip placement="bottomLeft">
                                 <div
                                     v-if="item?.attributes?.modelName"
@@ -980,6 +1035,7 @@
                 parentWorkbook,
                 parentSite,
                 sourceViewCount,
+                sourceChildCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1117,6 +1173,7 @@
                 parentWorkbook,
                 parentSite,
                 sourceViewCount,
+                sourceChildCount,
             }
         },
     })

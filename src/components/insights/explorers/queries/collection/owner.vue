@@ -14,7 +14,7 @@
                     :placeholder="placeholder"
                     :allow-clear="true"
                     size="minimal"
-                    customClass="border-b-0"
+                    :noBorder="true"
                     :autofocus="false"
                 >
                     <template #tab>
@@ -74,7 +74,7 @@
             <template #overlay>
                 <div
                     :style="dropdownStyleObject"
-                    class="pb-2 -mt-1 bg-white rounded-b shadow-2xl"
+                    class="pb-2 bg-white rounded-b shadow-2xl"
                     @mouseleave="() => showPopover(false)"
                 >
                     <div>

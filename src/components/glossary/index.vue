@@ -35,16 +35,18 @@
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
             >
-                <template v-if="showCollapseAll" #filter>
-                    <a-tooltip v-if="!queryText">
+                <template  #filter>
+                    <a-tooltip v-if="!queryText" >
                         <template #title>Collapse all </template>
-
+                        <!-- <a-button :disabled="!showCollapseAll" class="p-0 m-0 border-0 outline-none "> -->
                         <atlan-icon
                             icon="TreeCollapseAll"
                             class="h-4 ml-0 outline-none cursor-pointer"
+                            :class="{'cursor-not-allowed opacity-80':!showCollapseAll}"
                             @click="handleCollapse"
                         >
                         </atlan-icon>
+                        <!-- </a-button> -->
                     </a-tooltip>
                 </template>
             </SearchAdvanced>

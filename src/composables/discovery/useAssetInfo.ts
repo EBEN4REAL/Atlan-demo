@@ -740,8 +740,11 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Looker')
         )
     }
+    const isSaasAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('Salesforce')
+    }
 
-    const isNonBiAsset = (asset: assetInterface) => {
+    const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
@@ -1197,7 +1200,8 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         selectedAssetUpdatePermission,
-        isNonBiAsset,
+        isSQLAsset,
+        isSaasAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,

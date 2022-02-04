@@ -148,12 +148,11 @@
             watch(
                 filters,
                 () => {
-                    if (!modelValue.value && !disabled.value) {
-                        console.log('fetch', filters.value)
-
-                        // console.log('model', modelValue)
-                        initialBody.dsl = filters.value
-                        replaceBody(initialBody)
+                    if (!disabled.value) {
+                        if (!modelValue.value) {
+                            initialBody.dsl = filters.value
+                            replaceBody(initialBody)
+                        }
                     }
                 },
                 { immediate: true }

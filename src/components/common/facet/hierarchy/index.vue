@@ -17,6 +17,7 @@
 
         <AssetDropdown
             v-if="localValue.connectionQualifiedName"
+            :key="localValue.connectionQualifiedName"
             class="mt-0 mb-0"
             :persona="persona"
             :connector="filteredConnector"
@@ -88,6 +89,10 @@
                 (state, prevState) => {
                     if (!localValue.value.connectionQualifiedName) {
                         delete localValue.value.connectionQualifiedName
+                    }
+                    if (state !== prevState) {
+                        delete localValue.value.attributeValue
+                        delete localValue.value.attributeName
                     }
 
                     modelValue.value = localValue.value

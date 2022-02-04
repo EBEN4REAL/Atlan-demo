@@ -1,9 +1,9 @@
 <template>
     <div class="flex flex-col w-full gap-y-2">
-        {{ applicableDatabases }}
         <template v-for="(item, index) in list" :key="item.typeName">
             <div class="flex">
                 <AssetSelector
+                    :key="`${index}_${filter.connectionQualifiedName}`"
                     :modelValue="asset[item.attribute]"
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
@@ -69,8 +69,6 @@
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
             const { connector, filter, persona } = toRefs(props)
-            console.log('connection filters: ', filter.value)
-            console.log('connector preview: ', connector.value)
 
             const list: ComputedRef<any[]> = computed(
                 () =>
@@ -83,6 +81,11 @@
                 const chunks = filter.value.attributeValue?.split('/') || []
                 const blankAsset = {}
                 if (chunks?.length > 3) {
+                    const connection = chunks.slice(0, 3).join('/')
+
+                    if (connection !== filter.value.connectionQualifiedName) {
+                        return {}
+                    }
                     // Splicing first 3 as they contain tenant/integration/connection
                     for (
                         let idx = 0;

@@ -93,7 +93,6 @@ export default function useGraph() {
             isHighlightedNode: null,
             isHighlightedNodePath: null,
             isGrayed: false,
-            isTypeNode: !!typeCount, // Converting from number/undefined to boolean
             ...dataObj,
         }
 

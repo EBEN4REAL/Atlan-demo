@@ -10,6 +10,8 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
+import { childGroupBiAssetMap } from './util.js'
+
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
@@ -948,19 +950,37 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
 
-        showLoader(e)
+        if (node?.store?.data?.entity?.typeCount) {
+            // const edges = graph.value.getIncomingEdges(node)
+            // const sNode = edges[0]?.getSourceNode()
+            // if (sNode) {
+            //     onSelectAsset(sNode.store.data.entity)
+            //     highlight(node?.id)
+            //     setTimeout(() => {
+            //         drawerActiveKey.value = 'Relations'
+            //     }, 500)
+            //     selectedTypeInRelationDrawer.value =
+            //         node.store.data.entity.typeName
+            // }
 
-        if (node.store.data?.data?.isTypeNode) {
-            const edges = graph.value.getIncomingEdges(node)
-            const sNode = edges[0]?.getSourceNode()
-            if (sNode) {
-                onSelectAsset(sNode.store.data.entity)
-                highlight(node?.id)
-                setTimeout(() => {
-                    drawerActiveKey.value = 'Relations'
-                }, 500)
-                selectedTypeInRelationDrawer.value =
-                    node.store.data.entity.typeName
+            const { entity } = node.store.data
+            const targetEntityId =
+                entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
+
+            if (targetEntityId) {
+                highlight(entity?.guid)
+                showLoader(e)
+
+                const { data } = fetchAsset(targetEntityId)
+                watchOnce(data, () => {
+                    onSelectAsset(data.value)
+                    hideLoader()
+                    selectedTypeInRelationDrawer.value =
+                        node.store.data.entity.typeName
+                    setTimeout(() => {
+                        drawerActiveKey.value = 'Relations'
+                    }, 500)
+                })
             }
         } else {
             onSelectAsset(node.store.data.entity)

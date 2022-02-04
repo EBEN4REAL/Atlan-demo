@@ -691,7 +691,6 @@
                     const index = tabs.value.findIndex(
                         (tab) => tab.key === newKey
                     )
-                    // debugger
                     if (!editorStates.get(tabs.value[index].key)?.model) {
                         const newModel = monaco.editor.createModel(
                             String(
@@ -712,13 +711,37 @@
                             editorStates.get(tabs.value[index].key).model
                         )
 
-                        // debugger
                         const newViewState = editorStates.get(
                             tabs.value[index].key
                         ).viewState
                         editor?.restoreViewState(newViewState)
                         setEditorPos(editor?.getPosition(), editorPos)
                     }
+
+                    editor?.getModel()?.onDidChangeContent(async (event) => {
+                        // console.log('editor content change')
+                        if (isLineError(activeInlineTab)) {
+                            resetErrorDecorations(activeInlineTab, editor)
+                        }
+                        // setErrorDecorations(activeInlineTab, editor)
+                        const text = editor?.getValue()
+                        onEditorContentChange(event, text, editor)
+                        const changes = event?.changes[0]
+                        /* ------------- custom variable color change */
+                        findAndChangeCustomVariablesColor(false)
+                        /* ------------------------------------------ */
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab,
+                            cancelTokenSource
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
+                        suggestionsList.value = suggestions
+                        triggerAutoCompletion(suggestions)
+                    })
                 }
             })
 

@@ -337,6 +337,7 @@
             }
 
             const assetSidebarUpdatedData = ref({})
+            const updateAssetCheck = ref(false)
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -372,6 +373,7 @@
                 limitRows: limitRows,
                 isTabClosed: isTabClosed,
                 isTabAdded: isTabAdded,
+                updateAssetCheck,
             }
             useProvide(provideData)
             /*-------------------------------------*/

@@ -156,7 +156,9 @@
                         readme: dataEditor,
                     })
                     updateSelectedPersona()
+                    loadingSave.value = false
                 } catch (error) {
+                    loadingSave.value = false
                     message.error(
                         error?.response?.data?.message ||
                             'Some error occured...Please try again later.'

@@ -131,7 +131,7 @@ export default function useGraph() {
                 <div class=" ${isBase ? 'inscr' : 'hidden'}"> 
                     <span class="inscr-item">BASE</span>
                 </div>
-                <div class=" popover group-hover:visible group-hover:top-20 group-hover:opacity-100 group-hover:delay-1000 z-30">
+                <div class=" popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
                         ${displayText} 
                 </div>
                 <div>

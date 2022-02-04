@@ -208,7 +208,6 @@
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
@@ -217,6 +216,10 @@
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
     import { generateUUID } from '~/utils/helper/generator'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -243,6 +246,8 @@
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
+            const isTabClosed: Ref<undefined | string> = ref(undefined)
+            const isTabAdded: Ref<undefined | string> = ref(undefined)
             const showSaveQueryModal = ref(false)
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
@@ -297,6 +302,7 @@
             const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
                 const key = generateUUID()
+                isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Untitled ${getLastUntitledNumber()}`,
                     key,
@@ -491,6 +497,7 @@
                 showSaveQueryModal.value = true
             }
             const closeTabConfirm = (key: string) => {
+                isTabClosed.value = key
                 console.log(key, 'close')
                 inlineTabRemove(
                     key as string,
@@ -603,6 +610,16 @@
                     tabHover.value = null
                 }
             }
+
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+            const provideData: provideDataInterface = {
+                isTabClosed: isTabClosed,
+                isTabAdded: isTabAdded,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
 
             return {
                 fullSreenState,

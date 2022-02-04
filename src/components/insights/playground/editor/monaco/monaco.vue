@@ -70,6 +70,8 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<String>
@@ -81,37 +83,27 @@
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
-            const clearRemovedTabsModels = (
-                tabs: activeInlineTabInterface[]
-            ) => {
-                editorStates.forEach((_, key) => {
-                    const index = tabs.findIndex((tab) => tab.key === key)
-                    if (index < 0) {
-                        editorStates.delete(key)
-                    }
-                    console.log(editorStates.size, 'editorStates')
-                })
+            const clearRemovedTabsModels = (key: string) => {
+                if (editorStates.has(key)) {
+                    editorStates.delete(key)
+                }
             }
 
-            const addModelForNewTab = (tabs: activeInlineTabInterface[]) => {
-                tabs.forEach((tab) => {
-                    if (!editorStates.has(tab.key)) {
-                        editorStates.set(tab.key, {
-                            model: undefined,
-                            viewState: undefined,
-                        })
-                    }
-                })
+            const addModelForNewTab = (key: string) => {
+                if (!editorStates.has(key)) {
+                    editorStates.set(key, {
+                        model: undefined,
+                        viewState: undefined,
+                    })
+                }
             }
 
-            watch(
-                () => tabs.value.length,
-                () => {
-                    addModelForNewTab(tabs.value)
-                    clearRemovedTabsModels(tabs.value)
-                },
-                { immediate: true }
-            )
+            watch(isTabClosed, () => {
+                if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
+            })
+            watch(isTabAdded, () => {
+                if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
+            })
 
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(
@@ -648,6 +640,8 @@
             })
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
+                addModelForNewTab(newKey)
+
                 if (tabs.value[newKey]?.playground?.isVQB) {
                     return
                 } else {

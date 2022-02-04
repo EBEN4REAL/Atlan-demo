@@ -42,6 +42,8 @@ const hasCTA = (relations, childrenCounts, id) => {
     return res
 }
 
+const childGroupBiAssetTypes = Object.keys(childGroupBiAssetMap)
+
 export default function useGraph() {
     const createNodeData = (
         entity,
@@ -154,8 +156,7 @@ export default function useGraph() {
                             [
                                 'Table',
                                 'View',
-                                'LookerQuery',
-                                'LookerTile',
+                                ...childGroupBiAssetTypes,
                             ].includes(typeName)
                                 ? iconEllipse
                                 : ''
@@ -164,8 +165,7 @@ export default function useGraph() {
                             [
                                 'Table',
                                 'View',
-                                'LookerQuery',
-                                'LookerTile',
+                                ...childGroupBiAssetTypes,
                             ].includes(typeName)
                                 ? ''
                                 : 'hidden'

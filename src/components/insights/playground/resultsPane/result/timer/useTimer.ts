@@ -24,20 +24,20 @@ export function useTimer(activeInlineTab: Ref<activeInlineTabInterface>) {
     }
 
     function clockRunning() {
-        console.log('clock running: ', started)
         var currentTime = new Date(),
             timeElapsed = new Date(currentTime - timeBegan),
             hour = timeElapsed.getUTCHours(),
             min = timeElapsed.getUTCMinutes(),
             sec = timeElapsed.getUTCSeconds()
+        // console.log('timer: ', {
+        //     hour: typeof hour,
+        //     min: typeof min,
+        //     sec: typeof sec,
+        // })
 
         if (document.getElementById(`${timerId}_timer`)) {
             document.getElementById(`${timerId}_timer`).innerHTML =
-                (hour > 9 ? hour : '0' + hour) +
-                ':' +
-                (min > 9 ? min : '0' + min) +
-                ':' +
-                (sec > 9 ? sec : '0' + sec)
+                (hour ? hour + 'h ' : '') + (min ? min + 'm ' : '') + sec + 's'
         }
     }
 

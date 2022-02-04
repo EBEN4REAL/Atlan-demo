@@ -862,73 +862,31 @@
                         // console.log('running: ', isQueryRunning.value)
 
                         if (
-                            !isQueryCreatedByCurrentUser &&
-                            !hasQueryReadPermission &&
-                            !hasQueryWritePermission
+                            isQueryRunning.value == '' ||
+                            isQueryRunning.value == 'success' ||
+                            isQueryRunning.value == 'error'
                         ) {
-                            if (
-                                isQueryRunning.value == '' ||
-                                isQueryRunning.value == 'success' ||
-                                isQueryRunning.value == 'error'
-                            ) {
-                                runQuery()
-                            }
+                            runQuery()
                         }
                     }
                     //prevent the default action
                 }
-                if (e.key === 'S') {
+                if (e.key === 'S' || e.key === 's') {
                     if (e.metaKey || e.ctrlKey) {
+                        console.log('save key')
                         e.preventDefault()
                         saveOrUpdate()
                     }
                     //prevent the default action
                 }
-
-                /* Toggle VQB CODE */
-                // if (e.key === 'Q' || e.key === 'q') {
-                //     if (e.ctrlKey) {
-                //         e.preventDefault()
-                //         if (vqbQueryRoute.value) {
-                //             // showVQB.value = !showVQB.value
-                //             const activeInlineTabCopy: activeInlineTabInterface =
-                //                 Object.assign({}, activeInlineTab.value)
-
-                //             activeInlineTabCopy.playground.isVQB =
-                //                 !activeInlineTabCopy?.playground?.isVQB
-
-                //             setVQBInInlineTab(
-                //                 activeInlineTabCopy,
-                //                 inlineTabs,
-                //                 true
-                //             )
-                //         }
-                //     }
-                //     //prevent the default action
-                // }
-                /* ----------------------------- */
             }
+
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
             })
-
-            /* Handlng the Fullscreen esc key logic */
-            // const _keyListener = (e) => {
-            //     if (e.key === 'Escape') {
-            //         setFullScreenState(false, fullSreenState)
-            //         console.log('key pressed', e.key, e)
-            //         //prevent the default action
-            //     }
-            // }
-            // onMounted(() => {
-            //     window.addEventListener('keydown', _keyListener)
-            // })
-            // onUnmounted(() => {
-            //     window.removeEventListener('keydown', _keyListener)
-            // })
 
             /* ------------------------------------------ */
             return {

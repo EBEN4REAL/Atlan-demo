@@ -27,7 +27,10 @@
             </template> -->
         </DetailsWidget>
         <div class="h-full col-span-3 p-4 bg-white">
-            <ResourcesWidget />
+            <ResourcesWidget
+                @add="handleAddResource"
+                @update="handleAddResource"
+            />
         </div>
 
         <!-- <div class="pt-6 details-section">
@@ -158,7 +161,14 @@
     import { formatDateTime } from '~/utils/date'
     import DetailsWidget from '@/common/widgets/detailsWidget.vue'
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
-    import { enablePersona } from '../composables/useEditPersona'
+    import {
+        enablePersona,
+        isEditing,
+        savePersona,
+        discardPersona,
+        selectedPersonaDirty,
+        deletePersonaById,
+    } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -252,7 +262,21 @@
                         },
                     })
             }
+
+            // The `handleAddResource` function is a helper function that makes network request to store a resource link to the
+            // persona.
+            const handleAddResource = (r) => {
+                const body = persona.value
+                const { resources } = body
+                body.resources = {
+                    ...body?.resources,
+                    links: [...(body?.resources?.links ?? []), r],
+                }
+                savePersona(body)
+            }
+
             return {
+                handleAddResource,
                 setActiveTab,
                 timeStamp,
                 handleEnableDisablePersona,

@@ -28,6 +28,7 @@ export default function useEventGraph(
     drawerActiveKey: Ref<string>,
     selectedTypeInRelationDrawer: Ref<string>,
     config,
+    graphPrefs,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph
@@ -494,8 +495,13 @@ export default function useEventGraph(
         edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
         edge.attr('line/strokeWidth', reset ? 1.6 : 3)
         edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
-        edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
-        edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+
+        // Only change arrowhead size if showArrow is false
+        if (!graphPrefs.value.showArrow) {
+            edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
+            edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        }
+
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         edge.toFront()
@@ -1023,4 +1029,18 @@ export default function useEventGraph(
 
         resetSelections.value = false
     })
+
+    watch(
+        () => graphPrefs.value.showArrow,
+        (val) => {
+            const size = val ? 12 : 0.1
+            graph.value.getEdges().forEach((edge) => {
+                // Should not be port edge or the current selected edge
+                if (!edge.id.includes('port') && edge.id !== che.value) {
+                    edge.attr('line/targetMarker/height', size)
+                    edge.attr('line/targetMarker/width', size)
+                }
+            })
+        }
+    )
 }

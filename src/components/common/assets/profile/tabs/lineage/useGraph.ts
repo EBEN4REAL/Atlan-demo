@@ -157,7 +157,8 @@ export default function useGraph() {
                                 'Table',
                                 'View',
                                 ...childGroupBiAssetTypes,
-                            ].includes(typeName)
+                            ].includes(typeName) &&
+                            (schemaName || childGroupBiAsset)
                                 ? iconEllipse
                                 : ''
                         } 

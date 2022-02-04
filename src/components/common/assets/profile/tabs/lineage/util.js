@@ -15,23 +15,43 @@ import bigquery from '~/assets/images/source/bigquery.png'
  * @returns {String}
  */
 export const getNodeTypeText = {
+    // SQL
     Column: 'Column',
     ColumnProcess: 'Process',
     Database: 'Database',
-    PowerBIDashboard: 'PowerBIDashboard',
-    PowerBIDataflow: 'PowerBIDataflow',
-    PowerBIDataset: 'PowerBIDataset',
-    PowerBIDatasource: 'PowerBIDatasource',
-    PowerBIPage: 'PowerBIPage',
-    PowerBIReport: 'PowerBIReport',
-    PowerBITile: 'PowerBITile',
-    PowerBIWorkspace: 'PowerBIWorkspace',
     Process: 'Process',
-    Query: 'Query',
-    QueryFolder: 'Folder',
-    QueryFolderNamespace: 'QueryFolderNamespace',
     Table: 'Table',
     View: 'View',
+    // PowerBI
+    PowerBIDashboard: 'Dashboard',
+    PowerBIDataflow: 'Dataflow',
+    PowerBIDataset: 'Dataset',
+    PowerBIDatasource: 'Datasource',
+    PowerBIPage: 'Page',
+    PowerBIReport: 'Report',
+    PowerBITile: 'Tile',
+    PowerBIWorkspace: 'Workspace',
+    // Looker
+    LookerTile: 'Tile',
+    LookerFolder: 'Folder',
+    LookerDashboard: 'Dashboard',
+    LookerQuery: 'Query',
+    LookerExplore: 'Explore',
+    LookerField: 'Field',
+    LookerLook: 'Look',
+    LookerModel: 'Model',
+    LookerProject: 'Project',
+    // Tableau
+    TableauDatasource: 'Datasource',
+    TableauCalculatedField: 'Calculated Field',
+    TableauDatasourceField: 'Datasource Field',
+    TableauDashboard: 'Dashboard',
+    TableauWorksheet: 'Worksheet',
+    TableauWorkbook: 'Workbook',
+    TableauProject: 'Project',
+    TableauSite: 'Site',
+    TableauFlow: 'Flow',
+    TableauMetric: 'Metric',
 }
 
 /**

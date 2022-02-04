@@ -1445,6 +1445,7 @@
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,
+                                abortQueryFn: undefined,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
                                 totalRowsCount: -1,

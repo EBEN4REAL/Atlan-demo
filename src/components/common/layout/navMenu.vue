@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-between w-full h-full">
-        <div class="flex items-center">
+        <div class="flex items-center h-full">
             <AtlanIcon
                 icon="Dots"
                 v-if="!isHome"
@@ -8,11 +8,14 @@
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
-            <div v-if="logoUrl && !logoNotFound" class="mb-0.5 flex items-center">
+            <div
+                v-if="logoUrl && !logoNotFound"
+                class="mb-0.5 flex items-center"
+            >
                 <router-link to="/">
                     <img
                         :src="logoUrl"
-                        class="w-auto h-8 cursor-pointer select-none"
+                        class="w-auto h-6 cursor-pointer select-none"
                         :alt="defaultLogo"
                         @error="onLogoNotFound"
                     />
@@ -25,13 +28,14 @@
                 {{ logoName }}
             </p>
 
-            <div v-if="isAssets" class="flex items-center ml-1 gap-x-1">
-                <AtlanIcon icon="ChevronRight"></AtlanIcon>
+            <div
+                v-if="isAssets"
+                class="flex items-center ml-3 border-l border-r border-gray-200 h-full hover:bg-primary-menu transition"
+            >
                 <GlobalSelection
                     :key="dirtyTimestamp"
                     v-model="globalState"
                     @change="handleGlobalStateChange"
-                    class="mt-1"
                 ></GlobalSelection>
             </div>
         </div>

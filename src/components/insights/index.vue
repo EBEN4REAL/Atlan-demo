@@ -592,10 +592,6 @@
                         isVQB: openVQB === 'true' ? true : false,
                         vqb: vqbData,
                         editor: {
-                            editorState: {
-                                model: {},
-                                viewState: {},
-                            },
                             text: '',
                             context: {
                                 attributeName: undefined,

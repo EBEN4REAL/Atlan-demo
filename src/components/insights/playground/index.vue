@@ -369,10 +369,6 @@
                             ],
                         },
                         editor: {
-                            editorState: {
-                                model: {},
-                                viewState: {},
-                            },
                             context: {
                                 attributeName:
                                     activeInlineTab.value?.playground?.editor

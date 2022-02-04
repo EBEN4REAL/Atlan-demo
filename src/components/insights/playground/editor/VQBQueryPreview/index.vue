@@ -125,10 +125,6 @@
                             ],
                         },
                         editor: {
-                            editorState: {
-                                model: {},
-                                viewState: {},
-                            },
                             context:
                                 activeInlineTabCopy.playground.editor.context,
                             text: format(

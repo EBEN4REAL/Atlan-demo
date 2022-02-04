@@ -1425,10 +1425,6 @@
                             ],
                         },
                         editor: {
-                            editorState: {
-                                model: {},
-                                viewState: {},
-                            },
                             context: {
                                 ...context,
                             },

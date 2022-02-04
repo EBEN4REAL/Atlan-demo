@@ -93,17 +93,6 @@
                 })
             }
 
-            /* 
-            
-                      tabs.value.forEach((tab) => {
-                    editorStates.set(tab.key, {
-                        model: undefined,
-                        viewState: undefined,
-                    })
-                })
-                
-                
-                */
             const addModelForNewTab = (tabs: activeInlineTabInterface[]) => {
                 tabs.forEach((tab) => {
                     if (!editorStates.has(tab.key)) {
@@ -112,7 +101,6 @@
                             viewState: undefined,
                         })
                     }
-                    console.log(editorStates.size, 'editorStates')
                 })
             }
 
@@ -129,8 +117,6 @@
             const editorContentSelectionState = inject(
                 'editorContentSelectionState'
             ) as Ref<boolean>
-
-            const toggleRun = inject('toggleRun') as Function
             const runQuery = inject('runQuery') as Function
             const saveOrUpdate = inject('saveOrUpdate') as Function
             const editorPos = inject('editorPos') as Ref<{
@@ -139,28 +125,12 @@
             }>
             const monacoRoot = ref<HTMLElement>()
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
-            const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
 
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            )
-            const hasQueryReadPermission = inject('hasQueryReadPermission')
-            const hasQueryWritePermission = inject('hasQueryWritePermission')
-
-            // console.log('editor permisisons: ', {
-            //     isQueryCreatedByCurrentUser,
-            //     hasQueryReadPermission,
-            //     hasQueryWritePermission,
-            // })
-
             const {
-                saveEditorModelURI,
-                saveEditorViewState,
                 clearMoustacheTemplateColor,
                 setErrorDecorations,
-                saveEditorState,
                 resetErrorDecorations,
                 toggleGhostCursor,
                 onEditorContentChange,
@@ -178,32 +148,11 @@
                 'editorInstance'
             ) as Ref<monaco.editor.IStandaloneCodeEditor>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            // const editorInstance1 = toRaw(editorInstanceRef.value)
-            // const monacoInstance1 = toRaw(monacoInstanceRef.value)
 
-            // console.log('editor: ', {
-            //     editorInstanceRef,
-            //     monacoInstanceRef,
-            //     editorInstance1,
-            //     monacoInstance1,
-            // })
-
-            const { saveVariable, addVariableFromEditor, deleteVariable } =
-                useCustomVariable(editorInstanceRef, monacoInstanceRef)
-
-            // const activeInlineTabKey = inject(
-            //     'activeInlineTabKey'
-            // ) as ComputedRef<activeInlineTabInterface>
-
-            // let sqlVariables: Ref<CustomVaribaleInterface[]> = ref([
-            //     ...activeInlineTab.value.playground.editor.variables,
-            // ])
-
-            // watch(activeInlineTab, () => {
-            //     console.log('active inline tab: ', activeInlineTab.value)
-            //     sqlVariables.value =
-            //         activeInlineTab.value.playground.editor.variables
-            // })
+            const { addVariableFromEditor } = useCustomVariable(
+                editorInstanceRef,
+                monacoInstanceRef
+            )
 
             let timeout = null
 
@@ -277,15 +226,7 @@
                 languageTokens
             )
 
-            const {
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-                certificateStatus,
-            } = useAssetInfo()
+            const { assetType, certificateStatus } = useAssetInfo()
 
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -306,7 +247,6 @@
                             },
                         }
                     )
-                // editor.trigger('', 'showSuggestWidget', suggestions)
 
                 // editor autosuggestion icons
 
@@ -322,10 +262,6 @@
                             'suggest-icon codicon codicon-symbol-keyword'
                         )
 
-                        // console.log('suggestions: ', {
-                        //     data1: data1,
-                        //     data2: data2,
-                        // })
                         for (var i = 0; i < items.length; i++) {
                             let item = items[i].documentation?.entity
 
@@ -463,14 +399,10 @@
                         e.selection.startColumn === e.selection.endColumn
                     ) {
                         editorContentSelectionState.value = false
-                        // console.log('selection false')
                     } else {
-                        // console.log('selection true')
                         editorContentSelectionState.value = true
                     }
                 })
-                // monaco.editor.remeasureFonts()
-                // monaco.editor.EditorLayoutInfo
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
@@ -484,13 +416,10 @@
                 if (matches && matches?.length > 0)
                     setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
-                // console.log(lastLineLength)
 
                 const modifyLine = (lineCode) => {
                     let startCount = 0
                     let endCount = 0
-
-                    // console.log('line code: ', lineCode)
 
                     while (lineCode.startsWith('\n')) {
                         lineCode = lineCode.slice(1)
@@ -508,8 +437,6 @@
                     } else {
                         lineCode = `--${lineCode}`
                     }
-
-                    // console.log('line code update: ', lineCode)
 
                     for (var i = 0; i < startCount; i++) {
                         lineCode = '\n' + lineCode
@@ -545,12 +472,6 @@
 
                 const multiLineComment = () => {
                     let selection = toRaw(editor)?.getSelection()
-
-                    // let selectedText = toRaw(editor)
-                    //     ?.getModel()
-                    //     ?.getValueInRange(selection)
-
-                    // selectedText = modifyLine(selectedText)
 
                     let lineCount = 0
                     for (
@@ -689,12 +610,8 @@
                 editor?.onDidChangeCursorPosition((pos) => {
                     setEditorPos(pos.position, editorPos)
                 })
-                // editor?.onDidChangeCursorPosition(() => {
-                //     // setEditorPos(editor, editorPos)
-                //     // setEditorFocusedState(true, editorFocused)
-                // })
+
                 editor?.onDidBlurEditorWidget(() => {
-                    // setEditorFocusedState(false, editorFocused)
                     toggleGhostCursor(
                         true,
                         editor,
@@ -706,8 +623,6 @@
                     toggleGhostCursor(false, editor, monaco, editorPos)
                     setEditorFocusedState(true, editorFocused)
                 })
-                // editor?.focus()
-                // on mounting
             })
 
             monaco.languages.registerDocumentRangeFormattingEditProvider(
@@ -731,61 +646,6 @@
             onUnmounted(() => {
                 editor?.dispose()
             })
-
-            /*Watcher for changing the content of the editor on activeInlineTab Change*/
-
-            // watch(
-            //     hasQueryWritePermission,
-            //     () => {
-            //         console.log(
-            //             'hasQueryWritePermission: ',
-            //             hasQueryWritePermission
-            //         )
-            //         editor?.updateOptions({
-            //             readOnly: hasQueryWritePermission ? false : true,
-            //         })
-            //     }
-            //     // { immediate: true }
-            // )
-
-            // let s1 = computed(() =>
-            //     document.getElementsByClassName(
-            //         'suggest-icon codicon codicon-symbol-field'
-            //     )
-            // )
-            // let s2 = computed(() =>
-            //     document.getElementsByClassName(
-            //         'suggest-icon codicon codicon-symbol-field'
-            //     )
-            // )
-
-            // watch(
-            //     [s1, s2],
-            //     () => {
-            //         console.log('reset auto')
-            //         if (suggestionsList.value) {
-            //             triggerAutoCompletion(suggestionsList.value)
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
-            // editor?.onDidChangeModelContent((model) => {
-            //     const viewState = editor?.saveViewState()
-            //     if (viewState?.cursorState?.length > 0) {
-            //         const position = viewState?.cursorState[0].position
-            //         setEditorPos(editor, position)
-            //     }
-            //     debugger
-            //     if (!editorStates[activeInlineTabKey.value].viewState) {
-            //         setEditorFocusedState(false, editorFocused)
-            //     }
-
-            //     console.log(
-            //         model.getValue(),
-            //         'getValue',
-            //         activeInlineTab.value.label
-            //     )
-            // })
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
                 if (tabs.value[newKey]?.playground?.isVQB) {
@@ -918,23 +778,6 @@
                                 suggestionsList.value = suggestions
                                 triggerAutoCompletion(suggestions)
                             })
-                        // const range = editor?.getModel().getFullModelRange()
-                        // const position = {
-                        //     column: range?.endColumn,
-                        //     lineNumber: range?.endLineNumber,
-                        // }
-                        // if (position?.column && position?.lineNumber)
-                        //     editor?.setPosition(position)
-
-                        // editor?.focus()
-                        // editor?.onDidBlurEditorWidget(() => {
-                        //     setEditorFocusedState(false, editorFocused)
-                        //     toggleGhostCursor(true, editor, monaco, editorPos)
-                        // })
-                        // editor?.onDidFocusEditorWidget(() => {
-                        //     toggleGhostCursor(false, editor, monaco, editorPos)
-                        // })
-                        // emit('editorInstance', editor, monaco)
                     }
                 }
             )
@@ -962,19 +805,6 @@
             }
         },
     })
-
-    // document.fonts.ready.then(function (fontFaceSetEvent) {
-    //     alert('All fonts in use by visible text have loaded.')
-    //     console.log('Hack loaded? ' + Object.keys(fontFaceSetEvent)) // true
-    // })
-
-    // document.fonts.onloadingdone = function (fontFaceSetEvent) {
-    //     alert(
-    //         'onloadingdone we have ' +
-    //             fontFaceSetEvent.fontfaces.length +
-    //             ' font faces loaded'
-    //     )
-    // }
 </script>
 
 <style lang="less" scoped>
@@ -988,35 +818,6 @@
     .c {
         font-family: 'Courier New', Courier, monospace;
     }
-
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-BoldItalic.ttf');
-    //     font-weight: bold;
-    //     font-style: italic;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Italic.ttf');
-    //     font-style: italic;
-    //     font-weight: normal;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Bold.ttf');
-    //     font-weight: bold;
-    //     font-style: normal;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Regular.ttf');
-    //     font-style: normal;
-    //     font-weight: normal;
-    // }
-    // html,
-    // body {
-    //     font-family: 'Hack', sans-serif;
-    // }
 </style>
 <style lang="less">
     .moustacheDecoration {

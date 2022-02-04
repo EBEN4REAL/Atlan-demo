@@ -40,10 +40,6 @@ export interface activeInlineTabInterface {
     playground: {
         isVQB: Boolean
         editor: {
-            editorState: {
-                model: Object
-                viewState: Object
-            }
             context: connectorsWidgetInterface
             text: string
             dataList: Array<any>

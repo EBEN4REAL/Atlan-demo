@@ -151,10 +151,6 @@ export function useSavedQuery(
                           ],
                       },
                 editor: {
-                    editorState: {
-                        model: {},
-                        viewState: {},
-                    },
                     text: savedQuery?.attributes?.rawQuery
                         ? savedQuery?.attributes?.rawQuery
                         : '',

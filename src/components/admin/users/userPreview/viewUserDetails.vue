@@ -96,7 +96,7 @@
                     "
                 >
                     <span class="mt-2"
-                        >{{ selectedUser.firstName }} doesn't own any
+                        >{{ selectedUser?.firstName ?? selectedUser?.username }} doesn't own any
                         assets.</span
                     >
                 </div>

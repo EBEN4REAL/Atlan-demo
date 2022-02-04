@@ -731,9 +731,11 @@
                         </div>
                         <div
                             v-if="
-                                ['lookermodel'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
+                                [
+                                    'lookermodel',
+                                    'lookerexplore',
+                                    'lookerfield',
+                                ].includes(item.typeName?.toLowerCase())
                             "
                             class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
@@ -753,6 +755,32 @@
                                         {{
                                             item?.attributes?.projectName
                                         }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerexplore', 'lookerfield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.modelName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.modelName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Model -
+                                        {{ item?.attributes?.modelName }}</span
                                     >
                                 </template>
                             </a-tooltip>

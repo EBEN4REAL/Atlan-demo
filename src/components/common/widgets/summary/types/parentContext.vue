@@ -1,5 +1,5 @@
 <template>
-    <div class="flex gap-x-16">
+    <div class="flex flex-wrap gap-x-16 gap-y-3">
         <div
             v-if="
                 [
@@ -83,6 +83,8 @@
                     'TableauMetric',
                     'TableauDatasource',
                     'LookerModel',
+                    'LookerExplore',
+                    'LookerField',
                 ].includes(asset?.typeName) && parentProject(asset)?.guid
             "
             class="flex flex-col text-sm"
@@ -142,8 +144,9 @@
         </div>
         <div
             v-if="
-                ['LookerLook'].includes(asset?.typeName) &&
-                parentModel(asset)?.guid
+                ['LookerLook', 'LookerExplore', 'LookerField'].includes(
+                    asset?.typeName
+                ) && parentModel(asset)?.guid
             "
             class="flex flex-col text-sm"
         >
@@ -152,6 +155,32 @@
                 class="font-bold cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentModel(asset)?.guid)"
                 >{{ parentModel(asset)?.attributes?.name }}</span
+            >
+        </div>
+        <div
+            v-if="
+                ['LookerExplore'].includes(asset?.typeName) &&
+                parentModel(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">View Name</span>
+            <span class="text-gray-700">{{ asset?.attributes?.viewName }}</span>
+        </div>
+
+        <!-- SQL Parent Context -->
+        <div
+            v-if="
+                ['Schema'].includes(asset?.typeName) &&
+                parentDatabase(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Database</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentDatabase(asset)?.guid)"
+                >{{ parentDatabase(asset)?.attributes?.name }}</span
             >
         </div>
     </div>
@@ -192,6 +221,7 @@
                 parentWorkbook,
                 parentReport,
                 parentDashboard,
+                parentDatabase,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -218,6 +248,7 @@
                 parentWorkbook,
                 parentReport,
                 parentDashboard,
+                parentDatabase,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

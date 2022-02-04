@@ -1,5 +1,11 @@
 export const summaryVariants = [
     {
+        id: 'schema',
+        label: 'Schema',
+        components: ['ParentContext', 'TableCount', 'ViewCount', 'Connection'],
+        includes: ['Schema'],
+    },
+    {
         id: 'table',
         label: 'Table',
         components: ['Rows', 'Columns', 'Connection'],
@@ -239,13 +245,23 @@ export const summaryVariants = [
     {
         id: 'lookerExplore',
         label: 'Explore',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerExplore'],
     },
     {
         id: 'lookerField',
         label: 'Field',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerField'],
     },
     {

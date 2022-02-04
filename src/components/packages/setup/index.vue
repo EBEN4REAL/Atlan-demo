@@ -43,13 +43,6 @@
                         <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon>
                         Exit to Marketplace
                     </a-button>
-                    <a-button
-                        v-if="isSandbox"
-                        @click="toggleSandbox"
-                        class="ml-1"
-                    >
-                        View Template
-                    </a-button>
                 </div>
                 <a-button
                     @click="handleNext"

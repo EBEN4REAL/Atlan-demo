@@ -156,8 +156,8 @@
             const handleUpdatePueposeReadme = async (dataEditor) => {
                 try {
                     const payload = { ...purpose.value }
-                    delete payload.dataPolicies
-                    delete payload.metadataPolicies
+                    // delete payload.dataPolicies
+                    // delete payload.metadataPolicies
                     await savePersona({
                         ...payload,
                         readme: dataEditor,

@@ -542,8 +542,6 @@
 
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { useUtils } from '~/components/insights/common/composables/useUtils'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import AtlanBtn from '~/components/UI/button.vue'
     import { useTimeAgo } from '@vueuse/core'

@@ -12,14 +12,14 @@ export function useTimer(activeInlineTab: Ref<activeInlineTabInterface>) {
             timeBegan = new Date()
         }
 
-        started = setInterval(clockRunning, 10)
+        started = setInterval(clockRunning, 100)
     }
 
     function reset() {
         clearInterval(started)
         timeBegan = null
         if (document.getElementById(`${timerId}_timer`)) {
-            document.getElementById(`${timerId}_timer`).innerHTML = '00:00:00'
+            document.getElementById(`${timerId}_timer`).innerHTML = '0s'
         }
     }
 
@@ -28,7 +28,8 @@ export function useTimer(activeInlineTab: Ref<activeInlineTabInterface>) {
             timeElapsed = new Date(currentTime - timeBegan),
             hour = timeElapsed.getUTCHours(),
             min = timeElapsed.getUTCMinutes(),
-            sec = timeElapsed.getUTCSeconds()
+            sec = timeElapsed.getUTCSeconds(),
+            ms = timeElapsed.getUTCMilliseconds()
         // console.log('timer: ', {
         //     hour: typeof hour,
         //     min: typeof min,
@@ -37,7 +38,12 @@ export function useTimer(activeInlineTab: Ref<activeInlineTabInterface>) {
 
         if (document.getElementById(`${timerId}_timer`)) {
             document.getElementById(`${timerId}_timer`).innerHTML =
-                (hour ? hour + 'h ' : '') + (min ? min + 'm ' : '') + sec + 's'
+                (hour ? hour + 'h ' : '') +
+                (min ? min + 'm ' : '') +
+                sec +
+                '.' +
+                `${ms}`[0] +
+                's'
         }
     }
 

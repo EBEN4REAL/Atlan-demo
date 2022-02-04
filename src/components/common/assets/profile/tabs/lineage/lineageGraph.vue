@@ -14,11 +14,10 @@
             </div>
         </div>
 
-        <a-spin
+        <AtlanLoader
             v-if="loaderCords.x"
-            :style="`position: absolute; left: ${loaderCords.x - 25}px; top: ${
-                loaderCords.y - 148
-            }px; z-index: 999`"
+            class="absolute h-5 opacity-70"
+            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
         />
 
         <!-- Graph Container -->
@@ -83,6 +82,7 @@
         provide,
         toRefs,
         inject,
+        computed,
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -138,6 +138,18 @@
             const drawerActiveKey = ref('Overview')
             const selectedTypeInRelationDrawer = ref('__all')
 
+            /** COMPUTED */
+            const offsetLoaderCords = computed(() => {
+                const isFullScr = !!document.fullscreenElement
+                return {
+                    x: isFullScr
+                        ? loaderCords.value.x
+                        : (loaderCords.value.x || 0) - 25,
+                    y: isFullScr
+                        ? loaderCords.value.y
+                        : (loaderCords.value.y || 0) - 148,
+                }
+            })
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (
@@ -233,6 +245,7 @@
 
             return {
                 isDrawerVisible,
+                offsetLoaderCords,
                 selectedAsset,
                 baseEntity,
                 graph,

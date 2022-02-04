@@ -20,7 +20,7 @@
                             'ml-2': loadingSave || isLoading,
                         }"
                     />
-                    {{ readMeId ? 'Edit' : 'Add a readme' }}
+                    {{ readMe ? 'Edit' : 'Add a readme' }}
                 </a-button>
                 <template v-else-if="isEditMode">
                     <a-button @click="handleCancelEdit">Cancel</a-button>
@@ -66,70 +66,75 @@
         emits: ['addReadme'],
         setup(props, { emit }) {
             const { persona } = toRefs(props)
-            const readMeId = computed(() => persona.value.readme || '')
+            const readMe = computed(() => persona.value.readme || '')
             const editor = ref()
             const isEditMode = ref(false)
             const loadingSave = ref(false)
             const editorValue = ref('')
             const isLoading = ref(false)
-            const defaultValueEditor = ref({})
-            const resetEditor = () => {
-                const editorValueDefault = readMeId.value
-                    ? Object.keys(defaultValueEditor.value).length
-                        ? defaultValueEditor.value
-                        : ''
-                    : ''
-                editor.value.resetEditor(decodeURIComponent(editorValueDefault))
-                editorValue.value = editorValueDefault
-            }
-            const mutateReadme = () => {
-                isLoading.value = true
-                const {
-                    data,
-                    isLoading: loadingMutate,
-                    mutate,
-                } = Files.GetFile({
-                    id: readMeId.value,
-                    // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
-                })
-                mutate()
-                watch(loadingMutate, () => {
-                    isLoading.value = loadingMutate.value
-                })
-                watch(data, () => {
-                    editorValue.value = data.value
-                    defaultValueEditor.value = data.value
-                    resetEditor()
-                    isLoading.value = false
-                })
-            }
-            const fetchReadme = () => {
-                loadingSave.value = false
-                isLoading.value = false
-                if (readMeId.value) {
-                    mutateReadme()
-                }
+            // const defaultValueEditor = ref({})
+            // const resetEditor = () => {
+            //     const editorValueDefault = readMe.value
+            //         ? Object.keys(defaultValueEditor.value).length
+            //             ? defaultValueEditor.value
+            //             : ''
+            //         : ''
+            //     editor.value.resetEditor(decodeURIComponent(editorValueDefault))
+            //     editorValue.value = editorValueDefault
+            // }
+            // const mutateReadme = () => {
+            //     isLoading.value = true
+            //     const {
+            //         data,
+            //         isLoading: loadingMutate,
+            //         mutate,
+            //     } = Files.GetFile({
+            //         id: readMe.value,
+            //         // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
+            //     })
+            //     mutate()
+            //     watch(loadingMutate, () => {
+            //         isLoading.value = loadingMutate.value
+            //     })
+            //     watch(data, () => {
+            //         editorValue.value = data.value
+            //         defaultValueEditor.value = data.value
+            //         resetEditor()
+            //         isLoading.value = false
+            //     })
+            // }
+            // const fetchReadme = () => {
+            //     loadingSave.value = false
+            //     isLoading.value = false
+            //     if (readMe.value) {
+            //         mutateReadme()
+            //     }
+            // }
+            const handleSetValueEditor = () => {
+                editor.value.resetEditor(decodeURIComponent(readMe.value || ''))
+                editorValue.value = decodeURIComponent(readMe.value || '')
             }
             watch(persona, () => {
-                loadingSave.value = false
-                editor.value.resetEditor(decodeURIComponent(''))
-                editorValue.value = ''
-                fetchReadme()
+                handleSetValueEditor()
+                // fetchReadme()
             })
             onMounted(() => {
-                fetchReadme()
+                handleSetValueEditor()
+                // fetchReadme()
             })
             const handleCancelEdit = () => {
                 isEditMode.value = false
-                editor.value.resetEditor(decodeURIComponent(data.value || ''))
-                editorValue.value = data.value || ''
+                editor.value.resetEditor(decodeURIComponent(readMe.value || ''))
+                editorValue.value = decodeURIComponent(readMe.value || '')
+                // editor.value.resetEditor(decodeURIComponent(data.value || ''))
+                // editorValue.value = data.value || ''
             }
 
-            const handleUpdatePueposeReadme = async (id) => {
+            const handleUpdatePueposeReadme = async (dataEditor) => {
                 try {
                     await savePersona({
                         ...persona.value,
-                        readme: id,
+                        readme: dataEditor,
                     })
                     updateSelectedPersona()
                 } catch (error) {
@@ -140,35 +145,37 @@
                 }
             }
             const handleAddReadMe = () => {
-                const { data: dataFile } = Files.CreateFile(editorValue.value)
-                watch(dataFile, () => {
-                    const idFile = dataFile.value.id
-                    handleUpdatePueposeReadme(idFile)
-                    loadingSave.value = false
-                })
+                handleUpdatePueposeReadme(editorValue.value)
+                // const { data: dataFile } = Files.CreateFile(editorValue.value)
+                // watch(dataFile, () => {
+                //     const idFile = dataFile.value.id
+                //     handleUpdatePueposeReadme(idFile)
+                //     loadingSave.value = false
+                // })
             }
             const handleUpdateReadme = () => {
-                const {
-                    data: dataFile,
-                    isLoading: loadingUpdate,
-                    error,
-                } = Files.UpdateFile(editorValue.value, readMeId.value)
-                watch(error, () => {
-                    resetEditor()
-                    loadingSave.value = false
-                    message.error(
-                        error?.response?.data?.message ||
-                            'Some error occured...Please try again later.'
-                    )
-                })
-                watch(dataFile, () => {
-                    loadingSave.value = false
-                })
+                handleUpdatePueposeReadme(editorValue.value)
+                // const {
+                //     data: dataFile,
+                //     isLoading: loadingUpdate,
+                //     error,
+                // } = Files.UpdateFile(editorValue.value, readMe.value)
+                // watch(error, () => {
+                //     resetEditor()
+                //     loadingSave.value = false
+                //     message.error(
+                //         error?.response?.data?.message ||
+                //             'Some error occured...Please try again later.'
+                //     )
+                // })
+                // watch(dataFile, () => {
+                //     loadingSave.value = false
+                // })
             }
             const handleSave = () => {
                 isEditMode.value = false
                 loadingSave.value = true
-                if (readMeId.value) {
+                if (readMe.value) {
                     handleUpdateReadme()
                 } else {
                     handleAddReadMe()
@@ -182,7 +189,7 @@
                 editorValue,
                 editor,
                 loadingSave,
-                readMeId,
+                readMe,
                 handleSave,
             }
         },

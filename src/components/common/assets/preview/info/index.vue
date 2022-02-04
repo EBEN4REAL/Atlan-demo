@@ -155,7 +155,6 @@
                     'LookerFolder',
                     'LookerProject',
                     'LookerQuery',
-                    'LookerTile',
                 ].includes(selectedAsset?.typeName)
             "
             class="flex px-5"

@@ -10,6 +10,7 @@ export function useAssetListing(
 ) {
     const list: Ref<assetInterface[]> = ref([])
     const aggregations: Ref<any[]> = ref([])
+
     const { replaceBody, body, isReady, error, data, isLoading } =
         useIndexSearch(initalBody, '', immediate, params)
 

@@ -1,12 +1,13 @@
 <template>
     <div class="flex items-center w-full">
         <div class="mr-1">
-            <a-tooltip :title="typeName" placement="top">
+            <a-tooltip :title="typeName" placement="top" v-if="!isLoading">
                 <AtlanIcon
                     class="w-4 h-4"
                     :icon="typeName + `Gray`"
                     :class="disabled ? 'text-gray-500' : 'text-gray-700'"
             /></a-tooltip>
+            <a-spin v-else size="small" class="w-4 h-4"></a-spin>
         </div>
         <div style="width: calc(100% - 22px)">
             <a-select
@@ -14,7 +15,7 @@
                 :value="modelValue"
                 :allowClear="true"
                 :showSearch="true"
-                notFoundContent="No data available"
+                :options="dropdownOption"
                 class="w-full"
                 :dropdownMatchSelectWidth="true"
                 @change="handleChange"
@@ -22,21 +23,16 @@
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 dropdownClassName="connectorDropdown"
                 :loading="isLoading"
+                @search="handleSearch"
             >
-                <template v-for="item in dropdownOption" :key="item.label">
-                    <a-select-option :value="item.value">
-                        <div class="flex items-center truncate">
-                            <!-- <img :src="item.image" class="w-auto h-4 mr-1" /> -->
-
-                            <span class="parent-ellipsis-container-base"
-                                >{{ item?.label }}
-                            </span>
-                        </div></a-select-option
-                    >
-                </template>
-
                 <template #suffixIcon>
                     <AtlanIcon icon="CaretDown" class="mb-0" />
+                </template>
+                <template v-if="isLoading" #notFoundContent>
+                    <a-spin size="small" class="mr-1" />searching {{ typeName }}
+                </template>
+                <template v-if="error" #notFoundContent>
+                    <AtlanIcon icon="Error"></AtlanIcon>
                 </template>
             </a-select>
         </div>
@@ -47,12 +43,11 @@
     import { defineComponent, watch, toRefs, computed } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { message } from 'ant-design-vue'
+    import { useDebounceFn } from '@vueuse/core'
+    import bodybuilder from 'bodybuilder'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: {
-            VNodes: (_, { attrs }) => attrs.vnodes,
-        },
         props: {
             modelValue: {
                 type: String,
@@ -93,24 +88,69 @@
             })
 
             const { list, replaceBody, data, isLoading, error } =
-                useAssetListing(initialBody, immediate)
+                useAssetListing(initialBody, immediate.value)
+
+            const handleSearch = useDebounceFn((searchText: string) => {
+                const base = bodybuilder()
+
+                if (searchText) {
+                    base.orQuery('match', 'name', {
+                        query: searchText,
+                        boost: 40,
+                    })
+
+                    base.orQuery('match', 'name', {
+                        query: searchText,
+                        operator: 'AND',
+                        boost: 40,
+                    })
+
+                    base.orQuery('match', 'name.keyword', {
+                        query: searchText,
+                        boost: 120,
+                    })
+
+                    base.orQuery('match_phrase', 'name', {
+                        query: searchText,
+                        boost: 70,
+                    })
+                    base.orQuery('wildcard', 'name', {
+                        value: `${searchText.toLowerCase()}*`,
+                    })
+                    base.queryMinimumShouldMatch(1)
+
+                    initialBody.dsl = {
+                        query: {
+                            bool: {
+                                ...base.build()?.query?.bool,
+                                ...filters.value?.query?.bool,
+                            },
+                        },
+                        size: 100,
+                    }
+                } else {
+                    initialBody.dsl = filters.value
+                }
+
+                replaceBody(initialBody)
+            }, 200)
+
             watch(error, () => {
                 if (error.value) {
                     console.log(typeName.value)
-                    message.error({
-                        content: `Failed to fetch ${typeName.value}s!`,
-                        duration: 3,
-                    })
+                    // message.error({
+                    //     content: `Failed to fetch ${typeName.value}s!`,
+                    //     duration: 3,
+                    // })
                 }
             })
             const totalCount = computed(() => data.value?.approximateCount || 0)
             watch(
                 filters,
                 () => {
-                    console.log('fetch', modelValue.value)
-                    console.log('fetch', !disabled.value)
                     if (!modelValue.value && !disabled.value) {
-                        console.log('fetch', typeName.value)
+                        console.log('fetch', filters.value)
+
                         // console.log('model', modelValue)
                         initialBody.dsl = filters.value
                         replaceBody(initialBody)
@@ -120,31 +160,10 @@
             )
 
             const handleChange = (checkedValues: string) => {
-                console.log('checkedValue: ', checkedValues)
                 emit('update:modelValue', checkedValues)
                 emit('change', checkedValues)
             }
             const dropdownOption = computed(() => {
-                // const tree: Record<string, any>[] = []
-                // list.value.forEach((ls) => {
-                //     let treeNodeObj = {
-                //         label:
-                //             ls.attributes?.displayName || ls.attributes?.name,
-                //         value: ls.attributes.qualifiedName,
-                //         slots: {
-                //             title: 'title',
-                //         },
-                //         children: [],
-                //     }
-                //     tree.push(treeNodeObj)
-                //     console.log('selector tree data: ', tree)
-                // })
-                // tree.sort((x, y) => {
-                //     if (x.label < y.label) return -1
-                //     if (x.label > y.label) return 1
-                //     return 0
-                // })
-                // return tree
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     value: ls.attributes.qualifiedName,
@@ -154,7 +173,6 @@
                     if (x.label > y.label) return 1
                     return 0
                 })
-                // console.log('data here: ', data)
                 return data
             })
 
@@ -168,6 +186,8 @@
                 modelValue,
                 dropdownOption,
                 immediate,
+                handleSearch,
+                error,
             }
         },
     })

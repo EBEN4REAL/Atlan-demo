@@ -12,11 +12,11 @@ import {
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})
 
-const listPersonas = () =>
+const listPersonas = (params: any) =>
     useAPI(
         map.LIST_PERSONAS,
         'GET',
-        { initialState: [] },
+        { initialState: [], params },
         {
             asyncOptions: {
                 onError: (e) => {

@@ -5,7 +5,9 @@ import { Persona } from '~/services/service/persona'
 import { usePersonaStore } from '~/store/persona'
 
 export default function usePersona() {
-    const { data } = Persona.listPersonas()
+    const { data } = Persona.listPersonas({
+        columns: ["displayName", "name", "createdAt", "createdBy", "updatedAt", "updatedBy", "type", "level", "description", "metadataPolicies", "dataPolicies", "users", "groups", "version", "enabled", "resources", "attributes"]
+    })
     const personaStore = usePersonaStore()
     watch(data, () => {
         personaStore.setList(data.value?.records)

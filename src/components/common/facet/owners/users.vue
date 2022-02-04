@@ -8,6 +8,7 @@
                 <span class="text-gray-500">No users found</span>
             </div>
         </div>
+
         <div
             class="flex flex-col w-full overflow-y-auto"
             :class="checkboxListClass ? checkboxListClass : 'h-40'"
@@ -79,6 +80,16 @@
                         load more...
                     </div>
                 </template>
+            </div>
+            <div
+                v-if="(isLoading || isEnriching) && userList.length < 2"
+                class="flex items-center justify-center h-full"
+            >
+                <AtlanIcon
+                    icon="CircleLoader"
+                    class="mr-1 text-primary animate-spin mb-0.5"
+                />
+                Loading users
             </div>
         </div>
         <div class="pl-4">
@@ -253,7 +264,7 @@
                 return `${item.username}`
             }
             const handleChange = (checked, id) => {
-                 if (checked.target.checked) {
+                if (checked.target.checked) {
                     map.value[id] = true
                 } else {
                     delete map.value[id]

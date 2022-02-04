@@ -1,8 +1,13 @@
 import { ref } from 'vue'
-import { getNodeSourceImage, getSource, getSchema } from './util.js'
+import {
+    getNodeSourceImage,
+    getSource,
+    getSchema,
+    getNodeTypeText,
+    childGroupBiAssetMap,
+} from './util.js'
 import {
     iconPlus,
-    iconProcess,
     iconEllipse,
     iconCaretDown,
     iconVerified,
@@ -11,6 +16,7 @@ import {
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
 const checkIfLeafNode = (relations, id) => {
     let res = true
     relations.forEach((x) => {
@@ -36,8 +42,10 @@ const hasCTA = (relations, childrenCounts, id) => {
     return res
 }
 
+const childGroupBiAssetTypes = Object.keys(childGroupBiAssetMap)
+
 export default function useGraph() {
-    const createNodeData = async (
+    const createNodeData = (
         entity,
         relations,
         childrenCounts,
@@ -46,6 +54,7 @@ export default function useGraph() {
     ) => {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes, typeCount } = entity
+        const typeNameComputed = getNodeTypeText[typeName] || typeName
         const { certificateStatus } = attributes
         let status = ''
         const displayText = title(entity)
@@ -53,10 +62,18 @@ export default function useGraph() {
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
-        const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
         const isRootNode = checkIfRootNode(relations, guid)
         const isLeafNode = checkIfLeafNode(relations, guid)
         const isCtaNode = hasCTA(relations, childrenCounts, guid)
+        let childGroupBiAsset = ''
+
+        if (Object.keys(childGroupBiAssetMap).includes(typeName)) {
+            childGroupBiAsset =
+                attributes[childGroupBiAssetMap[typeName]]?.attributes?.name ||
+                attributes[
+                    childGroupBiAssetMap[typeName]
+                ]?.uniqueAttributes?.qualifiedName.split('/')[4]
+        }
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -86,8 +103,7 @@ export default function useGraph() {
             source,
             isBase,
             entity,
-            isProcess,
-            width: isProcess ? 60 : 270,
+            width: 270,
             height: typeCount ? 50 : 70,
             shape: 'html',
             data: computedData,
@@ -95,96 +111,85 @@ export default function useGraph() {
                 render(node) {
                     const data = node.getData() as any
 
-                    return !isProcess
-                        ? `
-                        <div class="flex items-center">
-                            <div id="${guid}" class="${
-                              typeCount ? 'isCounter' : ''
-                          } lineage-node group ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          }
-                            ${
-                                data?.isHighlightedNodePath === data?.id
-                                    ? 'isHighlightedNodePath'
+                    return `
+    <div class="flex items-center">
+        <div id="${guid}" class="${
+                        typeCount ? 'isCounter' : ''
+                    } lineage-node group ${
+                        data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                    }
+            ${
+                data?.isHighlightedNodePath === data?.id
+                    ? 'isHighlightedNodePath'
+                    : ''
+            }
+            ${data?.isGrayed ? 'isGrayed' : ''}
+            ${isBase ? 'isBase' : ''}
+            ">
+                <div class=" ${isBase ? 'inscr' : 'hidden'}"> 
+                    <span class="inscr-item">BASE</span>
+                </div>
+                <div class=" popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                        ${displayText} 
+                </div>
+                <div>
+                    <div class="${typeCount ? 'hidden' : ''} node-text">
+                        <span class="relative z-50 block ">
+                            <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
+                                ['Table', 'View'].includes(typeName)
+                                    ? iconCaretDown
                                     : ''
                             }
-                            ${data?.isGrayed ? 'isGrayed' : ''}
-                            ${isBase ? 'isBase' : ''}
-                            ">
-                                    <div class=" ${
-                                        isBase ? 'inscr' : 'hidden'
-                                    }"> 
-                                        <span class="inscr-item">BASE</span>
-                                    </div>
-                                    <div class="popover group-hover:visible group-hover:top-20 group-hover:opacity-100 group-hover:delay-1000">
-                                        ${displayText} 
-                                    </div>
-                                    <div>
-                                        <div class="${
-                                            typeCount ? 'hidden' : ''
-                                        } node-text">
-                                            <span class=" z-50 relative block">
-                                                <span class="hidden group-hover:flex absolute right-0 caret-bg text-white justify-end w-6">${
-                                                    ['Table', 'View'].includes(
-                                                        typeName
-                                                    )
-                                                        ? iconCaretDown
-                                                        : ''
-                                                }</span>
-                                            </span>
-                                            <div class="flex items-center gap-x-1">
-                                                <span class="node-title truncate group-hover:underline">${displayText}</span>
-                                                <span class="flex-none mr-1">${status}</span>
-                                            </div>
-                                        </div>
-                                        <div class="node-meta">
-                                            <img class="node-meta__source" src="${img}" />
-                                            <div class="node-meta__text truncate">${typeName}</div>
-                                            ${
-                                                ['Table', 'View'].includes(
-                                                    typeName
-                                                )
-                                                    ? iconEllipse
-                                                    : ''
-                                            }
-                                            <div class="${
-                                                !typeCount
-                                                    ? 'hidden'
-                                                    : 'isCounter'
-                                            } node-meta__text">${typeCount}</div>
-                                            <div class="node-meta__text  truncate ${
-                                                ['Table', 'View'].includes(
-                                                    typeName
-                                                )
-                                                    ? ''
-                                                    : 'hidden'
-                                            }">${schemaName || ''}</div>
-                                        </div>
-                                    </div>       
-                                </div>
-
-                                <div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${
-                              (isRootNode || isLeafNode) && isCtaNode
-                                  ? 'flex'
-                                  : 'hidden'
-                          } ${
-                              isRootNode ? 'l-m20px' : 'r-m20px'
-                          } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center hidden">${iconPlus}
-                                </div>
-                        </div>`
-                        : `<div class="lineage-process ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          } ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }
-                          ${data?.isGrayed ? 'isGrayed' : ''}"> ${iconProcess}
-                        </div>`
+                            </span>
+                        </span>
+                        <div class="flex items-center gap-x-1">
+                            <span class="truncate node-title group-hover:underline">${displayText}</span>
+                            <span class="flex-none mr-1">${status}</span>
+                        </div>
+                    </div>
+                    <div class="node-meta">
+                        <img class="node-meta__source" src="${img}" />
+                        <div class="truncate node-meta__text">${typeNameComputed}</div>
+                        ${
+                            [
+                                'Table',
+                                'View',
+                                ...childGroupBiAssetTypes,
+                            ].includes(typeName) &&
+                            (schemaName || childGroupBiAsset)
+                                ? iconEllipse
+                                : ''
+                        } 
+                        <div class="node-meta__text  truncate ${
+                            [
+                                'Table',
+                                'View',
+                                ...childGroupBiAssetTypes,
+                            ].includes(typeName)
+                                ? ''
+                                : 'hidden'
+                        }">
+                            ${schemaName || childGroupBiAsset || ''}
+                        </div>
+                        <div class="${
+                            !typeCount ? 'hidden' : 'isCounter'
+                        } node-meta__text">
+                            ${typeCount}
+                        </div>
+                    </div>
+                </div>       
+        </div>
+        <div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${
+                        (isRootNode || isLeafNode) && isCtaNode
+                            ? 'flex'
+                            : 'hidden'
+                    } ${
+                        isRootNode ? 'l-m20px' : 'r-m20px'
+                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center hidden">${iconPlus}
+        </div>
+    </div>`
                 },
                 shouldComponentUpdate(node) {
                     return node.hasChanged('data')
@@ -297,15 +302,13 @@ export default function useGraph() {
             },
         }
 
-        if (isProcess) delete nodeData.ports
-
-        return { nodeData, entity, isProcess }
+        return { nodeData }
     }
 
     const addNode = async (graph, entity, data = {}) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
-        const { nodeData } = await createNodeData(entity, baseEntityGuid)
+        const { nodeData } = createNodeData(entity, baseEntityGuid)
         graph.value.addNode(nodeData)
     }
 

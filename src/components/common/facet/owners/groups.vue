@@ -4,7 +4,14 @@
             v-if="list.length < 1"
             class="flex flex-col items-center justify-center h-full"
         >
-            <div class="flex flex-col items-center">
+            <div v-if="isLoading || isEnriching">
+                <AtlanIcon
+                    icon="CircleLoader"
+                    class="mr-1 text-primary animate-spin mb-0.5"
+                />
+                Loading groups
+            </div>
+            <div v-else class="flex flex-col items-center">
                 <span class="text-gray-500">No groups found</span>
             </div>
         </div>
@@ -57,8 +64,8 @@
                 </p> -->
                 <template v-if="list?.length < filterTotal">
                     <div
-                        class="flex justify-center ml-auto"
                         v-if="isLoading || isEnriching"
+                        class="flex justify-center ml-auto"
                     >
                         <AtlanIcon
                             icon="CircleLoader"

@@ -28,7 +28,10 @@
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon :icon="node.img" class="h-4 mr-1" />
-                    <div class="flex flex-col">
+                    <div class="flex flex-col" v-if="!node?.connection">
+                        {{ capitalizeFirstLetter(node.title) }}
+                    </div>
+                    <div class="flex flex-col" v-else>
                         {{ node.title }}
                     </div>
                     <span v-if="node?.count" class="text-sm text-gray-500">

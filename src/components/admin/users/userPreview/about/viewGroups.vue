@@ -39,7 +39,9 @@
             </div>
             <div v-else>
                 <span>{{
-                    isCurrentUser ? 'You are' : `${user.firstName} is`
+                    isCurrentUser
+                        ? 'You are'
+                        : `${user?.firstName ?? user.username} is`
                 }}</span>
                 not a part of any group.
             </div>

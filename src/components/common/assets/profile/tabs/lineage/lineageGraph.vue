@@ -14,11 +14,10 @@
             </div>
         </div>
 
-        <a-spin
+        <AtlanLoader
             v-if="loaderCords.x"
-            :style="`position: absolute; left: ${loaderCords.x - 25}px; top: ${
-                loaderCords.y - 148
-            }px; z-index: 999`"
+            class="absolute h-5 opacity-70"
+            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
         />
 
         <!-- Graph Container -->
@@ -83,6 +82,7 @@
         provide,
         toRefs,
         inject,
+        computed,
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -138,6 +138,18 @@
             const drawerActiveKey = ref('Overview')
             const selectedTypeInRelationDrawer = ref('__all')
 
+            /** COMPUTED */
+            const offsetLoaderCords = computed(() => {
+                const isFullScr = !!document.fullscreenElement
+                return {
+                    x: isFullScr
+                        ? loaderCords.value.x
+                        : (loaderCords.value.x || 0) - 25,
+                    y: isFullScr
+                        ? loaderCords.value.y
+                        : (loaderCords.value.y || 0) - 148,
+                }
+            })
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (
@@ -233,6 +245,7 @@
 
             return {
                 isDrawerVisible,
+                offsetLoaderCords,
                 selectedAsset,
                 baseEntity,
                 graph,
@@ -458,12 +471,12 @@
                         line-height: 22px;
                         background: #ffffff;
                         color: #5277d7;
-                        position: absolute;
+                        position: fixed;
                         border: 1px solid #5277d7;
                         border-bottom: 0;
-                        top: -37px;
+                        top: -26px;
                         padding: 3px 8px 0px 8px;
-                        left: -11px;
+                        left: 0;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -491,6 +504,9 @@
                         padding: 2px 5px 0px 5px;
                         border-radius: 2px;
                         line-height: 1.3rem;
+                        position: fixed;
+                        left: 6px;
+                        top: -17px;
                     }
                 }
 
@@ -502,9 +518,9 @@
                 }
             }
             & .popover {
-                @apply invisible opacity-0 absolute top-16 left-0 p-3;
+                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
                 @apply delay-75 transition-all;
-                @apply rounded shadow-lg break-all bg-white text-gray-500;
+                @apply rounded-md shadow-md bg-white text-gray-500;
             }
         }
 

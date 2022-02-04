@@ -141,7 +141,7 @@
                         </div>
                     </div>
                     <div class="w-full pt-4">
-                        <router-link :to="`/glossary/${term.guid}/overview`">
+                        <router-link :to="`/glossary/${fetchedTerm.guid}/overview`">
                             <AtlanButton
                                 color="secondary"
                                 class="w-full p-0 h-7"

@@ -801,7 +801,7 @@ export default function useEventGraph(
         e.stopPropagation()
 
         if (che.value) resetCHE()
-        if (chp.value.portId) deselectPort()
+        highlight(null)
 
         const ele = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
@@ -809,6 +809,7 @@ export default function useEventGraph(
         // If user selects the already selected port
         if (chp.value.portId === portId) {
             onCloseDrawer()
+            deselectPort()
         } else {
             selectPort(node, e, portId)
             const port = node.getPort(portId)

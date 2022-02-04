@@ -64,8 +64,7 @@
                             type="primary"
                             @click="
                                 () => {
-                                    setPopoverState(!popoverVisible),
-                                        setEmptyStateCTA(false)
+                                    setPopoverState(!popoverVisible)
                                 }
                             "
                             >Add User/Group</a-button
@@ -723,11 +722,8 @@
                         (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                persona.value.users = updatedUsersIds
                 selectedPersonaDirty.value.users = updatedUsersIds
-                persona.value.groups = updatedGroupIds
                 selectedPersonaDirty.value.groups = updatedGroupIds
-
                 updateUsers({
                     id: persona.value.id,
                     users: updatedUsersIds,
@@ -740,6 +736,8 @@
                         userGroupData.value.ownerGroups = updatedGroupIds
                         getUserList()
                         getGroupList()
+                        persona.value.users = updatedUsersIds
+                        persona.value.groups = updatedGroupIds
                     })
                     .catch((e) => {
                         if (type === 'user') {

@@ -155,6 +155,7 @@
                 title="Schedule"
                 okText="Update"
                 okType="primary"
+                @ok="handleScheduleUpdate"
             >
                 <div class="px-4 py-2">
                     <Schedule v-model="cronModel"></Schedule>
@@ -174,6 +175,7 @@
     import { promiseTimeout, useTimeout, useTimeoutFn } from '@vueuse/core'
 
     import Schedule from '@/common/input/schedule.vue'
+    import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -276,6 +278,32 @@
                 // emit('runNow', workflowObject)
             }
 
+            const path = ref({})
+            const body = ref({})
+
+            const { mutate: updateWorkflow } = useWorkflowUpdate(
+                path,
+                body,
+                false
+            )
+            const handleScheduleUpdate = () => {
+                console.log('update schedule', cronModel.value)
+                path.value = {
+                    name: workflowObject.value.metadata.name,
+                }
+
+                body.value = workflowObject.value
+                if (cronModel.value) {
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/schedule'
+                    ] = cronModel.value.cron
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/timezone'
+                    ] = cronModel.value.timezone
+                }
+                updateWorkflow()
+            }
+
             return {
                 packageObject,
                 workflowObject,
@@ -296,6 +324,10 @@
                 cronModel,
                 nextRuns,
                 nextRunsText,
+                handleScheduleUpdate,
+                updateWorkflow,
+                path,
+                body,
             }
         },
     })

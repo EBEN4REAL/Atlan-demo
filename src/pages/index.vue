@@ -9,8 +9,8 @@
             </div>
             <div class="flex flex-col col-span-4 px-9">
                 <div class="">
-                    <SearchAndStats />
-                    <Announcements class="mt-6" />
+                    <!-- <SearchAndStats /> -->
+                    <!-- <Announcements class="mt-6" /> -->
                 </div>
 
                 <div class="mt-6">
@@ -41,6 +41,12 @@
                 </h2>
                 <RecentResources />
             </section>
+            <section>
+                <h2 class="mb-3 text-lg font-bold text-gray-600">
+                    Recent announcements
+                </h2>
+                <RecentAnnouncements />
+            </section>
         </aside>
     </div>
 </template>
@@ -60,6 +66,7 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import RecentResources from '@/home/main/recentResources.vue'
+    import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -72,6 +79,7 @@
             Persona,
             Purpose,
             RecentResources,
+            RecentAnnouncements,
         },
         props: {},
         setup() {

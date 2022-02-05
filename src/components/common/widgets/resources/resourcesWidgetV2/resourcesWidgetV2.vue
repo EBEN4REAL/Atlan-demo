@@ -23,13 +23,18 @@
             </template>
             <template v-else>
                 <div class="grid grid-cols-2 gap-3">
-                    <template v-for="l in resources" :key="l.qualifiedName">
+                    <div v-for="l in resources" :key="l.qualifiedName">
                         <LinkPreviewCard
+                            style="min-height: 80px"
                             v-if="getPreviewComponent(l.url) === 'link'"
                             :link="l"
                         />
-                        <SlackPreview v-else :link="l" />
-                    </template>
+                        <SlackPreview
+                            style="min-height: 80px"
+                            v-else
+                            :link="l"
+                        />
+                    </div>
                 </div>
             </template>
         </section>

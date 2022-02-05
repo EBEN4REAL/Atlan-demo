@@ -156,6 +156,8 @@
                         ...resources,
                         links: [...(resources?.links ?? []), r],
                     }
+                    delete body.metadataPolicies
+                    delete body.dataPolicies
                     await savePersona(body)
                     addStatus.value = 'success'
                 } catch (e) {
@@ -164,11 +166,15 @@
             }
 
             const updateStatus = ref('')
-
+            watch(updateStatus, () => {
+                console.log('updateStatus', updateStatus.value)
+            })
             const handleUpdateResource = async (r) => {
                 updateStatus.value = 'loading'
                 try {
                     const body = JSON.parse(JSON.stringify(persona.value))
+                    delete body.metadataPolicies
+                    delete body.dataPolicies
                     const index = body.resources.links.findIndex(
                         (l) => l.qualifiedName === r.qualifiedName
                     )
@@ -187,6 +193,8 @@
                     body.resources.links = body.resources.links.filter(
                         (l) => l.qualifiedName !== id
                     )
+                    delete body.metadataPolicies
+                    delete body.dataPolicies
                     await savePersona(body)
                     removeStatus.value = 'success'
                 } catch (e) {

@@ -1,6 +1,6 @@
 <template>
     <div @click="visible = true">
-        <slot name="trigger" @click="visible = true" />
+        <slot name="trigger" />
     </div>
 
     <a-modal
@@ -71,13 +71,14 @@
             const removeStatus: Ref = inject('removeStatus')
 
             watch(removeStatus, (v) => {
+                // FIXME this watcher is running multiple times, ???!
                 if (v === 'success') {
                     message.success({
                         content: `Successfully removed resource "${link.value.name}"`,
                         duration: 1.5,
                         key: 'update',
                     })
-                    // visible.value = false
+                    visible.value = false
                 } else if (v === 'error') {
                     message.error({
                         content: `Failed to removed resource "${link.value.name}"`,

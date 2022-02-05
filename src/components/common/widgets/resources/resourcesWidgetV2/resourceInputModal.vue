@@ -112,10 +112,10 @@
     })
 
     const reset = () => {
-        // localResource.value = {
-        //     link: 'https://',
-        //     title: '',
-        // }
+        localResource.value = {
+            link: 'https://',
+            title: '',
+        }
     }
 
     const add: Function = inject('add')
@@ -125,37 +125,45 @@
 
     watch(addStatus, (v) => {
         if (v === 'success') {
-            message.success({
-                content: `Successfully added new resource "${localResource.value.title}"`,
-                duration: 1.5,
-                key: 'success',
-            })
+            // FIXME this watcher is running multiple times, ???!
+            if (localResource.value.title)
+                message.success({
+                    content: `Successfully added new resource "${localResource.value.title}"`,
+                    duration: 1.5,
+                    key: 'add',
+                })
             reset()
             visible.value = false
         } else if (v === 'error') {
-            message.error({
-                content: `Failed to add new resource "${localResource.value.title}"`,
-                duration: 1.5,
-                key: 'error',
-            })
+            // FIXME this watcher is running multiple times, ???!
+            if (localResource.value.title)
+                message.error({
+                    content: `Failed to add new resource "${localResource.value.title}"`,
+                    duration: 1.5,
+                    key: 'errorAdd',
+                })
         }
     })
 
-    watch(updateStatus, (v) => {
-        if (v === 'success') {
-            message.success({
-                content: `Successfully updated resource "${localResource.value.title}"`,
-                duration: 1.5,
-                key: 'update',
-            })
+    watch(updateStatus, (v, o) => {
+        if (updateStatus.value === 'success') {
+            // FIXME this watcher is running multiple times, ???!
+            if (localResource.value.title)
+                message.success({
+                    content: `Successfully updated resource "${localResource.value.title}"`,
+                    duration: 1.5,
+                    key: 'update',
+                })
             reset()
             visible.value = false
-        } else if (v === 'error') {
-            message.error({
-                content: `Failed to update resource "${localResource.value.title}"`,
-                duration: 1.5,
-                key: 'error',
-            })
+        } else if (updateStatus.value === 'error') {
+            // FIXME this watcher is running multiple times, ???!
+            if (localResource.value.title)
+                message.error({
+                    content: `Failed to update resource "${localResource.value.title}"`,
+                    duration: 1.5,
+                    key: 'errorUpdate',
+                })
         }
     })
 

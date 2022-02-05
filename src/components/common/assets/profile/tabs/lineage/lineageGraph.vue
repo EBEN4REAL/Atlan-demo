@@ -115,6 +115,7 @@
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const config = inject('config')
+            const graphPrefs = inject('preferences', ref({}))
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -206,6 +207,7 @@
                     drawerActiveKey,
                     selectedTypeInRelationDrawer,
                     config,
+                    graphPrefs,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph
@@ -265,6 +267,7 @@
                 onShowAddLineage,
                 onCloseDrawer,
                 handleDrawerUpdate,
+                graphPrefs,
             }
         },
     })
@@ -493,10 +496,14 @@
                 @apply mt-1;
 
                 &__text {
-                    @apply text-base;
+                    @apply text-base flex-shrink flex-grow-0;
                     text-transform: capitalize;
                     color: #6f7590;
                     margin: 0 6px;
+
+                    &.isTypename {
+                        @apply flex-shrink-0;
+                    }
 
                     &.isCounter {
                         background: #9ca1a9;

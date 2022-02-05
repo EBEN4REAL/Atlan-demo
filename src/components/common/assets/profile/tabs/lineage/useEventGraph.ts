@@ -10,6 +10,8 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
+import { childGroupBiAssetMap } from './util.js'
+
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
@@ -28,6 +30,7 @@ export default function useEventGraph(
     drawerActiveKey: Ref<string>,
     selectedTypeInRelationDrawer: Ref<string>,
     config,
+    graphPrefs,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph
@@ -494,8 +497,13 @@ export default function useEventGraph(
         edge.attr('line/stroke', reset ? '#aaaaaa' : '#5277d7')
         edge.attr('line/strokeWidth', reset ? 1.6 : 3)
         edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
-        edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
-        edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+
+        // Only change arrowhead size if showArrow is false
+        if (!graphPrefs.value.showArrow) {
+            edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
+            edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
+        }
+
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         edge.toFront()
@@ -948,19 +956,43 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
 
-        showLoader(e)
+        if (node?.store?.data?.entity?.typeCount) {
+            // const edges = graph.value.getIncomingEdges(node)
+            // const sNode = edges[0]?.getSourceNode()
+            // if (sNode) {
+            //     onSelectAsset(sNode.store.data.entity)
+            //     highlight(node?.id)
+            //     setTimeout(() => {
+            //         drawerActiveKey.value = 'Relations'
+            //     }, 500)
+            //     selectedTypeInRelationDrawer.value =
+            //         node.store.data.entity.typeName
+            // }
 
-        if (node.store.data?.data?.isTypeNode) {
-            const edges = graph.value.getIncomingEdges(node)
-            const sNode = edges[0]?.getSourceNode()
-            if (sNode) {
-                onSelectAsset(sNode.store.data.entity)
-                highlight(node?.id)
-                setTimeout(() => {
-                    drawerActiveKey.value = 'Relations'
-                }, 500)
-                selectedTypeInRelationDrawer.value =
-                    node.store.data.entity.typeName
+            const { entity } = node.store.data
+
+            if (entity.guid === highlightedNode.value) {
+                onCloseDrawer()
+                assetGuidToHighlight.value = ''
+                return
+            }
+
+            const targetEntityId =
+                entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
+
+            if (targetEntityId) {
+                onCloseDrawer()
+                showLoader(e)
+                const { data } = fetchAsset(targetEntityId)
+                watchOnce(data, () => {
+                    highlight(entity?.guid)
+                    onSelectAsset(data.value)
+                    selectedTypeInRelationDrawer.value =
+                        node.store.data.entity.typeName
+                    setTimeout(() => {
+                        drawerActiveKey.value = 'Relations'
+                    }, 500)
+                })
             }
         } else {
             onSelectAsset(node.store.data.entity)
@@ -1023,4 +1055,18 @@ export default function useEventGraph(
 
         resetSelections.value = false
     })
+
+    watch(
+        () => graphPrefs.value.showArrow,
+        (val) => {
+            const size = val ? 12 : 0.1
+            graph.value.getEdges().forEach((edge) => {
+                // Should not be port edge or the current selected edge
+                if (!edge.id.includes('port') && edge.id !== che.value) {
+                    edge.attr('line/targetMarker/height', size)
+                    edge.attr('line/targetMarker/width', size)
+                }
+            })
+        }
+    )
 }

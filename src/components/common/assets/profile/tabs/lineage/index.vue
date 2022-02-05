@@ -143,6 +143,7 @@
                     ...customMetadataProjections,
                 ],
             }))
+            const preferences = ref({ showArrow: false })
 
             /** METHODS */
             // addRelatedBiAssetToLineage
@@ -186,7 +187,7 @@
 
                 let parentGuidObj = {}
 
-                relatedBiAssets.value.forEach((x) => {
+                relatedBiAssets.value.forEach((x, index) => {
                     if (childGroupBiAssetMap[x.typeName]) {
                         const parentGuid =
                             x.attributes[childGroupBiAssetMap[x.typeName]].guid
@@ -199,15 +200,29 @@
                                 [parentGuid]: [x],
                             }
 
-                        Object.entries(parentGuidObj).forEach(([k, v]) => {
-                            const entity = v[0]
-                            if (v.length > 1)
-                                entity.typeCount = `${pluralizeString(
-                                    getNodeTypeText[entity.typeName],
-                                    v.length
-                                )}`
-                            addRelatedBiAssetToLineage(data, entity)
-                        })
+                        if (relatedBiAssets.value.length - 1 === index) {
+                            Object.entries(parentGuidObj).forEach(([k, v]) => {
+                                const typeNames = v.map((x) => x.typeName)
+                                const typeNamesUnique = [...new Set(typeNames)]
+
+                                typeNamesUnique.forEach((xxx) => {
+                                    const entity = v.find(
+                                        (x) => x.typeName === xxx
+                                    )
+                                    const length = v.filter(
+                                        (x) => x.typeName === xxx
+                                    ).length
+
+                                    if (length > 1)
+                                        entity.typeCount = `${pluralizeString(
+                                            getNodeTypeText[entity.typeName],
+                                            length
+                                        )}`
+                                    addRelatedBiAssetToLineage(data, entity)
+                                })
+                            })
+                        }
+                        return
                     }
                     addRelatedBiAssetToLineage(data, x)
                 })
@@ -358,6 +373,7 @@
             provide('lineageDirections', lineageDirections)
             provide('config', config)
             provide('control', control)
+            provide('preferences', preferences)
 
             /** WATCHERS */
             whenever(error, () => {

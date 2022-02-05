@@ -315,6 +315,7 @@ import Databricks from '~/assets/images/source/svg/Databricks.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
 import Looker from '~/assets/images/source/svg/Looker.svg'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -689,6 +690,7 @@ export default {
     Redshift,
     BigQuery,
     Looker,
+    Salesforce,
     SSO,
     SMTP,
     APIKey,

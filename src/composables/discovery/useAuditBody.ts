@@ -92,6 +92,53 @@ export function useAuditBody(
                 }
                 break
             }
+            case 'typeName': {
+                console.log('typeName', filterObject)
+                if (filterObject) {
+                    base.filter('nested', {
+                        path: 'detail',
+                        ...bodybuilder()
+                            .filter(
+                                'term',
+                                'detail.typeName.keyword',
+                                filterObject
+                            )
+                            .build(),
+                    })
+                }
+                break
+            }
+            case 'exists': {
+                if (filterObject) {
+                    base.filter('bool', (q) => {
+                        if (filterObject.length > 0)
+                            filterObject.forEach((element) => {
+                                q.orFilter('nested', {
+                                    path: 'detail',
+                                    ...bodybuilder()
+                                        .filter('exists', element)
+                                        .build(),
+                                })
+                            })
+                        return q
+                    })
+                    // base.filter('nested', (q) => {
+                    //     q.filter('bool', (q) => {
+                    //         q.orFilter(
+                    //             'exists',
+                    //             'detail.attributes.userDescription.keyword'
+                    //         )
+                    //         q.orFilter(
+                    //             'exists',
+                    //             'detail.attributes.userDescription.keyword'
+                    //         )
+                    //         return q
+                    //     })
+                    //     return q
+                    // })
+                }
+                break
+            }
         }
     })
 

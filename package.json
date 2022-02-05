@@ -166,6 +166,7 @@
         "dayjs/plugin/utc",
         "emoji-mart-vue-fast/src",
         "event-source-polyfill",
+        "json-2-csv",
         "keycloak-js",
         "pinia",
         "prosemirror-image-plugin",

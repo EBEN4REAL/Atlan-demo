@@ -48,7 +48,6 @@
     "chartjs-plugin-datalabels": "^2.0.0",
     "cron-parser": "^4.2.1",
     "cronstrue": "^1.122.0",
-    "dagrejs": "^0.2.1",
     "dayjs": "^1.10.7",
     "emoji-mart-vue-fast": "^10.2.1",
     "event-source-polyfill": "git://github.com/atlanhq/EventSource.git",

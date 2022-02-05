@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
-        <div class="flex justify-between px-5 pt-4 pb-4">
+        <div class="flex justify-between px-5 pt-4 pb-2">
             <span class="font-semibold text-gray-500">Activity</span>
 
             <AtlanIcon
@@ -8,6 +8,12 @@
                 class="w-auto h-4 mt-1 cursor-pointer text-primary"
                 @click="refreshAudits"
             />
+        </div>
+        <div class="px-5 pb-4">
+            <ActivityTypeSelect
+                v-model="activityType"
+                @change="handleActivityTypeChange"
+            ></ActivityTypeSelect>
         </div>
         <div
             v-if="auditList.length === 0 && isLoading"
@@ -147,11 +153,12 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import ActivityTypeSelect from '@/common/select/activityType.vue'
+    import { activityTypeMap } from '~/constant/activityType'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen, AtlanIcon },
+        components: { ActivityType, EmptyScreen, ActivityTypeSelect },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -167,6 +174,8 @@
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
             const dependentKey = ref('audit')
+
+            const activityType = ref('all')
 
             const facets = ref()
 
@@ -259,6 +268,47 @@
                 () => audits.value?.length < params.count
             )
 
+            const handleActivityTypeChange = () => {
+                console.log(activityType.value)
+
+                let found = {}
+
+                found = activityTypeMap.find((i) => {
+                    if (!i.isGroup) {
+                        if (i.value === activityType.value) {
+                            return i
+                        }
+                    } else {
+                        return i.children.some((j) => {
+                            if (j.value === activityType.value) {
+                                return j
+                            }
+                        })
+                    }
+                })
+
+                if (found.isGroup) {
+                    found = found.children.find((i) => {
+                        if (i.value === activityType.value) {
+                            return i
+                        }
+                    })
+                }
+
+                if (found) {
+                    if (found?.value === 'all') {
+                        facets.value.action = ''
+                        facets.value.exists = []
+                        facets.value.typeName = ''
+                    } else {
+                        facets.value.action = found.action || ''
+                        facets.value.exists = found.exists
+                        facets.value.typeName = found.typeName
+                    }
+                    quickChange()
+                }
+            }
+
             return {
                 error,
                 isLoading,
@@ -280,6 +330,9 @@
                 totalCount,
                 quickChange,
                 getColumnName,
+                activityType,
+                activityTypeMap,
+                handleActivityTypeChange,
             }
         },
     })

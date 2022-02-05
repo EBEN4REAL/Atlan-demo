@@ -203,7 +203,6 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (eventDetail) {
-                console.log(eventDetail)
                 switch (auditEvent.action) {
                     // case 'LABEL_ADD':
                     //     data.displayValue = `Label <b>${eventDetail[1].trim()}</b> added`

@@ -315,6 +315,10 @@ const useAssetAudit = (params: any, guid: string) => {
                         data.value = eventDetail
                         data.component = 'Create'
                         return data
+                    case 'ENTITY_DELETE':
+                        data.value = eventDetail
+                        data.component = 'Delete'
+                        return data
 
                     case 'ENTITY_UPDATE':
                         return getEntityUpdateLogs(eventDetail)

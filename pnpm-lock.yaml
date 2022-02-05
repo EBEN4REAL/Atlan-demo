@@ -57,7 +57,6 @@ specifiers:
   chartjs-plugin-datalabels: ^2.0.0
   cron-parser: ^4.2.1
   cronstrue: ^1.122.0
-  dagrejs: ^0.2.1
   dayjs: ^1.10.7
   dotenv: ^10.0.0
   emoji-mart-vue-fast: ^10.2.1
@@ -161,7 +160,6 @@ dependencies:
   chartjs-plugin-datalabels: 2.0.0_chart.js@3.7.0
   cron-parser: 4.2.1
   cronstrue: 1.123.0
-  dagrejs: 0.2.1
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.2.1_vue@3.2.29
   event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
@@ -3458,13 +3456,6 @@ packages:
     resolution: {integrity: sha512-2u44ZG2OcNUO9HDp/Jl8C07x6pU/eTR3ncV91SiK3dhG9TWvRVsCoJw14Ckx5DgWkzGA3waZWO3d7pgqpUI/XA==}
     dev: false
 
-  /dagrejs/0.2.1:
-    resolution: {integrity: sha512-4bb1y+4aM1xtkK7ieP0V7Xn/34GQfnCapl0yubrOMX8Qb/PIwM1Dii2uUBv/KtuzrQtxPliSP4r5MQBsnP6gNg==}
-    dependencies:
-      graphlib: 2.1.8
-      lodash: 4.17.21
-    dev: false
-
   /dayjs/1.10.7:
     resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==}
     dev: false
@@ -4590,12 +4581,6 @@ packages:
 
   /graceful-fs/4.2.9:
     resolution: {integrity: sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==}
-
-  /graphlib/2.1.8:
-    resolution: {integrity: sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==}
-    dependencies:
-      lodash: 4.17.21
-    dev: false
 
   /handle-thing/2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}

@@ -53,16 +53,60 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const { typeName } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
             const list = ref(activityTypeMap)
 
             const groupList = computed(() => {
-                return list.value.filter((i) => i.isGroup)
+                return list.value.filter((i) => {
+                    if (i.isGroup) {
+                        console.log('filter', typeName.value, i.includes)
+                        if (typeName.value && i.includes?.length > 0) {
+                            if (
+                                i.includes?.includes(typeName.value) &&
+                                i.isGroup
+                            ) {
+                                return true
+                            }
+                            return false
+                        } else if (typeName.value && i.excludes?.length > 0) {
+                            if (
+                                !i.excludes?.includes(typeName.value) &&
+                                i.isGroup
+                            ) {
+                                return true
+                            }
+                            return false
+                        }
+                        return true
+                    }
+                })
             })
             const nonGroupList = computed(() => {
-                return list.value.filter((i) => !i.isGroup)
+                return list.value.filter((i) => {
+                    if (!i.isGroup) {
+                        if (typeName.value && i.includes?.length > 0) {
+                            if (
+                                i.includes?.includes(typeName.value) &&
+                                !i.isGroup
+                            ) {
+                                return true
+                            }
+                            return false
+                        } else if (typeName.value && i.excludes?.length > 0) {
+                            if (
+                                !i.excludes?.includes(typeName.value) &&
+                                !i.isGroup
+                            ) {
+                                return true
+                            }
+                            return false
+                        }
+                        return true
+                    }
+                })
             })
 
             const handleChange = () => {

@@ -12,6 +12,7 @@
         <div class="px-5 pb-4">
             <ActivityTypeSelect
                 v-model="activityType"
+                :typeName="selectedAsset.typeName"
                 @change="handleActivityTypeChange"
             ></ActivityTypeSelect>
         </div>

@@ -16,6 +16,7 @@ export const activityTypeMap = [
         value: 'terms-updated',
         label: 'Terms',
         action: 'ENTITY_UPDATE',
+        excludes: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
         exists: ['detail.relationshipAttributes.meanings'],
     },
 
@@ -56,7 +57,7 @@ export const activityTypeMap = [
         isGroup: true,
         value: 'column-group',
         label: 'Columns',
-        includes: [],
+        includes: ['Table', 'View'],
         excludes: [],
         children: [
             {

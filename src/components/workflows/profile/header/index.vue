@@ -154,6 +154,7 @@
                 v-model:visible="scheduleVisible"
                 title="Schedule"
                 okText="Update"
+                :confirm-loading="isLoading"
                 okType="primary"
                 @ok="handleScheduleUpdate"
             >
@@ -281,11 +282,27 @@
             const path = ref({})
             const body = ref({})
 
-            const { mutate: updateWorkflow } = useWorkflowUpdate(
-                path,
-                body,
-                false
-            )
+            const {
+                mutate: updateWorkflow,
+                isLoading,
+                error,
+                data,
+            } = useWorkflowUpdate(path, body, false)
+
+            watch(data, () => {
+                if (data.value) {
+                    message.success('Workflow schedule updated')
+                    toggleSchedule()
+                }
+            })
+
+            watch(error, () => {
+                if (error.value) {
+                    message.error('Workflow schedule failed. Please try again')
+                    toggleSchedule()
+                }
+            })
+
             const handleScheduleUpdate = () => {
                 console.log('update schedule', cronModel.value)
                 path.value = {
@@ -328,6 +345,9 @@
                 updateWorkflow,
                 path,
                 body,
+                isLoading,
+                error,
+                data,
             }
         },
     })

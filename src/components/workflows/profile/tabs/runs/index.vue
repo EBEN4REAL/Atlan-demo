@@ -5,6 +5,7 @@
                 <div class="flex flex-col">
                     <div class="flex items-center">
                         <RunsSelect
+                            :key="runId"
                             v-model="selectedRunName"
                             :workflowName="workflowName"
                             style="min-width: 150px"
@@ -17,6 +18,7 @@
                         ></a-spin>
                     </div>
                     <Sidebar
+                        :key="runId"
                         :selectedRun="selectedRun"
                         :isLoading="isLoading"
                         :error="error"
@@ -26,12 +28,14 @@
             </div>
 
             <MonitorGraph
+                :key="runId"
                 ref="monitorGraphRef"
                 :graph-data="selectedRun"
                 class=""
                 @select="handleSelectPod"
                 :isLoading="isLoading"
                 :error="error"
+                @refresh="handleRefresh"
             />
         </div>
     </div>
@@ -52,7 +56,7 @@
     import Sidebar from './sidebar.vue'
 
     import MonitorGraph from './monitorGraph.vue'
-    import { useRouter } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import { useIntervalFn } from '@vueuse/core'
 
     export default defineComponent({
@@ -89,6 +93,7 @@
             const selectedRunName = ref(runId.value)
 
             const router = useRouter()
+            const route = useRoute()
 
             const monitorGraphRef = ref(null)
 
@@ -109,6 +114,11 @@
                 error,
             } = useRunItem(path, false)
 
+            watch(runId, () => {
+                console.log('changed run id', runId.value)
+                selectedRunName.value = runId.value
+            })
+
             watch(
                 selectedRunName,
                 async () => {
@@ -117,11 +127,14 @@
                             name: selectedRunName.value,
                         }
 
-                        // router.push({
-                        //     query: {
-                        //         name: selectedRunName.value,
-                        //     },
-                        // })
+                        if (route.query.name !== selectedRunName.value) {
+                            router.replace({
+                                query: {
+                                    name: selectedRunName.value,
+                                },
+                            })
+                        }
+
                         isValidating.value = true
                         await mutate()
                         monitorGraphRef.value?.initialize(false, selectedRun)
@@ -160,6 +173,13 @@
                 selectedPod.value = pod
             }
 
+            const handleRefresh = async (pod) => {
+                isValidating.value = true
+                await mutate()
+                monitorGraphRef.value?.initialize(false, selectedRun)
+                isValidating.value = false
+            }
+
             return {
                 selectedRunName,
                 workflowName,
@@ -179,8 +199,9 @@
                 mutate,
                 dependentKey,
                 isValidating,
-
+                route,
                 monitorGraphRef,
+                handleRefresh,
             }
         },
     })

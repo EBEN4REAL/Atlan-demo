@@ -71,6 +71,9 @@ export default function useWorkflowInfo() {
         )
     }
     const finishedAt = (item: any, relative: any) => {
+        if (!item?.status?.finishedAt) {
+            return 'N/A'
+        }
         if (relative) {
             if (item?.status?.finishedAt) {
                 return dayjs().from(item?.status?.finishedAt, true)
@@ -100,6 +103,10 @@ export default function useWorkflowInfo() {
         return finishedAtProp
     }
     const duration = (item) => {
+        if (!item?.status?.finishedAt || !item?.status?.startedAt) {
+            return 'N/A'
+        }
+
         if (item?.status?.startedAt && item?.status?.finishedAt) {
             const sec = dayjs(item.status.finishedAt).diff(
                 item.status.startedAt,

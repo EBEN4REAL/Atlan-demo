@@ -365,7 +365,8 @@
             const handleStop = () => {
                 Modal.confirm({
                     title: 'Are you sure you want to stop this run?',
-                    content: 'This will stop all the running tasks',
+                    content:
+                        'It might take 15-30 seconds for the workflow to kill all the tasks.',
                     okText: 'Yes',
                     onOk() {
                         const path = ref({

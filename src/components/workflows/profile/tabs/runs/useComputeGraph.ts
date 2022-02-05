@@ -21,6 +21,7 @@ export default function useComputeGraph(
     const model = ref(null)
 
     const name = workflowData?.value?.metadata?.name
+    // const workflowStatus = workflowData?.value?.metadata?.name
     // const sourceNodes = workflowData.value?.status?.nodes
 
     const sourceNodes = computed(() => workflowData.value?.status?.nodes)

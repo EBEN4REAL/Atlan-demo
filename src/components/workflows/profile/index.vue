@@ -21,7 +21,7 @@
             >
                 <component
                     :is="tab.component"
-                    :key="`${tab.id}`"
+                    :key="`${tab.id}_${searchDirtyTimestamp}`"
                     :workflowObject="workflowObject"
                     :runId="runId"
                     :packageObject="packageObject"
@@ -79,6 +79,8 @@
 
             const runId = computed(() => route?.query?.name)
 
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
             const router = useRouter()
             const handleChangeTab = (key) => {
                 router.replace(`/workflows/${route.params.id}/${key}`)
@@ -91,6 +93,7 @@
             const runName = ref('')
 
             const handleNewRun = (run) => {
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 // runName.value = run
                 router.push({
                     query: {
@@ -110,6 +113,7 @@
                 handleNewRun,
                 runName,
                 route,
+                searchDirtyTimestamp,
                 runId,
             }
         },

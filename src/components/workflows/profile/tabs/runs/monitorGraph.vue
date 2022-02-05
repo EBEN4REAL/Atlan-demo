@@ -124,22 +124,24 @@
                 </div>
             </div>
         </div>
+
+        <!-- <div
+            v-if="!isGraphRendered"
+            class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
+        >
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
+        </div> -->
         <!-- Parent Container for Graph and Spinner -->
         <div class="relative h-full">
             <!-- Graph Container -->
             <div ref="graphContainer" style="width: 100%; height: 100%"></div>
             <!-- Spinner -->
         </div>
-        <div
-            v-if="!isGraphRendered"
-            class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50"
-        >
-            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
-        </div>
 
         <a-drawer
             placement="right"
             :closable="true"
+            :key="graphData.name"
             :mask="false"
             v-model:visible="drawerVisible"
             :get-container="false"
@@ -354,8 +356,14 @@
                         currentScroll,
                         true
                     )
+                    graph.value.on('render:done', () => {
+                        isGraphRendered.value = true
+                        graph.value.getScrollbarPosition(currentScroll.value)
+                    })
                     init(false)
                 }
+
+                drawerVisible.value = false
             }
 
             watch(

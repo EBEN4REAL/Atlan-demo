@@ -1,12 +1,12 @@
 <template>
-    <a-dropdown trigger="click" placement="bottomRight">
+    <a-dropdown trigger="click" placement="bottomLeft">
         <slot />
 
         <template #overlay>
-            <a-menu class="p-2" mode="vertical">
+            <a-menu class="" mode="vertical">
                 <EditResource :link="link" :is-edit="true">
                     <template #trigger>
-                        <a-menu-link key="edit">
+                        <a-menu-item key="edit">
                             <div class="flex items-center cursor-pointer">
                                 <AtlanIcon
                                     icon="Edit"
@@ -14,26 +14,24 @@
                                 />
                                 Edit
                             </div>
-                        </a-menu-link>
+                        </a-menu-item>
                     </template>
                 </EditResource>
-                <!-- <DeleteResource
-                            :asset="selectedAsset"
-                            :link="link"
-                            :edit-permission="editPermission"
-                        >
-                            <template #trigger>
-                                <a-menu-link key="delete">
-                                    <div class="flex items-center text-red-500">
-                                        <AtlanIcon
-                                            icon="Delete"
-                                            class="h-4 mb-0.5 mr-1"
-                                        />
-                                        Delete
-                                    </div>
-                                </a-menu-link>
-                            </template>
-                        </DeleteResource> -->
+                <DeleteResource :link="link">
+                    <template #trigger>
+                        <a-menu-item key="delete">
+                            <div
+                                class="flex items-center text-red-500 cursor-pointer"
+                            >
+                                <AtlanIcon
+                                    icon="Delete"
+                                    class="h-4 mb-0.5 mr-1"
+                                />
+                                Delete
+                            </div>
+                        </a-menu-item>
+                    </template>
+                </DeleteResource>
             </a-menu>
         </template>
     </a-dropdown>
@@ -42,6 +40,7 @@
 <script setup lang="ts">
     import { PropType } from 'vue'
     import EditResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
+    import DeleteResource from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
     import { Link } from '~/types/resources.interface'
 
     const props = defineProps({

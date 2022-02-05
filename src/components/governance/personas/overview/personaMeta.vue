@@ -34,6 +34,7 @@
                 :resources="persona?.resources?.links ?? []"
                 @add="handleAddResource"
                 @update="handleUpdateResource"
+                @remove="handleRemoveResource"
             />
         </div>
 
@@ -292,6 +293,14 @@
                 savePersona(body)
             }
 
+            const handleRemoveResource = (id) => {
+                const body = JSON.parse(JSON.stringify(persona.value))
+                body.resources.links = body.resources.links.filter(
+                    (l) => l.qualifiedName !== id
+                )
+                savePersona(body)
+            }
+
             //cancel request to fetch users and groups if persona changes too fast
             watch(
                 () => persona.value.id,
@@ -310,6 +319,7 @@
             return {
                 handleAddResource,
                 handleUpdateResource,
+                handleRemoveResource,
                 setActiveTab,
                 timeStamp,
                 handleEnableDisablePersona,

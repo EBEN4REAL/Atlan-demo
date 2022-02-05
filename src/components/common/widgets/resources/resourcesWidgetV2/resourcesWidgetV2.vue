@@ -55,32 +55,21 @@
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
 
-    // const LinkPreviewCard = defineAsyncComponent(
-    //     () =>
-    //         import(
-    //             '@/common/widgets/resources/resourcesWidgetV2/resourcePreview.vue'
-    //         )
-    // )
-    // const SlackPreview = defineAsyncComponent(
-    //     () =>
-    //         import(
-    //             '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
-    //         )
-    // )
-
     const props = defineProps({
         resources: {
             type: Array as PropType<Link[]>,
             required: true,
         },
     })
-    const emit = defineEmits(['add', 'update'])
+    const emit = defineEmits(['add', 'update', 'remove'])
 
     const addCallback = (r) => emit('add', r)
     const updateCallback = (r) => emit('update', r)
+    const deleteCallback = (id) => emit('remove', id)
 
     provide('add', addCallback)
     provide('update', updateCallback)
+    provide('delete', deleteCallback)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

@@ -103,21 +103,6 @@
         title: '',
     })
 
-    const setDefalt = () => {
-        if (isEdit.value) {
-            const { url, name } = link.value
-            localResource.value.link = url
-            localResource.value.title = name
-        }
-    }
-
-    const showModal = async () => {
-        visible.value = true
-        await nextTick()
-        titleBar.value?.focus()
-        setDefalt()
-    }
-
     const faviconLink = ref('')
 
     const fetchFaviconLink = useDebounceFn(() => {
@@ -127,6 +112,22 @@
               )}&sz=64`
             : ''
     }, 500)
+
+    const setDefalt = () => {
+        if (isEdit.value) {
+            const { url, name } = link.value
+            localResource.value.link = url
+            localResource.value.title = name
+            fetchFaviconLink()
+        }
+    }
+
+    const showModal = async () => {
+        visible.value = true
+        await nextTick()
+        titleBar.value?.focus()
+        setDefalt()
+    }
 
     const handleCancel = () => {
         visible.value = false
@@ -177,6 +178,7 @@
         if (isEdit.value)
             update(generateResourceUpdateEntity(localResource.value))
         else add(generateResourceEntity(localResource.value))
+
         visible.value = false
     }
 </script>

@@ -27,6 +27,9 @@
                     color="primary"
                     :size="'sm'"
                     :disabled="buttonDisabled"
+                    :loading="
+                        addStatus === 'loading' || updateStatus === 'loading'
+                    "
                     @click="handleSubmit"
                 >
                     {{ isEdit ? 'Update' : 'Add' }}
@@ -67,7 +70,17 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, Ref, nextTick, computed, toRefs, inject, PropType } from 'vue'
+    import {
+        ref,
+        Ref,
+        nextTick,
+        computed,
+        toRefs,
+        inject,
+        PropType,
+        watch,
+    } from 'vue'
+    import { message } from 'ant-design-vue'
     import { useDebounceFn, useTimestamp } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
     import { getDomain } from '~/utils/url'
@@ -82,14 +95,10 @@
         },
         link: {
             type: Object as PropType<Link>,
-            required: true,
+            required: false,
+            default: () => null,
         },
     })
-
-    // const emit = defineEmits(['add', 'update'])
-
-    const add: Function = inject('add')
-    const update: Function = inject('update')
 
     const { isEdit, link } = toRefs(props)
 
@@ -97,10 +106,57 @@
     const titleBar: Ref<null | HTMLInputElement> = ref(null)
     const isValidUrl = ref(isEdit.value)
     const { username } = whoami()
-
     const localResource = ref({
         link: 'https://',
         title: '',
+    })
+
+    const reset = () => {
+        // localResource.value = {
+        //     link: 'https://',
+        //     title: '',
+        // }
+    }
+
+    const add: Function = inject('add')
+    const addStatus: Ref = inject('addStatus')
+    const update: Function = inject('update')
+    const updateStatus: Ref = inject('updateStatus')
+
+    watch(addStatus, (v) => {
+        if (v === 'success') {
+            message.success({
+                content: `Successfully added new resource "${localResource.value.title}"`,
+                duration: 1.5,
+                key: 'success',
+            })
+            reset()
+            visible.value = false
+        } else if (v === 'error') {
+            message.error({
+                content: `Failed to add new resource "${localResource.value.title}"`,
+                duration: 1.5,
+                key: 'error',
+            })
+        }
+    })
+
+    watch(updateStatus, (v) => {
+        if (v === 'success') {
+            message.success({
+                content: `Successfully updated resource "${localResource.value.title}"`,
+                duration: 1.5,
+                key: 'update',
+            })
+            reset()
+            visible.value = false
+        } else if (v === 'error') {
+            message.error({
+                content: `Failed to update resource "${localResource.value.title}"`,
+                duration: 1.5,
+                key: 'error',
+            })
+        }
     })
 
     const faviconLink = ref('')
@@ -130,16 +186,17 @@
     }
 
     const handleCancel = () => {
+        reset()
         visible.value = false
-        localResource.value = {
-            link: 'https://',
-            title: '',
-        }
     }
 
     const buttonDisabled = computed(
-        () => !localResource.value.link || !isValidUrl.value
+        () =>
+            !localResource.value.link ||
+            !localResource.value.title ||
+            !isValidUrl.value
     )
+
     const handleUrlChange = (e) => {
         fetchFaviconLink()
         if (e.target.checkValidity()) {
@@ -178,22 +235,20 @@
         if (isEdit.value)
             update(generateResourceUpdateEntity(localResource.value))
         else add(generateResourceEntity(localResource.value))
-
-        visible.value = false
     }
 </script>
 
 <style lang="less" module>
-    // .input {
-    //     :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
-    //         @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-    //     }
-    //     :global(.ant-input):focus,
-    //     :global(.ant-input):hover {
-    //         @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-    //     }
-    //     :global(.ant-input) {
-    //         @apply shadow-none outline-none px-0 border-0 !important;
-    //     }
-    // }
+    .input {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+    }
 </style>

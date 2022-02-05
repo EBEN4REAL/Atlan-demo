@@ -1,156 +1,29 @@
 <template>
     <div class="grid grid-cols-3 gap-3">
         <PersonaUsersGroups
+            :key="persona.id"
             v-model:persona="persona"
             class="col-span-2 border border-gray-200"
-            :key="persona.id"
-            :cancelTokenForGroups="cancelTokenForGroups"
-            :cancelTokenForUsers="cancelTokenForUsers"
+            :cancel-token-for-groups="cancelTokenForGroups"
+            :cancel-token-for-users="cancelTokenForUsers"
         />
         <DetailsWidget
             :item="persona"
             class="border border-gray-200"
             @editDetails="$emit('editDetails')"
         >
-            <!-- <template #actionBtn>
-                <div class="hidden">
-                    <a-switch
-                        v-model:checked="persona.enabled"
-                        class="ml-auto"
-                        data-test-id="toggle-switch"
-                        style="width: 40px !important"
-                        :class="
-                            persona.enabled ? 'btn-checked' : 'btn-unchecked'
-                        "
-                        :loading="enableDisableLoading"
-                        @change="handleEnableDisablePersona"
-                    />
-                    <span class="ml-2 text-sm text-gray">Enable Persona</span>
-                </div>
-            </template> -->
         </DetailsWidget>
         <div class="h-full col-span-3 p-4 bg-white">
             <ResourcesWidget
                 :resources="persona?.resources?.links ?? []"
+                :add-status="addStatus"
+                :update-status="updateStatus"
+                :remove-status="removeStatus"
                 @add="handleAddResource"
                 @update="handleUpdateResource"
                 @remove="handleRemoveResource"
             />
         </div>
-
-        <!-- <div class="pt-6 details-section">
-            <span class="text-sm text-gray-500">Created by</span>
-            <div v-if="persona.createdBy" class="flex items-center text-sm">
-                <PopOverUser :item="persona.createdBy">
-                    <UserPill
-                        :username="persona.createdBy"
-                        :allow-delete="false"
-                        :enable-hover="true"
-                    ></UserPill>
-                </PopOverUser>
-            </div>
-            <span v-else class="text-sm font-semibold text-gray-500"
-                >Unknown</span
-            >
-
-            <span class="text-sm text-gray-500">on</span>
-            <a-tooltip
-                :title="timeStamp(persona.createdAt, true)"
-                placement="right"
-                >{{ timeStamp(persona.createdAt) }}</a-tooltip
-            >
-
-            <a-switch
-                class="ml-auto"
-                data-test-id="toggle-switch"
-                style="width: 40px !important"
-                :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
-                v-model:checked="enablePersonaCheck"
-            />
-            <span class="text-sm text-gray">Enable Persona</span>
-        </div>
-        <div class="flex items-center py-4 pt-2">
-            <div
-                class="relative flex items-center flex-1 p-4 mr-3 bg-white border border-gray-300 rounded cursor-pointer group hover:shadow"
-                data-test-id="tab-policies"
-                @click="setActiveTab('policies')"
-            >
-                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
-                    <AtlanIcon icon="Policy" class="h-6" />
-                </div>
-                <div class="w-full">
-                    <div class="mb-1 font-bold text-gray-700">Policy</div>
-                    <div class="flex text-gray-500">
-                        <div
-                            v-if="
-                                persona.dataPolicies?.length === 0 &&
-                                persona.metadataPolicies?.length === 0
-                            "
-                        >
-                            No policies added
-                        </div>
-                        <div v-else class="flex items-center">
-                            <div class="mr-3">
-                                <b>{{ persona.metadataPolicies?.length }}</b>
-                                Metadata policies
-                            </div>
-                            <div>
-                                <b>{{ persona.dataPolicies?.length }}</b>
-                                Data policies
-                            </div>
-                        </div>
-                        <div
-                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
-                        >
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="h-6 ml-auto group-hover:text-primary"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div
-                class="relative flex items-center flex-1 p-4 bg-white border border-gray-300 rounded cursor-pointer group hover:shadow"
-                data-test-id="tab-users"
-                @click="setActiveTab('users')"
-            >
-                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
-                    <AtlanIcon icon="GroupStatic" class="h-6" />
-                </div>
-                <div class="w-full group">
-                    <div class="mb-1 text-sm font-bold">Users and Groups</div>
-                    <div class="flex w-full text-gray-500">
-                        <div
-                            v-if="
-                                persona.users?.length === 0 &&
-                                persona.groups?.length === 0
-                            "
-                        >
-                            No users added
-                        </div>
-                        <div v-else class="flex items-center">
-                            <div class="mr-3">
-                                <b>{{ persona.users?.length }}</b>
-                                Users
-                            </div>
-                            <div>
-                                <b>{{ persona.groups?.length }}</b>
-                                Groups
-                            </div>
-                        </div>
-                        <div
-                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
-                        >
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="h-6 ml-auto group-hover:text-primary"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -159,6 +32,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import axios from 'axios'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -174,8 +48,6 @@
         selectedPersonaDirty,
         deletePersonaById,
     } from '../composables/useEditPersona'
-    import { message, Modal } from 'ant-design-vue'
-    import axios from 'axios'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -274,34 +146,55 @@
 
             // The `handleAddResource` function is a helper function that makes network request to store a resource link to the
             // persona.
-            const handleAddResource = (r) => {
-                const body = JSON.parse(JSON.stringify(persona.value))
-                const { resources } = body
-                body.resources = {
-                    ...resources,
-                    links: [...(resources?.links ?? []), r],
+            const addStatus = ref('')
+            const handleAddResource = async (r) => {
+                addStatus.value = 'loading'
+                try {
+                    const body = JSON.parse(JSON.stringify(persona.value))
+                    const { resources } = body
+                    body.resources = {
+                        ...resources,
+                        links: [...(resources?.links ?? []), r],
+                    }
+                    await savePersona(body)
+                    addStatus.value = 'success'
+                } catch (e) {
+                    addStatus.value = 'error'
                 }
-                savePersona(body)
             }
 
-            const handleUpdateResource = (r) => {
-                const body = JSON.parse(JSON.stringify(persona.value))
-                const index = body.resources.links.findIndex(
-                    (l) => l.qualifiedName === r.qualifiedName
-                )
-                if (index > -1) body.resources.links[index] = r
-                savePersona(body)
+            const updateStatus = ref('')
+
+            const handleUpdateResource = async (r) => {
+                updateStatus.value = 'loading'
+                try {
+                    const body = JSON.parse(JSON.stringify(persona.value))
+                    const index = body.resources.links.findIndex(
+                        (l) => l.qualifiedName === r.qualifiedName
+                    )
+                    if (index > -1) body.resources.links[index] = r
+                    await savePersona(body)
+                    updateStatus.value = 'success'
+                } catch (error) {
+                    updateStatus.value = 'error'
+                }
+            }
+            const removeStatus = ref('')
+            const handleRemoveResource = async (id) => {
+                removeStatus.value = 'loading'
+                try {
+                    const body = JSON.parse(JSON.stringify(persona.value))
+                    body.resources.links = body.resources.links.filter(
+                        (l) => l.qualifiedName !== id
+                    )
+                    await savePersona(body)
+                    removeStatus.value = 'success'
+                } catch (e) {
+                    removeStatus.value = 'error'
+                }
             }
 
-            const handleRemoveResource = (id) => {
-                const body = JSON.parse(JSON.stringify(persona.value))
-                body.resources.links = body.resources.links.filter(
-                    (l) => l.qualifiedName !== id
-                )
-                savePersona(body)
-            }
-
-            //cancel request to fetch users and groups if persona changes too fast
+            // cancel request to fetch users and groups if persona changes too fast
             watch(
                 () => persona.value.id,
                 () => {
@@ -317,6 +210,9 @@
                 }
             )
             return {
+                addStatus,
+                updateStatus,
+                removeStatus,
                 handleAddResource,
                 handleUpdateResource,
                 handleRemoveResource,

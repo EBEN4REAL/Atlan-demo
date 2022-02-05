@@ -2,7 +2,7 @@
     <div class="w-full">
         <div class="flex justify-between">
             <h1 class="font-bold">Resources</h1>
-            <AddResource @add="addCallback" @update="handleUpdate">
+            <AddResource @add="addCallback">
                 <template #trigger>
                     <AtlanButton
                         class="flex-none px-2 rounded-full"
@@ -54,22 +54,40 @@
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
+    import propertyListVue from '~/components/governance/custom-metadata/propertyList.vue'
 
     const props = defineProps({
         resources: {
             type: Array as PropType<Link[]>,
             required: true,
         },
+        addStatus: {
+            type: String,
+            required: true,
+        },
+        updateStatus: {
+            type: String,
+            required: true,
+        },
+        removeStatus: {
+            type: String,
+            required: true,
+        },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
 
+    const { addStatus, updateStatus, removeStatus } = toRefs(props)
+
     const addCallback = (r) => emit('add', r)
     const updateCallback = (r) => emit('update', r)
-    const deleteCallback = (id) => emit('remove', id)
+    const removeCallback = (id) => emit('remove', id)
 
     provide('add', addCallback)
+    provide('addStatus', addStatus)
     provide('update', updateCallback)
-    provide('delete', deleteCallback)
+    provide('updateStatus', updateStatus)
+    provide('remove', removeCallback)
+    provide('removeStatus', removeStatus)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

@@ -80,13 +80,14 @@ export function usePackageBody(
             ...bodybuilder()
                 .query(
                     'wildcard',
-                    'metadata.annotations.orchestration.atlan.com/name.keyword',
+                    'metadata.annotations.orchestration.atlan.com/name',
                     {
-                        value: `${queryText}*`,
+                        value: `${queryText.toLowerCase()}*`,
                     }
                 )
                 .build(),
         })
+
         base.orQuery('nested', {
             path: 'metadata',
             ...bodybuilder()
@@ -270,10 +271,20 @@ export function usePackageBody(
                                         size: 200,
                                     },
                                     aggs: {
-                                        by_package: {
-                                            terms: {
-                                                field: 'metadata.name.keyword',
-                                                size: 200,
+                                        by_package_hits: {
+                                            top_hits: {
+                                                size: 2,
+                                                sort: [
+                                                    {
+                                                        'metadata.creationTimestamp':
+                                                            {
+                                                                order: 'desc',
+                                                            },
+                                                    },
+                                                ],
+                                                _source: {
+                                                    includes: ['metadata.name'],
+                                                },
                                             },
                                         },
                                     },

@@ -16,6 +16,7 @@
                     :is="componentName(property)"
                     v-model="formState[property.id]"
                     :property="property"
+                    :isEdit="isEdit"
                 ></Component>
 
                 <a-form-item
@@ -25,6 +26,15 @@
                     v-else
                 >
                     <template #label>
+                        <AtlanIcon
+                            icon="Lock"
+                            class="h-3 mr-1 text-yellow-500 mb-0.5"
+                            v-if="
+                                (property.ui.widget === 'password' ||
+                                    isUsername(property)) &&
+                                isEdit
+                            "
+                        ></AtlanIcon>
                         {{ property.ui?.label }}
 
                         <a-tooltip
@@ -38,12 +48,14 @@
                             ></span>
                         </a-tooltip>
                     </template>
+
                     <Component
                         :is="componentName(property)"
                         v-model="formState[property.id]"
                         :baseKey="baseKey"
                         :property="property"
                         :configMap="configMap"
+                        :isEdit="isEdit"
                     ></Component>
                 </a-form-item>
             </div>
@@ -126,10 +138,13 @@
                 required: false,
                 type: String,
             },
+            isEdit: {
+                required: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { configMap, currentStep, baseKey } = toRefs(props)
+            const { configMap, currentStep, baseKey, isEdit } = toRefs(props)
 
             const formState = inject('formState')
 
@@ -154,6 +169,11 @@
                 }
             }
 
+            const isUsername = (property) => {
+                if (property.id.endsWith('.username')) return true
+                return false
+            }
+
             const getCol = (grid = 12, start, end) => {
                 let c = `col-span-${grid}`
                 if (start) c += ` col-start-${start}`
@@ -163,27 +183,31 @@
             }
 
             const setDefaultValue = () => {
-                if (configMap.value?.properties) {
-                    Object.keys(configMap?.value?.properties).forEach((key) => {
-                        if (formState) {
-                            if (!formState[getName(key)]) {
-                                if (
-                                    configMap?.value?.properties[key].type ===
-                                    'boolean'
-                                ) {
-                                    formState[getName(key)] =
-                                        configMap?.value?.properties[
-                                            key
-                                        ]?.default
-                                } else {
-                                    formState[getName(key)] =
-                                        configMap?.value?.properties[
-                                            key
-                                        ]?.default?.toString()
+                if (!isEdit.value) {
+                    if (configMap.value?.properties) {
+                        Object.keys(configMap?.value?.properties).forEach(
+                            (key) => {
+                                if (formState) {
+                                    if (!formState[getName(key)]) {
+                                        if (
+                                            configMap?.value?.properties[key]
+                                                .type === 'boolean'
+                                        ) {
+                                            formState[getName(key)] =
+                                                configMap?.value?.properties[
+                                                    key
+                                                ]?.default
+                                        } else {
+                                            formState[getName(key)] =
+                                                configMap?.value?.properties[
+                                                    key
+                                                ]?.default?.toString()
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    })
+                        )
+                    }
                 }
             }
 
@@ -201,6 +225,41 @@
                     return `${baseKey.value}.${name}`
                 }
                 return name
+            }
+
+            const isImplied = () => {
+                if (configMap.value?.anyOf) {
+                    configMap.value.anyOf.forEach((item) => {
+                        item.required.forEach((i) => {
+                            if (configMap.value.properties[i]) {
+                                configMap.value.properties[i].ui.hidden = true
+                            }
+                        })
+                    })
+
+                    configMap.value.anyOf.forEach((item) => {
+                        const loopStop = Object.keys(item.properties).some(
+                            (i) => {
+                                if (
+                                    formState[getName(i)] ===
+                                    item.properties[i]?.const
+                                ) {
+                                    return true
+                                }
+                            }
+                        )
+                        if (loopStop) {
+                            item.required.forEach((i) => {
+                                console.log(i)
+                                console.log(configMap.value.properties[i])
+
+                                configMap.value.properties[i].ui.hidden = false
+
+                                console.log(configMap.value)
+                            })
+                        }
+                    })
+                }
             }
 
             const list = ref([])
@@ -245,43 +304,6 @@
                 list.value = temp
             }
 
-            const isImplied = () => {
-                if (configMap.value?.anyOf) {
-                    configMap.value.anyOf.forEach((item) => {
-                        let loopStop = false
-                        Object.keys(item.properties).some((i) => {
-                            if (loopStop) {
-                                return
-                            }
-                            if (
-                                formState[getName(i)] !==
-                                item.properties[i]?.const
-                            ) {
-                                loopStop = true
-                            }
-                        })
-
-                        if (!loopStop) {
-                            item.required.forEach((i) => {
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = false
-                                }
-                            })
-                        } else {
-                            item.required.forEach((i) => {
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = true
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-
             return {
                 componentName,
                 getName,
@@ -294,6 +316,8 @@
                 currentStep,
                 isImplied,
                 getCol,
+                isEdit,
+                isUsername,
             }
         },
     })

@@ -56,9 +56,11 @@
             }
 
             useHead({
-                title:
-                    localSelected.value?.attributes?.displayName ||
-                    localSelected.value?.attributes?.name,
+                title: computed(
+                    () =>
+                        localSelected.value?.attributes?.displayName ||
+                        localSelected.value?.attributes?.name
+                ),
             })
 
             const limit = ref(1)

@@ -85,7 +85,7 @@
                 attributes: ['name', 'displayName'],
             }
             const { list, replaceBody, data, isLoading, error } =
-                useAssetListing('', false)
+                useAssetListing({}, false)
             watch(error, () => {
                 if (error.value) {
                     console.log(typeName.value)

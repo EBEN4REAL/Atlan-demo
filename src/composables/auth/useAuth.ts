@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/store/auth'
 
@@ -7,16 +7,22 @@ export default function useAuth() {
     const authStore = useAuthStore()
     const currentRoute = useRoute()
     const getCurrentPermissions = currentRoute.meta.permissions
-    if (getCurrentPermissions) {
-        if (
-            getCurrentPermissions?.every(
-                (elem) => authStore.permissions.indexOf(elem) > -1
-            )
-        ) {
-            isAccess.value = true
-        }
-    }
 
+    watch(
+        () => authStore.permissions,
+        () => {
+            if (getCurrentPermissions) {
+                if (
+                    getCurrentPermissions?.every(
+                        (elem) => authStore.permissions.indexOf(elem) > -1
+                    )
+                ) {
+                    isAccess.value = true
+                }
+            }
+        },
+        { immediate: true }
+    )
     const checkAccess = (
         permissions: Array<string> | string,
         operator: 'and' | 'or' = 'and'

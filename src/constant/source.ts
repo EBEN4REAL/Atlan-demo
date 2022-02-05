@@ -73,11 +73,50 @@ export const SourceList = [
         id: 'redshift',
         label: 'Redshift',
         image: 'Redshift',
-        hierarchy: [],
+
         connectionCount: 0,
         dialectConfig: {
             abortQuery: true,
         },
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
     },
     {
         id: 'databricks',
@@ -123,6 +162,7 @@ export const SourceList = [
             },
         ],
         dialectConfig: {
+            assetQuoteType: '`',
             // does not support abortQuery for now
             abortQuery: false,
         },
@@ -219,7 +259,8 @@ export const SourceList = [
         image: 'Athena',
         filterMaxLevel: 2,
         dialectConfig: {
-            abortQuery: true,
+            assetQuoteType: '"',
+            abortQuery: false,
         },
         hierarchy: [
             {
@@ -298,6 +339,20 @@ export const SourceList = [
             'LookerProject',
             'LookerQuery',
             'LookerTile',
+        ],
+    },
+    {
+        id: 'salesforce',
+        label: 'Salesforce',
+        image: 'Salesforce',
+        connectionCount: 0,
+        hierarchy: [],
+        types: [
+            'SalesforceOrganization',
+            'SalesforceDashboard',
+            'SalesforceReport',
+            'SalesforceObject',
+            'SalesforceField',
         ],
     },
 ]

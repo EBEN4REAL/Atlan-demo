@@ -12,6 +12,8 @@ import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { message } from 'ant-design-vue'
 import { useError } from './UseError'
+import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
+
 // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
 export default function useProject() {
@@ -23,8 +25,11 @@ export default function useProject() {
         getParsedQueryCursor,
     } = useEditor()
 
-    const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
-        useConnector()
+    const {
+        getSchemaWithDataSourceName,
+        getConnectionQualifiedName,
+        getConnectorName,
+    } = useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
@@ -66,6 +71,13 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+        if (
+            activeInlineTab.value.playground.resultsPane.result
+                .isQueryRunning === 'loading'
+        ) {
+            message.info('A query is in progress in current tab')
+            return
+        }
         let startTime = new Date()
 
         // setStartTime(new Date())
@@ -258,10 +270,19 @@ export default function useProject() {
             pathVariables,
             body: sqlBody,
         })
+        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+            eventSource.value
 
         watch([isLoading, error], () => {
             try {
                 if (!isLoading.value && error.value === undefined) {
+                    // if query aborted then don't show the midway fetched data
+                    if (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .isQueryAborted
+                    )
+                        return
+
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         /* Saving the queryId */
@@ -275,10 +296,11 @@ export default function useProject() {
                             if (onQueryIdGeneration)
                                 onQueryIdGeneration(
                                     activeInlineTab,
-                                    message?.queryId,
-                                    eventSource.value
+                                    message?.queryId
                                 )
                         }
+                        // debugger
+
                         /* ---------------------------------- */
                         if (message?.columns)
                             setColumns(columnList, message.columns)
@@ -292,7 +314,6 @@ export default function useProject() {
                                 message?.details.executionTime
                             )
                             if (eventSource.value?.close) {
-                                // for closing the connection
                                 eventSource.value.close()
                             }
                             /* Query related data */
@@ -318,6 +339,10 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'success')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
 
                             /* ------------------- */
@@ -333,19 +358,34 @@ export default function useProject() {
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
                             }
+                            //IMP: connection need to be closed here
+                            if (eventSource.value?.close) {
+                                eventSource.value.close()
+                            }
                             // reset()
                         }
                     })
-                } else if (!isLoading.value && error.value !== undefined) {
+                } else if (
+                    !isLoading.value &&
+                    error.value !== undefined &&
+                    !activeInlineTab.value.playground.resultsPane.result
+                        .isQueryAborted
+                ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
+                    //IMP: connection need to be closed here
+                    if (eventSource.value?.close) {
+                        eventSource.value.close()
+                    }
                     // reset()
                 }
             } catch (e) {
-                console.log(e)
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
+                if (eventSource.value?.close) {
+                    eventSource.value.close()
+                }
                 // reset()
             }
         })
@@ -382,83 +422,125 @@ export default function useProject() {
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
     ) => {
-        /* Abort Query logic */
-        activeInlineTab.value.playground.resultsPane.result.buttonDisable = true
-        const body = {
-            queryId:
-                activeInlineTab.value.playground.resultsPane.result.runQueryId,
-            dataSourceName: getConnectionQualifiedName(
-                activeInlineTab.value.explorer.schema.connectors.attributeValue
-            ),
-        }
         if (
             activeInlineTab.value.playground.resultsPane.result
                 .eventSourceInstance?.close
         ) {
             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+            // debugger
         }
 
-        /* Change loading state */
-        Insights.AbortQuery(body)
-            .then(() => {
-                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                    ''
-                activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
-                    true
+        if (
+            canQueryAbort(
+                getConnectorName(
+                    activeInlineTab.value.playground.editor.context
+                        .attributeValue
+                ) as string
+            ) &&
+            activeInlineTab.value.playground.resultsPane.result.runQueryId
+        ) {
+            /* Abort Query logic */
+            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                true
+            const body = {
+                queryId:
+                    activeInlineTab.value.playground.resultsPane.result
+                        .runQueryId,
+                dataSourceName: getConnectionQualifiedName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                ),
+            }
 
-                activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-                    undefined
+            /* Change loading state */
+            Insights.AbortQuery(body)
+                .then(() => {
+                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                        ''
+                    activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+                        true
 
-                activeInlineTab.value.playground.resultsPane.result.buttonDisable =
-                    false
-                activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                    undefined
-                /* For syncing with local storage */
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                modifyActiveInlineTab(
-                    activeInlineTabCopy,
-                    inlineTabs,
-                    activeInlineTabCopy.isSaved
-                )
-            })
-            .catch((error) => {
-                /* Query related data */
+                    activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                        undefined
 
-                const errorCode = error?.status
-                    ? `${error.status} - ${error.statusText}`
-                    : undefined
-                activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                    {
-                        requestId: '',
-                        errorName: '',
-                        errorMessage:
-                            error.value?.message ?? 'Something went wrong',
-                        errorCode: errorCode,
-                        developerMessage: '', // (optional field)enabled in case of unhandled error
+                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                        false
+                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                        undefined
+                })
+                .catch((error) => {
+                    /* Query related data */
+                    /* 
+        If errorCode -  exist error from backend 
+        If errorCode - not exist, req did not reached server
+
+        */
+                    let errorCode = error?.response?.status
+                    let errorMessage
+                    if (errorCode) {
+                        // backed error message
+                        errorMessage =
+                            error?.response?.data?.error?.message ??
+                            'Query Abort Failed!'
+                    } else {
+                        errorCode = '000'
+                        errorMessage = error?.message
+                        // capitalizeFirstLetter
+                        errorMessage =
+                            errorMessage.charAt(0).toUpperCase() +
+                            errorMessage.slice(1)
                     }
-                activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
-                    -1
-                activeInlineTab.value.playground.resultsPane.result.executionTime =
-                    -1
-                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                    'error'
-                /* ------------------- */
-                /* Setting it undefined for new run */
 
-                activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                    undefined
-                activeInlineTab.value.playground.resultsPane.result.buttonDisable =
-                    false
-                /* Callback will be called when request completed */
-                if (onRunCompletion)
-                    onRunCompletion(
-                        'error',
-                        activeInlineTab,
-                        editorInstance,
-                        monacoInstance
-                    )
-            })
+                    activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                            {
+                                requestId:
+                                    activeInlineTab.value.playground.resultsPane
+                                        .result.runQueryId,
+                                errorName: errorMessage,
+                                errorMessage: errorMessage,
+                                errorCode: errorCode,
+                                developerMessage: error.value?.statusText,
+                                errorDescription: '',
+                            }
+                    activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                        -1
+                    activeInlineTab.value.playground.resultsPane.result.executionTime =
+                        -1
+                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                        'error'
+                    /* ------------------- */
+                    /* Setting it undefined for new run */
+
+                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                        undefined
+                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                        false
+                    /* Callback will be called when request completed */
+                    if (onRunCompletion)
+                        onRunCompletion(
+                            'error',
+                            activeInlineTab,
+                            editorInstance,
+                            monacoInstance
+                        )
+                })
+        } else {
+            // cancel stream query
+            // FIXME: code repetetion
+            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                ''
+            activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+                true
+
+            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                undefined
+
+            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                false
+            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                undefined
+        }
     }
 
     return {

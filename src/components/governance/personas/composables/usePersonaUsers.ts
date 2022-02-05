@@ -1,13 +1,12 @@
 import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
-import { getFormattedUser , useUsers } from '~/composables/user/useUsers'
+import { getFormattedUser, useUsers } from '~/composables/user/useUsers'
 import { IPersona, IUser } from '~/types/accessPolicies/personas'
 
-function usePersonaUserList(persona: Ref<IPersona>) {
+function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     const userListAPIParams: any = {
         sort: 'firstName',
         filter: { $and: [] },
     }
-
     const {
         error,
         isLoading,
@@ -15,7 +14,7 @@ function usePersonaUserList(persona: Ref<IPersona>) {
         state,
         STATES,
         getUserList,
-    } = useUsers(userListAPIParams)
+    } = useUsers(userListAPIParams, true, cancelToken)
 
     const list: ComputedRef<IUser[]> = computed(() =>
         data.value.map((usr) => getFormattedUser(usr))

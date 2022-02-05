@@ -14,11 +14,10 @@
             </div>
         </div>
 
-        <a-spin
+        <AtlanLoader
             v-if="loaderCords.x"
-            :style="`position: absolute; left: ${loaderCords.x - 25}px; top: ${
-                loaderCords.y - 148
-            }px; z-index: 999`"
+            class="absolute h-5 opacity-70"
+            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
         />
 
         <!-- Graph Container -->
@@ -83,6 +82,7 @@
         provide,
         toRefs,
         inject,
+        computed,
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -115,6 +115,7 @@
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const config = inject('config')
+            const graphPrefs = inject('preferences', ref({}))
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -135,8 +136,21 @@
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
-            const drawerActiveKey = ref('Info')
+            const drawerActiveKey = ref('Overview')
+            const selectedTypeInRelationDrawer = ref('__all')
 
+            /** COMPUTED */
+            const offsetLoaderCords = computed(() => {
+                const isFullScr = !!document.fullscreenElement
+                return {
+                    x: isFullScr
+                        ? loaderCords.value.x
+                        : (loaderCords.value.x || 0) - 25,
+                    y: isFullScr
+                        ? loaderCords.value.y
+                        : (loaderCords.value.y || 0) - 148,
+                }
+            })
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (
@@ -146,7 +160,6 @@
             ) => {
                 if (openDrawer) isDrawerVisible.value = true
                 control('selectedAsset', item)
-                control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
             }
 
@@ -171,7 +184,7 @@
                 )
 
                 // useComputeGraph
-                await useComputeGraph(
+                const { addSubGraph } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -184,22 +197,27 @@
                 // useEventGraph
                 useEventGraph(
                     graph,
+                    lineage,
                     baseEntity,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
                     currZoom,
                     resetSelections,
-                    config,
                     drawerActiveKey,
+                    selectedTypeInRelationDrawer,
+                    config,
+                    graphPrefs,
                     onSelectAsset,
-                    onCloseDrawer
+                    onCloseDrawer,
+                    addSubGraph
                 )
             }
 
             /** PROVIDERS */
             provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
+            provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
             // onShowAddLineage
             const onShowAddLineage = () => {
@@ -229,6 +247,7 @@
 
             return {
                 isDrawerVisible,
+                offsetLoaderCords,
                 selectedAsset,
                 baseEntity,
                 graph,
@@ -248,6 +267,7 @@
                 onShowAddLineage,
                 onCloseDrawer,
                 handleDrawerUpdate,
+                graphPrefs,
             }
         },
     })
@@ -261,18 +281,6 @@
 
 <style lang="less">
     .node-added-shadow {
-        // box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-        //     0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-        //     0 12.5px 10px rgba(0, 0, 0, 0.06),
-        //     0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-        //     0 41.8px 33.4px rgba(0, 0, 0, 0.086),
-        //     0 100px 80px rgba(0, 0, 0, 0.12);
-        // box-shadow: 0 2.8px 2.2px rgba(0, 179, 138, 0.034),
-        //     0 6.7px 5.3px rgba(0, 179, 138, 0.048),
-        //     0 12.5px 10px rgba(0, 179, 138, 0.06),
-        //     0 22.3px 17.9px rgba(0, 179, 138, 0.072),
-        //     0 41.8px 33.4px rgba(0, 179, 138, 0.086),
-        //     0 100px 80px rgba(0, 179, 138, 0.12);
         box-shadow: 0 2.8px 2.2px rgba(0, 179, 138, 0.12),
             0 6.7px 5.3px rgba(0, 179, 138, 0.12),
             0 12.5px 10px rgba(0, 179, 138, 0.12),
@@ -443,6 +451,10 @@
                 align-items: center;
             }
 
+            &.isCounter {
+                height: 50px !important;
+            }
+
             &.isBase {
                 border-top-left-radius: 0;
                 border: 1px solid #5277d7 !important;
@@ -462,12 +474,12 @@
                         line-height: 22px;
                         background: #ffffff;
                         color: #5277d7;
-                        position: absolute;
+                        position: fixed;
                         border: 1px solid #5277d7;
                         border-bottom: 0;
-                        top: -37px;
+                        top: -26px;
                         padding: 3px 8px 0px 8px;
-                        left: -11px;
+                        left: 0;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -484,10 +496,25 @@
                 @apply mt-1;
 
                 &__text {
-                    @apply text-base;
+                    @apply text-base flex-shrink flex-grow-0;
                     text-transform: capitalize;
                     color: #6f7590;
                     margin: 0 6px;
+
+                    &.isTypename {
+                        @apply flex-shrink-0;
+                    }
+
+                    &.isCounter {
+                        background: #9ca1a9;
+                        color: white;
+                        padding: 2px 5px 0px 5px;
+                        border-radius: 2px;
+                        line-height: 1.3rem;
+                        position: fixed;
+                        left: 6px;
+                        top: -17px;
+                    }
                 }
 
                 &__source {
@@ -496,6 +523,11 @@
                     margin-bottom: 0.2rem;
                     margin-right: 2px;
                 }
+            }
+            & .popover {
+                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
+                @apply delay-75 transition-all;
+                @apply rounded-md shadow-md bg-white text-gray-500;
             }
         }
 

@@ -6,14 +6,14 @@
                     {{
                         !subpanel?.filter?.isVariable
                             ? 'Make this interactive'
-                            : 'Interactive parameter'
+                            : 'Interactive variable'
                     }}
                 </p>
                 <p class="text-xs text-gray-500">
                     {{
                         !subpanel?.filter?.isVariable
-                            ? 'Configure this input to show as an interactive variable'
-                            : 'This input is configured as an interactive parameter'
+                            ? 'Configure this input for read-only viewers to interact'
+                            : 'This input is configured as an interactive variable'
                     }}
                 </p>
             </div>

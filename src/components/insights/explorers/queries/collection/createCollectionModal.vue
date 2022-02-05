@@ -559,8 +559,8 @@
                 console.log('users: ', list)
             }
 
-            const selectedType = ref('view')
-            const otherType = ref('edit')
+            const selectedType = ref('edit')
+            const otherType = ref('view')
 
             const handleChange = (item) => {
                 if (item !== 'remove') {

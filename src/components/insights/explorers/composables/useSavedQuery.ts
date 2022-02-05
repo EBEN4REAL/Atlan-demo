@@ -56,6 +56,27 @@ export function useSavedQuery(
 
     const { queryRun } = useRunQuery()
 
+    const checkQueryOpenedInTab = (queryId) => {
+        let index = -1
+        tabsArray.value.forEach((tab, i) => {
+            if (tab.queryId === queryId) {
+                index = i
+            }
+        })
+
+        return index
+    }
+
+    const checkPreviewOpenedInCurrentTab = (guid) => {
+        let assetId = activeInlineTab?.value?.assetSidebar?.assetInfo?.guid
+
+        if (assetId) {
+            return assetId === guid
+        }
+
+        return false
+    }
+
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
@@ -248,7 +269,9 @@ export function useSavedQuery(
         ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         editorInstance: Ref<any>,
-        monacoInstance: Ref<any>
+        monacoInstance: Ref<any>,
+        onRunCompletion,
+        onQueryIdGeneration
     ) => {
         openSavedQueryInNewTab({
             ...savedQuery?.value,
@@ -256,12 +279,13 @@ export function useSavedQuery(
                 savedQuery?.value?.attributes?.parent?.attributes?.name,
         })
         setTimeout(() => {
+            console.log('active tab copy: ', activeInlineTab)
             queryRun(
                 activeInlineTab,
                 getData,
                 limitRows,
-                null,
-                null,
+                onRunCompletion,
+                onQueryIdGeneration,
                 savedQuery.value?.attributes.rawQuery,
                 editorInstance,
                 monacoInstance,
@@ -379,7 +403,7 @@ export function useSavedQuery(
             },
         })
 
-        console.log('update query body: ', body.value)
+        // console.log('update query body: ', body.value)
 
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(
@@ -486,8 +510,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables
         )
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -671,15 +694,13 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
             getDatabaseQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = []
         // const uuidv4 = generateUUID()
-        const collectionQualifiedName =
-            activeInlineTab.value.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
         // const variablesSchemaBase64 = []
 
@@ -980,8 +1001,7 @@ export function useSavedQuery(
             isVisualQuery = true
         }
 
-        const collectionQualifiedName =
-            activeInlineTab.explorer.queries.collection.qualifiedName
+        const collectionQualifiedName = saveQueryData?.collection
         const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
@@ -1120,9 +1140,12 @@ export function useSavedQuery(
                     watch([data2, error2, isLoading2], () => {
                         if (isLoading2.value == false) {
                             if (error2.value === undefined) {
-                                // console.log('saved query entity: ', data2.value?.entity)
+                                // console.log('saved query entity: ', data2.value)
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     data2.value?.entity
+
+                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                    collectionQualifiedName
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             }
                         }
@@ -1281,5 +1304,7 @@ export function useSavedQuery(
         createFolder,
         saveQueryToDatabaseWithTerms,
         openSavedQueryInNewTabAndRun,
+        checkQueryOpenedInTab,
+        checkPreviewOpenedInCurrentTab,
     }
 }

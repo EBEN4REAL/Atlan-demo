@@ -28,7 +28,7 @@
                 <a-popover
                     v-model:visible="isPreferencesVisible"
                     :trigger="['click']"
-                    :getPopupContainer="() => footerRoot"
+                    :get-popup-container="() => footerRoot"
                 >
                     <template #content>
                         <div class="px-4 py-3 text-sm">View Options</div>
@@ -37,7 +37,10 @@
                             <!-- Depth Selector -->
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Depth</span>
-                                <a-dropdown :trigger="['click']">
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    :get-popup-container="(e) => e.parentNode"
+                                >
                                     <span class="lineage-footer-menu">
                                         {{ currDepth }}
                                         <AtlanIcon
@@ -65,7 +68,10 @@
                             <!-- Direction Selector -->
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Direction</span>
-                                <a-dropdown :trigger="['click']">
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    :get-popup-container="(e) => e.parentNode"
+                                >
                                     <span class="lineage-footer-menu">
                                         {{ currDir }}
                                         <AtlanIcon
@@ -91,6 +97,12 @@
                                         </a-menu>
                                     </template>
                                 </a-dropdown>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Arrows</span>
+                                <a-switch
+                                    v-model:checked="graphPrefs.showArrow"
+                                />
                             </div>
                         </div>
                     </template>
@@ -226,6 +238,7 @@
             const control = inject('control')
             const depth = inject('depth')
             const direction = inject('direction')
+            const graphPrefs = inject('preferences', ref({}))
             const lineageDepths: [] = inject('lineageDepths')
             const lineageDirections: [] = inject('lineageDirections')
 
@@ -262,6 +275,7 @@
                         graphHeight.value / 1.35
                     )
                 }
+
                 fullscreen(lineageContainer)
             }
 
@@ -273,6 +287,7 @@
 
             const toggleControlVisibility = () => {
                 if (isExpanded.value) {
+                    isPreferencesVisible.value = false
                     // Close the minimap if the user wants to collapse the controls
                     if (showMinimap.value) onShowMinimap()
                     isExpanded.value = false
@@ -290,7 +305,6 @@
             }
             return {
                 showMinimap,
-                footerRoot,
                 isFullscreen,
                 isPreferencesVisible,
                 isExpanded,
@@ -300,6 +314,8 @@
                 direction,
                 lineageDirections,
                 currDir,
+                footerRoot,
+                graphPrefs,
                 zoom,
                 fit,
                 onShowMinimap,

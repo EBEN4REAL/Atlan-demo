@@ -17,6 +17,7 @@ import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
+import AtlanIconNoBg from '~/assets/images/icons/atlanIconNoBg.svg'
 import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
@@ -317,6 +318,7 @@ import Databricks from '~/assets/images/source/svg/Databricks.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
 import Looker from '~/assets/images/source/svg/Looker.svg'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -386,6 +388,7 @@ import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
 import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
 import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Logout from '~/assets/images/icons/logout.svg'
 import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
@@ -499,6 +502,7 @@ export default {
     ChevronDown,
     ChevronUp,
     AtlanIcon,
+    AtlanIconNoBg,
     CallIcon,
     FeedbackIcon,
     AdminCenterIcon,
@@ -692,6 +696,7 @@ export default {
     Redshift,
     BigQuery,
     Looker,
+    Salesforce,
     SSO,
     SMTP,
     APIKey,
@@ -773,6 +778,7 @@ export default {
     MessageSuccess,
     CrossCircle,
     MessageCross,
+    Logout,
     AddColumn,
     QueryTime,
     ThreeDots,

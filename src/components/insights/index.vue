@@ -215,6 +215,8 @@
                 queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
+                readAccessCollections,
+                writeAccessCollections,
                 queryCollectionsLoading,
                 selectFirstCollectionByDefault,
                 // selectCollectionFromUrl,
@@ -276,7 +278,7 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            watch(activeInlineTab, () => {})
+            // watch(activeInlineTab, () => {})
 
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
@@ -335,6 +337,7 @@
             }
 
             const assetSidebarUpdatedData = ref({})
+            const updateAssetCheck = ref(false)
 
             /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -365,7 +368,10 @@
                 editorContentSelectionState,
                 refreshQueryTree,
                 assetSidebarUpdatedData,
+                readAccessCollections,
+                writeAccessCollections,
                 limitRows: limitRows,
+                updateAssetCheck,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -420,6 +426,22 @@
                     }
                 }
             })
+
+            watch(
+                () =>
+                    activeInlineTab.value?.explorer.queries.collection
+                        .qualifiedName,
+                () => {
+                    // console.log('collection change')
+                    selectFirstCollectionByDefault(
+                        queryCollections.value,
+                        activeInlineTab,
+                        tabsArray,
+                        false,
+                        undefined
+                    )
+                }
+            )
             watch(editorConfig, () => {
                 console.log('editorConfig CHanged')
                 setUserPreferenceToLocalStorage(editorConfig.value)

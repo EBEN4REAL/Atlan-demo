@@ -4,13 +4,15 @@ import { assetTypeList as AssetTypeList } from '~/constant/assetType'
 import useIndexSearch from './useIndexSearch'
 
 export function useAssetListing(
-    typeName?: string,
+    initalBody: Object = {},
     immediate: boolean = true,
     params: Object = {}
 ) {
     const list: Ref<assetInterface[]> = ref([])
+    const aggregations: Ref<any[]> = ref([])
+
     const { replaceBody, body, isReady, error, data, isLoading } =
-        useIndexSearch({}, '', immediate, params)
+        useIndexSearch(initalBody, '', immediate, params)
 
     function mutateAssetInList(updatedAsset: assetInterface) {
         const idx = list.value.findIndex(
@@ -20,16 +22,23 @@ export function useAssetListing(
     }
 
     watch(data, () => {
-        if (body?.value?.dsl.from > 0) {
+        if (body?.value?.dsl?.from > 0) {
             list.value = list.value.concat(data?.value?.entities)
         } else if (data.value?.entities) {
             list.value = data.value?.entities
         } else {
             list.value = []
         }
+        if (data.value?.aggregations) {
+            aggregations.value =
+                data.value?.aggregations[
+                    'agg_terms___typeName.keyword'
+                ]?.buckets
+        }
     })
 
     return {
+        aggregations,
         error,
         data,
         list,

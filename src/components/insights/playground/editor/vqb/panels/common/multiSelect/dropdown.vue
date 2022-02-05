@@ -460,7 +460,7 @@
     import Loader from '@common/loaders/page.vue'
     import CustomInput from '~/components/insights/playground/editor/vqb/panels/common/input/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
-    import { pluralizeString } from '~/utils/string'
+    import { pluralizeString, getValidStringUsingCount } from '~/utils/string'
     import { selectedTables } from '~/types/insights/VQB.interface'
 
     export default defineComponent({
@@ -502,6 +502,7 @@
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalViewsCount = inject('totalViewsCount') as Ref<number>
             const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
             const columnQueryText = inject('columnQueryText') as Ref<String>
             const tableQueryText = inject('tableQueryText') as Ref<String>
@@ -567,7 +568,7 @@
                         }
                     } else {
                         if (isTableLoading.value) {
-                            data = 'Loading...'
+                            data = 'Loading tables and views...'
                         } else {
                             data = `Search from ${
                                 totalTablesCount.value
@@ -575,14 +576,27 @@
                                 'table',
                                 totalTablesCount.value,
                                 false
+                            )} ${getValidStringUsingCount(
+                                totalViewsCount.value,
+                                `and ${totalViewsCount.value} ${pluralizeString(
+                                    'view',
+                                    totalViewsCount.value,
+                                    false
+                                )}`
                             )}`
                         }
                     }
                 } else {
                     if (isColumnLoading.value) {
-                        data = 'Loading...'
+                        data = 'Loading columns...'
                     } else {
-                        data = `Search from ${totalColumnsCount.value} columns`
+                        data = `Search from ${
+                            totalColumnsCount.value
+                        } ${pluralizeString(
+                            'column',
+                            totalColumnsCount.value,
+                            false
+                        )}`
                     }
                 }
 

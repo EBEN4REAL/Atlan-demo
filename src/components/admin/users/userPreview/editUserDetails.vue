@@ -45,7 +45,7 @@
                 <a-form-item label="Skills" prop="skills">
                     <a-select
                         v-model:value="formData.skills"
-                        placeholder="Tell everyone what are you great at"
+                        placeholder="Tell everyone what you are great at"
                         :loading="isRequestLoading"
                         mode="tags"
                         :open="false"

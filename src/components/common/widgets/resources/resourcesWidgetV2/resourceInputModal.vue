@@ -125,7 +125,7 @@
 
     watch(addStatus, (v) => {
         if (v === 'success') {
-            // FIXME this watcher is running multiple times, ???!
+            // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
                     content: `Successfully added new resource "${localResource.value.title}"`,
@@ -135,7 +135,7 @@
             reset()
             visible.value = false
         } else if (v === 'error') {
-            // FIXME this watcher is running multiple times, ???!
+            // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
                     content: `Failed to add new resource "${localResource.value.title}"`,
@@ -147,7 +147,7 @@
 
     watch(updateStatus, (v, o) => {
         if (updateStatus.value === 'success') {
-            // FIXME this watcher is running multiple times, ???!
+            // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
                     content: `Successfully updated resource "${localResource.value.title}"`,
@@ -157,7 +157,7 @@
             reset()
             visible.value = false
         } else if (updateStatus.value === 'error') {
-            // FIXME this watcher is running multiple times, ???!
+            // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
                     content: `Failed to update resource "${localResource.value.title}"`,
@@ -178,6 +178,7 @@
     }, 500)
 
     const setDefalt = () => {
+        faviconLink.value = ''
         if (isEdit.value) {
             const { url, name } = link.value
             localResource.value.link = url

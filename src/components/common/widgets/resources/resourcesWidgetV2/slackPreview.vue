@@ -14,7 +14,7 @@
     <template v-else>
         <div
             class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
-            @click="openLink(item?.attributes?.link)"
+            @click="openLink(link.url)"
         >
             <template v-if="data">
                 <div class="relative h-8 mr-3 min-w-link-left-col">
@@ -41,6 +41,7 @@
                             }}
                         </span>
                     </div>
+
                     <ShowLess :text="stripSlackText(data.message.text ?? '')" />
 
                     <div class="flex text-sm text-gray-500">
@@ -58,7 +59,7 @@
                 <div class="flex-grow"></div>
                 <div class="">
                     <CardActions v-bind="props">
-                        <div>
+                        <div @click="(e) => e.stopPropagation()">
                             <AtlanIcon
                                 icon="KebabMenu"
                                 class="h-4 m-0 cursor-pointer hover:text-primary"
@@ -83,7 +84,7 @@
     } from '~/composables/integrations/useSlack'
     import DeleteResource from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
     import EditResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
-    import ShowLess from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
+    import ShowLess from '@/UI/showLess.vue'
     import CardActions from '@/common/widgets/resources/resourcesWidgetV2/misc/cardActionMenu.vue'
     import integrationStore from '~/store/integrations/index'
 

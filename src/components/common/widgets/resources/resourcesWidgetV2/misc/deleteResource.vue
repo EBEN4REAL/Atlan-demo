@@ -5,16 +5,15 @@
 
     <a-modal
         v-model:visible="visible"
-        width="25%"
+        width="30%"
         :closable="false"
         :footer="null"
     >
         <div class="p-3">
             <p class="mb-1 font-bold text-md">Delete Resource</p>
             <p class="text-md">
-                Are you sure you want to delete the resource
-                {{ link.name }} of
-                <span class="font-bold">entity.name</span>
+                Are you sure you want to delete the resource "{{ link.name }}"
+                of <span class="font-bold">{{ entityName }} </span>?
             </p>
         </div>
 
@@ -68,23 +67,26 @@
             const visible = ref<boolean>(false)
 
             const remove: Function = inject('remove')
-            const removeStatus: Ref = inject('removeStatus')
+            const removeStatus: Ref = inject('removeStatus') ?? ref('')
+            const entityName = inject('entityName')
 
             watch(removeStatus, (v) => {
                 // FIXME this watcher is running multiple times, ???!
                 if (v === 'success') {
-                    message.success({
-                        content: `Successfully removed resource "${link.value.name}"`,
-                        duration: 1.5,
-                        key: 'update',
-                    })
+                    if (link.value?.name)
+                        message.success({
+                            content: `Successfully removed resource "${link.value.name}"`,
+                            duration: 1.5,
+                            key: 'update',
+                        })
                     visible.value = false
                 } else if (v === 'error') {
-                    message.error({
-                        content: `Failed to removed resource "${link.value.name}"`,
-                        duration: 1.5,
-                        key: 'error',
-                    })
+                    if (link.value?.name)
+                        message.error({
+                            content: `Failed to removed resource "${link.value.name}"`,
+                            duration: 1.5,
+                            key: 'error',
+                        })
                 }
             })
 
@@ -92,6 +94,7 @@
                 remove,
                 removeStatus,
                 visible,
+                entityName,
             }
         },
     })

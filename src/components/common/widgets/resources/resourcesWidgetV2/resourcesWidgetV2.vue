@@ -73,10 +73,14 @@
             type: String,
             required: true,
         },
+        entityName: {
+            type: String,
+            required: false,
+        },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
 
-    const { addStatus, updateStatus, removeStatus } = toRefs(props)
+    const { addStatus, updateStatus, removeStatus, entityName } = toRefs(props)
 
     const addCallback = (r) => emit('add', r)
     const updateCallback = (r) => emit('update', r)
@@ -88,11 +92,12 @@
     provide('updateStatus', updateStatus)
     provide('remove', removeCallback)
     provide('removeStatus', removeStatus)
+    provide('entityName', entityName)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
 
-    function getPreviewComponent(url) {
+    const getPreviewComponent = (url) => {
         if (
             isSlackLink(url) &&
             tenantSlackStatus.value.configured &&

@@ -1,5 +1,11 @@
 <template>
-    <div v-if="data.value?.attributes.announcementTitle" class="mb-0">
+    <div
+        v-if="
+            data.value?.attributes.announcementTitle &&
+            data.value?.attributes.announcementType
+        "
+        class="mb-0"
+    >
         New <b>Announcement</b> was added
         <AnnouncementWidget
             :selected-asset="data.value"
@@ -7,6 +13,28 @@
             :allowEdit="false"
         ></AnnouncementWidget>
     </div>
+
+    <div
+        v-else-if="
+            data.value?.attributes.announcementTitle ||
+            data.value?.attributes.announcementType ||
+            data.value?.attributes.announcementMessage
+        "
+        class="mb-0"
+    >
+        <b>Announcement</b> was edited
+        <AnnouncementWidget
+            v-if="data.value?.attributes.announcementType"
+            :selected-asset="data.value"
+            class="mt-1"
+            :allowEdit="false"
+        ></AnnouncementWidget>
+        <span v-else class="flex flex-col">
+            {{ data.value?.attributes.announcementTitle }}
+            {{ data.value?.attributes.announcementMessage }}
+        </span>
+    </div>
+
     <div v-else>
         <div v-if="data.value?.attributes.announcementTitle === ''">
             <div class="mb-3"><b>Announcement </b> was removed</div>

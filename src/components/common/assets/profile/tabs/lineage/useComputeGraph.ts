@@ -158,7 +158,7 @@ export default async function useComputeGraph(
 
     /* Render */
     const renderLayout = () => {
-        model.value = graphLayout.value.layout({
+        model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
         })

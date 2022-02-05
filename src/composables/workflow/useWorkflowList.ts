@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { watch, ref, Ref } from 'vue'
+import { useOptions } from '~/services/api/common'
 import { Workflows } from '~/services/service/workflows'
 import { ArchivedRuns } from '~/types/workflow/runs.interface'
 
@@ -422,11 +423,13 @@ export function useWorkflowByName(name, immediate: boolean = true) {
 }
 
 export function updateWorkflowByName(name, body, immediate: boolean = true) {
+    const options: useOptions = {}
+    options.asyncOptions = ref({
+        immediate,
+    })
+
     const { data, error, isLoading, isReady, mutate } =
-        Workflows.updateWorkflowByName(name, body, {
-            immediate,
-            options: {},
-        })
+        Workflows.updateWorkflowByName({ name }, body, options)
 
     return {
         workflow: data,

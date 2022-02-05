@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="w-full space-y-3">
         <div class="flex justify-between">
             <h1 class="font-bold">Resources</h1>
             <AddResource @add="addCallback">
@@ -10,7 +10,7 @@
                         color="secondary"
                         padding="compact"
                     >
-                        <AtlanIcon icon="Add" class="w-4 text-gray-400" />
+                        <AtlanIcon icon="Add" class="text-gray-400" />
                     </AtlanButton>
                 </template>
             </AddResource>
@@ -22,7 +22,7 @@
                 </div>
             </template>
             <template v-else>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-3">
                     <template v-for="l in resources" :key="l.qualifiedName">
                         <LinkPreviewCard
                             v-if="getPreviewComponent(l.url) === 'link'"

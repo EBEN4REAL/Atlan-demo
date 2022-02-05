@@ -40,6 +40,7 @@
     import { formatDateTime } from '~/utils/date'
     import DetailsWidget from '@/common/widgets/detailsWidget.vue'
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
+    import { reFetchList } from '@/governance/personas/composables/usePersonaList'
     import {
         enablePersona,
         isEditing,
@@ -159,6 +160,7 @@
                     delete body.metadataPolicies
                     delete body.dataPolicies
                     await savePersona(body)
+                    reFetchList() // TODO refetch only required persona
                     addStatus.value = 'success'
                 } catch (e) {
                     addStatus.value = 'error'
@@ -166,9 +168,6 @@
             }
 
             const updateStatus = ref('')
-            watch(updateStatus, () => {
-                console.log('updateStatus', updateStatus.value)
-            })
             const handleUpdateResource = async (r) => {
                 updateStatus.value = 'loading'
                 try {
@@ -180,11 +179,13 @@
                     )
                     if (index > -1) body.resources.links[index] = r
                     await savePersona(body)
+                    reFetchList() // TODO refetch only required persona
                     updateStatus.value = 'success'
                 } catch (error) {
                     updateStatus.value = 'error'
                 }
             }
+
             const removeStatus = ref('')
             const handleRemoveResource = async (id) => {
                 removeStatus.value = 'loading'
@@ -197,6 +198,7 @@
                     delete body.dataPolicies
                     await savePersona(body)
                     removeStatus.value = 'success'
+                    reFetchList() // TODO refetch only required persona
                 } catch (e) {
                     removeStatus.value = 'error'
                 }

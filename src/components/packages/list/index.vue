@@ -1,5 +1,5 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
+    <div class="grid w-full grid-cols-4 gap-4 grid-flow-cols auto-rows-min">
         <Item
             style="height: 150px"
             v-for="item in list"
@@ -8,6 +8,7 @@
             :selectedItem="selectedItem"
             @click="handleSelect(item)"
             @dblclick="handleDoubleClick(item)"
+            @select="handleDoubleClick(item)"
         ></Item>
     </div>
 </template>

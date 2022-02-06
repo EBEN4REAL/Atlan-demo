@@ -107,7 +107,50 @@
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Last updated by</span>
+            <div class="flex items-center mb-1 text-gray-500">
+                <span>Unique Identifier</span>
+                <a-tooltip title="Copy">
+                    <div
+                        @click="
+                            handleCopyValue(selectedAsset?.guid, 'Identifier')
+                        "
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-auto ml-1 cursor-pointer mb-0.5"
+                        /></div
+                ></a-tooltip>
+            </div>
+            <span class="text-gray-700">{{ selectedAsset?.guid }}</span>
+        </div>
+
+        <div v-if="!isGTC(selectedAsset)" class="flex flex-col text-sm">
+            <div class="flex items-center mb-1 text-gray-500">
+                <span>Qualified Name</span>
+                <a-tooltip title="Copy">
+                    <div
+                        @click="
+                            handleCopyValue(
+                                qualifiedName(selectedAsset),
+                                'Qualified Name'
+                            )
+                        "
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-auto ml-1 cursor-pointer mb-0.5"
+                        /></div
+                ></a-tooltip>
+            </div>
+            <span class="text-gray-700 break-all">{{
+                qualifiedName(selectedAsset)
+            }}</span>
+        </div>
+
+        <a-divider dashed class="my-0 border-gray-500"></a-divider>
+
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Last updated by (on Atlan)</span>
             <div class="flex flex-col">
                 <div class="flex">
                     <PopOverUser :item="modifiedBy(selectedAsset)">
@@ -120,7 +163,7 @@
             </div>
         </div>
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Last updated at</span>
+            <span class="mb-1 text-gray-500">Last updated at (on Atlan)</span>
             <div class="flex flex-col">
                 <span class="text-sm text-gray-700"
                     >{{ modifiedAt(selectedAsset, true) }} ({{
@@ -130,20 +173,31 @@
             </div>
         </div>
 
+        <div class="flex flex-col text-sm mt-3 mb-3">
+            <span class="mb-1 text-gray-500">Last synced at (on Atlan)</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
+                    >{{ lastSyncRunAt(selectedAsset, true) }} ({{
+                        lastSyncRunAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Unique Identifier</span>
-            <span class="text-gray-700">{{ selectedAsset?.guid }}</span>
+            <span class="mb-1 text-gray-500">Created at (on Atlan)</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
+                    >{{ createdAt(selectedAsset, true) }} ({{
+                        createdAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
         </div>
 
-        <div v-if="!isGTC(selectedAsset)" class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Qualified Name</span>
-            <span class="text-gray-700 break-all">{{
-                qualifiedName(selectedAsset)
-            }}</span>
-        </div>
-
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Created</span>
+            <span class="mb-1 text-gray-500">Created by (on Atlan)</span>
 
             <div class="flex flex-col">
                 <div class="flex">
@@ -156,30 +210,22 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Created at</span>
-
-            <div class="flex flex-col">
-                <span class="text-sm text-gray-700"
-                    >{{ createdAt(selectedAsset, true) }} ({{
-                        createdAt(selectedAsset, false)
-                    }})</span
-                >
-            </div>
-        </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
+    import { message } from 'ant-design-vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import map from '~/constant/accessControl/map'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -202,7 +248,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             const {
                 connectorName,
                 connectionName,
@@ -225,6 +271,7 @@
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRunAt,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -232,6 +279,11 @@
             const handleClickUser = (username: string) => {
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
+            const handleCopyValue = async (value, type) => {
+                await copyToClipboard(value)
+                message.success(`${type} copied!`)
             }
 
             return {
@@ -252,12 +304,15 @@
                 connectionQualifiedName,
                 ownerUsers,
                 capitalizeFirstLetter,
+                handleCopyValue,
                 sourceUpdatedBy,
                 sourceCreatedBy,
                 connectionGuid,
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRunAt,
+                map,
             }
         },
     })

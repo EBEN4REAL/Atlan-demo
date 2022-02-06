@@ -1,12 +1,16 @@
 <template>
     <div class="relative w-full bg-white">
         <div
-            v-if="isLoading || error"
+            v-if="initialLoad || isLoading || error"
             class="absolute flex items-center justify-center w-full bg-white"
             style="height: 80vh"
         >
-            <div v-if="isLoading">
-                <a-spin :tip="loaderText" />
+            <div
+                v-if="isLoading || initialLoad"
+                class="flex flex-col items-center justify-center"
+            >
+                <AtlanLoader class="h-10" />
+                <span class="mt-1 text-sm">{{ loaderText }}</span>
             </div>
             <div v-if="error">
                 <EmptyState
@@ -48,7 +52,7 @@
         onMounted,
     } from 'vue'
     import { useRoute } from 'vue-router'
-    import { whenever } from '@vueuse/core'
+    import { whenever, watchOnce } from '@vueuse/core'
 
     // Libs
     import { message } from 'ant-design-vue'
@@ -60,8 +64,18 @@
     // Store
     import useAssetStore from '~/store/asset'
 
-    // Utils
+    // API
     import useLineageService from '~/services/meta/lineage/lineage_service'
+
+    // Utils
+    import {
+        getNodeTypeText,
+        nonBiTypes,
+        childParentBiAssetMap,
+        childGroupBiAssetMap,
+        parentChildrenBiAssetArr,
+    } from './util.js'
+    import { pluralizeString } from '~/utils/string'
 
     // Constants
     import {
@@ -69,11 +83,13 @@
         BasicSearchAttributes,
         SQLAttributes,
         AssetRelationAttributes,
+        InternalAttributes,
     } from '~/constant/projection'
 
     // Composables
     import { useRelations } from '~/composables/discovery/useRelations'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import useFetchAssetList from '~/components/common/assetList/usefetchAssetList'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -95,23 +111,9 @@
             const direction = ref('BOTH')
             const hideProcess = ref(true)
             const loaderText = ref('Fetching Data...')
-            const isFirstLoad = ref(true)
+            const initialLoad = ref(true)
             const selectedAsset = ref(assetStore.getSelectedAsset)
-            const childBiAssetMap = {
-                PowerBIReport: 'dataset',
-                LookerTile: 'query',
-            }
-            const parentBiAssetMap = {
-                PowerBIDataset: [
-                    'datasets',
-                    'workspace',
-                    'tiles',
-                    'reports',
-                    'datasources',
-                    'dataflows',
-                ],
-                LookerQuery: ['tiles', 'model', 'looks'],
-            }
+            const relatedBiAssets = ref([])
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
                 { id: 2, label: 'Depth 2' },
@@ -141,13 +143,15 @@
                     ...customMetadataProjections,
                 ],
             }))
+            const preferences = ref({ showArrow: false })
 
             /** METHODS */
-            // addEntityToLineage
+            // addRelatedBiAssetToLineage
             const addRelatedBiAssetToLineage = (data, entity) => {
                 if (!computedLineage.value) computedLineage.value = { ...data }
 
                 const parentGuid = computedLineage.value.baseEntityGuid
+
                 computedLineage.value.childrenCounts = {
                     ...computedLineage.value.childrenCounts,
                     [entity.guid]: { OUTPUT: 0 },
@@ -156,6 +160,18 @@
                     ...computedLineage.value.guidEntityMap,
                     [entity.guid]: entity,
                 }
+                const relationExist = computedLineage.value.relations.find(
+                    (x) => {
+                        if (
+                            x.fromEntityId === parentGuid &&
+                            x.toEntityId === entity.guid
+                        )
+                            return true
+                    }
+                )
+                if (relationExist) return
+                if (parentGuid === entity.guid) return
+
                 computedLineage.value.relations.push({
                     fromEntityId: parentGuid,
                     processId: 'related',
@@ -164,37 +180,77 @@
                 })
             }
 
-            // computeLineageForChildBiAsset
-            const computeLineageForChildBiAsset = (data) => {
-                addRelatedBiAssetToLineage(data, selectedAsset.value)
-                computedLineage.value.baseEntityGuid = selectedAsset.value.guid
-                return computedLineage.value
-            }
-
             // computeLineageForParentBiAsset
             const computeLineageForParentBiAsset = (data) => {
-                const { attributes, typeName } = baseEntityRelData.value
-                const parentBiAssetMapTypes = parentBiAssetMap[typeName]
-
                 if (!data.relations.length)
                     addRelatedBiAssetToLineage(data, baseEntityRelData.value)
 
-                Object.entries(attributes).forEach(([k, v]) => {
-                    const valueExists = Array.isArray(v)
-                        ? v.length
-                        : Object.keys(v).length
+                let parentGuidObj = {}
 
-                    if (parentBiAssetMapTypes.includes(k) && valueExists) {
-                        if (Array.isArray(v)) {
-                            const asset = v[0]
-                            asset.typeCount = v.length
-                            addRelatedBiAssetToLineage(data, asset)
-                        } else {
-                            v.typeCount = 1
-                            addRelatedBiAssetToLineage(data, v)
+                relatedBiAssets.value.forEach((x, index) => {
+                    if (childGroupBiAssetMap[x.typeName]) {
+                        const parentGuid =
+                            x.attributes[childGroupBiAssetMap[x.typeName]].guid
+
+                        if (parentGuidObj[parentGuid])
+                            parentGuidObj[parentGuid].push(x)
+                        else
+                            parentGuidObj = {
+                                ...parentGuidObj,
+                                [parentGuid]: [x],
+                            }
+
+                        if (relatedBiAssets.value.length - 1 === index) {
+                            Object.entries(parentGuidObj).forEach(([k, v]) => {
+                                const typeNames = v.map((x) => x.typeName)
+                                const typeNamesUnique = [...new Set(typeNames)]
+
+                                typeNamesUnique.forEach((xxx) => {
+                                    const entity = v.find(
+                                        (x) => x.typeName === xxx
+                                    )
+                                    const length = v.filter(
+                                        (x) => x.typeName === xxx
+                                    ).length
+
+                                    if (length > 1)
+                                        entity.typeCount = `${pluralizeString(
+                                            getNodeTypeText[entity.typeName],
+                                            length
+                                        )}`
+                                    addRelatedBiAssetToLineage(data, entity)
+                                })
+                            })
                         }
+                        return
                     }
+                    addRelatedBiAssetToLineage(data, x)
                 })
+
+                return computedLineage.value
+            }
+
+            // computeLineageForChildBiAsset
+            const computeLineageForChildBiAsset = (data) => {
+                if (!data.relations.length) {
+                    const childParent = relatedBiAssets.value.find(
+                        (v) =>
+                            childParentBiAssetMap[
+                                selectedAsset.value.typeName
+                            ] === v.typeName
+                    )
+                    addRelatedBiAssetToLineage(data, childParent)
+                }
+
+                addRelatedBiAssetToLineage(data, selectedAsset.value)
+                computedLineage.value.baseEntityGuid = selectedAsset.value.guid
+
+                if (
+                    parentChildrenBiAssetArr.includes(
+                        selectedAsset.value.typeName
+                    )
+                )
+                    lineage.value = computeLineageForParentBiAsset(data)
 
                 return computedLineage.value
             }
@@ -205,9 +261,13 @@
                 useFetchLineage(config)
 
             watch(data, async () => {
-                if (childBiAssetMap[selectedAsset.value.typeName])
+                if (childParentBiAssetMap[selectedAsset.value.typeName])
                     lineage.value = computeLineageForChildBiAsset(data.value)
-                else if (parentBiAssetMap[selectedAsset.value.typeName])
+                else if (
+                    parentChildrenBiAssetArr.includes(
+                        selectedAsset.value.typeName
+                    )
+                )
                     lineage.value = computeLineageForParentBiAsset(data.value)
                 else if (!data.value.relations.length) {
                     lineage.value = { ...data.value }
@@ -220,9 +280,6 @@
 
                 const { guidEntityMap, baseEntityGuid } = lineage.value
                 baseEntity.value = guidEntityMap[baseEntityGuid]
-
-                if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
-                isFirstLoad.value = false
             })
 
             // Control
@@ -246,27 +303,64 @@
             // getChildBiAssetParentGuid
             const getChildBiAssetParentGuid = (entity) => {
                 let parentGuid = ''
-                Object.entries(entity.attributes).forEach(([key, value]) => {
-                    if (key === childBiAssetMap[entity.typeName])
-                        parentGuid = value.guid
+                relatedBiAssets.value.forEach((v) => {
+                    if (childParentBiAssetMap[entity.typeName] === v.typeName)
+                        parentGuid = v.guid
                 })
                 return parentGuid
             }
 
             /** LIFECYCLES */
             onMounted(() => {
-                const childBiAssetArr = Object.keys(childBiAssetMap)
-                const { data: relData } = useRelations(selectedAsset)
-                watch(relData, () => {
-                    baseEntityRelData.value = relData.value?.entities[0]
-
-                    const entity = relData.value?.entities[0]
-                    const { typeName } = selectedAsset.value
-
-                    if (childBiAssetArr.includes(typeName))
-                        guid.value = getChildBiAssetParentGuid(entity)
-
+                const { typeName } = selectedAsset.value
+                if (nonBiTypes.includes(typeName)) {
                     mutate()
+                    return
+                }
+                const childBiAssetArr = Object.keys(childParentBiAssetMap)
+                const { data: relData, guidList } = useRelations(selectedAsset)
+                const limit = ref(20)
+                const offset = ref(0)
+                const aggregations = ref(['typeName'])
+                const isCache = ref(false)
+                const relationAttributes = ref([...AssetRelationAttributes])
+                const dependentKey = ref('relatedBiAssets')
+                const postFilters = ref({
+                    typeName: '__all',
+                })
+                const defaultAttributes = ref([
+                    ...InternalAttributes,
+                    ...AssetAttributes,
+                ])
+
+                watchOnce(relData, () => {
+                    const filters = ref({
+                        guidList: guidList.value,
+                    })
+                    const { list } = useFetchAssetList({
+                        offset,
+                        limit,
+                        facets: filters,
+                        postFacets: postFilters,
+                        aggregations,
+                        isCache,
+                        dependentKey,
+                        attributes: defaultAttributes,
+                        relationAttributes,
+                        suppressLogs: true,
+                    })
+                    watchOnce(list, () => {
+                        relatedBiAssets.value = list.value
+                        baseEntityRelData.value = relData.value?.entities[0]
+
+                        const entity = relData.value?.entities[0]
+
+                        if (childBiAssetArr.includes(typeName))
+                            guid.value = getChildBiAssetParentGuid(entity)
+
+                        initialLoad.value = false
+                        mutate()
+                    })
                 })
             })
 
@@ -279,6 +373,7 @@
             provide('lineageDirections', lineageDirections)
             provide('config', config)
             provide('control', control)
+            provide('preferences', preferences)
 
             /** WATCHERS */
             whenever(error, () => {
@@ -292,6 +387,7 @@
                 data,
                 loaderText,
                 isLoading,
+                initialLoad,
                 isReady,
                 error,
                 emit,

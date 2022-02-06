@@ -64,6 +64,11 @@ export default function useAssetInfo() {
 
     const parentModel = (asset: assetInterface) => attributes(asset)?.model
 
+    const parentOrganization = (asset: assetInterface) =>
+        attributes(asset)?.organization
+
+    const parentObject = (asset: assetInterface) => attributes(asset)?.object
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -561,6 +566,14 @@ export default function useAssetInfo() {
         }
         return ''
     }
+    const lastSyncRunAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.lastSyncRunAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.lastSyncRunAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.lastSyncRunAt).value
+        }
+        return ''
+    }
 
     const sourceUpdatedBy = (asset: assetInterface) =>
         attributes(asset)?.sourceUpdatedBy || ''
@@ -740,8 +753,11 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Looker')
         )
     }
+    const isSaasAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('Salesforce')
+    }
 
-    const isNonBiAsset = (asset: assetInterface) => {
+    const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
@@ -1197,7 +1213,8 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         selectedAssetUpdatePermission,
-        isNonBiAsset,
+        isSQLAsset,
+        isSaasAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,
@@ -1240,5 +1257,8 @@ export default function useAssetInfo() {
         sourceChildCount,
         tableCount,
         viewCount,
+        parentOrganization,
+        parentObject,
+        lastSyncRunAt,
     }
 }

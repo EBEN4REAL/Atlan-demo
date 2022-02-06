@@ -15,23 +15,43 @@ import bigquery from '~/assets/images/source/bigquery.png'
  * @returns {String}
  */
 export const getNodeTypeText = {
+    // SQL
     Column: 'Column',
     ColumnProcess: 'Process',
     Database: 'Database',
-    PowerBIDashboard: 'PowerBIDashboard',
-    PowerBIDataflow: 'PowerBIDataflow',
-    PowerBIDataset: 'PowerBIDataset',
-    PowerBIDatasource: 'PowerBIDatasource',
-    PowerBIPage: 'PowerBIPage',
-    PowerBIReport: 'PowerBIReport',
-    PowerBITile: 'PowerBITile',
-    PowerBIWorkspace: 'PowerBIWorkspace',
     Process: 'Process',
-    Query: 'Query',
-    QueryFolder: 'Folder',
-    QueryFolderNamespace: 'QueryFolderNamespace',
     Table: 'Table',
     View: 'View',
+    // PowerBI
+    PowerBIDashboard: 'Dashboard',
+    PowerBIDataflow: 'Dataflow',
+    PowerBIDataset: 'Dataset',
+    PowerBIDatasource: 'Datasource',
+    PowerBIPage: 'Page',
+    PowerBIReport: 'Report',
+    PowerBITile: 'Tile',
+    PowerBIWorkspace: 'Workspace',
+    // Looker
+    LookerTile: 'Tile',
+    LookerFolder: 'Folder',
+    LookerDashboard: 'Dashboard',
+    LookerQuery: 'Query',
+    LookerExplore: 'Explore',
+    LookerField: 'Field',
+    LookerLook: 'Look',
+    LookerModel: 'Model',
+    LookerProject: 'Project',
+    // Tableau
+    TableauDatasource: 'Datasource',
+    TableauCalculatedField: 'Calculated Field',
+    TableauDatasourceField: 'Datasource Field',
+    TableauDashboard: 'Dashboard',
+    TableauWorksheet: 'Worksheet',
+    TableauWorkbook: 'Workbook',
+    TableauProject: 'Project',
+    TableauSite: 'Site',
+    TableauFlow: 'Flow',
+    TableauMetric: 'Metric',
 }
 
 /**
@@ -61,9 +81,59 @@ export const getSource = (entity) => {
 }
 
 export const getSchema = (entity) => {
+    const allowedTypes = ['Table', 'View']
+    if (!allowedTypes.includes(entity.typeName)) return null
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
 }
+
+export const childParentBiAssetMap = {
+    PowerBIReport: 'PowerBIDataset',
+    LookerTile: 'LookerQuery',
+}
+
+export const childGroupBiAssetMap = {
+    PowerBIDataset: 'workspace',
+    PowerBIDashboard: 'workspace',
+    PowerBIDataflow: 'workspace',
+    PowerBIPage: 'report',
+    PowerBIReport: 'workspace',
+    PowerBITile: 'dashboard',
+    LookerQuery: 'model',
+    LookerTile: 'dashboard',
+    LookerLook: 'model',
+    LookerDashboard: 'folder',
+    LookerExplore: 'model',
+    LookerModel: 'project',
+}
+export const parentChildrenBiAssetArr = [
+    'PowerBIDataset',
+    'PowerBIDashboard',
+    'PowerBIDataflow',
+    'PowerBIDatasource',
+    'PowerBIPage',
+    'PowerBIReport',
+    'PowerBITile',
+    'PowerBIWorkspace',
+    'LookerTile',
+    'LookerQuery',
+    'LookerFolder',
+    'LookerDashboard',
+    'LookerExplore',
+    'LookerLook',
+    'LookerModel',
+    'LookerProject',
+    'LookerField',
+]
+
+export const nonBiTypes = [
+    'Column',
+    'ColumnProcess',
+    'Database',
+    'Process',
+    'Table',
+    'View',
+]

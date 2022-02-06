@@ -188,6 +188,27 @@ export function useBody(
 
                         return q
                     })
+
+                    if (
+                        filterObject.attributeName &&
+                        filterObject.attributeValue
+                    ) {
+                        base.filter('bool', (q) => {
+                            q.orFilter(
+                                'term',
+                                filterObject.attributeName,
+                                filterObject.attributeValue
+                            )
+
+                            q.orFilter(
+                                'term',
+                                'qualifiedName',
+                                filterObject.attributeValue
+                            )
+
+                            return q
+                        })
+                    }
                     // base.filter(
                     //     'term',
                     //     'connectionQualifiedName',
@@ -635,7 +656,7 @@ export function useBody(
         !facets?.guid
     ) {
         // Global TypeName Filters
-        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
+        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI', 'CRM'])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
             'AtlasGlossaryCategory',

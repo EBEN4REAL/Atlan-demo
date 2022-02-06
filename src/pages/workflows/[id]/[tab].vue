@@ -1,124 +1,214 @@
 <template>
-    <div class="flex w-full h-full">
-        dsadasd
-        <!-- <div class="flex flex-col w-full container-workFlow">
-            <Header
-                :id="id"
-                :workflow="data.asset"
-                :creator="creator"
-                class="px-5 pt-3 bg-white"
-                :logo="logo"
-                @open-logs="workflowLogsIsOpen = true"
-            />
-            <a-tabs
-                :active-key="activeKey"
-                :class="$style.profiletab"
-                @change="selectTab($event)"
-            >
-                <a-tab-pane
-                    v-for="t in tabs"
-                    :key="t.id"
-                    class="tabs-workflow"
-                    :tab="t.name"
-                >
-                    <component
-                        :is="t.component"
-                        v-if="workflowTemplate"
-                        :key="activeKey || id"
-                        :ref="
-                            (el) => {
-                                refs[t.id] = el
-                            }
-                        "
-                        :selected-run-name="selectedRunName"
-                        :workflow-template="workflowTemplate"
-                        :workflow="id"
-                        class="bg-transparent"
-                        :selected-dag="selectedDag"
-                        :workflow-data="data.asset"
-                        :selected-pod="selectedPod"
-                        :active-key="activeKey"
-                        :form-config="formConfig"
-                        :data="data"
-                        @change="updateSelected"
-                        @openLog="openLog"
-                        @setSelectedPod="setSelectedPod"
-                        @setSelectedGraph="setSelectedGraph"
-                        @set-loading-fetch-pod="setLoadingFetchPod"
-                        @handleSetLogo="handleSetLogo"
-                    />
-                </a-tab-pane>
-            </a-tabs>
-        </div>
-        <div
-            v-if="isErrorVisible"
-            class="border-l border-gray-300 preview-container"
-        >
-            <EmptyView
-                empty-screen="EmptyDiscover"
-                :desc="`Invalid config UI found: ${errorCaptured}`"
-                desc-class="w-56 text-center"
-            />
-        </div>
-        <div v-else class="border-l border-gray-300 preview-container">
-            <ProfilePreview
-                v-if="selected"
-                :selected-workflow="selected"
-                :selected-dag="selectedDag"
-                :form-config="formConfig"
-                :loading-fetch-pod="loadingFetchPod"
-                @change="selectedRunName = $event"
-                @updateSelected="updateSelected"
-            />
-        </div>
-
-        <WorkflowLogs
-            ref="workflowLogs"
-            :is-open="workflowLogsIsOpen"
-            :selected-pod="selectedPod"
-            :selected-graph="selectedGraph"
-            @close="workflowLogsIsOpen = false"
-        /> -->
-    </div>
+    <Loader v-if="isPageLoading"></Loader>
+    <WorkflowProfile
+        v-else
+        :workflowObject="workflowObject"
+        :packageObject="packageObject"
+    ></WorkflowProfile>
 </template>
+
 <script lang="ts">
-    // Vue
-    // import {
-    //     computed,
-    //     defineComponent,
-    //     ref,
-    //     defineAsyncComponent,
-    //     watch,
-    //     onMounted,
-    //     provide,
-    //     ComputedRef,
-    // } from 'vue'
-    // import { useRoute, useRouter } from 'vue-router'
+    import {
+        computed,
+        defineComponent,
+        inject,
+        ref,
+        watch,
+        nextTick,
+        onMounted,
+    } from 'vue'
+    import { useHead } from '@vueuse/head'
+    import { useRoute } from 'vue-router'
 
-    // // Components
-    // import LoadingView from '@common/loaders/section.vue'
-    // import ErrorView from '@common/error/index.vue'
-    // import EmptyView from '@common/empty/index.vue'
-    // import { storeToRefs } from 'pinia'
-    // import ProfilePreview from '@/workflows/profile/preview/preview.vue'
-    // import Header from '@/workflows/profile/header.vue'
-    // import { useUsers } from '~/composables/user/useUsers'
+    import WorkflowProfile from '@/workflows/profile/index.vue'
+    import Loader from '@/common/loaders/page.vue'
 
-    // // Composables
-    // import {
-    //     useWorkflowByName,
-    //     getWorkflowConfigMapByName,
-    // } from '~/composables/workflow/useWorkflowList'
-
-    // import useWorkflowStore from '~/store/workflows'
+    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import { usePackageByName } from '~/composables/package/usePackageByName'
 
     export default defineComponent({
-        components: {},
-        props: {},
+        components: {
+            WorkflowProfile,
+            Loader,
+        },
         emits: ['preview'],
-        setup(props, { emit }) {},
+        setup(props, { emit }) {
+            const route = useRoute()
+            const { id } = route.params
+
+            const limit = ref(1)
+            const offset = ref(0)
+            const queryText = ref('')
+            const facets = ref({
+                name: id,
+            })
+            const dependentKey = ref('workflow_profile')
+
+            const { isLoading, list, error } = useWorkflowDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                queryText,
+                source: ref({}),
+            })
+
+            const workflowObject = computed(() => {
+                if (list.value?.length > 0) {
+                    return list.value[0]
+                }
+                return {}
+            })
+
+            const { packageName } = useWorkflowInfo()
+
+            const {
+                workflowPackage: packageObject,
+                changeName,
+                isLoading: isPackageLoading,
+            } = usePackageByName(packageName(workflowObject.value), false)
+
+            watch(workflowObject, () => {
+                const workflowTemplateName = packageName(workflowObject.value)
+                if (workflowTemplateName) {
+                    changeName(
+                        workflowTemplateName
+                            .replaceAll('@', '')
+                            .replaceAll('/', '-')
+                    )
+                }
+            })
+
+            const isPageLoading = computed(
+                () => isPackageLoading.value || isLoading.value
+            )
+
+            // const { selectedAsset } = useAssetInfo()
+
+            // const localSelected = ref()
+            // const route = useRoute()
+            // const id = computed(() => route?.params?.id || null)
+            // const profileActiveTab = computed(() => route?.params?.tab)
+            // const handlePreview = inject('preview')
+
+            // if (selectedAsset.value?.guid === id.value) {
+            //     localSelected.value = selectedAsset.value
+            //     handlePreview(localSelected.value)
+            // }
+
+            // useHead({
+            //     title:
+            //         localSelected.value?.attributes?.displayName ||
+            //         localSelected.value?.attributes?.name,
+            // })
+
+            // const limit = ref(1)
+            // const offset = ref(0)
+            // const facets = ref({
+            //     guid: id.value,
+            // })
+            // const fetchKey = computed(() => {
+            //     if (
+            //         selectedAsset.value.guid === id.value &&
+            //         selectedAsset.value.typeName !== 'Column'
+            //     ) {
+            //         return null
+            //     }
+            //     return id.value
+            // })
+            // const dependentKey = ref(fetchKey.value)
+
+            // const { customMetadataProjections } = useTypedefData()
+            // const defaultAttributes = ref([
+            //     ...InternalAttributes,
+            //     ...AssetAttributes,
+            //     ...SQLAttributes,
+            //     ...customMetadataProjections,
+            //     ...GlossaryAttributes,
+            // ])
+            // const relationAttributes = ref([...AssetRelationAttributes])
+            // const { list, isLoading, fetch } = useDiscoverList({
+            //     isCache: false,
+            //     dependentKey,
+            //     facets,
+            //     limit,
+            //     offset,
+            //     attributes: defaultAttributes,
+            //     relationAttributes,
+            // })
+
+            // const sendPageTrack = () => {
+            //     useTrackPage('assets', 'asset_profile', {
+            //         type: localSelected?.value?.typeName,
+            //         tab: profileActiveTab.value,
+            //     })
+            // }
+
+            // watch(list, () => {
+            //     if (list.value.length > 0) {
+            //         localSelected.value = list.value[0]
+
+            //         handlePreview(list.value[0])
+            //     }
+            // })
+
+            // watch(selectedAsset, () => {
+            //     localSelected.value = selectedAsset.value
+            // })
+
+            // watch(
+            //     () => id.value,
+            //     () => {
+            //         dependentKey.value = fetchKey.value
+            //         facets.value = {
+            //             guid: id.value,
+            //         }
+            //         fetch()
+            //     }
+            // )
+
+            // watch(isLoading, async () => {
+            //     await nextTick()
+            //     console.log(
+            //         'asset profile loaded',
+            //         localSelected.value.typeName,
+            //         { profileActiveTab: profileActiveTab.value }
+            //     )
+            //     sendPageTrack()
+            // })
+
+            // watch(profileActiveTab, () => {
+            //     if (profileActiveTab.value) {
+            //         sendPageTrack()
+            //     }
+            // })
+
+            // onMounted(() => {
+            //     if (!isLoading.value) {
+            //         sendPageTrack()
+            //     }
+            // })
+
+            return {
+                workflowObject,
+                packageName,
+                packageObject,
+                isPackageLoading,
+                isPageLoading,
+            }
+            // return {
+            //     fetchKey,
+            //     isLoading,
+            //     emit,
+            //     localSelected,
+            //     handlePreview,
+            // }
+        },
     })
 </script>
+
 <route lang="yaml">
 meta:
     layout: default

@@ -9,6 +9,8 @@ import styleImport from 'vite-plugin-style-import'
 import svgLoader from 'vite-svg-loader'
 import strip from '@rollup/plugin-strip'
 import VueI18n from '@intlify/vite-plugin-vue-i18n'
+import OptimizationPersist from 'vite-plugin-optimize-persist'
+import PkgConfig from 'vite-plugin-package-config'
 // import Components from 'unplugin-vue-components/vite'
 
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -53,6 +55,9 @@ export default defineConfig(({ mode }) => {
             },
         },
         plugins: [
+            // https://github.com/antfu/vite-plugin-optimize-persist
+            PkgConfig(),
+            OptimizationPersist(),
             visualizer(),
             Vue({
                 include: [/\.vue$/],
@@ -79,7 +84,7 @@ export default defineConfig(({ mode }) => {
             {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
                 apply: 'build',
-                
+
             },
             VueI18n({
                 runtimeOnly: true,

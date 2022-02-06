@@ -9,21 +9,32 @@
             :allowClear="true"
             @dropdownVisibleChange="handleDropdownVisibleChange"
         >
-            <template #suffixIcon>
-                <AtlanIcon
-                    icon="Error"
+            <template #notFoundContent v-if="isLoading || error">
+                <div
+                    class="flex items-center justify-center w-full h-10"
+                    v-if="isLoading"
+                >
+                    <a-spin size="small" class="mt-1 mr-2" /> Loading
+                </div>
+                <div
+                    class="flex items-center justify-center w-full h-10 text-red-500"
                     v-if="error"
-                    style="height: 12px"
-                ></AtlanIcon>
-                <AtlanIcon icon="Chevron" v-else></AtlanIcon>
+                >
+                    <AtlanIcon icon="Error" class="mr-1"></AtlanIcon> Please
+                    check your credential and try again.
+                </div>
             </template>
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+
             <a-select-option :value="item.value" v-for="item in list">
                 {{ item.label }}
             </a-select-option>
         </a-select>
-        <a-button style="width: 20%" @click="handleClick">
+        <a-button @click="handleClick" class="px-2">
             <a-spin size="small" class="mt-1" v-if="isLoading"></a-spin>
-            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
+            <AtlanIcon icon="Retry" class="text-primary" v-else></AtlanIcon>
         </a-button>
     </a-input-group>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <div class="lineage-control footer">
+    <div ref="footerRoot" class="lineage-control footer">
         <slot></slot>
 
         <div class="controls">
@@ -28,7 +28,7 @@
                 <a-popover
                     v-model:visible="isPreferencesVisible"
                     :trigger="['click']"
-                    :get-popup-container="(e) => e.parentNode"
+                    :get-popup-container="() => footerRoot"
                 >
                     <template #content>
                         <div class="px-4 py-3 text-sm">View Options</div>
@@ -97,6 +97,12 @@
                                         </a-menu>
                                     </template>
                                 </a-dropdown>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Arrows</span>
+                                <a-switch
+                                    v-model:checked="graphPrefs.showArrow"
+                                />
                             </div>
                         </div>
                     </template>
@@ -232,6 +238,7 @@
             const control = inject('control')
             const depth = inject('depth')
             const direction = inject('direction')
+            const graphPrefs = inject('preferences', ref({}))
             const lineageDepths: [] = inject('lineageDepths')
             const lineageDirections: [] = inject('lineageDirections')
 
@@ -242,6 +249,7 @@
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
             const isPreferencesVisible = ref(false)
+            const footerRoot = ref<HTMLElement>()
 
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
@@ -267,6 +275,7 @@
                         graphHeight.value / 1.35
                     )
                 }
+
                 fullscreen(lineageContainer)
             }
 
@@ -278,6 +287,7 @@
 
             const toggleControlVisibility = () => {
                 if (isExpanded.value) {
+                    isPreferencesVisible.value = false
                     // Close the minimap if the user wants to collapse the controls
                     if (showMinimap.value) onShowMinimap()
                     isExpanded.value = false
@@ -304,6 +314,8 @@
                 direction,
                 lineageDirections,
                 currDir,
+                footerRoot,
+                graphPrefs,
                 zoom,
                 fit,
                 onShowMinimap,

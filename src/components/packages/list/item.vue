@@ -1,7 +1,7 @@
 <template>
     <div
-        class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
-        :class="isSelected ? 'border-primary shadow-lg' : ''"
+        class="flex flex-col p-4 bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
+        :class="isSelected ? 'border-primary shadow-lg ' : ''"
     >
         <div class="flex items-center mb-2" v-if="item.metadata.annotations">
             <div
@@ -47,12 +47,17 @@
                     class="absolute -right-1 -top-2"
                 >
                     <a-tooltip title="Certified" placement="left">
-                        <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
+                        <span>
+                            <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon
+                        ></span>
                     </a-tooltip>
                 </div>
             </div>
             <div class="flex flex-col w-2/3">
-                <div class="text-sm font-bold truncate overflow-ellipsis">
+                <div
+                    class="text-sm font-bold truncate cursor-pointer overflow-ellipsis text-primary"
+                    @click="handleClick"
+                >
                     {{
                         item.metadata.annotations[
                             'orchestration.atlan.com/name'
@@ -98,7 +103,7 @@
                 },
             },
         },
-        emits: ['loadMore'],
+        emits: ['loadMore', 'select'],
         setup(props, { emit }) {
             const { item, selectedItem } = toRefs(props)
             const isSelected = computed(
@@ -106,9 +111,15 @@
                     item.value?.metadata.name ===
                     selectedItem.value?.metadata.name
             )
+
+            const handleClick = () => {
+                emit('select', item.value)
+            }
+
             return {
                 item,
                 isSelected,
+                handleClick,
             }
         },
     })

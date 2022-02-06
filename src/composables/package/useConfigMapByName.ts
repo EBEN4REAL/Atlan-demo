@@ -6,7 +6,7 @@ import { Workflows } from '~/services/service/workflows'
 
 export function useConfigMapByName(name, immediate = true) {
     // const params = ref({ filter: { name } })
-    const pathVariables = { name }
+    const pathVariables = ref({ name })
 
     const options: useOptions = {
         asyncOptions: {

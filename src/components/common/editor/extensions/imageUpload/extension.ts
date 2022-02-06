@@ -1,90 +1,12 @@
-import { Node, mergeAttributes } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
+import { Image } from '@tiptap/extension-image'
 import { TextSelection } from 'prosemirror-state'
 import Component from './component.vue'
 
-export interface ImageOptions {
-    inline: boolean
-    HTMLAttributes: Record<string, any>
-}
-
-declare module '@tiptap/core' {
-    interface Commands<ReturnType> {
-        imageBlock: {
-            /**
-             * Set a code block
-             */
-
-            /**
-             * Toggle a code block
-             */
-            toggleImageBlock: () => ReturnType
-        }
-    }
-}
-
-export default Node.create<ImageOptions>({
+export default Image.extend({
     name: 'uploadimage',
 
-    group: 'block',
-
     atom: true,
-
-    draggable: true,
-
-    addOptions() {
-        return {
-            inline: false,
-            HTMLAttributes: {},
-        }
-    },
-    addAttributes() {
-        return {
-            src: {
-                default: null,
-            },
-            alt: {
-                default: null,
-            },
-            title: {
-                default: null,
-            },
-        }
-    },
-
-    // addAttributes() {
-    //     return {
-    //         src: {
-    //             default:
-    //                 'https://storage.googleapis.com/gd-wagtail-prod-assets/original_images/evolving_google_identity_2x1.jpg',
-    //         },
-    //     }
-    // },
-    // parseHTML() {
-    //     return [
-    //         {
-    //             tag: 'uploadimage',
-    //         },
-    //     ]
-    // },
-
-    parseHTML() {
-        return [
-            {
-                tag: 'img[src]',
-            },
-        ]
-    },
-    renderHTML({ HTMLAttributes }) {
-        return [
-            'img',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-        ]
-    },
-
-    // renderHTML({ HTMLAttributes }) {
-    //     return ['uploadimage', mergeAttributes(HTMLAttributes)]
-    // },
 
     addNodeView() {
         return VueNodeViewRenderer(Component)

@@ -82,7 +82,7 @@
         <div v-if="showNone" class="px-4 pt-1">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
+                class="inline-flex flex-row-reverse w-full atlan-reverse"
             >
                 <component
                     :is="noStatus"
@@ -167,18 +167,18 @@
             selectedRecords: {
                 type: Object,
                 default: null,
-                required: false
+                required: false,
             },
             activeTab: {
                 type: String,
                 required: false,
                 default: '',
             },
-            hideTabs:{
+            hideTabs: {
                 type: Boolean,
                 default: false,
-                required: false
-            }
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

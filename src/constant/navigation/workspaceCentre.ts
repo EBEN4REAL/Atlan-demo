@@ -3,6 +3,13 @@ import page from '~/constant/accessControl/page'
 
 export const workspaceCentreList = [
     {
+        path: '/workflows',
+        icon: 'Admin',
+        label: 'Workflow Center',
+        isActive: true,
+        auth: page.PAGE_ADMIN,
+    },
+    {
         path: '/governance',
         icon: 'GovernanceCenter',
         label: 'Governance Center',
@@ -16,6 +23,7 @@ export const workspaceCentreList = [
         isActive: true,
         auth: page.PAGE_ADMIN,
     },
+
     // {
     //     path: '/platform',
     //     icon: 'Platform',

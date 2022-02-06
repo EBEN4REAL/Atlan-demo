@@ -198,12 +198,16 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         let isChanged = false
 
         if (
-            ownerUsers(selectedAsset.value).length === 0 &&
+            /* ownerUsers(selectedAsset.value).length === 0 &&
             (!localOwners.value?.ownerUsers ||
                 localOwners.value?.ownerUsers.length === 0) &&
             ownerGroups(selectedAsset.value).length === 0 &&
             (!localOwners.value?.ownerGroups ||
-                localOwners.value?.ownerGroups.length === 0)
+                localOwners.value?.ownerGroups.length === 0) */
+            ownerUsers(selectedAsset.value)?.sort().toString() ===
+                localOwners.value?.ownerUsers?.sort().toString() &&
+            ownerGroups(selectedAsset.value)?.sort().toString() ===
+                localOwners.value?.ownerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -242,12 +246,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         let isChanged = false
 
         if (
-            adminUsers(selectedAsset.value).length === 0 &&
-            (!localAdmins.value?.adminUsers ||
-                localAdmins.value?.adminUsers.length === 0) &&
-            adminGroups(selectedAsset.value).length === 0 &&
-            (!localAdmins.value?.adminGroups ||
-                localAdmins.value?.adminGroups.length === 0)
+            adminUsers(selectedAsset.value)?.sort().toString() ===
+                localAdmins.value?.adminUsers?.sort().toString() &&
+            adminGroups(selectedAsset.value)?.sort().toString() ===
+                localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -285,9 +287,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-            certificateStatus(selectedAsset.value) ||
+                certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-            certificateStatusMessage(selectedAsset.value)
+                certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -396,7 +398,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
-                    qualifiedName: assignedEntitiy.uniqueAttributes?.qualifiedName ??  assignedEntitiy.attributes?.qualifiedName ?? '',
+                    qualifiedName:
+                        assignedEntitiy.uniqueAttributes?.qualifiedName ??
+                        assignedEntitiy.attributes?.qualifiedName ??
+                        '',
                     name: assignedEntitiy.attributes.name,
                 },
                 relationshipAttributes: {
@@ -405,22 +410,23 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             }
         })
 
-        const unlinked = unlinkedAssets.map((unassignedEntity) => {
-            return {
-                guid: unassignedEntity.guid,
-                typeName: unassignedEntity.typeName,
-                attributes: {
-                    qualifiedName: unassignedEntity.uniqueAttributes?.qualifiedName ??  unassignedEntity.attributes?.qualifiedName ?? '',
-                    name: unassignedEntity.attributes.name,
-                },
-                relationshipAttributes: {
-                    meanings:
-                        unassignedEntity.attributes.meanings?.filter(
-                            (meaning) => meaning.guid !== term.guid
-                        ) ?? [],
-                },
-            }
-        })
+        const unlinked = unlinkedAssets.map((unassignedEntity) => ({
+            guid: unassignedEntity.guid,
+            typeName: unassignedEntity.typeName,
+            attributes: {
+                qualifiedName:
+                    unassignedEntity.uniqueAttributes?.qualifiedName ??
+                    unassignedEntity.attributes?.qualifiedName ??
+                    '',
+                name: unassignedEntity.attributes.name,
+            },
+            relationshipAttributes: {
+                meanings:
+                    unassignedEntity.attributes.meanings?.filter(
+                        (meaning) => meaning.guid !== term.guid
+                    ) ?? [],
+            },
+        }))
 
         body.value.entities = [...linked, ...unlinked]
         if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
@@ -532,7 +538,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         whenever(error, () => {
             message.error(
-                `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
                 }` ?? 'Something went wrong'
             )
         })
@@ -608,6 +615,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
+        if (adminUsers(selectedAsset?.value) !== localAdmins.value.adminUsers) {
+            localAdmins.value.adminUsers = adminUsers(selectedAsset?.value)
+        }
+        if (
+            adminGroups(selectedAsset?.value) !== localAdmins.value.adminGroups
+        ) {
+            localAdmins.value.adminGroups = adminGroups(selectedAsset?.value)
+        }
         if (meanings(selectedAsset?.value) !== localMeanings.value) {
             localMeanings.value = meanings(selectedAsset.value)
         }
@@ -616,7 +631,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -694,7 +710,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })

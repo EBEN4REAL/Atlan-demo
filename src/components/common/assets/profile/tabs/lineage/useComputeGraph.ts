@@ -2,6 +2,9 @@ import { ref } from 'vue'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
+import { getNodeTypeText, nonBiTypes, childGroupBiAssetMap } from './util.js'
+import { pluralizeString } from '~/utils/string'
+import { findDuplicates } from '~/utils/array'
 
 export default async function useComputeGraph(
     graph,
@@ -31,41 +34,79 @@ export default async function useComputeGraph(
     /* Nodes */
     let columnEntity = {}
     const columnEntityIds = []
+    let biEntity = {}
+    const biEntityIds = []
 
-    const createNodesFromEntityMap = async (lineageData, hasBase = true) => {
+    const typeNames = Object.values(lineage.value.guidEntityMap).map(
+        (x) => x.typeName
+    )
+    const typeNamesDupArr = findDuplicates(typeNames)
+
+    const createNodesFromEntityMap = (lineageData, hasBase = true) => {
         const { relations, childrenCounts, baseEntityGuid } = lineageData
         const guidEntityMap = Object.values(lineageData.guidEntityMap)
 
-        await Promise.all(
-            guidEntityMap.map(async (entity) => {
-                const { attributes, typeName, guid } = entity
+        guidEntityMap.forEach((entity) => {
+            const ent = { ...entity }
+            const { attributes, typeName, guid } = ent
 
-                if (typeName === 'Column') {
-                    const parentGuid = attributes.table.guid
-                    if (!columnEntity[parentGuid])
-                        columnEntity = {
-                            ...columnEntity,
-                            [parentGuid]: [entity],
-                        }
-                    else columnEntity[parentGuid].push(entity)
+            if (typeName === 'Column') {
+                const parentGuid = attributes.table.guid
+                if (!columnEntity[parentGuid])
+                    columnEntity = {
+                        ...columnEntity,
+                        [parentGuid]: [ent],
+                    }
+                else columnEntity[parentGuid].push(ent)
 
-                    columnEntityIds.push(guid)
-                    return
-                }
+                columnEntityIds.push(guid)
+                return
+            }
 
-                const { nodeData, entity: ent } = await createNodeData(
-                    entity,
-                    relations,
-                    childrenCounts,
-                    hasBase ? baseEntityGuid : null
-                )
+            if (
+                !nonBiTypes.includes(typeName) &&
+                typeNamesDupArr.includes(typeName)
+            ) {
+                const parentGuid =
+                    attributes[childGroupBiAssetMap[typeName]].guid
+                if (!biEntity[parentGuid])
+                    biEntity = {
+                        ...biEntity,
+                        [parentGuid]: [ent],
+                    }
+                else biEntity[parentGuid].push(ent)
+                biEntityIds.push(guid)
 
-                const searchItem = ent
-                searchItems.value.push(searchItem)
+                if (biEntity[parentGuid].length > 1) return
 
-                nodes.value.push(nodeData)
-            })
-        )
+                const typeCountLength = guidEntityMap.filter(
+                    (x) => x?.attributes?.model?.guid === parentGuid
+                ).length
+                if (typeCountLength > 1)
+                    ent.typeCount = `${pluralizeString(
+                        getNodeTypeText[typeName],
+                        typeCountLength
+                    )}`
+            }
+
+            const { nodeData } = createNodeData(
+                ent,
+                relations,
+                childrenCounts,
+                hasBase ? baseEntityGuid : null
+            )
+
+            const searchItem = ent
+            searchItems.value.push(searchItem)
+
+            nodes.value.push(nodeData)
+        })
+
+        Object.entries(biEntity).forEach(([k, v]) => {
+            const f = [...v]
+            f.shift()
+            biEntity[k] = f
+        })
 
         if (Object.keys(columnEntity).length) {
             Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
@@ -74,9 +115,13 @@ export default async function useComputeGraph(
         }
     }
 
-    await createNodesFromEntityMap(lineage.value)
+    createNodesFromEntityMap(lineage.value)
 
     /* Edges */
+    const biEntityIdsBl = Object.values(biEntity)
+        .flat()
+        .map((x) => x.guid)
+
     const createNodeEdges = (lineageData) => {
         const { relations } = lineageData
 
@@ -90,6 +135,8 @@ export default async function useComputeGraph(
             else fromAndToIdSet.add(fromAndToId)
 
             if (columnEntityIds.find((y) => [from, to].includes(y))) return
+
+            if (biEntityIdsBl.find((y) => to === y)) return
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -111,7 +158,7 @@ export default async function useComputeGraph(
 
     /* Render */
     const renderLayout = () => {
-        model.value = graphLayout.value.layout({
+        model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
         })
@@ -133,7 +180,7 @@ export default async function useComputeGraph(
     }
 
     /* addSubGraph */
-    const addSubGraph = async (
+    const addSubGraph = (
         data,
         registerAllListeners,
         removeAddedNodesShadow
@@ -144,7 +191,7 @@ export default async function useComputeGraph(
             if (guidEntityMapArr.includes(x.id))
                 delete newData.guidEntityMap[x.id]
         })
-        await createNodesFromEntityMap(newData, false)
+        createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
         renderLayout()
         removeAddedNodesShadow()

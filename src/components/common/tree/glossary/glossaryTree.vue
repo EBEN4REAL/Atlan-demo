@@ -168,6 +168,7 @@
                 dragAndDropNode,
                 nodeToParentKeyMap,
                 allKeys,
+                checkDuplicateCategoryNames
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -281,6 +282,8 @@
             })
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
+            provide('treeData', treeData)
+            provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
             return {
                 onLoadData,
                 loadedKeys,
@@ -311,6 +314,7 @@
                 handleAddSelectedKey,
                 dragAndDropNode,
                 isTreeNodeAnimating,
+                checkDuplicateCategoryNames
             }
         },
     })

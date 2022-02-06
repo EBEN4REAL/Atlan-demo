@@ -248,7 +248,9 @@
             </div>
             <a-button-group>
                 <a-tooltip
-                    v-if="!isGTC(item) && !isBiAsset(item)"
+                    v-if="
+                        !isGTC(item) && !isBiAsset(item) && !isSaasAsset(item)
+                    "
                     title="Query"
                 >
                     <QueryDropdown
@@ -276,7 +278,10 @@
                 </a-tooltip>
 
                 <a-button
-                    v-if="isBiAsset(item) && (webURL(item) || sourceURL(item))"
+                    v-if="
+                        (isBiAsset(item) || isSaasAsset(item)) &&
+                        (webURL(item) || sourceURL(item))
+                    "
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
@@ -401,6 +406,7 @@
                 selectedAssetUpdatePermission,
                 isGTC,
                 isBiAsset,
+                isSaasAsset,
                 assetTypeLabel,
                 webURL,
                 sourceURL,
@@ -496,6 +502,7 @@
                 map,
                 checkAccess,
                 isBiAsset,
+                isSaasAsset,
                 webURL,
                 handleBIRedirect,
                 handleClick,

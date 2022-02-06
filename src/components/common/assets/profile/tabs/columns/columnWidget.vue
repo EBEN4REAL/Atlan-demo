@@ -270,10 +270,18 @@
 
             const updateFacet = () => {
                 facets.value = {}
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() === 'table' ||
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                        'tablepartition'
+                ) {
                     facets.value.tableQualifiedName = assetQualifiedName.value
                 }
-                if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() === 'view' ||
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                        'materialisedview'
+                ) {
                     facets.value.viewQualifiedName = assetQualifiedName.value
                 }
             }

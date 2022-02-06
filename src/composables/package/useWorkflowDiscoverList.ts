@@ -87,8 +87,11 @@ export function useWorkflowDiscoverList({
         let temp = {}
         data.value?.aggregations?.by_package?.by_package?.buckets?.forEach(
             (element) => {
-                const list = element?.by_package?.buckets.map((i) => i.key)
+                const list = element?.by_package_hits?.hits?.hits?.map(
+                    (i) => i._source.name
+                )
                 temp[element.key] = list
+                // temp = temp.concat(element?.by_package?.buckets)
             }
         )
         return temp
@@ -98,10 +101,15 @@ export function useWorkflowDiscoverList({
         let temp = []
         data.value?.aggregations?.by_package?.by_package?.buckets?.forEach(
             (element) => {
-                temp = temp.concat(element?.by_package?.buckets)
+                temp = temp.concat(
+                    element?.by_package_hits?.hits?.hits?.map(
+                        (i) => i._source.name
+                    )
+                )
+                // temp = temp.concat(element?.by_package?.buckets)
             }
         )
-        return temp.map((i) => i?.key)
+        return temp
     })
 
     const quickChange = () => {

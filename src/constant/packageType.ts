@@ -1,17 +1,17 @@
 export const packageType = [
     {
         id: 'connector',
-        label: 'Connectors',
-        description: 'Connectors',
+        label: 'Assets',
+        description: 'Connector',
+    },
+    {
+        id: 'miner',
+        label: 'Queries',
+        description: 'Queries',
     },
     {
         id: 'utility',
         label: 'Utility',
-        description: 'Draft',
-    },
-    {
-        id: 'atlan-platform',
-        label: 'Atlan Platform',
         description: 'Draft',
     },
 ]

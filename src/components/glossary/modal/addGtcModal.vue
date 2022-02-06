@@ -31,44 +31,72 @@
 
                     <div
                         v-if="showGlossarySelect && !glossaryQualifiedName"
-                        class="mr-3"
+                        class="border px-1 py-0.5 rounded flex align-center"
                     >
                         <GlossarySelect
                             v-model="parentGlossary"
                             @change="handleSelectGlossary"
                             :showAllGlossary="false"
+                            size="small"
                         ></GlossarySelect>
                     </div>
+                    <atlan-icon
+                        v-if="showGlossarySelect && !glossaryQualifiedName"
+                        icon="CaretRight"
+                        class="mx-2"
+                    />
                     <div
                         v-if="glossaryName && entityType !== 'AtlasGlossary'"
-                        class="flex items-center mr-3"
+                        class="flex items-center border rounded py-0.5 px-1"
+                        style="max-width: 150px"
                     >
-                        <AtlanIcon
-                            icon="Glossary"
-                            class="self-center pr-1"
-                        ></AtlanIcon>
-                        {{ glossaryName }}
+                        <div class="w-4 mb-0.5">
+                            <AtlanIcon
+                                icon="Glossary"
+                                class="self-center"
+                            ></AtlanIcon>
+                        </div>
+                        <Tooltip
+                            :tooltip-text="`${glossaryName}`"
+                            :classes="'pr-1 pl-0.5'"
+                        />
                     </div>
+                    <atlan-icon
+                        v-if="glossaryName && entityType !== 'AtlasGlossary'"
+                        icon="CaretRight"
+                        class="px-2"
+                    />
                     <div
                         v-if="glossaryName && categoryName && categoryGuid"
-                        class="flex items-center mr-3"
+                        class="flex items-center border rounded py-0.5 px-1"
+                        style="max-width: 150px"
                     >
-                        <AtlanIcon
-                            icon="Category"
-                            class="self-center pr-1"
-                        ></AtlanIcon>
-                        {{ categoryName }}
+                        <div class="w-4 mb-0.5">
+                            <AtlanIcon
+                                icon="Category"
+                                class="self-center"
+                            ></AtlanIcon>
+                        </div>
+                        <Tooltip
+                            :tooltip-text="`${categoryName}`"
+                            :classes="'pr-1 pl-0.5'"
+                        />
                     </div>
+                    <atlan-icon
+                        v-if="glossaryName && categoryName && categoryGuid"
+                        icon="CaretRight"
+                        class="px-2"
+                    />
+
                     <GTCSelect
                         v-if="
                             (showGlossarySelect || glossaryQualifiedName) &&
                             entityType !== 'AtlasGlossary'
                         "
-                        class="p-1 mr-3 bg-gray-100 rounded"
+                        class="p-1 mr-3 bg-white border rounded"
                         v-model="localEntityType"
                     ></GTCSelect>
                 </div>
-                <div class="text-xs">
                     <a-dropdown
                         placement="bottomLeft"
                         :trigger="['click']"
@@ -81,7 +109,7 @@
                                     :key="item.id"
                                     @click="handleStatusChange(item)"
                                 >
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex items-center space-x-2 text-xs">
                                         <component
                                             :is="item.icon"
                                             class="w-auto h-4 ml-1 mr-2 pushtop"
@@ -91,7 +119,7 @@
                                 </a-menu-item>
                             </a-menu>
                         </template>
-                        <div class="flex flex-row-reverse" style="width: 140px">
+                        <div class="flex flex-row-reverse text-xs" style="width: 140px">
                             <AtlanIcon
                                 icon="CaretDown"
                                 class="w-4 h-4 ml-1"
@@ -106,7 +134,6 @@
                             ></StatusBadge>
                         </div>
                     </a-dropdown>
-                </div>
             </div>
             <!-- header ends here  -->
             <a-input
@@ -168,6 +195,7 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
     import { ListForSidebar } from '~/constant/status'
 
     import updateAsset from '~/composables/discovery/updateAsset'
@@ -189,6 +217,7 @@
             StatusBadge,
             AddOwners,
             GlossarySelect,
+            Tooltip,
         },
         props: {
             entityType: {
@@ -242,7 +271,10 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
-            const checkDuplicateCategoryNames = inject('checkDuplicateCategoryNames', (...args) => false)
+            const checkDuplicateCategoryNames = inject(
+                'checkDuplicateCategoryNames',
+                (...args) => false
+            )
             // shortcuts for cmnd+enter to save
             const keys = useMagicKeys()
             const { meta, Enter } = keys
@@ -367,14 +399,22 @@
                     body.value = {
                         entities: [entity],
                     }
-                    const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
-                    if(entity.typeName === 'AtlasGlossaryCategory' && duplicateExists) {
-                        message.error(`${entity.attributes.name} already exists on this level!`)
-                        return                    
-                    } 
+                    const duplicateExists = checkDuplicateCategoryNames(
+                        categoryGuid.value,
+                        entity.attributes.name
+                    )
+                    if (
+                        entity.typeName === 'AtlasGlossaryCategory' &&
+                        duplicateExists
+                    ) {
+                        message.error(
+                            `${entity.attributes.name} already exists on this level!`
+                        )
+                        return
+                    }
                     mutateAsset()
                 } else {
-                    message.warning(`Please enter the mandatory name`)
+                    message.warning(`Please enter a name`)
                 }
             }
 
@@ -479,6 +519,7 @@
                 )
                 console.log(glossaryQualifiedName.value || parentGlossary.value)
             }
+
             return {
                 visible,
                 showModal,

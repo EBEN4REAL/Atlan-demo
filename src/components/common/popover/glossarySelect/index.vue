@@ -61,7 +61,7 @@
                 class="flex items-center cursor-pointer hover:text-primary"
                 style="max-width: 80%"
             >
-                <div class="w-4 mr-2">
+            <div class="w-4" :class="size==='default'?'mr-2':'mr-1'">
                     <AtlanIcon
                         :icon="
                             displayText === 'All Glossaries'
@@ -71,15 +71,16 @@
                                       certificateStatus(selectedGlossary)
                                   )
                         "
-                        class="self-center h-5"
+                        class="self-center"
+                        :class="size==='default'?'h-5':'h-4'"
                     ></AtlanIcon>
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="' font-bold  hover:text-primary text-base mt-0.5 align-text-bottom'"
+                    :classes="`  hover:text-primary  align-text-bottom ${size==='default'?'text-base font-bold  mt-0.5':'text-sm'}`"
                 />
 
-                <div class="w-4 mr-1 mt-0.5">
+                <div class="w-4 mr-1 " :classes="{'mt-0.5':size==='default'}">
                     <AtlanIcon
                         icon="ChevronDown"
                         class="h-3 ml-2 hover:text-primary"
@@ -124,6 +125,11 @@
                 required: false,
                 default: true,
             },
+            size:{
+                type:String,
+                required:false,
+                default:()=>"default"
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

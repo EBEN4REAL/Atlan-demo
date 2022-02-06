@@ -17,7 +17,7 @@
                             icon="GlossaryGray"
                             class="self-center pr-1"
                         ></AtlanIcon>
-                        <div class="overflow-ellipsis group-hover:text-primary">
+                        <div class="overflow-ellipsis group-hover:text-primary ">
                             All Glossaries
                         </div>
                     </div>
@@ -76,10 +76,10 @@
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="' font-bold  hover:text-primary text-base '"
+                    :classes="' font-bold  hover:text-primary text-base mt-0.5 align-text-bottom'"
                 />
 
-                <div class="w-4 mr-1">
+                <div class="w-4 mr-1 mt-0.5">
                     <AtlanIcon
                         icon="ChevronDown"
                         class="h-3 ml-2 hover:text-primary"

@@ -112,13 +112,13 @@
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
-                :placeholder="`Untitled ${typeNameTitle}`"
+                :placeholder="`Name`"
                 class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
                 :class="$style.titleInput"
             />
             <a-textarea
                 v-model:value="entity.attributes.userDescription"
-                placeholder="Add description..."
+                placeholder="Description"
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :rows="2"
             />

@@ -46,7 +46,7 @@
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
-                    desc="No columns found"
+                    desc="No fields found"
                 ></EmptyView>
             </div>
 
@@ -261,7 +261,7 @@
                 ...customMetadataProjections,
             ])
             const preference = ref({
-                sort: 'order-asc',
+                sort: 'default',
             })
             const relationAttributes = ref([...AssetRelationAttributes])
 
@@ -274,9 +274,11 @@
 
                 if (
                     selectedAsset?.value.typeName?.toLowerCase() ===
-                    'salesforcefield'
+                    'salesforceobject'
                 ) {
+                    facets.value.typeName = 'SalesforceField'
                     facets.value.objectQualifiedName = assetQualifiedName.value
+                    console.log('hello', facets.value)
                 }
             }
 

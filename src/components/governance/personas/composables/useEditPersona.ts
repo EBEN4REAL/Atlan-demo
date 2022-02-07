@@ -66,7 +66,14 @@ export function removeEditFlag(type: PolicyType, idx: string) {
 }
 
 export async function savePersona(persona: IPersona) {
-    return updatePersona(persona)
+    const payload = {...persona}
+    if(!payload.attributes){
+        payload.attributes = {}
+    }
+    if(!payload.resources){
+        payload.resources = {}
+    }
+    return updatePersona(payload)
 }
 
 export function discardPersona(type: PolicyType, idx: string) {
@@ -221,7 +228,6 @@ export function discardPolicy(type: PolicyType, id: string) {
             )
         }
     } else {
-        console.log('else')
         if (type === 'meta') {
             const policyIndex =
                 selectedPersona.value?.metadataPolicies?.findIndex(
@@ -255,7 +261,6 @@ export function discardPolicy(type: PolicyType, id: string) {
                 selectedPersonaDirty.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
                 ) ?? -1
-            console.log(policyIndex, dirtyPolicyIndex, '-1')
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy = toRaw(selectedPersona.value)?.dataPolicies?.[

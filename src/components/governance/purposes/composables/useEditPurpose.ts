@@ -60,7 +60,14 @@ export function removeEditFlag(type: PolicyType, idx: string) {
 }
 
 export async function savePersona(persona: IPurpose) {
-    return updatePersona(persona)
+    const payload = {...persona}
+    if(!payload.attributes){
+        payload.attributes = {}
+    }
+    if(!payload.resources){
+        payload.resources = {}
+    }
+    return updatePersona(payload)
 }
 
 export function discardPersona(type: PolicyType, idx: string) {

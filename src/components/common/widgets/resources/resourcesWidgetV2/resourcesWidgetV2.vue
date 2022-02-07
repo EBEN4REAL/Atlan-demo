@@ -30,9 +30,8 @@
                             class="w-full h-full"
                         />
                     </div>
-                    <p class="text-sm text-center">
-                        Resources is the place to document all <br />knowledge
-                        around the asset
+                    <p class="w-1/3 text-sm text-center">
+                        {{ placeholder }}
                     </p>
                 </div>
             </template>
@@ -96,6 +95,11 @@
         entityName: {
             type: String,
             required: false,
+            default: '',
+        },
+        placeholder: {
+            type: String,
+            required: true,
         },
     })
     const emit = defineEmits(['add', 'update', 'remove'])

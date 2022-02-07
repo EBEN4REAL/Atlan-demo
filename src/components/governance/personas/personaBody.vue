@@ -61,7 +61,8 @@
             <Readme :persona="selectedPersonaDirty" />
             <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
-                    :entityName="persona.name"
+                    placeholder="Resources is the place to document all knowledge around the persona"
+                    :entity-name="persona.name"
                     :resources="persona?.resources?.links ?? []"
                     :add-status="addStatus"
                     :update-status="updateStatus"
@@ -234,6 +235,7 @@
         toRefs,
     } from 'vue'
     import { message } from 'ant-design-vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
     import PolicyCard from './policies/policyCard.vue'
@@ -249,7 +251,6 @@
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {

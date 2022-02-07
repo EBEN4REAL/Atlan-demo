@@ -116,6 +116,7 @@ export const AssetAttributes = [
     'dataflowCount',
     'tileCount',
     'pageCount',
+    'sourceId',
 ]
 
 export const SQLAttributes = [

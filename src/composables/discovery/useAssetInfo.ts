@@ -1104,6 +1104,9 @@ export default function useAssetInfo() {
     const externalLocationFormat = (asset: assetInterface) =>
         attributes(asset)?.externalLocationFormat || ''
 
+    const sourceId = (asset: assetInterface) =>
+        attributes(asset)?.sourceId || '-'
+
     const fieldsLookerQuery = (asset: assetInterface) =>
         attributes(asset)?.fields || []
 
@@ -1260,5 +1263,6 @@ export default function useAssetInfo() {
         parentOrganization,
         parentObject,
         lastSyncRunAt,
+        sourceId,
     }
 }

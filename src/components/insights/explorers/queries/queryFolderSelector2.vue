@@ -29,10 +29,16 @@
                         @click="onSelect('root', 'root')"
                         class="flex items-center w-full cursor-pointer"
                     >
-                        <AtlanIcon
+                        <!-- <AtlanIcon
                             icon="CollectionIconSmall"
                             class="w-4 h-4 my-auto mr-2"
-                        ></AtlanIcon>
+                        ></AtlanIcon> -->
+
+                        <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
+                            selectedCollection?.attributes?.icon
+                                ? selectedCollection?.attributes?.icon
+                                : '🗃'
+                        }}</span>
                         <span
                             class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                             >{{ selectedCollection?.attributes.name }}</span

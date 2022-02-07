@@ -460,6 +460,7 @@
 
             const handleCollapse = () => {
                 glossaryTree.value.collapseTree()
+                console.log('bruh log', glossaryTree.value)
             }
             const handleAddTerm = (asset) => {
                 handleSelectGlossary(getAnchorQualifiedName(asset))
@@ -487,13 +488,18 @@
                     emit('searchItemCheck', checkedNode, checked)
                 }
             }
+            const checkDuplicateCategoryNames = (categoryGuid: string, name: string) => {
+                 return glossaryTree.value?.checkDuplicateCategoryNames(categoryGuid, name)
+            }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
+            provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
             // dont fetch flat list on mount
             onMounted(() => {
                 cancelRequest()
             })
             return {
+                checkDuplicateCategoryNames,
                 handleFilterChange,
                 isLoading,
                 queryText,

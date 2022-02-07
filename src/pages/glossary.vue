@@ -1,10 +1,9 @@
 <template>
-    <div class="flex w-full h-full bg-white">
-        <splitpanes
-            v-if="isItem"
-            class="w-full h-full bg-white"
-            :class="$style.splitpane__styles"
-        >
+    <div
+        class="flex w-full h-full bg-white"
+        :class="$style.splitpane__glossary"
+    >
+        <splitpanes v-if="isItem" class="w-full h-full bg-white">
             <pane
                 min-size="20"
                 max-size="50"
@@ -207,31 +206,52 @@
     }
 </style>
 <style lang="less" module>
-    :global(.splitpanes) {
-        &__splitter {
-            @apply bg-gray-200 !important;
+    .splitpane__glossary {
+        :global(.splitpanes__splitter) {
+            background-color: #fff;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
             position: relative;
+            -ms-flex-negative: 0;
+            z-index: 3 !important;
+            flex-shrink: 0;
         }
 
-        &__splitter:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            transition: 0.4s;
-        }
-        &--vertical > &__splitter:before {
-            left: -1px;
-            right: -1px;
-        }
-        &--horizontal > &__splitter:before {
-            top: -1px;
-            bottom: -1px;
-        }
-        &__splitter:hover:before {
-            background-color: #5277d7;
+        :global(.splitpanes--vertical > .splitpanes__splitter) {
+            position: relative;
+            touch-action: none;
+            border-width: 0.5px !important;
+            &:before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                transition: opacity 0.4s;
+                @apply bg-primary;
+                opacity: 0;
+                z-index: 1;
+                left: -1px;
+                right: -1px;
+                height: 100%;
+            }
+
+            &:hover {
+                &:before {
+                    opacity: 1;
+                    width: 2.5px !important;
+                }
+            }
+            &:after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                z-index: 1;
+                left: -8px;
+                right: -8px;
+                height: 100%;
+            }
         }
     }
 </style>

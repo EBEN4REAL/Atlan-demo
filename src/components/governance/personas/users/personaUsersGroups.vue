@@ -14,8 +14,8 @@
                         ghost
                         @click="
                             () => {
-                                getUserList()
-                                getGroupList()
+                                fetchPersonaUserSubjects()
+                                fetchPersonaGroupSubjects()
                             }
                         "
                     >
@@ -64,8 +64,7 @@
                             type="primary"
                             @click="
                                 () => {
-                                    setPopoverState(!popoverVisible),
-                                        setEmptyStateCTA(false)
+                                    setPopoverState(!popoverVisible)
                                 }
                             "
                             >Add User/Group</a-button
@@ -489,10 +488,19 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            cancelTokenForUsers: {
+                type: Object,
+                required: false,
+            },
+            cancelTokenForGroups: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const showRemoveUserPopover = ref({})
-            const { persona } = toRefs(props)
+            const { persona, cancelTokenForUsers, cancelTokenForGroups } =
+                toRefs(props)
             const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
             const enableTabs = computed(() => ['users', 'groups'])
 
@@ -504,21 +512,19 @@
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
             const { updateUsers } = usePersonaService()
             const {
-                getUserList,
+                fetchPersonaUserSubjects,
                 STATES: USER_STATES,
                 state: userState,
                 userList,
                 isLoading: isUsersLoading,
                 error: usersError,
-            } = usePersonaUserList(persona)
+            } = usePersonaUserList(persona, cancelTokenForUsers.value)
             const {
-                getGroupList,
-                STATES: GROUP_STATES,
-                state: groupState,
+                fetchPersonaGroupSubjects,
                 groupList,
                 isLoading: isGroupsLoading,
                 error: groupsError,
-            } = usePersonaGroupList(persona)
+            } = usePersonaGroupList(persona, cancelTokenForGroups.value)
 
             const filteredList = computed(() => {
                 const qry = queryText.value
@@ -666,8 +672,7 @@
                                 userGroupData.value.ownerUsers ?? []
                             persona.value.groups =
                                 userGroupData.value.ownerGroups ?? []
-                            getUserList()
-                            getGroupList()
+                            // when we change users/groups in a persona, a watch runs to fetch more info for users/groups
                         })
                         .catch((e) => {
                             addUsersLoading.value = false
@@ -714,11 +719,8 @@
                         (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                persona.value.users = updatedUsersIds
                 selectedPersonaDirty.value.users = updatedUsersIds
-                persona.value.groups = updatedGroupIds
                 selectedPersonaDirty.value.groups = updatedGroupIds
-
                 updateUsers({
                     id: persona.value.id,
                     users: updatedUsersIds,
@@ -729,8 +731,8 @@
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
-                        getUserList()
-                        getGroupList()
+                        persona.value.users = updatedUsersIds
+                        persona.value.groups = updatedGroupIds
                     })
                     .catch((e) => {
                         if (type === 'user') {
@@ -791,13 +793,11 @@
                 userState,
                 USER_STATES,
                 showGroupPreviewDrawer,
-                getGroupList,
-                getUserList,
+                fetchPersonaGroupSubjects,
+                fetchPersonaUserSubjects,
                 enableTabs,
                 getPopoverContent,
                 confirmPopover,
-                groupState,
-                GROUP_STATES,
                 addUsersLoading,
                 handleUpdate,
                 setPopoverState,

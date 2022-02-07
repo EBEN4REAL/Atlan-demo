@@ -60,6 +60,15 @@ export default function useAssetInfo() {
 
     const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
+    const parentFolder = (asset: assetInterface) => attributes(asset)?.folder
+
+    const parentModel = (asset: assetInterface) => attributes(asset)?.model
+
+    const parentOrganization = (asset: assetInterface) =>
+        attributes(asset)?.organization
+
+    const parentObject = (asset: assetInterface) => attributes(asset)?.object
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -159,6 +168,9 @@ export default function useAssetInfo() {
 
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
+
+    const parentDatabase = (asset: assetInterface) =>
+        attributes(asset)?.database
 
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
@@ -478,6 +490,16 @@ export default function useAssetInfo() {
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount, true)
 
+    const tableCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.tableCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).tableCount, false)
+
+    const viewCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.viewsCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).viewsCount, false)
+
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.termsCount?.toLocaleString() || 'N/A'
@@ -541,6 +563,14 @@ export default function useAssetInfo() {
             return raw
                 ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
                 : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+        }
+        return ''
+    }
+    const lastSyncRunAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.lastSyncRunAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.lastSyncRunAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.lastSyncRunAt).value
         }
         return ''
     }
@@ -723,8 +753,11 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Looker')
         )
     }
+    const isSaasAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('Salesforce')
+    }
 
-    const isNonBiAsset = (asset: assetInterface) => {
+    const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
@@ -1077,6 +1110,21 @@ export default function useAssetInfo() {
     const sourceOwners = (asset: assetInterface) =>
         attributes(asset)?.sourceOwners
 
+    const resultMakerID = (asset: assetInterface) =>
+        attributes(asset)?.resultMakerID || '-'
+
+    const sourceMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceMetadataId || '-'
+
+    const sourceContentMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceContentMetadataId || '-'
+
+    const sourceViewCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceViewCount, true)
+
+    const sourceChildCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceChildCount, true)
+
     return {
         attributes,
         title,
@@ -1165,7 +1213,8 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         selectedAssetUpdatePermission,
-        isNonBiAsset,
+        isSQLAsset,
+        isSaasAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,
@@ -1198,5 +1247,18 @@ export default function useAssetInfo() {
         parentWorkbook,
         sourceURL,
         parentSite,
+        resultMakerID,
+        sourceMetadataId,
+        sourceContentMetadataId,
+        sourceViewCount,
+        parentFolder,
+        parentModel,
+        parentDatabase,
+        sourceChildCount,
+        tableCount,
+        viewCount,
+        parentOrganization,
+        parentObject,
+        lastSyncRunAt,
     }
 }

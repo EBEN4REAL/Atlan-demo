@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 mt-5 bg-white border border-gray-200 rounded">
+    <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
         <div class="flex items-center justify-between">
             <div>
                 <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" />

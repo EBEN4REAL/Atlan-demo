@@ -203,7 +203,6 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (eventDetail) {
-                console.log(eventDetail)
                 switch (auditEvent.action) {
                     // case 'LABEL_ADD':
                     //     data.displayValue = `Label <b>${eventDetail[1].trim()}</b> added`
@@ -315,6 +314,10 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'ENTITY_CREATE':
                         data.value = eventDetail
                         data.component = 'Create'
+                        return data
+                    case 'ENTITY_DELETE':
+                        data.value = eventDetail
+                        data.component = 'Delete'
                         return data
 
                     case 'ENTITY_UPDATE':

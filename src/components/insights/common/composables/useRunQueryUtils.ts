@@ -9,7 +9,7 @@ export function useRunQueryUtils(editorInstance, monacoInstance) {
         if (status === 'success') {
             /* Resetting the red dot from the editor if it error is not line type */
             resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
-        } else if ((status = 'error')) {
+        } else if (status === 'error') {
             resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
             const errorName =
@@ -30,15 +30,9 @@ export function useRunQueryUtils(editorInstance, monacoInstance) {
             }
         }
     }
-    const onQueryIdGeneration = (
-        activeInlineTab,
-        queryId: string,
-        eventSource: any
-    ) => {
+    const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
         /* Setting the particular instance to this tab */
         activeInlineTab.value.playground.resultsPane.result.runQueryId = queryId
-        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-            eventSource
     }
 
     return {

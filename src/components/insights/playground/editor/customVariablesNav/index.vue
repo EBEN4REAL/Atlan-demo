@@ -78,14 +78,14 @@
                                 <div
                                     @mouseleave="closeSelectDropdown"
                                     class="z-10 flex flex-col text-gray-700 bg-white rounded shadow"
-                                    style="width: 162px"
+                                    style="width: 162px; max-height: 200px"
                                 >
                                     <div
                                         v-if="variable.allowMultiple"
-                                        class="gap-y-2"
+                                        class="w-full overflow-y-scroll gap-y-2"
                                     >
                                         <div
-                                            class="flex flex-col w-full"
+                                            class="absolute top-0 z-10 flex flex-col w-full bg-white hover:bg-primary-light"
                                             @change="
                                                 () => {
                                                     onCheckAllOptions(variable)
@@ -95,9 +95,13 @@
                                         >
                                             <a-checkbox
                                                 v-model:checked="checkAll"
-                                                class="w-full px-4 py-2"
+                                                class="inline-flex items-center w-full px-2 py-2"
+                                                :class="$style.checkbox_style"
                                             >
-                                                Select all
+                                                <span
+                                                    class="flex w-full h-full ml-1 -mb-1.5"
+                                                    >Select all</span
+                                                >
                                             </a-checkbox>
                                         </div>
 
@@ -114,43 +118,59 @@
                                                     onChange(variable)
                                                 }
                                             "
+                                            class="w-full overflow-x-hidden mt-9"
                                         >
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
-                                                class="flex items-center justify-between px-4 pt-2 pb-2"
+                                                class="w-full px-2 py-1 hover:bg-primary-light"
                                             >
-                                                <a-checkbox :value="item.value"
+                                                <a-checkbox
+                                                    :value="item.value"
+                                                    :class="
+                                                        $style.checkbox_style
+                                                    "
+                                                    class="inline-flex items-center"
                                                     ><span
-                                                        class="w-full h-8 mb-0 ml-1"
+                                                        class="flex w-full h-full ml-1 -mb-1.5"
                                                     >
-                                                        {{ item.label }}
+                                                        <!-- {{ item.label }} -->
+
+                                                        <Tooltip
+                                                            :tooltip-text="`${item.label}`"
+                                                            clamp-percentage="97%"
+                                                        />
                                                     </span>
                                                 </a-checkbox>
                                             </div>
                                         </a-checkbox-group>
                                     </div>
-                                    <div v-else>
+                                    <div v-else class="overflow-y-scroll">
                                         <a-menu
                                             v-model:selectedKeys="
                                                 variable.value
                                             "
                                             @select="onChange(variable)"
+                                            class="w-full"
                                         >
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
+                                                class="w-full"
                                             >
                                                 <a-menu-item
-                                                    class="px-4 hover:bg-gray-100"
+                                                    class="w-full px-2 hover:bg-primary-light"
                                                     :key="item.value"
                                                 >
                                                     <div
-                                                        class="flex items-center justify-between"
+                                                        class="flex items-center justify-between w-full"
                                                     >
-                                                        <span>{{
-                                                            item.label
-                                                        }}</span>
+                                                        <span
+                                                            class="flex w-full h-8 mb-0"
+                                                            ><Tooltip
+                                                                :tooltip-text="`${item.label}`"
+                                                                clamp-percentage="99%"
+                                                        /></span>
                                                         <!-- <AtlanIcon
                                                             icon="Check"
                                                             class="text-primary"
@@ -231,7 +251,9 @@
                                                 placement="bottom"
                                                 color="#363636"
                                             >
-                                                <template #title>Copy</template>
+                                                <template #title
+                                                    >Copy variable</template
+                                                >
                                                 <AtlanIcon
                                                     @click="
                                                         () =>
@@ -279,6 +301,15 @@
                                                     v-model:value="
                                                         activeVariable.name
                                                     "
+                                                    @change="
+                                                        () => {
+                                                            activeVariable.name =
+                                                                activeVariable.name.replace(
+                                                                    / /g,
+                                                                    '_'
+                                                                )
+                                                        }
+                                                    "
                                                     placeholder="Name"
                                                     :class="
                                                         inputError
@@ -305,19 +336,42 @@
                                                 >
                                                     <a-select-option
                                                         value="string"
-                                                        >String</a-select-option
                                                     >
+                                                        <AtlanIcon
+                                                            icon="String"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span>String</span>
+                                                    </a-select-option>
                                                     <a-select-option
                                                         value="number"
-                                                        >Number</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="Number"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Number</span
+                                                        ></a-select-option
                                                     >
                                                     <a-select-option
                                                         value="date"
-                                                        >Date</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="DateTime"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Date</span
+                                                        ></a-select-option
                                                     >
                                                     <a-select-option
                                                         value="dropdown"
-                                                        >Dropdown</a-select-option
+                                                        ><AtlanIcon
+                                                            icon="Columns"
+                                                            class="w-4 h-4 mr-1 -mt-0.5 outline-none text-gray-500"
+                                                        />
+                                                        <span
+                                                            >Select</span
+                                                        ></a-select-option
                                                     >
                                                 </a-select>
                                             </a-form-item>
@@ -374,6 +428,11 @@
                                                     :dropdownStyle="{
                                                         visibility: 'hidden',
                                                     }"
+                                                    :class="[
+                                                        dropdownError
+                                                            ? $style.error_select
+                                                            : $style.multi_select,
+                                                    ]"
                                                 >
                                                     <!-- <template
                                                         #dropdownRender
@@ -414,9 +473,10 @@
                                                             onChangeAllowMultiple()
                                                         }
                                                     "
+                                                    class="inline-flex items-center"
                                                 >
                                                     <span
-                                                        class="text-sm text-gray-700"
+                                                        class="flex -mb-1.5 ml-0.5 text-sm text-gray-700"
                                                     >
                                                         Allow multiple values
                                                     </span>
@@ -480,10 +540,11 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import dayjs from 'dayjs'
-
+    import Tooltip from '@common/ellipsis/index.vue'
     export default defineComponent({
         components: {
             AtlanBtn,
+            Tooltip,
         },
         props: {},
         setup(props) {
@@ -527,11 +588,13 @@
 
             const varTest = /^[a-zA-Z0-9_]+$/
             let inputError = ref(false)
+            let dropdownError = ref(false)
 
             const closeDropdown = () => {
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
                 inputError.value = false
+                dropdownError.value = false
             }
 
             const cancelEdit = () => {
@@ -549,6 +612,7 @@
 
                 currVariable.value = undefined
                 inputError.value = false
+                dropdownError.value = false
             }
             const onAddVariable = () => {
                 // addVariable(activeInlineTab, tabs, sqlVariables)
@@ -569,6 +633,15 @@
                 } else {
                     inputError.value = true
                 }
+                if (variable.type === 'dropdown') {
+                    if (variable.options.length) {
+                        dropdownError.value = false
+                    } else {
+                        dropdownError.value = true
+                    }
+                }
+
+                // console.log('toggle: ', variable)
             }
 
             const onDeleteVariable = (variable: CustomVaribaleInterface) => {
@@ -578,27 +651,51 @@
             }
 
             const onSaveVariable = () => {
+                // console.log('save var: ', activeVariable.value)
                 if (varTest.test(activeVariable.value.name)) {
-                    if (
-                        saveVariable(
-                            activeInlineTab,
-                            tabs,
-                            activeVariable.value,
-                            currVariable
-                        )
-                    ) {
-                        /* If successfully variable saved then close the dropdown */
-                        checkAll.value = false
-                        inputError.value = false
-
-                        // if (variable.type === 'dropdown') {
-                        //     variable.value = [variable.options[0].value]
-                        // }
-                        // activeVariable.value = null
-                        closeDropdown()
+                    if (activeVariable.value.type === 'dropdown') {
+                        if (activeVariable.value.options.length) {
+                            dropdownError.value = false
+                            if (
+                                saveVariable(
+                                    activeInlineTab,
+                                    tabs,
+                                    activeVariable.value,
+                                    currVariable
+                                )
+                            ) {
+                                /* If successfully variable saved then close the dropdown */
+                                checkAll.value = false
+                                inputError.value = false
+                                closeDropdown()
+                            }
+                        } else {
+                            dropdownError.value = true
+                        }
+                    } else {
+                        if (
+                            saveVariable(
+                                activeInlineTab,
+                                tabs,
+                                activeVariable.value,
+                                currVariable
+                            )
+                        ) {
+                            /* If successfully variable saved then close the dropdown */
+                            checkAll.value = false
+                            inputError.value = false
+                            closeDropdown()
+                        }
                     }
                 } else {
                     inputError.value = true
+                    if (activeVariable.value.type === 'dropdown') {
+                        if (activeVariable.value.options.length) {
+                            dropdownError.value = false
+                        } else {
+                            dropdownError.value = true
+                        }
+                    }
                 }
             }
             const onCopyVariable = (variable: CustomVaribaleInterface) => {
@@ -630,6 +727,15 @@
             const handleSelectInputChange = (
                 variable: CustomVaribaleInterface
             ) => {
+                console.log('change select')
+                activeVariable.value.dummy = activeVariable.value.dummy.map(
+                    (el) => {
+                        return el.trim()
+                    }
+                )
+                activeVariable.value.dummy = activeVariable.value.dummy.filter(
+                    (el) => el.length > 0
+                )
                 if (variable.dummy.length) {
                     variable.value = [variable.dummy[variable.dummy.length - 1]]
                 }
@@ -716,6 +822,7 @@
                 closeDropdown,
                 // checkInput,
                 inputError,
+                dropdownError,
                 handleSelectInputChange,
                 handleSelectDateChange,
                 handleVariableTypeChange,
@@ -769,8 +876,8 @@
             height: 7px !important;
         }
         :global(.ant-checkbox-inner) {
-            width: 13.5px !important;
-            height: 13px !important;
+            width: 13px !important;
+            height: 13.5px !important;
         }
         :global(.ant-checkbox + span) {
             @apply px-1 !important;
@@ -798,6 +905,21 @@
     }
     input[type='number'] {
         -moz-appearance: textfield !important;
+    }
+
+    .multi_select {
+        :global(.ant-select-selector) {
+            max-height: 80px !important;
+            overflow: scroll !important;
+        }
+    }
+    .error_select {
+        :global(.ant-select-selector) {
+            // @apply border-red-300;
+            border-color: rgb(252, 165, 165) !important;
+            max-height: 80px !important;
+            overflow: scroll !important;
+        }
     }
 </style>
 

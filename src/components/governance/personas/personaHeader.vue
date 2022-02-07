@@ -47,7 +47,10 @@
                         placement="right"
                     >
                         <span
-                            ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ><AtlanIcon
+                                icon="Info"
+                                class="ml-1 mb-0.5"
+                            ></AtlanIcon
                         ></span>
                     </a-tooltip>
                 </div>
@@ -198,16 +201,19 @@
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Working on it...',
-                    duration: 0,
+                    duration: 1.5,
                     key: messageKey,
                 })
 
                 try {
-                    await savePersona({
+                    const body = {
                         ...persona.value,
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
-                    })
+                    }
+                    delete body.metadataPolicies
+                    delete body.dataPolicies
+                    await savePersona(body)
 
                     message.success({
                         content: `${persona.value?.displayName} persona updated`,

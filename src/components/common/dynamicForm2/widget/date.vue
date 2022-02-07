@@ -100,7 +100,7 @@
                 localValue.value = minDate.value.unix().toString()
                 handleChange()
             } else {
-                localValue.value = modelValue.value.toString()
+                localValue.value = modelValue.value?.toString()
             }
 
             // Can not select days before today and today

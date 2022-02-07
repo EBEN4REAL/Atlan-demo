@@ -198,9 +198,12 @@
 
                         <div
                             v-if="
-                                ['table', 'view', 'tablepartition'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
+                                [
+                                    'table',
+                                    'view',
+                                    'tablepartition',
+                                    'materialisedview',
+                                ].includes(item.typeName?.toLowerCase())
                             "
                             class="flex mr-2 text-sm text-gray-500"
                         >
@@ -315,6 +318,7 @@
                                 >
                             </div>
                         </div>
+
                         <div
                             v-if="
                                 ['column'].includes(
@@ -481,7 +485,11 @@
                             </a-tooltip>
                         </div>
                         <div
-                            v-if="['PowerBITile'].includes(item?.typeName)"
+                            v-if="
+                                ['PowerBITile', 'LookerTile'].includes(
+                                    item?.typeName
+                                )
+                            "
                             class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
@@ -670,6 +678,191 @@
                                 </template>
                             </a-tooltip>
                         </div>
+
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.folderName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.folderName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Folder -
+                                        {{ item?.attributes?.folderName }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'lookermodel',
+                                    'lookerexplore',
+                                    'lookerfield',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.projectName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{ item?.attributes?.projectName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Project -
+                                        {{
+                                            item?.attributes?.projectName
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerexplore', 'lookerfield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="item?.attributes?.modelName"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        <AtlanIcon
+                                            icon="CaretRight"
+                                            class="w-auto h-4 mb-0.5 -mx-1"
+                                        />
+                                        {{ item?.attributes?.modelName }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Model -
+                                        {{ item?.attributes?.modelName }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerdashboard', 'lookerlook'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span class="tracking-tight text-gray-500">{{
+                                    sourceViewCount(item)
+                                }}</span>
+                                views</span
+                            >
+                        </div>
+                        <div
+                            v-if="
+                                ['lookerfolder'].includes(
+                                    item.typeName?.toLowerCase()
+                                ) && sourceChildCount(item) !== '0'
+                            "
+                            class="flex text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span class="tracking-tight text-gray-500">{{
+                                    sourceChildCount(item)
+                                }}</span>
+                                sub-folder{{
+                                    sourceChildCount(item) === '1' ? '' : 's'
+                                }}</span
+                            >
+                        </div>
+                        <div
+                            v-if="
+                                [
+                                    'salesforcedashboard',
+                                    'salesforcereport',
+                                    'salesforceobject',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="
+                                        parentOrganization(item)?.attributes
+                                            ?.name
+                                    "
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentOrganization(item)?.attributes
+                                                ?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Organization -
+                                        {{
+                                            parentOrganization(item)?.attributes
+                                                ?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                ['salesforcefield'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="parentObject(item)?.attributes?.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <span class="tracking-tight">
+                                        in
+                                        {{
+                                            parentObject(item)?.attributes?.name
+                                        }}
+                                    </span>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Object -
+                                        {{
+                                            parentObject(item)?.attributes?.name
+                                        }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -707,21 +900,27 @@
                         </div>
                         <div
                             v-if="
-                                meaningRelationships(item).length > 0 &&
+                                meanings(item).length > 0 &&
                                 preference?.display?.includes('terms')
                             "
                             class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
-                                v-for="term in meaningRelationships(item)"
+                                v-for="term in meanings(item)"
                                 :key="term.guid"
                             >
-                                <div class="flex flex-wrap">
+                                <div
+                                    class="flex flex-wrap"
+                                    v-if="
+                                        term?.attributes?.__state &&
+                                        term?.attributes?.__state !== 'DELETED'
+                                    "
+                                >
                                     <TermPopover
                                         :term="term"
                                         :loading="termLoading"
                                         :fetched-term="
-                                            getFetchedTerm(term.termGuid)
+                                            getFetchedTerm(term?.guid ?? term?.termGuid)
                                         "
                                         :error="termError"
                                         trigger="hover"
@@ -905,6 +1104,7 @@
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
+                meanings,
                 parentWorkspace,
                 parentReport,
                 parentDashboard,
@@ -919,6 +1119,10 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                parentOrganization,
+                parentObject,
+                sourceViewCount,
+                sourceChildCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -941,8 +1145,7 @@
             }
 
             const isSelected = computed(() => {
-                return selectedGuid.value === item?.value?.guid;
-
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
@@ -951,8 +1154,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -1057,6 +1259,11 @@
                 parentDatasource,
                 parentWorkbook,
                 parentSite,
+                parentOrganization,
+                parentObject,
+                sourceViewCount,
+                sourceChildCount,
+                meanings,
             }
         },
     })

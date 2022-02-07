@@ -2,8 +2,12 @@ import { ref, Ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useAPI } from '~/services/api/useAPI'
 
-import {map} from '~/services/meta/search/key'
-import { InternalAttributes, SavedQueryAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { map } from '~/services/meta/search/key'
+import {
+    InternalAttributes,
+    SavedQueryAttributes,
+    BasicSearchAttributes,
+} from '~/constant/projection'
 import whoami from '~/composables/user/whoami'
 import bodybuilder from 'bodybuilder'
 
@@ -15,7 +19,7 @@ const searchQueries = (
     limit?: Ref<number>
 ) => {
     const body = ref<Record<string, any>>({})
-    
+
     const { username } = whoami()
 
     const attributes = [
@@ -49,36 +53,26 @@ const searchQueries = (
 
     const refreshBody = () => {
         base = bodybuilder()
-        base.sort('name.keyword', { order: "asc" })
-        base.filter(
-            'regexp',
-            'name.keyword',
-            `${query.value}.*`
-        )
-        base.filter(
-            'term',
-            '__state',
-            'ACTIVE'
-        )
+        base.sort('name.keyword', { order: 'asc' })
+        base.filter('regexp', 'name.keyword', `${query.value}.*`)
+        base.filter('term', '__state', 'ACTIVE')
 
-        if(facets.value && Object.keys(facets.value).length>0) {
+        if (facets.value && Object.keys(facets.value).length > 0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
                 const filterObject = facets?.value[mkey]
                 const existsValue = 'NONE'
                 switch (mkey) {
-                    
                     case 'certificateStatus': {
                         if (filterObject) {
                             if (filterObject.length > 0) {
-
                                 let filter = [...filterObject]
 
-                                for(var i=0;i<filter.length;i++) {
+                                for (var i = 0; i < filter.length; i++) {
                                     if (filter[i] == null) {
-                                        filter[i] = "NONE";
+                                        filter[i] = 'NONE'
                                     }
                                 }
-                                
+
                                 const index = filter.indexOf(existsValue)
                                 if (index > -1) {
                                     const temp = []
@@ -95,7 +89,7 @@ const searchQueries = (
                                                 temp
                                             )
                                         }
-        
+
                                         q.orFilter('bool', (query) => {
                                             return query.notFilter(
                                                 'exists',
@@ -124,7 +118,7 @@ const searchQueries = (
                                         'ownerUsers',
                                         filterObject.ownerUsers
                                     )
-        
+
                                 if (filterObject.ownerGroups?.length > 0)
                                     q.orFilter(
                                         'terms',
@@ -133,20 +127,29 @@ const searchQueries = (
                                     )
                                 if (filterObject.empty === true) {
                                     q.orFilter('bool', (query) => {
-                                        return query.filter('bool', (query2) => {
-                                            query2.notFilter('exists', 'ownerUsers')
-                                            query2.notFilter('exists', 'ownerGroups')
-                                            return query2
-                                        })
+                                        return query.filter(
+                                            'bool',
+                                            (query2) => {
+                                                query2.notFilter(
+                                                    'exists',
+                                                    'ownerUsers'
+                                                )
+                                                query2.notFilter(
+                                                    'exists',
+                                                    'ownerGroups'
+                                                )
+                                                return query2
+                                            }
+                                        )
                                     })
                                 }
                                 return q
                             })
                         }
-        
+
                         break
                     }
-                    
+
                     case '__traitNames': {
                         if (filterObject) {
                             base.filter('bool', (q) => {
@@ -156,29 +159,35 @@ const searchQueries = (
                                         '__traitNames',
                                         filterObject.classifications
                                     )
-        
+
                                 if (filterObject.empty === true) {
                                     q.orFilter('bool', (query) => {
-                                        return query.filter('bool', (query2) => {
-                                            query2.notFilter('exists', '__traitNames')
-                                            return query2
-                                        })
+                                        return query.filter(
+                                            'bool',
+                                            (query2) => {
+                                                query2.notFilter(
+                                                    'exists',
+                                                    '__traitNames'
+                                                )
+                                                return query2
+                                            }
+                                        )
                                     })
                                 }
                                 return q
                             })
                         }
-        
+
                         break
                     }
-                   
+
                     case 'glossary': {
                         if (filterObject) {
                             base.filter('term', '__glossary', filterObject)
                         }
                         break
                     }
-                   
+
                     case 'terms': {
                         if (filterObject) {
                             base.filter('term', '__meanings', filterObject)
@@ -188,7 +197,6 @@ const searchQueries = (
                 }
             })
         }
-        
     }
     refreshBody()
 
@@ -198,11 +206,7 @@ const searchQueries = (
 
     const fetchQueries = async () => {
         refreshBody()
-        base.filter(
-            'term',
-            '__typeName.keyword',
-            "Query"
-        )
+        base.filter('term', '__typeName.keyword', 'Query')
         base.filter(
             'term',
             'collectionQualifiedName',
@@ -211,34 +215,33 @@ const searchQueries = (
         // console.log('parentQualifiedName: ', collection)
         let body = base.build()
         // console.log('query filter facet')
-        const {isLoading, data, error} =  await useAPI(
+        const { isLoading, data, error } = await useAPI(
             map.INDEX_SEARCH,
             'POST',
             {
                 body: {
                     dsl: body,
-                    attributes: attributes
-                }
-
+                    attributes: attributes,
+                    suppressLogs: true,
+                },
             },
             {}
         )
 
         watch([isLoading, data], () => {
-            if(isLoading.value===true) {
-
+            if (isLoading.value === true) {
             } else {
-                isLoading1.value = isLoading.value;
+                isLoading1.value = isLoading.value
                 data1.value = data.value
                 error1.value = error.value
             }
         })
     }
 
-
     const onQueryChange = useDebounceFn((query: string, facets) => {
-        console.log('query: ', facets && Object.keys(facets).length>0)
-        if (query.length || (facets && Object.keys(facets).length>0)) fetchQueries()
+        console.log('query: ', facets && Object.keys(facets).length > 0)
+        if (query.length || (facets && Object.keys(facets).length > 0))
+            fetchQueries()
     })
 
     watch([query, collection, facets], ([newQuery]) => {

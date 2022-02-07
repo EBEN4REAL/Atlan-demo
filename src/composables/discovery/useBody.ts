@@ -23,49 +23,58 @@ export function useBody(
     const base = bodybuilder()
 
     if (queryText) {
+        let tempQuery = queryText
+        if (queryText.includes('.')) {
+            const split = queryText.split('.')
+            if (split.length === 2) {
+                base.filter('term', 'schemaName.keyword', split[0])
+                tempQuery = split[1]
+            }
+        }
+
         // Synonym
         base.orQuery('match', 'name', {
-            query: queryText.toLowerCase(),
+            query: tempQuery.toLowerCase(),
             boost: 40,
             analyzer: 'search_synonyms',
         })
 
         base.orQuery('match', 'name', {
-            query: queryText,
+            query: tempQuery,
             boost: 40,
         })
 
         base.orQuery('match', 'name', {
-            query: queryText,
+            query: tempQuery,
             operator: 'AND',
             boost: 40,
         })
 
         base.orQuery('match', 'name.keyword', {
-            query: queryText,
+            query: tempQuery,
             boost: 120,
         })
 
         base.orQuery('match_phrase', 'name', {
-            query: queryText,
+            query: tempQuery,
             boost: 70,
         })
         base.orQuery('wildcard', 'name', {
-            value: `${queryText.toLowerCase()}*`,
+            value: `${tempQuery.toLowerCase()}*`,
         })
         base.orQuery('match', 'description', {
-            query: queryText,
+            query: tempQuery,
         })
         base.orQuery('match', 'userDescription', {
-            query: queryText,
+            query: tempQuery,
         })
         base.orQuery('match', '__meaningsText', {
-            query: queryText,
+            query: tempQuery,
             boost: 20,
         })
 
         base.orQuery('match', 'name.stemmed', {
-            query: queryText.toLowerCase(),
+            query: tempQuery.toLowerCase(),
         })
         base.queryMinimumShouldMatch(1)
     }
@@ -179,6 +188,27 @@ export function useBody(
 
                         return q
                     })
+
+                    if (
+                        filterObject.attributeName &&
+                        filterObject.attributeValue
+                    ) {
+                        base.filter('bool', (q) => {
+                            q.orFilter(
+                                'term',
+                                filterObject.attributeName,
+                                filterObject.attributeValue
+                            )
+
+                            q.orFilter(
+                                'term',
+                                'qualifiedName',
+                                filterObject.attributeValue
+                            )
+
+                            return q
+                        })
+                    }
                     // base.filter(
                     //     'term',
                     //     'connectionQualifiedName',
@@ -374,8 +404,12 @@ export function useBody(
                 break
             }
             case 'excludeGtc': {
-                if(filterObject) {
-                    base.notFilter('terms', '__typeName.keyword', ['AtlasGlossary', 'AtlasGlossaryCategory', 'AtlasGlossaryTerm'])
+                if (filterObject) {
+                    base.notFilter('terms', '__typeName.keyword', [
+                        'AtlasGlossary',
+                        'AtlasGlossaryCategory',
+                        'AtlasGlossaryTerm',
+                    ])
                 }
                 break
             }
@@ -607,6 +641,10 @@ export function useBody(
                 if (filterObject !== 'default') {
                     const split = filterObject.split('-')
                     if (split.length > 1) {
+                        if (queryText) {
+                            base.sort('_score', 'desc')
+                        }
+
                         base.sort(split[0], split[1])
                     }
                 }
@@ -622,7 +660,7 @@ export function useBody(
         !facets?.guid
     ) {
         // Global TypeName Filters
-        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
+        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI', 'CRM'])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
             'AtlasGlossaryCategory',

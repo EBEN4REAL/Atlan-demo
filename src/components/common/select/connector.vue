@@ -9,7 +9,7 @@
         class="selector"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-1" />
+            <AtlanIcon icon="CaretDown" />
         </template>
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id" class="flex">

@@ -95,6 +95,7 @@ export default function useAssetInfo() {
             attributes(asset)?.name ||
             attributes(asset)?.qualifiedName) ??
         ''
+    const apiName = (asset: assetInterface) => attributes(asset)?.apiName ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
@@ -1273,5 +1274,6 @@ export default function useAssetInfo() {
         lastSyncRunAt,
         sourceId,
         fieldCount,
+        apiName,
     }
 }

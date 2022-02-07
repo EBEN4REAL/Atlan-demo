@@ -37,6 +37,7 @@ export const InternalAttributes = [
 export const AssetAttributes = [
     'name',
     'displayName',
+    'apiName',
     'description',
     'displayDescription',
     'userDescription',

@@ -891,56 +891,38 @@
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
         position: relative;
-        box-sizing: border-box;
-        position: relative;
         touch-action: none;
-        border-right: 0px !important;
-        // margin-right: -0.5px;
-        // @apply border-r !important;
-        border-width: 1px !important;
-        // margin-left: -0.5px !important;
+        border-width: 0.5px !important;
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            // transition: opacity 0.4s;
+            @apply bg-primary;
+            opacity: 0;
+            z-index: 1;
+            left: -1px;
+            right: -1px;
+            height: 100%;
+        }
+
         &:hover {
-            @apply bg-primary !important;
             &:before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                @apply bg-primary;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                margin-left: 0px;
-                transform: translateY(-50%) translateX(-35%);
-                width: 2px;
-                height: 101%;
-                @apply z-50 !important;
-            }
-            &:after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: -10%;
-                @apply bg-transparent;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                transform: translateY(-50%);
-                width: 15px;
-                height: 100%;
-                margin-left: -8px;
-                @apply z-50 !important;
+                opacity: 1;
+                width: 2.5px !important;
             }
         }
         &:after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            @apply bg-transparent;
-            transform: translateY(-50%);
-            width: 10px;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            z-index: 1;
+            left: -8px;
+            right: -8px;
             height: 100%;
-            margin-left: 0px;
-            @apply z-50 !important;
         }
     }
     // asset sidebar resize disabled

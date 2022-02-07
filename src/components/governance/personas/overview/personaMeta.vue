@@ -13,18 +13,6 @@
             @editDetails="$emit('editDetails')"
         >
         </DetailsWidget>
-        <div class="h-full col-span-3 p-4 bg-white">
-            <ResourcesWidget
-                :entityName="persona.name"
-                :resources="persona?.resources?.links ?? []"
-                :add-status="addStatus"
-                :update-status="updateStatus"
-                :remove-status="removeStatus"
-                @add="handleAddResource"
-                @update="handleUpdateResource"
-                @remove="handleRemoveResource"
-            />
-        </div>
     </div>
 </template>
 
@@ -32,7 +20,6 @@
     import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import axios from 'axios'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
@@ -49,12 +36,10 @@
         selectedPersonaDirty,
         deletePersonaById,
     } from '../composables/useEditPersona'
-    import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     export default defineComponent({
         name: 'PersonaMeta',
         components: {
-            ResourcesWidget,
             PopOverUser,
             UserPill,
             DetailsWidget,
@@ -145,15 +130,6 @@
                         },
                     })
             }
-
-            const {
-                addStatus,
-                updateStatus,
-                removeStatus,
-                handleAddResource,
-                handleUpdateResource,
-                handleRemoveResource,
-            } = usePersonaResources(persona)
 
             // cancel request to fetch users and groups if persona changes too fast
             watch(

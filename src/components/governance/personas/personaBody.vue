@@ -59,6 +59,18 @@
                 @editDetails="$emit('editDetails')"
             />
             <Readme :persona="selectedPersonaDirty" />
+            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+                <ResourcesWidget
+                    :entityName="persona.name"
+                    :resources="persona?.resources?.links ?? []"
+                    :add-status="addStatus"
+                    :update-status="updateStatus"
+                    :remove-status="removeStatus"
+                    @add="handleAddResource"
+                    @update="handleUpdateResource"
+                    @remove="handleRemoveResource"
+                />
+            </div>
         </div>
         <div
             v-if="activeTabKey === 'policies'"
@@ -230,6 +242,7 @@
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -247,10 +260,12 @@
         PolicyType,
         deletePolicyV2,
     } from './composables/useEditPersona'
+    import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     export default defineComponent({
         name: 'PersonaBody',
         components: {
+            ResourcesWidget,
             MinimalTab,
             PolicyCard,
             DataPolicy,
@@ -273,7 +288,7 @@
             },
         },
         emits: ['selectPolicy'],
-        setup(prop, { emit }) {
+        setup(props, { emit }) {
             const searchPersona = ref('')
             const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
@@ -471,7 +486,23 @@
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
+
+            const {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
+            } = usePersonaResources(props.persona)
+
             return {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
                 newIdTag,
                 activeTabKey,
                 tabConfig,

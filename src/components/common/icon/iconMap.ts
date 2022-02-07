@@ -401,8 +401,10 @@ import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 import Comment from '~/assets/images/icons/Comment.svg'
+import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 
 export default {
+    Resources2,
     IntegrationsActive,
     Integrations,
     SlackToken,

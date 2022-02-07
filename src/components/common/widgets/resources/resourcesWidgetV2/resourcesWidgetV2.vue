@@ -1,7 +1,10 @@
 <template>
     <div class="w-full space-y-3">
         <div class="flex justify-between">
-            <h1 class="font-bold">Resources</h1>
+            <div>
+                <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
+                <span class="text-base font-bold text-gray"> Resources </span>
+            </div>
             <AddResource @add="addCallback">
                 <template #trigger>
                     <AtlanButton

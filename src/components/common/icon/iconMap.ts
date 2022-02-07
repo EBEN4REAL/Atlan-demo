@@ -254,6 +254,7 @@ import TaskList from '~/assets/images/readme/TaskList.svg'
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
+import PlusWhite from '~/assets/images/icons/plus-white.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
 import NoRuns from '~/assets/images/workflows/noRuns.svg'
@@ -777,4 +778,5 @@ export default {
     FilterFunnelDot,
     Comment,
     EmptyRequest,
+    PlusWhite,
 }

@@ -73,6 +73,9 @@ export async function savePersona(persona: IPersona) {
     if(!payload.resources){
         payload.resources = {}
     }
+    if(payload.readme === null){
+        delete payload.readme
+    }
     return updatePersona(payload)
 }
 

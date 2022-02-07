@@ -28,15 +28,14 @@
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <div ref="splitpaneRef">
+        <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
+                class="parent_splitpanes"
                 :class="[
-                    $style.splitpane__styles,
                     activeInlineTab?.assetSidebar?.isVisible
                         ? 'show-assetsidebar'
                         : 'hide-assetsidebar',
                 ]"
-                class="parent_splitpanes"
                 @resize="paneResize"
                 :dbl-click-splitter="false"
             >
@@ -880,123 +879,69 @@
     })
 </script>
 <style lang="less" module>
-    :global(.splitpanes__splitter) {
-        background-color: #fff;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-        position: relative;
-        -ms-flex-negative: 0;
-        z-index: 3 !important;
-        flex-shrink: 0;
-    }
+    .splitpane_insights {
+        :global(.splitpanes__splitter) {
+            background-color: #fff;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            position: relative;
+            -ms-flex-negative: 0;
+            z-index: 3 !important;
+            flex-shrink: 0;
+        }
 
-    :global(.splitpanes--vertical > .splitpanes__splitter) {
-        position: relative;
-        box-sizing: border-box;
-        position: relative;
-        touch-action: none;
-        border-right: 0px !important;
-        // margin-right: -0.5px;
-        // @apply border-r !important;
-        border-width: 1px !important;
-        // margin-left: -0.5px !important;
-        &:hover {
-            @apply bg-primary !important;
+        :global(.splitpanes--vertical > .splitpanes__splitter) {
+            position: relative;
+            touch-action: none;
+            border-width: 0.5px !important;
             &:before {
                 content: '';
                 position: absolute;
-                top: 50%;
-                left: 50%;
+                left: 0;
+                top: 0;
+                // transition: opacity 0.4s;
                 @apply bg-primary;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                margin-left: 0px;
-                transform: translateY(-50%) translateX(-35%);
-                width: 2px;
-                height: 101%;
-                @apply z-50 !important;
-            }
-            &:after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: -10%;
-                @apply bg-transparent;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                transform: translateY(-50%);
-                width: 15px;
+                opacity: 0;
+                z-index: 1;
+                left: -1px;
+                right: -1px;
                 height: 100%;
-                margin-left: -8px;
-                @apply z-50 !important;
+            }
+
+            &:hover {
+                &:before {
+                    opacity: 1;
+                    width: 2.5px !important;
+                }
+            }
+            &:after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                z-index: 1;
+                left: -8px;
+                right: -8px;
+                height: 100%;
             }
         }
-        &:after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            @apply bg-transparent;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 100%;
-            margin-left: 0px;
-            @apply z-50 !important;
-        }
-    }
-    // asset sidebar resize disabled
-    :global(.splitpanes__splitter:nth-child(4)) {
-        cursor: default !important;
-        &:after {
-            display: none !important;
+        // asset sidebar resize disabled
+        :global(.splitpanes__splitter:nth-child(4)) {
             cursor: default !important;
-        }
-        &:hover {
-            &:before {
-                display: none !important;
-                cursor: default !important;
-            }
             &:after {
                 display: none !important;
                 cursor: default !important;
             }
-        }
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter) {
-        position: relative;
-        margin-top: -1px;
-        box-sizing: border-box;
-        position: relative;
-        touch-action: none;
-        @apply border-t !important;
-        &:hover {
-            // border-width: 1.5px !important;
-            @apply bg-primary !important;
-            &:before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                margin-top: -2px;
-                transform: translateX(-50%);
-                width: 100%;
-                height: 2px;
-                @apply z-50 bg-primary !important;
-            }
-            &:after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                @apply z-50 bg-transparent !important;
-                -webkit-transition: background-color 0.3s;
-                transition: background-color 0.3s;
-                margin-top: -2px;
-                transform: translateX(-50%);
-                width: 100%;
-                height: 8px;
+            &:hover {
+                &:before {
+                    display: none !important;
+                    cursor: default !important;
+                }
+                &:after {
+                    display: none !important;
+                    cursor: default !important;
+                }
             }
         }
     }

@@ -160,6 +160,7 @@
             v-if="activeInlineTabKey"
             class="w-full"
             style="max-height: 100%; min-height: 92%; height: 100%"
+            :class="$style.splitspane_playground"
         >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -783,6 +784,46 @@
     // :global(.unsaved-dot) {
     //     visibility: hidden !important;
     // }
+    .splitspane_playground {
+        :global(.splitpanes--horizontal > .splitpanes__splitter) {
+            position: relative;
+            margin-top: -1px;
+            box-sizing: border-box;
+            position: relative;
+            touch-action: none;
+            @apply border-t !important;
+            &:hover {
+                // border-width: 1.5px !important;
+                @apply bg-primary !important;
+                &:before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2px;
+                    @apply z-50 bg-primary !important;
+                }
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    @apply z-50 bg-transparent !important;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 8px;
+                }
+            }
+        }
+    }
     :global(.ant-tabs-dropdown-menu-item-remove) {
         visibility: hidden !important;
     }

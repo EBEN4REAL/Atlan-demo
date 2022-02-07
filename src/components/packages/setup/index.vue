@@ -587,9 +587,9 @@
                     entrypoint: 'main',
                 }
 
-                if (workflowObject.value.spec.volumeClaimTemplates) {
+                if (workflowTemplate.value?.spec.volumeClaimTemplates) {
                     body.value.spec.volumeClaimTemplates =
-                        workflowObject.value.spec.volumeClaimTemplates
+                        workflowTemplate.value.spec.volumeClaimTemplates
                 }
 
                 status.value = 'loading'

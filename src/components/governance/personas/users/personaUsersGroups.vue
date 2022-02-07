@@ -14,8 +14,8 @@
                         ghost
                         @click="
                             () => {
-                                getUserList()
-                                getGroupList()
+                                fetchPersonaUserSubjects()
+                                fetchPersonaGroupSubjects()
                             }
                         "
                     >
@@ -512,7 +512,7 @@
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
             const { updateUsers } = usePersonaService()
             const {
-                getUserList,
+                fetchPersonaUserSubjects,
                 STATES: USER_STATES,
                 state: userState,
                 userList,
@@ -520,8 +520,7 @@
                 error: usersError,
             } = usePersonaUserList(persona, cancelTokenForUsers.value)
             const {
-                getGroupList,
-
+                fetchPersonaGroupSubjects,
                 groupList,
                 isLoading: isGroupsLoading,
                 error: groupsError,
@@ -732,8 +731,6 @@
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
-                        // getUserList()
-                        // getGroupList()
                         persona.value.users = updatedUsersIds
                         persona.value.groups = updatedGroupIds
                     })
@@ -796,8 +793,8 @@
                 userState,
                 USER_STATES,
                 showGroupPreviewDrawer,
-                getGroupList,
-                getUserList,
+                fetchPersonaGroupSubjects,
+                fetchPersonaUserSubjects,
                 enableTabs,
                 getPopoverContent,
                 confirmPopover,

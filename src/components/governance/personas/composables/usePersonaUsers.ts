@@ -22,6 +22,19 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     )
     const userList: Ref<IUser[]> = ref([])
 
+    const fetchUsers = () => {
+        userListAPIParams.filter.$or = []
+        persona.value.users?.forEach((id) =>
+            userListAPIParams.filter.$or.push({ id })
+        )
+        getUserList()
+    }
+    /* Fetching user subjects of the persona if there are any. */
+    const fetchPersonaUserSubjects = () => {
+        if (persona?.value?.users?.length) fetchUsers()
+        else userList.value = []
+    }
+
     watch(
         data,
         () => {
@@ -39,28 +52,10 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         { immediate: true }
     )
     watch(
-        () => persona.value.id,
-        () => {
-            userListAPIParams.filter.$or = []
-            persona.value.users?.forEach((id) =>
-                userListAPIParams.filter.$or.push({ id })
-            )
-            getUserList()
-        },
+        () => [persona?.value?.id, persona?.value?.users],
+        fetchPersonaUserSubjects,
         { immediate: true }
     )
-    watch(
-        () => persona.value.users,
-        () => {
-            userListAPIParams.filter.$or = []
-            persona.value.users?.forEach((id) =>
-                userListAPIParams.filter.$or.push({ id })
-            )
-            getUserList()
-        },
-        { deep: true }
-    )
-
     return {
         state,
         STATES,
@@ -68,7 +63,7 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         isLoading,
         list: data,
         userListAPIParams,
-        getUserList,
+        fetchPersonaUserSubjects,
         userList,
     }
 }

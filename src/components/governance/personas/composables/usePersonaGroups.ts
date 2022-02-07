@@ -18,33 +18,23 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
         isLoading,
         error,
     } = useGroups(params.value, '', {}, cancelToken, { immediate: false })
-    watch(
-        () => persona.value.id,
-        () => {
-            const groupFilter = { $or: [] }
-            persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
-            params.value.delete('filter')
-            params.value.append('filter', JSON.stringify(groupFilter))
-            getGroupList()
-        },
-        { immediate: true }
-    )
-    watch(
-        () => persona.value.groups,
-        () => {
-            const groupFilter = { $or: [] }
-            persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
-            params.value.delete('filter')
-            params.value.append('filter', JSON.stringify(groupFilter))
-            getGroupList()
-        },
-        { deep: true }
-    )
     const groupList: Ref<IGroup[]> = ref([])
+
+    const fetchGroups = () => {
+        const groupFilter = { $or: [] }
+        persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
+        params.value.delete('filter')
+        params.value.append('filter', JSON.stringify(groupFilter))
+        getGroupList()
+    }
+    /* Fetching group subjects of the persona if there are any. */
+    const fetchPersonaGroupSubjects = () => {
+        if (persona?.value?.groups?.length) fetchGroups()
+        else groupList.value = []
+    }
     watch(
         data,
         () => {
-            // console.log(data.value, 'data edit first')
             groupList.value = []
             persona.value.groups?.forEach((grpid) => {
                 data?.value?.forEach((t) => {
@@ -53,14 +43,17 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
                     }
                 })
             })
-            // console.log(data.value, 'data edit end')
         },
         { immediate: true }
     )
-
+    watch(
+        () => [persona?.value?.id, persona?.value?.groups],
+        fetchPersonaGroupSubjects,
+        { immediate: true }
+    )
     return {
         list: data,
-        getGroupList,
+        fetchPersonaGroupSubjects,
         groupList,
         isLoading,
         error,

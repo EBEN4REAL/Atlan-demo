@@ -8,7 +8,7 @@
                         <a-menu-item
                             v-for="stat in listStatus"
                             :key="stat.key"
-                            @click="selctedFilter = stat"
+                            @click="selectedFilter = stat"
                         >
                             <div
                                 class="flex items-center rounded hover:bg-primary-light menu-status"
@@ -21,7 +21,7 @@
                                 /> -->
                                 {{ stat.name }}
                                 <AtlanIcon
-                                    v-if="selctedFilter.key === stat.key"
+                                    v-if="selectedFilter.key === stat.key"
                                     icon="Check"
                                     class="ml-auto text-primary"
                                 />
@@ -37,11 +37,11 @@
                     <div class="flex items-center">
                         <!-- <div
                             :style="{
-                                background: selctedFilter.color,
+                                background: selectedFilter.color,
                             }"
                             class="mr-2 dot"
                         /> -->
-                        {{ selctedFilter.name }}
+                        {{ selectedFilter.name }}
                     </div>
                     <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
                 </AtlanButton>
@@ -145,7 +145,7 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const selctedFilter = ref(listStatus[0])
+            const selectedFilter = ref(listStatus[0])
             const list = ref([])
             const resPagination = ref({
                 filterRecord: 0,
@@ -161,13 +161,13 @@
                 selectedAsset.value.typeName,
                 filterStatus
             )
-            watch(selctedFilter, () => {
+            watch(selectedFilter, () => {
                 list.value = []
-                if (selctedFilter.value.key === 'all') {
+                if (selectedFilter.value.key === 'all') {
                     filterStatus.value = {}
                 } else {
                     filterStatus.value = {
-                        status: selctedFilter.value.key,
+                        status: selectedFilter.value.key,
                     }
                 }
                 pagination.value.offset = 0
@@ -195,7 +195,7 @@
                 handleLoadMore,
                 pagination,
                 listStatus,
-                selctedFilter,
+                selectedFilter,
             }
         },
     })

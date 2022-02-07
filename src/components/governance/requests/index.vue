@@ -462,7 +462,7 @@
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
                     : []
-                const createdBy = facetsValue?.requestor?.ownerUsers || []
+                const createdBy = facetsValue?.owners?.ownerUsers || []
                 // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,

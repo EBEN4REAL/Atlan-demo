@@ -5,7 +5,9 @@
         :style="`background-color: ${bgHover}!important;`"
         @mouseenter="
             () => {
-                mouseEnter = true
+                if (!noHover) {
+                    mouseEnter = true
+                }
             }
         "
         @mouseleave="
@@ -84,8 +86,14 @@
         },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, displayName, color, createdBy, isPropagated } =
-                toRefs(props)
+            const {
+                name,
+                displayName,
+                color,
+                createdBy,
+                isPropagated,
+                noHover,
+            } = toRefs(props)
             const originalColour = ref(unref(color).toLowerCase())
 
             const mouseEnter = ref(false)
@@ -114,9 +122,12 @@
                     bgColor.value === 'white' ? originalColour.value : 'white'
             }
 
-            const bgHover = computed(() =>
-                getClassificationColorHex(bgColor.value)
-            )
+            const bgHover = computed(() => {
+                if (noHover.value) {
+                    return 'transparent'
+                }
+                return getClassificationColorHex(bgColor.value)
+            })
 
             return {
                 name,
